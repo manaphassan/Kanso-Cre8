@@ -1,0 +1,250 @@
+:root {
+	/* Primary Colors */
+	--royal-blue-traditional: #022461;
+	--egyptian-blue: #043388;
+	--celestial-blue: #21a1f7;
+	--baby-blue: #6dc6ec;
+	--white: #ffffff;
+
+	/* Secondary Colors */
+	--eerie-black: #1c1c1c;
+	--maize: #f7e143;
+	--arylide-yellow: #e5d15c;
+	--tan: #ccac8d;
+	--lion: #bd9a73;
+
+	/* Grey Colors */
+	--silver: #cccccc;
+	--battleship-gray: #999999;
+	--dim-gray: #666666;
+	--davys-gray: #575756;
+	--onyx: #3c3c3b;
+
+	/* Opacity variants */
+	--celestial-blue-80: rgba(33, 161, 247, 0.8);
+	--baby-blue-60: rgba(109, 198, 236, 0.6);
+	--maize-20: rgba(247, 225, 67, 0.2);
+
+	/* Semantic Colors */
+	--primary: var(--royal-blue-traditional);
+	--primary-light: var(--egyptian-blue);
+	--accent: var(--celestial-blue);
+	--accent-light: var(--baby-blue);
+	--text-dark: var(--eerie-black);
+	--text-light: var(--white);
+	--warning: var(--maize);
+	--background: var(--white);
+	--border: var(--silver);
+
+	/* Shadows */
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+	--shadow-blue: 0 4px 14px rgba(33, 161, 247, 0.3);
+
+	/* Gradients */
+	--gradient-blue: linear-gradient(135deg, var(--royal-blue-traditional) 0%, var(--celestial-blue) 100%);
+	--gradient-blue-horizontal: linear-gradient(90deg, var(--royal-blue-traditional) 0%, var(--celestial-blue) 100%);
+	--gradient-yellow: linear-gradient(135deg, var(--maize) 0%, var(--arylide-yellow) 100%);
+	--gradient-light: linear-gradient(135deg, var(--baby-blue) 0%, var(--white) 100%);
+}
+
+/* Utility Classes */
+.bg-primary { background-color: var(--primary); }
+.bg-accent { background-color: var(--accent); }
+.bg-warning { background-color: var(--warning); }
+
+.text-primary { color: var(--primary); }
+.text-accent { color: var(--accent); }
+.text-warning { color: var(--warning); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+.gradient-blue { background-image: var(--gradient-blue); }
+.gradient-yellow { background-image: var(--gradient-yellow); }
+
+/* Hover States */
+.hover\:bg-accent:hover { background-color: var(--accent); }
+.hover\:text-accent:hover { color: var(--accent); }
+
+/* Focus States */
+.focus\:ring-accent:focus { 
+	outline: none;
+	box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* Responsive Typography */
+html {
+	font-size: 16px;
+}
+
+@media (min-width: 768px) {
+	html {
+		font-size: 18px;
+	}
+}
+
+/* Animation */
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.fade-in {
+	animation: fadeIn 0.3s ease-out;
+}
+
+
+/* Typography System */
+--font-primary: 'Poppins', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+--font-secondary: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+--font-tertiary: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+/* Font Weights */
+--font-weight-light: 300;
+--font-weight-regular: 400;
+--font-weight-medium: 500;
+--font-weight-semibold: 600;
+--font-weight-bold: 700;
+
+/* Font Sizes - Modular Scale */
+--text-xs: 0.75rem;    /* 12px */
+--text-sm: 0.875rem;   /* 14px */
+--text-base: 1rem;     /* 16px */
+--text-lg: 1.125rem;   /* 18px */
+--text-xl: 1.25rem;    /* 20px */
+--text-2xl: 1.5rem;    /* 24px */
+--text-3xl: 1.875rem;  /* 30px */
+--text-4xl: 2.25rem;   /* 36px */
+--text-5xl: 3rem;      /* 48px */
+--text-6xl: 3.75rem;   /* 60px */
+
+/* Line Heights */
+--leading-tight: 1.25;
+--leading-normal: 1.5;
+--leading-relaxed: 1.75;
+}
+
+/* Font Face Declarations (add near top of CSS file) */
+@font-face {
+	font-family: 'Poppins';
+	font-style: normal;
+	font-weight: 300;
+	src: local('Poppins Light'), local('Poppins-Light'),
+	url('../fonts/poppins-v15-latin-300.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Poppins';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Poppins Regular'), local('Poppins-Regular'),
+	url('../fonts/poppins-v15-latin-regular.woff2') format('woff2');
+}
+
+/* Add similar @font-face rules for all weights of Poppins and Montserrat */
+
+/* Base Typography */
+body {
+	font-family: var(--font-primary);
+	font-weight: var(--font-weight-regular);
+	line-height: var(--leading-normal);
+	color: var(--text-dark);
+}
+
+/* Typography Utility Classes */
+.font-primary {
+	font-family: var(--font-primary);
+}
+
+.font-secondary {
+	font-family: var(--font-secondary);
+}
+
+.font-tertiary {
+	font-family: var(--font-tertiary);
+}
+
+.text-light {
+	font-weight: var(--font-weight-light);
+}
+
+.text-regular {
+	font-weight: var(--font-weight-regular);
+}
+
+.text-medium {
+	font-weight: var(--font-weight-medium);
+}
+
+.text-semibold {
+	font-weight: var(--font-weight-semibold);
+}
+
+.text-bold {
+	font-weight: var(--font-weight-bold);
+}
+
+/* Size Utilities */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+.text-6xl { font-size: var(--text-6xl); }
+
+/* Heading Styles */
+h1, .h1 {
+	font-size: var(--text-4xl);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--leading-tight);
+}
+
+h2, .h2 {
+	font-size: var(--text-3xl);
+	font-weight: var(--font-weight-semibold);
+}
+
+h3, .h3 {
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-medium);
+}
+
+/* Special Typography Components */
+.hero-text {
+	font-family: var(--font-tertiary);
+	font-size: var(--text-5xl);
+	font-weight: var(--font-weight-bold);
+	line-height: 1.1;
+}
+
+.subtitle {
+	font-family: var(--font-secondary);
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-light);
+	color: var(--dim-gray);
+}
+
+/* Responsive Typography */
+@media (min-width: 768px) {
+	:root {
+		--text-base: 1.125rem;
+		--text-lg: 1.25rem;
+		--text-xl: 1.5rem;
+		--text-2xl: 1.875rem;
+		--text-3xl: 2.25rem;
+		--text-4xl: 3rem;
+		--text-5xl: 3.75rem;
+		--text-6xl: 4.5rem;
+	}
+	
+	.hero-text {
+		font-size: var(--text-6xl);
+	}
+}
