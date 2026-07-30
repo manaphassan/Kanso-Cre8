@@ -45,18 +45,18 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.6.0`) — double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.6.2`) — double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.6.0
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.6.2
 ```
 
 **Output:**
 
 ```
-dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe   (~48 MB)
+dist\SuamiSihat-Designer-Assets-Installer-1.6.2.exe   (~48 MB)
 ```
 
 ### How the EXE works
@@ -68,7 +68,7 @@ dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe   (~48 MB)
 ### Smoke test
 
 ```powershell
-.\dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe --smoke-test
+.\dist\SuamiSihat-Designer-Assets-Installer-1.6.2.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -82,10 +82,10 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(installer): release SuamiSihat Designer Assets Installer v1.6.0"
+git commit -m "feat(installer): release SuamiSihat Designer Assets Installer v1.6.2"
 
 # Tag the release
-git tag -a v1.6.0 -m "SuamiSihat Designer Assets Installer v1.6.0"
+git tag -a v1.6.2 -m "SuamiSihat Designer Assets Installer v1.6.2"
 
 # Push branch and tag
 git push origin SS-Master --tags

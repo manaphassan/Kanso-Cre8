@@ -55,18 +55,20 @@ Double-click the downloaded `.exe` file. **No administrator password is required
 
 ### Step 3 — Follow the setup wizard
 
-The wizard walks you through 8 simple steps:
+The wizard walks you through 10 dynamic steps based on your component selections:
 
 | Step | What happens |
 |---|---|
-| 1 | Welcome screen and overview of what will be installed |
-| 2 | PC spec check — see how your machine compares |
-| 3 | Read and accept the internal-use licence agreement |
-| 4 | Design software check — Affinity, Adobe, Canva, Figma detected automatically |
-| 5 | Choose fonts — **Core Brand Fonts only** or **All Fonts** |
-| 6 | Choose where to save brand assets (default: `Documents\SuamiSihat Brand Assets`) |
-| 7 | Review your selections before anything is installed |
-| 8 | Installation runs, reports are saved, done! |
+| 1 | **Launch Screen** — Select components to set up (**Brand Kit** and/or **Creative Project Management**) |
+| 2 | **PC Compatibility Check** — See how your machine specs compare against recommended targets |
+| 3 | **Design Software Readiness** — Affinity, Adobe, Canva, and Figma detected automatically |
+| 4 | **Licence Agreement** — Read and accept the internal-use licence agreement (*new installs only*) |
+| 5 | **Font Installation** — Select font installation options or click **Skip Fonts** |
+| 6 | **Brand Assets Folder** — Choose destination folder (default: `Documents\SuamiSihat Brand Assets`, *skipped if Brand Kit is unselected*) |
+| 7 | **Creative Project Management** — View feature overview & installation path (*skipped if CPM is unselected*) |
+| 8 | **Review & Install** — Review your component selection summary before starting installation |
+| 9 | **Installation Progress** — Live setup status & file extraction |
+| 10 | **Setup Complete** — Workstation & font reports generated; click **Open App** or **Close** |
 
 ---
 
