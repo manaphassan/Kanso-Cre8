@@ -1,14 +1,16 @@
-# SuamiSihat Designer Assets Installer 🎨
+# SuamiSihat Creative Assets Management 🎨
 
-**One-click setup for every SuamiSihat design workstation.**
-Run the installer once and your fonts, brand logos, colour palettes, and design libraries are ready to use in Affinity Designer, Adobe Photoshop, and Adobe Illustrator.
+**One-click font installer, brand kit setup, and Post Haste-style creative project folder generator.**
+Run the setup once to install official fonts & brand assets, register the **SuamiSihat Creative Assets Management** app in your Windows Start Menu, and generate standardized date-coded project folders with auto-incrementing Job IDs.
 
 ---
 
-## 📦 What's inside the installer?
+## 📦 What's inside the application?
 
 | Category | What you get |
 |---|---|
+| 🔀 **Project Creator** | Post Haste-style template generator with **Year Selector**, **Sub-Brand**, **Auto-Incrementing Job ID** & 1-click File Explorer launch |
+| ⚙️ **Settings & Repair** | Reinstall/repair fonts anytime, configure default workspace folder, and set custom Job ID counters |
 | 🔤 **Fonts** | Poppins, Calibri, Helvetica Neue, Montserrat + barcode & utility fonts |
 | 🖼️ **Logos** | All sub-brand logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG |
 | 🎨 **Colour Palettes** | `.afpalette` for Affinity · `.ase` files for Adobe apps |
@@ -38,7 +40,7 @@ Make sure your workstation meets at least the **minimum** requirements. The **re
 
 ### Step 1 — Download the installer
 
-Download **SuamiSihat-Designer-Assets-Installer.exe** from the [latest release](https://github.com/SuamiSihat/SS-Brand-Assets/releases/latest).
+Download **SuamiSihat-Creative-Assets-Management-1.6.0.exe** from the [latest release](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
 
 ### Step 2 — Run the installer
 
