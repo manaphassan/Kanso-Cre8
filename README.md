@@ -38,11 +38,13 @@ Make sure your workstation meets at least the **minimum** requirements. The **re
 
 ---
 
-## 🚀 How to install
+## 🚀 How to install & update
 
-### Step 1 — Download the installer
+### Step 1 — Download the latest release
 
-Download **SuamiSihat-Creative-Assets-Management-1.6.0.exe** from the [latest release](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
+Download **SuamiSihat Creative Assets Management** (`.exe`) from the [Official Latest Release](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
+
+> 💡 **Future Updates**: Once installed, the application automatically checks for future updates! You can also click **Check for Updates** anytime inside **⚙ Settings** to upgrade in 1-click.
 
 ### Step 2 — Run the installer
 
