@@ -1,155 +1,203 @@
-# SuamiSihat Designer Assets Installer
+# SuamiSihat Designer Assets Installer 🎨
 
-A Windows installer for preparing a new SuamiSihat design workstation. It installs the approved desktop fonts and copies production logos, colour palettes, and native libraries for Affinity Designer, Adobe Photoshop, and Adobe Illustrator.
+**One-click setup for every SuamiSihat design workstation.**
+Run the installer once and your fonts, brand logos, colour palettes, and design libraries are ready to use in Affinity Designer, Adobe Photoshop, and Adobe Illustrator.
 
-## Project structure
+---
 
-```text
-SS-Brand-Assets/
-├── installer/
-│   ├── src/                 PowerShell setup engine and Windows wizard
-│   ├── Setup.cmd            Run the unpackaged wizard
-│   └── Build-Installer.*    Build the distributable EXE
-├── payload/
-│   ├── Fonts/               Installable desktop fonts and licences
-│   └── Brand Assets/
-│       ├── Logos/
-│       ├── Libraries/
-│       └── Colour Palettes/
-└── dist/                    Generated EXE output; not committed
+## 📦 What's inside the installer?
+
+| Category | What you get |
+|---|---|
+| 🔤 **Fonts** | Poppins, Calibri, Helvetica Neue, Montserrat + barcode & utility fonts |
+| 🖼️ **Logos** | All sub-brand logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG |
+| 🎨 **Colour Palettes** | `.afpalette` for Affinity · `.ase` files for Adobe apps |
+| 📚 **Design Libraries** | `.afassets` for Affinity · `.cclibs` for Adobe Creative Cloud |
+| 🔗 **Quick Links** | Browser shortcuts to the SuamiSihat Service Dashboard and Internal Assets portal |
+
+---
+
+## 💻 Before you start — PC requirements
+
+Make sure your workstation meets at least the **minimum** requirements. The **recommended** specs are what SuamiSihat design PCs are built to.
+
+| | Minimum | Recommended |
+|---|---|---|
+| **Windows** | Windows 10 (64-bit) | Windows 11 |
+| **RAM** | 16 GB | 32 GB or more |
+| **Processor** | Any modern 64-bit CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
+| **Graphics** | Any display adapter | DirectX 12 GPU with 4 GB graphics memory |
+| **Storage** | Enough for the install | SSD with 100 GB free space |
+| **Display** | Any monitor | 1920 × 1080 IPS or better |
+
+> **Recommended specs are a guide, not a blocker** — the installer will still run on a minimum-spec machine.
+
+---
+
+## 🚀 How to install
+
+### Step 1 — Download the installer
+
+Download **SuamiSihat-Designer-Assets-Installer.exe** from the [latest release](https://github.com/SuamiSihat/SS-Brand-Assets/releases/latest).
+
+### Step 2 — Run the installer
+
+Double-click the downloaded `.exe` file. **No administrator password is required.**
+
+> ⚠️ **Windows SmartScreen warning?**
+> If you see *"Windows protected your PC"*, click **More info** → **Run anyway**. This is normal for internally distributed software that hasn't been submitted to Microsoft's signing programme yet.
+
+### Step 3 — Follow the setup wizard
+
+The wizard walks you through 8 simple steps:
+
+| Step | What happens |
+|---|---|
+| 1 | Welcome screen and overview of what will be installed |
+| 2 | PC spec check — see how your machine compares |
+| 3 | Read and accept the internal-use licence agreement |
+| 4 | Design software check — Affinity, Adobe, Canva, Figma detected automatically |
+| 5 | Choose fonts — **Core Brand Fonts only** or **All Fonts** |
+| 6 | Choose where to save brand assets (default: `Documents\SuamiSihat Brand Assets`) |
+| 7 | Review your selections before anything is installed |
+| 8 | Installation runs, reports are saved, done! |
+
+---
+
+## 🖥️ Setting up your design apps
+
+After the installer finishes, open your design applications and load the SuamiSihat library files. You only need to do this once per machine.
+
+### Affinity Designer / Publisher / Photo
+
+1. **Load the asset library**
+   - Go to **Assets panel** → click the menu icon → **Import Assets**
+   - Select `SuamiSihat Branding.afassets` from your brand assets folder
+
+2. **Load the colour palette**
+   - Go to **Swatches panel** → click the menu icon → **Import Palette → From File**
+   - Select `ss_color_theme.afpalette`
+
+### Adobe Photoshop & Illustrator
+
+1. **Load the Creative Cloud library**
+   - Open **Libraries panel** → click the cloud icon → import `SuamiSihat™ Branding.cclibs`
+
+2. **Load colour swatches**
+   - Go to **Swatches panel** → open panel menu → **Open Swatch Library → Other Library**
+   - Select any `.ase` file from the `Colour Palettes` folder:
+     - `SS Health Primary.ase`
+     - `SS Health Secondary.ase`
+     - `SS Health Grey Tone.ase`
+
+3. **Restart Photoshop or Illustrator** if newly installed fonts are not showing yet.
+
+### Canva & Figma
+
+These platforms use your SuamiSihat team account. The shared account email is shown on the installer's software setup screen. **Get the current password and OTP from your team lead** — credentials are not stored in the installer for security reasons.
+
+---
+
+## 📁 What gets installed where?
+
+```
+Documents\SuamiSihat Brand Assets\    ← default location (you can change this)
+├── Logos\
+│   ├── 00_SuamiSihat\
+│   ├── 01_ssHealth\
+│   ├── 02_ssClinic\
+│   ├── 03_ssWellness\
+│   ├── 04_ssEcom\
+│   └── 05_ssTech\
+├── Libraries\
+│   ├── SuamiSihat Branding.afassets       ← Affinity asset library
+│   ├── ss_health_branding.afassets
+│   └── SuamiSihat™ Branding.cclibs        ← Adobe CC library
+├── Colour Palettes\
+│   ├── ss_color_theme.afpalette            ← Affinity palette
+│   ├── SS Health Primary.ase               ← Adobe swatches
+│   ├── SS Health Secondary.ase
+│   └── SS Health Grey Tone.ase
+├── Links\                                  ← web shortcuts
+│   ├── SuamiSihat Service Dashboard.url
+│   └── SuamiSihat Internal Assets.url
+└── Reports\                                ← auto-generated after install
+    ├── SuamiSihat-Workstation-Report.md
+    └── SuamiSihat-Font-Inventory.md
 ```
 
-The payload intentionally excludes webfont bundles, icon-source repositories, archive metadata, thumbnail caches, old database/Office examples, duplicate Inter formats, and superseded cross-platform font scripts.
+**Fonts** are installed directly into your **Windows font library** — they appear in every app automatically.
 
-## Run from the repository
+---
 
-Double-click `installer\Setup.cmd`.
+## 🔤 Fonts included
 
-The wizard, titled **SuamiSihat Designer Assets Installer**, lets the user:
+### Core Brand Fonts
 
-- review and accept the internal-use licence agreement;
-- inspect locally collected Windows, CPU, GPU, memory, display, and available-storage information before the licence;
-- compare the PC against Windows 10+ 64-bit and 16 GB RAM minimum requirements;
-- compare performance hardware against the recommended SuamiSihat design-PC target;
-- detect Affinity, Canva, Figma, Adobe Creative Cloud, Photoshop, and Illustrator;
-- open the official vendor setup flow for missing software and rescan afterward;
-- show the shared design-account email and direct staff to the team lead for the current password and OTP;
-- install every bundled desktop font or only the four core brand families;
-- skip font installation when only the resources are needed;
-- choose where the brand assets are copied;
-- optionally open the Affinity and Adobe library/palette files after copying;
-- review success or error output;
-- save local workstation and font-inventory reports in Markdown format;
-- create Windows web shortcuts for the SuamiSihat Service Dashboard and Internal Assets;
-- review readiness in a checklist with green checks and red action/skip marks.
+| # | Font | Role |
+|---|---|---|
+| 1 | **Poppins** | Primary typeface — headings, display text |
+| 2 | **Calibri** | Secondary typeface — body text, documents |
+| 3 | **Helvetica Neue** | Secondary & alternate primary — clean layouts |
+| 4 | **Montserrat** | Tertiary typeface — supporting text |
 
-Fonts are installed for the current Windows account, so administrator access is not required. Restart Affinity and Adobe applications after installation.
+### Extended Library
 
-## Installer flow
+| Font | Use |
+|---|---|
+| FontAwesome Pro 5 | UI icons and icon sets |
+| Barcode fonts | Product label and barcode artwork |
+| Futura Std | Additional display use |
+| Oswald | Additional heading use |
+| Roboto | Digital / screen use |
+| Trueno | Display accent |
 
-1. Welcome and installation overview.
-2. PC compatibility check with minimum and recommended design specifications.
-3. Internal-use licence agreement.
-4. Design-software detection, official setup links, and rescan.
-5. Core or complete font selection.
-6. Suggested brand-assets destination under `Documents\SuamiSihat Brand Assets`, with a folder browser for another path.
-7. Review checklist.
-8. Installation, reports, and completion.
+---
 
-Minimum workstation requirements are Windows 10 or later, 64-bit architecture,
-and 16 GB RAM. The recommended design target is Windows 11, 32 GB or more RAM,
-a modern six-core or better Intel Core i7/AMD Ryzen 7-class processor, a DirectX
-12 GPU with at least 4 GB reported graphics memory, an SSD with 100 GB free, and
-a 1920 x 1080 or higher IPS display. Recommended items guide purchasing and
-performance expectations; they do not block the installer.
+## 🔧 Troubleshooting
 
-Affinity, Canva, Figma, and Adobe require their own account and licence acceptance. The installer does not silently accept third-party terms. When a platform is missing, it opens the official setup page so the user can complete the vendor-controlled installation, then return and select **Rescan**.
+| Problem | Solution |
+|---|---|
+| **SmartScreen blocks the installer** | Click **More info** → **Run anyway** |
+| **Fonts not showing in Affinity** | Restart Affinity after installation |
+| **Fonts not showing in Photoshop / Illustrator** | Restart Adobe apps after installation |
+| **Design software not detected** | Click **Rescan** in the wizard after installing the missing app |
+| **I need a different install location** | Use the folder browser on Step 6 to choose a custom path |
+| **I only need fonts, not brand assets** | On Step 5, choose **Core Brand Fonts only** |
 
-## Build the EXE
+---
 
-The build uses Windows PowerShell and the .NET Framework compiler included with Windows. No external packaging framework is required. Double-click:
+## 📊 After installation — workstation reports
 
-```text
-installer\Build-Installer.cmd
+The installer automatically saves two reports to your `Reports` folder:
+
+- **SuamiSihat-Workstation-Report.md** — your PC specs, detected design apps, and a full installation log
+- **SuamiSihat-Font-Inventory.md** — a list of every font installed, with source group and file format
+
+These files stay on your machine only and are never transmitted.
+
+---
+
+## 🗂️ Recommended Project Folder Structure
+
+To keep creative work organised across the whole team, SuamiSihat uses an **Atomic date-coded folder system**. See the full guide → [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md)
+
+**Quick reference:**
+```
+SS-2026\
+└── 2607_July\
+    └── 260730_D0073_SS_Brand-Assets-Installer\
+        ├── Artwork Design\      ← working files (.afdesign, .psd, .ai)
+        ├── Artwork Mockup\      ← review & client presentation
+        ├── Assets\              ← source photos, icons, brand files
+        └── Production\         ← final approved exports (PDF, PNG, SVG)
 ```
 
-Or build a specific semantic version:
+---
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.6.0
-```
+## 📋 Licence note
 
-The self-contained installer is created as:
+The fonts and assets bundled in this installer are for internal SuamiSihat use. Before sharing or distributing assets outside the team, confirm licensing with your team lead or design manager.
 
-```text
-dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe
-```
-
-The EXE embeds the complete payload as a compressed resource, extracts it to a unique temporary directory, launches the interactive setup wizard, and removes the temporary files afterward.
-
-## Design application imports
-
-- **Affinity Designer:** Import `.afassets` from the Assets panel and `.afpalette` from the Swatches panel.
-- **Adobe Photoshop and Illustrator:** Open the `.cclibs` library and import the `.ase` files through the Swatches panel.
-
-The files are copied under the selected destination, using the `Libraries` and `Colour Palettes` folders.
-
-The installer also creates standard Windows Internet shortcuts for the
-[SuamiSihat Service Dashboard](https://suamisihat.myds.me) and
-[SuamiSihat Internal Assets](https://assets.suamisihat.com.my). Copies are stored
-under `Favorites\SuamiSihat` and the selected brand-assets `Links` folder.
-
-The shared account email is shown in the wizard. Passwords and OTPs are deliberately
-not embedded in the repository or EXE; authorised staff obtain the current credentials
-from the team lead.
-
-The `Reports` folder contains:
-
-- `SuamiSihat-Workstation-Report.md` with local PC information, detected design software, and installation results;
-- `SuamiSihat-Font-Inventory.md` with the standardized source group, filename, and font format.
-
-These reports are written locally and are not transmitted.
-
-## Installer branding
-
-The installer follows the official [SuamiSihat brand-assets guidance](https://suamisihat.com.my/brand-assets):
-
-- SS Prussian Blue `#022057` for the primary header;
-- SS Blue `#043388` for headings and primary actions;
-- Azure `#21A1F7` and Malibu `#6DC6EC` for supporting accents;
-- the approved dark-background logo in the header;
-- the approved light-background logo on the welcome page.
-
-The artwork is used without recolouring, distortion, effects, or changes to its proportions.
-
-## Security and Optimization Best Practices
-
-### Security Recommendations
-- **Code Signing**: Sign the compiled setup EXE (`dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe`) using an enterprise EV/OV Code Signing Certificate (`signtool.exe`) before wider distribution to eliminate Windows SmartScreen "Unknown Publisher" warnings.
-- **Zero Secrets in Repository**: Secrets, passwords, and 2FA/OTPs are strictly excluded from all `.ps1` scripts, C# source files, and embedded archives. Authorized personnel receive current credentials out-of-band.
-- **Privilege & Execution Isolation**: The installer runs under current-user context by default (avoiding forced elevation) and uses `-ExecutionPolicy Bypass` strictly scoped to the temporary extracted wizard script.
-- **Secure Temporary Extraction**: Temporary extraction takes place in `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>`, which is automatically purged upon wizard completion.
-- **Licensing Compliance**: Verify enterprise licensing compliance for commercial font files (such as FontAwesome Pro and proprietary typefaces) before distributing installers outside internal teams.
-
-### Optimization Best Practices
-- **Payload Compression**: The build pipeline compresses fonts and asset libraries into `SuamiSihat.Payload.Zip` using optimal compression, producing a single portable ~48 MB executable.
-- **Repository Cleanliness**: The `dist/` folder is ignored by `.gitignore` to prevent binary blob bloat in Git history. Raw webfont archives, thumbnail caches (`Thumbs.db`), and redundant cross-platform legacy scripts have been pruned.
-
-## Git Workflow and Release
-
-To stage, commit, and release version 1.6.0 to the remote Git repository:
-
-```powershell
-# 1. Stage all restructured assets and scripts
-git add -A
-
-# 2. Commit the release
-git commit -m "feat(installer): release SuamiSihat Designer Assets Installer v1.6.0"
-
-# 3. Create a version tag
-git tag -a v1.6.0 -m "SuamiSihat Designer Assets Installer v1.6.0"
-
-# 4. Push to remote GitHub repository
-git push origin main --tags
-```
+For developer and build documentation, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
