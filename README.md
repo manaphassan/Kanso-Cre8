@@ -1,115 +1,116 @@
-# SuamiSihat Creative Assets Management 🎨
+# SuamiSihat Creative Assets Management
 
-**One-click font installer, brand kit setup, and Material Design Post Haste creative project folder generator.**
-Run the setup once to install official fonts & brand assets, register the **SuamiSihat Creative Assets Management** app in your Windows Start Menu, and generate standardized date-coded project folders with auto-incrementing Job IDs.
+Automated workstation setup utility, font installer, brand asset distributor, and standardized creative project folder generator for SuamiSihat design environments.
 
 ---
 
-## 📦 What's inside the application?
+## Technical Overview
 
-| Category | What you get |
+SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard to prepare Windows workstations for creative design work. The utility deploys official typography, brand assets, application libraries, and color palettes, while registering an integrated project creation management tool.
+
+### Core Application Capabilities
+
+| Feature Area | Specifications & Functions |
 |---|---|
-| 🔀 **Material Project Creator** | Material Design template generator with **Year Selector**, **Sub-Brand**, **Auto-Incrementing Job ID**, **Clipboard Copy**, & **Recent Projects Quick-Launcher** |
-| 📐 **Template Injection** | Automatic injection of starter master canvas guidelines (`.psd` / `.afdesign` starter guide) |
-| 🏷️ **Custom Folders** | Optional toggle for extra sub-folders (`Client Revisions`, `RAW Audio & 3D`) |
-| ⚙️ **Settings & Repair** | Reinstall/repair fonts anytime, configure default workspace folder, and set custom Job ID counters |
-| 🔤 **Fonts** | Poppins, Calibri, Helvetica Neue, Montserrat + barcode & utility fonts |
-| 🖼️ **Logos** | All sub-brand logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG |
-| 🎨 **Colour Palettes** | `.afpalette` for Affinity · `.ase` files for Adobe apps |
-| 📚 **Design Libraries** | `.afassets` for Affinity · `.cclibs` for Adobe Creative Cloud |
-| 🔗 **Quick Links** | Browser shortcuts to the SuamiSihat Service Dashboard and Internal Assets portal |
+| **Project Creator** | Standardized folder generator with Year Selector, Sub-Brand selection, Auto-Incrementing Job ID tracking, Clipboard integration, and Recent Projects quick-launcher |
+| **Template Injection** | Automated deployment of master guidelines and starter canvas templates (`.psd`, `.afdesign`) |
+| **Custom Folder Support** | Configurable directory structures (`Client Revisions`, `RAW Audio & 3D`) |
+| **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
+| **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
+| **Brand Assets** | Sub-brand vector logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG formats |
+| **Color Palettes** | Swatch definitions provided in `.afpalette` (Affinity) and `.ase` (Adobe Creative Cloud) formats |
+| **Design Libraries** | Pre-packaged asset libraries in `.afassets` (Affinity) and `.cclibs` (Adobe Creative Cloud) formats |
+| **System Shortcuts** | Pre-configured browser shortcuts to the SuamiSihat Service Dashboard and Internal Assets portals |
 
 ---
 
-## 💻 Before you start — PC requirements
+## Workstation Requirements
 
-Make sure your workstation meets at least the **minimum** requirements. The **recommended** specs are what SuamiSihat design PCs are built to.
+Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
 
-| | Minimum | Recommended |
+| Component | Minimum Specification | Recommended Specification |
 |---|---|---|
-| **Windows** | Windows 10 (64-bit) | Windows 11 |
-| **RAM** | 16 GB | 32 GB or more |
-| **Processor** | Any modern 64-bit CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
-| **Graphics** | Any display adapter | DirectX 12 GPU with 4 GB graphics memory |
-| **Storage** | Enough for the install | SSD with 100 GB free space |
-| **Display** | Any monitor | 1920 × 1080 IPS or better |
+| **Operating System** | Windows 10 (64-bit) | Windows 11 (64-bit) |
+| **System Memory (RAM)** | 16 GB | 32 GB or greater |
+| **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
+| **Graphics Hardware** | DirectX 11 compatible adapter | DirectX 12 GPU with 4 GB VRAM |
+| **Storage** | 5 GB available space | NVMe SSD with 100 GB available space |
+| **Display** | 1280 × 720 resolution | 1920 × 1080 IPS display or higher |
 
-> **Recommended specs are a guide, not a blocker** — the installer will still run on a minimum-spec machine.
-
----
-
-## 🚀 How to install & update
-
-### Step 1 — Download the latest release
-
-Download **SuamiSihat Creative Assets Management** (`.exe`) from the [Official Latest Release](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
-
-> 💡 **Future Updates**: Once installed, the application automatically checks for future updates! You can also click **Check for Updates** anytime inside **⚙ Settings** to upgrade in 1-click.
-
-### Step 2 — Run the installer
-
-Double-click the downloaded `.exe` file. **No administrator password is required.**
-
-> ⚠️ **Windows SmartScreen warning?**
-> If you see *"Windows protected your PC"*, click **More info** → **Run anyway**. This is normal for internally distributed software that hasn't been submitted to Microsoft's signing programme yet.
-
-### Step 3 — Follow the setup wizard
-
-The wizard walks you through 10 dynamic steps based on your component selections:
-
-| Step | What happens |
-|---|---|
-| 1 | **Launch Screen** — Select components to set up (**Brand Kit** and/or **Creative Project Management**) |
-| 2 | **PC Compatibility Check** — See how your machine specs compare against recommended targets |
-| 3 | **Design Software Readiness** — Affinity, Adobe, Canva, and Figma detected automatically |
-| 4 | **Licence Agreement** — Read and accept the internal-use licence agreement (*new installs only*) |
-| 5 | **Font Installation** — Select font installation options or click **Skip Fonts** |
-| 6 | **Brand Assets Folder** — Choose destination folder (default: `Documents\SuamiSihat Brand Assets`, *skipped if Brand Kit is unselected*) |
-| 7 | **Creative Project Management** — View feature overview & installation path (*skipped if CPM is unselected*) |
-| 8 | **Review & Install** — Review your component selection summary before starting installation |
-| 9 | **Installation Progress** — Live setup status & file extraction |
-| 10 | **Setup Complete** — Workstation & font reports generated; click **Open App** or **Close** |
+*Note: Minimum specifications allow software installation, but recommended hardware is advised for optimal performance with high-resolution assets.*
 
 ---
 
-## 🖥️ Setting up your design apps
+## Installation & Deployment Guide
 
-After the installer finishes, open your design applications and load the SuamiSihat library files. You only need to do this once per machine.
+### Step 1: Download Release Package
 
-### Affinity Designer / Publisher / Photo
+Obtain the latest compiled installer (`SS-CAM-v1.6.2.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
 
-1. **Load the asset library**
-   - Go to **Assets panel** → click the menu icon → **Import Assets**
-   - Select `SuamiSihat Branding.afassets` from your brand assets folder
+### Step 2: Execute Deployment Utility
 
-2. **Load the colour palette**
-   - Go to **Swatches panel** → click the menu icon → **Import Palette → From File**
-   - Select `ss_color_theme.afpalette`
+Launch the downloaded installer executable. The deployment process operates in the user context and does not require elevated administrator privileges.
 
-### Adobe Photoshop & Illustrator
+If Windows SmartScreen prompts appear during internal deployment, select **More Info** followed by **Run Anyway**.
 
-1. **Load the Creative Cloud library**
-   - Open **Libraries panel** → click the cloud icon → import `SuamiSihat™ Branding.cclibs`
+### Step 3: Setup Wizard Sequence
 
-2. **Load colour swatches**
-   - Go to **Swatches panel** → open panel menu → **Open Swatch Library → Other Library**
-   - Select any `.ase` file from the `Colour Palettes` folder:
+The wizard adapts dynamically based on component selection:
+
+| Step | Function | Details |
+|---|---|---|
+| **1** | **Launch Screen** | Select target components (**Brand Kit** and/or **Creative Project Management**) |
+| **2** | **PC Compatibility** | Evaluates workstation hardware against minimum and recommended baselines |
+| **3** | **Software Readiness** | Detects installed software (Affinity, Adobe Creative Cloud, Canva, Figma) |
+| **4** | **Licence Agreement** | Displays internal end-user licence agreement (*new installations only*) |
+| **5** | **Font Deployment** | Select typeface suites or execute **Skip Fonts** |
+| **6** | **Asset Location** | Specifies destination folder (default: `Documents\SuamiSihat Brand Assets`) |
+| **7** | **Application Overview** | Reviews Creative Project Management deployment settings |
+| **8** | **Review & Install** | Provides final summary prior to execution |
+| **9** | **Progress** | Live extraction and shortcut registration |
+| **10** | **Completion** | Generates system reports; provides direct **Open App** launcher |
+
+---
+
+## Application Configuration Instructions
+
+Following installer completion, configure design applications by importing asset libraries and color swatches.
+
+### Affinity Suite (Designer, Publisher, Photo)
+
+1. **Asset Library Import**:
+   - Open **Assets Panel** → Menu → **Import Assets**
+   - Target `SuamiSihat Branding.afassets` from the deployed Brand Assets directory.
+
+2. **Color Palette Import**:
+   - Open **Swatches Panel** → Menu → **Import Palette → From File**
+   - Select `ss_color_theme.afpalette`.
+
+### Adobe Creative Cloud (Photoshop, Illustrator, InDesign)
+
+1. **Creative Cloud Library**:
+   - Open **Libraries Panel** → Import `SuamiSihat™ Branding.cclibs`.
+
+2. **Swatch Library Import**:
+   - Open **Swatches Panel** → **Open Swatch Library → Other Library**
+   - Import target `.ase` files from the `Colour Palettes` directory:
      - `SS Health Primary.ase`
      - `SS Health Secondary.ase`
      - `SS Health Grey Tone.ase`
 
-3. **Restart Photoshop or Illustrator** if newly installed fonts are not showing yet.
+3. **Restart Application**:
+   - Restart Adobe software to ensure newly registered system fonts are enumerated.
 
-### Canva & Figma
+### Web & Cloud Applications (Canva, Figma)
 
-These platforms use your SuamiSihat team account. The shared account email is shown on the installer's software setup screen. **Get the current password and OTP from your team lead** — credentials are not stored in the installer for security reasons.
+Team accounts are authorized via central directory credentials displayed on the software setup screen. Request account access and multi-factor authentication tokens from system administration.
 
 ---
 
-## 📁 What gets installed where?
+## Deployed Directory Structure
 
-```
-Documents\SuamiSihat Brand Assets\    ← default location (you can change this)
+```text
+Documents\SuamiSihat Brand Assets\
 ├── Logos\
 │   ├── 00_SuamiSihat\
 │   ├── 01_ssHealth\
@@ -118,94 +119,91 @@ Documents\SuamiSihat Brand Assets\    ← default location (you can change this)
 │   ├── 04_ssEcom\
 │   └── 05_ssTech\
 ├── Libraries\
-│   ├── SuamiSihat Branding.afassets       ← Affinity asset library
+│   ├── SuamiSihat Branding.afassets
 │   ├── ss_health_branding.afassets
-│   └── SuamiSihat™ Branding.cclibs        ← Adobe CC library
+│   └── SuamiSihat™ Branding.cclibs
 ├── Colour Palettes\
-│   ├── ss_color_theme.afpalette            ← Affinity palette
-│   ├── SS Health Primary.ase               ← Adobe swatches
+│   ├── ss_color_theme.afpalette
+│   ├── SS Health Primary.ase
 │   ├── SS Health Secondary.ase
 │   └── SS Health Grey Tone.ase
-├── Links\                                  ← web shortcuts
+├── Links\
 │   ├── SuamiSihat Service Dashboard.url
 │   └── SuamiSihat Internal Assets.url
-└── Reports\                                ← auto-generated after install
+└── Reports\
     ├── SuamiSihat-Workstation-Report.md
     └── SuamiSihat-Font-Inventory.md
 ```
 
-**Fonts** are installed directly into your **Windows font library** — they appear in every app automatically.
+Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and registered in the Windows Registry for seamless application access.
 
 ---
 
-## 🔤 Fonts included
+## Typographic Specifications
 
-### Core Brand Fonts
+### Core Brand Typefaces
 
-| # | Font | Role |
+| Index | Family | Usage & Classification |
 |---|---|---|
-| 1 | **Poppins** | Primary typeface — headings, display text |
-| 2 | **Calibri** | Secondary typeface — body text, documents |
-| 3 | **Helvetica Neue** | Secondary & alternate primary — clean layouts |
-| 4 | **Montserrat** | Tertiary typeface — supporting text |
+| 1 | **Poppins** | Primary display typeface — headlines, marketing banners |
+| 2 | **Calibri** | Secondary typeface — documentation, body text |
+| 3 | **Helvetica Neue** | Secondary & structural typeface — user interfaces, technical layouts |
+| 4 | **Montserrat** | Tertiary display typeface — supporting accents, labels |
 
-### Extended Library
+### Extended Typographic Suite
 
-| Font | Use |
+| Typeface | Functional Purpose |
 |---|---|
-| FontAwesome Pro 5 | UI icons and icon sets |
-| Barcode fonts | Product label and barcode artwork |
-| Futura Std | Additional display use |
-| Oswald | Additional heading use |
-| Roboto | Digital / screen use |
-| Trueno | Display accent |
+| FontAwesome Pro 5 | Vector icon typography |
+| Barcode Suite | Code 128 and 2D barcode generation |
+| Futura Std | Display & title graphics |
+| Oswald | Compact headlines & condensed typography |
+| Roboto | Screen-optimized digital interfaces |
+| Trueno | Display accent typography |
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting Reference
 
-| Problem | Solution |
+| Symptom | Resolution Procedure |
 |---|---|
-| **SmartScreen blocks the installer** | Click **More info** → **Run anyway** |
-| **Fonts not showing in Affinity** | Restart Affinity after installation |
-| **Fonts not showing in Photoshop / Illustrator** | Restart Adobe apps after installation |
-| **Design software not detected** | Click **Rescan** in the wizard after installing the missing app |
-| **I need a different install location** | Use the folder browser on Step 6 to choose a custom path |
-| **I only need fonts, not brand assets** | On Step 5, choose **Core Brand Fonts only** |
+| **SmartScreen Notice** | Select **More Info** followed by **Run Anyway** |
+| **Fonts Missing in Affinity** | Restart Affinity suite following setup completion |
+| **Fonts Missing in Adobe Apps** | Restart Adobe Creative Cloud applications |
+| **Unrecognized Software** | Click **Rescan** on the Software Readiness wizard page |
+| **Custom Destination Requirements** | Modify output path on Step 6 of the setup wizard |
+| **Bypass Font Deployment** | Select **Skip Fonts** on Step 5 of the setup wizard |
 
 ---
 
-## 📊 After installation — workstation reports
+## System Audit & Workstation Reports
 
-The installer automatically saves two reports to your `Reports` folder:
+The deployment utility generates two Markdown audit documents stored in the `Reports` directory:
 
-- **SuamiSihat-Workstation-Report.md** — your PC specs, detected design apps, and a full installation log
-- **SuamiSihat-Font-Inventory.md** — a list of every font installed, with source group and file format
-
-These files stay on your machine only and are never transmitted.
+1. `SuamiSihat-Workstation-Report.md`: Hardware specifications, software detection records, and execution logs.
+2. `SuamiSihat-Font-Inventory.md`: Comprehensive inventory of deployed typefaces, file formats, and font family metadata.
 
 ---
 
-## 🗂️ Recommended Project Folder Structure
+## Standardized Project Directory Structure
 
-To keep creative work organised across the whole team, SuamiSihat uses an **Atomic date-coded folder system**. See the full guide → [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md)
+Creative projects must adhere to the organizational standard defined in [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md).
 
-**Quick reference:**
-```
+```text
 SS-2026\
-└── 2607_July\
-    └── 260730_D0073_SS_Brand-Assets-Installer\
-        ├── Artwork Design\      ← working files (.afdesign, .psd, .ai)
-        ├── Artwork Mockup\      ← review & client presentation
-        ├── Assets\              ← source photos, icons, brand files
-        └── Production\         ← final approved exports (PDF, PNG, SVG)
+└── 202607_July\
+    └── 20260730_D0073_SS_Brand-Assets-Installer\
+        ├── Artwork Design\      ← Working source files (.afdesign, .psd, .ai)
+        ├── Artwork Mockup\      ← Presentation mockups & client previews
+        ├── Assets\              ← Raw photos, icons, reference materials
+        └── Production\         ← Exported outputs (PDF, PNG, SVG)
 ```
 
 ---
 
-## 📋 Licence note
+## Governance & Compliance
 
-The fonts and assets bundled in this installer are for internal SuamiSihat use. Before sharing or distributing assets outside the team, confirm licensing with your team lead or design manager.
+Assets and typography bundled within this package are restricted to authorized internal operations. For licensing compliance and usage policies, consult system administration.
 
-For developer and build documentation, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 

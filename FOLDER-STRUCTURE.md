@@ -1,12 +1,12 @@
-# SuamiSihat Creative Folder Structure Standard 🗂️
+# SuamiSihat Creative Directory Hierarchy Specification
 
-**The official Atomic / Zettelkasten-inspired folder hierarchy for all SuamiSihat design projects.**
+Official folder structure and naming convention standard for SuamiSihat creative design projects.
 
-This standard ensures every creative asset is searchable, chronologically organized, and consistent across all team workstations and NAS storage (`SSNAS`).
+This standard establishes a searchable, chronologically indexed directory hierarchy across local workstations and network storage (`SSNAS`).
 
 ---
 
-## 📐 The Hierarchy Overview
+## Directory Hierarchy Specification
 
 ```text
 Creative Workspace/
@@ -18,28 +18,28 @@ Creative Workspace/
         │   ├── 202604_D0070_Corporate_Kegel_Voucher/
         │   ├── 202604_D0071_Rejal_brand/
         │   └── 202604_D0072_ECOM_POSM/          ← Project Folder (YYYYMM_D####_BRAND_ProjectName)
-        │       ├── Artwork Design/             ← Working files (.afdesign, .psd, .ai)
+        │       ├── Artwork Design/             ← Source files (.afdesign, .psd, .ai)
         │       ├── Artwork Mockup/             ← Presentation mockups & client previews
         │       ├── Assets/                     ← Raw photos, icons, reference materials
-        │       └── Production/                ← Final export-ready outputs (PDF, PNG, SVG)
+        │       └── Production/                ← Print & web exports (PDF, PNG, SVG)
         └── 202607_July/
 ```
 
 ---
 
-## 🏷️ Project Folder Naming Rule
+## Project Directory Naming Convention
 
 Format:
 `YYYYMM_D####_BRAND_ProjectName`
 
 | Component | Format | Description | Example |
 |---|---|---|---|
-| **Date Code** | `YYYYMM` | Year (4 digits) + Month (2 digits) | `202604` |
+| **Date Code** | `YYYYMM` | Four-digit year + two-digit month | `202604` |
 | **Job ID** | `D####` | Sequential designer job number | `D0072` |
-| **Sub-brand** | Code | Brand unit identifier (`HEALTH`, `CLINIC`, `WELLNESS`, `ECOM`, `TECH`, `SS`) | `ECOM` |
-| **Project Name** | Short Title | Concise description separated by underscores | `POSM` |
+| **Sub-brand** | Identifier | Business unit identifier (`HEALTH`, `CLINIC`, `WELLNESS`, `ECOM`, `TECH`, `SS`) | `ECOM` |
+| **Project Name** | Title | Concise description separated by underscores | `POSM` |
 
-### Full Examples
+### Standardized Examples
 * `202604_D0072_ECOM_POSM`
 * `202601_D0060_SS_Wellness_BD_Wellness_Centre`
 * `202602_D0069_ECOM_Flash_Sale_Thursday`
@@ -47,21 +47,22 @@ Format:
 
 ---
 
-## 📂 Standard Sub-Folder Template (Per Project)
+## Standard Sub-Directory Requirements
 
-Inside every project folder, maintain these 4 standardized sub-folders:
+Each project directory must contain the following four standardized sub-directories:
 
-| Sub-Folder | Purpose | File Types |
+| Sub-Directory | Functional Purpose | File Types |
 |---|---|---|
-| `Artwork Design` | Working files, editable source graphics | `.afdesign`, `.afphoto`, `.psd`, `.ai`, `.indd` |
-| `Artwork Mockup` | Presentation previews, 3D/realistic mockups for review | `.jpg`, `.png`, `.pdf` |
-| `Assets` | Source materials used in the project | Raw photos, stock graphics, icons, fonts |
-| `Production` | Final print-ready or deployment-ready exports | `.pdf` (print), `.png` (web), `.svg`, `.eps` |
+| `Artwork Design` | Working files, editable source vector and raster graphics | `.afdesign`, `.afphoto`, `.psd`, `.ai`, `.indd` |
+| `Artwork Mockup` | Presentation previews, 3D renderings, and client review files | `.jpg`, `.png`, `.pdf` |
+| `Assets` | Source assets, reference materials, icons, and stock graphics | Raw photos, vector icons, project fonts |
+| `Production` | Exported final assets ready for print or web deployment | `.pdf` (print), `.png` (web), `.svg`, `.eps` |
 
 ---
 
-## 💡 Quick Tips for Designers
+## Production Guidelines
 
-1. **Never save files directly in the project root** — always sort into `Artwork Design`, `Artwork Mockup`, `Assets`, or `Production`.
-2. **Sequential Job Numbers (`D####`)** — maintain incrementing numbers so projects stay sorted chronologically in File Explorer.
-3. **Use Underscores (`_`)** for separation rather than spaces or complex special characters to ensure compatibility across Windows, Mac, and NAS drives.
+1. **Root File Exclusion**: Files must not be saved directly in the project root; all assets must be categorized into `Artwork Design`, `Artwork Mockup`, `Assets`, or `Production`.
+2. **Sequential Job Numbers (`D####`)**: Maintain sequential numbering to ensure chronological sorting across file systems.
+3. **Delimiter Standard**: Use underscores (`_`) instead of spaces or special characters to maintain cross-platform compatibility across Windows, macOS, and NAS storage.
+
