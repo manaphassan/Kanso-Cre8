@@ -1,85 +1,155 @@
-# Font Library Installer 🎨
+# SuamiSihat Designer Assets Installer
 
-A simple, cross-platform solution to install multiple fonts at once from a designated folder.
+A Windows installer for preparing a new SuamiSihat design workstation. It installs the approved desktop fonts and copies production logos, colour palettes, and native libraries for Affinity Designer, Adobe Photoshop, and Adobe Illustrator.
 
-## Features ✨
+## Project structure
 
-- Supports Windows, macOS, and Linux
-- Handles `.ttf`, `.otf`, and `.fon` font formats
-- Simple one-command installation
-- Progress feedback during installation
-- User-specific or system-wide installation options
+```text
+SS-Brand-Assets/
+├── installer/
+│   ├── src/                 PowerShell setup engine and Windows wizard
+│   ├── Setup.cmd            Run the unpackaged wizard
+│   └── Build-Installer.*    Build the distributable EXE
+├── payload/
+│   ├── Fonts/               Installable desktop fonts and licences
+│   └── Brand Assets/
+│       ├── Logos/
+│       ├── Libraries/
+│       └── Colour Palettes/
+└── dist/                    Generated EXE output; not committed
+```
 
-## Prerequisites
+The payload intentionally excludes webfont bundles, icon-source repositories, archive metadata, thumbnail caches, old database/Office examples, duplicate Inter formats, and superseded cross-platform font scripts.
 
-- **For Windows**: PowerShell (included with Windows)
-- **For macOS/Linux**: Bash (pre-installed)
-- **For Python script**: Python 3.x
+## Run from the repository
 
-## Installation 📥
+Double-click `installer\Setup.cmd`.
 
-1. Clone this repository or download the scripts:
-   ```bash
-   git clone https://github.com/your-username/font-library.git
-   cd font-library
-   ```
+The wizard, titled **SuamiSihat Designer Assets Installer**, lets the user:
 
-2. Prepare your fonts:
-   - Create a folder named `FontLibrary` in the project directory
-   - Place all your font files (`.ttf`, `.otf`, `.fon`) in this folder
+- review and accept the internal-use licence agreement;
+- inspect locally collected Windows, CPU, GPU, memory, display, and available-storage information before the licence;
+- compare the PC against Windows 10+ 64-bit and 16 GB RAM minimum requirements;
+- compare performance hardware against the recommended SuamiSihat design-PC target;
+- detect Affinity, Canva, Figma, Adobe Creative Cloud, Photoshop, and Illustrator;
+- open the official vendor setup flow for missing software and rescan afterward;
+- show the shared design-account email and direct staff to the team lead for the current password and OTP;
+- install every bundled desktop font or only the four core brand families;
+- skip font installation when only the resources are needed;
+- choose where the brand assets are copied;
+- optionally open the Affinity and Adobe library/palette files after copying;
+- review success or error output;
+- save local workstation and font-inventory reports in Markdown format;
+- create Windows web shortcuts for the SuamiSihat Service Dashboard and Internal Assets;
+- review readiness in a checklist with green checks and red action/skip marks.
 
-## Usage 🚀
+Fonts are installed for the current Windows account, so administrator access is not required. Restart Affinity and Adobe applications after installation.
 
-### Windows (PowerShell)
+## Installer flow
+
+1. Welcome and installation overview.
+2. PC compatibility check with minimum and recommended design specifications.
+3. Internal-use licence agreement.
+4. Design-software detection, official setup links, and rescan.
+5. Core or complete font selection.
+6. Suggested brand-assets destination under `Documents\SuamiSihat Brand Assets`, with a folder browser for another path.
+7. Review checklist.
+8. Installation, reports, and completion.
+
+Minimum workstation requirements are Windows 10 or later, 64-bit architecture,
+and 16 GB RAM. The recommended design target is Windows 11, 32 GB or more RAM,
+a modern six-core or better Intel Core i7/AMD Ryzen 7-class processor, a DirectX
+12 GPU with at least 4 GB reported graphics memory, an SSD with 100 GB free, and
+a 1920 x 1080 or higher IPS display. Recommended items guide purchasing and
+performance expectations; they do not block the installer.
+
+Affinity, Canva, Figma, and Adobe require their own account and licence acceptance. The installer does not silently accept third-party terms. When a platform is missing, it opens the official setup page so the user can complete the vendor-controlled installation, then return and select **Rescan**.
+
+## Build the EXE
+
+The build uses Windows PowerShell and the .NET Framework compiler included with Windows. No external packaging framework is required. Double-click:
+
+```text
+installer\Build-Installer.cmd
+```
+
+Or build a specific semantic version:
+
 ```powershell
-# Run as Administrator
-Right-click "Install-Fonts.ps1" → "Run with PowerShell"
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.6.0
 ```
 
-### macOS/Linux (Bash)
-```bash
-# Make the script executable and run it
-chmod +x install-fonts.sh
-./install-fonts.sh
+The self-contained installer is created as:
+
+```text
+dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe
 ```
 
-### Cross-Platform (Python)
-```bash
-python install_fonts.py
+The EXE embeds the complete payload as a compressed resource, extracts it to a unique temporary directory, launches the interactive setup wizard, and removes the temporary files afterward.
+
+## Design application imports
+
+- **Affinity Designer:** Import `.afassets` from the Assets panel and `.afpalette` from the Swatches panel.
+- **Adobe Photoshop and Illustrator:** Open the `.cclibs` library and import the `.ase` files through the Swatches panel.
+
+The files are copied under the selected destination, using the `Libraries` and `Colour Palettes` folders.
+
+The installer also creates standard Windows Internet shortcuts for the
+[SuamiSihat Service Dashboard](https://suamisihat.myds.me) and
+[SuamiSihat Internal Assets](https://assets.suamisihat.com.my). Copies are stored
+under `Favorites\SuamiSihat` and the selected brand-assets `Links` folder.
+
+The shared account email is shown in the wizard. Passwords and OTPs are deliberately
+not embedded in the repository or EXE; authorised staff obtain the current credentials
+from the team lead.
+
+The `Reports` folder contains:
+
+- `SuamiSihat-Workstation-Report.md` with local PC information, detected design software, and installation results;
+- `SuamiSihat-Font-Inventory.md` with the standardized source group, filename, and font format.
+
+These reports are written locally and are not transmitted.
+
+## Installer branding
+
+The installer follows the official [SuamiSihat brand-assets guidance](https://suamisihat.com.my/brand-assets):
+
+- SS Prussian Blue `#022057` for the primary header;
+- SS Blue `#043388` for headings and primary actions;
+- Azure `#21A1F7` and Malibu `#6DC6EC` for supporting accents;
+- the approved dark-background logo in the header;
+- the approved light-background logo on the welcome page.
+
+The artwork is used without recolouring, distortion, effects, or changes to its proportions.
+
+## Security and Optimization Best Practices
+
+### Security Recommendations
+- **Code Signing**: Sign the compiled setup EXE (`dist\SuamiSihat-Designer-Assets-Installer-1.6.0.exe`) using an enterprise EV/OV Code Signing Certificate (`signtool.exe`) before wider distribution to eliminate Windows SmartScreen "Unknown Publisher" warnings.
+- **Zero Secrets in Repository**: Secrets, passwords, and 2FA/OTPs are strictly excluded from all `.ps1` scripts, C# source files, and embedded archives. Authorized personnel receive current credentials out-of-band.
+- **Privilege & Execution Isolation**: The installer runs under current-user context by default (avoiding forced elevation) and uses `-ExecutionPolicy Bypass` strictly scoped to the temporary extracted wizard script.
+- **Secure Temporary Extraction**: Temporary extraction takes place in `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>`, which is automatically purged upon wizard completion.
+- **Licensing Compliance**: Verify enterprise licensing compliance for commercial font files (such as FontAwesome Pro and proprietary typefaces) before distributing installers outside internal teams.
+
+### Optimization Best Practices
+- **Payload Compression**: The build pipeline compresses fonts and asset libraries into `SuamiSihat.Payload.Zip` using optimal compression, producing a single portable ~48 MB executable.
+- **Repository Cleanliness**: The `dist/` folder is ignored by `.gitignore` to prevent binary blob bloat in Git history. Raw webfont archives, thumbnail caches (`Thumbs.db`), and redundant cross-platform legacy scripts have been pruned.
+
+## Git Workflow and Release
+
+To stage, commit, and release version 1.6.0 to the remote Git repository:
+
+```powershell
+# 1. Stage all restructured assets and scripts
+git add -A
+
+# 2. Commit the release
+git commit -m "feat(installer): release SuamiSihat Designer Assets Installer v1.6.0"
+
+# 3. Create a version tag
+git tag -a v1.6.0 -m "SuamiSihat Designer Assets Installer v1.6.0"
+
+# 4. Push to remote GitHub repository
+git push origin main --tags
 ```
 
-## Verification ✅
-
-After installation, verify the fonts in your system's font manager:
-- **Windows**: `Control Panel` → `Fonts`
-- **macOS**: `Font Book` app
-- **Linux**: Check `~/.local/share/fonts` or `~/.fonts`
-
-## Notes ⚠️
-
-- **Windows**: Requires administrator privileges for system-wide installation
-- **macOS/Linux**: Installs fonts for current user by default
-- For system-wide installation on Linux, run the script as root and copy fonts to `/usr/share/fonts`
-
-## Contributing 🤝
-
-Contributions are welcome! Please open an issue or submit a pull request for any improvements.
-
-## License 📜
-
-[MIT License](LICENSE)
-```
-
-### Improvements made:
-1. Added emojis for better visual scanning
-2. Organized content into clear sections
-3. Added a "Features" section to highlight benefits
-4. Included prerequisites
-5. Added proper code blocks with syntax highlighting
-6. Included Git clone instructions
-7. Added specific verification instructions per OS
-8. Added notes about installation scope
-9. Included standard GitHub sections (Contributing, License)
-10. Made the overall structure more professional while keeping it approachable
-
-This format follows common GitHub README best practices and makes the project more appealing to potential users.
