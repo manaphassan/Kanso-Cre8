@@ -1,6 +1,6 @@
 # SuamiSihat Creative Assets Management 🎨
 
-**One-click font installer, brand kit setup, and Post Haste-style creative project folder generator.**
+**One-click font installer, brand kit setup, and Material Design Post Haste creative project folder generator.**
 Run the setup once to install official fonts & brand assets, register the **SuamiSihat Creative Assets Management** app in your Windows Start Menu, and generate standardized date-coded project folders with auto-incrementing Job IDs.
 
 ---
@@ -9,7 +9,9 @@ Run the setup once to install official fonts & brand assets, register the **Suam
 
 | Category | What you get |
 |---|---|
-| 🔀 **Project Creator** | Post Haste-style template generator with **Year Selector**, **Sub-Brand**, **Auto-Incrementing Job ID** & 1-click File Explorer launch |
+| 🔀 **Material Project Creator** | Material Design template generator with **Year Selector**, **Sub-Brand**, **Auto-Incrementing Job ID**, **Clipboard Copy**, & **Recent Projects Quick-Launcher** |
+| 📐 **Template Injection** | Automatic injection of starter master canvas guidelines (`.psd` / `.afdesign` starter guide) |
+| 🏷️ **Custom Folders** | Optional toggle for extra sub-folders (`Client Revisions`, `RAW Audio & 3D`) |
 | ⚙️ **Settings & Repair** | Reinstall/repair fonts anytime, configure default workspace folder, and set custom Job ID counters |
 | 🔤 **Fonts** | Poppins, Calibri, Helvetica Neue, Montserrat + barcode & utility fonts |
 | 🖼️ **Logos** | All sub-brand logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG |
