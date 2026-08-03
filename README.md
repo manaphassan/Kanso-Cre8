@@ -11,9 +11,11 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 ### Core Application Capabilities
 
 | Feature Area | Specifications & Functions |
-|---|---|
+| --- | --- |
+| **Dashboard** | Workspace metrics, project-type and sub-brand charts, six-month activity, storage totals, and designer-to-project workflow overview |
 | **Project Creator** | Standardized folder generator with Year Selector, Sub-Brand selection, Auto-Incrementing Job ID tracking, Clipboard integration, and Recent Projects quick-launcher |
-| **Template Injection** | Automated deployment of master guidelines and starter canvas templates (`.psd`, `.afdesign`) |
+| **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
+| **Search & Copy** | Synology Drive file search, designer project-folder browser, and controlled asset copying into active work orders |
 | **Custom Folder Support** | Configurable directory structures (`Client Revisions`, `RAW Audio & 3D`) |
 | **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
 | **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
@@ -29,7 +31,7 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
 
 | Component | Minimum Specification | Recommended Specification |
-|---|---|---|
+| --- | --- | --- |
 | **Operating System** | Windows 10 (64-bit) | Windows 11 (64-bit) |
 | **System Memory (RAM)** | 16 GB | 32 GB or greater |
 | **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
@@ -45,7 +47,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.7.0.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.0.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Brand-Assets/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
@@ -55,15 +57,14 @@ If Windows SmartScreen prompts appear during internal deployment, select **More 
 
 ### Step 3: Setup Wizard Sequence
 
-The responsive setup wizard adapts dynamically across 5 streamlined steps:
+The responsive WPF setup wizard adapts dynamically across four steps:
 
 | Step | Function | Details |
-|---|---|---|
-| **1** | **Launch Screen** | Select target components (**Brand Kit** and/or **Creative Project Management**) |
-| **2** | **System Check** | Tabbed interface combining **This PC** (hardware compatibility) and **Design Apps** (software readiness & vendor downloads with auto-rescan) |
-| **3** | **Licence & Configuration** | Scroll-to-accept EULA, font suite selection (All / Core / Skip), brand-assets location, web shortcuts toggle, and CPM installation directory |
-| **4** | **Review & Install** | Provides final summary of all selected components and hardware readiness prior to execution |
-| **5** | **Progress & Completion** | Live extraction and installation log, status progress, system report generation, and direct **Open App** launcher |
+| --- | --- | --- |
+| **1** | **Components** | Choose Express or Custom installation, select **Brand Kit** and/or **Creative Project Management**, or uninstall an existing CPM installation |
+| **2** | **Configuration** | Review PC/software readiness and configure only the selected components; Express installation skips this step |
+| **3** | **Licence** | Read the full agreement and scroll to the end before acceptance is enabled |
+| **4** | **Installation** | View installation/uninstallation status, component report, and the direct **Open App** launcher |
 
 ---
 
@@ -139,7 +140,7 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 ### Core Brand Typefaces
 
 | Index | Family | Usage & Classification |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Poppins** | Primary display typeface — headlines, marketing banners |
 | 2 | **Calibri** | Secondary typeface — documentation, body text |
 | 3 | **Helvetica Neue** | Secondary & structural typeface — user interfaces, technical layouts |
@@ -148,7 +149,7 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 ### Extended Typographic Suite
 
 | Typeface | Functional Purpose |
-|---|---|
+| --- | --- |
 | FontAwesome Pro 5 | Vector icon typography |
 | Barcode Suite | Code 128 and 2D barcode generation |
 | Futura Std | Display & title graphics |
@@ -161,7 +162,7 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 ## Troubleshooting Reference
 
 | Symptom | Resolution Procedure |
-|---|---|
+| --- | --- |
 | **SmartScreen Notice** | Select **More Info** followed by **Run Anyway** |
 | **Fonts Missing in Affinity** | Restart Affinity suite following setup completion |
 | **Fonts Missing in Adobe Apps** | Restart Adobe Creative Cloud applications |
@@ -201,4 +202,3 @@ SS-2026\
 Assets and typography bundled within this package are restricted to authorized internal operations. For licensing compliance and usage policies, consult system administration.
 
 For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
-

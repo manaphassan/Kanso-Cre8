@@ -6,11 +6,12 @@ This document covers technical information for developers and maintainers of the
 
 ## Repository structure
 
-```
+```text
 SS-Brand-Assets/
 ├── installer/
 │   ├── src/                  PowerShell setup engine and GUI wizard
-│   │   ├── Install-SuamiSihat-GUI.ps1
+│   │   ├── Install-SuamiSihat-WPF.ps1  Active WPF application and setup wizard
+│   │   ├── Install-SuamiSihat-GUI.ps1  Legacy WinForms rollback implementation
 │   │   ├── Install-SuamiSihat.ps1
 │   │   └── Installer.Common.ps1
 │   ├── bootstrapper/
@@ -45,30 +46,30 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.7.0`) — double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.9.0`) — double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.7.0
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.0
 ```
 
 **Output:**
 
-```
-dist\SS-CAM-v1.7.0.exe   (~48 MB)
+```text
+dist\SS-CAM-v1.9.0.exe   (~48 MB)
 ```
 
 ### How the EXE works
 
 1. `Build-Installer.ps1` compresses the full `payload/` folder and wizard scripts into a ZIP at `Optimal` compression level.
 2. The C# bootstrapper (`Program.cs`) is compiled as a `winexe` target with the ZIP embedded as a managed resource (`SuamiSihat.Payload.Zip`).
-3. At runtime, the EXE extracts to `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>`, launches `Install-SuamiSihat-GUI.ps1` via `powershell.exe -WindowStyle Hidden`, and purges the temporary directory in a `finally` block after the wizard exits.
+3. At runtime, the EXE extracts to `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>`, launches `Install-SuamiSihat-WPF.ps1` via `powershell.exe -WindowStyle Hidden`, and purges the temporary directory in a `finally` block after the wizard exits.
 
 ### Smoke test
 
 ```powershell
-.\dist\SS-CAM-v1.7.0.exe --smoke-test
+.\dist\SS-CAM-v1.9.0.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -82,10 +83,10 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(installer): release SuamiSihat Designer Assets Installer v1.7.0"
+git commit -m "feat(release): publish SS-CAM v1.9.0"
 
 # Tag the release
-git tag -a v1.7.0 -m "SuamiSihat Designer Assets Installer v1.7.0"
+git tag -a v1.9.0 -m "SuamiSihat Creative Assets Management v1.9.0"
 
 # Push branch and tag
 git push origin SS-Master --tags
@@ -94,14 +95,14 @@ git push origin SS-Master --tags
 After pushing, draft the GitHub release at:
 `https://github.com/SuamiSihat/SS-Brand-Assets/releases/new`
 
-Attach `dist\SuamiSihat-Designer-Assets-Installer-<version>.exe` as the release asset.
+Attach `dist\SS-CAM-v<version>.exe` as the release asset.
 
 ---
 
 ## Security best practices
 
 | Area | Guidance |
-|---|---|
+| --- | --- |
 | **Code signing** | Sign the compiled EXE with the organisation's EV/OV certificate using `signtool.exe` before wider distribution — eliminates Windows SmartScreen "Unknown Publisher" warnings |
 | **No embedded secrets** | Passwords, 2FA/OTPs, and API tokens must never appear in `.ps1` scripts, `Program.cs`, or the embedded ZIP payload |
 | **Execution policy scope** | The C# launcher uses `-ExecutionPolicy Bypass` scoped only to the extracted wizard path — no system-wide policy changes |
@@ -116,7 +117,7 @@ Attach `dist\SuamiSihat-Designer-Assets-Installer-<version>.exe` as the release 
 The installer window follows the official [SuamiSihat brand-assets guidance](https://suamisihat.com.my/brand-assets):
 
 | Element | Value |
-|---|---|
+| --- | --- |
 | Primary header background | SS Prussian Blue `#022057` |
 | Headings & primary actions | SS Blue `#043388` |
 | Supporting accent (1) | Azure `#21A1F7` |
