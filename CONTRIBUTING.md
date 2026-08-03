@@ -46,18 +46,18 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.9.1`) — double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.9.2`) — double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.1
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.2
 ```
 
 **Output:**
 
 ```text
-dist\SS-CAM-v1.9.1.exe   (~48 MB)
+dist\SS-CAM-v1.9.2.exe   (~48 MB)
 ```
 
 ### How the EXE works
@@ -69,7 +69,7 @@ dist\SS-CAM-v1.9.1.exe   (~48 MB)
 ### Smoke test
 
 ```powershell
-.\dist\SS-CAM-v1.9.1.exe --smoke-test
+.\dist\SS-CAM-v1.9.2.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -83,19 +83,21 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(release): publish SS-CAM v1.9.1"
+git commit -m "feat(release): publish SS-CAM v1.9.2"
 
 # Tag the release
-git tag -a v1.9.1 -m "SuamiSihat Creative Assets Management v1.9.1"
+git tag -a v1.9.2 -m "SuamiSihat Creative Assets Management v1.9.2"
 
 # Push branch and tag
 git push origin SS-Master --tags
 ```
 
 After pushing, draft the GitHub release at:
-`https://github.com/SuamiSihat/SS-Brand-Assets/releases/new`
+`https://github.com/SuamiSihat/ss_cam/releases/new`
 
 Attach `dist\SS-CAM-v<version>.exe` as the release asset.
+
+Release notes must summarize user-visible changes, compatibility behavior, verification performed, and the executable SHA-256 checksum. Update [CHANGELOG.md](./CHANGELOG.md), [README.md](./README.md), [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md), and `installer\EULA.txt` before tagging.
 
 ---
 

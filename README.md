@@ -13,16 +13,26 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | Feature Area | Specifications & Functions |
 | --- | --- |
 | **Dashboard** | Workspace metrics, project-type and sub-brand charts, six-month activity, storage totals, and designer-to-project workflow overview |
-| **Project Creator** | Standardized folder generator with Year Selector, Sub-Brand selection, Auto-Incrementing Job ID tracking, Clipboard integration, and Recent Projects quick-launcher |
+| **Project Creator** | Standardized folder generator with Year Selector, full Sub-Brand labels, suffix-format Job IDs (`0001D`, `0001S`), Clipboard integration, and Recent Projects quick-launcher |
 | **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
-| **Search & Copy** | Project-folder name search with designer filtering, automatic `README.md` brief preview, project file browser, and controlled asset copying into active work orders |
-| **Custom Folder Support** | Configurable directory structures (`Client Revisions`, `RAW Audio & 3D`) |
+| **Search & Copy** | Project-folder name search with designer filtering, rendered or raw `README.md` preview, project file browser, and controlled asset copying into active work orders |
+| **Custom Folder Support** | Optional `Client Revisions` and `RAW Media` directories |
 | **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
 | **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
-| **Brand Assets** | Sub-brand vector logos (SuamiSihat, SS Health, SS Clinic, SS Wellness, SS Ecom, SS Tech) in SVG and PNG formats |
+| **Brand Assets** | Conditional in-app module for installed colour palettes, design libraries, logos, official links, and rendered Markdown installation reports |
 | **Color Palettes** | Swatch definitions provided in `.afpalette` (Affinity) and `.ase` (Adobe Creative Cloud) formats |
 | **Design Libraries** | Pre-packaged asset libraries in `.afassets` (Affinity) and `.cclibs` (Adobe Creative Cloud) formats |
-| **System Shortcuts** | Pre-configured browser shortcuts to the SuamiSihat Service Dashboard and Internal Assets portals |
+| **System Shortcuts** | Pre-configured browser shortcuts to the SuamiSihat Service Dashboard, Internal Assets, and Public Brand Assets portals |
+
+### Application Modules
+
+| Module | Purpose |
+| --- | --- |
+| **Dashboard** | Review workspace totals, storage use, recent activity, project types, sub-brands, and designer metrics |
+| **Project Management** | Create standardized project folders, briefs, master canvases, and optional production subfolders |
+| **Search & Copy** | Search by project-folder name, filter by designer, switch `README.md` between rendered Preview and Raw Markdown, and copy selected files into a work order |
+| **Brand Assets** | Opens installed palettes, libraries, logos, links, and reports; shown only when Brand Kit installation is detected |
+| **User Profile** | Manage designer identity, workspace defaults, recent-project history, Job ID counter, repair, update, and uninstall actions |
 
 ---
 
@@ -47,7 +57,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.1.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.2.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
@@ -125,7 +135,8 @@ Documents\SuamiSihat Brand Assets\
 │   └── SS Health Grey Tone.ase
 ├── Links\
 │   ├── SuamiSihat Service Dashboard.url
-│   └── SuamiSihat Internal Assets.url
+│   ├── SuamiSihat Internal Assets.url
+│   └── SuamiSihat Public Brand Assets.url
 └── Reports\
     ├── SuamiSihat-Workstation-Report.md
     └── SuamiSihat-Font-Inventory.md
@@ -166,9 +177,10 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 | **SmartScreen Notice** | Select **More Info** followed by **Run Anyway** |
 | **Fonts Missing in Affinity** | Restart Affinity suite following setup completion |
 | **Fonts Missing in Adobe Apps** | Restart Adobe Creative Cloud applications |
-| **Unrecognized Software** | Click **Rescan** on the Design Apps tab in Step 2 (System Check) |
-| **Custom Destination Requirements** | Modify output path on Step 3 (Licence & Configuration) |
-| **Bypass Font Deployment** | Select "Do not install fonts" on Step 3 (Licence & Configuration) |
+| **Unrecognized Software** | Click **Rescan** in Step 2, **System Check & Configuration** |
+| **Custom Destination Requirements** | Change the Brand Kit or Creative Project Management path in Step 2, **Configuration** |
+| **Bypass Font Deployment** | Select **Do not install fonts** under Step 2, **Brand Kit options** |
+| **Brand Assets module hidden** | Run Custom installation or Repair with **Brand Kit** selected; the module appears when Brand Kit registration or installed asset folders are detected |
 
 ---
 
@@ -179,6 +191,8 @@ The deployment utility generates two Markdown audit documents stored in the `Rep
 1. `SuamiSihat-Workstation-Report.md`: Hardware specifications, software detection records, and execution logs.
 2. `SuamiSihat-Font-Inventory.md`: Comprehensive inventory of deployed typefaces, file formats, and font family metadata.
 
+Both reports open as formatted Markdown inside the Brand Assets module.
+
 ---
 
 ## Standardized Project Directory Structure
@@ -188,7 +202,7 @@ Creative projects must adhere to the organizational standard defined in [FOLDER-
 ```text
 SS-2026\
 └── 202607_July\
-    └── 20260730_D0073_SS_Brand-Assets-Installer\
+    └── 202607_0073D_SS_Brand-Assets-Installer\
         ├── Artwork Design\      ← Working source files (.afdesign, .psd, .ai)
         ├── Artwork Mockup\      ← Presentation mockups & client previews
         ├── Assets\              ← Raw photos, icons, reference materials
@@ -201,4 +215,8 @@ SS-2026\
 
 Assets and typography bundled within this package are restricted to authorized internal operations. For licensing compliance and usage policies, consult system administration.
 
+The application interface uses Font Awesome Free vector icons under the Font Awesome Free licence. Attribution is retained in the WPF source. Commercial fonts in the installation payload remain subject to their respective licences.
+
 For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+Release history is maintained in [CHANGELOG.md](./CHANGELOG.md).
