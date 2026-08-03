@@ -15,7 +15,7 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | **Dashboard** | Workspace metrics, project-type and sub-brand charts, six-month activity, storage totals, and designer-to-project workflow overview |
 | **Project Creator** | Standardized folder generator with Year Selector, Sub-Brand selection, Auto-Incrementing Job ID tracking, Clipboard integration, and Recent Projects quick-launcher |
 | **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
-| **Search & Copy** | Synology Drive file search, designer project-folder browser, and controlled asset copying into active work orders |
+| **Search & Copy** | Project-folder name search with designer filtering, automatic `README.md` brief preview, project file browser, and controlled asset copying into active work orders |
 | **Custom Folder Support** | Configurable directory structures (`Client Revisions`, `RAW Audio & 3D`) |
 | **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
 | **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
@@ -47,7 +47,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.0.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Brand-Assets/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.1.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 

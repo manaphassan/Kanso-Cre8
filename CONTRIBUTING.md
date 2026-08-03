@@ -46,18 +46,18 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.9.0`) — double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.9.1`) — double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.0
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.1
 ```
 
 **Output:**
 
 ```text
-dist\SS-CAM-v1.9.0.exe   (~48 MB)
+dist\SS-CAM-v1.9.1.exe   (~48 MB)
 ```
 
 ### How the EXE works
@@ -69,7 +69,7 @@ dist\SS-CAM-v1.9.0.exe   (~48 MB)
 ### Smoke test
 
 ```powershell
-.\dist\SS-CAM-v1.9.0.exe --smoke-test
+.\dist\SS-CAM-v1.9.1.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -83,10 +83,10 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(release): publish SS-CAM v1.9.0"
+git commit -m "feat(release): publish SS-CAM v1.9.1"
 
 # Tag the release
-git tag -a v1.9.0 -m "SuamiSihat Creative Assets Management v1.9.0"
+git tag -a v1.9.1 -m "SuamiSihat Creative Assets Management v1.9.1"
 
 # Push branch and tag
 git push origin SS-Master --tags
