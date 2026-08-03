@@ -45,7 +45,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.6.2.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.7.0.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/SS-Designer-Assets/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
@@ -55,20 +55,15 @@ If Windows SmartScreen prompts appear during internal deployment, select **More 
 
 ### Step 3: Setup Wizard Sequence
 
-The wizard adapts dynamically based on component selection:
+The responsive setup wizard adapts dynamically across 5 streamlined steps:
 
 | Step | Function | Details |
 |---|---|---|
 | **1** | **Launch Screen** | Select target components (**Brand Kit** and/or **Creative Project Management**) |
-| **2** | **PC Compatibility** | Evaluates workstation hardware against minimum and recommended baselines |
-| **3** | **Software Readiness** | Detects installed software (Affinity, Adobe Creative Cloud, Canva, Figma) |
-| **4** | **Licence Agreement** | Displays internal end-user licence agreement (*new installations only*) |
-| **5** | **Font Deployment** | Select typeface suites or execute **Skip Fonts** |
-| **6** | **Asset Location** | Specifies destination folder (default: `Documents\SuamiSihat Brand Assets`) |
-| **7** | **Application Overview** | Reviews Creative Project Management deployment settings |
-| **8** | **Review & Install** | Provides final summary prior to execution |
-| **9** | **Progress** | Live extraction and shortcut registration |
-| **10** | **Completion** | Generates system reports; provides direct **Open App** launcher |
+| **2** | **System Check** | Tabbed interface combining **This PC** (hardware compatibility) and **Design Apps** (software readiness & vendor downloads with auto-rescan) |
+| **3** | **Licence & Configuration** | Scroll-to-accept EULA, font suite selection (All / Core / Skip), brand-assets location, web shortcuts toggle, and CPM installation directory |
+| **4** | **Review & Install** | Provides final summary of all selected components and hardware readiness prior to execution |
+| **5** | **Progress & Completion** | Live extraction and installation log, status progress, system report generation, and direct **Open App** launcher |
 
 ---
 
@@ -170,9 +165,9 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 | **SmartScreen Notice** | Select **More Info** followed by **Run Anyway** |
 | **Fonts Missing in Affinity** | Restart Affinity suite following setup completion |
 | **Fonts Missing in Adobe Apps** | Restart Adobe Creative Cloud applications |
-| **Unrecognized Software** | Click **Rescan** on the Software Readiness wizard page |
-| **Custom Destination Requirements** | Modify output path on Step 6 of the setup wizard |
-| **Bypass Font Deployment** | Select **Skip Fonts** on Step 5 of the setup wizard |
+| **Unrecognized Software** | Click **Rescan** on the Design Apps tab in Step 2 (System Check) |
+| **Custom Destination Requirements** | Modify output path on Step 3 (Licence & Configuration) |
+| **Bypass Font Deployment** | Select "Do not install fonts" on Step 3 (Licence & Configuration) |
 
 ---
 
