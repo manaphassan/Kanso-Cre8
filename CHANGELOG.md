@@ -4,6 +4,14 @@ All notable SS-CAM changes are documented here.
 
 ## [1.9.10] - 2026-08-04
 
+### Added
+- **Creative Wellbeing Module** – A completely local, private companion for designers to help maintain healthy work habits.
+  - **Focus Timer**: Includes monotonic stopwatch tracking for standard focus, deep flow, and gentle focus sessions. Automatically detects when you're idle and safely pauses sessions.
+  - **Wellbeing Check-Ins**: Quick interface to rate energy and pressure levels, supporting self-reflection.
+  - **Fatigue Rule Engine**: Suggests appropriate rests or breathing breaks based on work duration and recorded check-ins without any diagnostic labeling.
+  - **Mind Drops**: Instantly capture blocking thoughts during a session; saved securely with DPAPI encryption to remain completely private to your Windows user account.
+  - **Zero Telemetry**: All data is kept strictly on your local disk at `%LOCALAPPDATA%` with zero cloud sync or network footprint.
+
 ### Fixed
 - **Window Icon** — Fixed an issue where the WPF Window taskbar icon and title bar were displaying as the default PowerShell logo by loading the `suamisihat-logo-on-dark-ui.png` directly as the WPF `Window.Icon` instead of relying on `.ico` format parsing.
 

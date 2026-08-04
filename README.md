@@ -1,4 +1,4 @@
-﻿# SuamiSihat Creative Assets Management
+# SuamiSihat Creative Assets Management
 
 Automated workstation setup utility, font installer, brand asset distributor, and standardized creative project folder generator for SuamiSihat design environments.
 
@@ -16,6 +16,7 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | **Project Creator** | Standardized folder generator with Year Selector, full Sub-Brand labels, suffix-format Job IDs (`0001D`, `0001S`), Clipboard integration, and Recent Projects quick-launcher |
 | **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
 | **Search & Copy** | Project-folder name search with designer filtering, rendered or raw `README.md` preview, project file browser, and controlled asset copying into active work orders |
+| **Creative Wellbeing** | Local-only designer companion for healthy work habits with focus timer, DPAPI-encrypted Mind Drops, energy check-ins, and a fatigue rule engine |
 | **Custom Folder Support** | Optional `Client Revisions` and `RAW Media` directories |
 | **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
 | **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
@@ -30,6 +31,7 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | --- | --- |
 | **Dashboard** | Review workspace totals, storage use, recent activity, project types, sub-brands, and designer metrics |
 | **Project Management** | Create standardized project folders, briefs, master canvases, and optional production subfolders |
+| **Creative Wellbeing** | Track focus sessions, check energy levels, and securely store private thoughts to prevent creative burnout with zero telemetry |
 | **Search & Copy** | Search by project-folder name, filter by designer, switch `README.md` between rendered Preview and Raw Markdown, and copy selected files into a work order |
 | **Brand Assets** | Opens installed palettes, libraries, logos, links, and reports; shown only when Brand Kit installation is detected |
 | **User Profile** | Manage designer identity, workspace defaults, recent-project history, Job ID counter, repair, update, and uninstall actions |
