@@ -2,6 +2,17 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.10] - 2026-08-04
+
+### Fixed
+- **Window Icon** — Fixed an issue where the WPF Window taskbar icon and title bar were displaying as the default PowerShell logo by loading the `suamisihat-logo-on-dark-ui.png` directly as the WPF `Window.Icon` instead of relying on `.ico` format parsing.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.10.exe` | `D0595B94F0228C412D671B03BCAC68B9C743EC3E5CA31A4E8B5BAD330B784AAC` |
+
 ## [1.9.9] - 2026-08-04
 
 ### Fixed
