@@ -2,7 +2,7 @@
 
 All notable SS-CAM changes are documented here.
 
-## [1.9.8] - 2026-08-04 (Pre-release)
+## [1.9.8] - 2026-08-04
 
 ### Added
 - **Collapsible sidebar** — Added a hamburger menu button in the header (top left) that allows the sidebar to be collapsed/expanded to maximize workspace area.
