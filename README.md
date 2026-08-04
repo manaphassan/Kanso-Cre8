@@ -57,7 +57,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.2.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.3.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 

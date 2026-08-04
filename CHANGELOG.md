@@ -2,6 +2,37 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.3] - 2026-08-04 (Pre-release)
+
+### Changed
+
+- Update checker now shows a **Yes/No dialog** when a newer version is available, with a direct link to the GitHub release download page.
+- Update checker status text now confirms the running version when already up to date: `You are running the latest version (vX.Y.Z)`.
+- Hardcoded fallback version strings in `Get-SuamiSihatLatestRelease` and `Build-Installer.ps1` bumped to `1.9.3` for consistency.
+
+### Documentation
+
+- Replaced outdated WinForms installer screenshots in `docs/` with fresh WPF v1.9.3 captures:
+  - `app-dashboard.png` — Creative Workspace Dashboard
+  - `app-project-creator.png` — Creative Project Folder Creator
+  - `app-search-copy.png` — Search & Copy
+  - `app-brand-assets.png` — Brand Assets module
+  - `app-profile-settings.png` — User Profile & Settings
+  - `app-installer-setup.png` — Installer Setup wizard
+
+### Verification
+
+- Update checker dialog and browser launch tested in smoke-test mode.
+- All six `RenderTargetBitmap` screenshot exports verified.
+- Self-contained v1.9.3 executable smoke test passed.
+- Release executable signed with SuamiSihat certificate, timestamped via DigiCert (2026-08-04).
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.3.exe` | `39035C252CA31D694EDBD92FC980B9BBB2362E7D58526B70CCD156C33898B565` |
+
 ## [1.9.2] - 2026-08-03
 
 ### Added
