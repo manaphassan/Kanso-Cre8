@@ -2,6 +2,21 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.6] - 2026-08-04 (Pre-release)
+
+### Added
+
+- **Avatar click-to-preview** — clicking the circular profile photo in the sidebar now opens a full-size image popup (`860×660` resizable dark window). The click is captured via `PreviewMouseLeftButtonDown` with `Handled=true` so it doesn't trigger the NavProfile navigation.
+- **Department/role in sidebar** — the subtitle under the designer name now shows the department/role from User Profile settings (e.g. "Design Lead"), falling back to "User Profile" when empty. Implemented via a new `DepartmentDisplay` computed property on `AppViewModel` that reacts to `Department` changes.
+- **Production / Export thumbnail tab** — a new third tab in the Search & Copy right panel scans `Production`, `Export`, `Exports`, `Output`, and `Outputs` subfolders of the selected project for image files (`.png .jpg .jpeg .gif .bmp .tiff .webp`). Results appear as `160×120` thumbnail cards in a `WrapPanel`; clicking any card opens the full-size popup.
+- **Animated header** — the dark navy header has a looping PS Vita-style animation of 8 semi-transparent floating circle outlines (`Ellipse`, white stroke, 5–9% opacity). Driven by a 33 ms `DispatcherTimer`; shapes wrap around canvas edges. Timer is stopped cleanly on `Window.Closed`.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.6.exe` | `0421AF93D1B7C6BE32123C9F1902B962560F4536152B08F3C1BEA912FBEAB391` |
+
 ## [1.9.5] - 2026-08-04 (Pre-release)
 
 ### Fixed
