@@ -2,6 +2,17 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.9] - 2026-08-04
+
+### Fixed
+- **App Icon** — Fixed an issue where the application icon was displaying as the default PowerShell logo by generating and embedding a proper `.ico` asset containing the SuamiSihat brand logo.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.9.exe` | `FC7D2BDF2BD953AC57672B101388C404535A691BDE802F0E7559EB6679E4E788` |
+
 ## [1.9.8] - 2026-08-04
 
 ### Added
