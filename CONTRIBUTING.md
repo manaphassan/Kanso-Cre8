@@ -46,18 +46,18 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.9.6`) â€” double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.9.7`) â€” double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.6
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.7
 ```
 
 **Output:**
 
 ```text
-dist\SS-CAM-v1.9.6.exe   (~48 MB)
+dist\SS-CAM-v1.9.7.exe   (~48 MB)
 ```
 
 ### How the EXE works
@@ -69,7 +69,7 @@ dist\SS-CAM-v1.9.6.exe   (~48 MB)
 ### Smoke test
 
 ```powershell
-.\dist\SS-CAM-v1.9.6.exe --smoke-test
+.\dist\SS-CAM-v1.9.7.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -83,10 +83,10 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(release): publish SS-CAM v1.9.6"
+git commit -m "feat(release): publish SS-CAM v1.9.7"
 
 # Tag the release
-git tag -a v1.9.6 -m "SuamiSihat Creative Assets Management v1.9.6"
+git tag -a v1.9.7 -m "SuamiSihat Creative Assets Management v1.9.7"
 
 # Push branch and tag
 git push origin SS-Master --tags
@@ -138,6 +138,7 @@ Logos are used without recolouring, distortion, effects, or proportion changes.
 3. Place colour palette files under `payload\Brand Assets\Colour Palettes\`.
 4. Rebuild the EXE using `Build-Installer.ps1` with an incremented version number.
 5. Update the font table in [README.md](./README.md) if new typefaces are added.
+
 
 
 

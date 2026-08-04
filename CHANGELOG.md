@@ -2,6 +2,18 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.7] - 2026-08-04 (Pre-release)
+
+### Fixed
+
+- **App crash on launch** — Fixed a bug where the app would crash immediately upon opening because the animated header canvas was not in the script scope, causing the `DispatcherTimer` tick handler to fail.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.7.exe` | `01B5AD5515AB976216F3FD2E668C115063E61B527D85D5009AD7357C2841DDDD` |
+
 ## [1.9.6] - 2026-08-04 (Pre-release)
 
 ### Added
