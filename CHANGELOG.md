@@ -34,7 +34,8 @@ All notable SS-CAM changes are documented here.
 - Legacy and suffix Job ID scanning tests passed.
 - README Preview/Raw toggle and Markdown rendering tests passed.
 - Self-contained v1.9.2 executable smoke test passed.
-- Release executable SHA-256: `77C5CD7376AFD818030B0FE261233D26773AF71A03F1A74F970C646EDC232498`.
+- Release executable signed with SuamiSihat certificate (SHA1: `9A73B71BEE3AFEDA9E4CCECA2466FB5FFE0255AC`), timestamped via DigiCert on 2026-08-04.
+- Signed executable SHA-256: `99B929F06D4A41CF33FFC1A3111955FB8A57B98C1B2D1AB738F495B62B20A21C`.
 
 ## [1.9.1] - 2026-08-03
 
