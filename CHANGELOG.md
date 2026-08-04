@@ -2,6 +2,20 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.8] - 2026-08-04 (Pre-release)
+
+### Added
+- **Collapsible sidebar** — Added a hamburger menu button in the header (top left) that allows the sidebar to be collapsed/expanded to maximize workspace area.
+
+### Fixed
+- **Circular avatar profile picture** — Fixed the avatar picture displaying as a square by updating the `Image` to a `Border` with a rounded `CornerRadius` using an `ImageBrush` background, making it perfectly circular.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.8.exe` | `CAA9C009DB915351F175E9FBA019198DCBD6251A71231EA600CD4BCD1A272FD3` |
+
 ## [1.9.7] - 2026-08-04 (Pre-release)
 
 ### Fixed
