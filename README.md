@@ -57,7 +57,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.4.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.5.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
@@ -220,4 +220,5 @@ The application interface uses Font Awesome Free vector icons under the Font Awe
 For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Release history is maintained in [CHANGELOG.md](./CHANGELOG.md).
+
 

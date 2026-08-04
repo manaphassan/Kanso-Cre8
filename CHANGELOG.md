@@ -2,6 +2,24 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.5] - 2026-08-04 (Pre-release)
+
+### Fixed
+
+- **Avatar image** uploaded in User Profile is now shown in the sidebar immediately after saving. Previously the sidebar always displayed the static person placeholder icon regardless of `AvatarPath`. The fix adds a named `<Image>` overlay in the sidebar XAML, a new `Update-AvatarDisplay` helper that loads the image via `BitmapImage.BeginInit/EndInit`, and wires it up on `ContentRendered`, every `AvatarPath` property change, and after `Save-WpfSettings`.
+
+### Verification
+
+- Smoke test passed for Settings view.
+- Self-contained v1.9.5 executable smoke test passed.
+- Release executable signed with SuamiSihat certificate, timestamped via DigiCert (2026-08-04).
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.5.exe` | `E2535C2B6710D55D44F8470FA40B0D7D4FE1091070D95EE617D18F298B4D3434` |
+
 ## [1.9.4] - 2026-08-04 (Pre-release)
 
 ### Fixed
