@@ -1,4 +1,4 @@
-# SuamiSihat Creative Assets Management
+﻿# SuamiSihat Creative Assets Management
 
 Automated workstation setup utility, font installer, brand asset distributor, and standardized creative project folder generator for SuamiSihat design environments.
 
@@ -47,7 +47,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 | **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
 | **Graphics Hardware** | DirectX 11 compatible adapter | DirectX 12 GPU with 4 GB VRAM |
 | **Storage** | 5 GB available space | NVMe SSD with 100 GB available space |
-| **Display** | 1280 × 720 resolution | 1920 × 1080 IPS display or higher |
+| **Display** | 1280 Ã— 720 resolution | 1920 Ã— 1080 IPS display or higher |
 
 *Note: Minimum specifications allow software installation, but recommended hardware is advised for optimal performance with high-resolution assets.*
 
@@ -57,7 +57,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.3.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v1.9.4.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
@@ -85,20 +85,20 @@ Following installer completion, configure design applications by importing asset
 ### Affinity Suite (Designer, Publisher, Photo)
 
 1. **Asset Library Import**:
-   - Open **Assets Panel** → Menu → **Import Assets**
+   - Open **Assets Panel** â†’ Menu â†’ **Import Assets**
    - Target `SuamiSihat Branding.afassets` from the deployed Brand Assets directory.
 
 2. **Color Palette Import**:
-   - Open **Swatches Panel** → Menu → **Import Palette → From File**
+   - Open **Swatches Panel** â†’ Menu â†’ **Import Palette â†’ From File**
    - Select `ss_color_theme.afpalette`.
 
 ### Adobe Creative Cloud (Photoshop, Illustrator, InDesign)
 
 1. **Creative Cloud Library**:
-   - Open **Libraries Panel** → Import `SuamiSihat™ Branding.cclibs`.
+   - Open **Libraries Panel** â†’ Import `SuamiSihatâ„¢ Branding.cclibs`.
 
 2. **Swatch Library Import**:
-   - Open **Swatches Panel** → **Open Swatch Library → Other Library**
+   - Open **Swatches Panel** â†’ **Open Swatch Library â†’ Other Library**
    - Import target `.ase` files from the `Colour Palettes` directory:
      - `SS Health Primary.ase`
      - `SS Health Secondary.ase`
@@ -117,29 +117,29 @@ Team accounts are authorized via central directory credentials displayed on the 
 
 ```text
 Documents\SuamiSihat Brand Assets\
-├── Logos\
-│   ├── 00_SuamiSihat\
-│   ├── 01_ssHealth\
-│   ├── 02_ssClinic\
-│   ├── 03_ssWellness\
-│   ├── 04_ssEcom\
-│   └── 05_ssTech\
-├── Libraries\
-│   ├── SuamiSihat Branding.afassets
-│   ├── ss_health_branding.afassets
-│   └── SuamiSihat™ Branding.cclibs
-├── Colour Palettes\
-│   ├── ss_color_theme.afpalette
-│   ├── SS Health Primary.ase
-│   ├── SS Health Secondary.ase
-│   └── SS Health Grey Tone.ase
-├── Links\
-│   ├── SuamiSihat Service Dashboard.url
-│   ├── SuamiSihat Internal Assets.url
-│   └── SuamiSihat Public Brand Assets.url
-└── Reports\
-    ├── SuamiSihat-Workstation-Report.md
-    └── SuamiSihat-Font-Inventory.md
+â”œâ”€â”€ Logos\
+â”‚   â”œâ”€â”€ 00_SuamiSihat\
+â”‚   â”œâ”€â”€ 01_ssHealth\
+â”‚   â”œâ”€â”€ 02_ssClinic\
+â”‚   â”œâ”€â”€ 03_ssWellness\
+â”‚   â”œâ”€â”€ 04_ssEcom\
+â”‚   â””â”€â”€ 05_ssTech\
+â”œâ”€â”€ Libraries\
+â”‚   â”œâ”€â”€ SuamiSihat Branding.afassets
+â”‚   â”œâ”€â”€ ss_health_branding.afassets
+â”‚   â””â”€â”€ SuamiSihatâ„¢ Branding.cclibs
+â”œâ”€â”€ Colour Palettes\
+â”‚   â”œâ”€â”€ ss_color_theme.afpalette
+â”‚   â”œâ”€â”€ SS Health Primary.ase
+â”‚   â”œâ”€â”€ SS Health Secondary.ase
+â”‚   â””â”€â”€ SS Health Grey Tone.ase
+â”œâ”€â”€ Links\
+â”‚   â”œâ”€â”€ SuamiSihat Service Dashboard.url
+â”‚   â”œâ”€â”€ SuamiSihat Internal Assets.url
+â”‚   â””â”€â”€ SuamiSihat Public Brand Assets.url
+â””â”€â”€ Reports\
+    â”œâ”€â”€ SuamiSihat-Workstation-Report.md
+    â””â”€â”€ SuamiSihat-Font-Inventory.md
 ```
 
 Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and registered in the Windows Registry for seamless application access.
@@ -152,10 +152,10 @@ Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fon
 
 | Index | Family | Usage & Classification |
 | --- | --- | --- |
-| 1 | **Poppins** | Primary display typeface — headlines, marketing banners |
-| 2 | **Calibri** | Secondary typeface — documentation, body text |
-| 3 | **Helvetica Neue** | Secondary & structural typeface — user interfaces, technical layouts |
-| 4 | **Montserrat** | Tertiary display typeface — supporting accents, labels |
+| 1 | **Poppins** | Primary display typeface â€” headlines, marketing banners |
+| 2 | **Calibri** | Secondary typeface â€” documentation, body text |
+| 3 | **Helvetica Neue** | Secondary & structural typeface â€” user interfaces, technical layouts |
+| 4 | **Montserrat** | Tertiary display typeface â€” supporting accents, labels |
 
 ### Extended Typographic Suite
 
@@ -201,12 +201,12 @@ Creative projects must adhere to the organizational standard defined in [FOLDER-
 
 ```text
 SS-2026\
-└── 202607_July\
-    └── 202607_0073D_SS_Brand-Assets-Installer\
-        ├── Artwork Design\      ← Working source files (.afdesign, .psd, .ai)
-        ├── Artwork Mockup\      ← Presentation mockups & client previews
-        ├── Assets\              ← Raw photos, icons, reference materials
-        └── Production\         ← Exported outputs (PDF, PNG, SVG)
+â””â”€â”€ 202607_July\
+    â””â”€â”€ 202607_0073D_SS_Brand-Assets-Installer\
+        â”œâ”€â”€ Artwork Design\      â† Working source files (.afdesign, .psd, .ai)
+        â”œâ”€â”€ Artwork Mockup\      â† Presentation mockups & client previews
+        â”œâ”€â”€ Assets\              â† Raw photos, icons, reference materials
+        â””â”€â”€ Production\         â† Exported outputs (PDF, PNG, SVG)
 ```
 
 ---
@@ -220,3 +220,4 @@ The application interface uses Font Awesome Free vector icons under the Font Awe
 For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Release history is maintained in [CHANGELOG.md](./CHANGELOG.md).
+

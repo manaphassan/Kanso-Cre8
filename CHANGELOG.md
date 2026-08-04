@@ -2,6 +2,26 @@
 
 All notable SS-CAM changes are documented here.
 
+## [1.9.4] - 2026-08-04 (Pre-release)
+
+### Fixed
+
+- **Job ID code** no longer stays stuck on `D` when switching creative presets. Changing the preset now immediately updates the suffix letter in the Job ID field (e.g. `0003D` → `0003S` for Social, `0003V` for Video, `0003P` for Brand Identity).
+- **README preview** in Search & Copy no longer shows YAML frontmatter (`---` block). Frontmatter is now stripped before the FlowDocument renderer processes the file.
+- **Asset folder cards** text is no longer cropped. Changed fixed `Height="132"` to `MinHeight="132"` so card height grows to fit the subtitle text.
+
+### Verification
+
+- Smoke test passed for Projects, BrandAssets, Search, Dashboard, Settings, and Setup views.
+- Self-contained v1.9.4 executable smoke test passed.
+- Release executable signed with SuamiSihat certificate, timestamped via DigiCert (2026-08-04).
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v1.9.4.exe` | `FF4EB88986DB185BA0EF692F6AC38C444EC0C38ABCC7BA29405A542AFF624DB4` |
+
 ## [1.9.3] - 2026-08-04 (Pre-release)
 
 ### Changed

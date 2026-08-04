@@ -1,4 +1,4 @@
-# Contributing & Developer Guide
+﻿# Contributing & Developer Guide
 
 This document covers technical information for developers and maintainers of the **SuamiSihat Designer Assets Installer**. For the end-user setup guide, see [README.md](./README.md).
 
@@ -8,28 +8,28 @@ This document covers technical information for developers and maintainers of the
 
 ```text
 SS-Brand-Assets/
-├── installer/
-│   ├── src/                  PowerShell setup engine and GUI wizard
-│   │   ├── Install-SuamiSihat-WPF.ps1  Active WPF application and setup wizard
-│   │   ├── Install-SuamiSihat-GUI.ps1  Legacy WinForms rollback implementation
-│   │   ├── Install-SuamiSihat.ps1
-│   │   └── Installer.Common.ps1
-│   ├── bootstrapper/
-│   │   └── Program.cs        C# EXE entry point (extracts payload, launches wizard)
-│   ├── assets/               Installer branding images
-│   ├── EULA.txt
-│   ├── Setup.cmd             Run the unpackaged wizard (development mode)
-│   ├── Build-Installer.cmd   Double-click build shortcut
-│   └── Build-Installer.ps1   Versioned build script
-├── payload/
-│   ├── Fonts/                Installable desktop fonts and licences
-│   └── Brand Assets/
-│       ├── Logos/
-│       ├── Libraries/        .afassets and .cclibs files
-│       └── Colour Palettes/  .afpalette and .ase files
-├── docs/                     Installer UI preview screenshots
-├── dist/                     Generated EXE output — not committed (see .gitignore)
-└── .gitignore
+â”œâ”€â”€ installer/
+â”‚   â”œâ”€â”€ src/                  PowerShell setup engine and GUI wizard
+â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat-WPF.ps1  Active WPF application and setup wizard
+â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat-GUI.ps1  Legacy WinForms rollback implementation
+â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat.ps1
+â”‚   â”‚   â””â”€â”€ Installer.Common.ps1
+â”‚   â”œâ”€â”€ bootstrapper/
+â”‚   â”‚   â””â”€â”€ Program.cs        C# EXE entry point (extracts payload, launches wizard)
+â”‚   â”œâ”€â”€ assets/               Installer branding images
+â”‚   â”œâ”€â”€ EULA.txt
+â”‚   â”œâ”€â”€ Setup.cmd             Run the unpackaged wizard (development mode)
+â”‚   â”œâ”€â”€ Build-Installer.cmd   Double-click build shortcut
+â”‚   â””â”€â”€ Build-Installer.ps1   Versioned build script
+â”œâ”€â”€ payload/
+â”‚   â”œâ”€â”€ Fonts/                Installable desktop fonts and licences
+â”‚   â””â”€â”€ Brand Assets/
+â”‚       â”œâ”€â”€ Logos/
+â”‚       â”œâ”€â”€ Libraries/        .afassets and .cclibs files
+â”‚       â””â”€â”€ Colour Palettes/  .afpalette and .ase files
+â”œâ”€â”€ docs/                     Installer UI preview screenshots
+â”œâ”€â”€ dist/                     Generated EXE output â€” not committed (see .gitignore)
+â””â”€â”€ .gitignore
 ```
 
 ---
@@ -46,18 +46,18 @@ This launches the PowerShell GUI wizard directly from the repository without com
 
 The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
 
-**Quick build** (uses default version `1.9.3`) — double-click `installer\Build-Installer.cmd`
+**Quick build** (uses default version `1.9.4`) â€” double-click `installer\Build-Installer.cmd`
 
 **Versioned build:**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.3
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.4
 ```
 
 **Output:**
 
 ```text
-dist\SS-CAM-v1.9.3.exe   (~48 MB)
+dist\SS-CAM-v1.9.4.exe   (~48 MB)
 ```
 
 ### How the EXE works
@@ -69,7 +69,7 @@ dist\SS-CAM-v1.9.3.exe   (~48 MB)
 ### Smoke test
 
 ```powershell
-.\dist\SS-CAM-v1.9.3.exe --smoke-test
+.\dist\SS-CAM-v1.9.4.exe --smoke-test
 ```
 
 Verifies extraction and wizard launch without showing the full UI.
@@ -83,10 +83,10 @@ Verifies extraction and wizard launch without showing the full UI.
 git add -A
 
 # Commit
-git commit -m "feat(release): publish SS-CAM v1.9.3"
+git commit -m "feat(release): publish SS-CAM v1.9.4"
 
 # Tag the release
-git tag -a v1.9.3 -m "SuamiSihat Creative Assets Management v1.9.3"
+git tag -a v1.9.4 -m "SuamiSihat Creative Assets Management v1.9.4"
 
 # Push branch and tag
 git push origin SS-Master --tags
@@ -105,12 +105,12 @@ Release notes must summarize user-visible changes, compatibility behavior, verif
 
 | Area | Guidance |
 | --- | --- |
-| **Code signing** | Sign the compiled EXE with the organisation's EV/OV certificate using `signtool.exe` before wider distribution — eliminates Windows SmartScreen "Unknown Publisher" warnings |
+| **Code signing** | Sign the compiled EXE with the organisation's EV/OV certificate using `signtool.exe` before wider distribution â€” eliminates Windows SmartScreen "Unknown Publisher" warnings |
 | **No embedded secrets** | Passwords, 2FA/OTPs, and API tokens must never appear in `.ps1` scripts, `Program.cs`, or the embedded ZIP payload |
-| **Execution policy scope** | The C# launcher uses `-ExecutionPolicy Bypass` scoped only to the extracted wizard path — no system-wide policy changes |
+| **Execution policy scope** | The C# launcher uses `-ExecutionPolicy Bypass` scoped only to the extracted wizard path â€” no system-wide policy changes |
 | **Temporary files** | Payload extracts to `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>` and is purged in a `finally` block on exit |
 | **Font licensing** | Verify enterprise multi-seat licensing for commercial typefaces (FontAwesome Pro, Helvetica Neue, etc.) before distributing beyond the internal team |
-| **Binary exclusion** | `dist/` is listed in `.gitignore` — compiled EXEs are distributed via GitHub Releases, not committed to Git history |
+| **Binary exclusion** | `dist/` is listed in `.gitignore` â€” compiled EXEs are distributed via GitHub Releases, not committed to Git history |
 
 ---
 
@@ -138,3 +138,4 @@ Logos are used without recolouring, distortion, effects, or proportion changes.
 3. Place colour palette files under `payload\Brand Assets\Colour Palettes\`.
 4. Rebuild the EXE using `Build-Installer.ps1` with an incremented version number.
 5. Update the font table in [README.md](./README.md) if new typefaces are added.
+
