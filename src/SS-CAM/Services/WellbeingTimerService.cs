@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using SS_CAM.Models;
 using SS_CAM.Services;
 
@@ -13,17 +12,6 @@ namespace SS_CAM.Services
     /// </summary>
     public class WellbeingTimerService
     {
-        // ── P/Invoke for idle detection ──────────────────────────────────
-        [StructLayout(LayoutKind.Sequential)]
-        private struct LASTINPUTINFO
-        {
-            public uint cbSize;
-            public uint dwTime;
-        }
-
-        [DllImport("user32.dll")]
-        private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
         // ── State ────────────────────────────────────────────────────────
         public enum TimerState { Ready, Running, Paused, Completed, RecoveryPending }
 
@@ -48,20 +36,12 @@ namespace SS_CAM.Services
         }
 
         // ── Idle detection ───────────────────────────────────────────────
+        // NOTE: GetLastInputInfo is intentionally removed from the production build.
+        // AV heuristics flag it as suspicious (same API fingerprint as keyloggers).
+        // Auto-pause on idle is handled gracefully: the user can manually pause.
         public int GetIdleSeconds()
         {
-            try
-            {
-                var lii = new LASTINPUTINFO();
-                lii.cbSize = (uint)Marshal.SizeOf(lii);
-                if (!GetLastInputInfo(ref lii)) return 0;
-                uint idleMs = (uint)Environment.TickCount - lii.dwTime;
-                return (int)(idleMs / 1000u);
-            }
-            catch
-            {
-                return 0;
-            }
+            return 0; // Idle detection disabled — not required for core timer function
         }
 
         // ── Session control ──────────────────────────────────────────────
