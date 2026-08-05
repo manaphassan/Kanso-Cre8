@@ -1,4 +1,4 @@
-﻿# SuamiSihat Creative Assets Management
+# SuamiSihat Creative Assets Management
 
 Automated workstation setup utility, font installer, brand asset distributor, and standardized creative project folder generator for SuamiSihat design environments.
 
@@ -16,6 +16,7 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | **Project Creator** | Standardized folder generator with Year Selector, full Sub-Brand labels, suffix-format Job IDs (`0001D`, `0001S`), Clipboard integration, and Recent Projects quick-launcher |
 | **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
 | **Search & Copy** | Project-folder name search with designer filtering, rendered or raw `README.md` preview, project file browser, and controlled asset copying into active work orders |
+| **Creative Wellbeing** | Local-only designer companion for healthy work habits with focus timer, DPAPI-encrypted Mind Drops, energy check-ins, and a fatigue rule engine |
 | **Custom Folder Support** | Optional `Client Revisions` and `RAW Media` directories |
 | **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
 | **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
@@ -30,9 +31,16 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 | --- | --- |
 | **Dashboard** | Review workspace totals, storage use, recent activity, project types, sub-brands, and designer metrics |
 | **Project Management** | Create standardized project folders, briefs, master canvases, and optional production subfolders |
+| **Creative Wellbeing** | Track focus sessions, check energy levels, and securely store private thoughts to prevent creative burnout with zero telemetry |
 | **Search & Copy** | Search by project-folder name, filter by designer, switch `README.md` between rendered Preview and Raw Markdown, and copy selected files into a work order |
 | **Brand Assets** | Opens installed palettes, libraries, logos, links, and reports; shown only when Brand Kit installation is detected |
 | **User Profile** | Manage designer identity, workspace defaults, recent-project history, Job ID counter, repair, update, and uninstall actions |
+
+---
+
+## Workstation Requirements
+
+Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
 
 ---
 
@@ -47,9 +55,21 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 | **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
 | **Graphics Hardware** | DirectX 11 compatible adapter | DirectX 12 GPU with 4 GB VRAM |
 | **Storage** | 5 GB available space | NVMe SSD with 100 GB available space |
-| **Display** | 1280 Ã— 720 resolution | 1920 Ã— 1080 IPS display or higher |
+| **Display** | 1280 × 720 resolution | 1920 × 1080 IPS display or higher |
 
 *Note: Minimum specifications allow software installation, but recommended hardware is advised for optimal performance with high-resolution assets.*
+
+---
+
+## Release Status & Lifecycle
+
+| Release Version | Release Status | Target Framework & Highlights |
+| --- | --- | --- |
+| **`v2.0.7`** | **Latest Stable Release** | Native C# WPF single-file executable. Designer Intelligence Dashboard with interactive ToolTips, Largest Project size detector, Stale Projects finder, Sub-brand Storage distribution chart, 16s Box Breathing loop, and auto Job ID calculation. |
+| **`v1.9.10`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Creative Wellbeing module with DPAPI encrypted Mind Drops and monotonic Focus Timer. |
+| **`v1.9.2`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Search & Copy workspace file browser, rendered README preview, and conditional Brand Kit integration module. |
+| **`v1.9.3` - `v1.9.9`** | **Pre-release** | Intermediate developmental preview builds. |
+| **`v2.0.0` - `v2.0.6`** | **Pre-release** | Intermediate C# WPF architectural refactoring builds. |
 
 ---
 
@@ -57,7 +77,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.10.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v2.0.7.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 

@@ -1,0 +1,123 @@
+<Page x:Class="SS_CAM.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="User Profile &amp; Settings">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel MaxWidth="900" HorizontalAlignment="Left">
+            <!-- Header -->
+            <StackPanel Margin="0,0,0,24">
+                <TextBlock Text="Designer Profile &amp; Workspace Settings" FontSize="24" FontWeight="Bold" Foreground="#043388"/>
+                <TextBlock Text="Manage designer identity, upload avatar picture, configure workspace storage paths, and manage brand payload assets." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <StackPanel>
+                <!-- Designer Profile Card -->
+                <GroupBox Header="Designer Profile Identity" Margin="0,0,0,20">
+                    <StackPanel Margin="16">
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Avatar Picture with Change Button -->
+                            <StackPanel Grid.Column="0" Margin="0,0,20,0" VerticalAlignment="Center">
+                                <Border Width="80" Height="80" CornerRadius="40" Background="#21A1F7" BorderBrush="#043388" BorderThickness="2" ClipToBounds="True" HorizontalAlignment="Center">
+                                    <Grid>
+                                        <TextBlock x:Name="AvatarEmojiText" Text="👤" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Image x:Name="AvatarPreviewImg" Stretch="UniformToFill" Visibility="Collapsed"/>
+                                    </Grid>
+                                </Border>
+                                <Button Content="Change Avatar" Click="OnChangeAvatarClicked" Height="28" Margin="0,8,0,0" Padding="12,0" FontSize="11" Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"/>
+                            </StackPanel>
+
+                            <!-- Identity Overview -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="ProfileHeaderName" Text="Brand" FontSize="20" FontWeight="Bold" Foreground="#043388"/>
+                                <TextBlock x:Name="ProfileHeaderDept" Text="Creative &amp; Brand" Foreground="#64748B" FontSize="13"/>
+                                <TextBlock x:Name="ProfileHeaderStaffId" Text="Staff ID: 0001D" Foreground="#21A1F7" FontSize="12" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Identity Form -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Designer Name" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="DesignerNameInput" Text="Brand" Height="36"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Staff ID Code" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="StaffIdInput" Text="0001D" Height="36"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Department / Role" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="DepartmentInput" Text="Creative &amp; Brand" Height="36"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Email Address" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="EmailInput" Text="brand@suamisihat.com" Height="36"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Button Content="Save Profile Identity" Click="OnSaveProfileClicked" Background="#043388" Foreground="White" Height="36" Padding="20,0" FontWeight="Bold" HorizontalAlignment="Left" Cursor="Hand"/>
+                        <TextBlock x:Name="ProfileSaveStatus" Text="" Foreground="#10B981" FontSize="12" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Workspace Storage Source Card -->
+                <GroupBox Header="Workspace Storage Source" Margin="0,0,0,20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Configured Synology / Local Drive Workspace Root" FontSize="12" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,6"/>
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBox x:Name="WorkspaceRootInput" Text="D:\Testing" Height="36" Grid.Column="0"/>
+                            <Button Content="Browse..." Click="OnBrowseWorkspace" Height="36" Width="100" Grid.Column="2" Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"/>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Maintenance & Payload Provisioning Tools -->
+                <GroupBox Header="Workstation Payload &amp; Maintenance" Margin="0,0,0,20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Install bundled brand fonts into Windows, deploy asset libraries, or check for application updates." Foreground="#64748B" FontSize="12" Margin="0,0,0,14"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="🔤 Install Brand Fonts" Click="OnRepairFonts" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"/>
+                            <Button Content="📦 Deploy Asset Libraries" Click="OnDeployAssets" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"/>
+                            <Button Content="Check for Updates" Click="OnCheckUpdates" Height="36" Padding="16,0" Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Reset Profile & Clear Data Maintenance Card -->
+                <GroupBox Header="Reset Profile &amp; Data Maintenance">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Reset designer identity credentials to default SS Branding details or clear local session data." Foreground="#64748B" FontSize="12" Margin="0,0,0,14"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="🔄 Reset Profile Defaults" Click="OnResetProfileDefaults" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#EFF6FF" Foreground="#043388" BorderBrush="#21A1F7" BorderThickness="1" FontWeight="Bold" Cursor="Hand" ToolTip="Reset profile to SS Branding, Creative Department, branding@suamisihat.com, SS000X"/>
+                            <Button Content="🧹 Clear Cache &amp; Reset All Data" Click="OnClearAllData" Height="36" Padding="16,0" Background="#FEF2F2" Foreground="#DC2626" BorderBrush="#EF4444" BorderThickness="1" FontWeight="Bold" Cursor="Hand" ToolTip="Clear local session history &amp; reset profile credentials to defaults"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

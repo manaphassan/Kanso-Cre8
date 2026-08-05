@@ -1,0 +1,126 @@
+<Page x:Class="SS_CAM.Views.WellbeingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Creative Wellbeing">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header with Casual Healthy Mind Tips -->
+            <StackPanel Margin="0,0,0,20">
+                <TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
+                <TextBlock Text="Your personal space to stay focused, rest your eyes &amp; spine, and keep a calm, healthy mind while designing." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Focus Timer & Breathing Animation -->
+                <StackPanel Grid.Column="0">
+                    <!-- Animated Focus & Breathing Timer Card -->
+                    <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="CREATIVE TIMER &amp; BREATHING RHYTHM" Foreground="#64748B" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+
+                            <!-- Animated Pulsing Canvas Ring -->
+                            <Grid Width="160" Height="160" Margin="0,0,0,14">
+                                <Canvas x:Name="BreathingCanvas" Width="160" Height="160"/>
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock x:Name="TxtTimerDisplay" Text="25:00" FontSize="36" FontWeight="Bold" Foreground="#043388" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtBreathingInstruction" Text="Ready" FontSize="12" FontWeight="SemiBold" Foreground="#21A1F7" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock x:Name="TxtTimerStatus" Text="Select a mode below to begin your session." FontSize="12" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,0,0,14"/>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button x:Name="BtnStartFocus" Content="🎯 Focus Mode (25m)" Click="BtnStartFocus_Click" FontFamily="Segoe UI Emoji, Segoe UI" Background="#043388" Foreground="White" Height="38" Padding="14,0" Margin="0,0,6,0" FontWeight="Bold"/>
+                                <Button Content="☕ 5-Min Break" Click="BtnBreak5_Click" FontFamily="Segoe UI Emoji, Segoe UI" Background="#EFF6FF" Foreground="#043388" BorderBrush="#21A1F7" BorderThickness="1" Height="38" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold"/>
+                                <Button Content="🌬️ Breathing (2m)" Click="BtnBreathing_Click" FontFamily="Segoe UI Emoji, Segoe UI" Background="#EFF6FF" Foreground="#043388" BorderBrush="#21A1F7" BorderThickness="1" Height="38" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold"/>
+                                <Button x:Name="BtnPauseFocus" Content="Pause" Click="BtnPauseFocus_Click" Background="#E2E8F0" Foreground="#1E293B" Height="38" Padding="12,0" Margin="0,0,6,0" Visibility="Collapsed"/>
+                                <Button x:Name="BtnStopFocus" Content="Stop" Click="BtnStopFocus_Click" Background="#DC2626" Foreground="White" Height="38" Padding="12,0" Visibility="Collapsed"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Casual Healthy Mind Guide -->
+                    <Border Background="#EFF6FF" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="💡 Quick Guide to Maintaining a Healthy Mind" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
+                            <TextBlock Text="• Focus Mode (25m): 25 minutes of uninterrupted design work gets you into a flow state without mental fatigue." Foreground="#1E293B" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                            <TextBlock Text="• 5-Min Break: Step away, stretch your shoulders, look out a window (20-20-20 rule to prevent eye strain)." Foreground="#1E293B" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                            <TextBlock Text="• 2-Min Breathing: Follow the pulsing circle — 4s Inhale, 4s Hold, 4s Exhale to reset your nervous system." Foreground="#1E293B" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Energy Check-in -->
+                    <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="ENERGY CHECK-IN (1 = Low Battery · 5 = Full Power)" Foreground="#64748B" FontSize="11" FontWeight="Bold" Margin="0,0,0,12"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Button x:Name="BtnE1" Content="1" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="1" Background="#E2E8F0" Foreground="#1E293B"/>
+                                <Button x:Name="BtnE2" Content="2" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="2" Background="#E2E8F0" Foreground="#1E293B"/>
+                                <Button x:Name="BtnE3" Content="3" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="3" Background="#043388" Foreground="White" FontWeight="Bold"/>
+                                <Button x:Name="BtnE4" Content="4" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="4" Background="#E2E8F0" Foreground="#1E293B"/>
+                                <Button x:Name="BtnE5" Content="5" Width="40" Height="36" Click="BtnEnergy_Click" Tag="5" Background="#E2E8F0" Foreground="#1E293B"/>
+                            </StackPanel>
+                            <TextBlock x:Name="TxtFatigueRec" Text="" FontSize="12" Foreground="#DC2626" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Right Column: Interactive Dynamic Radar / Spider Chart -->
+                <Border Grid.Column="2" Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="18">
+                    <DockPanel LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                            <TextBlock Text="INTERACTIVE WELLBEING RADAR" FontSize="14" FontWeight="Bold" Foreground="#043388"/>
+                            <TextBlock Text="Real-time multi-axis overview: Energy, Focus, Rest, Pressure, and Flow state." Foreground="#64748B" FontSize="11" Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <!-- Canvas for Spider Chart -->
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Canvas x:Name="RadarCanvas" Width="280" Height="280"/>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <!-- Mind Drops Card (DPAPI Encrypted) -->
+            <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="MIND DROPS (Local Private Thought Vault)" Foreground="#64748B" FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                    <TextBlock Text="Got a distracting thought or urgent reminder while designing? Drop it here privately so you can focus." Foreground="#64748B" FontSize="11" Margin="0,0,0,10"/>
+                    <ui:TextBox x:Name="TxtMindDrop" PlaceholderText="Write down any distracting thought..." AcceptsReturn="True" MinHeight="60" Margin="0,0,0,12"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Save (End-of-Day Purge)" Click="BtnSaveDrop_EndOfDay" Background="#043388" Foreground="White" Height="36" Padding="14,0" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                        <Button Content="Save (Session Only)" Click="BtnSaveDrop_Session" Background="#E2E8F0" Foreground="#1E293B" Height="36" Padding="14,0" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Today's Session Metrics -->
+            <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="16">
+                <UniformGrid Columns="3">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="TOTAL FOCUS TIME" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="TxtMetricFocus" Text="0h 0m" FontSize="18" FontWeight="Bold" Foreground="#043388" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="COMPLETED SESSIONS" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="TxtMetricSessions" Text="0 completed" FontSize="18" FontWeight="Bold" Foreground="#043388" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="MIND DROPS" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="TxtMetricDrops" Text="0 captured" FontSize="18" FontWeight="Bold" Foreground="#043388" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </UniformGrid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

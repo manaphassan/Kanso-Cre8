@@ -1,0 +1,266 @@
+<Page x:Class="SS_CAM.Views.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Dashboard">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header Bar -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Designer Intelligence Dashboard" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
+                    <TextBlock Text="Live overview of active work-in-progress, sub-brand workload distribution, focus velocity, and Synology workspace." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="🔄 Refresh Analytics" Click="OnRefreshClicked" Background="#E2E8F0" Foreground="#1E293B" Height="36" Padding="14,0" FontWeight="SemiBold"/>
+            </Grid>
+
+            <!-- 7 Designer POV Key Metric Cards -->
+            <UniformGrid Columns="4" Margin="-4,0,-4,20">
+                <!-- Total Projects -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="Total number of projects currently stored in the workspace across all designers.">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL PROJECTS" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricTotalProjects" Text="0" Foreground="#043388" FontSize="30" FontWeight="Bold" Margin="0,6,0,0"/>
+                        <TextBlock Text="Workspace total" Foreground="#94A3B8" FontSize="10" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Active WIP Projects -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="Projects that have been modified or worked on within the last 7 days.">
+                    <StackPanel>
+                        <TextBlock Text="ACTIVE WIP (7 DAYS)" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricActiveWIP" Text="0" Foreground="#21A1F7" FontSize="30" FontWeight="Bold" Margin="0,6,0,0"/>
+                        <TextBlock Text="Modified recently" Foreground="#94A3B8" FontSize="10" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Latest Project -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="The most recently generated project folder.">
+                    <StackPanel>
+                        <TextBlock Text="LATEST CREATED" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricLatestProject" Text="None" Foreground="#043388" FontSize="13" FontWeight="Bold" Margin="0,8,0,0" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="Most recent job" Foreground="#94A3B8" FontSize="10" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Storage Size -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="Total physical disk space consumed by all projects.">
+                    <StackPanel>
+                        <TextBlock Text="STORAGE SIZE" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricFileSize" Text="0 MB" Foreground="#043388" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                        <TextBlock Text="Total asset volume" Foreground="#94A3B8" FontSize="10" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Created This Month -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="Total projects created in the current month, compared to the previous month's output.">
+                    <StackPanel>
+                        <TextBlock Text="THIS MONTH OUTPUT" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricThisMonth" Text="0" Foreground="#10B981" FontSize="28" FontWeight="Bold" Margin="0,4,0,0"/>
+                        <TextBlock x:Name="MetricMonthComparison" Text="▲ +0% vs last month" Foreground="#10B981" FontSize="11" FontWeight="Bold" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Largest Project -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="The largest project folder in terms of physical disk space.">
+                    <StackPanel>
+                        <TextBlock Text="LARGEST PROJECT" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricLargestProjectSize" Text="0 MB" Foreground="#F59E0B" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                        <TextBlock x:Name="MetricLargestProjectName" Text="None" Foreground="#94A3B8" FontSize="10" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Stale Projects -->
+                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="14" Margin="4" ToolTip="Projects that haven't been modified in over 90 days.">
+                    <StackPanel>
+                        <TextBlock Text="STALE PROJECTS (>90 DAYS)" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock x:Name="MetricStaleProjects" Text="0" Foreground="#EF4444" FontSize="30" FontWeight="Bold" Margin="0,6,0,0"/>
+                        <TextBlock Text="Idle folders to archive" Foreground="#94A3B8" FontSize="10" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Inline 6 Last Created Projects List -->
+            <GroupBox Header="Recent Past Projects (Last 6 Created)" Margin="0,0,0,20">
+                <ItemsControl x:Name="Recent6ProjectsControl" Margin="8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="10" Margin="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="32" Height="32" CornerRadius="6" Background="#EFF6FF" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Text="📁" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Project}" FontWeight="Bold" Foreground="#043388" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                            <Border Background="#21A1F7" CornerRadius="3" Padding="4,1" Margin="0,0,6,0">
+                                                <TextBlock Text="{Binding Designer}" Foreground="White" FontSize="9" FontWeight="Bold"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Modified}" Foreground="#64748B" FontSize="10" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+
+            <!-- 4 Visual Charts -->
+            <UniformGrid Columns="2" Margin="-6,0,-6,20">
+                <!-- Projects by Type Bar Chart -->
+                <GroupBox Header="Projects by Type Category" Margin="6,0,6,12">
+                    <ItemsControl x:Name="TypeChartControl" Margin="8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="32"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="1" Width="{Binding BarWidth}" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{Binding Color}" CornerRadius="7"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Count}" FontWeight="Bold" Foreground="#043388" HorizontalAlignment="Right" FontSize="11"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </GroupBox>
+
+                <!-- Projects by Sub-Brand -->
+                <GroupBox Header="Workload Share by Sub-Brand" Margin="6,0,6,12">
+                    <ItemsControl x:Name="BrandChartControl" Margin="8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="11"/>
+                                    <Border Grid.Column="1" Width="{Binding BarWidth}" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{Binding Color}" CornerRadius="7"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Percent}" Foreground="#64748B" HorizontalAlignment="Right" FontSize="11"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </GroupBox>
+
+                <!-- Storage Distribution by Sub-Brand -->
+                <GroupBox Header="Storage Usage by Sub-Brand" Margin="6,0,6,0">
+                    <ItemsControl x:Name="StorageChartControl" Margin="8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="80"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="11"/>
+                                    <Border Grid.Column="1" Width="{Binding BarWidth}" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{Binding Color}" CornerRadius="7"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Percent}" Foreground="#F59E0B" HorizontalAlignment="Right" FontSize="11"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </GroupBox>
+
+                <!-- 6-Month Activity Vertical Column Chart -->
+                <GroupBox Header="6-Month Output Activity" Margin="6,0,6,0">
+                    <ItemsControl x:Name="ActivityChartControl" HorizontalAlignment="Center" Margin="8">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="28" Height="140" Margin="2,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="20"/>
+                                        <RowDefinition Height="20"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Height="{Binding BarHeight}" Width="16" VerticalAlignment="Bottom" Background="{Binding Color}" CornerRadius="4,4,0,0"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding Count}" HorizontalAlignment="Center" FontWeight="Bold" Foreground="#043388" FontSize="11"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding Label}" HorizontalAlignment="Center" Foreground="#64748B" FontSize="10"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </GroupBox>
+            </UniformGrid>
+
+            <!-- Workspace Node Flow Diagram -->
+            <GroupBox Header="Workspace Synology Flow" Margin="0,0,0,20">
+                <Grid Margin="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Background="#EFF6FF" CornerRadius="8" Padding="14" ToolTip="The root directory on the Synology NAS where all brand assets are stored.">
+                        <StackPanel>
+                            <TextBlock Text="WORKSPACE" Foreground="#64748B" FontWeight="Bold" FontSize="10"/>
+                            <TextBlock Text="Synology Drive" Foreground="#043388" FontWeight="SemiBold" FontSize="13" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Grid.Column="1" Text="➔" FontSize="20" Foreground="#21A1F7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <Border Grid.Column="2" Background="#EFF6FF" CornerRadius="8" Padding="14" ToolTip="Total number of active designers sharing this workspace.">
+                        <StackPanel>
+                            <TextBlock Text="DESIGNERS" Foreground="#64748B" FontWeight="Bold" FontSize="10"/>
+                            <TextBlock x:Name="FlowDesignerCount" Text="0" Foreground="#043388" FontSize="20" FontWeight="Bold" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Grid.Column="3" Text="➔" FontSize="20" Foreground="#21A1F7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <Border Grid.Column="4" Background="#EFF6FF" CornerRadius="8" Padding="14" ToolTip="Total number of discrete project folders created.">
+                        <StackPanel>
+                            <TextBlock Text="PROJECTS" Foreground="#64748B" FontWeight="Bold" FontSize="10"/>
+                            <TextBlock x:Name="FlowProjectCount" Text="0" Foreground="#043388" FontSize="20" FontWeight="Bold" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Grid.Column="5" Text="➔" FontSize="20" Foreground="#21A1F7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <Border Grid.Column="6" Background="#EFF6FF" CornerRadius="8" Padding="14" ToolTip="The massive volume of individual asset files, videos, vectors, and documents contained within all projects.">
+                        <StackPanel>
+                            <TextBlock Text="FILES &amp; ASSETS" Foreground="#64748B" FontWeight="Bold" FontSize="10"/>
+                            <TextBlock x:Name="FlowFileCount" Text="0" Foreground="#043388" FontSize="20" FontWeight="Bold" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+            <!-- Workspace Path Source -->
+            <GroupBox Header="Workspace Storage Root">
+                <StackPanel Margin="8">
+                    <TextBlock x:Name="TxtWorkspacePath" Text="D:\Testing" Foreground="#043388" FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock x:Name="TxtStatus" Text="Connected to local workspace storage." Foreground="#64748B" FontSize="11" Margin="0,4,0,0"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
