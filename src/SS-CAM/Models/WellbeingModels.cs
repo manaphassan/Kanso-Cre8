@@ -100,4 +100,12 @@ namespace SS_CAM.Models
             MindDropRetention = "EndOfDay";
         }
     }
+
+    public class WellbeingCheckIn
+    {
+        public DateTime Timestamp { get; set; }
+        public int EnergyLevel { get; set; }
+        public int MoodLevel { get; set; }
+        public int PressureLevel { get; set; }
+    }
 }

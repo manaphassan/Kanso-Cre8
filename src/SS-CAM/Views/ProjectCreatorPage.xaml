@@ -4,49 +4,139 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Project Creator">
 
-    <Grid Margin="12">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Create New Project" Style="{StaticResource BrandTitleStyle}" FontSize="28" Margin="0,0,0,16"/>
-
-        <ScrollViewer Grid.Row="1">
-            <StackPanel>
-                <ui:CardControl Header="Project Details" Icon="{ui:SymbolIcon Edit24}" Margin="0,0,0,16">
-                    <StackPanel>
-                        <TextBlock Text="Sub-Brand" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CmbSubBrand" SelectedIndex="0" Margin="0,0,0,12">
-                            <ComboBoxItem Content="SSH - SuamiSihat Holding" />
-                            <ComboBoxItem Content="SSC - SuamiSihat Healthcare" />
-                            <ComboBoxItem Content="SSW - SuamiSihat Wellness" />
-                            <ComboBoxItem Content="SSE - SuamiSihat Ecom" />
-                            <ComboBoxItem Content="SST - SuamiSihat Tech" />
-                        </ComboBox>
-
-                        <TextBlock Text="Project Name" Margin="0,0,0,4"/>
-                        <ui:TextBox x:Name="TxtProjectName" PlaceholderText="e.g. Q3 Marketing Campaign" Margin="0,0,0,12"/>
-
-                        <TextBlock Text="Job Number (Optional)" Margin="0,0,0,4"/>
-                        <ui:TextBox x:Name="TxtJobNumber" PlaceholderText="e.g. 1024" Margin="0,0,0,12"/>
-                    </StackPanel>
-                </ui:CardControl>
-
-                <ui:CardControl Header="Template Settings" Icon="{ui:SymbolIcon Folder24}" Margin="0,0,0,16">
-                    <StackPanel>
-                        <TextBlock Text="Preset Template" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CmbPreset" SelectedIndex="0" Margin="0,0,0,12">
-                            <ComboBoxItem Content="Social Media Campaign" />
-                            <ComboBoxItem Content="Video Production" />
-                            <ComboBoxItem Content="Brand Identity" />
-                            <ComboBoxItem Content="Standard Artwork" />
-                        </ComboBox>
-                    </StackPanel>
-                </ui:CardControl>
-
-                <ui:Button x:Name="BtnGenerate" Appearance="Primary" Content="Generate Project Folders" Icon="{ui:SymbolIcon Sparkle24}" HorizontalAlignment="Right" />
-                <TextBlock x:Name="TxtResult" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,8,0,0" HorizontalAlignment="Right" Visibility="Collapsed" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header -->
+            <StackPanel Margin="0,0,0,20">
+                <TextBlock Text="Standardized Project Creator" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
+                <TextBlock Text="Generate structured SuamiSihat project folders, starter canvas templates, briefs, and Job IDs." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.3*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Form Controls -->
+                <StackPanel Grid.Column="0">
+                    <!-- Project Identity Group -->
+                    <GroupBox Header="01. Project Identity &amp; Job ID" Margin="0,0,0,16">
+                        <StackPanel Margin="8">
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Year -->
+                                <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                    <TextBlock Text="Year" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="YearComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                                <!-- Sub-brand -->
+                                <StackPanel Grid.Column="1" Margin="3,0,3,0">
+                                    <TextBlock Text="Sub-Brand" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="SubBrandComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                                <!-- Job ID Suffix Code -->
+                                <StackPanel Grid.Column="2" Margin="6,0,0,0">
+                                    <TextBlock Text="Job ID Suffix" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ui:TextBox x:Name="JobIdInput" Text="0001D" Height="36" TextChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel Margin="0,0,0,12">
+                                <TextBlock Text="Project Title / Descriptor" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="ProjectNameInput" Text="brand campaign" Height="36" TextChanged="OnFormInputChanged"/>
+                            </StackPanel>
+
+                            <StackPanel>
+                                <TextBlock Text="Project Brief / Remarks" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <ui:TextBox x:Name="ProjectDescriptionInput" PlaceholderText="Enter optional project scope, requirements, or client notes..." AcceptsReturn="True" Height="60"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Template & Platform Configuration -->
+                    <GroupBox Header="02. Preset &amp; Starter Canvas Template" Margin="0,0,0,16">
+                        <StackPanel Margin="8">
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Category Preset -->
+                                <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                    <TextBlock Text="Category Preset" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="PresetComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                                <!-- Target Platform -->
+                                <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                    <TextBlock Text="Target Platform" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="PlatformComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Target Platform Specifications Info Card -->
+                            <Border Background="#EFF6FF" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📐 Platform Specs: " FontWeight="Bold" Foreground="#043388" FontSize="11"/>
+                                    <TextBlock x:Name="PlatformSpecsText" Text="1080 x 1080 px · 72 DPI · sRGB Color Mode" Foreground="#1E293B" FontSize="11" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="Master Canvas Extension" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="TemplateExtensionComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                </StackPanel>
+                                <CheckBox x:Name="InjectCanvasCheck" Grid.Column="1" Content="Inject Starter Canvas" IsChecked="True" VerticalAlignment="Bottom" Margin="0,0,0,8" Click="OnFormInputChanged"/>
+                            </Grid>
+
+                            <WrapPanel Margin="0,4,0,0">
+                                <CheckBox x:Name="IncludeRevisionsCheck" Content="Include 'Client Revisions' Folder" IsChecked="True" Margin="0,0,16,0" Click="OnFormInputChanged"/>
+                                <CheckBox x:Name="IncludeRawMediaCheck" Content="Include 'RAW Media' Folder" IsChecked="True" Click="OnFormInputChanged"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Submit Actions -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Button Content="Copy Folder Name" Click="OnCopyFolderNameClicked" Background="#E2E8F0" Foreground="#1E293B" Height="40" Padding="14,0" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                        <Button Content="🚀 Create Project Folders" Click="OnCreateProjectClicked" Background="#043388" Foreground="White" Height="40" Padding="18,0" FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="CreateStatusText" Text="" Foreground="#10B981" FontSize="13" FontWeight="Bold" Margin="0,10,0,0" HorizontalAlignment="Right"/>
+                </StackPanel>
+
+                <!-- Right Column: Real-time Live Preview & Recent Projects -->
+                <StackPanel Grid.Column="2">
+                    <!-- Real-time Live Preview -->
+                    <GroupBox Header="Live Directory Structure Preview" Margin="0,0,0,16">
+                        <StackPanel Margin="8">
+                            <TextBlock Text="Target Folder Path:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="PreviewPathText" Text="D:\Testing\Brand\202608_0001D_SS_brand campaign" Foreground="#043388" FontWeight="Bold" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" FontFamily="Consolas"/>
+
+                            <TextBlock Text="Directory Tree Structure:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                            <TextBox x:Name="FolderStructureBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Height="190" FontFamily="Consolas" FontSize="12" Background="#F8FAFC" BorderBrush="#CBD5E1" Padding="10"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Recent Projects Quick Launcher -->
+                    <GroupBox Header="Recent Projects Launcher">
+                        <DockPanel Margin="8" LastChildFill="True">
+                            <TextBlock Text="Double-click any recent project to open in File Explorer:" DockPanel.Dock="Top" FontSize="11" Foreground="#64748B" Margin="0,0,0,8"/>
+                            <ListBox x:Name="RecentProjectsList" Height="140" MouseDoubleClick="OnRecentProjectDoubleClicked"/>
+                        </DockPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

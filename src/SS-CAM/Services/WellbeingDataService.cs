@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using SS_CAM.Models;
-using System.Linq;
 
 namespace SS_CAM.Services
 {
+    public class WellbeingDayMetrics
+    {
+        public int TotalFocusMinutes { get; set; }
+        public int CompletedSessions { get; set; }
+        public int MindDropCount { get; set; }
+    }
+
     public class WellbeingDataService
     {
         private readonly string _dataPath;
@@ -43,7 +50,6 @@ namespace SS_CAM.Services
             }
             catch
             {
-                // Log decryption failure, return empty
                 return string.Empty;
             }
         }
@@ -68,11 +74,10 @@ namespace SS_CAM.Services
                 if (data.MindDrops == null) data.MindDrops = new List<MindDrop>();
                 if (data.Preferences == null) data.Preferences = new WellbeingPreferences();
 
-                // Expiry/Purge Logic for MindDrops
                 var todayStr = DateTime.Now.ToString("yyyy-MM-dd");
-                var retainedDrops = data.MindDrops.Where(drop => 
+                var retainedDrops = data.MindDrops.Where(drop =>
                 {
-                    if (drop.RetentionMode == "Session") return false; // Purged
+                    if (drop.RetentionMode == "Session") return false;
                     if (drop.RetentionMode == "EndOfDay")
                     {
                         DateTime dropDate;
@@ -90,7 +95,7 @@ namespace SS_CAM.Services
             }
             catch
             {
-                return new WellbeingData(); // Fallback on corruption
+                return new WellbeingData();
             }
         }
 
@@ -98,6 +103,71 @@ namespace SS_CAM.Services
         {
             var json = JsonConvert.SerializeObject(data, Formatting.Indented);
             File.WriteAllText(_dataPath, json, Encoding.UTF8);
+        }
+
+        public void SaveMindDrop(string plainText, string retentionMode)
+        {
+            WellbeingData data = GetWellbeingData();
+            data.MindDrops.Add(new MindDrop
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                CreatedAt = DateTime.Now.ToString("o"),
+                ContentBase64 = ProtectText(plainText),
+                RetentionMode = retentionMode
+            });
+            SaveWellbeingData(data);
+        }
+
+        public void SaveCheckIn(WellbeingCheckIn checkin)
+        {
+            WellbeingData data = GetWellbeingData();
+            data.CheckIns.Add(new CheckIn
+            {
+                Timestamp = checkin.Timestamp.ToString("o"),
+                EnergyScore = checkin.EnergyLevel,
+                MoodScore = checkin.MoodLevel,
+                PressureScore = checkin.PressureLevel
+            });
+            SaveWellbeingData(data);
+        }
+
+        public WellbeingDayMetrics GetMetricsForDay(DateTime day)
+        {
+            WellbeingData data = GetWellbeingData();
+            string targetDateStr = day.ToString("yyyy-MM-dd");
+
+            int totalMinutes = 0;
+            int completed = 0;
+            foreach (var session in data.FocusSessions)
+            {
+                DateTime st;
+                if (DateTime.TryParse(session.StartTime, out st) && st.ToString("yyyy-MM-dd") == targetDateStr)
+                {
+                    if (session.Completed)
+                    {
+                        completed++;
+                        int mins = session.DurationMinutes > 0 ? session.DurationMinutes : (session.ActualSeconds / 60);
+                        totalMinutes += Math.Max(1, mins);
+                    }
+                    else if (session.ActualSeconds >= 30)
+                    {
+                        totalMinutes += Math.Max(1, session.ActualSeconds / 60);
+                    }
+                }
+            }
+
+            int dropsCount = data.MindDrops.Count(d =>
+            {
+                DateTime dt;
+                return DateTime.TryParse(d.CreatedAt, out dt) && dt.ToString("yyyy-MM-dd") == targetDateStr;
+            });
+
+            return new WellbeingDayMetrics
+            {
+                TotalFocusMinutes = totalMinutes,
+                CompletedSessions = completed,
+                MindDropCount = dropsCount
+            };
         }
     }
 }

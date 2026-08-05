@@ -23,9 +23,15 @@ namespace SS_CAM.Services
 
         private readonly Stopwatch _stopwatch;
         private readonly WellbeingDataService _dataService;
-
-        // Idle auto-pause threshold (3 minutes of no input)
         private const int IdleAutoPauseThresholdSeconds = 180;
+
+        private static readonly Lazy<WellbeingTimerService> _shared =
+            new Lazy<WellbeingTimerService>(() => new WellbeingTimerService(new WellbeingDataService()));
+
+        public static WellbeingTimerService SharedInstance
+        {
+            get { return _shared.Value; }
+        }
 
         public WellbeingTimerService(WellbeingDataService dataService)
         {
@@ -147,15 +153,28 @@ namespace SS_CAM.Services
             return null;
         }
 
+        public int GetLiveElapsedSeconds()
+        {
+            int elapsed = ElapsedSeconds;
+            if (State == TimerState.Running && _stopwatch.IsRunning)
+            {
+                elapsed += (int)_stopwatch.Elapsed.TotalSeconds;
+            }
+            return elapsed;
+        }
+
+        public int GetLiveRemainingSeconds()
+        {
+            if (State == TimerState.Ready) return PlannedDurationSeconds;
+            int remaining = PlannedDurationSeconds - GetLiveElapsedSeconds();
+            return remaining < 0 ? 0 : remaining;
+        }
+
         /// <summary>Returns remaining time as "MM:SS" string for UI display.</summary>
         public string GetFormattedRemaining()
         {
             if (State == TimerState.Ready) return string.Empty;
-            int elapsed = ElapsedSeconds;
-            if (State == TimerState.Running)
-                elapsed += (int)_stopwatch.Elapsed.TotalSeconds;
-            int remaining = PlannedDurationSeconds - elapsed;
-            if (remaining < 0) remaining = 0;
+            int remaining = GetLiveRemainingSeconds();
             int m = remaining / 60;
             int s = remaining % 60;
             return string.Format("{0}:{1:D2}", m, s);
