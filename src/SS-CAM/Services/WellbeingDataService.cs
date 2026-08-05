@@ -61,6 +61,12 @@ namespace SS_CAM.Services
                 var json = File.ReadAllText(_dataPath, Encoding.UTF8);
                 var data = JsonConvert.DeserializeObject<WellbeingData>(json) ?? new WellbeingData();
 
+                if (data.FocusSessions == null) data.FocusSessions = new List<FocusSession>();
+                if (data.CheckIns == null) data.CheckIns = new List<CheckIn>();
+                if (data.ResetSessions == null) data.ResetSessions = new List<ResetSession>();
+                if (data.MindDrops == null) data.MindDrops = new List<MindDrop>();
+                if (data.Preferences == null) data.Preferences = new WellbeingPreferences();
+
                 // Expiry/Purge Logic for MindDrops
                 var todayStr = DateTime.Now.ToString("yyyy-MM-dd");
                 var retainedDrops = data.MindDrops.Where(drop => 
