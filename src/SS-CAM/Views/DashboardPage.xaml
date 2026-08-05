@@ -1,0 +1,53 @@
+<Page x:Class="SS_CAM.Views.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Dashboard">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Workspace Dashboard" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+                <!-- Overview Cards -->
+                <UniformGrid Columns="3">
+                    <ui:Card Margin="0,0,12,0">
+                        <StackPanel>
+                            <ui:SymbolIcon Symbol="Folder24" FontSize="32" Margin="0,0,0,8"/>
+                            <TextBlock Text="Total Projects" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="142" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Margin="0,0,12,0">
+                        <StackPanel>
+                            <ui:SymbolIcon Symbol="Heart24" FontSize="32" Margin="0,0,0,8"/>
+                            <TextBlock Text="Wellbeing Check-ins" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="28" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card>
+                        <StackPanel>
+                            <ui:SymbolIcon Symbol="Storage24" FontSize="32" Margin="0,0,0,8"/>
+                            <TextBlock Text="Storage Used" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="42.5 GB" FontSize="24" FontWeight="Bold"/>
+                        </StackPanel>
+                    </ui:Card>
+                </UniformGrid>
+
+                <!-- Action Area -->
+                <ui:CardControl Icon="{ui:SymbolIcon Add24}" Header="Create New Project" Margin="0,16,0,0">
+                    <ui:Button Appearance="Primary" Content="Start Project Creator" Icon="{ui:SymbolIcon Play24}" />
+                </ui:CardControl>
+                
+                <ui:CardControl Icon="{ui:SymbolIcon Search24}" Header="Search &amp; Copy Assets" Margin="0,16,0,0">
+                    <ui:Button Content="Open Browser" Icon="{ui:SymbolIcon Open24}" />
+                </ui:CardControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

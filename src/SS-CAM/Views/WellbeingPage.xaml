@@ -1,0 +1,44 @@
+<Page x:Class="SS_CAM.Views.WellbeingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Creative Wellbeing">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Creative Wellbeing" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+                
+                <ui:CardControl Icon="{ui:SymbolIcon Timer24}" Header="Focus Session" Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Appearance="Primary" Content="Start Focus (25m)" Icon="{ui:SymbolIcon Play24}" Margin="0,0,8,0" Click="BtnStartFocus_Click" />
+                        <ui:Button Content="Take a Break (5m)" Icon="{ui:SymbolIcon Pause24}" Click="BtnTakeBreak_Click" />
+                    </StackPanel>
+                </ui:CardControl>
+
+                <ui:CardControl Icon="{ui:SymbolIcon HeartPulse24}" Header="Energy Check-in" Margin="0,0,0,16">
+                    <ui:Button Content="Log Energy Level" Icon="{ui:SymbolIcon Edit24}" Click="BtnLogEnergy_Click" />
+                </ui:CardControl>
+
+                <ui:CardControl Icon="{ui:SymbolIcon TextQuote24}" Header="Mind Drops" Margin="0,0,0,16">
+                    <ui:Button Content="Write Mind Drop" Icon="{ui:SymbolIcon DocumentEdit24}" Click="BtnMindDrop_Click" />
+                </ui:CardControl>
+                
+                <ui:Card>
+                    <StackPanel>
+                        <TextBlock Text="Today's Metrics" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <TextBlock Text="Focus Time: 0h 0m" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="Breaks Taken: 0" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="Average Energy: -" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </ui:Card>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
