@@ -2,7 +2,25 @@
 
 All notable SS-CAM changes are documented here.
 
-## [1.9.10] - 2026-08-04
+## [2.0.7] - 2026-08-05 (Latest Stable Release)
+
+### Added
+- **Native C# WPF Release Architecture**: Replaced legacy PowerShell bootstrapper packaging with a single-file compiled executable using Fody/Costura assembly embedding.
+- **Designer Intelligence Dashboard Enhancements**:
+  - **Interactive ToolTips**: Added hover tooltips across all metric cards and the Workspace Synology Flow diagram.
+  - **Largest Project Widget**: Tracks and displays the largest project folder on disk by physical size.
+  - **Stale Projects Widget**: Identifies and flags idle projects modified over 90 days ago.
+  - **Storage Usage by Sub-Brand**: Added a visual chart breakdown for physical storage consumption per sub-brand.
+- **Auto Job ID Calculation**: Automatically scans existing workspace folders to determine and pre-fill the next incremental Job ID sequence starting from `0001`.
+- **Synchronized 16-Second Box Breathing**: Updated breathing animation and phase color transitions (Inhale, Hold, Exhale, Hold) synchronized with real-time breathing guidance.
+
+### Integrity
+
+| File | SHA-256 |
+|---|---|
+| `SS-CAM-v2.0.7.exe` | Compiled Native WPF Single-File Executable |
+
+## [1.9.10] - 2026-08-04 (Stable Release)
 
 ### Added
 - **Creative Wellbeing Module** – A completely local, private companion for designers to help maintain healthy work habits.
@@ -21,7 +39,7 @@ All notable SS-CAM changes are documented here.
 |---|---|
 | `SS-CAM-v1.9.10.exe` | `D0595B94F0228C412D671B03BCAC68B9C743EC3E5CA31A4E8B5BAD330B784AAC` |
 
-## [1.9.9] - 2026-08-04
+## [1.9.9] - 2026-08-04 (Pre-release)
 
 ### Fixed
 - **App Icon** — Fixed an issue where the application icon was displaying as the default PowerShell logo by generating and embedding a proper `.ico` asset containing the SuamiSihat brand logo.
@@ -32,7 +50,7 @@ All notable SS-CAM changes are documented here.
 |---|---|
 | `SS-CAM-v1.9.9.exe` | `FC7D2BDF2BD953AC57672B101388C404535A691BDE802F0E7559EB6679E4E788` |
 
-## [1.9.8] - 2026-08-04
+## [1.9.8] - 2026-08-04 (Pre-release)
 
 ### Added
 - **Collapsible sidebar** — Added a hamburger menu button in the header (top left) that allows the sidebar to be collapsed/expanded to maximize workspace area.
@@ -142,7 +160,7 @@ All notable SS-CAM changes are documented here.
 |---|---|
 | `SS-CAM-v1.9.3.exe` | `39035C252CA31D694EDBD92FC980B9BBB2362E7D58526B70CCD156C33898B565` |
 
-## [1.9.2] - 2026-08-03
+## [1.9.2] - 2026-08-03 (Stable Release)
 
 ### Added
 

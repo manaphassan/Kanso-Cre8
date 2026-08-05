@@ -42,6 +42,12 @@ SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard t
 
 Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
 
+---
+
+## Workstation Requirements
+
+Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
+
 | Component | Minimum Specification | Recommended Specification |
 | --- | --- | --- |
 | **Operating System** | Windows 10 (64-bit) | Windows 11 (64-bit) |
@@ -49,9 +55,21 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 | **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
 | **Graphics Hardware** | DirectX 11 compatible adapter | DirectX 12 GPU with 4 GB VRAM |
 | **Storage** | 5 GB available space | NVMe SSD with 100 GB available space |
-| **Display** | 1280 Ã— 720 resolution | 1920 Ã— 1080 IPS display or higher |
+| **Display** | 1280 × 720 resolution | 1920 × 1080 IPS display or higher |
 
 *Note: Minimum specifications allow software installation, but recommended hardware is advised for optimal performance with high-resolution assets.*
+
+---
+
+## Release Status & Lifecycle
+
+| Release Version | Release Status | Target Framework & Highlights |
+| --- | --- | --- |
+| **`v2.0.7`** | **Latest Stable Release** | Native C# WPF single-file executable. Designer Intelligence Dashboard with interactive ToolTips, Largest Project size detector, Stale Projects finder, Sub-brand Storage distribution chart, 16s Box Breathing loop, and auto Job ID calculation. |
+| **`v1.9.10`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Creative Wellbeing module with DPAPI encrypted Mind Drops and monotonic Focus Timer. |
+| **`v1.9.2`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Search & Copy workspace file browser, rendered README preview, and conditional Brand Kit integration module. |
+| **`v1.9.3` - `v1.9.9`** | **Pre-release** | Intermediate developmental preview builds. |
+| **`v2.0.0` - `v2.0.6`** | **Pre-release** | Intermediate C# WPF architectural refactoring builds. |
 
 ---
 
@@ -59,7 +77,7 @@ Review the workstation hardware requirements prior to deployment. Recommended sp
 
 ### Step 1: Download Release Package
 
-Obtain the latest compiled installer (`SS-CAM-v1.9.10.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain the latest compiled installer (`SS-CAM-v2.0.7.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2: Execute Deployment Utility
 
