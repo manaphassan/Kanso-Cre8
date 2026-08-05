@@ -1,147 +1,362 @@
-﻿# Contributing & Developer Guide
+# Contributing & Developer Guide
 
-This document covers technical information for developers and maintainers of the **SuamiSihat Designer Assets Installer**. For the end-user setup guide, see [README.md](./README.md).
+Technical reference for maintainers and contributors of **SS-CAM — SuamiSihat Creative Assets Management**. For the end-user deployment guide, refer to [README.md](./README.md).
 
 ---
 
-## Repository structure
+## Table of Contents
 
-```text
+1. [Project Architecture](#1-project-architecture)
+2. [Repository Structure](#2-repository-structure)
+3. [Development Prerequisites](#3-development-prerequisites)
+4. [Building the Application](#4-building-the-application)
+5. [Running in Development Mode](#5-running-in-development-mode)
+6. [Testing & Verification](#6-testing--verification)
+7. [Branch & Release Workflow](#7-branch--release-workflow)
+8. [Release Lifecycle & Versioning](#8-release-lifecycle--versioning)
+9. [Code Standards & Security](#9-code-standards--security)
+10. [Branding & Design Tokens](#10-branding--design-tokens)
+11. [Extending the Payload](#11-extending-the-payload)
+
+---
+
+## 1. Project Architecture
+
+SS-CAM v2.0+ is a **native C# WPF application** targeting .NET Framework 4.8, distributed as a single self-contained executable. All dependencies are embedded at compile time using **Fody/Costura** assembly weaving.
+
+```
+Application Stack
+─────────────────────────────────────────────────────
+UI Layer          WPF + WPF-UI (Fluent Design System)
+Business Logic    C# .NET Framework 4.8
+Data Storage      JSON (AppData/Local) + DPAPI encryption
+Build Pipeline    MSBuild + Fody/Costura (single-file EXE)
+Dependency Mgmt   NuGet (packages.config)
+```
+
+### Application Modules
+
+| Module | Namespace | Description |
+| --- | --- | --- |
+| **Dashboard** | `SS_CAM.Views.DashboardPage` | Workspace intelligence metrics, storage analytics, and sub-brand charts |
+| **Project Creator** | `SS_CAM.Views.ProjectCreatorPage` | Standardized folder generator with auto Job ID and live preview |
+| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Workspace file browser with rendered README preview |
+| **Creative Wellbeing** | `SS_CAM.Views.WellbeingPage` | Focus timer, breathing guides, energy check-ins, DPAPI encrypted Mind Drops |
+| **Brand Assets** | `SS_CAM.Views.BrandAssetsPage` | Asset library, logo, palette, and report launcher |
+| **Settings** | `SS_CAM.Views.SettingsPage` | Designer identity, workspace config, update checker |
+| **Workstation Health** | `SS_CAM.Views.WorkstationHealthPage` | Font repair, NAS diagnostics |
+
+### Core Services
+
+| Service | Description |
+| --- | --- |
+| `WorkspaceScanner` | Scans workspace directories, aggregates metrics, builds chart datasets |
+| `UserProfileService` | Loads and persists designer identity, workspace root, avatar |
+| `AudioFeedbackService` | Plays ambient/interaction audio via MediaElement |
+| `WellbeingTimerService` | Monotonic focus session tracking with idle detection |
+| `WellbeingDataService` | DPAPI-encrypted Mind Drop storage and energy check-in persistence |
+| `PayloadInstallerService` | Deploys fonts and brand assets to the Windows user profile |
+
+---
+
+## 2. Repository Structure
+
+```
 SS-Brand-Assets/
-â”œâ”€â”€ installer/
-â”‚   â”œâ”€â”€ src/                  PowerShell setup engine and GUI wizard
-â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat-WPF.ps1  Active WPF application and setup wizard
-â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat-GUI.ps1  Legacy WinForms rollback implementation
-â”‚   â”‚   â”œâ”€â”€ Install-SuamiSihat.ps1
-â”‚   â”‚   â””â”€â”€ Installer.Common.ps1
-â”‚   â”œâ”€â”€ bootstrapper/
-â”‚   â”‚   â””â”€â”€ Program.cs        C# EXE entry point (extracts payload, launches wizard)
-â”‚   â”œâ”€â”€ assets/               Installer branding images
-â”‚   â”œâ”€â”€ EULA.txt
-â”‚   â”œâ”€â”€ Setup.cmd             Run the unpackaged wizard (development mode)
-â”‚   â”œâ”€â”€ Build-Installer.cmd   Double-click build shortcut
-â”‚   â””â”€â”€ Build-Installer.ps1   Versioned build script
-â”œâ”€â”€ payload/
-â”‚   â”œâ”€â”€ Fonts/                Installable desktop fonts and licences
-â”‚   â””â”€â”€ Brand Assets/
-â”‚       â”œâ”€â”€ Logos/
-â”‚       â”œâ”€â”€ Libraries/        .afassets and .cclibs files
-â”‚       â””â”€â”€ Colour Palettes/  .afpalette and .ase files
-â”œâ”€â”€ docs/                     Installer UI preview screenshots
-â”œâ”€â”€ dist/                     Generated EXE output â€” not committed (see .gitignore)
-â””â”€â”€ .gitignore
+├── src/
+│   └── SS-CAM/                        C# WPF application source
+│       ├── Models/                    Data models (Dashboard, UserProfile, Wellbeing)
+│       ├── Services/                  Business logic and data access services
+│       ├── Views/                     XAML pages and code-behind
+│       ├── Properties/                Assembly metadata (version, GUID)
+│       ├── packages/                  NuGet restored dependencies
+│       ├── SS-CAM.csproj              MSBuild project file
+│       └── app.ico                    Application icon
+├── installer/
+│   ├── src/                           Legacy PowerShell setup scripts (v1.x)
+│   ├── bootstrapper/                  Legacy C# EXE bootstrapper (v1.x)
+│   ├── assets/                        Installer branding images
+│   ├── EULA.txt                       End User Licence Agreement
+│   └── Build-Installer.ps1            Versioned build script (supports v1.x and v2.x+)
+├── payload/
+│   ├── Fonts/                         Installable desktop typefaces and licences
+│   ├── Audio/                         Ambient and interaction sound effects
+│   └── Brand Assets/
+│       ├── Logos/                     SVG and PNG logo variants per sub-brand
+│       ├── Libraries/                 .afassets and .cclibs files
+│       └── Colour Palettes/           .afpalette and .ase swatch files
+├── tests/                             PowerShell smoke and integration tests
+├── docs/                              Application screenshot assets
+├── dist/                              Build output — not committed (see .gitignore)
+├── CHANGELOG.md                       Release history with integrity hashes
+├── CONTRIBUTING.md                    This document
+├── FOLDER-STRUCTURE.md                Workspace folder naming convention
+└── README.md                          End-user deployment and setup guide
 ```
 
 ---
 
-## Running the wizard without building
+## 3. Development Prerequisites
 
-For quick testing during development, double-click `installer\Setup.cmd`.
+| Requirement | Minimum Version | Notes |
+| --- | --- | --- |
+| **Windows** | 10 (64-bit) | WPF requires Windows |
+| **.NET Framework** | 4.8 | Pre-installed on Windows 10 1903+ |
+| **Visual Studio** | 2019 or later | Community edition is sufficient |
+| **MSBuild** | 4.0 (bundled with .NET Framework) | Located at `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe` |
+| **NuGet** | Any | `src/nuget.exe` is committed for offline restore |
+| **PowerShell** | 5.1+ | Required to run `Build-Installer.ps1` and test scripts |
+| **Git** | Any | For version control and tagging |
+| **GitHub CLI (`gh`)** | Any | For publishing GitHub releases with assets |
 
-This launches the PowerShell GUI wizard directly from the repository without compiling an EXE.
+> **NuGet Restore**: Before building for the first time, restore packages by opening the solution in Visual Studio (it restores automatically), or run:
+> ```powershell
+> .\src\nuget.exe restore .\src\SS-CAM\SS-CAM.csproj -PackagesDirectory .\src\SS-CAM\packages
+> ```
 
 ---
 
-## Building the installer EXE
+## 4. Building the Application
 
-The build uses the .NET Framework C# compiler (`csc.exe`) included with Windows. No external toolchain is required.
+The build system uses MSBuild with a PowerShell wrapper. Two build paths exist depending on the version target.
 
-**Quick build** (uses default version `1.9.10`) â€” double-click `installer\Build-Installer.cmd`
+### v2.0+ Native WPF Build (Current)
 
-**Versioned build:**
+```powershell
+# Build with default version (2.0.7)
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1
+
+# Build with explicit version
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.0.8
+```
+
+**Build output:**
+
+```
+dist\SS-CAM-v2.0.7.exe   (~4.6 MB, single-file, all dependencies embedded)
+```
+
+### Legacy v1.x Bootstrapper Build
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.10
 ```
 
-**Output:**
+**Build output:**
 
-```text
-dist\SS-CAM-v1.9.10.exe   (~48 MB)
+```
+dist\SS-CAM-v1.9.10.exe   (~48 MB, PowerShell wizard + payload ZIP)
 ```
 
-### How the EXE works
+### How the v2.0+ Build Works
 
-1. `Build-Installer.ps1` compresses the full `payload/` folder and wizard scripts into a ZIP at `Optimal` compression level.
-2. The C# bootstrapper (`Program.cs`) is compiled as a `winexe` target with the ZIP embedded as a managed resource (`SuamiSihat.Payload.Zip`).
-3. At runtime, the EXE extracts to `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>`, launches `Install-SuamiSihat-WPF.ps1` via `powershell.exe -WindowStyle Hidden`, and purges the temporary directory in a `finally` block after the wizard exits.
-
-### Smoke test
-
-```powershell
-.\dist\SS-CAM-v1.9.10.exe --smoke-test
-```
-
-Verifies extraction and wizard launch without showing the full UI.
+1. MSBuild compiles `SS-CAM.csproj` in `Release` configuration.
+2. **Fody/Costura** weaves all NuGet DLL dependencies (WPF-UI, Newtonsoft.Json, etc.) directly into the output EXE as compressed embedded resources.
+3. The build script copies `bin\Release\SS-CAM.exe` to `dist\SS-CAM-v{VERSION}.exe`.
+4. The result is a genuine single-file Windows executable — no runtime extraction required.
 
 ---
 
-## Git workflow and release
+## 5. Running in Development Mode
+
+Open `src\SS-CAM\SS-CAM.csproj` in **Visual Studio** and press **F5** (Debug) or **Ctrl+F5** (Start without debugging).
+
+The app reads user settings from `%LOCALAPPDATA%\SuamiSihat\SS-CAM\` and workspace configuration from the same location.
+
+To reset to a clean state during development, delete:
+
+```
+%LOCALAPPDATA%\SuamiSihat\SS-CAM\
+```
+
+---
+
+## 6. Testing & Verification
+
+All test scripts are located in `tests\`.
+
+### Smoke Test
+
+Validates that all WPF pages construct and render without errors:
 
 ```powershell
-# Stage all changes
-git add -A
+powershell -ExecutionPolicy Bypass -File .\tests\SmokeTest.ps1
+```
 
-# Commit
-git commit -m "feat(release): publish SS-CAM v1.9.10"
+Expected output: `[PASS] ALL SMOKE TESTS PASSED CLEANLY!`
 
-# Tag the release
-git tag -a v1.9.10 -m "SuamiSihat Creative Assets Management v1.9.10"
+### Targeted Tests
 
-# Push branch and tag
+| Script | Purpose |
+| --- | --- |
+| `SmokeTest.ps1` | Full WPF page construction and navigation validation |
+| `TestNasConnection.ps1` | Synology DDNS health check probe |
+| `TestAudioSounds.ps1` | Audio playback and MediaElement verification |
+| `TestNavigationTimerPersistence.ps1` | Focus timer cross-page state persistence |
+| `TestResetDefaults.ps1` | User profile and settings reset validation |
+| `WellbeingTimer.tests.ps1` | Monotonic timer logic and idle detection |
+| `WellbeingMindDrop.tests.ps1` | DPAPI encryption and Mind Drop storage |
+| `WellbeingFatigue.tests.ps1` | Fatigue rule engine logic |
+
+---
+
+## 7. Branch & Release Workflow
+
+### Branch Structure
+
+| Branch | Purpose |
+| --- | --- |
+| `SS-Master` | Production-stable code. All stable releases ship from here. |
+| `staging` | Integration testing before promotion to `SS-Master`. |
+| `feature/*` | Feature development branches, merged via pull request. |
+
+### Release Procedure
+
+```powershell
+# 1. Ensure all changes are on the feature branch and committed
+git checkout feature/my-feature
+git add .
+git commit -m "feat: describe the change"
+
+# 2. Merge into SS-Master
+git checkout SS-Master
+git merge feature/my-feature --no-ff -m "merge: feature/my-feature for vX.Y.Z"
+
+# 3. Build and verify
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version X.Y.Z
+powershell -ExecutionPolicy Bypass -File .\tests\SmokeTest.ps1
+
+# 4. Tag the release
+git tag -a vX.Y.Z -m "Release vX.Y.Z — <brief description>"
 git push origin SS-Master --tags
+
+# 5. Update staging
+git checkout staging
+git merge SS-Master
+git push origin staging
+
+# 6. Create the GitHub release with asset
+gh release create vX.Y.Z dist\SS-CAM-vX.Y.Z.exe `
+  --title "SS-CAM vX.Y.Z" `
+  --notes-file CHANGELOG_SECTION.md `
+  --latest
 ```
 
-After pushing, draft the GitHub release at:
-`https://github.com/SuamiSihat/ss_cam/releases/new`
+### Pre-release Tagging
 
-Attach `dist\SS-CAM-v<version>.exe` as the release asset.
+For intermediate builds, append the `--prerelease` flag:
 
-Release notes must summarize user-visible changes, compatibility behavior, verification performed, and the executable SHA-256 checksum. Update [CHANGELOG.md](./CHANGELOG.md), [README.md](./README.md), [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md), and `installer\EULA.txt` before tagging.
+```powershell
+gh release create vX.Y.Z dist\SS-CAM-vX.Y.Z.exe --prerelease --title "SS-CAM vX.Y.Z (Pre-release)"
+```
 
 ---
 
-## Security best practices
+## 8. Release Lifecycle & Versioning
 
-| Area | Guidance |
+SS-CAM uses **Semantic Versioning**: `MAJOR.MINOR.PATCH`
+
+| Component | Increment When |
 | --- | --- |
-| **Code signing** | Sign the compiled EXE with the organisation's EV/OV certificate using `signtool.exe` before wider distribution â€” eliminates Windows SmartScreen "Unknown Publisher" warnings |
-| **No embedded secrets** | Passwords, 2FA/OTPs, and API tokens must never appear in `.ps1` scripts, `Program.cs`, or the embedded ZIP payload |
-| **Execution policy scope** | The C# launcher uses `-ExecutionPolicy Bypass` scoped only to the extracted wizard path â€” no system-wide policy changes |
-| **Temporary files** | Payload extracts to `%TEMP%\SuamiSihatDesignerAssetsInstaller-<GUID>` and is purged in a `finally` block on exit |
-| **Font licensing** | Verify enterprise multi-seat licensing for commercial typefaces (FontAwesome Pro, Helvetica Neue, etc.) before distributing beyond the internal team |
-| **Binary exclusion** | `dist/` is listed in `.gitignore` â€” compiled EXEs are distributed via GitHub Releases, not committed to Git history |
+| **MAJOR** | Architectural overhaul (e.g., v1 PowerShell → v2 C# WPF) |
+| **MINOR** | New feature module or significant UI enhancement |
+| **PATCH** | Bug fix, text correction, or documentation update |
 
----
+### Current Release Matrix
 
-## Installer branding specifications
+| Version | Status | Notes |
+| --- | --- | --- |
+| `v2.0.7` | **Latest Stable** | Native C# WPF single-file executable |
+| `v1.9.10` | Stable | Legacy PowerShell bootstrapper |
+| `v1.9.2` | Stable | Legacy PowerShell bootstrapper |
+| `v1.9.3` – `v1.9.9` | Pre-release | Intermediate builds |
+| `v2.0.0` – `v2.0.6` | Pre-release | C# WPF refactoring builds |
 
-The installer window follows the official [SuamiSihat brand-assets guidance](https://suamisihat.com.my/brand-assets):
+Version strings must be updated consistently across:
 
-| Element | Value |
+| File | Field |
 | --- | --- |
-| Primary header background | SS Prussian Blue `#022057` |
-| Headings & primary actions | SS Blue `#043388` |
-| Supporting accent (1) | Azure `#21A1F7` |
-| Supporting accent (2) | Malibu `#6DC6EC` |
-| Header logo | Dark-background variant |
-| Welcome page logo | Light-background variant |
-
-Logos are used without recolouring, distortion, effects, or proportion changes.
+| `src\SS-CAM\Properties\AssemblyInfo.cs` | `AssemblyVersion`, `AssemblyFileVersion` |
+| `src\SS-CAM\MainWindow.xaml` | `Title`, header `TextBlock` |
+| `src\SS-CAM\MainWindow.xaml.cs` | `CurrentVersion` constant |
+| `src\SS-CAM\Views\AboutWindow.xaml` | Version badge and changelog header |
+| `src\SS-CAM\Views\SettingsPage.xaml.cs` | Update check fallback string |
+| `installer\Build-Installer.ps1` | Default `$Version` parameter |
+| `CHANGELOG.md` | New release section header |
+| `README.md` | Download link and release table |
 
 ---
 
-## Adding new fonts or assets to the payload
+## 9. Code Standards & Security
 
-1. Place font files under `payload\Fonts\` in the appropriate numbered sub-folder.
-2. Place design library files under `payload\Brand Assets\Libraries\`.
-3. Place colour palette files under `payload\Brand Assets\Colour Palettes\`.
-4. Rebuild the EXE using `Build-Installer.ps1` with an incremented version number.
-5. Update the font table in [README.md](./README.md) if new typefaces are added.
+### C# / WPF Guidelines
 
+- Follow the existing MVVM-lite pattern: page code-behind acts as the view-model controller.
+- Do not introduce new NuGet dependencies without team discussion.
+- Dispose `DispatcherTimer` instances on `Window.Closed` or page unload.
+- Use `try { } catch { }` defensively for all file system operations (workspace may be a NAS path with intermittent connectivity).
 
+### Security Practices
 
+| Area | Requirement |
+| --- | --- |
+| **Secrets** | No passwords, tokens, or credentials in source code, scripts, or the embedded payload |
+| **DPAPI** | Mind Drop notes are encrypted with `ProtectedData.Protect` (CurrentUser scope) — never stored as plain text |
+| **Execution Policy** | `Build-Installer.ps1` uses `-ExecutionPolicy Bypass` scoped to the build session only |
+| **Font Licensing** | Verify multi-seat licensing for commercial typefaces before distributing outside the internal team |
+| **Binary Exclusion** | `dist/` is `.gitignore`d — compiled EXEs are distributed via GitHub Releases only |
+| **Code Signing** | Sign release EXEs with the organisation OV certificate via `signtool.exe` to suppress Windows SmartScreen |
 
+---
 
+## 10. Branding & Design Tokens
 
+All UI elements must conform to the SuamiSihat official brand palette.
 
+### Colour System
+
+| Token | Hex | Usage |
+| --- | --- | --- |
+| **SS Prussian Blue** | `#022057` | App header background, dark surfaces |
+| **SS Blue** | `#043388` | Primary headings, interactive elements, key metrics |
+| **Azure** | `#21A1F7` | Supporting accent, badges, chart highlights |
+| **Malibu** | `#6DC6EC` | Secondary accent, logo mark tones |
+| **Emerald** | `#10B981` | Positive states (growth, active, online) |
+| **Amber** | `#F59E0B` | Warning states, exhale phase, storage highlights |
+| **Crimson** | `#EF4444` | Error states, stale/offline indicators |
+| **Slate 500** | `#64748B` | Secondary text, metadata labels |
+| **Slate 200** | `#CBD5E1` | Border lines, dividers |
+
+### Logo Usage
+
+- Use the **dark-background variant** on the `#022057` header.
+- Use the **light-background variant** on white/light surfaces.
+- Do not recolour, distort, apply effects, or alter the logo proportions.
+
+---
+
+## 11. Extending the Payload
+
+### Adding Fonts
+
+1. Place font files in `payload\Fonts\` in the appropriate numbered sub-folder.
+2. Add a licence file alongside the fonts.
+3. Rebuild with `Build-Installer.ps1`.
+4. Update the typography table in [README.md](./README.md).
+
+### Adding Brand Assets
+
+1. Place logos in `payload\Brand Assets\Logos\`.
+2. Place design library files in `payload\Brand Assets\Libraries\`.
+3. Place colour palettes in `payload\Brand Assets\Colour Palettes\`.
+4. Rebuild the EXE with an incremented `PATCH` version.
+
+### Adding Audio
+
+1. Place `.mp3` and `.ogg` files in `payload\Audio\`.
+2. Reference the audio file path in `AudioFeedbackService.cs`.
+3. Test playback with `tests\TestAudioSounds.ps1`.
+
+---
+
+*For user-facing documentation, see [README.md](./README.md). For the full version history, see [CHANGELOG.md](./CHANGELOG.md).*

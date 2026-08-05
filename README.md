@@ -1,249 +1,273 @@
-# SuamiSihat Creative Assets Management
+<div align="center">
 
-Automated workstation setup utility, font installer, brand asset distributor, and standardized creative project folder generator for SuamiSihat design environments.
+# SS-CAM — SuamiSihat Creative Assets Management
+
+**The official creative workstation management suite for SuamiSihat design teams.**
+
+Standardized project folder generation · Brand asset deployment · Designer intelligence dashboard · Creative wellbeing tools
+
+[![Latest Release](https://img.shields.io/badge/release-v2.0.7-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
+[![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+[![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
+
+</div>
 
 ---
 
-## Technical Overview
+## Overview
 
-SuamiSihat Creative Assets Management (SS-CAM) provides a unified setup wizard to prepare Windows workstations for creative design work. The utility deploys official typography, brand assets, application libraries, and color palettes, while registering an integrated project creation management tool.
+SS-CAM is a native Windows desktop application built with C# WPF (.NET Framework 4.8). It provides SuamiSihat designers with a unified workstation management suite — from generating standardized project folders and deploying brand assets to tracking workspace storage and supporting healthy creative work habits.
 
-### Core Application Capabilities
+The application ships as a **true single-file executable** (~4.6 MB) with all dependencies embedded via Fody/Costura assembly weaving. No installer, no runtime prerequisites, no extraction on launch.
 
-| Feature Area | Specifications & Functions |
+---
+
+## Table of Contents
+
+1. [Core Capabilities](#core-capabilities)
+2. [Application Modules](#application-modules)
+3. [Workstation Requirements](#workstation-requirements)
+4. [Release Status](#release-status)
+5. [Installation](#installation)
+6. [First-Time Configuration](#first-time-configuration)
+7. [Creative Application Setup](#creative-application-setup)
+8. [Project Folder Convention](#project-folder-convention)
+9. [Typography Suite](#typography-suite)
+10. [Troubleshooting](#troubleshooting)
+11. [Governance & Licensing](#governance--licensing)
+
+---
+
+## Core Capabilities
+
+| Capability | Description |
 | --- | --- |
-| **Dashboard** | Workspace metrics, project-type and sub-brand charts, six-month activity, storage totals, and designer-to-project workflow overview |
-| **Project Creator** | Standardized folder generator with Year Selector, full Sub-Brand labels, suffix-format Job IDs (`0001D`, `0001S`), Clipboard integration, and Recent Projects quick-launcher |
-| **Template Injection** | Automated deployment of master guidelines and starter canvas templates with built-in and custom file extensions |
-| **Search & Copy** | Project-folder name search with designer filtering, rendered or raw `README.md` preview, project file browser, and controlled asset copying into active work orders |
-| **Creative Wellbeing** | Local-only designer companion for healthy work habits with focus timer, DPAPI-encrypted Mind Drops, energy check-ins, and a fatigue rule engine |
-| **Custom Folder Support** | Optional `Client Revisions` and `RAW Media` directories |
-| **Settings & Utility** | Workstation maintenance tools, font repair capabilities, custom workspace configuration, and job counter overrides |
-| **Typography Suite** | Core typefaces (Poppins, Calibri, Helvetica Neue, Montserrat) and extended utility typefaces |
-| **Brand Assets** | Conditional in-app module for installed colour palettes, design libraries, logos, official links, and rendered Markdown installation reports |
-| **Color Palettes** | Swatch definitions provided in `.afpalette` (Affinity) and `.ase` (Adobe Creative Cloud) formats |
-| **Design Libraries** | Pre-packaged asset libraries in `.afassets` (Affinity) and `.cclibs` (Adobe Creative Cloud) formats |
-| **System Shortcuts** | Pre-configured browser shortcuts to the SuamiSihat Service Dashboard, Internal Assets, and Public Brand Assets portals |
+| **Designer Intelligence Dashboard** | Live workspace metrics with storage analytics, project-type breakdown, sub-brand workload share, six-month output activity, largest project detector, stale project alerts, and interactive tooltips on every widget |
+| **Project Folder Generator** | Standardized folder creation following the `YYYYMM_NNNNX_BRAND_Name` naming convention, with auto-calculated Job IDs, preset-specific subfolder templates (Social, Video, Brand Identity, General), and live preview |
+| **Search & Copy** | Full-text project folder search, designer filtering, rendered README preview, project file browser, and controlled asset copying into active work orders |
+| **Creative Wellbeing** | DPAPI-encrypted Mind Drops, focus session timer with idle detection, energy and pressure check-ins, 16-second box breathing guide with phase-synchronized animations, and fatigue-aware break suggestions — all fully local, zero telemetry |
+| **Brand Assets** | In-app launcher for installed colour palettes, asset libraries, logo files, official links, and rendered Markdown workstation reports |
+| **Workspace Synology Flow** | Visual NAS hierarchy diagram showing the Synology Drive → Designers → Projects → Files chain with live counts |
+| **NAS Health Monitor** | Real-time Synology DDNS connectivity probe (`suamisihat.myds.me`) with 30-second background polling and click-to-recheck from the status bar |
+| **Notify & Auto-Update** | Version check against the NAS endpoint; yellow banner notification with one-click download when a newer build is available |
 
-### Application Modules
+---
+
+## Application Modules
 
 | Module | Purpose |
 | --- | --- |
-| **Dashboard** | Review workspace totals, storage use, recent activity, project types, sub-brands, and designer metrics |
-| **Project Management** | Create standardized project folders, briefs, master canvases, and optional production subfolders |
-| **Creative Wellbeing** | Track focus sessions, check energy levels, and securely store private thoughts to prevent creative burnout with zero telemetry |
-| **Search & Copy** | Search by project-folder name, filter by designer, switch `README.md` between rendered Preview and Raw Markdown, and copy selected files into a work order |
-| **Brand Assets** | Opens installed palettes, libraries, logos, links, and reports; shown only when Brand Kit installation is detected |
-| **User Profile** | Manage designer identity, workspace defaults, recent-project history, Job ID counter, repair, update, and uninstall actions |
+| **Dashboard** | Review workspace totals, storage usage, recent activity, project types, sub-brands, and designer metrics |
+| **Project Creator** | Generate standardized project folders, briefs, master canvases, and optional production subfolders with live folder-name preview |
+| **Search & Copy** | Search by project-folder name, filter by designer, switch README between rendered Preview and Raw Markdown, and copy selected files into a work order |
+| **Creative Wellbeing** | Focus sessions, breathing guides, energy check-ins, and secure private Mind Drop notes — all stored locally with DPAPI encryption |
+| **Brand Assets** | Open installed palettes, libraries, logos, and reports — shown only when Brand Kit installation is detected |
+| **Settings & Profile** | Manage designer identity, avatar, workspace root, recent-project history, Job ID override, font repair, and update controls |
+| **Workstation Health** | System diagnostics, font integrity validation, and NAS connectivity status |
 
 ---
 
 ## Workstation Requirements
 
-Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
-
----
-
-## Workstation Requirements
-
-Review the workstation hardware requirements prior to deployment. Recommended specifications reflect standard SuamiSihat production environment configurations.
-
-| Component | Minimum Specification | Recommended Specification |
+| Component | Minimum | Recommended |
 | --- | --- | --- |
-| **Operating System** | Windows 10 (64-bit) | Windows 11 (64-bit) |
-| **System Memory (RAM)** | 16 GB | 32 GB or greater |
+| **Operating System** | Windows 10 64-bit (21H2+) | Windows 11 64-bit |
+| **System Memory** | 16 GB RAM | 32 GB or greater |
 | **Processor** | 64-bit multi-core CPU | Intel Core i7 / AMD Ryzen 7 (6+ cores) |
-| **Graphics Hardware** | DirectX 11 compatible adapter | DirectX 12 GPU with 4 GB VRAM |
-| **Storage** | 5 GB available space | NVMe SSD with 100 GB available space |
-| **Display** | 1280 × 720 resolution | 1920 × 1080 IPS display or higher |
+| **Graphics** | DirectX 11 compatible | DirectX 12 GPU with 4 GB VRAM |
+| **Storage** | 5 GB available | NVMe SSD with 100 GB+ available |
+| **Display** | 1280 × 720 | 1920 × 1080 IPS or higher |
+| **Network** | LAN or Wi-Fi | Gigabit LAN (for NAS asset sync) |
 
-*Note: Minimum specifications allow software installation, but recommended hardware is advised for optimal performance with high-resolution assets.*
+> **Note:** .NET Framework 4.8 is pre-installed on Windows 10 version 1903 and later. No separate runtime installation is required.
 
 ---
 
-## Release Status & Lifecycle
+## Release Status
 
-| Release Version | Release Status | Target Framework & Highlights |
+| Version | Status | Architecture | Key Changes |
+| --- | --- | --- | --- |
+| **`v2.0.7`** | ✅ **Latest Stable** | Native C# WPF · Single-file EXE | Dashboard Intelligence Suite, ToolTips, Largest Project widget, Stale Projects widget, Storage Distribution chart, Auto Job ID, 16s Box Breathing, NAS health monitor |
+| **`v1.9.10`** | ✅ Stable | Legacy PowerShell bootstrapper | Creative Wellbeing module, DPAPI Mind Drops, Focus Timer, window icon fix |
+| **`v1.9.2`** | ✅ Stable | Legacy PowerShell bootstrapper | Search & Copy, rendered README preview, conditional Brand Assets module |
+| `v1.9.3` – `v1.9.9` | ⚠️ Pre-release | Legacy PowerShell bootstrapper | Intermediate development builds |
+| `v2.0.0` – `v2.0.6` | ⚠️ Pre-release | Native C# WPF | C# WPF architectural refactoring builds |
+
+Download the latest release from the [Releases page](https://github.com/SuamiSihat/ss_cam/releases/latest).
+
+---
+
+## Installation
+
+### Step 1 — Download
+
+Obtain `SS-CAM-v2.0.7.exe` from the [Official Release Page](https://github.com/SuamiSihat/ss_cam/releases/latest).
+
+### Step 2 — Launch
+
+Double-click the downloaded executable. SS-CAM runs entirely in the user context — no administrator privileges are required.
+
+> If Windows SmartScreen appears, select **More Info → Run Anyway**. This occurs because the executable is not yet widely distributed enough for Microsoft's reputation system.
+
+### Step 3 — Configure
+
+On first launch, the application will prompt you to:
+
+1. Set your **Designer Name** and **Staff ID** in the User Profile.
+2. Set your **Workspace Root** — the local or NAS path where project folders are created.
+3. Optionally configure your avatar and department.
+
+---
+
+## First-Time Configuration
+
+### Workspace Root
+
+The workspace root is the parent directory where all project folders are stored. This is typically your mapped Synology NAS drive or a local `D:\Projects\` path.
+
+Set this in **Settings → Workspace Configuration**.
+
+### Job ID Sequencing
+
+The application automatically scans your workspace to determine the next available Job ID (`0001`, `0002`, etc.) when you open the Project Creator. You can override this counter manually in **Settings → Job ID Override**.
+
+---
+
+## Creative Application Setup
+
+### Affinity Suite (Designer · Publisher · Photo)
+
+| Asset Type | Location | Import Method |
 | --- | --- | --- |
-| **`v2.0.7`** | **Latest Stable Release** | Native C# WPF single-file executable. Designer Intelligence Dashboard with interactive ToolTips, Largest Project size detector, Stale Projects finder, Sub-brand Storage distribution chart, 16s Box Breathing loop, and auto Job ID calculation. |
-| **`v1.9.10`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Creative Wellbeing module with DPAPI encrypted Mind Drops and monotonic Focus Timer. |
-| **`v1.9.2`** | **Stable Release** | Legacy PowerShell bootstrapper distribution. Search & Copy workspace file browser, rendered README preview, and conditional Brand Kit integration module. |
-| **`v1.9.3` - `v1.9.9`** | **Pre-release** | Intermediate developmental preview builds. |
-| **`v2.0.0` - `v2.0.6`** | **Pre-release** | Intermediate C# WPF architectural refactoring builds. |
+| Asset Library | `Brand Assets\Libraries\SuamiSihat Branding.afassets` | Assets Panel → Menu → **Import Assets** |
+| Colour Palette | `Brand Assets\Colour Palettes\ss_color_theme.afpalette` | Swatches Panel → Menu → **Import Palette → From File** |
 
----
+### Adobe Creative Cloud (Photoshop · Illustrator · InDesign)
 
-## Installation & Deployment Guide
-
-### Step 1: Download Release Package
-
-Obtain the latest compiled installer (`SS-CAM-v2.0.7.exe`) from the [Official Release Repository](https://github.com/SuamiSihat/ss_cam/releases/latest).
-
-### Step 2: Execute Deployment Utility
-
-Launch the downloaded installer executable. The deployment process operates in the user context and does not require elevated administrator privileges.
-
-If Windows SmartScreen prompts appear during internal deployment, select **More Info** followed by **Run Anyway**.
-
-### Step 3: Setup Wizard Sequence
-
-The responsive WPF setup wizard adapts dynamically across four steps:
-
-| Step | Function | Details |
+| Asset Type | Location | Import Method |
 | --- | --- | --- |
-| **1** | **Components** | Choose Express or Custom installation, select **Brand Kit** and/or **Creative Project Management**, or uninstall an existing CPM installation |
-| **2** | **Configuration** | Review PC/software readiness and configure only the selected components; Express installation skips this step |
-| **3** | **Licence** | Read the full agreement and scroll to the end before acceptance is enabled |
-| **4** | **Installation** | View installation/uninstallation status, component report, and the direct **Open App** launcher |
+| CC Library | `Brand Assets\Libraries\SuamiSihat™ Branding.cclibs` | Libraries Panel → Import |
+| Swatch (Primary) | `Brand Assets\Colour Palettes\SS Health Primary.ase` | Swatches Panel → Open Swatch Library → Other Library |
+| Swatch (Secondary) | `Brand Assets\Colour Palettes\SS Health Secondary.ase` | As above |
+| Swatch (Grey Tone) | `Brand Assets\Colour Palettes\SS Health Grey Tone.ase` | As above |
+
+> Restart Adobe applications after importing to ensure newly registered system fonts are enumerated.
+
+### Web & Cloud (Canva · Figma)
+
+Team accounts are provisioned via central directory credentials. Request access and MFA tokens from system administration.
 
 ---
 
-## Application Configuration Instructions
+## Project Folder Convention
 
-Following installer completion, configure design applications by importing asset libraries and color swatches.
+All project folders follow the standardized naming scheme defined in [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md):
 
-### Affinity Suite (Designer, Publisher, Photo)
-
-1. **Asset Library Import**:
-   - Open **Assets Panel** â†’ Menu â†’ **Import Assets**
-   - Target `SuamiSihat Branding.afassets` from the deployed Brand Assets directory.
-
-2. **Color Palette Import**:
-   - Open **Swatches Panel** â†’ Menu â†’ **Import Palette â†’ From File**
-   - Select `ss_color_theme.afpalette`.
-
-### Adobe Creative Cloud (Photoshop, Illustrator, InDesign)
-
-1. **Creative Cloud Library**:
-   - Open **Libraries Panel** â†’ Import `SuamiSihatâ„¢ Branding.cclibs`.
-
-2. **Swatch Library Import**:
-   - Open **Swatches Panel** â†’ **Open Swatch Library â†’ Other Library**
-   - Import target `.ase` files from the `Colour Palettes` directory:
-     - `SS Health Primary.ase`
-     - `SS Health Secondary.ase`
-     - `SS Health Grey Tone.ase`
-
-3. **Restart Application**:
-   - Restart Adobe software to ensure newly registered system fonts are enumerated.
-
-### Web & Cloud Applications (Canva, Figma)
-
-Team accounts are authorized via central directory credentials displayed on the software setup screen. Request account access and multi-factor authentication tokens from system administration.
-
----
-
-## Deployed Directory Structure
-
-```text
-Documents\SuamiSihat Brand Assets\
-â”œâ”€â”€ Logos\
-â”‚   â”œâ”€â”€ 00_SuamiSihat\
-â”‚   â”œâ”€â”€ 01_ssHealth\
-â”‚   â”œâ”€â”€ 02_ssClinic\
-â”‚   â”œâ”€â”€ 03_ssWellness\
-â”‚   â”œâ”€â”€ 04_ssEcom\
-â”‚   â””â”€â”€ 05_ssTech\
-â”œâ”€â”€ Libraries\
-â”‚   â”œâ”€â”€ SuamiSihat Branding.afassets
-â”‚   â”œâ”€â”€ ss_health_branding.afassets
-â”‚   â””â”€â”€ SuamiSihatâ„¢ Branding.cclibs
-â”œâ”€â”€ Colour Palettes\
-â”‚   â”œâ”€â”€ ss_color_theme.afpalette
-â”‚   â”œâ”€â”€ SS Health Primary.ase
-â”‚   â”œâ”€â”€ SS Health Secondary.ase
-â”‚   â””â”€â”€ SS Health Grey Tone.ase
-â”œâ”€â”€ Links\
-â”‚   â”œâ”€â”€ SuamiSihat Service Dashboard.url
-â”‚   â”œâ”€â”€ SuamiSihat Internal Assets.url
-â”‚   â””â”€â”€ SuamiSihat Public Brand Assets.url
-â””â”€â”€ Reports\
-    â”œâ”€â”€ SuamiSihat-Workstation-Report.md
-    â””â”€â”€ SuamiSihat-Font-Inventory.md
+```
+{Workspace Root}\
+└── {YYYY}\                                ← Year folder
+    └── {YYYYMM}_{MonthName}\              ← Month folder
+        └── {YYYYMM}_{NNNN}{TYPE}_{BRAND}_{ProjectName}\   ← Project folder
+            ├── Artwork Design\            Working source files (.afdesign, .psd, .ai)
+            ├── Artwork Mockup\            Presentation mockups and client previews
+            ├── Assets\                    Raw photos, icons, reference materials
+            └── Production\               Exported outputs (PDF, PNG, SVG)
 ```
 
-Typography files are installed directly to `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and registered in the Windows Registry for seamless application access.
+**Job ID suffix codes:**
+
+| Code | Category |
+| --- | --- |
+| `D` | General / Graphic / Print |
+| `S` | Social Media |
+| `V` | Video |
+| `P` | Brand Identity |
+
+**Example:** `202608_0042S_SSC_Raya-Campaign` — August 2026, Job #42, Social Media, SS Clinic.
 
 ---
 
-## Typographic Specifications
+## Deployed Asset Directory
+
+Brand assets are deployed to the following locations on the designer's workstation:
+
+```
+Documents\SuamiSihat Brand Assets\
+├── Logos\
+│   ├── 00_SuamiSihat\
+│   ├── 01_ssHealth\
+│   ├── 02_ssClinic\
+│   ├── 03_ssWellness\
+│   ├── 04_ssEcom\
+│   └── 05_ssTech\
+├── Libraries\
+│   ├── SuamiSihat Branding.afassets
+│   ├── ss_health_branding.afassets
+│   └── SuamiSihat™ Branding.cclibs
+├── Colour Palettes\
+│   ├── ss_color_theme.afpalette
+│   ├── SS Health Primary.ase
+│   ├── SS Health Secondary.ase
+│   └── SS Health Grey Tone.ase
+├── Links\
+│   ├── SuamiSihat Service Dashboard.url
+│   ├── SuamiSihat Internal Assets.url
+│   └── SuamiSihat Public Brand Assets.url
+└── Reports\
+    ├── SuamiSihat-Workstation-Report.md
+    └── SuamiSihat-Font-Inventory.md
+```
+
+Typography files are installed to `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and registered in the Windows Registry.
+
+---
+
+## Typography Suite
 
 ### Core Brand Typefaces
 
-| Index | Family | Usage & Classification |
+| # | Family | Classification & Usage |
 | --- | --- | --- |
-| 1 | **Poppins** | Primary display typeface â€” headlines, marketing banners |
-| 2 | **Calibri** | Secondary typeface â€” documentation, body text |
-| 3 | **Helvetica Neue** | Secondary & structural typeface â€” user interfaces, technical layouts |
-| 4 | **Montserrat** | Tertiary display typeface â€” supporting accents, labels |
+| 1 | **Poppins** | Primary display — headlines, marketing banners |
+| 2 | **Calibri** | Secondary — documentation, body text |
+| 3 | **Helvetica Neue** | Structural — user interfaces, technical layouts |
+| 4 | **Montserrat** | Tertiary display — labels, supporting accents |
 
-### Extended Typographic Suite
+### Extended Suite
 
-| Typeface | Functional Purpose |
+| Typeface | Purpose |
 | --- | --- |
 | FontAwesome Pro 5 | Vector icon typography |
 | Barcode Suite | Code 128 and 2D barcode generation |
-| Futura Std | Display & title graphics |
-| Oswald | Compact headlines & condensed typography |
+| Futura Std | Display and title graphics |
+| Oswald | Compact headlines and condensed typography |
 | Roboto | Screen-optimized digital interfaces |
 | Trueno | Display accent typography |
 
 ---
 
-## Troubleshooting Reference
+## Troubleshooting
 
-| Symptom | Resolution Procedure |
+| Symptom | Resolution |
 | --- | --- |
-| **SmartScreen Notice** | Select **More Info** followed by **Run Anyway** |
-| **Fonts Missing in Affinity** | Restart Affinity suite following setup completion |
-| **Fonts Missing in Adobe Apps** | Restart Adobe Creative Cloud applications |
-| **Unrecognized Software** | Click **Rescan** in Step 2, **System Check & Configuration** |
-| **Custom Destination Requirements** | Change the Brand Kit or Creative Project Management path in Step 2, **Configuration** |
-| **Bypass Font Deployment** | Select **Do not install fonts** under Step 2, **Brand Kit options** |
-| **Brand Assets module hidden** | Run Custom installation or Repair with **Brand Kit** selected; the module appears when Brand Kit registration or installed asset folders are detected |
+| **SmartScreen blocks launch** | Select **More Info → Run Anyway** |
+| **Fonts missing in Affinity** | Restart Affinity applications after setup completes |
+| **Fonts missing in Adobe apps** | Restart Adobe Creative Cloud and all Adobe applications |
+| **Workspace not found on startup** | Re-enter your workspace root path in **Settings → Workspace Configuration** |
+| **NAS shows offline** | Check VPN or LAN connection; click the status bar NAS indicator to retry |
+| **Job ID not auto-filling** | Verify the workspace root path is accessible; check for subfolders following the naming convention |
+| **Brand Assets module hidden** | The module appears only when the Brand Kit asset path is registered; re-configure the asset path in Settings |
+| **Mind Drops inaccessible after OS reinstall** | DPAPI-encrypted data is tied to the Windows user account SID; data cannot be recovered after OS reinstall |
 
 ---
 
-## System Audit & Workstation Reports
+## Governance & Licensing
 
-The deployment utility generates two Markdown audit documents stored in the `Reports` directory:
+Assets and typography bundled within this package are restricted to **authorized internal SuamiSihat operations only**. For licensing compliance, usage policies, and access provisioning, consult the SuamiSihat technology administration team.
 
-1. `SuamiSihat-Workstation-Report.md`: Hardware specifications, software detection records, and execution logs.
-2. `SuamiSihat-Font-Inventory.md`: Comprehensive inventory of deployed typefaces, file formats, and font family metadata.
+The application interface uses **Font Awesome Free** vector icons under the [Font Awesome Free Licence](https://fontawesome.com/license/free). Attribution is retained in the WPF application source. Commercial fonts in the installation payload remain subject to their respective commercial licences.
 
-Both reports open as formatted Markdown inside the Brand Assets module.
-
----
-
-## Standardized Project Directory Structure
-
-Creative projects must adhere to the organizational standard defined in [FOLDER-STRUCTURE.md](./FOLDER-STRUCTURE.md).
-
-```text
-SS-2026\
-â””â”€â”€ 202607_July\
-    â””â”€â”€ 202607_0073D_SS_Brand-Assets-Installer\
-        â”œâ”€â”€ Artwork Design\      â† Working source files (.afdesign, .psd, .ai)
-        â”œâ”€â”€ Artwork Mockup\      â† Presentation mockups & client previews
-        â”œâ”€â”€ Assets\              â† Raw photos, icons, reference materials
-        â””â”€â”€ Production\         â† Exported outputs (PDF, PNG, SVG)
-```
-
----
-
-## Governance & Compliance
-
-Assets and typography bundled within this package are restricted to authorized internal operations. For licensing compliance and usage policies, consult system administration.
-
-The application interface uses Font Awesome Free vector icons under the Font Awesome Free licence. Attribution is retained in the WPF source. Commercial fonts in the installation payload remain subject to their respective licences.
-
-For developer build and maintenance documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+For developer and maintainer documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Release history is maintained in [CHANGELOG.md](./CHANGELOG.md).
-
-
-
-
-
-
-
