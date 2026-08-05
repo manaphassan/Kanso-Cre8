@@ -98,6 +98,8 @@
     </Compile>
     <Compile Include="Models\WellbeingModels.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
+    <Compile Include="Services\WellbeingTimerService.cs" />
+    <Compile Include="Services\FatigueRuleEngine.cs" />
     <Compile Include="Services\ProjectGeneratorService.cs" />
   </ItemGroup>
 

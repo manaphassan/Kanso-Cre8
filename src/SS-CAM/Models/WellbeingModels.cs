@@ -30,13 +30,20 @@ namespace SS_CAM.Models
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public int DurationMinutes { get; set; }
+        public int ActualSeconds { get; set; }
         public string PresetName { get; set; }
         public bool Completed { get; set; }
+        public string EndReason { get; set; }
     }
 
     public class CheckIn
     {
         public string Timestamp { get; set; }
+        // 1-5 numeric scores (stored alongside legacy EnergyLevel string)
+        public int EnergyScore { get; set; }
+        public int MoodScore { get; set; }
+        public int PressureScore { get; set; }
+        // Legacy / UI string fields
         public string EnergyLevel { get; set; }
         public string FatigueReason { get; set; }
         public bool RecommendedReset { get; set; }
@@ -65,6 +72,9 @@ namespace SS_CAM.Models
         public string SessionType { get; set; }
         public string StartTime { get; set; }
         public int DurationMinutes { get; set; }
+        public int AccumulatedSeconds { get; set; }
+        public string TimerStateLabel { get; set; }
+        public string LastCheckpointTime { get; set; }
     }
 
     public class WellbeingPreferences

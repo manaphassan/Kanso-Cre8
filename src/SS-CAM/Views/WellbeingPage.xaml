@@ -14,30 +14,85 @@
 
         <ScrollViewer Grid.Row="1">
             <StackPanel>
-                
+
+                <!-- ── Focus Timer Card ─────────────────────────────── -->
                 <ui:CardControl Icon="{ui:SymbolIcon Timer24}" Header="Focus Session" Margin="0,0,0,16">
-                    <StackPanel Orientation="Horizontal">
-                        <ui:Button Appearance="Primary" Content="Start Focus (25m)" Icon="{ui:SymbolIcon Play24}" Margin="0,0,8,0" Click="BtnStartFocus_Click" />
-                        <ui:Button Content="Take a Break (5m)" Icon="{ui:SymbolIcon Pause24}" Click="BtnTakeBreak_Click" />
+                    <StackPanel>
+                        <TextBlock x:Name="TxtTimerDisplay" Text="" FontSize="36" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,8"
+                                   Foreground="{DynamicResource SystemAccentColorPrimaryBrush}" />
+                        <TextBlock x:Name="TxtTimerStatus" Text="Ready" FontSize="13"
+                                   HorizontalAlignment="Center" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <ui:Button x:Name="BtnStartFocus" Appearance="Primary"
+                                       Content="Start Focus (25m)" Icon="{ui:SymbolIcon Play24}"
+                                       Margin="0,0,8,0" Click="BtnStartFocus_Click" />
+                            <ui:Button x:Name="BtnPauseFocus" Content="Pause"
+                                       Icon="{ui:SymbolIcon Pause24}" Margin="0,0,8,0"
+                                       Click="BtnPauseFocus_Click" Visibility="Collapsed" />
+                            <ui:Button x:Name="BtnStopFocus" Content="Stop"
+                                       Icon="{ui:SymbolIcon Stop24}" Appearance="Caution"
+                                       Click="BtnStopFocus_Click" Visibility="Collapsed" />
+                        </StackPanel>
                     </StackPanel>
                 </ui:CardControl>
 
-                <ui:CardControl Icon="{ui:SymbolIcon HeartPulse24}" Header="Energy Check-in" Margin="0,0,0,16">
-                    <ui:Button Content="Log Energy Level" Icon="{ui:SymbolIcon Edit24}" Click="BtnLogEnergy_Click" />
+                <!-- ── Break / Reset Card ──────────────────────────── -->
+                <ui:CardControl Icon="{ui:SymbolIcon LeafThree24}" Header="Creative Reset" Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Content="5-Min Break" Icon="{ui:SymbolIcon Coffee24}"
+                                   Margin="0,0,8,0" Click="BtnBreak5_Click" />
+                        <ui:Button Content="Breathing (2 Min)" Icon="{ui:SymbolIcon Heart24}"
+                                   Click="BtnBreathing_Click" />
+                    </StackPanel>
                 </ui:CardControl>
 
-                <ui:CardControl Icon="{ui:SymbolIcon TextQuote24}" Header="Mind Drops" Margin="0,0,0,16">
-                    <ui:Button Content="Write Mind Drop" Icon="{ui:SymbolIcon DocumentEdit24}" Click="BtnMindDrop_Click" />
+                <!-- ── Energy Check-in Card ────────────────────────── -->
+                <ui:CardControl Icon="{ui:SymbolIcon HeartPulse24}" Header="Energy Check-in" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Energy (1=Low · 5=High)" Margin="0,0,0,4" FontSize="12"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ui:Button x:Name="BtnE1" Content="1" Width="36" Margin="0,0,4,0" Click="BtnEnergy_Click" Tag="1" />
+                            <ui:Button x:Name="BtnE2" Content="2" Width="36" Margin="0,0,4,0" Click="BtnEnergy_Click" Tag="2" />
+                            <ui:Button x:Name="BtnE3" Content="3" Width="36" Margin="0,0,4,0" Click="BtnEnergy_Click" Tag="3" Appearance="Primary" />
+                            <ui:Button x:Name="BtnE4" Content="4" Width="36" Margin="0,0,4,0" Click="BtnEnergy_Click" Tag="4" />
+                            <ui:Button x:Name="BtnE5" Content="5" Width="36" Click="BtnEnergy_Click" Tag="5" />
+                        </StackPanel>
+                        <TextBlock x:Name="TxtFatigueRec" Text="" FontSize="12" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource SystemFillColorCautionBrush}"
+                                   Visibility="Collapsed" />
+                    </StackPanel>
                 </ui:CardControl>
-                
+
+                <!-- ── Mind Drops Card ────────────────────────────── -->
+                <ui:CardControl Icon="{ui:SymbolIcon TextQuote24}" Header="Mind Drops (Private · DPAPI encrypted)" Margin="0,0,0,16">
+                    <StackPanel>
+                        <ui:TextBox x:Name="TxtMindDrop" PlaceholderText="Capture a thought privately…"
+                                    AcceptsReturn="True" MinHeight="60" Margin="0,0,0,8" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:Button Content="Save (End-of-Day)" Icon="{ui:SymbolIcon LockClosed24}"
+                                       Margin="0,0,8,0" Click="BtnSaveDrop_EndOfDay" />
+                            <ui:Button Content="Save (Session only)" Icon="{ui:SymbolIcon ClockDismiss24}"
+                                       Click="BtnSaveDrop_Session" />
+                        </StackPanel>
+                    </StackPanel>
+                </ui:CardControl>
+
+                <!-- ── Today's Metrics Card ───────────────────────── -->
                 <ui:Card>
                     <StackPanel>
                         <TextBlock Text="Today's Metrics" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                        <TextBlock Text="Focus Time: 0h 0m" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="Breaks Taken: 0" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="Average Energy: -" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock x:Name="TxtMetricFocus" Text="Focus Time: 0h 0m"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock x:Name="TxtMetricSessions" Text="Sessions: 0 completed"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock x:Name="TxtMetricDrops" Text="Mind Drops: 0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                     </StackPanel>
                 </ui:Card>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>
