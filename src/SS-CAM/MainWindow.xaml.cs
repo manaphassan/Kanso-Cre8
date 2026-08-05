@@ -13,11 +13,14 @@ namespace SS_CAM
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            // Force window to correct size and state after Mica/FluentWindow initialisation
             WindowState = WindowState.Normal;
             Width  = 1366;
             Height = 768;
             Activate();
+
+            // Navigate to Dashboard so content area is never blank on startup
+            RootNavigation.Navigate(typeof(Views.DashboardPage));
         }
     }
 }
+
