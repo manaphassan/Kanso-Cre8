@@ -363,15 +363,15 @@ namespace SS_CAM
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
         {
             isSidebarExpanded = !isSidebarExpanded;
-            // Fluent 2 nav: expanded = 240px, collapsed = 48px (icon-only navigation rail)
-            SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(48);
+            // Fluent 2 nav: expanded = 240px, collapsed = 64px (v2.1.0 standard navigation rail)
+            SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(64);
 
             Visibility labelVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
 
             // Top Header: remove padding & center hamburger button when collapsed
             if (TopHeaderBorder != null)
             {
-                TopHeaderBorder.Padding = isSidebarExpanded ? new Thickness(12, 10, 12, 6) : new Thickness(0, 10, 0, 6);
+                TopHeaderBorder.Padding = isSidebarExpanded ? new Thickness(12, 10, 12, 6) : new Thickness(8, 10, 8, 6);
             }
             if (TopHeaderStackPanel != null)
             {
@@ -401,20 +401,20 @@ namespace SS_CAM
             // Align bottom status panel margins
             if (SidebarBottomPanel != null)
             {
-                SidebarBottomPanel.Margin = isSidebarExpanded ? new Thickness(8, 8, 8, 12) : new Thickness(0, 8, 0, 12);
+                SidebarBottomPanel.Margin = isSidebarExpanded ? new Thickness(8, 8, 8, 12) : new Thickness(8, 8, 8, 12);
             }
 
             // Align dividers
             if (SidebarDivider1 != null)
             {
-                SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(8, 0, 8, 8);
+                SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(4, 0, 4, 8);
             }
             if (SidebarDivider2 != null)
             {
-                SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(8, 10, 8, 4);
+                SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(4, 10, 4, 4);
             }
                 
-            // Align status row icons (centered along X = 24px when collapsed)
+            // Align status row icons (centered along X = 32px when collapsed)
             Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
             HorizontalAlignment panelAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
 
@@ -427,9 +427,18 @@ namespace SS_CAM
             if (StatusTimerPanel != null) StatusTimerPanel.HorizontalAlignment = panelAlign;
             if (StatusThemePanel != null) StatusThemePanel.HorizontalAlignment = panelAlign;
 
+            if (NasPill != null)
+            {
+                NasPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
+            }
+            if (TimerPill != null)
+            {
+                TimerPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
+            }
             if (StatusThemeBtn != null)
             {
                 StatusThemeBtn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
+                StatusThemeBtn.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
             }
 
             // Align user avatar circle
@@ -445,13 +454,13 @@ namespace SS_CAM
             if (SidebarUserCard != null)
             {
                 SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(0, 6, 0, 6);
-                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 0, 0, 0);
+                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0);
             }
 
-            // Update Nav Panel margins (0 left/right margin when collapsed for full 48px button width)
+            // Update Nav Panel margins (always keep 8px left/right margins for clean spacing)
             if (SidebarNavPanel != null)
             {
-                SidebarNavPanel.Margin = isSidebarExpanded ? new Thickness(8, 4, 8, 4) : new Thickness(0, 4, 0, 4);
+                SidebarNavPanel.Margin = isSidebarExpanded ? new Thickness(8, 4, 8, 4) : new Thickness(8, 4, 8, 4);
             }
 
             // Update all Nav Items (center icon when collapsed, restore margins when expanded)
@@ -464,8 +473,8 @@ namespace SS_CAM
             foreach (var btn in navBtns)
             {
                 if (btn == null) continue;
-                btn.Width = isSidebarExpanded ? double.NaN : 48;
-                btn.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+                btn.Width = double.NaN; // Stretches to panel width (which is 64 - 16 = 48px when collapsed)
+                btn.HorizontalAlignment = HorizontalAlignment.Stretch;
                 btn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
 
                 var grid = btn.Content as Grid;
