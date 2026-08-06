@@ -350,6 +350,9 @@ namespace SS_CAM.Services
             {
                 AllStations = new List<RadioStation>(_config.SavedStations);
 
+                // Purge removed Chinese station presets if present
+                AllStations.RemoveAll(s => s.Id == "preset_fm988" || s.Id == "preset_aifm" || s.Name.Contains("988 FM") || s.Name.Contains("Ai FM"));
+
                 // Ensure Initial D is present
                 if (!AllStations.Any(s => s.StreamUrl.Contains("165.227.19.100") || s.Name.Contains("Initial D")))
                 {
@@ -457,26 +460,6 @@ namespace SS_CAM.Services
                 },
                 new RadioStation
                 {
-                    Id = "preset_fm988",
-                    Name = "988 FM Malaysia",
-                    Genre = "Pop / Hits",
-                    StreamUrl = "https://28103.live.streamtheworld.com/988_FMAAC.aac",
-                    IconEmoji = "📻",
-                    IsPreset = true,
-                    Description = "Popular Malaysian Chinese music & entertainment."
-                },
-                new RadioStation
-                {
-                    Id = "preset_aifm",
-                    Name = "Ai FM",
-                    Genre = "Pop / Hits",
-                    StreamUrl = "https://28153.live.streamtheworld.com/AI_FMAAC.aac",
-                    IconEmoji = "🎵",
-                    IsPreset = true,
-                    Description = "National Chinese infotainment radio station."
-                },
-                new RadioStation
-                {
                     Id = "preset_cityplus",
                     Name = "CITYPlus FM",
                     Genre = "Talk / News",
@@ -513,7 +496,6 @@ namespace SS_CAM.Services
 
             string url = station.StreamUrl.Trim();
 
-            // Detect if this is a web page radio (e.g. Jango, Spotify, YouTube web player)
             if (url.Contains("jango.com") || url.Contains("youtube.com") || url.Contains("spotify.com") || !url.Contains(":") || (url.StartsWith("http") && !url.Contains(".") && !url.Contains(":")))
             {
                 IsWebStation = true;
