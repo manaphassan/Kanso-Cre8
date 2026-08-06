@@ -40,11 +40,12 @@ Dependency Mgmt   NuGet (packages.config)
 | --- | --- | --- |
 | **Dashboard** | `SS_CAM.Views.DashboardPage` | Workspace intelligence metrics, storage analytics, and sub-brand charts |
 | **Project Creator** | `SS_CAM.Views.ProjectCreatorPage` | Standardized folder generator with auto Job ID and live preview |
-| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Workspace file browser with rendered README preview |
+| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Workspace file browser with rendered README preview and image gallery |
+| **Radio Player** | `SS_CAM.Views.RadioPage` | Live Malaysian radio & lo-fi focus streams; persistent status-bar mini-player |
 | **Creative Wellbeing** | `SS_CAM.Views.WellbeingPage` | Focus timer, breathing guides, energy check-ins, DPAPI encrypted Mind Drops |
 | **Brand Assets** | `SS_CAM.Views.BrandAssetsPage` | Asset library, logo, palette, and report launcher |
 | **Settings** | `SS_CAM.Views.SettingsPage` | Designer identity, workspace config, update checker |
-| **Workstation Health** | `SS_CAM.Views.WorkstationHealthPage` | Font repair, NAS diagnostics |
+| **Workstation Health** | `SS_CAM.Views.WorkstationHealthPage` | Font repair, software scanner, NAS diagnostics |
 
 ### Core Services
 
@@ -123,17 +124,17 @@ The build system uses MSBuild with a PowerShell wrapper. Two build paths exist d
 ### v2.0+ Native WPF Build (Current)
 
 ```powershell
-# Build with default version (2.0.7)
+# Build with default version
 powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1
 
 # Build with explicit version
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.0.8
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.3.6
 ```
 
 **Build output:**
 
 ```
-dist\SS-CAM-v2.0.7.exe   (~4.6 MB, single-file, all dependencies embedded)
+dist\SS-CAM-v2.3.6.exe   (~4.7 MB, single-file, all dependencies embedded)
 ```
 
 ### Legacy v1.x Bootstrapper Build
@@ -266,11 +267,14 @@ SS-CAM uses **Semantic Versioning**: `MAJOR.MINOR.PATCH`
 
 | Version | Status | Notes |
 | --- | --- | --- |
-| `v2.0.7` | **Latest Stable** | Native C# WPF single-file executable |
+| `v2.3.6` | **Latest Stable** | Fluent 2 full compliance — Segoe Fluent Icons, token colours |
+| `v2.1.0` | Stable | Radio & Focus Stream Player |
+| `v2.0.7` | Stable | Dashboard Intelligence Suite |
 | `v1.9.10` | Stable | Legacy PowerShell bootstrapper |
 | `v1.9.2` | Stable | Legacy PowerShell bootstrapper |
 | `v1.9.3` – `v1.9.9` | Pre-release | Intermediate builds |
 | `v2.0.0` – `v2.0.6` | Pre-release | C# WPF refactoring builds |
+| `v2.1.1` – `v2.3.5` | Pre-release | Incremental feature builds |
 
 Version strings must be updated consistently across:
 
@@ -280,10 +284,11 @@ Version strings must be updated consistently across:
 | `src\SS-CAM\MainWindow.xaml` | `Title`, header `TextBlock` |
 | `src\SS-CAM\MainWindow.xaml.cs` | `CurrentVersion` constant |
 | `src\SS-CAM\Views\AboutWindow.xaml` | Version badge and changelog header |
+| `src\SS-CAM\Views\DashboardPage.xaml` | Version badge TextBlock fallback |
 | `src\SS-CAM\Views\SettingsPage.xaml.cs` | Update check fallback string |
 | `installer\Build-Installer.ps1` | Default `$Version` parameter |
 | `CHANGELOG.md` | New release section header |
-| `README.md` | Download link and release table |
+| `README.md` | Download link, version badge, and release table |
 
 ---
 
@@ -315,17 +320,26 @@ All UI elements must conform to the SuamiSihat official brand palette.
 
 ### Colour System
 
-| Token | Hex | Usage |
+All colours are defined as `SolidColorBrush` resources in `Styles/Fluent2Styles.xaml`. Always reference the named token — **never use raw hex literals in XAML**.
+
+| Token Key | Hex | Usage |
 | --- | --- | --- |
-| **SS Prussian Blue** | `#022057` | App header background, dark surfaces |
-| **SS Blue** | `#043388` | Primary headings, interactive elements, key metrics |
-| **Azure** | `#21A1F7` | Supporting accent, badges, chart highlights |
-| **Malibu** | `#6DC6EC` | Secondary accent, logo mark tones |
-| **Emerald** | `#10B981` | Positive states (growth, active, online) |
-| **Amber** | `#F59E0B` | Warning states, exhale phase, storage highlights |
-| **Crimson** | `#EF4444` | Error states, stale/offline indicators |
-| **Slate 500** | `#64748B` | Secondary text, metadata labels |
-| **Slate 200** | `#CBD5E1` | Border lines, dividers |
+| `FluentBrand80` | `#043388` | Primary headings, interactive elements, key metrics |
+| `FluentBrandTint` | `#21A1F7` | Supporting accent, badges, chart highlights |
+| `FluentBrandLight` | `#EFF6FF` | Tinted highlight backgrounds (info cards, selected rows) |
+| `FluentDarkCanvasBg` | `#022057` | App header background, dark hero surfaces |
+| `FluentLightTextPrimary` | (system) | Primary label text |
+| `FluentLightTextSecondary` | `#64748B` | Secondary text, metadata labels, column headers |
+| `FluentLightCardBg` | `#FFFFFF` | Card surface background |
+| `FluentLightCardSubBg` | `#F8FAFC` | Sub-card, alternating row, secondary surface |
+| `FluentLightStroke` | `#CBD5E1` | Border lines, dividers |
+| `FluentSuccess` | `#10B981` | Positive states (growth, active, online) |
+| `FluentWarning` | `#F59E0B` | Warning states, storage highlights |
+| `FluentDanger` | `#EF4444` | Error states, stale/offline indicators, stop buttons |
+
+### Icon System
+
+Use **Segoe Fluent Icons** exclusively for UI chrome icons. Set `FontFamily="Segoe Fluent Icons"` on a `TextBlock` with the Unicode glyph (e.g. `Text="&#xE72C;"`). Do **not** use emoji characters (`📁`, `🔄`, `📻`) in any button, header, or status element. Emoji are acceptable only in user-generated content contexts (e.g. radio station icons bound from user data).
 
 ### Logo Usage
 
