@@ -363,29 +363,93 @@ namespace SS_CAM
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
         {
             isSidebarExpanded = !isSidebarExpanded;
-            // Fluent 2 nav: expanded = 240px (icon+label), collapsed = 48px (icon-only)
+            // Fluent 2 nav: expanded = 240px, collapsed = 48px (icon-only navigation rail)
             SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(48);
 
             Visibility labelVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
 
-            // Hide/show text labels, section header, search bar, status rows
+            // Hide/show search bar container (prevents squishing search box / clipped search icon!)
+            if (SearchBoxBorder != null) SearchBoxBorder.Visibility = labelVis;
+
+            // Hide/show section header, title panel, profile text
             if (SidebarModulesHeader != null) SidebarModulesHeader.Visibility = labelVis;
             if (AppTitlePanel != null) AppTitlePanel.Visibility = labelVis;
             if (SidebarUserText != null) SidebarUserText.Visibility = labelVis;
-            if (TopGlobalSearchInput != null) TopGlobalSearchInput.Visibility = labelVis;
+
+            // Hide/show status row text
             if (StatusNasText != null) StatusNasText.Visibility = labelVis;
             if (StatusTimerText != null) StatusTimerText.Visibility = labelVis;
             if (StatusRadioText != null) StatusRadioText.Visibility = labelVis;
             if (StatusThemeText != null) StatusThemeText.Visibility = labelVis;
 
-            // Nav item labels
-            if (NavDashboardLabel != null) NavDashboardLabel.Visibility = labelVis;
-            if (NavWellbeingText != null) NavWellbeingText.Visibility = labelVis;
-            if (NavProjectsText != null) NavProjectsText.Visibility = labelVis;
-            if (NavSearchText != null) NavSearchText.Visibility = labelVis;
-            if (NavBrandAssetsText != null) NavBrandAssetsText.Visibility = labelVis;
-            if (NavRadioText != null) NavRadioText.Visibility = labelVis;
-            if (NavWorkstationHealthText != null) NavWorkstationHealthText.Visibility = labelVis;
+            // Align status icons (centered when collapsed, left when expanded)
+            Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
+            HorizontalAlignment iconAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+
+            if (StatusNasDot != null) { StatusNasDot.Margin = iconMargin; StatusNasDot.HorizontalAlignment = iconAlign; }
+            if (StatusTimerIcon != null) { StatusTimerIcon.Margin = iconMargin; StatusTimerIcon.HorizontalAlignment = iconAlign; }
+            if (StatusRadioIcon != null) { StatusRadioIcon.Margin = iconMargin; StatusRadioIcon.HorizontalAlignment = iconAlign; }
+            if (StatusThemeIcon != null) { StatusThemeIcon.Margin = iconMargin; StatusThemeIcon.HorizontalAlignment = iconAlign; }
+
+            // Align user avatar circle
+            if (SidebarAvatarCircle != null)
+            {
+                SidebarAvatarCircle.Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
+                SidebarAvatarCircle.HorizontalAlignment = iconAlign;
+            }
+            if (SidebarUserCard != null)
+            {
+                SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(6, 6, 6, 6);
+            }
+
+            // Update all Nav Items (center icon when collapsed, restore margins when expanded)
+            System.Windows.Controls.Button[] navBtns = new[]
+            {
+                NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
+                NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn
+            };
+
+            foreach (var btn in navBtns)
+            {
+                if (btn == null) continue;
+                var grid = btn.Content as Grid;
+                if (grid == null) continue;
+
+                foreach (var child in grid.Children)
+                {
+                    var sp = child as StackPanel;
+                    if (sp != null)
+                    {
+                        sp.Margin = isSidebarExpanded ? new Thickness(12, 0, 8, 0) : new Thickness(0);
+                        sp.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+
+                        if (sp.Children.Count > 0)
+                        {
+                            var icon = sp.Children[0] as System.Windows.Controls.TextBlock;
+                            if (icon != null)
+                            {
+                                icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 12, 0) : new Thickness(0);
+                                icon.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                                icon.Width = isSidebarExpanded ? 20 : double.NaN;
+                            }
+                        }
+                        if (sp.Children.Count > 1)
+                        {
+                            var label = sp.Children[1] as System.Windows.Controls.TextBlock;
+                            if (label != null)
+                            {
+                                label.Visibility = labelVis;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Update spectrum canvas width
+            if (SidebarSpectrumCanvas != null)
+            {
+                SidebarSpectrumCanvas.Width = isSidebarExpanded ? 240 : 48;
+            }
         }
 
         private void OnTopSearchInputChanged(object sender, TextChangedEventArgs e)

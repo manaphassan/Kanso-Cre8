@@ -196,7 +196,7 @@
                                     ToolTip="User Profile &amp; Settings">
                                 <StackPanel Orientation="Horizontal">
                                     <!-- Avatar circle -->
-                                    <Border Width="28" Height="28" CornerRadius="14"
+                                    <Border x:Name="SidebarAvatarCircle" Width="28" Height="28" CornerRadius="14"
                                             Background="#0078D4" Margin="0,0,10,0" ClipToBounds="True"
                                             VerticalAlignment="Center">
                                         <Grid x:Name="AvatarBorder">
