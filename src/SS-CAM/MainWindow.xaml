@@ -115,7 +115,7 @@
                             <Border x:Name="NasPill" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
                                     Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked"
                                     ToolTip="Click to re-check Synology NAS connection">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel x:Name="StatusNasPanel" Orientation="Horizontal">
                                     <TextBlock x:Name="StatusNasDot" Text="&#xE839;" FontFamily="Segoe Fluent Icons"
                                                FontSize="12" Foreground="#13A10E" VerticalAlignment="Center"
                                                Margin="0,0,10,0"/>
@@ -131,7 +131,7 @@
                             <Border CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
                                     Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked"
                                     ToolTip="Open Wellbeing &amp; Focus Timer">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel x:Name="StatusTimerPanel" Orientation="Horizontal">
                                     <TextBlock x:Name="StatusTimerIcon" Text="&#xE916;" FontFamily="Segoe Fluent Icons"
                                                FontSize="14" Foreground="#9D9D9D" VerticalAlignment="Center"
                                                Margin="0,0,10,0"/>
@@ -177,7 +177,7 @@
                                         Background="Transparent" Foreground="#C8C8C8"
                                         BorderThickness="0" Padding="8,6" Cursor="Hand"
                                         HorizontalContentAlignment="Left" HorizontalAlignment="Stretch">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel x:Name="StatusThemePanel" Orientation="Horizontal">
                                         <TextBlock x:Name="StatusThemeIcon" Text="&#xE790;"
                                                    FontFamily="Segoe Fluent Icons"
                                                    FontSize="14" Foreground="#9D9D9D"

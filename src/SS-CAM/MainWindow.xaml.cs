@@ -409,21 +409,26 @@ namespace SS_CAM
             {
                 SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(8, 10, 8, 4);
             }
-
+                
             // Align status row icons (centered along X = 24px when collapsed)
+            // To perfectly center, the StackPanel itself must be centered and the icon must lose its right margin.
             Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
-            HorizontalAlignment iconAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+            HorizontalAlignment panelAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
 
-            if (StatusNasDot != null) { StatusNasDot.Margin = iconMargin; StatusNasDot.HorizontalAlignment = iconAlign; }
-            if (StatusTimerIcon != null) { StatusTimerIcon.Margin = iconMargin; StatusTimerIcon.HorizontalAlignment = iconAlign; }
-            if (StatusRadioIcon != null) { StatusRadioIcon.Margin = iconMargin; StatusRadioIcon.HorizontalAlignment = iconAlign; }
-            if (StatusThemeIcon != null) { StatusThemeIcon.Margin = iconMargin; StatusThemeIcon.HorizontalAlignment = iconAlign; }
+            if (StatusNasDot != null) StatusNasDot.Margin = iconMargin;
+            if (StatusTimerIcon != null) StatusTimerIcon.Margin = iconMargin;
+            if (StatusRadioIcon != null) StatusRadioIcon.Margin = iconMargin;
+            if (StatusThemeIcon != null) StatusThemeIcon.Margin = iconMargin;
+
+            if (StatusNasPanel != null) StatusNasPanel.HorizontalAlignment = panelAlign;
+            if (StatusTimerPanel != null) StatusTimerPanel.HorizontalAlignment = panelAlign;
+            if (StatusThemePanel != null) StatusThemePanel.HorizontalAlignment = panelAlign;
 
             // Align user avatar circle
             if (SidebarAvatarCircle != null)
             {
                 SidebarAvatarCircle.Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
-                SidebarAvatarCircle.HorizontalAlignment = iconAlign;
+                SidebarAvatarCircle.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
             }
             if (SidebarUserCard != null)
             {
@@ -468,10 +473,11 @@ namespace SS_CAM
                     {
                         sp.Margin = isSidebarExpanded ? new Thickness(12, 0, 8, 0) : new Thickness(0);
                         sp.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-
+                        
+                        // Fix the icon's margin inside the Nav button
                         if (sp.Children.Count > 0)
                         {
-                            var icon = sp.Children[0] as System.Windows.Controls.TextBlock;
+                            var icon = sp.Children[0] as FrameworkElement;
                             if (icon != null)
                             {
                                 icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 12, 0) : new Thickness(0);
