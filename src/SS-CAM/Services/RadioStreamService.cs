@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -220,7 +219,6 @@ namespace SS_CAM.Services
         public RadioPlaybackState State { get; private set; }
         public RadioStation CurrentStation { get; private set; }
         public List<RadioStation> AllStations { get; private set; }
-        public bool IsWebStation { get; private set; }
 
         public double Volume
         {
@@ -350,19 +348,26 @@ namespace SS_CAM.Services
             {
                 AllStations = new List<RadioStation>(_config.SavedStations);
 
-                // Purge removed Chinese station presets if present
+                // Purge removed Chinese station presets
                 AllStations.RemoveAll(s => s.Id == "preset_fm988" || s.Id == "preset_aifm" || s.Name.Contains("988 FM") || s.Name.Contains("Ai FM"));
+
+                // Update BABYMETAL station if it used old jango URL
+                var bm = AllStations.FirstOrDefault(s => s.Id == "preset_babymetal" || s.Name.Contains("BABYMETAL"));
+                if (bm != null)
+                {
+                    bm.StreamUrl = "https://animefm.stream.laut.fm/animefm";
+                    bm.Name = "BABYMETAL & J-Rock Radio";
+                    bm.Description = "24/7 BABYMETAL, J-Rock, Anime & High-Energy Japanese Metal Station.";
+                }
+                else
+                {
+                    AllStations.Insert(1, GetBabymetalStation());
+                }
 
                 // Ensure Initial D is present
                 if (!AllStations.Any(s => s.StreamUrl.Contains("165.227.19.100") || s.Name.Contains("Initial D")))
                 {
                     AllStations.Insert(0, GetInitialDStation());
-                }
-
-                // Ensure BABYMETAL Radio (Jango) is present
-                if (!AllStations.Any(s => s.StreamUrl.Contains("379987623") || s.Name.Contains("BABYMETAL")))
-                {
-                    AllStations.Insert(1, GetBabymetalStation());
                 }
 
                 SyncConfigStations();
@@ -413,12 +418,12 @@ namespace SS_CAM.Services
             return new RadioStation
             {
                 Id = "preset_babymetal",
-                Name = "BABYMETAL Radio (Jango)",
+                Name = "BABYMETAL & J-Rock Radio",
                 Genre = "J-Rock / Kawaii Metal",
-                StreamUrl = "https://www.jango.com/stations/379987623",
+                StreamUrl = "https://animefm.stream.laut.fm/animefm",
                 IconEmoji = "🦊",
                 IsPreset = true,
-                Description = "BABYMETAL & J-Rock radio station on Jango Web Radio."
+                Description = "24/7 BABYMETAL, J-Rock, Anime & High-Energy Japanese Metal Station."
             };
         }
 
@@ -495,33 +500,6 @@ namespace SS_CAM.Services
             }
 
             string url = station.StreamUrl.Trim();
-
-            if (url.Contains("jango.com") || url.Contains("youtube.com") || url.Contains("spotify.com") || !url.Contains(":") || (url.StartsWith("http") && !url.Contains(".") && !url.Contains(":")))
-            {
-                IsWebStation = true;
-                Stop();
-
-                try
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = url,
-                        UseShellExecute = true
-                    });
-                    SetState(RadioPlaybackState.Playing);
-                }
-                catch (Exception ex)
-                {
-                    SetState(RadioPlaybackState.Error);
-                    if (ErrorOccurred != null)
-                    {
-                        ErrorOccurred("Failed to open web station: " + ex.Message);
-                    }
-                }
-                return;
-            }
-
-            IsWebStation = false;
             SetState(RadioPlaybackState.Buffering);
             _localProxy.Start(url);
 
@@ -849,7 +827,7 @@ namespace SS_CAM.Services
                     if (response.StatusCode == HttpStatusCode.OK ||
                         ctype.Contains("audio") || ctype.Contains("mpeg") || ctype.Contains("aac") || ctype.Contains("ogg") || ctype.Contains("stream") || ctype.Contains("html"))
                     {
-                        statusMessage = "Stream/Web Station connection successful!";
+                        statusMessage = "Stream connection successful (" + (response.ContentType ?? "Audio Stream") + ")!";
                         return true;
                     }
                     else

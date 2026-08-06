@@ -91,13 +91,13 @@
                         <TextBlock x:Name="HeroStatusDot" Text="⏹ " FontSize="12" Foreground="#CBD5E1" VerticalAlignment="Center"/>
                         <TextBlock x:Name="HeroStatusText" Text="Ready to Play" Foreground="#E2E8F0" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
-                        <!-- Visualizer Audio Wave Animation (Visible when playing) -->
-                        <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
-                            <Rectangle x:Name="Bar1" Width="3" Height="14" Fill="#6DC6EC" Margin="1,0"/>
-                            <Rectangle x:Name="Bar2" Width="3" Height="8" Fill="#21A1F7" Margin="1,0"/>
-                            <Rectangle x:Name="Bar3" Width="3" Height="18" Fill="#10B981" Margin="1,0"/>
-                            <Rectangle x:Name="Bar4" Width="3" Height="10" Fill="#6DC6EC" Margin="1,0"/>
-                            <Rectangle x:Name="Bar5" Width="3" Height="16" Fill="#21A1F7" Margin="1,0"/>
+                        <!-- Visualizer Audio Wave Animation (Fixed Height to prevent layout expansion jitter) -->
+                        <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="12,0,0,0" Height="22" VerticalAlignment="Center" Visibility="Collapsed">
+                            <Rectangle x:Name="Bar1" Width="3" Height="14" Fill="#6DC6EC" Margin="1,0" VerticalAlignment="Bottom"/>
+                            <Rectangle x:Name="Bar2" Width="3" Height="8" Fill="#21A1F7" Margin="1,0" VerticalAlignment="Bottom"/>
+                            <Rectangle x:Name="Bar3" Width="3" Height="18" Fill="#10B981" Margin="1,0" VerticalAlignment="Bottom"/>
+                            <Rectangle x:Name="Bar4" Width="3" Height="10" Fill="#6DC6EC" Margin="1,0" VerticalAlignment="Bottom"/>
+                            <Rectangle x:Name="Bar5" Width="3" Height="16" Fill="#21A1F7" Margin="1,0" VerticalAlignment="Bottom"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
