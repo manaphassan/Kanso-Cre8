@@ -36,6 +36,7 @@ namespace SS_CAM.Views
             _radioService.StationChanged += OnStationChanged;
             _radioService.VolumeChanged += OnVolumeChanged;
             _radioService.ErrorOccurred += OnErrorOccurred;
+            _radioService.StreamTitleChanged += OnStreamTitleChanged;
 
             InitVisualizerTimer();
             RefreshHeroUI();
@@ -50,6 +51,7 @@ namespace SS_CAM.Views
                 _radioService.StationChanged -= OnStationChanged;
                 _radioService.VolumeChanged -= OnVolumeChanged;
                 _radioService.ErrorOccurred -= OnErrorOccurred;
+                _radioService.StreamTitleChanged -= OnStreamTitleChanged;
             }
 
             if (_visualizerTimer != null)
@@ -147,6 +149,7 @@ namespace SS_CAM.Views
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
                     if (_visualizerTimer != null) _visualizerTimer.Stop();
+                    if (HeroStreamTitleText != null) HeroStreamTitleText.Visibility = Visibility.Collapsed;
                     break;
             }
         }
@@ -170,6 +173,22 @@ namespace SS_CAM.Views
         private void OnErrorOccurred(string errorMsg)
         {
             UpdatePlaybackStateUI(RadioPlaybackState.Error);
+        }
+
+        private void OnStreamTitleChanged(string title)
+        {
+            if (HeroStreamTitleText != null)
+            {
+                if (!string.IsNullOrEmpty(title) && _radioService.State == RadioPlaybackState.Playing)
+                {
+                    HeroStreamTitleText.Text = "Now Playing: " + title;
+                    HeroStreamTitleText.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    HeroStreamTitleText.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void OnHeroPlayClicked(object sender, RoutedEventArgs e)

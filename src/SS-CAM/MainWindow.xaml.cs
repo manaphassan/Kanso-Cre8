@@ -77,6 +77,7 @@ namespace SS_CAM
             var radio = RadioStreamService.Instance;
             radio.PlaybackStateChanged += OnRadioPlaybackStateChanged;
             radio.StationChanged += OnRadioStationChanged;
+            radio.StreamTitleChanged += OnRadioStreamTitleChanged;
 
             UpdateRadioStatusUI();
         }
@@ -87,6 +88,11 @@ namespace SS_CAM
         }
 
         private void OnRadioStationChanged(RadioStation station)
+        {
+            UpdateRadioStatusUI();
+        }
+
+        private void OnRadioStreamTitleChanged(string title)
         {
             UpdateRadioStatusUI();
         }
@@ -105,10 +111,19 @@ namespace SS_CAM
                 if (StatusRadioText != null && StatusRadioPlayIcon != null)
                 {
                     string stationName = radio.CurrentStation != null ? radio.CurrentStation.Name : "BFM 89.9";
+                    string streamTitle = radio.LocalProxy != null ? radio.LocalProxy.CurrentStreamTitle : null;
+                    
                     if (radio.State == RadioPlaybackState.Playing)
                     {
                         StatusRadioPlayIcon.Text = "\uE769"; // Pause icon
-                        StatusRadioText.Text = stationName + " ▶ Live";
+                        if (!string.IsNullOrEmpty(streamTitle))
+                        {
+                            StatusRadioText.Text = stationName + " ▶ " + streamTitle;
+                        }
+                        else
+                        {
+                            StatusRadioText.Text = stationName + " ▶ Live";
+                        }
                         StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
                     }
                     else if (radio.State == RadioPlaybackState.Buffering)

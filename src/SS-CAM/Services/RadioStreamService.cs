@@ -50,6 +50,9 @@ namespace SS_CAM.Services
         public double[] CurrentSpectrumData { get; private set; }
         public double CurrentPeakAmplitude { get; private set; }
 
+        public event Action<string> StreamTitleChanged;
+        public string CurrentStreamTitle { get; private set; }
+
         public LocalAudioProxy()
         {
             CurrentSpectrumData = new double[48];
@@ -64,6 +67,9 @@ namespace SS_CAM.Services
         public void Start(string targetStreamUrl)
         {
             Stop();
+            CurrentStreamTitle = null;
+            if (StreamTitleChanged != null) StreamTitleChanged(null);
+
             _targetStreamUrl = targetStreamUrl;
             _isRunning = true;
 
@@ -143,23 +149,75 @@ namespace SS_CAM.Services
                 remoteReq.Timeout = 8000;
                 remoteReq.ReadWriteTimeout = 8000;
                 remoteReq.AllowAutoRedirect = true;
+                remoteReq.Headers.Add("Icy-MetaData", "1"); // Request ICY Metadata
 
                 remoteResp = (HttpWebResponse)remoteReq.GetResponse();
+                
+                int metaInt = 0;
+                string metaIntStr = remoteResp.Headers.Get("icy-metaint");
+                if (!string.IsNullOrEmpty(metaIntStr))
+                {
+                    int.TryParse(metaIntStr, out metaInt);
+                }
+
                 remoteStream = remoteResp.GetResponseStream();
 
                 byte[] buffer = new byte[8192];
                 Stream outStream = response.OutputStream;
+                int bytesUntilMeta = metaInt;
 
                 while (_isRunning && remoteStream != null)
                 {
-                    int bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead <= 0) break;
+                    if (metaInt > 0)
+                    {
+                        if (bytesUntilMeta > 0)
+                        {
+                            int toRead = Math.Min(buffer.Length, bytesUntilMeta);
+                            int bytesRead = remoteStream.Read(buffer, 0, toRead);
+                            if (bytesRead <= 0) break;
 
-                    outStream.Write(buffer, 0, bytesRead);
-                    outStream.Flush();
+                            outStream.Write(buffer, 0, bytesRead);
+                            outStream.Flush();
 
-                    // Real-Time Audio Energy & 48 Frequency Band Spectrum Sampling
-                    AnalyzeAudioBuffer(buffer, bytesRead);
+                            AnalyzeAudioBuffer(buffer, bytesRead);
+                            bytesUntilMeta -= bytesRead;
+                        }
+                        else
+                        {
+                            // Metadata block
+                            int lengthByte = remoteStream.ReadByte();
+                            if (lengthByte < 0) break;
+
+                            int metaLen = lengthByte * 16;
+                            if (metaLen > 0)
+                            {
+                                byte[] metaBuffer = new byte[metaLen];
+                                int totalRead = 0;
+                                while (totalRead < metaLen)
+                                {
+                                    int r = remoteStream.Read(metaBuffer, totalRead, metaLen - totalRead);
+                                    if (r <= 0) break;
+                                    totalRead += r;
+                                }
+                                
+                                string metaString = System.Text.Encoding.UTF8.GetString(metaBuffer).TrimEnd('\0');
+                                ParseMetadata(metaString);
+                            }
+                            
+                            bytesUntilMeta = metaInt;
+                        }
+                    }
+                    else
+                    {
+                        int bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+                        if (bytesRead <= 0) break;
+
+                        outStream.Write(buffer, 0, bytesRead);
+                        outStream.Flush();
+
+                        // Real-Time Audio Energy & 48 Frequency Band Spectrum Sampling
+                        AnalyzeAudioBuffer(buffer, bytesRead);
+                    }
                 }
             }
             catch
@@ -172,6 +230,35 @@ namespace SS_CAM.Services
                 try { if (remoteResp != null) remoteResp.Close(); } catch { }
                 try { response.Close(); } catch { }
             }
+        }
+
+        private void ParseMetadata(string metaString)
+        {
+            try
+            {
+                var match = Regex.Match(metaString, @"StreamTitle='([^']*)';");
+                if (match.Success)
+                {
+                    string title = match.Groups[1].Value.Trim();
+                    if (string.IsNullOrEmpty(title) || title.ToLower() == "unknown")
+                    {
+                        title = null;
+                    }
+
+                    if (title != CurrentStreamTitle)
+                    {
+                        CurrentStreamTitle = title;
+                        if (Application.Current != null)
+                        {
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                if (StreamTitleChanged != null) StreamTitleChanged(title);
+                            }));
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         private void AnalyzeAudioBuffer(byte[] buffer, int length)
@@ -270,6 +357,7 @@ namespace SS_CAM.Services
         public event Action<RadioStation> StationChanged;
         public event Action<double, bool> VolumeChanged;
         public event Action<string> ErrorOccurred;
+        public event Action<string> StreamTitleChanged;
 
         public RadioPlaybackState State { get; private set; }
         public RadioStation CurrentStation { get; private set; }
@@ -334,6 +422,7 @@ namespace SS_CAM.Services
             State = RadioPlaybackState.Stopped;
             AllStations = new List<RadioStation>();
             _localProxy = new LocalAudioProxy();
+            _localProxy.StreamTitleChanged += (title) => { if (StreamTitleChanged != null) StreamTitleChanged(title); };
 
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string ssDir = Path.Combine(appData, "SuamiSihat");

@@ -84,7 +84,11 @@
                         </Border>
                     </StackPanel>
 
-                    <TextBlock x:Name="HeroDescriptionText" Text="The Business Station — News, interviews, and intellectual discussion." Foreground="#93C5FD" FontSize="11" Margin="0,4,0,8" TextTrimming="CharacterEllipsis"/>
+                    <!-- Station Description -->
+                    <TextBlock x:Name="HeroDescriptionText" Text="The Business Station — News, interviews, and intellectual discussion." Foreground="#93C5FD" FontSize="11" Margin="0,4,0,2" TextTrimming="CharacterEllipsis"/>
+                    
+                    <!-- Active Stream Title (Metadata) -->
+                    <TextBlock x:Name="HeroStreamTitleText" Text="Now Playing: Loading..." Foreground="#FDE047" FontSize="12" FontWeight="Bold" Margin="0,0,0,6" Visibility="Collapsed" TextTrimming="CharacterEllipsis"/>
 
                     <!-- Playback Status Indicator -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
