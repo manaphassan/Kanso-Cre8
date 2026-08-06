@@ -3,81 +3,56 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using Newtonsoft.Json;
 using SS_CAM.Models;
 
 namespace SS_CAM.Services
 {
-    public class SoftwareHealthItem
+    public class UserProfileService
     {
-        public string Icon { get; set; }
-        public string SoftwareName { get; set; }
-        public string ScannedVersion { get; set; }
-        public string LatestVersion { get; set; }
-        public string StatusText { get; set; }
-        public string StatusColor { get; set; }
-        public bool IsInstalled { get; set; }
-        public string DownloadUrl { get; set; }
-        public bool ShowActionButton { get; set; }
-    }
-
-    public static class UserProfileService
-    {
-        private static readonly string _profilePath;
-
-        static UserProfileService()
-        {
-            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string ssDir = Path.Combine(appData, "SuamiSihat");
-
-            if (!Directory.Exists(ssDir))
-            {
-                Directory.CreateDirectory(ssDir);
-            }
-
-            _profilePath = Path.Combine(ssDir, "user_profile.json");
-        }
+        private static readonly string ConfigFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SuamiSihat",
+            "user_profile.json"
+        );
 
         public static UserProfile LoadProfile()
         {
             try
             {
-                if (File.Exists(_profilePath))
+                if (File.Exists(ConfigFilePath))
                 {
-                    string json = File.ReadAllText(_profilePath, Encoding.UTF8);
+                    string json = File.ReadAllText(ConfigFilePath);
                     UserProfile profile = JsonConvert.DeserializeObject<UserProfile>(json);
-                    if (profile != null) return profile;
+                    if (profile != null)
+                    {
+                        return profile;
+                    }
                 }
             }
             catch { }
 
-            return GetDefaultProfile();
+            UserProfile defaultProfile = GetDefaultProfile();
+            SaveProfile(defaultProfile);
+            return defaultProfile;
         }
 
         public static void SaveProfile(UserProfile profile)
         {
             try
             {
+                string dir = Path.GetDirectoryName(ConfigFilePath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
                 string json = JsonConvert.SerializeObject(profile, Formatting.Indented);
-                File.WriteAllText(_profilePath, json, Encoding.UTF8);
+                File.WriteAllText(ConfigFilePath, json);
             }
             catch { }
-        }
-
-        public static UserProfile GetDefaultProfile()
-        {
-            return new UserProfile
-            {
-                DesignerName = "SS Branding",
-                StaffId = "SS000X",
-                Department = "Creative Department",
-                Email = "branding@suamisihat.com",
-                AvatarPath = "",
-                WorkspaceRoot = @"D:\Testing",
-                NextJobNumber = 1
-            };
         }
 
         public static UserProfile ResetToDefaults()
@@ -89,34 +64,38 @@ namespace SS_CAM.Services
 
         public static void ClearAllDataAndCache()
         {
-            UserProfile defaultProfile = GetDefaultProfile();
-            SaveProfile(defaultProfile);
-
             try
             {
-                string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string ssDir = Path.Combine(appData, "SuamiSihat");
-                if (Directory.Exists(ssDir))
+                string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SuamiSihat");
+                if (Directory.Exists(folder))
                 {
-                    string wellbeingFile = Path.Combine(ssDir, "wellbeing_history.json");
-                    if (File.Exists(wellbeingFile)) File.Delete(wellbeingFile);
-
-                    string avatarPng = Path.Combine(ssDir, "avatar.png");
-                    if (File.Exists(avatarPng)) File.Delete(avatarPng);
-
-                    string avatarJpg = Path.Combine(ssDir, "avatar.jpg");
-                    if (File.Exists(avatarJpg)) File.Delete(avatarJpg);
+                    Directory.Delete(folder, true);
                 }
             }
             catch { }
+
+            ResetToDefaults();
+        }
+
+        public static UserProfile GetDefaultProfile()
+        {
+            return new UserProfile
+            {
+                DesignerName = "Brand",
+                StaffId = "0001D",
+                Department = "Creative & Brand",
+                Email = "brand@suamisihat.com",
+                AvatarPath = "",
+                WorkspaceRoot = @"D:\Testing"
+            };
         }
 
         public static SystemSpecs GetSystemSpecs()
         {
             SystemSpecs specs = new SystemSpecs
             {
-                OSVersion = Environment.OSVersion.VersionString + (Environment.Is64BitOperatingSystem ? " (64-bit)" : " (32-bit)"),
-                ProcessorName = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "x64 Multi-Core CPU",
+                OSVersion = Environment.OSVersion.VersionString,
+                ProcessorName = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "x64 Processor",
                 GraphicsGPU = "DirectX 12 GPU",
                 TotalRAM = "16 GB RAM",
                 DisplayResolution = string.Format("{0} x {1}", (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight),
@@ -174,7 +153,7 @@ namespace SS_CAM.Services
             string roamApp = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            // 1. Serif Affinity Suite (v2 / v3 / Canva Edition)
+            // 1. Serif Affinity Suite
             items.Add(CheckAppHealth(
                 "🎨",
                 "Serif Affinity Suite (v2/v3)",
@@ -248,7 +227,7 @@ namespace SS_CAM.Services
                 "Figma Desktop",
                 new[] {
                     Path.Combine(localApp, "Figma", "Figma.exe"),
-                    Path.Combine(localApp, "Programs", "Figma", "Figma.exe")
+                    Path.Combine(roamApp, "Figma", "Figma.exe")
                 },
                 "v126.2.10",
                 "https://www.figma.com/downloads/"
@@ -260,7 +239,7 @@ namespace SS_CAM.Services
                 "Canva Desktop",
                 new[] {
                     Path.Combine(localApp, "Programs", "Canva", "Canva.exe"),
-                    Path.Combine(roamApp, "Canva", "Canva.exe")
+                    Path.Combine(localApp, "Canva", "Canva.exe")
                 },
                 "v1.123.1",
                 "https://www.canva.com/download/windows/"
@@ -275,7 +254,7 @@ namespace SS_CAM.Services
                     Path.Combine(localApp, "CapCut", "CapCut.exe")
                 },
                 "v9.1.0",
-                "https://www.capcut.com/download"
+                "https://www.capcut.com/"
             ));
 
             // 9. DaVinci Resolve Studio
@@ -283,9 +262,6 @@ namespace SS_CAM.Services
                 "🎞️",
                 "DaVinci Resolve Studio",
                 new[] {
-                    @"E:\Applications\Blackmagic Design\DaVinci Resolve\Resolve.exe",
-                    @"D:\Applications\Blackmagic Design\DaVinci Resolve\Resolve.exe",
-                    @"C:\Applications\Blackmagic Design\DaVinci Resolve\Resolve.exe",
                     Path.Combine(pf, "Blackmagic Design", "DaVinci Resolve", "Resolve.exe"),
                     Path.Combine(pf86, "Blackmagic Design", "DaVinci Resolve", "Resolve.exe")
                 },
@@ -305,7 +281,7 @@ namespace SS_CAM.Services
                     Path.Combine(pf, "Synology", "SynologyDrive", "bin", "launcher.exe"),
                     Path.Combine(pf, "Synology", "SynologyDrive", "bin", "synology-drive.exe")
                 },
-                "v4.0.2-17889",
+                "v4.0.2",
                 "https://www.synology.com/en-global/support/download/utility"
             ));
 
@@ -337,12 +313,24 @@ namespace SS_CAM.Services
                     try
                     {
                         FileVersionInfo vi = FileVersionInfo.GetVersionInfo(path);
-                        if (!string.IsNullOrEmpty(vi.FileVersion))
-                            fileVer = "v" + vi.FileVersion;
-                        else if (!string.IsNullOrEmpty(vi.ProductVersion))
-                            fileVer = "v" + vi.ProductVersion;
+                        string rawVer = !string.IsNullOrEmpty(vi.FileVersion) ? vi.FileVersion : vi.ProductVersion;
+                        if (!string.IsNullOrEmpty(rawVer))
+                        {
+                            // Clean long build numbers (e.g. 1.0.0.000000 -> 1.0.0)
+                            string[] parts = rawVer.Split('.');
+                            if (parts.Length > 3)
+                            {
+                                fileVer = string.Format("v{0}.{1}.{2}", parts[0], parts[1], parts[2]);
+                            }
+                            else
+                            {
+                                fileVer = "v" + rawVer;
+                            }
+                        }
                         else
+                        {
                             fileVer = "Installed";
+                        }
                     }
                     catch
                     {
@@ -353,9 +341,9 @@ namespace SS_CAM.Services
             }
 
             bool isInstalled = !string.IsNullOrEmpty(foundPath);
-            string scannedVersion = isInstalled ? fileVer : "Not Installed";
-            string statusText = isInstalled ? "Installed · Healthy" : "Missing / Download Available";
-            string statusColor = isInstalled ? "#10B981" : "#F59E0B";
+            string scannedVersion = isInstalled ? fileVer : "—";
+            string statusText = isInstalled ? "🟢 Healthy" : "⚪ Not Installed";
+            string statusColor = isInstalled ? "#059669" : "#94A3B8";
 
             return new SoftwareHealthItem
             {

@@ -43,4 +43,30 @@ namespace SS_CAM.Models
             DisplayResolution = "1920 x 1080";
         }
     }
+
+    public class SoftwareHealthItem
+    {
+        public string Icon { get; set; }
+        public string SoftwareName { get; set; }
+        public string ScannedVersion { get; set; }
+        public string LatestVersion { get; set; }
+        public string StatusText { get; set; }
+        public string StatusColor { get; set; }
+        public bool IsInstalled { get; set; }
+        public string DownloadUrl { get; set; }
+        public bool ShowActionButton { get; set; }
+
+        public SoftwareHealthItem()
+        {
+            Icon = "📦";
+            SoftwareName = "";
+            ScannedVersion = "Not Installed";
+            LatestVersion = "";
+            StatusText = "⚪ Not Installed";
+            StatusColor = "#94A3B8";
+            IsInstalled = false;
+            DownloadUrl = "";
+            ShowActionButton = false;
+        }
+    }
 }
