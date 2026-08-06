@@ -273,15 +273,17 @@ namespace SS_CAM
                     {
                         if (isPlaying)
                         {
-                            // Active Music: Dynamic Dark Void Visualizer Header
+                            // Active Music: Dynamic Dark Void Visualizer Header & Hide Subtitle to avoid overlapping
                             HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02091A"));
                             HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7"));
+                            if (HeaderSubtitle != null) HeaderSubtitle.Visibility = Visibility.Collapsed;
                         }
                         else
                         {
-                            // Stopped/Paused: Restore Standard SuamiSihat Midnight Header
+                            // Stopped/Paused: Restore Standard SuamiSihat Midnight Header & Show Subtitle
                             HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#021B47"));
                             HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E3A8A"));
+                            if (HeaderSubtitle != null) HeaderSubtitle.Visibility = Visibility.Visible;
                         }
                     }
                 }
@@ -493,8 +495,9 @@ namespace SS_CAM
             ResetNavHighlight();
             if (activeBtn != null)
             {
-                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-                activeBtn.Foreground = Brushes.White;
+                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6DC6EC"));
+                activeBtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
+                SetButtonTextColors(activeBtn, "#043388", "#022057");
             }
         }
 
@@ -506,7 +509,39 @@ namespace SS_CAM
                 if (btn != null)
                 {
                     btn.Background = Brushes.Transparent;
-                    btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+                    btn.Foreground = Brushes.White;
+                    SetButtonTextColors(btn, "#FFFFFF", "#93C5FD");
+                }
+            }
+        }
+
+        private void SetButtonTextColors(System.Windows.Controls.Button btn, string mainColorHex, string subColorHex)
+        {
+            if (btn == null) return;
+            StackPanel sp = btn.Content as StackPanel;
+            if (sp == null) return;
+
+            foreach (var child in sp.Children)
+            {
+                StackPanel textSp = child as StackPanel;
+                if (textSp != null)
+                {
+                    if (textSp.Children.Count > 0 && textSp.Children[0] is System.Windows.Controls.TextBlock)
+                    {
+                        System.Windows.Controls.TextBlock tbMain = textSp.Children[0] as System.Windows.Controls.TextBlock;
+                        if (tbMain != null)
+                        {
+                            tbMain.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(mainColorHex));
+                        }
+                    }
+                    if (textSp.Children.Count > 1 && textSp.Children[1] is System.Windows.Controls.TextBlock)
+                    {
+                        System.Windows.Controls.TextBlock tbSub = textSp.Children[1] as System.Windows.Controls.TextBlock;
+                        if (tbSub != null)
+                        {
+                            tbSub.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(subColorHex));
+                        }
+                    }
                 }
             }
         }
