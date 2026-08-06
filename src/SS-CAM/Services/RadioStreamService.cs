@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Newtonsoft.Json;
@@ -36,6 +37,127 @@ namespace SS_CAM.Services
         Error
     }
 
+    public class LocalAudioProxy
+    {
+        private HttpListener _listener;
+        private Thread _listenerThread;
+        private string _targetStreamUrl;
+        private bool _isRunning;
+        private const int ProxyPort = 28193;
+
+        public string LocalProxyUrl
+        {
+            get { return string.Format("http://127.0.0.1:{0}/live.mp3", ProxyPort); }
+        }
+
+        public void Start(string targetStreamUrl)
+        {
+            Stop();
+            _targetStreamUrl = targetStreamUrl;
+            _isRunning = true;
+
+            try
+            {
+                _listener = new HttpListener();
+                _listener.Prefixes.Add(string.Format("http://127.0.0.1:{0}/", ProxyPort));
+                _listener.Start();
+
+                _listenerThread = new Thread(ListenLoop);
+                _listenerThread.IsBackground = true;
+                _listenerThread.Start();
+            }
+            catch
+            {
+                _isRunning = false;
+            }
+        }
+
+        public void Stop()
+        {
+            _isRunning = false;
+            try
+            {
+                if (_listener != null)
+                {
+                    _listener.Stop();
+                    _listener.Close();
+                    _listener = null;
+                }
+            }
+            catch { }
+
+            if (_listenerThread != null && _listenerThread.IsAlive)
+            {
+                try { _listenerThread.Abort(); } catch { }
+                _listenerThread = null;
+            }
+        }
+
+        private void ListenLoop()
+        {
+            while (_isRunning && _listener != null && _listener.IsListening)
+            {
+                try
+                {
+                    HttpListenerContext context = _listener.GetContext();
+                    ThreadPool.QueueUserWorkItem(state => ProcessRequest(context));
+                }
+                catch
+                {
+                    break;
+                }
+            }
+        }
+
+        private void ProcessRequest(HttpListenerContext context)
+        {
+            HttpListenerResponse response = context.Response;
+            HttpWebRequest remoteReq = null;
+            HttpWebResponse remoteResp = null;
+            Stream remoteStream = null;
+
+            try
+            {
+                response.ContentType = "audio/mpeg";
+                response.Headers.Add("Access-Control-Allow-Origin", "*");
+                response.Headers.Add("Cache-Control", "no-cache, no-store");
+
+                ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, sslPolicyErrors) => true;
+
+                remoteReq = (HttpWebRequest)WebRequest.Create(_targetStreamUrl);
+                remoteReq.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
+                remoteReq.Timeout = 8000;
+                remoteReq.ReadWriteTimeout = 8000;
+                remoteReq.AllowAutoRedirect = true;
+
+                remoteResp = (HttpWebResponse)remoteReq.GetResponse();
+                remoteStream = remoteResp.GetResponseStream();
+
+                byte[] buffer = new byte[8192];
+                Stream outStream = response.OutputStream;
+
+                while (_isRunning && remoteStream != null)
+                {
+                    int bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead <= 0) break;
+
+                    outStream.Write(buffer, 0, bytesRead);
+                    outStream.Flush();
+                }
+            }
+            catch
+            {
+                try { response.StatusCode = 500; } catch { }
+            }
+            finally
+            {
+                try { if (remoteStream != null) remoteStream.Close(); } catch { }
+                try { if (remoteResp != null) remoteResp.Close(); } catch { }
+                try { response.Close(); } catch { }
+            }
+        }
+    }
+
     public class RadioStreamService
     {
         private static RadioStreamService _instance;
@@ -52,6 +174,7 @@ namespace SS_CAM.Services
         }
 
         private MediaPlayer _mediaPlayer;
+        private LocalAudioProxy _localProxy;
         private readonly string _configFilePath;
         private RadioConfigData _config;
 
@@ -122,6 +245,7 @@ namespace SS_CAM.Services
         {
             State = RadioPlaybackState.Stopped;
             AllStations = new List<RadioStation>();
+            _localProxy = new LocalAudioProxy();
 
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string ssDir = Path.Combine(appData, "SuamiSihat");
@@ -308,6 +432,9 @@ namespace SS_CAM.Services
             }
             SetState(RadioPlaybackState.Buffering);
 
+            // Start Local Audio Proxy for seamless HTTPS streaming
+            _localProxy.Start(station.StreamUrl.Trim());
+
             EnsureUI(() =>
             {
                 try
@@ -316,7 +443,8 @@ namespace SS_CAM.Services
                     _mediaPlayer.Stop();
                     _mediaPlayer.Close();
 
-                    Uri streamUri = new Uri(station.StreamUrl.Trim(), UriKind.Absolute);
+                    // Open through Local Audio Loopback Proxy
+                    Uri streamUri = new Uri(_localProxy.LocalProxyUrl, UriKind.Absolute);
                     _mediaPlayer.Open(streamUri);
                     _mediaPlayer.Volume = _config.IsMuted ? 0.0 : _config.Volume;
                     _mediaPlayer.Play();
@@ -369,6 +497,11 @@ namespace SS_CAM.Services
 
         public void Stop()
         {
+            if (_localProxy != null)
+            {
+                _localProxy.Stop();
+            }
+
             EnsureUI(() =>
             {
                 try
@@ -520,7 +653,7 @@ namespace SS_CAM.Services
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url.Trim());
                 request.Timeout = 5000;
-                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
                 request.Method = "GET";
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -535,7 +668,7 @@ namespace SS_CAM.Services
                     else
                     {
                         statusMessage = "Server returned status: " + response.StatusCode;
-                        return true; // Still accessible
+                        return true;
                     }
                 }
             }
