@@ -62,7 +62,13 @@ namespace SS_CAM
             InitUpdateCheck();
             InitRadioStatusListeners();
 
-            // 4. Navigate to Dashboard on startup
+            // 4. Initialize Faded Animated Audio Spectrum Visualizer in Sidebar Background
+            InitSidebarSpectrumVisualizer();
+
+            // 5. Apply Theme on Launch (loads saved theme from ThemeService)
+            ThemeService.ApplyTheme(ThemeService.CurrentTheme);
+
+            // 6. Navigate to Dashboard on startup
             NavigateTo(typeof(DashboardPage), NavDashboardBtn);
         }
 
@@ -140,6 +146,10 @@ namespace SS_CAM
             if (nasCheckTimer != null)
             {
                 nasCheckTimer.Stop();
+            }
+            if (_spectrumTimer != null)
+            {
+                _spectrumTimer.Stop();
             }
         }
 
@@ -503,6 +513,29 @@ namespace SS_CAM
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02153D"));
             }
 
+            // Window TitleBar Text / Foreground
+            if (AppTitleBar != null)
+            {
+                AppTitleBar.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
+            }
+
+            // Top Header & Hamburger
+            if (ToggleSidebarIcon != null) ToggleSidebarIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
+            if (SidebarAppTitleText != null) SidebarAppTitleText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
+
+            // Search Box
+            if (SearchBoxBorder != null)
+            {
+                SearchBoxBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBg));
+                SearchBoxBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBorder));
+            }
+            if (SearchBoxIcon != null) SearchBoxIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchPlaceholder));
+            if (TopGlobalSearchInput != null) TopGlobalSearchInput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
+
+            // Section Header & Dividers
+            if (SidebarModulesHeader != null) SidebarModulesHeader.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
+            if (SidebarDivider1 != null) SidebarDivider1.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
+
             if (StatusThemeText != null)
             {
                 StatusThemeText.Text = (theme == AppTheme.Falconia)
@@ -510,52 +543,55 @@ namespace SS_CAM
                     : "Theme: SS Default";
             }
 
-            // Sidebar
+            // Sidebar Container
             if (SidebarBorder != null)
             {
                 SidebarBorder.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
                 SidebarBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
             }
 
-            // Sidebar nav text colours (inactive)
-            if (NavDashboardBtn != null)
-            {
-                System.Windows.Controls.Button[] navBtns = new[]
-                {
-                    NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
-                    NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn
-                };
-                foreach (var btn in navBtns)
-                {
-                    if (btn != null)
-                        btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
-                }
-            }
+            // Status Row Text & Icons
+            if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusTimerIcon != null) StatusTimerIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusTimerText != null) StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusRadioIcon != null) StatusRadioIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusRadioText != null) StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusThemeIcon != null) StatusThemeIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusThemeText != null) StatusThemeText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
 
-            // Foot / status row text
-            if (StatusNasText != null)
-                StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-
-            // User card
+            // User Profile Persona Card
             if (SidebarUserCard != null)
             {
                 SidebarUserCard.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
                 SidebarUserCard.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBorder));
             }
+            if (SidebarDesignerName != null) SidebarDesignerName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
+            if (SidebarDepartment != null) SidebarDepartment.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
 
-            // Main content frame
+            // Main Content Frame
             if (MainFrame != null)
                 MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.MainFrameBg));
 
-            // Re-apply nav highlight with correct active colour for this theme
+            // Re-apply Spectrum Visualizer Bar Colors
+            if (_spectrumBars != null && _spectrumBars.Count > 0)
+            {
+                Color baseColor = (Color)ColorConverter.ConvertFromString(c.SpectrumBarColor);
+                byte alpha = c.IsLight ? (byte)60 : (byte)45;
+                Brush barBrush = new SolidColorBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
+                Brush dotBrush = new SolidColorBrush(Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B));
+
+                foreach (var bar in _spectrumBars) bar.Fill = barBrush;
+                foreach (var dot in _spectrumPeakDots) dot.Fill = dotBrush;
+            }
+
+            // Re-apply Nav Highlights
             ResetNavHighlight();
             if (_lastActiveNavBtn != null)
             {
                 string activeBg  = c.IsLight ? "#1A0F6CBD" : "#1A479EF5";
-                string activeIcon = c.IsLight ? c.NavIconActive : c.NavIconActive;
                 _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(activeBg));
                 SetNavIndicator(_lastActiveNavBtn, true);
-                SetNavIconColor(_lastActiveNavBtn, activeIcon);
+                SetNavIconColor(_lastActiveNavBtn, c.NavIconActive);
             }
         }
 
@@ -668,6 +704,163 @@ namespace SS_CAM
         }
 
         private DispatcherTimer footerTimer;
+
+        // ─────────────────────────────────────────────────────────────────
+        // REAL-TIME FADED AUDIO SPECTRUM VISUALIZER (SIDEBAR BACKGROUND)
+        // ─────────────────────────────────────────────────────────────────
+        private DispatcherTimer _spectrumTimer;
+        private readonly List<Rectangle> _spectrumBars = new List<Rectangle>();
+        private readonly List<Ellipse> _spectrumPeakDots = new List<Ellipse>();
+        private readonly double[] _spectrumCurrentHeights = new double[24];
+        private readonly double[] _spectrumPeakY = new double[24];
+        private readonly double[] _spectrumPeakVel = new double[24];
+
+        private void InitSidebarSpectrumVisualizer()
+        {
+            if (SidebarSpectrumCanvas == null) return;
+            SidebarSpectrumCanvas.Children.Clear();
+            _spectrumBars.Clear();
+            _spectrumPeakDots.Clear();
+
+            int numBars = 24;
+            double canvasWidth = 240.0;
+            double canvasHeight = 240.0;
+            double barGap = 3.0;
+            double totalGapWidth = barGap * (numBars + 1);
+            double barWidth = (canvasWidth - totalGapWidth) / numBars;
+
+            ThemeColors c = ThemeService.GetColors(ThemeService.CurrentTheme);
+            Color baseColor = (Color)ColorConverter.ConvertFromString(c.SpectrumBarColor);
+            byte alpha = c.IsLight ? (byte)60 : (byte)45;
+            Brush barBrush = new SolidColorBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
+            Brush dotBrush = new SolidColorBrush(Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B));
+
+            for (int i = 0; i < numBars; i++)
+            {
+                double xPos = barGap + i * (barWidth + barGap);
+
+                // Vertical Bar
+                Rectangle bar = new Rectangle
+                {
+                    Width = barWidth,
+                    Height = 0,
+                    RadiusX = 2,
+                    RadiusY = 2,
+                    Fill = barBrush,
+                    RenderTransformOrigin = new Point(0.5, 1.0)
+                };
+                Canvas.SetLeft(bar, xPos);
+                Canvas.SetBottom(bar, 0);
+                SidebarSpectrumCanvas.Children.Add(bar);
+                _spectrumBars.Add(bar);
+
+                // Peak Cap Dot
+                Ellipse dot = new Ellipse
+                {
+                    Width = barWidth,
+                    Height = 2.5,
+                    Fill = dotBrush,
+                    Visibility = Visibility.Collapsed
+                };
+                Canvas.SetLeft(dot, xPos);
+                Canvas.SetBottom(dot, 0);
+                SidebarSpectrumCanvas.Children.Add(dot);
+                _spectrumPeakDots.Add(dot);
+
+                _spectrumCurrentHeights[i] = 0;
+                _spectrumPeakY[i] = 0;
+                _spectrumPeakVel[i] = 0;
+            }
+
+            _spectrumTimer = new DispatcherTimer();
+            _spectrumTimer.Interval = TimeSpan.FromMilliseconds(33); // ~30 FPS
+            _spectrumTimer.Tick += OnSpectrumTick;
+            _spectrumTimer.Start();
+        }
+
+        private void OnSpectrumTick(object sender, EventArgs e)
+        {
+            if (SidebarSpectrumCanvas == null) return;
+
+            var radio = RadioStreamService.Instance;
+            bool isPlaying = (radio.State == RadioPlaybackState.Playing || radio.State == RadioPlaybackState.Buffering);
+
+            // Target canvas opacity: smoothly fade in when playing, fade out when stopped
+            double targetCanvasOpacity = isPlaying ? 0.35 : 0.0;
+            SidebarSpectrumCanvas.Opacity += (targetCanvasOpacity - SidebarSpectrumCanvas.Opacity) * 0.15;
+
+            if (SidebarSpectrumCanvas.Opacity < 0.005 && !isPlaying)
+            {
+                // Idle when not playing
+                return;
+            }
+
+            double[] liveBands = radio.LocalProxy != null ? radio.LocalProxy.CurrentSpectrumData : null;
+            double peakAmp = radio.LocalProxy != null ? radio.LocalProxy.CurrentPeakAmplitude : 0.0;
+
+            int numBars = _spectrumBars.Count;
+            double maxHeight = SidebarSpectrumCanvas.ActualHeight > 0 ? SidebarSpectrumCanvas.ActualHeight : 240.0;
+
+            Random rnd = null;
+
+            for (int i = 0; i < numBars; i++)
+            {
+                double targetH = 0;
+
+                if (isPlaying)
+                {
+                    if (liveBands != null && liveBands.Length >= 48)
+                    {
+                        // Map 48 frequency bands to 24 display bars
+                        int bandIndex = i * 2;
+                        double val1 = liveBands[bandIndex];
+                        double val2 = (bandIndex + 1 < 48) ? liveBands[bandIndex + 1] : val1;
+                        double rawVal = (val1 + val2) * 0.5;
+
+                        // Frequency weighting: curve mid and bass frequencies
+                        double frequencyMultiplier = 1.0 + Math.Sin((i / (double)numBars) * Math.PI) * 0.4;
+                        targetH = rawVal * maxHeight * 0.85 * frequencyMultiplier;
+                    }
+                    else
+                    {
+                        // Fallback wave equalizing animation
+                        if (rnd == null) rnd = new Random();
+                        targetH = (0.15 + rnd.NextDouble() * 0.70) * maxHeight * (peakAmp > 0 ? peakAmp : 0.5);
+                    }
+                }
+
+                // Smooth exponential lerp
+                _spectrumCurrentHeights[i] += (targetH - _spectrumCurrentHeights[i]) * 0.30;
+                double h = Math.Max(0, _spectrumCurrentHeights[i]);
+
+                Rectangle bar = _spectrumBars[i];
+                bar.Height = h;
+
+                // Update Peak Cap Dot with gravity drop-off
+                Ellipse dot = _spectrumPeakDots[i];
+                if (h > _spectrumPeakY[i])
+                {
+                    _spectrumPeakY[i] = h + 3;
+                    _spectrumPeakVel[i] = 0;
+                }
+                else
+                {
+                    _spectrumPeakVel[i] += 0.4; // Gravity acceleration
+                    _spectrumPeakY[i] -= _spectrumPeakVel[i];
+                    if (_spectrumPeakY[i] < h) _spectrumPeakY[i] = h;
+                }
+
+                if (_spectrumPeakY[i] > 2)
+                {
+                    dot.Visibility = Visibility.Visible;
+                    Canvas.SetBottom(dot, Math.Max(0, _spectrumPeakY[i]));
+                }
+                else
+                {
+                    dot.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
 
         private void InitFooterTimer()
         {

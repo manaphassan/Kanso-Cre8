@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace SS_CAM.Services
 {
@@ -30,16 +32,59 @@ namespace SS_CAM.Services
         public string UserCardTitle { get; set; }
         public string UserCardSub { get; set; }
         public string MainFrameBg { get; set; }
+        public string TitleBarForeground { get; set; }
+        public string SearchBg { get; set; }
+        public string SearchBorder { get; set; }
+        public string SearchText { get; set; }
+        public string SearchPlaceholder { get; set; }
+        
         // Falconia-specific extras
         public string NavIndicatorColor { get; set; }
         public string NavIconActive { get; set; }
         public string NavIconInactive { get; set; }
+        public string SpectrumBarColor { get; set; }
         public bool IsLight { get; set; }
+    }
+
+    public class ThemeConfig
+    {
+        public AppTheme SelectedTheme { get; set; }
+
+        public ThemeConfig()
+        {
+            SelectedTheme = AppTheme.SSDefault;
+        }
     }
 
     public class ThemeService
     {
         private static AppTheme _currentTheme = AppTheme.SSDefault;
+        private static readonly string _configPath;
+
+        static ThemeService()
+        {
+            try
+            {
+                string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string ssDir = Path.Combine(appData, "SuamiSihat");
+                if (!Directory.Exists(ssDir)) Directory.CreateDirectory(ssDir);
+                _configPath = Path.Combine(ssDir, "theme_config.json");
+
+                if (File.Exists(_configPath))
+                {
+                    string json = File.ReadAllText(_configPath);
+                    var cfg = JsonConvert.DeserializeObject<ThemeConfig>(json);
+                    if (cfg != null)
+                    {
+                        _currentTheme = cfg.SelectedTheme;
+                    }
+                }
+            }
+            catch
+            {
+                _currentTheme = AppTheme.SSDefault;
+            }
+        }
 
         public static AppTheme CurrentTheme
         {
@@ -54,62 +99,59 @@ namespace SS_CAM.Services
             {
                 // ─────────────────────────────────────────────────────────────────
                 // FALCONIA — Full White Fluent 2 Light Theme
-                // Based on official Fluent 2 Light design tokens:
-                //   colorNeutralBackground1   = #FFFFFF
-                //   colorNeutralBackground2   = #F5F5F5
-                //   colorNeutralBackground3   = #F0F0F0
-                //   colorNeutralForeground1   = #242424   (primary text)
-                //   colorNeutralForeground2   = #424242   (secondary text)
-                //   colorNeutralForeground3   = #616161   (tertiary / icons)
-                //   colorNeutralStroke1       = #D1D1D1   (borders)
-                //   colorNeutralStroke2       = #E0E0E0
-                //   colorBrandBackground      = #0F6CBD   (brand accent)
-                //   colorBrandForeground1     = #0F6CBD   (active link/icon)
-                //   colorBrandForeground2     = #115EA3
-                //   colorNeutralBackground1Hover = #F5F5F5
+                // Official Microsoft Fluent 2 Light tokens (fluent2.microsoft.design)
                 // ─────────────────────────────────────────────────────────────────
                 return new ThemeColors
                 {
                     IsLight = true,
                     FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
-                    // Header: white with subtle bottom shadow stroke
+                    TitleBarForeground = "#242424",
+
+                    // Header & Canvas
                     HeaderBg        = "#FFFFFF",
                     HeaderBorder    = "#D1D1D1",
+                    MainFrameBg     = "#FAFAFA",
 
-                    // Sidebar: neutral background 2 (not pure white — slight depth)
+                    // Sidebar: neutral background 2 (#F5F5F5) with stroke (#E0E0E0)
                     SidebarBg       = "#F5F5F5",
                     SidebarBorder   = "#E0E0E0",
 
-                    // Active nav item: subtle blue tint bg, brand text
+                    // Global search in sidebar
+                    SearchBg          = "#EBEBEB",
+                    SearchBorder      = "#D1D1D1",
+                    SearchText        = "#242424",
+                    SearchPlaceholder = "#616161",
+
+                    // Active nav item: subtle blue tint bg, brand text (#0F6CBD)
                     ActiveNavBg     = "#EBF3FC",              // colorBrandBackground2 tint
                     ActiveNavText   = "#0F6CBD",              // colorBrandForeground1
                     ActiveNavSubtext= "#115EA3",
 
-                    // Inactive nav: standard foreground on light bg
-                    InactiveNavText    = "#242424",           // colorNeutralForeground1
+                    // Inactive nav: primary text (#242424), tertiary icon (#616161)
+                    InactiveNavText    = "#242424",           // colorNeutralForeground1 (WCAG AA 15:1)
                     InactiveNavSubtext = "#616161",
 
-                    // Footer / status bar: white with stroke
+                    // Footer / status bar: neutral foreground
                     FooterBg        = "#FFFFFF",
                     FooterBorder    = "#E0E0E0",
-                    FooterText      = "#242424",
-                    FooterCardBg    = "#F5F5F5",
+                    FooterText      = "#242424",              // High contrast text on light bg
+                    FooterCardBg    = "#FFFFFF",
                     FooterCardBorder= "#E0E0E0",
 
                     // User profile card in sidebar
                     UserCardBg      = "#FFFFFF",
                     UserCardBorder  = "#D1D1D1",
                     UserCardTitle   = "#242424",
-                    UserCardSub     = "#0F6CBD",
-
-                    // Main content canvas
-                    MainFrameBg     = "#FAFAFA",
+                    UserCardSub     = "#616161",
 
                     // Nav indicator pill + icon tint
                     NavIndicatorColor = "#0F6CBD",
                     NavIconActive     = "#0F6CBD",            // 8.5:1 on #FAFAFA WCAG AA ✅
                     NavIconInactive   = "#616161",            // 5.9:1 on #F5F5F5 WCAG AA ✅
+
+                    // Visualizer bar color for light mode
+                    SpectrumBarColor  = "#0F6CBD"
                 };
             }
 
@@ -120,38 +162,68 @@ namespace SS_CAM.Services
             {
                 IsLight = false,
                 FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
+
+                TitleBarForeground = "#FFFFFF",
+
                 HeaderBg        = "#021B47",
                 HeaderBorder    = "#1E3A8A",
+                MainFrameBg     = "#F8FAFC",
+
                 SidebarBg       = "#02153D",
                 SidebarBorder   = "#0A2560",
+
+                SearchBg          = "#071E46",
+                SearchBorder      = "#1E3A8A",
+                SearchText        = "#FFFFFF",
+                SearchPlaceholder = "#9D9D9D",
+
                 ActiveNavBg     = "#1A479EF5",
                 ActiveNavText   = "#FFFFFF",
                 ActiveNavSubtext= "#C7E0F4",
+
                 InactiveNavText    = "#C8C8C8",
                 InactiveNavSubtext = "#9D9D9D",
+
                 FooterBg        = "#02153D",
                 FooterBorder    = "#0A2560",
                 FooterText      = "#C8C8C8",
                 FooterCardBg    = "#071E46",
                 FooterCardBorder= "#0A2560",
+
                 UserCardBg      = "#071E46",
                 UserCardBorder  = "#0A2560",
                 UserCardTitle   = "#FFFFFF",
                 UserCardSub     = "#479EF5",
-                MainFrameBg     = "#F8FAFC",
+
                 NavIndicatorColor = "#479EF5",
                 NavIconActive     = "#479EF5",    // 5.8:1 on #02153D WCAG AA ✅
                 NavIconInactive   = "#9D9D9D",    // 5.4:1 on #02153D WCAG AA ✅
+
+                SpectrumBarColor  = "#479EF5"
             };
         }
 
         public static void ApplyTheme(AppTheme theme)
         {
             _currentTheme = theme;
+            SaveTheme(theme);
             if (ThemeChanged != null)
             {
                 ThemeChanged(theme);
             }
+        }
+
+        private static void SaveTheme(AppTheme theme)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_configPath))
+                {
+                    string json = JsonConvert.SerializeObject(new ThemeConfig { SelectedTheme = theme }, Formatting.Indented);
+                    File.WriteAllText(_configPath, json);
+                }
+            }
+            catch { }
         }
     }
 }

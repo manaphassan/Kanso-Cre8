@@ -67,175 +67,182 @@
             <Border Grid.Column="0" x:Name="SidebarBorder"
                     Background="#202020"
                     BorderBrush="#303030" BorderThickness="0,0,1,0">
-                <DockPanel LastChildFill="True">
+                <Grid>
+                    <!-- ── FADED ANIMATED AUDIO SPECTRUM VISUALIZER IN SIDEBAR BACKGROUND ── -->
+                    <Canvas x:Name="SidebarSpectrumCanvas"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                            Height="240" Opacity="0.0" IsHitTestVisible="False"
+                            ClipToBounds="True"/>
 
-                    <!-- ── TOP: App Identity + Hamburger ── -->
-                    <Border DockPanel.Dock="Top" Padding="12,10,12,6" Background="Transparent">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                    <DockPanel LastChildFill="True">
 
-                            <!-- App Logo & Title -->
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                <!-- Hamburger toggle — always visible -->
-                                <Button x:Name="ToggleSidebarBtn" Click="OnToggleSidebarClicked"
-                                        Background="Transparent" BorderThickness="0"
-                                        Width="32" Height="32" Padding="0" Margin="0,0,8,0" Cursor="Hand"
-                                        ToolTip="Toggle Navigation (Ctrl+B)">
-                                    <TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="16" Foreground="#FFFFFF"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Button>
-                                <StackPanel x:Name="AppTitlePanel" VerticalAlignment="Center">
-                                    <TextBlock Text="SuamiSihat" Foreground="#FFFFFF"
-                                               FontSize="14" FontWeight="SemiBold"
-                                               FontFamily="Segoe UI Variable Display"
-                                               VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- ── BOTTOM: Status Widgets + User Profile ── -->
-                    <StackPanel DockPanel.Dock="Bottom" Margin="8,8,8,12">
-
-                        <!-- Divider -->
-                        <Border Height="1" Background="#303030" Margin="4,0,4,8"/>
-
-                        <!-- NAS Status row -->
-                        <Border x:Name="NasPill" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
-                                Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked"
-                                ToolTip="Click to re-check Synology NAS connection">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="StatusNasDot" Text="&#xE895;" FontFamily="Segoe Fluent Icons"
-                                           FontSize="12" Foreground="#13A10E" VerticalAlignment="Center"
-                                           Margin="0,0,10,0"/>
-                                <TextBlock x:Name="StatusNasText"
-                                           Text="SSNAS Connected"
-                                           Foreground="#C8C8C8" FontSize="12"
-                                           FontFamily="Segoe UI Variable Text"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Focus Timer row -->
-                        <Border CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
-                                Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked"
-                                ToolTip="Open Wellbeing &amp; Focus Timer">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons"
-                                           FontSize="14" Foreground="#9D9D9D" VerticalAlignment="Center"
-                                           Margin="0,0,10,0"/>
-                                <TextBlock x:Name="StatusTimerText" Text="Focus: 25:00"
-                                           Foreground="#C8C8C8" FontSize="12"
-                                           FontFamily="Segoe UI Variable Text"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Radio Player row: hidden until radio is playing -->
-                        <Border x:Name="RadioFooterRow" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
-                                Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked"
-                                ToolTip="Open Radio Player" Visibility="Collapsed">
+                        <!-- ── TOP: App Identity + Hamburger ── -->
+                        <Border DockPanel.Dock="Top" Padding="12,10,12,6" Background="Transparent">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons"
-                                           FontSize="14" Foreground="#9D9D9D" VerticalAlignment="Center"
-                                           Margin="0,0,10,0"/>
-                                <TextBlock x:Name="StatusRadioText" Grid.Column="1"
-                                           Text="Radio: BFM 89.9"
-                                           Foreground="#C8C8C8" FontSize="12"
-                                           FontFamily="Segoe UI Variable Text"
-                                           VerticalAlignment="Center"/>
-                                <Button x:Name="StatusRadioPlayBtn" Grid.Column="2"
-                                        Click="OnStatusRadioPlayToggle"
-                                        Background="Transparent" BorderThickness="0"
-                                        Padding="4,0" Cursor="Hand" ToolTip="Play / Pause">
-                                    <TextBlock x:Name="StatusRadioPlayIcon" Text="&#xE768;"
-                                               FontFamily="Segoe Fluent Icons"
-                                               FontSize="14" Foreground="#0078D4"/>
-                                </Button>
+
+                                <!-- App Logo & Title -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <!-- Hamburger toggle — always visible -->
+                                    <Button x:Name="ToggleSidebarBtn" Click="OnToggleSidebarClicked"
+                                            Background="Transparent" BorderThickness="0"
+                                            Width="32" Height="32" Padding="0" Margin="0,0,8,0" Cursor="Hand"
+                                            ToolTip="Toggle Navigation (Ctrl+B)">
+                                        <TextBlock x:Name="ToggleSidebarIcon" Text="&#xE700;" FontFamily="Segoe Fluent Icons"
+                                                   FontSize="16" Foreground="#FFFFFF"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Button>
+                                    <StackPanel x:Name="AppTitlePanel" VerticalAlignment="Center">
+                                        <TextBlock x:Name="SidebarAppTitleText" Text="SuamiSihat" Foreground="#FFFFFF"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   FontFamily="Segoe UI Variable Display"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
                             </Grid>
                         </Border>
 
-                        <!-- Theme Switcher row -->
-                        <Border CornerRadius="4" Padding="0,0,0,0" Margin="0,0,0,8">
-                            <Button x:Name="StatusThemeBtn" Click="OnStatusThemeToggle"
-                                    Background="Transparent" Foreground="#C8C8C8"
-                                    BorderThickness="0" Padding="8,6" Cursor="Hand"
-                                    HorizontalContentAlignment="Left" HorizontalAlignment="Stretch">
+                        <!-- ── BOTTOM: Status Widgets + User Profile ── -->
+                        <StackPanel DockPanel.Dock="Bottom" Margin="8,8,8,12">
+
+                            <!-- Divider -->
+                            <Border x:Name="SidebarDivider1" Height="1" Background="#303030" Margin="4,0,4,8"/>
+
+                            <!-- NAS Status row -->
+                            <Border x:Name="NasPill" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
+                                    Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked"
+                                    ToolTip="Click to re-check Synology NAS connection">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="StatusThemeIcon" Text="&#xE790;"
-                                               FontFamily="Segoe Fluent Icons"
-                                               FontSize="14" Foreground="#9D9D9D"
-                                               VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                    <TextBlock x:Name="StatusThemeText" Text="Theme: SS Default"
-                                               FontSize="12" FontFamily="Segoe UI Variable Text"
+                                    <TextBlock x:Name="StatusNasDot" Text="&#xE895;" FontFamily="Segoe Fluent Icons"
+                                               FontSize="12" Foreground="#13A10E" VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <TextBlock x:Name="StatusNasText"
+                                               Text="SSNAS Connected"
+                                               Foreground="#C8C8C8" FontSize="12"
+                                               FontFamily="Segoe UI Variable Text"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
-                            </Button>
-                        </Border>
+                            </Border>
 
-                        <!-- User Profile row (Fluent 2 Persona at bottom of nav) -->
-                        <Border x:Name="SidebarUserCard" CornerRadius="6" Padding="8,8"
-                                Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked"
-                                Background="#2A2A2A"
-                                ToolTip="User Profile &amp; Settings">
-                            <StackPanel Orientation="Horizontal">
-                                <!-- Avatar circle -->
-                                <Border Width="28" Height="28" CornerRadius="14"
-                                        Background="#0078D4" Margin="0,0,10,0" ClipToBounds="True"
-                                        VerticalAlignment="Center">
-                                    <Grid x:Name="AvatarBorder">
-                                        <TextBlock x:Name="AvatarEmojiText" Text="B"
-                                                   Foreground="White" FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   FontFamily="Segoe UI Variable Text"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-                                        <Image x:Name="SidebarAvatarImg" Stretch="UniformToFill"
-                                               Visibility="Collapsed"/>
-                                    </Grid>
-                                </Border>
-                                <StackPanel x:Name="SidebarUserText" VerticalAlignment="Center">
-                                    <TextBlock x:Name="SidebarDesignerName" Text="Brand"
-                                               Foreground="#FFFFFF" FontSize="12" FontWeight="SemiBold"
-                                               FontFamily="Segoe UI Variable Text"/>
-                                    <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand"
-                                               Foreground="#9D9D9D" FontSize="10"
-                                               FontFamily="Segoe UI Variable Text"/>
+                            <!-- Focus Timer row -->
+                            <Border CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
+                                    Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked"
+                                    ToolTip="Open Wellbeing &amp; Focus Timer">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="StatusTimerIcon" Text="&#xE916;" FontFamily="Segoe Fluent Icons"
+                                               FontSize="14" Foreground="#9D9D9D" VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <TextBlock x:Name="StatusTimerText" Text="Focus: 25:00"
+                                               Foreground="#C8C8C8" FontSize="12"
+                                               FontFamily="Segoe UI Variable Text"
+                                               VerticalAlignment="Center"/>
                                 </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
+                            </Border>
 
-                    <!-- ── MIDDLE: Global Search ── -->
-                    <Border DockPanel.Dock="Top" Padding="12,0,12,8">
-                        <Border Background="#2D2D2D" BorderBrush="#404040" BorderThickness="1"
-                                CornerRadius="4" Height="32">
-                            <Grid Margin="8,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons"
-                                           FontSize="12" Foreground="#9D9D9D"
-                                           VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBox x:Name="TopGlobalSearchInput" Grid.Column="1"
-                                         Background="Transparent" Foreground="#FFFFFF"
-                                         BorderThickness="0" FontSize="12"
-                                         FontFamily="Segoe UI Variable Text"
-                                         VerticalAlignment="Center"
-                                         TextChanged="OnTopSearchInputChanged"/>
-                            </Grid>
+                            <!-- Radio Player row: hidden until radio is playing -->
+                            <Border x:Name="RadioFooterRow" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
+                                    Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked"
+                                    ToolTip="Open Radio Player" Visibility="Collapsed">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="StatusRadioIcon" Text="&#xE768;" FontFamily="Segoe Fluent Icons"
+                                               FontSize="14" Foreground="#9D9D9D" VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <TextBlock x:Name="StatusRadioText" Grid.Column="1"
+                                               Text="Radio: BFM 89.9"
+                                               Foreground="#C8C8C8" FontSize="12"
+                                               FontFamily="Segoe UI Variable Text"
+                                               VerticalAlignment="Center"/>
+                                    <Button x:Name="StatusRadioPlayBtn" Grid.Column="2"
+                                            Click="OnStatusRadioPlayToggle"
+                                            Background="Transparent" BorderThickness="0"
+                                            Padding="4,0" Cursor="Hand" ToolTip="Play / Pause">
+                                        <TextBlock x:Name="StatusRadioPlayIcon" Text="&#xE768;"
+                                                   FontFamily="Segoe Fluent Icons"
+                                                   FontSize="14" Foreground="#0078D4"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!-- Theme Switcher row -->
+                            <Border CornerRadius="4" Padding="0,0,0,0" Margin="0,0,0,8">
+                                <Button x:Name="StatusThemeBtn" Click="OnStatusThemeToggle"
+                                        Background="Transparent" Foreground="#C8C8C8"
+                                        BorderThickness="0" Padding="8,6" Cursor="Hand"
+                                        HorizontalContentAlignment="Left" HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="StatusThemeIcon" Text="&#xE790;"
+                                                   FontFamily="Segoe Fluent Icons"
+                                                   FontSize="14" Foreground="#9D9D9D"
+                                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="StatusThemeText" Text="Theme: SS Default"
+                                                   FontSize="12" FontFamily="Segoe UI Variable Text"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Border>
+
+                            <!-- User Profile row (Fluent 2 Persona at bottom of nav) -->
+                            <Border x:Name="SidebarUserCard" CornerRadius="6" Padding="8,8"
+                                    Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked"
+                                    Background="#2A2A2A"
+                                    ToolTip="User Profile &amp; Settings">
+                                <StackPanel Orientation="Horizontal">
+                                    <!-- Avatar circle -->
+                                    <Border Width="28" Height="28" CornerRadius="14"
+                                            Background="#0078D4" Margin="0,0,10,0" ClipToBounds="True"
+                                            VerticalAlignment="Center">
+                                        <Grid x:Name="AvatarBorder">
+                                            <TextBlock x:Name="AvatarEmojiText" Text="B"
+                                                       Foreground="White" FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       FontFamily="Segoe UI Variable Text"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            <Image x:Name="SidebarAvatarImg" Stretch="UniformToFill"
+                                                   Visibility="Collapsed"/>
+                                        </Grid>
+                                    </Border>
+                                    <StackPanel x:Name="SidebarUserText" VerticalAlignment="Center">
+                                        <TextBlock x:Name="SidebarDesignerName" Text="Brand"
+                                                   Foreground="#FFFFFF" FontSize="12" FontWeight="SemiBold"
+                                                   FontFamily="Segoe UI Variable Text"/>
+                                        <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand"
+                                                   Foreground="#9D9D9D" FontSize="10"
+                                                   FontFamily="Segoe UI Variable Text"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- ── MIDDLE: Global Search ── -->
+                        <Border DockPanel.Dock="Top" Padding="12,0,12,8">
+                            <Border x:Name="SearchBoxBorder" Background="#2D2D2D" BorderBrush="#404040" BorderThickness="1"
+                                    CornerRadius="4" Height="32">
+                                <Grid Margin="8,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="SearchBoxIcon" Text="&#xE721;" FontFamily="Segoe Fluent Icons"
+                                               FontSize="12" Foreground="#9D9D9D"
+                                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBox x:Name="TopGlobalSearchInput" Grid.Column="1"
+                                             Background="Transparent" Foreground="#FFFFFF"
+                                             BorderThickness="0" FontSize="12"
+                                             FontFamily="Segoe UI Variable Text"
+                                             VerticalAlignment="Center"
+                                             TextChanged="OnTopSearchInputChanged"/>
+                                </Grid>
+                            </Border>
                         </Border>
-                    </Border>
 
                     <!-- ── NAV ITEMS: Fluent 2 Single-Column Nav ── -->
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -453,11 +460,11 @@
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
-
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>
-            </Border>
+            </Grid>
+        </Border>
 
             <!-- ═══════════════════════════════════════
                  MAIN CONTENT FRAME
