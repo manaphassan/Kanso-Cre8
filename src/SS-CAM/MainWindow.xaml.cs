@@ -368,7 +368,19 @@ namespace SS_CAM
 
             Visibility labelVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
 
-            // Hide/show search bar container (prevents squishing search box / clipped search icon!)
+            // Top Header: remove padding & center hamburger button when collapsed
+            if (TopHeaderBorder != null)
+            {
+                TopHeaderBorder.Padding = isSidebarExpanded ? new Thickness(12, 10, 12, 6) : new Thickness(0, 10, 0, 6);
+            }
+            if (ToggleSidebarBtn != null)
+            {
+                ToggleSidebarBtn.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
+                ToggleSidebarBtn.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+            }
+
+            // Hide/show search bar outer border (eliminates search box / clipped search icon when collapsed)
+            if (SearchBoxOuterBorder != null) SearchBoxOuterBorder.Visibility = labelVis;
             if (SearchBoxBorder != null) SearchBoxBorder.Visibility = labelVis;
 
             // Hide/show section header, title panel, profile text
@@ -382,7 +394,19 @@ namespace SS_CAM
             if (StatusRadioText != null) StatusRadioText.Visibility = labelVis;
             if (StatusThemeText != null) StatusThemeText.Visibility = labelVis;
 
-            // Align status icons (centered when collapsed, left when expanded)
+            // Align bottom status panel margins
+            if (SidebarBottomPanel != null)
+            {
+                SidebarBottomPanel.Margin = isSidebarExpanded ? new Thickness(8, 8, 8, 12) : new Thickness(0, 8, 0, 12);
+            }
+
+            // Align dividers
+            if (SidebarDivider1 != null)
+            {
+                SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(8, 0, 8, 8);
+            }
+
+            // Align status row icons (centered along X = 24px when collapsed)
             Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
             HorizontalAlignment iconAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
 
@@ -400,6 +424,13 @@ namespace SS_CAM
             if (SidebarUserCard != null)
             {
                 SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(6, 6, 6, 6);
+                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(4, 0, 4, 0);
+            }
+
+            // Update Nav Panel margins (0 left/right margin when collapsed for full 48px button width)
+            if (SidebarNavPanel != null)
+            {
+                SidebarNavPanel.Margin = isSidebarExpanded ? new Thickness(8, 4, 8, 4) : new Thickness(0, 4, 0, 4);
             }
 
             // Update all Nav Items (center icon when collapsed, restore margins when expanded)
@@ -412,11 +443,22 @@ namespace SS_CAM
             foreach (var btn in navBtns)
             {
                 if (btn == null) continue;
+                btn.Width = isSidebarExpanded ? double.NaN : 48;
+                btn.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+
                 var grid = btn.Content as Grid;
                 if (grid == null) continue;
 
                 foreach (var child in grid.Children)
                 {
+                    var rect = child as System.Windows.Shapes.Rectangle;
+                    if (rect != null)
+                    {
+                        // 3px indicator pill on left edge
+                        rect.HorizontalAlignment = HorizontalAlignment.Left;
+                        rect.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 4, 0, 4);
+                    }
+
                     var sp = child as StackPanel;
                     if (sp != null)
                     {

@@ -77,7 +77,7 @@
                     <DockPanel LastChildFill="True">
 
                         <!-- ── TOP: App Identity + Hamburger ── -->
-                        <Border DockPanel.Dock="Top" Padding="12,10,12,6" Background="Transparent">
+                        <Border x:Name="TopHeaderBorder" DockPanel.Dock="Top" Padding="12,10,12,6" Background="Transparent">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -106,7 +106,7 @@
                         </Border>
 
                         <!-- ── BOTTOM: Status Widgets + User Profile ── -->
-                        <StackPanel DockPanel.Dock="Bottom" Margin="8,8,8,12">
+                        <StackPanel x:Name="SidebarBottomPanel" DockPanel.Dock="Bottom" Margin="8,8,8,12">
 
                             <!-- Divider -->
                             <Border x:Name="SidebarDivider1" Height="1" Background="#303030" Margin="4,0,4,8"/>
@@ -223,7 +223,7 @@
                         </StackPanel>
 
                         <!-- ── MIDDLE: Global Search ── -->
-                        <Border DockPanel.Dock="Top" Padding="12,0,12,8">
+                        <Border x:Name="SearchBoxOuterBorder" DockPanel.Dock="Top" Padding="12,0,12,8">
                             <Border x:Name="SearchBoxBorder" Background="#2D2D2D" BorderBrush="#404040" BorderThickness="1"
                                     CornerRadius="4" Height="32">
                                 <Grid Margin="8,0">
