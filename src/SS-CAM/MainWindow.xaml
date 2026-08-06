@@ -11,7 +11,7 @@
         ExtendsContentIntoTitleBar="True"
         WindowCornerPreference="Round">
 
-    <Grid>
+    <Grid Background="#02153D">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -21,33 +21,33 @@
         </Grid.RowDefinitions>
 
         <!-- Windows TitleBar -->
-        <ui:TitleBar Grid.Row="0" Title="SuamiSihat Creative Assets Management" Icon="app.ico"/>
+        <ui:TitleBar Grid.Row="0" Title="SuamiSihat Creative Assets Management" Icon="app.ico" Foreground="White"/>
 
         <!-- Top Dark Navy Branding Header with Animated Floating Geometry Canvas -->
-        <Border Grid.Row="1" Background="#022057" Padding="20,12" ClipToBounds="True">
+        <Border Grid.Row="1" Background="#021B47" BorderBrush="#1E3A8A" BorderThickness="0,0,0,1" Padding="20,12" ClipToBounds="True">
             <Grid>
                 <!-- Animated Canvas Background -->
                 <Canvas x:Name="HeaderCanvas" IsHitTestVisible="False"/>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Button x:Name="ToggleSidebarBtn" Click="OnToggleSidebarClicked" Background="Transparent" BorderThickness="0" Margin="0,0,16,0" Cursor="Hand">
-                        <TextBlock Text="☰" Foreground="#BFE4FF" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="☰" Foreground="#93C5FD" FontSize="18" FontWeight="Bold"/>
                     </Button>
-                    <!-- Brand Title &amp; Subtitle -->
+                    <!-- Brand Title & Subtitle -->
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="SuamiSihat" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,0,10,0"/>
-                            <Border Background="#21A1F7" CornerRadius="4" Padding="6,2" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="OnOpenAboutWindow" ToolTip="About SS-CAM (Click for Easter Egg)">
-                                <TextBlock Text="v2.1.0" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                            <Border Background="#21A1F7" CornerRadius="10" Padding="8,2" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="OnOpenAboutWindow" ToolTip="About SS-CAM">
+                                <TextBlock Text="v2.1.0" Foreground="White" FontSize="10.5" FontWeight="Bold"/>
                             </Border>
                         </StackPanel>
-                        <TextBlock Text="Creative Assets Management | Standardized Workstation Suite" Foreground="#BFE4FF" FontSize="11" Margin="0,2,0,0"/>
+                        <TextBlock Text="Creative Assets Management | Standardized Workstation Suite" Foreground="#93C5FD" FontSize="11" Margin="0,2,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Update Notification Banner (hidden by default, shown when new version available) -->
+        <!-- Update Notification Banner -->
         <Border x:Name="UpdateBanner" Grid.Row="2" Background="#FEF9C3" BorderBrush="#EAB308" BorderThickness="0,0,0,1" Padding="16,8" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -71,33 +71,33 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Navigation Sidebar -->
-            <Border Grid.Column="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="0,0,1,0">
+            <!-- Apple-Style Translucent Navigation Sidebar -->
+            <Border Grid.Column="0" Background="#03183D" BorderBrush="#1E3A8A" BorderThickness="0,0,1,0">
                 <DockPanel LastChildFill="True">
-                    <!-- User Profile Footer Badge (Clicking opens User Profile & Settings) -->
-                    <Border DockPanel.Dock="Bottom" Background="#0F172A" Padding="12" BorderBrush="#334155" BorderThickness="0,1,0,0" Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked" ToolTip="User Profile &amp; Settings">
+                    <!-- User Profile Footer Card -->
+                    <Border DockPanel.Dock="Bottom" Background="#072352" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#1E40AF" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked" ToolTip="User Profile &amp; Settings">
                         <StackPanel x:Name="SidebarUserPanel" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <Border x:Name="AvatarBorder" Width="36" Height="36" CornerRadius="18" Background="#21A1F7" Margin="0,0,8,0" VerticalAlignment="Center" ClipToBounds="True">
+                            <Border x:Name="AvatarBorder" Width="34" Height="34" CornerRadius="17" Background="#21A1F7" Margin="0,0,10,0" VerticalAlignment="Center" ClipToBounds="True">
                                 <Grid>
-                                    <TextBlock x:Name="AvatarEmojiText" Text="👤" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="AvatarEmojiText" Text="👤" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <Image x:Name="SidebarAvatarImg" Stretch="UniformToFill" Visibility="Collapsed"/>
                                 </Grid>
                             </Border>
                             <StackPanel x:Name="SidebarUserText" VerticalAlignment="Center">
                                 <TextBlock x:Name="SidebarDesignerName" Text="Brand" Foreground="White" FontWeight="Bold" FontSize="12"/>
-                                <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand" Foreground="#94A3B8" FontSize="10"/>
+                                <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand" Foreground="#93C5FD" FontSize="10"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- Navigation Items (5 Modules + Settings) -->
+                    <!-- Navigation Items -->
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel x:Name="SidebarNavPanel" Margin="6,12">
-                            <TextBlock x:Name="SidebarModulesHeader" Text="NAVIGATE" Foreground="#64748B" FontSize="10" FontWeight="Bold" Margin="10,0,0,10"/>
+                        <StackPanel x:Name="SidebarNavPanel" Margin="8,12">
+                            <TextBlock x:Name="SidebarModulesHeader" Text="MODULES" Foreground="#64748B" FontSize="10" FontWeight="Bold" Margin="10,0,0,10"/>
 
-                            <Button x:Name="NavDashboardBtn" Click="OnNavDashboardClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="#043388" Foreground="White" BorderThickness="0" ToolTip="Dashboard (Workspace Overview)">
+                            <Button x:Name="NavDashboardBtn" Click="OnNavDashboardClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="#043388" Foreground="White" BorderThickness="0" ToolTip="Dashboard (Workspace Overview)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavDashboardIcon" Text="📊" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavDashboardIcon" Text="📊" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavDashboardText" VerticalAlignment="Center">
                                         <TextBlock Text="Dashboard" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="Workspace overview" Foreground="#93C5FD" FontSize="9"/>
@@ -105,9 +105,9 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavWellbeingBtn" Click="OnNavWellbeingClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Creative Wellbeing (Focus Timer &amp; Habits)">
+                            <Button x:Name="NavWellbeingBtn" Click="OnNavWellbeingClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Creative Wellbeing (Focus Timer &amp; Habits)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavWellbeingIcon" Text="🧘" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavWellbeingIcon" Text="🧘" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavWellbeingText" VerticalAlignment="Center">
                                         <TextBlock Text="Creative Wellbeing" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="Focus, reset &amp; habits" Foreground="#94A3B8" FontSize="9"/>
@@ -115,9 +115,9 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavProjectsBtn" Click="OnNavProjectsClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Project Creator (Standardized Templates)">
+                            <Button x:Name="NavProjectsBtn" Click="OnNavProjectsClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Project Creator (Standardized Templates)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavProjectsIcon" Text="📁" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavProjectsIcon" Text="📁" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavProjectsText" VerticalAlignment="Center">
                                         <TextBlock Text="Project Creator" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="Standardized templates" Foreground="#94A3B8" FontSize="9"/>
@@ -125,9 +125,9 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavSearchBtn" Click="OnNavSearchClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Search &amp; Copy (Find Project Folders)">
+                            <Button x:Name="NavSearchBtn" Click="OnNavSearchClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Search &amp; Copy (Find Project Folders)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavSearchIcon" Text="🔍" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavSearchIcon" Text="🔍" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavSearchText" VerticalAlignment="Center">
                                         <TextBlock Text="Search &amp; Copy" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="Find project folders" Foreground="#94A3B8" FontSize="9"/>
@@ -135,18 +135,18 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavBrandAssetsBtn" Click="OnNavBrandAssetsClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Brand Assets (Palettes &amp; Libraries)">
+                            <Button x:Name="NavBrandAssetsBtn" Click="OnNavBrandAssetsClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Brand Assets (Palettes &amp; Libraries)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavBrandAssetsIcon" Text="🎨" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavBrandAssetsIcon" Text="🎨" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavBrandAssetsText" VerticalAlignment="Center">
                                         <TextBlock Text="Brand Assets" FontWeight="Bold" FontSize="12"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavRadioBtn" Click="OnNavRadioClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Radio Player (Live Streams &amp; Lo-Fi Focus Beats)">
+                            <Button x:Name="NavRadioBtn" Click="OnNavRadioClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Radio Player (Live Streams &amp; Lo-Fi Focus Beats)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavRadioIcon" Text="📻" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavRadioIcon" Text="📻" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavRadioText" VerticalAlignment="Center">
                                         <TextBlock Text="Radio Player" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="Live streams &amp; lo-fi beats" Foreground="#94A3B8" FontSize="9"/>
@@ -154,9 +154,9 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="NavWorkstationHealthBtn" Click="OnNavWorkstationHealthClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Workstation Health (PC Specs &amp; Software Scanner)">
+                            <Button x:Name="NavWorkstationHealthBtn" Click="OnNavWorkstationHealthClicked" Height="42" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Workstation Health (PC Specs &amp; Software Scanner)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <TextBlock x:Name="NavWorkstationHealthIcon" Text="💻" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="NavWorkstationHealthIcon" Text="💻" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <StackPanel x:Name="NavWorkstationHealthText" VerticalAlignment="Center">
                                         <TextBlock Text="Workstation Health" FontWeight="Bold" FontSize="12"/>
                                         <TextBlock Text="PC specs &amp; software scanner" Foreground="#94A3B8" FontSize="9"/>
@@ -168,42 +168,42 @@
                 </DockPanel>
             </Border>
 
-            <!-- Main Page Frame Content Area -->
+            <!-- Main Content Area -->
             <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Background="#F8FAFC"/>
         </Grid>
 
-        <!-- Bottom Status Bar -->
-        <StatusBar Grid.Row="4" Background="#E2E8F0" Padding="12,6">
-            <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked" ToolTip="Click to re-check Synology NAS status (https://suamisihat.myds.me)">
+        <!-- Minimalist Dark Navy Status Bar -->
+        <StatusBar Grid.Row="4" Background="#02153D" BorderBrush="#1E3A8A" BorderThickness="0,1,0,0" Padding="12,6">
+            <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked" ToolTip="Click to re-check Synology NAS status">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusNasDot" Text="🔴 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="10" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="StatusNasText" Text="SSNAS Checking..." Foreground="#475569" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StatusNasText" Text="SSNAS Checking..." Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Margin="8,0"/>
+            <Separator Margin="8,0" Background="#1E3A8A"/>
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked" ToolTip="Click to open Wellbeing &amp; Focus Timer module">
-                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                <Border Background="#072352" BorderBrush="#1E40AF" BorderThickness="1" CornerRadius="6" Padding="8,2">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="⏱️ " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="11" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="#043388" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </StatusBarItem>
-            <Separator Margin="8,0"/>
+            <Separator Margin="8,0" Background="#1E3A8A"/>
             <!-- Radio Stream Mini Player Widget -->
-            <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked" ToolTip="Click to open Radio &amp; Focus Stream Player">
-                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,2">
+            <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked" ToolTip="Click to open Radio Player">
+                <Border Background="#072352" BorderBrush="#1E40AF" BorderThickness="1" CornerRadius="6" Padding="8,2">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Button x:Name="StatusRadioPlayBtn" Click="OnStatusRadioPlayToggle" Background="Transparent" BorderThickness="0" Padding="2,0" Cursor="Hand" ToolTip="Play / Pause Radio Stream">
-                            <TextBlock x:Name="StatusRadioPlayIcon" Text="▶" Foreground="#043388" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock x:Name="StatusRadioPlayIcon" Text="▶" Foreground="#21A1F7" FontSize="11" FontWeight="Bold"/>
                         </Button>
-                        <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="#043388" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="White" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </StatusBarItem>
-            <Separator Margin="8,0"/>
+            <Separator Margin="8,0" Background="#1E3A8A"/>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#043388" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
+                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#21A1F7" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
