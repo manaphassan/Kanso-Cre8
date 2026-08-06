@@ -251,9 +251,6 @@ namespace SS_CAM
                 visGlowDots.Add(dot);
             }
 
-            // Listen for Theme Mode changes
-            ThemeService.ThemeChanged += OnThemeModeChanged;
-
             headerAnimTimer = new DispatcherTimer();
             headerAnimTimer.Interval = TimeSpan.FromMilliseconds(33);
             headerAnimTimer.Tick += (s, ev) =>
@@ -348,26 +345,6 @@ namespace SS_CAM
             headerAnimTimer.Start();
         }
 
-        private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
-        {
-            ThemeService.ToggleTheme();
-        }
-
-        private void OnThemeModeChanged(AppTheme theme)
-        {
-            if (theme == AppTheme.Dark)
-            {
-                if (StatusThemeIcon != null) StatusThemeIcon.Text = "🌙 ";
-                if (StatusThemeText != null) StatusThemeText.Text = "Dark Mode";
-                if (MainFrame != null) MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A1329"));
-            }
-            else
-            {
-                if (StatusThemeIcon != null) StatusThemeIcon.Text = "☀️ ";
-                if (StatusThemeText != null) StatusThemeText.Text = "Light Mode";
-                if (MainFrame != null) MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC"));
-            }
-        }
 
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
         {

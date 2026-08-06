@@ -75,8 +75,8 @@
             <!-- Navigation Sidebar (#043388 SuamiSihat Brand Navy) -->
             <Border Grid.Column="0" Background="#043388" BorderBrush="#022057" BorderThickness="0,0,1,0">
                 <DockPanel LastChildFill="True">
-                    <!-- User Profile Footer Card (#1C1C1C) -->
-                    <Border x:Name="SidebarUserCard" DockPanel.Dock="Bottom" Background="#1C1C1C" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#333333" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked" ToolTip="User Profile &amp; Settings">
+                    <!-- User Profile Footer Card (#FFFFFF White Background) -->
+                    <Border x:Name="SidebarUserCard" DockPanel.Dock="Bottom" Background="#FFFFFF" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked" ToolTip="User Profile &amp; Settings">
                         <StackPanel x:Name="SidebarUserPanel" Orientation="Horizontal" HorizontalAlignment="Left">
                             <Border x:Name="AvatarBorder" Width="34" Height="34" CornerRadius="17" Background="#21A1F7" Margin="0,0,10,0" VerticalAlignment="Center" ClipToBounds="True">
                                 <Grid>
@@ -85,8 +85,8 @@
                                 </Grid>
                             </Border>
                             <StackPanel x:Name="SidebarUserText" VerticalAlignment="Center">
-                                <TextBlock x:Name="SidebarDesignerName" Text="Brand" Foreground="White" FontWeight="Bold" FontSize="12"/>
-                                <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand" Foreground="#93C5FD" FontSize="10"/>
+                                <TextBlock x:Name="SidebarDesignerName" Text="Brand" Foreground="#0F172A" FontWeight="Bold" FontSize="12"/>
+                                <TextBlock x:Name="SidebarDepartment" Text="Creative &amp; Brand" Foreground="#043388" FontSize="10" FontWeight="SemiBold"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -173,48 +173,38 @@
             <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Background="#F8FAFC"/>
         </Grid>
 
-        <!-- Footer Status Bar (#1C1C1C) -->
-        <StatusBar Grid.Row="4" Background="#1C1C1C" BorderBrush="#333333" BorderThickness="0,1,0,0" Padding="12,6">
+        <!-- Footer Status Bar (#FFFFFF White Background) -->
+        <StatusBar Grid.Row="4" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="12,6">
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked" ToolTip="Click to re-check Synology NAS status">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusNasDot" Text="🔴 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="10" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="StatusNasText" Text="SSNAS Checking..." Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StatusNasText" Text="SSNAS Checking..." Foreground="#043388" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Margin="8,0" Background="#333333"/>
+            <Separator Margin="8,0" Background="#E2E8F0"/>
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked" ToolTip="Click to open Wellbeing &amp; Focus Timer module">
-                <Border Background="#2A2A2A" BorderBrush="#444444" BorderThickness="1" CornerRadius="6" Padding="8,2">
+                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="8,2">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="⏱️ " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="11" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="#043388" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </StatusBarItem>
-            <Separator Margin="8,0" Background="#333333"/>
+            <Separator Margin="8,0" Background="#E2E8F0"/>
             <!-- Radio Stream Mini Player Widget -->
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked" ToolTip="Click to open Radio Player">
-                <Border Background="#2A2A2A" BorderBrush="#444444" BorderThickness="1" CornerRadius="6" Padding="8,2">
+                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="8,2">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Button x:Name="StatusRadioPlayBtn" Click="OnStatusRadioPlayToggle" Background="Transparent" BorderThickness="0" Padding="2,0" Cursor="Hand" ToolTip="Play / Pause Radio Stream">
-                            <TextBlock x:Name="StatusRadioPlayIcon" Text="▶" Foreground="#6DC6EC" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock x:Name="StatusRadioPlayIcon" Text="▶" Foreground="#043388" FontSize="11" FontWeight="Bold"/>
                         </Button>
-                        <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="White" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="#043388" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </StatusBarItem>
-            <Separator Margin="8,0" Background="#333333"/>
-            <!-- Light / Dark Mode Toggle Button -->
-            <StatusBarItem Cursor="Hand" ToolTip="Click to toggle Light / Dark Mode">
-                <Button x:Name="StatusThemeBtn" Click="OnStatusThemeToggle" Background="#2A2A2A" Foreground="#6DC6EC" BorderBrush="#444444" BorderThickness="1" Padding="8,2" FontSize="11" FontWeight="Bold" Cursor="Hand">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock x:Name="StatusThemeIcon" Text="🌙 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="11" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="StatusThemeText" Text="Dark Mode" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </StatusBarItem>
-            <Separator Margin="8,0" Background="#333333"/>
+            <Separator Margin="8,0" Background="#E2E8F0"/>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#6DC6EC" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
+                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#043388" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

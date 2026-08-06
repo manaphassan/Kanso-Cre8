@@ -166,17 +166,6 @@ namespace SS_CAM.Views
             }
         }
 
-        private void OnSelectDarkModeClicked(object sender, RoutedEventArgs e)
-        {
-            ThemeService.ApplyTheme(AppTheme.Dark);
-            MessageBox.Show("Switched to Apple Midnight Dark Mode theme.", "Theme Mode", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void OnSelectLightModeClicked(object sender, RoutedEventArgs e)
-        {
-            ThemeService.ApplyTheme(AppTheme.Light);
-            MessageBox.Show("Switched to Light Slate Mode theme.", "Theme Mode", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
 
         public void OnDownloadSoftwareClicked(object sender, RoutedEventArgs e)
         {
