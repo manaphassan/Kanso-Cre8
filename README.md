@@ -6,7 +6,7 @@
 
 Standardized project folder generation · Brand asset deployment · Designer intelligence dashboard · Creative wellbeing tools
 
-[![Latest Release](https://img.shields.io/badge/release-v2.0.7-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v2.1.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
@@ -17,7 +17,7 @@ Standardized project folder generation · Brand asset deployment · Designer int
 
 ## Overview
 
-SS-CAM is a native Windows desktop application built with C# WPF (.NET Framework 4.8). It provides SuamiSihat designers with a unified workstation management suite — from generating standardized project folders and deploying brand assets to tracking workspace storage and supporting healthy creative work habits.
+SS-CAM is a native Windows desktop application built with C# WPF (.NET Framework 4.8). It provides SuamiSihat designers with a unified workstation management suite — from generating standardized project folders and deploying brand assets to tracking workspace storage, listening to live radio/focus streams, and supporting healthy creative work habits.
 
 The application ships as a **true single-file executable** (~4.6 MB) with all dependencies embedded via Fody/Costura assembly weaving. No installer, no runtime prerequisites, no extraction on launch.
 
@@ -43,6 +43,7 @@ The application ships as a **true single-file executable** (~4.6 MB) with all de
 
 | Capability | Description |
 | --- | --- |
+| **Radio Stream Player** | Integrated live stream player featuring preloaded Malaysian radio stations (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga), lo-fi focus beats, custom stream management, and a persistent status-bar mini-player |
 | **Designer Intelligence Dashboard** | Live workspace metrics with storage analytics, project-type breakdown, sub-brand workload share, six-month output activity, largest project detector, stale project alerts, and interactive tooltips on every widget |
 | **Project Folder Generator** | Standardized folder creation following the `YYYYMM_NNNNX_BRAND_Name` naming convention, with auto-calculated Job IDs, preset-specific subfolder templates (Social, Video, Brand Identity, General), and live preview |
 | **Search & Copy** | Full-text project folder search, designer filtering, rendered README preview, project file browser, and controlled asset copying into active work orders |
@@ -61,6 +62,7 @@ The application ships as a **true single-file executable** (~4.6 MB) with all de
 | **Dashboard** | Review workspace totals, storage usage, recent activity, project types, sub-brands, and designer metrics |
 | **Project Creator** | Generate standardized project folders, briefs, master canvases, and optional production subfolders with live folder-name preview |
 | **Search & Copy** | Search by project-folder name, filter by designer, switch README between rendered Preview and Raw Markdown, and copy selected files into a work order |
+| **Radio Player** | Stream live Malaysian radio stations and lo-fi focus beats, manage custom stream URLs, and control playback via status bar mini-player |
 | **Creative Wellbeing** | Focus sessions, breathing guides, energy check-ins, and secure private Mind Drop notes — all stored locally with DPAPI encryption |
 | **Brand Assets** | Open installed palettes, libraries, logos, and reports — shown only when Brand Kit installation is detected |
 | **Settings & Profile** | Manage designer identity, avatar, workspace root, recent-project history, Job ID override, font repair, and update controls |
@@ -88,7 +90,8 @@ The application ships as a **true single-file executable** (~4.6 MB) with all de
 
 | Version | Status | Architecture | Key Changes |
 | --- | --- | --- | --- |
-| **`v2.0.7`** | ✅ **Latest Stable** | Native C# WPF · Single-file EXE | Dashboard Intelligence Suite, ToolTips, Largest Project widget, Stale Projects widget, Storage Distribution chart, Auto Job ID, 16s Box Breathing, NAS health monitor |
+| **`v2.1.0`** | ✅ **Latest Stable** | Native C# WPF · Single-file EXE | Radio & Focus Stream Player module, BFM 89.9 / Hitz / Era / Hot FM presets, lo-fi focus beats, custom stream manager, persistent status bar mini-player |
+| **`v2.0.7`** | ✅ Stable | Native C# WPF · Single-file EXE | Dashboard Intelligence Suite, ToolTips, Largest Project widget, Stale Projects widget, Storage Distribution chart, Auto Job ID, 16s Box Breathing, NAS health monitor |
 | **`v1.9.10`** | ✅ Stable | Legacy PowerShell bootstrapper | Creative Wellbeing module, DPAPI Mind Drops, Focus Timer, window icon fix |
 | **`v1.9.2`** | ✅ Stable | Legacy PowerShell bootstrapper | Search & Copy, rendered README preview, conditional Brand Assets module |
 | `v1.9.3` – `v1.9.9` | ⚠️ Pre-release | Legacy PowerShell bootstrapper | Intermediate development builds |
