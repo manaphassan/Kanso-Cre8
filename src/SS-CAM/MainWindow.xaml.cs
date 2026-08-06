@@ -146,8 +146,6 @@ namespace SS_CAM
         public void RefreshProfileUI()
         {
             currentProfile = UserProfileService.LoadProfile();
-            SidebarDesignerName.Text = currentProfile.DesignerName;
-            SidebarDepartment.Text = string.IsNullOrWhiteSpace(currentProfile.Department) ? "User Profile" : currentProfile.Department;
 
             if (!string.IsNullOrWhiteSpace(currentProfile.AvatarPath) && File.Exists(currentProfile.AvatarPath))
             {
@@ -159,20 +157,23 @@ namespace SS_CAM
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.EndInit();
 
-                    SidebarAvatarImg.Source = bmp;
-                    SidebarAvatarImg.Visibility = Visibility.Visible;
-                    AvatarEmojiText.Visibility = Visibility.Collapsed;
+                    if (SidebarAvatarImg != null)
+                    {
+                        SidebarAvatarImg.Source = bmp;
+                        SidebarAvatarImg.Visibility = Visibility.Visible;
+                    }
+                    if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Collapsed;
                 }
                 catch
                 {
-                    SidebarAvatarImg.Visibility = Visibility.Collapsed;
-                    AvatarEmojiText.Visibility = Visibility.Visible;
+                    if (SidebarAvatarImg != null) SidebarAvatarImg.Visibility = Visibility.Collapsed;
+                    if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Visible;
                 }
             }
             else
             {
-                SidebarAvatarImg.Visibility = Visibility.Collapsed;
-                AvatarEmojiText.Visibility = Visibility.Visible;
+                if (SidebarAvatarImg != null) SidebarAvatarImg.Visibility = Visibility.Collapsed;
+                if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Visible;
             }
         }
 
@@ -359,47 +360,33 @@ namespace SS_CAM
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
         {
             isSidebarExpanded = !isSidebarExpanded;
-            SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(64);
+            SidebarColumn.Width = isSidebarExpanded ? new GridLength(256) : new GridLength(56);
+        }
 
-            Visibility textVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
-
-            if (SidebarModulesHeader != null) SidebarModulesHeader.Visibility = textVis;
-            if (SidebarUserText != null) SidebarUserText.Visibility = textVis;
-            if (NavDashboardText != null) NavDashboardText.Visibility = textVis;
-            if (NavWellbeingText != null) NavWellbeingText.Visibility = textVis;
-            if (NavProjectsText != null) NavProjectsText.Visibility = textVis;
-            if (NavSearchText != null) NavSearchText.Visibility = textVis;
-            if (NavBrandAssetsText != null) NavBrandAssetsText.Visibility = textVis;
-            if (NavRadioText != null) NavRadioText.Visibility = textVis;
-            if (NavWorkstationHealthText != null) NavWorkstationHealthText.Visibility = textVis;
-
-            System.Windows.Controls.Button[] buttons = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
-            System.Windows.Controls.TextBlock[] icons = new[] { NavDashboardIcon, NavWellbeingIcon, NavProjectsIcon, NavSearchIcon, NavBrandAssetsIcon, NavRadioIcon, NavWorkstationHealthIcon };
-
-            for (int i = 0; i < buttons.Length; i++)
+        private void OnTopSearchInputChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TopGlobalSearchInput != null && !string.IsNullOrWhiteSpace(TopGlobalSearchInput.Text))
             {
-                if (buttons[i] != null)
+                if (MainFrame.Content == null || !(MainFrame.Content is SearchCopyPage))
                 {
-                    buttons[i].HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-                    buttons[i].Padding = isSidebarExpanded ? new Thickness(8, 0, 8, 0) : new Thickness(0);
-                }
-
-                if (icons[i] != null)
-                {
-                    icons[i].Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
-                    icons[i].FontSize = isSidebarExpanded ? 16 : 20;
-                    icons[i].HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                    NavigateTo(typeof(SearchCopyPage), NavSearchBtn);
                 }
             }
+        }
 
-            if (AvatarBorder != null)
+        private void OnNavBackClicked(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null && MainFrame.CanGoBack)
             {
-                AvatarBorder.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
+                MainFrame.GoBack();
             }
+        }
 
-            if (SidebarUserPanel != null)
+        private void OnNavForwardClicked(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null && MainFrame.CanGoForward)
             {
-                SidebarUserPanel.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                MainFrame.GoForward();
             }
         }
 
@@ -436,6 +423,11 @@ namespace SS_CAM
         private void OnNavWorkstationHealthClicked(object sender, RoutedEventArgs e)
         {
             NavigateTo(typeof(WorkstationHealthPage), NavWorkstationHealthBtn);
+        }
+
+        private void OnNavSettingsClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(SettingsPage), null);
         }
 
         private void OnNavProfileClicked(object sender, MouseButtonEventArgs e)
@@ -530,17 +522,8 @@ namespace SS_CAM
                 SidebarBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
             }
 
-            if (FooterStatusBar != null)
-            {
-                FooterStatusBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterBg));
-                FooterStatusBar.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterBorder));
-            }
-
             if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-            if (StatusVersionText != null) StatusVersionText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
 
-            if (SidebarDesignerName != null) SidebarDesignerName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
-            if (SidebarDepartment != null) SidebarDepartment.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
             if (SidebarUserCard != null)
             {
                 SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
