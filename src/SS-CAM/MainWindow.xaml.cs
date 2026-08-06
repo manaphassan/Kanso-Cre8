@@ -303,8 +303,9 @@ namespace SS_CAM
                     item.Shape.Opacity = isPlaying ? 0.03 : 0.08;
                 }
 
-                // Animate NCS Spectrum GLava Audio Visualizer Bars & Glow Tips
+                // Animate NCS Spectrum GLava Audio Visualizer Bars & Glow Tips (Real-Time Audio Sampled)
                 double barSpacing = cw / barCount;
+                double[] realSpectrum = RadioStreamService.Instance.LocalProxy != null ? RadioStreamService.Instance.LocalProxy.CurrentSpectrumData : null;
 
                 for (int i = 0; i < visBars.Count; i++)
                 {
@@ -314,14 +315,19 @@ namespace SS_CAM
 
                     if (isPlaying)
                     {
-                        // NCS Spectrum Harmonic Math Simulation
-                        double wave1 = Math.Sin(visTickCount * 0.22 + i * 0.28);
-                        double wave2 = Math.Cos(visTickCount * 0.14 - i * 0.42);
-                        double wave3 = Math.Sin(visTickCount * 0.31 + i * 0.15);
-                        
-                        double rawVal = Math.Abs(wave1 * 0.4 + wave2 * 0.4 + wave3 * 0.2);
-                        targetHeight = Math.Max(3, 4 + 42 * rawVal);
-                        
+                        double sampleVal = 0;
+                        if (realSpectrum != null && i < realSpectrum.Length && realSpectrum[i] > 0.005)
+                        {
+                            sampleVal = realSpectrum[i];
+                        }
+                        else
+                        {
+                            double wave1 = Math.Sin(visTickCount * 0.22 + i * 0.28);
+                            double wave2 = Math.Cos(visTickCount * 0.14 - i * 0.42);
+                            sampleVal = Math.Abs(wave1 * wave2);
+                        }
+
+                        targetHeight = Math.Max(3, 4 + 44 * sampleVal);
                         bar.Opacity = 0.85;
                         dot.Opacity = 0.95;
                     }

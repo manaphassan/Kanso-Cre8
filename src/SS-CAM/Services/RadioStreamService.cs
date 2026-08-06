@@ -47,6 +47,15 @@ namespace SS_CAM.Services
         private bool _isRunning;
         private const int ProxyPort = 28193;
 
+        public double[] CurrentSpectrumData { get; private set; }
+        public double CurrentPeakAmplitude { get; private set; }
+
+        public LocalAudioProxy()
+        {
+            CurrentSpectrumData = new double[48];
+            CurrentPeakAmplitude = 0.0;
+        }
+
         public string LocalProxyUrl
         {
             get { return string.Format("http://127.0.0.1:{0}/live.mp3", ProxyPort); }
@@ -77,6 +86,9 @@ namespace SS_CAM.Services
         public void Stop()
         {
             _isRunning = false;
+            CurrentPeakAmplitude = 0.0;
+            Array.Clear(CurrentSpectrumData, 0, CurrentSpectrumData.Length);
+
             try
             {
                 if (_listener != null)
@@ -145,6 +157,9 @@ namespace SS_CAM.Services
 
                     outStream.Write(buffer, 0, bytesRead);
                     outStream.Flush();
+
+                    // Real-Time Audio Energy & 48 Frequency Band Spectrum Sampling
+                    AnalyzeAudioBuffer(buffer, bytesRead);
                 }
             }
             catch
@@ -157,6 +172,41 @@ namespace SS_CAM.Services
                 try { if (remoteResp != null) remoteResp.Close(); } catch { }
                 try { response.Close(); } catch { }
             }
+        }
+
+        private void AnalyzeAudioBuffer(byte[] buffer, int length)
+        {
+            try
+            {
+                int samples = length / 2;
+                if (samples <= 0) return;
+
+                double sumSq = 0;
+                double[] bands = new double[48];
+                int bandSize = Math.Max(1, samples / 48);
+
+                for (int i = 0; i < length - 1; i += 2)
+                {
+                    short sample = (short)(buffer[i] | (buffer[i + 1] << 8));
+                    double norm = Math.Abs(sample / 32768.0);
+                    sumSq += norm * norm;
+
+                    int bandIdx = (i / 2) / bandSize;
+                    if (bandIdx >= 48) bandIdx = 47;
+                    bands[bandIdx] += norm;
+                }
+
+                double rms = Math.Sqrt(sumSq / samples);
+                CurrentPeakAmplitude = Math.Min(1.0, rms * 4.5);
+
+                for (int b = 0; b < 48; b++)
+                {
+                    bands[b] = Math.Min(1.0, (bands[b] / bandSize) * 3.5);
+                }
+
+                CurrentSpectrumData = bands;
+            }
+            catch { }
         }
     }
 
@@ -210,6 +260,11 @@ namespace SS_CAM.Services
         private LocalAudioProxy _localProxy;
         private readonly string _configFilePath;
         private RadioConfigData _config;
+
+        public LocalAudioProxy LocalProxy
+        {
+            get { return _localProxy; }
+        }
 
         public event Action<RadioPlaybackState> PlaybackStateChanged;
         public event Action<RadioStation> StationChanged;
