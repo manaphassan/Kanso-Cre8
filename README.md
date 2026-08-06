@@ -6,7 +6,7 @@
 
 Standardized project folder generation · Brand asset deployment · Designer intelligence dashboard · Creative wellbeing tools
 
-[![Latest Release](https://img.shields.io/badge/release-v2.1.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v2.3.6-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
@@ -19,7 +19,7 @@ Standardized project folder generation · Brand asset deployment · Designer int
 
 SS-CAM is a native Windows desktop application built with C# WPF (.NET Framework 4.8). It provides SuamiSihat designers with a unified workstation management suite — from generating standardized project folders and deploying brand assets to tracking workspace storage, listening to live radio/focus streams, and supporting healthy creative work habits.
 
-The application ships as a **true single-file executable** (~4.6 MB) with all dependencies embedded via Fody/Costura assembly weaving. No installer, no runtime prerequisites, no extraction on launch.
+The application ships as a **true single-file executable** (~4.7 MB) with all dependencies embedded via Fody/Costura assembly weaving. No installer, no runtime prerequisites, no extraction on launch. The UI is built to the **Microsoft Fluent 2 Design System** specification, using Segoe Fluent Icons and the WPF-UI library throughout.
 
 ---
 
@@ -90,12 +90,14 @@ The application ships as a **true single-file executable** (~4.6 MB) with all de
 
 | Version | Status | Architecture | Key Changes |
 | --- | --- | --- | --- |
-| **`v2.1.0`** | ✅ **Latest Stable** | Native C# WPF · Single-file EXE | Radio & Focus Stream Player module, BFM 89.9 / Hitz / Era / Hot FM presets, lo-fi focus beats, custom stream manager, persistent status bar mini-player |
+| **`v2.3.6`** | ✅ **Latest Stable** | Native C# WPF · Single-file EXE | Full Fluent 2 compliance — Segoe Fluent Icons throughout, token-based colour system, no raw hex in UI chrome; version badge fix |
+| **`v2.1.0`** | ✅ Stable | Native C# WPF · Single-file EXE | Radio & Focus Stream Player module, BFM 89.9 / Hitz / Era / Hot FM presets, lo-fi focus beats, custom stream manager, persistent status bar mini-player |
 | **`v2.0.7`** | ✅ Stable | Native C# WPF · Single-file EXE | Dashboard Intelligence Suite, ToolTips, Largest Project widget, Stale Projects widget, Storage Distribution chart, Auto Job ID, 16s Box Breathing, NAS health monitor |
 | **`v1.9.10`** | ✅ Stable | Legacy PowerShell bootstrapper | Creative Wellbeing module, DPAPI Mind Drops, Focus Timer, window icon fix |
 | **`v1.9.2`** | ✅ Stable | Legacy PowerShell bootstrapper | Search & Copy, rendered README preview, conditional Brand Assets module |
 | `v1.9.3` – `v1.9.9` | ⚠️ Pre-release | Legacy PowerShell bootstrapper | Intermediate development builds |
 | `v2.0.0` – `v2.0.6` | ⚠️ Pre-release | Native C# WPF | C# WPF architectural refactoring builds |
+| `v2.1.1` – `v2.3.5` | ⚠️ Pre-release | Native C# WPF | Incremental feature and UI refinement builds |
 
 Download the latest release from the [Releases page](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
@@ -105,7 +107,7 @@ Download the latest release from the [Releases page](https://github.com/SuamiSih
 
 ### Step 1 — Download
 
-Obtain `SS-CAM-v2.0.7.exe` from the [Official Release Page](https://github.com/SuamiSihat/ss_cam/releases/latest).
+Obtain `SS-CAM-v2.3.6.exe` from the [Official Release Page](https://github.com/SuamiSihat/ss_cam/releases/latest).
 
 ### Step 2 — Launch
 
@@ -265,11 +267,13 @@ Typography files are installed to `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and r
 
 ---
 
+---
+
 ## Governance & Licensing
 
 Assets and typography bundled within this package are restricted to **authorized internal SuamiSihat operations only**. For licensing compliance, usage policies, and access provisioning, consult the SuamiSihat technology administration team.
 
-The application interface uses **Font Awesome Free** vector icons under the [Font Awesome Free Licence](https://fontawesome.com/license/free). Attribution is retained in the WPF application source. Commercial fonts in the installation payload remain subject to their respective commercial licences.
+The application interface uses **Segoe Fluent Icons** (system font, Windows 11+) and the **WPF-UI** library (MIT licence). Commercial fonts in the installation payload remain subject to their respective commercial licences.
 
 For developer and maintainer documentation, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
