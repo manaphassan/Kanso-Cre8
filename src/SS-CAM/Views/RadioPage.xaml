@@ -1,0 +1,244 @@
+<Page x:Class="SS_CAM.Views.RadioPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Radio Player" Foreground="#1E293B">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📻 " FontSize="22" VerticalAlignment="Center"/>
+                    <TextBlock Text="Radio &amp; Focus Stream Player" FontSize="22" FontWeight="Bold" Foreground="#043388" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Live Malaysian radio stations &amp; lo-fi ambient audio streams for creative productivity." Foreground="#64748B" FontSize="12" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" Background="#043388" CornerRadius="6">
+                <Button Click="OnAddCustomStationClicked" Background="Transparent" Foreground="White" Padding="14,8" BorderThickness="0" Cursor="Hand" ToolTip="Add a custom HTTP/HTTPS radio stream URL">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="➕ " FontFamily="Segoe UI Emoji" FontSize="12"/>
+                        <TextBlock Text="Add Custom Stream" FontWeight="Bold" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+            </Border>
+        </Grid>
+
+        <!-- Now Playing Hero Card -->
+        <Border Grid.Row="1" Background="#022057" CornerRadius="12" Padding="20" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Station Icon -->
+                <Border Grid.Column="0" Width="64" Height="64" CornerRadius="32" Background="#21A1F7" Margin="0,0,16,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="HeroIconText" Text="📻" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Station Metadata & Status -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="HeroStationName" Text="BFM 89.9" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,10,0"/>
+                        <Border x:Name="HeroGenreBadge" Background="#21A1F7" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                            <TextBlock x:Name="HeroGenreText" Text="Talk / News" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock x:Name="HeroDescriptionText" Text="The Business Station — News, interviews, and intellectual discussion." Foreground="#93C5FD" FontSize="11" Margin="0,4,0,8" TextTrimming="CharacterEllipsis"/>
+
+                    <!-- Playback Status Indicator -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="HeroStatusDot" Text="⏹ " FontSize="12" Foreground="#CBD5E1" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="HeroStatusText" Text="Ready to Play" Foreground="#E2E8F0" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+                        <!-- Visualizer Audio Wave Animation (Visible when playing) -->
+                        <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">
+                            <Rectangle x:Name="Bar1" Width="3" Height="14" Fill="#6DC6EC" Margin="1,0"/>
+                            <Rectangle x:Name="Bar2" Width="3" Height="8" Fill="#21A1F7" Margin="1,0"/>
+                            <Rectangle x:Name="Bar3" Width="3" Height="18" Fill="#10B981" Margin="1,0"/>
+                            <Rectangle x:Name="Bar4" Width="3" Height="10" Fill="#6DC6EC" Margin="1,0"/>
+                            <Rectangle x:Name="Bar5" Width="3" Height="16" Fill="#21A1F7" Margin="1,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Controls & Volume -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <!-- Play / Pause Button -->
+                    <Border Width="44" Height="44" CornerRadius="22" Background="#21A1F7" Margin="0,0,8,0">
+                        <Button x:Name="HeroPlayBtn" Click="OnHeroPlayClicked" Background="Transparent" Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Play / Pause Stream">
+                            <TextBlock x:Name="HeroPlayBtnText" Text="▶" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                    </Border>
+
+                    <!-- Stop Button -->
+                    <Border Width="36" Height="36" CornerRadius="18" Background="#334155" Margin="0,0,16,0">
+                        <Button x:Name="HeroStopBtn" Click="OnHeroStopClicked" Background="Transparent" Foreground="#CBD5E1" BorderThickness="0" Cursor="Hand" ToolTip="Stop Stream">
+                            <TextBlock Text="⏹" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                    </Border>
+
+                    <!-- Volume & Mute Section -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked" Background="Transparent" Foreground="#CBD5E1" BorderThickness="0" FontSize="16" Cursor="Hand" Margin="0,0,4,0" ToolTip="Mute / Unmute">
+                            <TextBlock x:Name="HeroMuteIcon" Text="🔊"/>
+                        </Button>
+                        <Slider x:Name="HeroVolumeSlider" Width="90" Minimum="0" Maximum="100" Value="80" ValueChanged="OnHeroVolumeChanged" VerticalAlignment="Center" ToolTip="Volume Level"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Category & Filter Tabs -->
+        <Border Grid.Row="2" Background="#F1F5F9" CornerRadius="8" Padding="6" Margin="0,0,0,16">
+            <WrapPanel x:Name="FilterCategoryPanel">
+                <Border CornerRadius="6" Background="#043388" Margin="2">
+                    <Button Tag="ALL" Content="All Stations" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="FAV" Content="⭐ Favorites" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="FOCUS" Content="🎧 Focus / Lo-Fi" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="POP" Content="📻 Pop / Hits" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="TALK" Content="🎙️ Talk / News" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="JAZZ" Content="🎷 Jazz / Chill" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+                <Border CornerRadius="6" Background="Transparent" Margin="2">
+                    <Button Tag="CUSTOM" Content="➕ Custom Streams" Click="OnFilterClicked" Padding="12,6" Background="Transparent" Foreground="#475569" BorderThickness="0" FontWeight="SemiBold" FontSize="11"/>
+                </Border>
+            </WrapPanel>
+        </Border>
+
+        <!-- Station Cards Scroll Area -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="StationItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="14" Margin="6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon -->
+                                <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Background="#F1F5F9" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding IconEmoji}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Station Meta -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A" Margin="0,0,6,0"/>
+                                        <Border Background="#F1F5F9" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Genre}" Foreground="#475569" FontSize="9" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Description}" Foreground="#64748B" FontSize="10" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+
+                                <!-- Actions: Favorite, Play, Delete -->
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Click="OnStationFavoriteClicked" Tag="{Binding}" Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="0,0,4,0" ToolTip="Toggle Favorite">
+                                        <TextBlock Text="⭐" FontSize="14" Opacity="0.9"/>
+                                    </Button>
+
+                                    <Border Width="32" Height="32" CornerRadius="16" Background="#043388">
+                                        <Button Click="OnStationPlayClicked" Tag="{Binding}" Background="Transparent" Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Play Station">
+                                            <TextBlock Text="▶" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Button>
+                                    </Border>
+
+                                    <Button Click="OnStationDeleteClicked" Tag="{Binding}" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Cursor="Hand" Margin="4,0,0,0" ToolTip="Delete Custom Station" Visibility="{Binding IsPreset, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                        <TextBlock Text="🗑️" FontSize="12"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Add Custom Stream Modal Overlay -->
+        <Grid x:Name="AddStationModal" Grid.RowSpan="4" Background="#80000000" Visibility="Collapsed">
+            <Border Background="White" CornerRadius="12" Width="440" Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <Grid Margin="0,0,0,16">
+                        <TextBlock Text="➕ Add Custom Radio Stream" FontSize="16" FontWeight="Bold" Foreground="#043388" VerticalAlignment="Center"/>
+                        <Button Click="OnCloseModalClicked" HorizontalAlignment="Right" Background="Transparent" Foreground="#64748B" BorderThickness="0" FontSize="14" FontWeight="Bold" Cursor="Hand">✕</Button>
+                    </Grid>
+
+                    <TextBlock Text="Station Name" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtStationName" Padding="8,6" Margin="0,0,0,12" FontSize="12"/>
+
+                    <TextBlock Text="Stream URL (HTTP / HTTPS / M3U8 / MP3)" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtStreamUrl" Padding="8,6" Margin="0,0,0,12" FontSize="12" Text="https://"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Genre / Category" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="CmbGenre" Padding="8,6" FontSize="12" IsEditable="True">
+                                <ComboBoxItem Content="Focus / Lo-Fi" IsSelected="True"/>
+                                <ComboBoxItem Content="Pop / Hits"/>
+                                <ComboBoxItem Content="Talk / News"/>
+                                <ComboBoxItem Content="Jazz / Chill"/>
+                                <ComboBoxItem Content="Malay Pop"/>
+                                <ComboBoxItem Content="Custom"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Icon Emoji" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtEmoji" Text="📻" Padding="8,6" Width="60" TextAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Description (Optional)" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtDescription" Padding="8,6" Margin="0,0,0,20" FontSize="12"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Border CornerRadius="6" Background="#E2E8F0" Margin="0,0,8,0">
+                            <Button Click="OnCloseModalClicked" Content="Cancel" Padding="14,6" Background="Transparent" Foreground="#475569" BorderThickness="0" Cursor="Hand"/>
+                        </Border>
+                        <Border CornerRadius="6" Background="#043388">
+                            <Button Click="OnSaveCustomStationClicked" Content="Save Station" Padding="16,6" Background="Transparent" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

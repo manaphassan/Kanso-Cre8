@@ -101,6 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\RadioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -113,6 +117,7 @@
     <Compile Include="Models\WellbeingModels.cs" />
     <Compile Include="Models\DashboardModels.cs" />
     <Compile Include="Models\UserProfileModels.cs" />
+    <Compile Include="Models\RadioStation.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
     <Compile Include="Services\FatigueRuleEngine.cs" />
@@ -121,6 +126,7 @@
     <Compile Include="Services\UserProfileService.cs" />
     <Compile Include="Services\PayloadInstallerService.cs" />
     <Compile Include="Services\AudioFeedbackService.cs" />
+    <Compile Include="Services\RadioStreamService.cs" />
     <Compile Include="Views\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -151,6 +157,10 @@
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\RadioPage.xaml.cs">
+      <DependentUpon>RadioPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

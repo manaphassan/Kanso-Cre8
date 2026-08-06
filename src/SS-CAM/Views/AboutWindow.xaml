@@ -27,7 +27,7 @@
                     <TextBlock Text="SuamiSihat Creative Assets Management" Foreground="#043388" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Border Background="#043388" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
-                            <TextBlock Text="Version 2.0.7 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text="Version 2.1.0 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
                         </Border>
                         <Border Background="#10B981" CornerRadius="4" Padding="8,3">
                             <TextBlock Text="Production Release" Foreground="White" FontSize="11" FontWeight="Bold"/>
@@ -41,10 +41,16 @@
                 </StackPanel>
 
                 <!-- Middle Content: Version Changelog -->
-                <GroupBox Header="v2.0.7 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
+                <GroupBox Header="v2.1.0 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                         <StackPanel Margin="6">
-                            <TextBlock Text="✨ What's New in Version 2.0.7:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
+                            <TextBlock Text="✨ What's New in Version 2.1.0:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
+
+                            <TextBlock Text="• Radio &amp; Focus Stream Player: Live Malaysian radio streams (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga) &amp; lo-fi focus audio streams." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+
+                            <TextBlock Text="• Custom Stream Manager: Add, test, and manage custom HTTP/HTTPS/M3U8 radio stream URLs." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+
+                            <TextBlock Text="• Status Bar Mini-Player: Persistent audio controls and station playback status accessible from any page." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
                             <TextBlock Text="• Animated Header Geometry Loop: Modernized header with dynamic smooth particle background." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 

@@ -57,9 +57,71 @@ namespace SS_CAM
             InitFooterTimer();
             InitNasHealthCheck();
             InitUpdateCheck();
+            InitRadioStatusListeners();
 
             // 4. Navigate to Dashboard on startup
             NavigateTo(typeof(DashboardPage), NavDashboardBtn);
+        }
+
+        private void InitRadioStatusListeners()
+        {
+            var radio = RadioStreamService.Instance;
+            radio.PlaybackStateChanged += OnRadioPlaybackStateChanged;
+            radio.StationChanged += OnRadioStationChanged;
+
+            UpdateRadioStatusUI();
+        }
+
+        private void OnRadioPlaybackStateChanged(RadioPlaybackState state)
+        {
+            UpdateRadioStatusUI();
+        }
+
+        private void OnRadioStationChanged(RadioStation station)
+        {
+            UpdateRadioStatusUI();
+        }
+
+        private void UpdateRadioStatusUI()
+        {
+            try
+            {
+                var radio = RadioStreamService.Instance;
+                if (StatusRadioText != null && StatusRadioPlayIcon != null)
+                {
+                    string stationName = radio.CurrentStation != null ? radio.CurrentStation.Name : "BFM 89.9";
+                    if (radio.State == RadioPlaybackState.Playing)
+                    {
+                        StatusRadioPlayIcon.Text = "⏸";
+                        StatusRadioText.Text = "Radio: " + stationName + " (Live)";
+                        StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
+                    }
+                    else if (radio.State == RadioPlaybackState.Buffering)
+                    {
+                        StatusRadioPlayIcon.Text = "⏳";
+                        StatusRadioText.Text = "Radio: Connecting...";
+                        StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+                    }
+                    else
+                    {
+                        StatusRadioPlayIcon.Text = "▶";
+                        StatusRadioText.Text = "Radio: " + stationName;
+                        StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void OnStatusRadioPlayToggle(object sender, RoutedEventArgs e)
+        {
+            RadioStreamService.Instance.TogglePlayPause();
+            e.Handled = true;
+        }
+
+        private void OnFooterRadioClicked(object sender, MouseButtonEventArgs e)
+        {
+            NavigateTo(typeof(RadioPage), NavRadioBtn);
         }
 
         private void OnClosed(object sender, EventArgs e)
@@ -191,10 +253,11 @@ namespace SS_CAM
             if (NavProjectsText != null) NavProjectsText.Visibility = textVis;
             if (NavSearchText != null) NavSearchText.Visibility = textVis;
             if (NavBrandAssetsText != null) NavBrandAssetsText.Visibility = textVis;
+            if (NavRadioText != null) NavRadioText.Visibility = textVis;
             if (NavWorkstationHealthText != null) NavWorkstationHealthText.Visibility = textVis;
 
-            System.Windows.Controls.Button[] buttons = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavWorkstationHealthBtn };
-            System.Windows.Controls.TextBlock[] icons = new[] { NavDashboardIcon, NavWellbeingIcon, NavProjectsIcon, NavSearchIcon, NavBrandAssetsIcon, NavWorkstationHealthIcon };
+            System.Windows.Controls.Button[] buttons = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
+            System.Windows.Controls.TextBlock[] icons = new[] { NavDashboardIcon, NavWellbeingIcon, NavProjectsIcon, NavSearchIcon, NavBrandAssetsIcon, NavRadioIcon, NavWorkstationHealthIcon };
 
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -246,6 +309,11 @@ namespace SS_CAM
         private void OnNavBrandAssetsClicked(object sender, RoutedEventArgs e)
         {
             NavigateTo(typeof(BrandAssetsPage), NavBrandAssetsBtn);
+        }
+
+        private void OnNavRadioClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(RadioPage), NavRadioBtn);
         }
 
         private void OnNavWorkstationHealthClicked(object sender, RoutedEventArgs e)
@@ -304,7 +372,7 @@ namespace SS_CAM
 
         private void ResetNavHighlight()
         {
-            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavWorkstationHealthBtn };
+            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
             foreach (System.Windows.Controls.Button btn in navBtns)
             {
                 if (btn != null)
@@ -461,12 +529,12 @@ namespace SS_CAM
         // Hosts a version.json at: https://suamisihat.myds.me/ss-cam/version.json
         // Format:
         // {
-        //   "version": "2.0.7",
-        //   "releaseNotes": "Fixed audio playback, added project export.",
-        //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.0.7.exe"
+        //   "version": "2.1.0",
+        //   "releaseNotes": "Radio & Focus Stream Player.",
+        //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "2.0.7";
+        private const string CurrentVersion = "2.1.0";
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 

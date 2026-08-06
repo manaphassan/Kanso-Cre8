@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v2.0.7" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v2.1.0" Height="820" Width="1280"
         MinHeight="660" MinWidth="980"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
@@ -38,7 +38,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="SuamiSihat" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,0,10,0"/>
                             <Border Background="#21A1F7" CornerRadius="4" Padding="6,2" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="OnOpenAboutWindow" ToolTip="About SS-CAM (Click for Easter Egg)">
-                                <TextBlock Text="v2.0.7" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text="v2.1.0" Foreground="White" FontSize="11" FontWeight="Bold"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Creative Assets Management | Standardized Workstation Suite" Foreground="#BFE4FF" FontSize="11" Margin="0,2,0,0"/>
@@ -144,6 +144,16 @@
                                 </StackPanel>
                             </Button>
 
+                            <Button x:Name="NavRadioBtn" Click="OnNavRadioClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Radio Player (Live Streams &amp; Lo-Fi Focus Beats)">
+                                <StackPanel Orientation="Horizontal" Margin="8,0">
+                                    <TextBlock x:Name="NavRadioIcon" Text="📻" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <StackPanel x:Name="NavRadioText" VerticalAlignment="Center">
+                                        <TextBlock Text="Radio Player" FontWeight="Bold" FontSize="12"/>
+                                        <TextBlock Text="Live streams &amp; lo-fi beats" Foreground="#94A3B8" FontSize="9"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+
                             <Button x:Name="NavWorkstationHealthBtn" Click="OnNavWorkstationHealthClicked" Height="44" Margin="0,0,0,4" HorizontalContentAlignment="Left" Background="Transparent" Foreground="#E2E8F0" BorderThickness="0" ToolTip="Workstation Health (PC Specs &amp; Software Scanner)">
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
                                     <TextBlock x:Name="NavWorkstationHealthIcon" Text="💻" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Center"/>
@@ -170,7 +180,7 @@
                     <TextBlock x:Name="StatusNasText" Text="SSNAS Checking..." Foreground="#475569" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Margin="10,0"/>
+            <Separator Margin="8,0"/>
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked" ToolTip="Click to open Wellbeing &amp; Focus Timer module">
                 <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,2">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -179,9 +189,21 @@
                     </StackPanel>
                 </Border>
             </StatusBarItem>
-            <Separator Margin="10,0"/>
+            <Separator Margin="8,0"/>
+            <!-- Radio Stream Mini Player Widget -->
+            <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnFooterRadioClicked" ToolTip="Click to open Radio &amp; Focus Stream Player">
+                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="StatusRadioPlayBtn" Click="OnStatusRadioPlayToggle" Background="Transparent" BorderThickness="0" Padding="2,0" Cursor="Hand" ToolTip="Play / Pause Radio Stream">
+                            <TextBlock x:Name="StatusRadioPlayIcon" Text="▶" Foreground="#043388" FontSize="11" FontWeight="Bold"/>
+                        </Button>
+                        <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="#043388" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </StatusBarItem>
+            <Separator Margin="8,0"/>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.0.7" Foreground="#043388" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
+                <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#043388" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
