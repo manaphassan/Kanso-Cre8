@@ -490,6 +490,11 @@ namespace SS_CAM
         {
             ThemeColors c = ThemeService.GetColors(theme);
 
+            if (!string.IsNullOrEmpty(c.FontFamily))
+            {
+                FontFamily = new FontFamily(c.FontFamily);
+            }
+
             if (theme == AppTheme.GlassMorphism)
             {
                 WindowBackdropType = WindowBackdropType.Acrylic;

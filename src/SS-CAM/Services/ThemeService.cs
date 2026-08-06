@@ -11,6 +11,7 @@ namespace SS_CAM.Services
 
     public class ThemeColors
     {
+        public string FontFamily { get; set; }
         public string HeaderBg { get; set; }
         public string HeaderBorder { get; set; }
         public string SidebarBg { get; set; }
@@ -49,6 +50,7 @@ namespace SS_CAM.Services
             {
                 return new ThemeColors
                 {
+                    FontFamily = "Segoe UI Variable Display, Segoe UI, sans-serif",
                     HeaderBg = "#B00A2C40",        // Translucent Frosted Dark Teal Glass (Dropbox Concept Style)
                     HeaderBorder = "#4038BDF8",    // Subtle Cyan Glow Border
                     SidebarBg = "#C0061D2B",       // Translucent Deep Cyan-Teal Sidebar
@@ -75,31 +77,34 @@ namespace SS_CAM.Services
             {
                 return new ThemeColors
                 {
-                    HeaderBg = "#0F172A",
-                    HeaderBorder = "#334155",
-                    SidebarBg = "#0F172A",
-                    SidebarBorder = "#1E293B",
-                    ActiveNavBg = "#0078D4",
+                    // Official Windows 11 Fluent System Font Family & System Palette (No SuamiSihat Colors)
+                    FontFamily = "Segoe UI Variable Text, Segoe UI, sans-serif",
+                    HeaderBg = "#202020",          // Windows 11 Mica System Dark Header
+                    HeaderBorder = "#2C2C2C",
+                    SidebarBg = "#202020",         // Windows 11 System Navigation Drawer
+                    SidebarBorder = "#2C2C2C",
+                    ActiveNavBg = "#0078D4",       // Official Windows Accent Blue
                     ActiveNavText = "#FFFFFF",
                     ActiveNavSubtext = "#E0F2FE",
-                    InactiveNavText = "#F1F5F9",
-                    InactiveNavSubtext = "#94A3B8",
-                    FooterBg = "#F8FAFC",
-                    FooterBorder = "#E2E8F0",
-                    FooterText = "#0F172A",
-                    FooterCardBg = "#FFFFFF",
-                    FooterCardBorder = "#CBD5E1",
-                    UserCardBg = "#FFFFFF",
-                    UserCardBorder = "#E2E8F0",
-                    UserCardTitle = "#0F172A",
-                    UserCardSub = "#0078D4",
-                    MainFrameBg = "#F1F5F9"
+                    InactiveNavText = "#FFFFFF",
+                    InactiveNavSubtext = "#A1A1AA",
+                    FooterBg = "#2C2C2C",          // Windows 11 Dark Footer
+                    FooterBorder = "#3F3F46",
+                    FooterText = "#FFFFFF",
+                    FooterCardBg = "#3F3F46",
+                    FooterCardBorder = "#52525B",
+                    UserCardBg = "#2C2C2C",
+                    UserCardBorder = "#3F3F46",
+                    UserCardTitle = "#FFFFFF",
+                    UserCardSub = "#60A5FA",
+                    MainFrameBg = "#18181B"        // Windows 11 Dark Canvas
                 };
             }
 
             // SSDefault (SuamiSihat Brand Theme)
             return new ThemeColors
             {
+                FontFamily = "Segoe UI, sans-serif",
                 HeaderBg = "#021B47",
                 HeaderBorder = "#1E3A8A",
                 SidebarBg = "#043388",
