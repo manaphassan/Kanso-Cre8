@@ -107,13 +107,13 @@ namespace SS_CAM
                     string stationName = radio.CurrentStation != null ? radio.CurrentStation.Name : "BFM 89.9";
                     if (radio.State == RadioPlaybackState.Playing)
                     {
-                        StatusRadioPlayIcon.Text = "⏸";
+                        StatusRadioPlayIcon.Text = "\uE769"; // Pause icon
                         StatusRadioText.Text = stationName + " ▶ Live";
                         StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
                     }
                     else if (radio.State == RadioPlaybackState.Buffering)
                     {
-                        StatusRadioPlayIcon.Text = "⏳";
+                        StatusRadioPlayIcon.Text = "\uE823"; // Processing icon
                         StatusRadioText.Text = "Connecting...";
                         StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
                     }
@@ -1070,9 +1070,10 @@ namespace SS_CAM
             {
                 if (StatusNasDot != null && StatusNasText != null)
                 {
-                    StatusNasDot.Text = isOnline ? "🟢 " : "🔴 ";
+                    StatusNasDot.Text = "\uE839"; // Server icon
                     StatusNasText.Text = statusText;
                     StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
+                    StatusNasDot.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
                 }
             });
         }

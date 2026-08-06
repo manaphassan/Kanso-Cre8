@@ -104,8 +104,8 @@ namespace SS_CAM.Views
             switch (state)
             {
                 case RadioPlaybackState.Playing:
-                    HeroPlayBtnText.Text = "⏸";
-                    HeroStatusDot.Text = "🟢 ";
+                    HeroPlayBtnText.Text = "\uE769"; // Pause
+                    HeroStatusDot.Text = "\uE73E"; // Check
                     HeroStatusText.Text = "Live Stream Playing";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
                     VisualizerBars.Visibility = Visibility.Visible;
@@ -113,8 +113,8 @@ namespace SS_CAM.Views
                     break;
 
                 case RadioPlaybackState.Buffering:
-                    HeroPlayBtnText.Text = "⏳";
-                    HeroStatusDot.Text = "🟡 ";
+                    HeroPlayBtnText.Text = "\uE823"; // Processing
+                    HeroStatusDot.Text = "\uE823";
                     HeroStatusText.Text = "Connecting & Buffering Stream...";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
@@ -122,8 +122,8 @@ namespace SS_CAM.Views
                     break;
 
                 case RadioPlaybackState.Paused:
-                    HeroPlayBtnText.Text = "▶";
-                    HeroStatusDot.Text = "🟡 ";
+                    HeroPlayBtnText.Text = "\uE768"; // Play
+                    HeroStatusDot.Text = "\uE769"; // Pause
                     HeroStatusText.Text = "Paused";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
@@ -131,8 +131,8 @@ namespace SS_CAM.Views
                     break;
 
                 case RadioPlaybackState.Error:
-                    HeroPlayBtnText.Text = "▶";
-                    HeroStatusDot.Text = "🔴 ";
+                    HeroPlayBtnText.Text = "\uE768"; // Play
+                    HeroStatusDot.Text = "\uEA39"; // Error/Cancel
                     HeroStatusText.Text = "Stream Connection Error (Try Editing / Testing Stream URL)";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
@@ -141,9 +141,9 @@ namespace SS_CAM.Views
 
                 case RadioPlaybackState.Stopped:
                 default:
-                    HeroPlayBtnText.Text = "▶";
-                    HeroStatusDot.Text = "⏹ ";
-                    HeroStatusText.Text = "Stopped";
+                    HeroPlayBtnText.Text = "\uE768"; // Play
+                    HeroStatusDot.Text = "\uE71A"; // Stop
+                    HeroStatusText.Text = "Ready to Play";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
                     if (_visualizerTimer != null) _visualizerTimer.Stop();
@@ -184,7 +184,10 @@ namespace SS_CAM.Views
 
         private void OnHeroMuteClicked(object sender, RoutedEventArgs e)
         {
-            _radioService.IsMuted = !_radioService.IsMuted;
+            var r = RadioStreamService.Instance;
+            r.IsMuted = !r.IsMuted;
+            HeroMuteIcon.Text = r.IsMuted ? "\uE74F" : "\uE767"; // VolumeMute vs Volume
+            HeroVolumeSlider.IsEnabled = !r.IsMuted;
         }
 
         private void OnHeroVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
