@@ -373,6 +373,10 @@ namespace SS_CAM
             {
                 TopHeaderBorder.Padding = isSidebarExpanded ? new Thickness(12, 10, 12, 6) : new Thickness(0, 10, 0, 6);
             }
+            if (TopHeaderStackPanel != null)
+            {
+                TopHeaderStackPanel.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+            }
             if (ToggleSidebarBtn != null)
             {
                 ToggleSidebarBtn.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
@@ -411,7 +415,6 @@ namespace SS_CAM
             }
                 
             // Align status row icons (centered along X = 24px when collapsed)
-            // To perfectly center, the StackPanel itself must be centered and the icon must lose its right margin.
             Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
             HorizontalAlignment panelAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
 
@@ -424,11 +427,20 @@ namespace SS_CAM
             if (StatusTimerPanel != null) StatusTimerPanel.HorizontalAlignment = panelAlign;
             if (StatusThemePanel != null) StatusThemePanel.HorizontalAlignment = panelAlign;
 
+            if (StatusThemeBtn != null)
+            {
+                StatusThemeBtn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
+            }
+
             // Align user avatar circle
             if (SidebarAvatarCircle != null)
             {
                 SidebarAvatarCircle.Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
                 SidebarAvatarCircle.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+            }
+            if (SidebarUserGrid != null)
+            {
+                SidebarUserGrid.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
             }
             if (SidebarUserCard != null)
             {
@@ -454,6 +466,7 @@ namespace SS_CAM
                 if (btn == null) continue;
                 btn.Width = isSidebarExpanded ? double.NaN : 48;
                 btn.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+                btn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
 
                 var grid = btn.Content as Grid;
                 if (grid == null) continue;
@@ -482,7 +495,7 @@ namespace SS_CAM
                             {
                                 icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 12, 0) : new Thickness(0);
                                 icon.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-                                icon.Width = isSidebarExpanded ? 20 : double.NaN;
+                                icon.Width = 20;
                             }
                         }
                         if (sp.Children.Count > 1)

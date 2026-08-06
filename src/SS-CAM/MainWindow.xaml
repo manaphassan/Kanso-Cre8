@@ -85,7 +85,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- App Logo & Title -->
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel x:Name="TopHeaderStackPanel" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                     <!-- Hamburger toggle — always visible -->
                                     <Button x:Name="ToggleSidebarBtn" Click="OnToggleSidebarClicked"
                                             Background="Transparent" BorderThickness="0"
@@ -128,7 +128,7 @@
                             </Border>
 
                             <!-- Focus Timer row -->
-                            <Border CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
+                            <Border x:Name="TimerPill" CornerRadius="4" Padding="8,6" Margin="0,0,0,2"
                                     Cursor="Hand" MouseLeftButtonDown="OnFooterTimerClicked"
                                     ToolTip="Open Wellbeing &amp; Focus Timer">
                                 <StackPanel x:Name="StatusTimerPanel" Orientation="Horizontal">
@@ -194,7 +194,7 @@
                                     Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked"
                                     Background="#2A2A2A"
                                     ToolTip="User Profile &amp; Settings">
-                                <Grid>
+                                <Grid x:Name="SidebarUserGrid">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
