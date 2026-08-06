@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Media;
 using Newtonsoft.Json;
@@ -14,14 +15,14 @@ namespace SS_CAM.Services
         public string LastStationId { get; set; }
         public double Volume { get; set; }
         public bool IsMuted { get; set; }
-        public List<RadioStation> CustomStations { get; set; }
+        public List<RadioStation> SavedStations { get; set; }
         public List<string> FavoriteStationIds { get; set; }
 
         public RadioConfigData()
         {
             Volume = 0.8;
             IsMuted = false;
-            CustomStations = new List<RadioStation>();
+            SavedStations = new List<RadioStation>();
             FavoriteStationIds = new List<string>();
         }
     }
@@ -74,10 +75,13 @@ namespace SS_CAM.Services
                 if (_config != null)
                 {
                     _config.Volume = Math.Max(0.0, Math.Min(1.0, value));
-                    if (_mediaPlayer != null && !_config.IsMuted)
+                    EnsureUI(() =>
                     {
-                        _mediaPlayer.Volume = _config.Volume;
-                    }
+                        if (_mediaPlayer != null && !_config.IsMuted)
+                        {
+                            _mediaPlayer.Volume = _config.Volume;
+                        }
+                    });
                     SaveConfig();
                     if (VolumeChanged != null)
                     {
@@ -98,10 +102,13 @@ namespace SS_CAM.Services
                 if (_config != null)
                 {
                     _config.IsMuted = value;
-                    if (_mediaPlayer != null)
+                    EnsureUI(() =>
                     {
-                        _mediaPlayer.Volume = _config.IsMuted ? 0.0 : _config.Volume;
-                    }
+                        if (_mediaPlayer != null)
+                        {
+                            _mediaPlayer.Volume = _config.IsMuted ? 0.0 : _config.Volume;
+                        }
+                    });
                     SaveConfig();
                     if (VolumeChanged != null)
                     {
@@ -124,44 +131,71 @@ namespace SS_CAM.Services
             }
             _configFilePath = Path.Combine(ssDir, "radio_config.json");
 
-            InitMediaPlayer();
             LoadStations();
         }
 
-        private void InitMediaPlayer()
+        private void EnsureUI(Action action)
         {
-            _mediaPlayer = new MediaPlayer();
+            if (Application.Current == null) return;
 
-            _mediaPlayer.MediaOpened += (s, e) =>
+            if (Application.Current.Dispatcher.CheckAccess())
             {
-                SetState(RadioPlaybackState.Playing);
-            };
+                action();
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(action);
+            }
+        }
 
-            _mediaPlayer.MediaEnded += (s, e) =>
+        private void EnsureMediaPlayerCreated()
+        {
+            EnsureUI(() =>
             {
-                SetState(RadioPlaybackState.Stopped);
-            };
-
-            _mediaPlayer.MediaFailed += (s, e) =>
-            {
-                SetState(RadioPlaybackState.Error);
-                string errMsg = e.ErrorException != null ? e.ErrorException.Message : "Stream connection failed";
-                if (ErrorOccurred != null)
+                if (_mediaPlayer == null)
                 {
-                    ErrorOccurred(errMsg);
+                    _mediaPlayer = new MediaPlayer();
+
+                    _mediaPlayer.MediaOpened += (s, e) =>
+                    {
+                        SetState(RadioPlaybackState.Playing);
+                    };
+
+                    _mediaPlayer.MediaEnded += (s, e) =>
+                    {
+                        SetState(RadioPlaybackState.Stopped);
+                    };
+
+                    _mediaPlayer.MediaFailed += (s, e) =>
+                    {
+                        SetState(RadioPlaybackState.Error);
+                        string errMsg = "Stream connection failed";
+                        if (e.ErrorException != null && !string.IsNullOrWhiteSpace(e.ErrorException.Message))
+                        {
+                            errMsg = e.ErrorException.Message;
+                        }
+                        if (ErrorOccurred != null)
+                        {
+                            ErrorOccurred(errMsg);
+                        }
+                    };
                 }
-            };
+            });
         }
 
         private void LoadStations()
         {
-            List<RadioStation> presets = GetPresetStations();
             _config = LoadConfig();
 
-            AllStations = new List<RadioStation>(presets);
-            if (_config.CustomStations != null && _config.CustomStations.Count > 0)
+            if (_config.SavedStations != null && _config.SavedStations.Count > 0)
             {
-                AllStations.AddRange(_config.CustomStations);
+                AllStations = new List<RadioStation>(_config.SavedStations);
+            }
+            else
+            {
+                AllStations = GetDefaultPresetStations();
+                _config.SavedStations = new List<RadioStation>(AllStations);
+                SaveConfig();
             }
 
             if (_config.FavoriteStationIds != null)
@@ -183,7 +217,7 @@ namespace SS_CAM.Services
             }
         }
 
-        public static List<RadioStation> GetPresetStations()
+        public static List<RadioStation> GetDefaultPresetStations()
         {
             return new List<RadioStation>
             {
@@ -192,80 +226,70 @@ namespace SS_CAM.Services
                     Id = "preset_bfm899",
                     Name = "BFM 89.9",
                     Genre = "Talk / News",
-                    StreamUrl = "https://stream.bfm.my/stream",
+                    StreamUrl = "https://stream.rcs.revma.com/s91qy9p0zs3vv",
                     IconEmoji = "🎙️",
                     IsPreset = true,
                     Description = "The Business Station — News, interviews, and intellectual discussion."
                 },
                 new RadioStation
                 {
-                    Id = "preset_lofigirl",
-                    Name = "Lofi Focus Beats",
+                    Id = "preset_lofifocus",
+                    Name = "Lo-Fi Focus Beats",
                     Genre = "Focus / Lo-Fi",
-                    StreamUrl = "https://stream.zeno.fm/f3vkgv1y64zuv",
+                    StreamUrl = "https://stream.bigfm.de/lofifocus/mp3-128/radiobrowser",
                     IconEmoji = "🎧",
                     IsPreset = true,
-                    Description = "Chillhop lo-fi beats to relax and study/code to."
+                    Description = "Chillhop lo-fi beats to relax and code/design to."
                 },
                 new RadioStation
                 {
-                    Id = "preset_jazzfocus",
+                    Id = "preset_chillhop",
+                    Name = "Chillhop Lounge",
+                    Genre = "Focus / Lo-Fi",
+                    StreamUrl = "https://stream.laut.fm/lofi",
+                    IconEmoji = "☕",
+                    IsPreset = true,
+                    Description = "Smooth lo-fi chillhop background tracks."
+                },
+                new RadioStation
+                {
+                    Id = "preset_fm988",
+                    Name = "988 FM Malaysia",
+                    Genre = "Pop / Hits",
+                    StreamUrl = "https://28103.live.streamtheworld.com/988_FMAAC.aac",
+                    IconEmoji = "📻",
+                    IsPreset = true,
+                    Description = "Popular Malaysian Chinese music & entertainment."
+                },
+                new RadioStation
+                {
+                    Id = "preset_aifm",
+                    Name = "Ai FM",
+                    Genre = "Pop / Hits",
+                    StreamUrl = "https://28153.live.streamtheworld.com/AI_FMAAC.aac",
+                    IconEmoji = "🎵",
+                    IsPreset = true,
+                    Description = "National Chinese infotainment radio station."
+                },
+                new RadioStation
+                {
+                    Id = "preset_cityplus",
+                    Name = "CITYPlus FM",
+                    Genre = "Talk / News",
+                    StreamUrl = "https://stream.rcs.revma.com/9ykdmcawe1bwv",
+                    IconEmoji = "🔥",
+                    IsPreset = true,
+                    Description = "Malaysia business radio & financial insights."
+                },
+                new RadioStation
+                {
+                    Id = "preset_smoothjazz",
                     Name = "Smooth Jazz Workstation",
                     Genre = "Jazz / Chill",
-                    StreamUrl = "https://stream.zeno.fm/7c37n8puv0hvv",
+                    StreamUrl = "https://0nlineradio.radioho.st/0r-jazz?ref=radio-browser",
                     IconEmoji = "🎷",
                     IsPreset = true,
                     Description = "Smooth instrumental jazz for deep concentration."
-                },
-                new RadioStation
-                {
-                    Id = "preset_hitzfm",
-                    Name = "Hitz FM",
-                    Genre = "Pop / Hits",
-                    StreamUrl = "https://astro1.prod.mobi/hitz/hitz.m3u8",
-                    IconEmoji = "📻",
-                    IsPreset = true,
-                    Description = "Malaysia's #1 English Hit Station."
-                },
-                new RadioStation
-                {
-                    Id = "preset_erafm",
-                    Name = "Era FM",
-                    Genre = "Malay Pop",
-                    StreamUrl = "https://astro1.prod.mobi/era/era.m3u8",
-                    IconEmoji = "🎵",
-                    IsPreset = true,
-                    Description = "Muzik Hit Terbaik — Top Malay pop hits."
-                },
-                new RadioStation
-                {
-                    Id = "preset_hotfm",
-                    Name = "Hot FM",
-                    Genre = "Malay Pop",
-                    StreamUrl = "https://mp3.mp3cast.my/hotfm.mp3",
-                    IconEmoji = "🔥",
-                    IsPreset = true,
-                    Description = "Yang Hangat dan Terbaik — Top hits and entertainment."
-                },
-                new RadioStation
-                {
-                    Id = "preset_suriafm",
-                    Name = "Suria FM",
-                    Genre = "Malay Pop",
-                    StreamUrl = "https://mp3.mp3cast.my/suria.mp3",
-                    IconEmoji = "☀️",
-                    IsPreset = true,
-                    Description = "Muzik Hit Sentiasa — Classic and modern Malay hits."
-                },
-                new RadioStation
-                {
-                    Id = "preset_thrraga",
-                    Name = "THR Raaga",
-                    Genre = "Pop / Hits",
-                    StreamUrl = "https://astro1.prod.mobi/raaga/raaga.m3u8",
-                    IconEmoji = "🎶",
-                    IsPreset = true,
-                    Description = "Malaysia's leading Tamil music station."
                 }
             };
         }
@@ -284,14 +308,15 @@ namespace SS_CAM.Services
             }
             SetState(RadioPlaybackState.Buffering);
 
-            Action action = () =>
+            EnsureUI(() =>
             {
                 try
                 {
+                    EnsureMediaPlayerCreated();
                     _mediaPlayer.Stop();
                     _mediaPlayer.Close();
 
-                    Uri streamUri = new Uri(station.StreamUrl, UriKind.Absolute);
+                    Uri streamUri = new Uri(station.StreamUrl.Trim(), UriKind.Absolute);
                     _mediaPlayer.Open(streamUri);
                     _mediaPlayer.Volume = _config.IsMuted ? 0.0 : _config.Volume;
                     _mediaPlayer.Play();
@@ -304,16 +329,7 @@ namespace SS_CAM.Services
                         ErrorOccurred("Failed to play station: " + ex.Message);
                     }
                 }
-            };
-
-            if (Application.Current != null && !Application.Current.Dispatcher.CheckAccess())
-            {
-                Application.Current.Dispatcher.BeginInvoke(action);
-            }
-            else
-            {
-                action();
-            }
+            });
         }
 
         public void TogglePlayPause()
@@ -337,47 +353,35 @@ namespace SS_CAM.Services
 
         public void Pause()
         {
-            Action action = () =>
+            EnsureUI(() =>
             {
                 try
                 {
-                    _mediaPlayer.Pause();
+                    if (_mediaPlayer != null)
+                    {
+                        _mediaPlayer.Pause();
+                    }
                     SetState(RadioPlaybackState.Paused);
                 }
                 catch { }
-            };
-
-            if (Application.Current != null && !Application.Current.Dispatcher.CheckAccess())
-            {
-                Application.Current.Dispatcher.BeginInvoke(action);
-            }
-            else
-            {
-                action();
-            }
+            });
         }
 
         public void Stop()
         {
-            Action action = () =>
+            EnsureUI(() =>
             {
                 try
                 {
-                    _mediaPlayer.Stop();
-                    _mediaPlayer.Close();
+                    if (_mediaPlayer != null)
+                    {
+                        _mediaPlayer.Stop();
+                        _mediaPlayer.Close();
+                    }
                     SetState(RadioPlaybackState.Stopped);
                 }
                 catch { }
-            };
-
-            if (Application.Current != null && !Application.Current.Dispatcher.CheckAccess())
-            {
-                Application.Current.Dispatcher.BeginInvoke(action);
-            }
-            else
-            {
-                action();
-            }
+            });
         }
 
         public void ToggleFavorite(RadioStation station)
@@ -403,59 +407,142 @@ namespace SS_CAM.Services
                 _config.FavoriteStationIds.Remove(station.Id);
             }
 
+            SyncConfigStations();
             SaveConfig();
         }
 
-        public void AddCustomStation(RadioStation customStation)
+        public void AddStation(RadioStation station)
         {
-            if (customStation == null) return;
+            if (station == null) return;
 
-            if (_config.CustomStations == null)
+            AllStations.Add(station);
+            SyncConfigStations();
+            SaveConfig();
+        }
+
+        public void UpdateStation(RadioStation updatedStation)
+        {
+            if (updatedStation == null) return;
+
+            RadioStation existing = AllStations.FirstOrDefault(s => s.Id == updatedStation.Id);
+            if (existing != null)
             {
-                _config.CustomStations = new List<RadioStation>();
-            }
+                existing.Name = updatedStation.Name;
+                existing.StreamUrl = updatedStation.StreamUrl;
+                existing.Genre = updatedStation.Genre;
+                existing.IconEmoji = updatedStation.IconEmoji;
+                existing.Description = updatedStation.Description;
 
-            _config.CustomStations.Add(customStation);
-            AllStations.Add(customStation);
-            SaveConfig();
+                if (CurrentStation != null && CurrentStation.Id == existing.Id)
+                {
+                    CurrentStation = existing;
+                    if (StationChanged != null)
+                    {
+                        StationChanged(CurrentStation);
+                    }
+                    if (State == RadioPlaybackState.Playing)
+                    {
+                        PlayStation(CurrentStation);
+                    }
+                }
+
+                SyncConfigStations();
+                SaveConfig();
+            }
         }
 
-        public void DeleteCustomStation(RadioStation customStation)
+        public void DeleteStation(RadioStation station)
         {
-            if (customStation == null || customStation.IsPreset) return;
+            if (station == null) return;
 
-            if (CurrentStation != null && CurrentStation.Id == customStation.Id)
+            if (CurrentStation != null && CurrentStation.Id == station.Id)
             {
                 Stop();
+                CurrentStation = null;
             }
 
-            if (_config.CustomStations != null)
+            AllStations.RemoveAll(s => s.Id == station.Id);
+            if (_config.FavoriteStationIds != null)
             {
-                _config.CustomStations.RemoveAll(s => s.Id == customStation.Id);
+                _config.FavoriteStationIds.Remove(station.Id);
             }
-            AllStations.RemoveAll(s => s.Id == customStation.Id);
+
+            SyncConfigStations();
             SaveConfig();
+        }
+
+        public void ResetToDefaultPresets()
+        {
+            Stop();
+            AllStations = GetDefaultPresetStations();
+            CurrentStation = AllStations.Count > 0 ? AllStations[0] : null;
+            SyncConfigStations();
+            SaveConfig();
+
+            if (StationChanged != null && CurrentStation != null)
+            {
+                StationChanged(CurrentStation);
+            }
+        }
+
+        private void SyncConfigStations()
+        {
+            if (_config != null)
+            {
+                _config.SavedStations = new List<RadioStation>(AllStations);
+            }
         }
 
         private void SetState(RadioPlaybackState state)
         {
             State = state;
-            if (Application.Current != null && !Application.Current.Dispatcher.CheckAccess())
-            {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    if (PlaybackStateChanged != null)
-                    {
-                        PlaybackStateChanged(State);
-                    }
-                }));
-            }
-            else
+            EnsureUI(() =>
             {
                 if (PlaybackStateChanged != null)
                 {
                     PlaybackStateChanged(State);
                 }
+            });
+        }
+
+        public static bool TestStreamUrl(string url, out string statusMessage)
+        {
+            statusMessage = "";
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                statusMessage = "URL cannot be empty.";
+                return false;
+            }
+
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url.Trim());
+                request.Timeout = 5000;
+                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
+                request.Method = "GET";
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    string ctype = response.ContentType != null ? response.ContentType.ToLower() : "";
+                    if (response.StatusCode == HttpStatusCode.OK ||
+                        ctype.Contains("audio") || ctype.Contains("mpeg") || ctype.Contains("aac") || ctype.Contains("ogg") || ctype.Contains("stream"))
+                    {
+                        statusMessage = "Stream connection successful (" + (response.ContentType ?? "Audio Stream") + ")!";
+                        return true;
+                    }
+                    else
+                    {
+                        statusMessage = "Server returned status: " + response.StatusCode;
+                        return true; // Still accessible
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                statusMessage = "Stream test failed: " + ex.Message;
+                return false;
             }
         }
 

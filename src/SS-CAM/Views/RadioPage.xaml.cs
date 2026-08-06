@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,38 +13,16 @@ using SS_CAM.Services;
 
 namespace SS_CAM.Views
 {
-    public class InverseBoolToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool)
-            {
-                bool b = (bool)value;
-                return b ? Visibility.Collapsed : Visibility.Visible;
-            }
-            return Visibility.Visible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public partial class RadioPage : Page
     {
         private RadioStreamService _radioService;
         private DispatcherTimer _visualizerTimer;
         private Random _random = new Random();
         private string _activeFilter = "ALL";
+        private RadioStation _editingStation = null;
 
         public RadioPage()
         {
-            if (!Resources.Contains("InverseBoolToVisibilityConverter"))
-            {
-                Resources.Add("InverseBoolToVisibilityConverter", new InverseBoolToVisibilityConverter());
-            }
-
             InitializeComponent();
             Loaded += OnPageLoaded;
             Unloaded += OnPageUnloaded;
@@ -154,7 +133,7 @@ namespace SS_CAM.Views
                 case RadioPlaybackState.Error:
                     HeroPlayBtnText.Text = "▶";
                     HeroStatusDot.Text = "🔴 ";
-                    HeroStatusText.Text = "Stream Connection Error";
+                    HeroStatusText.Text = "Stream Connection Error (Try Editing / Testing Stream URL)";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
                     VisualizerBars.Visibility = Visibility.Collapsed;
                     if (_visualizerTimer != null) _visualizerTimer.Stop();
@@ -304,34 +283,109 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnStationEditClicked(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null && btn.Tag is RadioStation)
+            {
+                _editingStation = btn.Tag as RadioStation;
+                ModalTitleText.Text = "✏️ Edit Station — " + _editingStation.Name;
+                TxtStationName.Text = _editingStation.Name;
+                TxtStreamUrl.Text = _editingStation.StreamUrl;
+                TxtEmoji.Text = _editingStation.IconEmoji;
+                TxtDescription.Text = _editingStation.Description;
+                CmbGenre.Text = _editingStation.Genre;
+
+                StreamTestBadge.Visibility = Visibility.Collapsed;
+                AddStationModal.Visibility = Visibility.Visible;
+            }
+        }
+
         private void OnStationDeleteClicked(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.Tag is RadioStation)
             {
                 RadioStation station = btn.Tag as RadioStation;
-                string msg = string.Format("Delete custom station '{0}'?", station.Name);
-                var result = MessageBox.Show(msg, "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                string msg = string.Format("Delete station '{0}' from playlist?", station.Name);
+                var result = MessageBox.Show(msg, "Confirm Delete Station", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    _radioService.DeleteCustomStation(station);
+                    _radioService.DeleteStation(station);
                     ApplyFilter(_activeFilter);
                 }
             }
         }
 
+        private void OnResetDefaultsClicked(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Reset playlist to default recommended radio stations?", "Reset Playlist", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                _radioService.ResetToDefaultPresets();
+                ApplyFilter(_activeFilter);
+                MessageBox.Show("Playlist reset to default stations!", "Playlist Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         private void OnAddCustomStationClicked(object sender, RoutedEventArgs e)
         {
+            _editingStation = null;
+            ModalTitleText.Text = "➕ Add Custom Radio Stream";
             TxtStationName.Text = "";
             TxtStreamUrl.Text = "https://";
             TxtEmoji.Text = "📻";
             TxtDescription.Text = "";
+            CmbGenre.SelectedIndex = 0;
+
+            StreamTestBadge.Visibility = Visibility.Collapsed;
             AddStationModal.Visibility = Visibility.Visible;
         }
 
         private void OnCloseModalClicked(object sender, RoutedEventArgs e)
         {
             AddStationModal.Visibility = Visibility.Collapsed;
+            _editingStation = null;
+        }
+
+        private void OnTestStreamClicked(object sender, RoutedEventArgs e)
+        {
+            string url = TxtStreamUrl.Text.Trim();
+            if (string.IsNullOrWhiteSpace(url) || url == "https://")
+            {
+                StreamTestBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEF2F2"));
+                StreamTestText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DC2626"));
+                StreamTestText.Text = "⚠️ Please enter a stream URL to test.";
+                StreamTestBadge.Visibility = Visibility.Visible;
+                return;
+            }
+
+            StreamTestBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEF9C3"));
+            StreamTestText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#854D0E"));
+            StreamTestText.Text = "⏳ Testing stream URL connectivity...";
+            StreamTestBadge.Visibility = Visibility.Visible;
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                string statusMsg;
+                bool isOk = RadioStreamService.TestStreamUrl(url, out statusMsg);
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (isOk)
+                    {
+                        StreamTestBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ECFDF5"));
+                        StreamTestText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#047857"));
+                        StreamTestText.Text = "✅ " + statusMsg;
+                    }
+                    else
+                    {
+                        StreamTestBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEF2F2"));
+                        StreamTestText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DC2626"));
+                        StreamTestText.Text = "❌ " + statusMsg;
+                    }
+                }));
+            });
         }
 
         private void OnSaveCustomStationClicked(object sender, RoutedEventArgs e)
@@ -369,23 +423,35 @@ namespace SS_CAM.Views
                 emoji = "📻";
             }
 
-            RadioStation customStation = new RadioStation
+            if (_editingStation != null)
             {
-                Name = name,
-                StreamUrl = url,
-                Genre = genre,
-                IconEmoji = emoji,
-                Description = desc,
-                IsPreset = false,
-                IsFavorite = false
-            };
+                _editingStation.Name = name;
+                _editingStation.StreamUrl = url;
+                _editingStation.Genre = genre;
+                _editingStation.IconEmoji = emoji;
+                _editingStation.Description = desc;
 
-            _radioService.AddCustomStation(customStation);
+                _radioService.UpdateStation(_editingStation);
+                _editingStation = null;
+            }
+            else
+            {
+                RadioStation customStation = new RadioStation
+                {
+                    Name = name,
+                    StreamUrl = url,
+                    Genre = genre,
+                    IconEmoji = emoji,
+                    Description = desc,
+                    IsPreset = false,
+                    IsFavorite = false
+                };
+
+                _radioService.AddStation(customStation);
+            }
+
             AddStationModal.Visibility = Visibility.Collapsed;
             ApplyFilter(_activeFilter);
-
-            string successMsg = string.Format("Custom station '{0}' added successfully!", name);
-            MessageBox.Show(successMsg, "Station Added", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
