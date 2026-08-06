@@ -236,7 +236,7 @@
                             <!-- Folder Structure Text Box -->
                             <TextBlock Text="Directory Subfolder Structure (One folder per line)" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
                             <TextBox x:Name="TxtPresetFolders" AcceptsReturn="True" Height="170" FontFamily="Consolas" FontSize="12" Padding="8" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
-                            <TextBlock Text="Tip: Name subfolders starting with '01_' to place starter master canvas files in that folder." FontSize="10" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                            <TextBlock Text="💡 Subfolders: Use '/' (e.g. 01_Product_Shots/sub_folder) OR indent with '- sub folder'." FontSize="10" Foreground="#043388" FontWeight="SemiBold" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Grid>
 

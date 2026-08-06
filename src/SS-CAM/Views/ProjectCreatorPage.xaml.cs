@@ -234,10 +234,18 @@ namespace SS_CAM.Views
             
             foreach (var folder in presetFolders)
             {
-                lines.Add(" ├── 📁 " + folder);
-                if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
+                if (folder.Contains(Path.DirectorySeparatorChar.ToString()) || folder.Contains("/"))
                 {
-                    lines.Add(" │   └── 📄 master_canvas" + (TemplateExtensionComboBox.SelectedItem ?? ".afdesign"));
+                    string[] parts = folder.Split(new[] { Path.DirectorySeparatorChar, '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    lines.Add(" │   └── 📁 " + string.Join("/", parts.Skip(1)));
+                }
+                else
+                {
+                    lines.Add(" ├── 📁 " + folder);
+                    if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
+                    {
+                        lines.Add(" │   └── 📄 master_canvas" + (TemplateExtensionComboBox.SelectedItem ?? ".afdesign"));
+                    }
                 }
             }
 
@@ -411,10 +419,7 @@ namespace SS_CAM.Views
                 suffix = "D";
             }
 
-            List<string> folders = folderText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-                                             .Select(f => f.Trim())
-                                             .Where(f => !string.IsNullOrWhiteSpace(f))
-                                             .ToList();
+            List<string> folders = CategoryPresetService.ParseFolderLines(folderText);
 
             if (folders.Count == 0)
             {

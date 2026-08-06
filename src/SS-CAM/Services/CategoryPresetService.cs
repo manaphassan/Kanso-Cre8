@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using SS_CAM.Models;
 
@@ -60,6 +61,43 @@ namespace SS_CAM.Services
                     Folders = new List<string> { "01_Product_Shots", "02_Banners", "03_Listing_Assets", "04_Exports" }
                 }
             };
+        }
+
+        public static List<string> ParseFolderLines(string folderText)
+        {
+            List<string> subFolders = new List<string>();
+            if (string.IsNullOrWhiteSpace(folderText)) return subFolders;
+
+            string[] rawLines = folderText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string parentFolder = "";
+
+            foreach (string l in rawLines)
+            {
+                string trimmed = l.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed)) continue;
+
+                bool isIndented = l.StartsWith(" ") || l.StartsWith("\t") || l.StartsWith("-") || trimmed.StartsWith("-");
+
+                if (isIndented && !string.IsNullOrEmpty(parentFolder))
+                {
+                    string subName = trimmed.TrimStart('-', '*', ' ', '\t').Trim();
+                    subName = Regex.Replace(subName, @"[\\/:*?""<>|]", "_");
+                    if (!string.IsNullOrEmpty(subName))
+                    {
+                        subFolders.Add(Path.Combine(parentFolder, subName));
+                    }
+                }
+                else
+                {
+                    string normalized = trimmed.Replace('/', Path.DirectorySeparatorChar);
+                    subFolders.Add(normalized);
+
+                    string[] parts = normalized.Split(Path.DirectorySeparatorChar);
+                    parentFolder = parts[0];
+                }
+            }
+
+            return subFolders;
         }
 
         public static List<CategoryPreset> LoadPresets()
