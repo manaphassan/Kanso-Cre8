@@ -2,7 +2,24 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.0.7] - 2026-08-05 (Latest Stable Release)
+## [2.1.0] - 2026-08-06 (Latest Stable Release)
+
+### Added
+- **Radio & Focus Stream Player Module**:
+  - **Live Radio Stations**: Preloaded Malaysian radio stations including BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, and THR Raaga.
+  - **Focus & Lo-Fi Streams**: Preloaded ambient audio streams (Lofi Focus Beats, Smooth Jazz Workstation).
+  - **Custom Stream Management**: Support for adding, editing, filtering, and deleting custom HTTP/HTTPS/M3U8 audio streams with custom genres and emoji icons.
+  - **Status Bar Mini-Player Widget**: Persistent audio controls (`▶`/`⏸` play toggle, live station indicator) built directly into the bottom status bar, accessible from all pages.
+  - **Interactive Station Grid & Visualizer**: Station cards with category filter tabs (`⭐ Favorites`, `Focus`, `Pop/Hits`, `Talk/News`, `Jazz/Chill`, `Custom`) and animated EQ visualizer bars during active playback.
+  - **Configuration Persistence**: Automatically saves custom streams, starred favorites, last played station, and volume preferences to `%LOCALAPPDATA%\SuamiSihat\radio_config.json`.
+
+### Integrity
+
+| File | Details |
+|---|---|
+| `SS-CAM-v2.1.0.exe` | Compiled Native WPF Single-File Executable |
+
+## [2.0.7] - 2026-08-05 (Stable Release)
 
 ### Added
 - **Native C# WPF Release Architecture**: Replaced legacy PowerShell bootstrapper packaging with a single-file compiled executable using Fody/Costura assembly embedding.
