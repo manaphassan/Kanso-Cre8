@@ -175,6 +175,7 @@ namespace SS_CAM
 
         private List<Rectangle> visBars;
         private List<Ellipse> visGlowDots;
+        private double[] visCurrentHeights;
         private int visTickCount = 0;
         private bool wasPlayingLastTick = false;
 
@@ -183,6 +184,7 @@ namespace SS_CAM
             animItems = new List<AnimShapeItem>();
             visBars = new List<Rectangle>();
             visGlowDots = new List<Ellipse>();
+            visCurrentHeights = new double[48];
 
             var shapeData = new[]
             {
@@ -220,7 +222,7 @@ namespace SS_CAM
                 });
             }
 
-            // Create 48 NCS GLava Spectrum Frequency Bars across bottom of HeaderCanvas
+            // Create 48 Audio Visual Synthesizer Spectrum Bars across bottom of HeaderCanvas
             int barCount = 48;
             string[] ncsColors = new[] { "#21A1F7", "#3B82F6", "#EC4899", "#8B5CF6", "#06B6D4" };
 
@@ -239,7 +241,7 @@ namespace SS_CAM
                 HeaderCanvas.Children.Add(bar);
                 visBars.Add(bar);
 
-                // Top Glow Dot for NCS GLava Spectrum Tip
+                // Top Radiant Glow Dot for Visual Synthesizer Tip
                 Ellipse dot = new Ellipse
                 {
                     Width = 4,
@@ -262,7 +264,7 @@ namespace SS_CAM
 
                 bool isPlaying = RadioStreamService.Instance.State == RadioPlaybackState.Playing;
 
-                // Dynamic Header Background Transition between Active Music Visualizer and Normal Ambient Header
+                // Dynamic Header Background Transition between Active Visual Synthesizer and Normal Ambient Header
                 if (isPlaying != wasPlayingLastTick)
                 {
                     wasPlayingLastTick = isPlaying;
@@ -303,9 +305,8 @@ namespace SS_CAM
                     item.Shape.Opacity = isPlaying ? 0.03 : 0.08;
                 }
 
-                // Animate NCS Spectrum GLava Audio Visualizer Bars & Glow Tips (Real-Time Audio Sampled)
+                // Fluid Visual Synthesizer Bar & Radiant Glow Tip Animation Engine
                 double barSpacing = cw / barCount;
-                double[] realSpectrum = RadioStreamService.Instance.LocalProxy != null ? RadioStreamService.Instance.LocalProxy.CurrentSpectrumData : null;
 
                 for (int i = 0; i < visBars.Count; i++)
                 {
@@ -315,31 +316,31 @@ namespace SS_CAM
 
                     if (isPlaying)
                     {
-                        double sampleVal = 0;
-                        if (realSpectrum != null && i < realSpectrum.Length && realSpectrum[i] > 0.005)
-                        {
-                            sampleVal = realSpectrum[i];
-                        }
-                        else
-                        {
-                            double wave1 = Math.Sin(visTickCount * 0.22 + i * 0.28);
-                            double wave2 = Math.Cos(visTickCount * 0.14 - i * 0.42);
-                            sampleVal = Math.Abs(wave1 * wave2);
-                        }
+                        // Multi-Harmonic Synthesizer Spectrum Math (Bass Sub-pulse + Mid Frequency + Treble Shimmer)
+                        double bass = Math.Sin(visTickCount * 0.18 + i * 0.12) * 0.45;
+                        double mid = Math.Cos(visTickCount * 0.28 - i * 0.32) * 0.35;
+                        double treble = Math.Sin(visTickCount * 0.45 + i * 0.65) * 0.20;
+                        double bellEnvelope = Math.Sin((double)i / barCount * Math.PI);
 
-                        targetHeight = Math.Max(3, 4 + 44 * sampleVal);
+                        double rawVal = Math.Abs(bass + mid + treble) * (0.35 + 0.65 * bellEnvelope);
+                        targetHeight = Math.Min(34.0, Math.Max(3.0, 4.0 + 30.0 * rawVal));
+
                         bar.Opacity = 0.85;
                         dot.Opacity = 0.95;
                     }
                     else
                     {
+                        targetHeight = 0;
                         bar.Opacity = 0.0;
                         dot.Opacity = 0.0;
                     }
 
-                    bar.Height = targetHeight;
+                    // Damped Spring Smooth Interpolation (Prevents freezing & jitter)
+                    visCurrentHeights[i] = visCurrentHeights[i] * 0.75 + targetHeight * 0.25;
+
+                    bar.Height = visCurrentHeights[i];
                     double xPos = i * barSpacing + 3;
-                    double yPos = ch - targetHeight - 1;
+                    double yPos = ch - visCurrentHeights[i] - 1;
 
                     Canvas.SetLeft(bar, xPos);
                     Canvas.SetTop(bar, yPos);
