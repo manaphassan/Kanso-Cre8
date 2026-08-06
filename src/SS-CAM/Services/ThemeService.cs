@@ -77,27 +77,27 @@ namespace SS_CAM.Services
             {
                 return new ThemeColors
                 {
-                    // Official Windows 11 Fluent System Font Family & System Palette (No SuamiSihat Colors)
-                    FontFamily = "Segoe UI Variable Text, Segoe UI, sans-serif",
-                    HeaderBg = "#202020",          // Windows 11 Mica System Dark Header
-                    HeaderBorder = "#2C2C2C",
-                    SidebarBg = "#202020",         // Windows 11 System Navigation Drawer
-                    SidebarBorder = "#2C2C2C",
-                    ActiveNavBg = "#0078D4",       // Official Windows Accent Blue
+                    // Official Microsoft Fluent 2 Design System Tokens (fluent2.microsoft.design)
+                    FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
+                    HeaderBg = "#1F1F1F",          // Fluent 2 Dark Neutral Container (14)
+                    HeaderBorder = "#2E2E2E",      // Fluent 2 Dark Stroke Neutral (20)
+                    SidebarBg = "#1F1F1F",         // Fluent 2 Dark Sidebar Container
+                    SidebarBorder = "#2E2E2E",
+                    ActiveNavBg = "#0078D4",       // Fluent 2 Brand 80 Primary Accent
                     ActiveNavText = "#FFFFFF",
-                    ActiveNavSubtext = "#E0F2FE",
-                    InactiveNavText = "#FFFFFF",
-                    InactiveNavSubtext = "#A1A1AA",
-                    FooterBg = "#2C2C2C",          // Windows 11 Dark Footer
-                    FooterBorder = "#3F3F46",
-                    FooterText = "#FFFFFF",
-                    FooterCardBg = "#3F3F46",
-                    FooterCardBorder = "#52525B",
-                    UserCardBg = "#2C2C2C",
-                    UserCardBorder = "#3F3F46",
+                    ActiveNavSubtext = "#C7E0F4",  // Fluent 2 Brand Light Foreground
+                    InactiveNavText = "#E0E0E0",   // Fluent 2 Dark Neutral Foreground (90)
+                    InactiveNavSubtext = "#A1A1A1",// Fluent 2 Dark Neutral Foreground (60)
+                    FooterBg = "#1F1F1F",          // Fluent 2 Dark Footer Container
+                    FooterBorder = "#2E2E2E",
+                    FooterText = "#F5F5F5",
+                    FooterCardBg = "#292929",      // Fluent 2 Dark Sub-container
+                    FooterCardBorder = "#3B3B3B",
+                    UserCardBg = "#292929",
+                    UserCardBorder = "#3B3B3B",
                     UserCardTitle = "#FFFFFF",
-                    UserCardSub = "#60A5FA",
-                    MainFrameBg = "#18181B"        // Windows 11 Dark Canvas
+                    UserCardSub = "#2899F5",       // Fluent 2 Brand Tint Accent
+                    MainFrameBg = "#141414"        // Fluent 2 Dark Page Canvas Neutral (8)
                 };
             }
 

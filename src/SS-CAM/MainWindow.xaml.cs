@@ -503,7 +503,7 @@ namespace SS_CAM
             else if (theme == AppTheme.Win11Fluent)
             {
                 WindowBackdropType = WindowBackdropType.Mica;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A"));
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141414"));
             }
             else
             {
