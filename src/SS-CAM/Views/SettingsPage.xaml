@@ -95,6 +95,17 @@
                     </StackPanel>
                 </GroupBox>
 
+                <!-- App Appearance & Theme Preference Card -->
+                <GroupBox Header="App Appearance &amp; Theme Mode" Margin="0,0,0,20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Choose between Apple Midnight Navy Dark Mode or Light Mode theme interface." Foreground="#64748B" FontSize="12" Margin="0,0,0,14"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="BtnDarkMode" Content="🌙 Dark Mode (Midnight)" Click="OnSelectDarkModeClicked" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"/>
+                            <Button x:Name="BtnLightMode" Content="☀️ Light Mode (Slate)" Click="OnSelectLightModeClicked" Height="36" Padding="16,0" Background="#E2E8F0" Foreground="#1E293B" FontWeight="Bold" Cursor="Hand"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
                 <!-- Workstation Payload & Maintenance -->
                 <GroupBox Header="Workstation Payload &amp; Maintenance" Margin="0,0,0,20">
                     <StackPanel Margin="16">

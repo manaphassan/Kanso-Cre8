@@ -173,9 +173,14 @@ namespace SS_CAM
             }
         }
 
+        private List<Rectangle> visBars;
+        private int visTickCount = 0;
+
         private void InitHeaderAnimation()
         {
             animItems = new List<AnimShapeItem>();
+            visBars = new List<Rectangle>();
+
             var shapeData = new[]
             {
                 new { X = 60.0, Y = 10.0, VX = 0.45, VY = 0.20, D = 72.0, O = 0.09 },
@@ -212,10 +217,31 @@ namespace SS_CAM
                 });
             }
 
+            // Create 32 Header Audio Visualizer Wave Bars across bottom of HeaderCanvas
+            int barCount = 32;
+            for (int i = 0; i < barCount; i++)
+            {
+                Rectangle bar = new Rectangle
+                {
+                    Width = 4,
+                    Height = 2,
+                    RadiusX = 2,
+                    RadiusY = 2,
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7")),
+                    Opacity = 0.65
+                };
+                HeaderCanvas.Children.Add(bar);
+                visBars.Add(bar);
+            }
+
+            // Listen for Theme Mode changes
+            ThemeService.ThemeChanged += OnThemeModeChanged;
+
             headerAnimTimer = new DispatcherTimer();
             headerAnimTimer.Interval = TimeSpan.FromMilliseconds(33);
             headerAnimTimer.Tick += (s, ev) =>
             {
+                visTickCount++;
                 double cw = HeaderCanvas.ActualWidth;
                 double ch = HeaderCanvas.ActualHeight;
                 if (cw <= 0 || ch <= 0) return;
@@ -235,8 +261,55 @@ namespace SS_CAM
                     Canvas.SetLeft(item.Shape, x);
                     Canvas.SetTop(item.Shape, y);
                 }
+
+                // Animate Header Audio Visualizer Wave when Radio Stream is Playing
+                bool isPlaying = RadioStreamService.Instance.State == RadioPlaybackState.Playing;
+                double barSpacing = cw / barCount;
+
+                for (int i = 0; i < visBars.Count; i++)
+                {
+                    Rectangle bar = visBars[i];
+                    double targetHeight = 2;
+
+                    if (isPlaying)
+                    {
+                        double wave1 = Math.Sin(visTickCount * 0.18 + i * 0.35);
+                        double wave2 = Math.Cos(visTickCount * 0.12 + i * 0.55);
+                        targetHeight = Math.Max(3, 4 + 26 * Math.Abs(wave1 * wave2));
+                        bar.Opacity = 0.7 + 0.3 * Math.Abs(wave1);
+                    }
+                    else
+                    {
+                        bar.Opacity = 0.2;
+                    }
+
+                    bar.Height = targetHeight;
+                    Canvas.SetLeft(bar, i * barSpacing + 2);
+                    Canvas.SetTop(bar, ch - targetHeight - 2);
+                }
             };
             headerAnimTimer.Start();
+        }
+
+        private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ToggleTheme();
+        }
+
+        private void OnThemeModeChanged(AppTheme theme)
+        {
+            if (theme == AppTheme.Dark)
+            {
+                if (StatusThemeIcon != null) StatusThemeIcon.Text = "🌙 ";
+                if (StatusThemeText != null) StatusThemeText.Text = "Dark Mode";
+                if (MainFrame != null) MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A1329"));
+            }
+            else
+            {
+                if (StatusThemeIcon != null) StatusThemeIcon.Text = "☀️ ";
+                if (StatusThemeText != null) StatusThemeText.Text = "Light Mode";
+                if (MainFrame != null) MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8FAFC"));
+            }
         }
 
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)

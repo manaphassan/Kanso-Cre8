@@ -202,6 +202,16 @@
                 </Border>
             </StatusBarItem>
             <Separator Margin="8,0" Background="#1E3A8A"/>
+            <!-- Light / Dark Mode Toggle Button -->
+            <StatusBarItem Cursor="Hand" ToolTip="Click to toggle Light / Dark Mode">
+                <Button x:Name="StatusThemeBtn" Click="OnStatusThemeToggle" Background="#072352" Foreground="#21A1F7" BorderBrush="#1E40AF" BorderThickness="1" Padding="8,2" FontSize="11" FontWeight="Bold" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="StatusThemeIcon" Text="🌙 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="11" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusThemeText" Text="Dark Mode" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StatusBarItem>
+            <Separator Margin="8,0" Background="#1E3A8A"/>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock x:Name="StatusVersionText" Text="SS-CAM v2.1.0" Foreground="#21A1F7" FontSize="11" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="OnOpenGithub"/>
             </StatusBarItem>

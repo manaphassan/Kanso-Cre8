@@ -130,6 +130,7 @@
     <Compile Include="Services\AudioFeedbackService.cs" />
     <Compile Include="Services\RadioStreamService.cs" />
     <Compile Include="Services\CategoryPresetService.cs" />
+    <Compile Include="Services\ThemeService.cs" />
     <Compile Include="Views\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
       <SubType>Code</SubType>
