@@ -15,6 +15,13 @@ namespace SS_CAM.Views
         public DashboardPage()
         {
             InitializeComponent();
+            
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            if (TxtVersionBadge != null)
+            {
+                TxtVersionBadge.Text = string.Format("v{0} Fluent 2", version.ToString(3));
+            }
+
             Loaded += OnPageLoaded;
         }
 

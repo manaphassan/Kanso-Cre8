@@ -16,6 +16,19 @@ namespace SS_CAM.Views
         public AboutWindow()
         {
             InitializeComponent();
+            
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            string verString = version.ToString(3);
+            
+            if (TxtVersionBadge != null)
+                TxtVersionBadge.Text = string.Format("Version {0} (C# Native WPF)", verString);
+                
+            if (GroupChangelog != null)
+                GroupChangelog.Header = string.Format("v{0} Release Highlights & Changelog", verString);
+                
+            if (TxtWhatsNew != null)
+                TxtWhatsNew.Text = string.Format("✨ What's New in Version {0}:", verString);
+
             Loaded += OnWindowLoaded;
             Closed += OnWindowClosed;
         }
