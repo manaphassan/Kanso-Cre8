@@ -38,7 +38,7 @@ namespace SS_CAM.Services
         public string SearchText { get; set; }
         public string SearchPlaceholder { get; set; }
         
-        // Falconia-specific extras
+        // Falconia-specific & Nav Tokens
         public string NavIndicatorColor { get; set; }
         public string NavIconActive { get; set; }
         public string NavIconInactive { get; set; }
@@ -99,7 +99,8 @@ namespace SS_CAM.Services
             {
                 // ─────────────────────────────────────────────────────────────────
                 // FALCONIA — Full White Fluent 2 Light Theme
-                // Official Microsoft Fluent 2 Light tokens (fluent2.microsoft.design)
+                // - Active item: text = SAME color as active icon (#0F6CBD)
+                // - Inactive items: text = dark grey (#424242), icon = medium grey (#616161)
                 // ─────────────────────────────────────────────────────────────────
                 return new ThemeColors
                 {
@@ -123,19 +124,19 @@ namespace SS_CAM.Services
                     SearchText        = "#242424",
                     SearchPlaceholder = "#616161",
 
-                    // Active nav item: subtle blue tint bg, brand text (#0F6CBD)
-                    ActiveNavBg     = "#EBF3FC",              // colorBrandBackground2 tint
-                    ActiveNavText   = "#0F6CBD",              // colorBrandForeground1
+                    // Active nav item: text = SAME color as active icon (#0F6CBD)
+                    ActiveNavBg     = "#EBF3FC",              // subtle blue tint
+                    ActiveNavText   = "#0F6CBD",              // same color as icon active!
                     ActiveNavSubtext= "#115EA3",
 
-                    // Inactive nav: primary text (#242424), tertiary icon (#616161)
-                    InactiveNavText    = "#242424",           // colorNeutralForeground1 (WCAG AA 15:1)
+                    // Inactive nav: dark grey text (#424242), grey icon (#616161)
+                    InactiveNavText    = "#424242",           // turns grey when inactive
                     InactiveNavSubtext = "#616161",
 
-                    // Footer / status bar: neutral foreground
+                    // Footer / status bar
                     FooterBg        = "#FFFFFF",
                     FooterBorder    = "#E0E0E0",
-                    FooterText      = "#242424",              // High contrast text on light bg
+                    FooterText      = "#242424",
                     FooterCardBg    = "#FFFFFF",
                     FooterCardBorder= "#E0E0E0",
 
@@ -147,8 +148,8 @@ namespace SS_CAM.Services
 
                     // Nav indicator pill + icon tint
                     NavIndicatorColor = "#0F6CBD",
-                    NavIconActive     = "#0F6CBD",            // 8.5:1 on #FAFAFA WCAG AA ✅
-                    NavIconInactive   = "#616161",            // 5.9:1 on #F5F5F5 WCAG AA ✅
+                    NavIconActive     = "#0F6CBD",            // brand blue active icon
+                    NavIconInactive   = "#616161",            // grey inactive icon
 
                     // Visualizer bar color for light mode
                     SpectrumBarColor  = "#0F6CBD"
@@ -157,6 +158,8 @@ namespace SS_CAM.Services
 
             // ─────────────────────────────────────────────────────────────────
             // SS DEFAULT — SuamiSihat Brand Theme (deep navy)
+            // - Active item: text = WHITE (#FFFFFF), icon = #479EF5
+            // - Inactive items: text = GREY (#9D9D9D), icon = #9D9D9D
             // ─────────────────────────────────────────────────────────────────
             return new ThemeColors
             {
@@ -178,10 +181,10 @@ namespace SS_CAM.Services
                 SearchPlaceholder = "#9D9D9D",
 
                 ActiveNavBg     = "#1A479EF5",
-                ActiveNavText   = "#FFFFFF",
+                ActiveNavText   = "#FFFFFF",              // white text when selected!
                 ActiveNavSubtext= "#C7E0F4",
 
-                InactiveNavText    = "#C8C8C8",
+                InactiveNavText    = "#9D9D9D",           // grey text when inactive!
                 InactiveNavSubtext = "#9D9D9D",
 
                 FooterBg        = "#02153D",
@@ -196,8 +199,8 @@ namespace SS_CAM.Services
                 UserCardSub     = "#479EF5",
 
                 NavIndicatorColor = "#479EF5",
-                NavIconActive     = "#479EF5",    // 5.8:1 on #02153D WCAG AA ✅
-                NavIconInactive   = "#9D9D9D",    // 5.4:1 on #02153D WCAG AA ✅
+                NavIconActive     = "#479EF5",
+                NavIconInactive   = "#9D9D9D",
 
                 SpectrumBarColor  = "#479EF5"
             };

@@ -588,10 +588,8 @@ namespace SS_CAM
             ResetNavHighlight();
             if (_lastActiveNavBtn != null)
             {
-                string activeBg  = c.IsLight ? "#1A0F6CBD" : "#1A479EF5";
-                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(activeBg));
-                SetNavIndicator(_lastActiveNavBtn, true);
-                SetNavIconColor(_lastActiveNavBtn, c.NavIconActive);
+                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavBg));
+                SetNavItemColors(_lastActiveNavBtn, c.NavIconActive, c.ActiveNavText, c.NavIndicatorColor, true);
             }
         }
 
@@ -611,12 +609,9 @@ namespace SS_CAM
             ResetNavHighlight();
             if (activeBtn != null)
             {
-                // Pick active colours from current theme
                 ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
-                string activeBg = tc.IsLight ? "#1A0F6CBD" : "#1A479EF5";
-                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(activeBg));
-                SetNavIndicator(activeBtn, true);
-                SetNavIconColor(activeBtn, tc.NavIconActive);
+                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tc.ActiveNavBg));
+                SetNavItemColors(activeBtn, tc.NavIconActive, tc.ActiveNavText, tc.NavIndicatorColor, true);
             }
         }
 
@@ -629,45 +624,44 @@ namespace SS_CAM
                 if (btn != null)
                 {
                     btn.Background = Brushes.Transparent;
-                    btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tc.InactiveNavText));
-                    SetNavIndicator(btn, false);
-                    SetNavIconColor(btn, tc.NavIconInactive);
+                    SetNavItemColors(btn, tc.NavIconInactive, tc.InactiveNavText, tc.NavIndicatorColor, false);
                 }
             }
         }
 
         private static readonly Dictionary<System.Windows.Controls.Button, string> _indicatorNames = new Dictionary<System.Windows.Controls.Button, string>();
 
-        private void SetNavIndicator(System.Windows.Controls.Button btn, bool visible)
+        private void SetNavItemColors(System.Windows.Controls.Button btn, string iconColorHex, string textColorHex, string indicatorColorHex, bool isIndicatorVisible)
         {
             if (btn == null) return;
             var grid = btn.Content as System.Windows.Controls.Grid;
             if (grid == null) return;
+
             foreach (var child in grid.Children)
             {
                 var rect = child as System.Windows.Shapes.Rectangle;
                 if (rect != null)
                 {
-                    rect.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-                    return;
+                    rect.Visibility = isIndicatorVisible ? Visibility.Visible : Visibility.Collapsed;
+                    if (!string.IsNullOrEmpty(indicatorColorHex))
+                        rect.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(indicatorColorHex));
                 }
-            }
-        }
 
-        private void SetNavIconColor(System.Windows.Controls.Button btn, string colorHex)
-        {
-            if (btn == null) return;
-            var grid = btn.Content as System.Windows.Controls.Grid;
-            if (grid == null) return;
-            foreach (var child in grid.Children)
-            {
                 var sp = child as System.Windows.Controls.StackPanel;
-                if (sp != null && sp.Children.Count > 0)
+                if (sp != null)
                 {
-                    var icon = sp.Children[0] as System.Windows.Controls.TextBlock;
-                    if (icon != null)
-                        icon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorHex));
-                    return;
+                    if (sp.Children.Count > 0)
+                    {
+                        var icon = sp.Children[0] as System.Windows.Controls.TextBlock;
+                        if (icon != null)
+                            icon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(iconColorHex));
+                    }
+                    if (sp.Children.Count > 1)
+                    {
+                        var label = sp.Children[1] as System.Windows.Controls.TextBlock;
+                        if (label != null)
+                            label.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(textColorHex));
+                    }
                 }
             }
         }
