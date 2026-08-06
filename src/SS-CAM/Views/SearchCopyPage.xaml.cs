@@ -35,10 +35,12 @@ namespace SS_CAM.Views
                 workspaceRoot = profile.WorkspaceRoot;
             }
 
-            // Populate Designer filter
-            List<string> designers = new List<string> { "All Designers", "Brand", "Design", "Media" };
+            // Populate Designer filter with only current user's name (no 'All Designers' noise)
+            string myName = !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : "Brand";
+            List<string> designers = new List<string> { myName };
             DesignerFilterCmb.ItemsSource = designers;
             DesignerFilterCmb.SelectedIndex = 0;
+            DesignerFilterCmb.Visibility = System.Windows.Visibility.Collapsed; // hide single-item filter
 
             await PerformSearch();
         }

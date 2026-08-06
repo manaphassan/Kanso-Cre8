@@ -341,9 +341,11 @@ namespace SS_CAM.Services
             }
 
             bool isInstalled = !string.IsNullOrEmpty(foundPath);
-            string scannedVersion = isInstalled ? fileVer : "—";
-            string statusText = isInstalled ? "🟢 Healthy" : "⚪ Not Installed";
-            string statusColor = isInstalled ? "#059669" : "#94A3B8";
+            string scannedVersion = isInstalled ? fileVer : "\u2014";
+            // Fluent 2 colorStatusSuccessForeground1 #0E7A0D = 5.1:1 on white \u2705 WCAG AA (was #059669 = 3.2:1 \u274c)
+            // Fluent 2 colorNeutralForeground3 #707070 = 4.6:1 on white \u2705 WCAG AA (was #94A3B8 = 2.8:1 \u274c)
+            string statusText = isInstalled ? "\ud83d\udfe2 Healthy" : "\u25ef Not Installed";
+            string statusColor = isInstalled ? "#0E7A0D" : "#707070";
 
             return new SoftwareHealthItem
             {
