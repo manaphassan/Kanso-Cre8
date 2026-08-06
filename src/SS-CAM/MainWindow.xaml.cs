@@ -30,9 +30,12 @@ namespace SS_CAM
         private List<AnimShapeItem> animItems;
         private UserProfile currentProfile;
 
+        private System.Windows.Controls.Button _lastActiveNavBtn = null;
+
         public MainWindow()
         {
             InitializeComponent();
+            ThemeService.ThemeChanged += OnThemeModeChanged;
             Loaded += OnLoaded;
             Closed += OnClosed;
         }
@@ -464,10 +467,69 @@ namespace SS_CAM
             catch { }
         }
 
+        private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
+        {
+            AppTheme nextTheme = ThemeService.CurrentTheme == AppTheme.SSDefault ? AppTheme.Win11Fluent : AppTheme.SSDefault;
+            ThemeService.ApplyTheme(nextTheme);
+        }
+
+        private void OnThemeModeChanged(AppTheme theme)
+        {
+            ThemeColors c = ThemeService.GetColors(theme);
+
+            if (StatusThemeText != null)
+            {
+                StatusThemeText.Text = theme == AppTheme.Win11Fluent ? "Theme: Win11 Fluent" : "Theme: SS Default";
+            }
+
+            if (HeaderBorder != null && RadioStreamService.Instance.State != RadioPlaybackState.Playing)
+            {
+                HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.HeaderBg));
+                HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.HeaderBorder));
+            }
+
+            if (SidebarBorder != null)
+            {
+                SidebarBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+                SidebarBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
+            }
+
+            if (FooterStatusBar != null)
+            {
+                FooterStatusBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterBg));
+                FooterStatusBar.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterBorder));
+            }
+
+            if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusVersionText != null) StatusVersionText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+
+            if (SidebarDesignerName != null) SidebarDesignerName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
+            if (SidebarDepartment != null) SidebarDepartment.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
+            if (SidebarUserCard != null)
+            {
+                SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+                SidebarUserCard.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBorder));
+            }
+
+            if (MainFrame != null)
+            {
+                MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.MainFrameBg));
+            }
+
+            ResetNavHighlight();
+            if (_lastActiveNavBtn != null)
+            {
+                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavBg));
+                _lastActiveNavBtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavText));
+                SetButtonTextColors(_lastActiveNavBtn, c.ActiveNavText, c.ActiveNavSubtext);
+            }
+        }
+
         private readonly Dictionary<Type, Page> _pageCache = new Dictionary<Type, Page>();
 
         public void NavigateTo(Type pageType, System.Windows.Controls.Button activeBtn)
         {
+            _lastActiveNavBtn = activeBtn;
             Page instance = null;
             if (!_pageCache.TryGetValue(pageType, out instance))
             {
@@ -479,22 +541,24 @@ namespace SS_CAM
             ResetNavHighlight();
             if (activeBtn != null)
             {
-                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6DC6EC"));
-                activeBtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-                SetButtonTextColors(activeBtn, "#043388", "#022057");
+                ThemeColors c = ThemeService.GetColors(ThemeService.CurrentTheme);
+                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavBg));
+                activeBtn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavText));
+                SetButtonTextColors(activeBtn, c.ActiveNavText, c.ActiveNavSubtext);
             }
         }
 
         private void ResetNavHighlight()
         {
+            ThemeColors c = ThemeService.GetColors(ThemeService.CurrentTheme);
             System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
             foreach (System.Windows.Controls.Button btn in navBtns)
             {
                 if (btn != null)
                 {
                     btn.Background = Brushes.Transparent;
-                    btn.Foreground = Brushes.White;
-                    SetButtonTextColors(btn, "#FFFFFF", "#93C5FD");
+                    btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
+                    SetButtonTextColors(btn, c.InactiveNavText, c.InactiveNavSubtext);
                 }
             }
         }

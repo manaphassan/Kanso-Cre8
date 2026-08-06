@@ -166,6 +166,18 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnSelectSSDefaultTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.SSDefault);
+            MessageBox.Show("Applied SS Default (SuamiSihat Brand Theme).", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OnSelectWin11FluentTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.Win11Fluent);
+            MessageBox.Show("Applied Windows 11 Fluent (Mica Slate Theme).", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
 
         public void OnDownloadSoftwareClicked(object sender, RoutedEventArgs e)
         {

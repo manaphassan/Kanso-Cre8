@@ -23,7 +23,7 @@
         <!-- Windows TitleBar -->
         <ui:TitleBar Grid.Row="0" Title="SuamiSihat Creative Assets Management" Icon="app.ico" Foreground="White"/>
 
-        <!-- Top Dark Navy Branding Header with Animated Floating Geometry Canvas -->
+        <!-- Top Branding Header with Animated Floating Geometry Canvas -->
         <Border Grid.Row="1" x:Name="HeaderBorder" Background="#021B47" BorderBrush="#1E3A8A" BorderThickness="0,0,0,1" Padding="20,12" ClipToBounds="True">
             <Grid>
                 <!-- Animated Canvas Background -->
@@ -72,10 +72,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Navigation Sidebar (#043388 SuamiSihat Brand Navy) -->
-            <Border Grid.Column="0" Background="#043388" BorderBrush="#022057" BorderThickness="0,0,1,0">
+            <!-- Navigation Sidebar -->
+            <Border Grid.Column="0" x:Name="SidebarBorder" Background="#043388" BorderBrush="#022057" BorderThickness="0,0,1,0">
                 <DockPanel LastChildFill="True">
-                    <!-- User Profile Footer Card (#FFFFFF White Background) -->
+                    <!-- User Profile Footer Card -->
                     <Border x:Name="SidebarUserCard" DockPanel.Dock="Bottom" Background="#FFFFFF" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnNavProfileClicked" ToolTip="User Profile &amp; Settings">
                         <StackPanel x:Name="SidebarUserPanel" Orientation="Horizontal" HorizontalAlignment="Left">
                             <Border x:Name="AvatarBorder" Width="34" Height="34" CornerRadius="17" Background="#21A1F7" Margin="0,0,10,0" VerticalAlignment="Center" ClipToBounds="True">
@@ -173,8 +173,8 @@
             <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Background="#F8FAFC"/>
         </Grid>
 
-        <!-- Footer Status Bar (#FFFFFF White Background) -->
-        <StatusBar Grid.Row="4" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="12,6">
+        <!-- Footer Status Bar -->
+        <StatusBar Grid.Row="4" x:Name="FooterStatusBar" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="12,6">
             <StatusBarItem Cursor="Hand" MouseLeftButtonDown="OnCheckNasStatusClicked" ToolTip="Click to re-check Synology NAS status">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusNasDot" Text="🔴 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="10" VerticalAlignment="Center"/>
@@ -201,6 +201,16 @@
                         <TextBlock x:Name="StatusRadioText" Text="Radio: BFM 89.9" Foreground="#043388" FontSize="11" FontWeight="Bold" Margin="4,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
+            </StatusBarItem>
+            <Separator Margin="8,0" Background="#E2E8F0"/>
+            <!-- App Theme Selector Widget -->
+            <StatusBarItem Cursor="Hand" ToolTip="Click to switch between SS Default and Windows 11 Fluent themes">
+                <Button x:Name="StatusThemeBtn" Click="OnStatusThemeToggle" Background="#F1F5F9" Foreground="#043388" BorderBrush="#CBD5E1" BorderThickness="1" Padding="8,2" FontSize="11" FontWeight="Bold" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="StatusThemeIcon" Text="🎨 " FontFamily="Segoe UI Emoji, Segoe UI" FontSize="11" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="StatusThemeText" Text="Theme: SS Default" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StatusBarItem>
             <Separator Margin="8,0" Background="#E2E8F0"/>
             <StatusBarItem HorizontalAlignment="Right">
