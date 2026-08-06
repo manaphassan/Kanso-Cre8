@@ -174,12 +174,15 @@ namespace SS_CAM
         }
 
         private List<Rectangle> visBars;
+        private List<Ellipse> visGlowDots;
         private int visTickCount = 0;
+        private bool wasPlayingLastTick = false;
 
         private void InitHeaderAnimation()
         {
             animItems = new List<AnimShapeItem>();
             visBars = new List<Rectangle>();
+            visGlowDots = new List<Ellipse>();
 
             var shapeData = new[]
             {
@@ -217,21 +220,35 @@ namespace SS_CAM
                 });
             }
 
-            // Create 32 Header Audio Visualizer Wave Bars across bottom of HeaderCanvas
-            int barCount = 32;
+            // Create 48 NCS GLava Spectrum Frequency Bars across bottom of HeaderCanvas
+            int barCount = 48;
+            string[] ncsColors = new[] { "#21A1F7", "#3B82F6", "#EC4899", "#8B5CF6", "#06B6D4" };
+
             for (int i = 0; i < barCount; i++)
             {
+                string colorHex = ncsColors[i % ncsColors.Length];
                 Rectangle bar = new Rectangle
                 {
-                    Width = 4,
+                    Width = 3.5,
                     Height = 2,
-                    RadiusX = 2,
-                    RadiusY = 2,
-                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7")),
-                    Opacity = 0.65
+                    RadiusX = 1.75,
+                    RadiusY = 1.75,
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorHex)),
+                    Opacity = 0.0
                 };
                 HeaderCanvas.Children.Add(bar);
                 visBars.Add(bar);
+
+                // Top Glow Dot for NCS GLava Spectrum Tip
+                Ellipse dot = new Ellipse
+                {
+                    Width = 4,
+                    Height = 4,
+                    Fill = Brushes.White,
+                    Opacity = 0.0
+                };
+                HeaderCanvas.Children.Add(dot);
+                visGlowDots.Add(dot);
             }
 
             // Listen for Theme Mode changes
@@ -246,6 +263,30 @@ namespace SS_CAM
                 double ch = HeaderCanvas.ActualHeight;
                 if (cw <= 0 || ch <= 0) return;
 
+                bool isPlaying = RadioStreamService.Instance.State == RadioPlaybackState.Playing;
+
+                // Dynamic Header Background Transition between Active Music Visualizer and Normal Ambient Header
+                if (isPlaying != wasPlayingLastTick)
+                {
+                    wasPlayingLastTick = isPlaying;
+                    if (HeaderBorder != null)
+                    {
+                        if (isPlaying)
+                        {
+                            // Active Music: Dynamic Dark Void Visualizer Header
+                            HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02091A"));
+                            HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7"));
+                        }
+                        else
+                        {
+                            // Stopped/Paused: Restore Standard SuamiSihat Midnight Header
+                            HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#021B47"));
+                            HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E3A8A"));
+                        }
+                    }
+                }
+
+                // Ambient floating circles
                 foreach (var item in animItems)
                 {
                     double x = Canvas.GetLeft(item.Shape) + item.VX;
@@ -260,32 +301,46 @@ namespace SS_CAM
 
                     Canvas.SetLeft(item.Shape, x);
                     Canvas.SetTop(item.Shape, y);
+                    item.Shape.Opacity = isPlaying ? 0.03 : 0.08;
                 }
 
-                // Animate Header Audio Visualizer Wave when Radio Stream is Playing
-                bool isPlaying = RadioStreamService.Instance.State == RadioPlaybackState.Playing;
+                // Animate NCS Spectrum GLava Audio Visualizer Bars & Glow Tips
                 double barSpacing = cw / barCount;
 
                 for (int i = 0; i < visBars.Count; i++)
                 {
                     Rectangle bar = visBars[i];
+                    Ellipse dot = visGlowDots[i];
                     double targetHeight = 2;
 
                     if (isPlaying)
                     {
-                        double wave1 = Math.Sin(visTickCount * 0.18 + i * 0.35);
-                        double wave2 = Math.Cos(visTickCount * 0.12 + i * 0.55);
-                        targetHeight = Math.Max(3, 4 + 26 * Math.Abs(wave1 * wave2));
-                        bar.Opacity = 0.7 + 0.3 * Math.Abs(wave1);
+                        // NCS Spectrum Harmonic Math Simulation
+                        double wave1 = Math.Sin(visTickCount * 0.22 + i * 0.28);
+                        double wave2 = Math.Cos(visTickCount * 0.14 - i * 0.42);
+                        double wave3 = Math.Sin(visTickCount * 0.31 + i * 0.15);
+                        
+                        double rawVal = Math.Abs(wave1 * 0.4 + wave2 * 0.4 + wave3 * 0.2);
+                        targetHeight = Math.Max(3, 4 + 42 * rawVal);
+                        
+                        bar.Opacity = 0.85;
+                        dot.Opacity = 0.95;
                     }
                     else
                     {
-                        bar.Opacity = 0.2;
+                        bar.Opacity = 0.0;
+                        dot.Opacity = 0.0;
                     }
 
                     bar.Height = targetHeight;
-                    Canvas.SetLeft(bar, i * barSpacing + 2);
-                    Canvas.SetTop(bar, ch - targetHeight - 2);
+                    double xPos = i * barSpacing + 3;
+                    double yPos = ch - targetHeight - 1;
+
+                    Canvas.SetLeft(bar, xPos);
+                    Canvas.SetTop(bar, yPos);
+
+                    Canvas.SetLeft(dot, xPos - 0.25);
+                    Canvas.SetTop(dot, Math.Max(0, yPos - 4));
                 }
             };
             headerAnimTimer.Start();

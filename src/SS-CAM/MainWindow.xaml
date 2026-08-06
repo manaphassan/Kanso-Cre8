@@ -24,7 +24,7 @@
         <ui:TitleBar Grid.Row="0" Title="SuamiSihat Creative Assets Management" Icon="app.ico" Foreground="White"/>
 
         <!-- Top Dark Navy Branding Header with Animated Floating Geometry Canvas -->
-        <Border Grid.Row="1" Background="#021B47" BorderBrush="#1E3A8A" BorderThickness="0,0,0,1" Padding="20,12" ClipToBounds="True">
+        <Border Grid.Row="1" x:Name="HeaderBorder" Background="#021B47" BorderBrush="#1E3A8A" BorderThickness="0,0,0,1" Padding="20,12" ClipToBounds="True">
             <Grid>
                 <!-- Animated Canvas Background -->
                 <Canvas x:Name="HeaderCanvas" IsHitTestVisible="False"/>
