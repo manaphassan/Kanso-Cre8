@@ -8,12 +8,12 @@
         <StackPanel>
             <!-- Header -->
             <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="Project Workspace Search &amp; Folder Copy" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
-                <TextBlock Text="Search project directories across Synology workspace, inspect cleaned README documentation, and copy whole project folders to local destination." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
+                <TextBlock Text="Project Workspace Search &amp; Folder Copy" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontFamily="{StaticResource FluentFontFamily}"/>
+                <TextBlock Text="Search project directories across Synology workspace, inspect cleaned README documentation, and copy whole project folders to local destination." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0" FontFamily="{StaticResource FluentFontFamily}"/>
             </StackPanel>
 
             <!-- Search Controls Bar -->
-            <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,20">
+            <Border Background="{DynamicResource FluentLightCardBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
@@ -25,7 +25,9 @@
 
                     <ui:TextBox x:Name="SearchInput" Grid.Column="1" Height="38" PlaceholderText="Search project title, job ID, or designer name..." Margin="0,0,10,0" TextChanged="OnSearchInputChanged"/>
 
-                    <Button Grid.Column="2" Content="🔍 Search" Click="OnSearchClicked" Background="#043388" Foreground="White" Height="38" Padding="16,0" FontWeight="Bold"/>
+                    <Button Grid.Column="2" Click="OnSearchClicked" Background="{DynamicResource FluentBrand80}" Foreground="White" Height="38" Padding="16,0" FontWeight="Bold" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Search" VerticalAlignment="Center"/></StackPanel>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -41,8 +43,12 @@
                 <GroupBox Header="Matching Workspace Projects" Grid.Column="0">
                     <DockPanel Margin="8" LastChildFill="True">
                         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-                            <Button Content="📋 Copy Path String" Click="OnCopyPathClicked" Background="#E2E8F0" Foreground="#1E293B" Height="36" Padding="12,0" Margin="0,0,8,0"/>
-                            <Button Content="📦 Copy Whole Project Folder..." Click="OnCopyWholeFolderClicked" Background="#043388" Foreground="White" Height="36" Padding="16,0" FontWeight="Bold"/>
+                            <Button Click="OnCopyPathClicked" Background="{DynamicResource FluentLightCardSubBg}" Foreground="{DynamicResource FluentLightTextPrimary}" Height="36" Padding="12,0" Margin="0,0,8,0" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Copy Path String" VerticalAlignment="Center"/></StackPanel>
+                            </Button>
+                            <Button Click="OnCopyWholeFolderClicked" Background="{DynamicResource FluentBrand80}" Foreground="White" Height="36" Padding="16,0" FontWeight="Bold" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE7C5;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/><TextBlock Text="Copy Whole Project Folder..." VerticalAlignment="Center"/></StackPanel>
+                            </Button>
                         </StackPanel>
 
                         <DataGrid x:Name="ResultsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionChanged="OnGridSelectionChanged" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowBackground="White" AlternatingRowBackground="#F8FAFC" Height="360">
@@ -50,10 +56,10 @@
                                 <Style TargetType="DataGridRow">
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#EFF6FF"/>
-                                            <Setter Property="Foreground" Value="#043388"/>
+                                            <Setter Property="Background" Value="{DynamicResource FluentBrandLight}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource FluentBrand80}"/>
                                             <Setter Property="FontWeight" Value="Bold"/>
-                                            <Setter Property="BorderBrush" Value="#21A1F7"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource FluentBrandTint}"/>
                                             <Setter Property="BorderThickness" Value="2"/>
                                         </Trigger>
                                     </Style.Triggers>
@@ -73,19 +79,21 @@
                 <GroupBox x:Name="InspectionCard" Header="Selected Project Overview &amp; README" Grid.Column="2">
                     <DockPanel Margin="8" LastChildFill="True">
                         <!-- Selected Folder Highlight Badge -->
-                        <Border DockPanel.Dock="Top" x:Name="SelectedHighlightBadge" Background="#EFF6FF" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,10">
+                        <Border DockPanel.Dock="Top" x:Name="SelectedHighlightBadge" Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrandTint}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,10">
                             <StackPanel>
-                                <TextBlock Text="SELECTED PROJECT FOLDER" Foreground="#64748B" FontSize="10" FontWeight="Bold"/>
-                                <TextBlock x:Name="SelectedProjectTitle" Text="None selected" Foreground="#043388" FontSize="14" FontWeight="Bold" Margin="0,2,0,0"/>
-                                <TextBlock x:Name="SelectedProjectPath" Text="Select a folder in table to inspect." Foreground="#64748B" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="SELECTED PROJECT FOLDER" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10" FontWeight="Bold" FontFamily="{StaticResource FluentFontFamily}"/>
+                                <TextBlock x:Name="SelectedProjectTitle" Text="None selected" Foreground="{DynamicResource FluentBrand80}" FontSize="14" FontWeight="Bold" Margin="0,2,0,0" FontFamily="{StaticResource FluentFontFamily}"/>
+                                <TextBlock x:Name="SelectedProjectPath" Text="Select a folder in table to inspect." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource FluentFontFamily}"/>
                             </StackPanel>
                         </Border>
 
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="BtnModeRendered" Content="PREVIEW" Click="OnModeRenderedClicked" Height="26" Padding="8,0" Margin="0,0,4,0" Background="#043388" Foreground="White" FontSize="11" FontWeight="Bold"/>
-                                <Button x:Name="BtnModeRaw" Content="Raw Markdown" Click="OnModeRawClicked" Height="26" Padding="8,0" Margin="0,0,4,0" Background="#E2E8F0" Foreground="#1E293B" FontSize="11"/>
-                                <Button x:Name="BtnModeImages" Content="🖼️ Image Gallery" Click="OnModeImagesClicked" Height="26" Padding="8,0" Background="#E2E8F0" Foreground="#1E293B" FontSize="11" FontWeight="SemiBold"/>
+                                <Button x:Name="BtnModeRendered" Content="PREVIEW" Click="OnModeRenderedClicked" Height="26" Padding="8,0" Margin="0,0,4,0" Background="{DynamicResource FluentBrand80}" Foreground="White" FontSize="11" FontWeight="Bold" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}"/>
+                                <Button x:Name="BtnModeRaw" Content="Raw Markdown" Click="OnModeRawClicked" Height="26" Padding="8,0" Margin="0,0,4,0" Background="{DynamicResource FluentLightCardSubBg}" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}"/>
+                                <Button x:Name="BtnModeImages" Click="OnModeImagesClicked" Height="26" Padding="8,0" Background="{DynamicResource FluentLightCardSubBg}" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                    <StackPanel Orientation="Horizontal"><TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/><TextBlock Text="Image Gallery" VerticalAlignment="Center"/></StackPanel>
+                                </Button>
                             </StackPanel>
                         </DockPanel>
 

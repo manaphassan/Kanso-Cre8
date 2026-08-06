@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v2.3.0" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v2.3.6" Height="820" Width="1280"
         MinHeight="660" MinWidth="980"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
@@ -248,35 +248,40 @@
                             </Border>
                         </Border>
 
+
                     <!-- ── NAV ITEMS: Fluent 2 Single-Column Nav ── -->
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel x:Name="SidebarNavPanel" Margin="8,4,8,4">
 
-                            <!-- Section header -->
-                            <TextBlock x:Name="SidebarModulesHeader"
-                                       Text="MODULES"
-                                       Foreground="#707070" FontSize="10" FontWeight="SemiBold"
+                            <!-- Section Header -->
+                            <TextBlock x:Name="SidebarModulesHeader" Text="MODULES"
+                                       Foreground="#9D9D9D" FontSize="10" FontWeight="SemiBold"
                                        FontFamily="Segoe UI Variable Text"
-                                       Margin="12,8,0,4"/>
+                                       Margin="11,6,8,4" VerticalAlignment="Center"/>
 
                             <!-- Dashboard nav item -->
                             <Button x:Name="NavDashboardBtn" Click="OnNavDashboardClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#FFFFFF"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Dashboard">
-                                <Grid Width="Auto" HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>   <!-- Active indicator -->
+                                        <ColumnDefinition Width="*"/>   <!-- Icon + Label -->
+                                    </Grid.ColumnDefinitions>
                                     <!-- Active indicator bar (3px left, colorBrandForeground1) -->
-                                    <Rectangle x:Name="NavDashboardIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                    <Rectangle x:Name="NavDashboardIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Visible"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavDashboardIcon" Text="&#xE8A1;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#0078D4"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavDashboardLabel"
                                                    Text="Dashboard"
                                                    Foreground="#FFFFFF" FontSize="13"
@@ -289,21 +294,26 @@
 
                             <!-- Wellbeing nav item -->
                             <Button x:Name="NavWellbeingBtn" Click="OnNavWellbeingClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Creative Wellbeing">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavWellbeingIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavWellbeingIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavWellbeingIcon" Text="&#xE8EF;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavWellbeingText"
                                                    Text="Creative Wellbeing"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -315,21 +325,26 @@
 
                             <!-- Project Creator nav item -->
                             <Button x:Name="NavProjectsBtn" Click="OnNavProjectsClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Project Creator">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavProjectsIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavProjectsIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavProjectsIcon" Text="&#xED25;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavProjectsText"
                                                    Text="Project Creator"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -341,21 +356,26 @@
 
                             <!-- Search & Copy nav item -->
                             <Button x:Name="NavSearchBtn" Click="OnNavSearchClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Search &amp; Copy">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavSearchIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavSearchIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavSearchIcon" Text="&#xE721;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavSearchText"
                                                    Text="Search &amp; Copy"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -367,21 +387,26 @@
 
                             <!-- Brand Assets nav item -->
                             <Button x:Name="NavBrandAssetsBtn" Click="OnNavBrandAssetsClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Brand Assets">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavBrandAssetsIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavBrandAssetsIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavBrandAssetsIcon" Text="&#xEB3C;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavBrandAssetsText"
                                                    Text="Brand Assets"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -393,21 +418,26 @@
 
                             <!-- Radio Player nav item -->
                             <Button x:Name="NavRadioBtn" Click="OnNavRadioClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Radio Player">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavRadioIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavRadioIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavRadioIcon" Text="&#xE768;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavRadioText"
                                                    Text="Radio Player"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -419,21 +449,26 @@
 
                             <!-- Workstation Health nav item -->
                             <Button x:Name="NavWorkstationHealthBtn" Click="OnNavWorkstationHealthClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Workstation Health">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavWorkstationHealthIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavWorkstationHealthIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavWorkstationHealthIcon" Text="&#xE7F4;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavWorkstationHealthText"
                                                    Text="Workstation Health"
                                                    Foreground="#C8C8C8" FontSize="13"
@@ -448,21 +483,26 @@
 
                             <!-- Settings nav item -->
                             <Button x:Name="NavSettingsBtn" Click="OnNavSettingsClicked"
-                                    Height="36" HorizontalContentAlignment="Left"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
                                     Background="Transparent" Foreground="#C8C8C8"
                                     BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
                                     Padding="0" ToolTip="Settings">
-                                <Grid HorizontalAlignment="Stretch">
-                                    <Rectangle x:Name="NavSettingsIndicator"
-                                               Width="3" VerticalAlignment="Stretch"
-                                               Fill="#0078D4" HorizontalAlignment="Left"
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavSettingsIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
                                                RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
-                                    <StackPanel Orientation="Horizontal" Margin="12,0,8,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
                                         <TextBlock x:Name="NavSettingsIcon" Text="&#xE713;"
                                                    FontFamily="Segoe Fluent Icons" FontSize="16"
                                                    Foreground="#9D9D9D"
                                                    Width="20" VerticalAlignment="Center"
-                                                   Margin="0,0,12,0"/>
+                                                   Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavSettingsText" Text="Settings"
                                                    Foreground="#C8C8C8" FontSize="13"
                                                    FontFamily="Segoe UI Variable Text"

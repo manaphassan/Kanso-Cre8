@@ -485,24 +485,24 @@ namespace SS_CAM
                     var rect = child as System.Windows.Shapes.Rectangle;
                     if (rect != null)
                     {
-                        // 3px indicator pill on left edge
-                        rect.HorizontalAlignment = HorizontalAlignment.Left;
+                        // 3px indicator pill — lives in its own Grid column, no horizontal override needed
                         rect.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 4, 0, 4);
                     }
 
                     var sp = child as StackPanel;
                     if (sp != null)
                     {
-                        sp.Margin = isSidebarExpanded ? new Thickness(12, 0, 8, 0) : new Thickness(0);
+                        // Fluent 2: expanded = 8px left gap from indicator column; collapsed = centered
+                        sp.Margin = isSidebarExpanded ? new Thickness(8, 0, 8, 0) : new Thickness(0);
                         sp.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
                         
-                        // Fix the icon's margin inside the Nav button
+                        // Icon margin: 8px right gap to label when expanded, 0 when collapsed (icon-only)
                         if (sp.Children.Count > 0)
                         {
                             var icon = sp.Children[0] as FrameworkElement;
                             if (icon != null)
                             {
-                                icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 12, 0) : new Thickness(0);
+                                icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
                                 icon.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
                                 icon.Width = 20;
                             }
@@ -1133,6 +1133,16 @@ namespace SS_CAM
 
         private void OnCheckNasStatusClicked(object sender, MouseButtonEventArgs e)
         {
+            // If NAS is online, open the NAS web interface; always re-check status
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "https://suamisihat.myds.me/",
+                    UseShellExecute = true
+                });
+            }
+            catch { /* fall through to status check */ }
             TriggerNasHealthCheck();
         }
 
@@ -1145,7 +1155,7 @@ namespace SS_CAM
         //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "2.1.0";
+        private const string CurrentVersion = "2.3.6";
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 

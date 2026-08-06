@@ -19,7 +19,7 @@ namespace SS_CAM.Views
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             if (TxtVersionBadge != null)
             {
-                TxtVersionBadge.Text = string.Format("v{0} Fluent 2", version.ToString(3));
+                TxtVersionBadge.Text = string.Format("v{0}", version.ToString(3));
             }
 
             Loaded += OnPageLoaded;

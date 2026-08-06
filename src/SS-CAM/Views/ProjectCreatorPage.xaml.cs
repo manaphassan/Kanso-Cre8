@@ -244,7 +244,7 @@ namespace SS_CAM.Views
                     lines.Add(" ├── 📁 " + folder);
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
-                        lines.Add(" │   └── 📄 master_canvas" + (TemplateExtensionComboBox.SelectedItem ?? ".afdesign"));
+                        lines.Add(" │   └── 📄 " + folderName + (TemplateExtensionComboBox.SelectedItem ?? ".afdesign"));
                     }
                 }
             }
@@ -291,7 +291,7 @@ namespace SS_CAM.Views
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         string ext = TemplateExtensionComboBox.SelectedItem != null ? TemplateExtensionComboBox.SelectedItem.ToString() : ".afdesign";
-                        string canvasFilePath = Path.Combine(fPath, string.Format("master_canvas{0}", ext));
+                        string canvasFilePath = Path.Combine(fPath, string.Format("{0}{1}", folderName, ext));
                         
                         string sampleHeader = string.Format("// SuamiSihat Master Canvas Template\n// Created: {0:yyyy-MM-dd HH:mm}\n// Project: {1}\n", DateTime.Now, folderName);
                         File.WriteAllText(canvasFilePath, sampleHeader);

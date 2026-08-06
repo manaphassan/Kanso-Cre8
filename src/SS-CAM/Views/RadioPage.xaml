@@ -23,38 +23,38 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="📻 " FontSize="22" VerticalAlignment="Center"/>
-                    <TextBlock Text="Radio &amp; Focus Stream Player" FontSize="22" FontWeight="Bold" Foreground="#043388" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="22" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Radio &amp; Focus Stream Player" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" FontFamily="{StaticResource FluentFontFamily}"/>
+                    </StackPanel>
+                    <TextBlock Text="Live Malaysian radio stations &amp; lo-fi ambient audio streams for creative productivity." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12" Margin="0,4,0,0" FontFamily="{StaticResource FluentFontFamily}"/>
                 </StackPanel>
-                <TextBlock Text="Live Malaysian radio stations &amp; lo-fi ambient audio streams for creative productivity." Foreground="#64748B" FontSize="12" Margin="0,4,0,0"/>
-            </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
-                    <Button Click="OnImportPlaylistClicked" Background="Transparent" Foreground="#475569" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Import .pls or .m3u radio playlist file">
+                <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+                    <Button Click="OnImportPlaylistClicked" Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Import .pls or .m3u radio playlist file" FontFamily="{StaticResource FluentFontFamily}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📥 " FontFamily="Segoe UI Emoji" FontSize="11"/>
-                            <TextBlock Text="Import Playlist" FontWeight="SemiBold" FontSize="11"/>
+                            <TextBlock Text="&#xE8B5;" FontFamily="Segoe Fluent Icons" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Import Playlist" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Border>
 
-                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
-                    <Button Click="OnResetDefaultsClicked" Background="Transparent" Foreground="#475569" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Reset playlist to default stations">
+                <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+                    <Button Click="OnResetDefaultsClicked" Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Reset playlist to default stations" FontFamily="{StaticResource FluentFontFamily}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🔄 " FontFamily="Segoe UI Emoji" FontSize="11"/>
-                            <TextBlock Text="Reset Playlist" FontWeight="SemiBold" FontSize="11"/>
+                            <TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Reset Playlist" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Border>
 
-                <Border Background="#043388" CornerRadius="6">
-                    <Button Click="OnAddCustomStationClicked" Background="Transparent" Foreground="White" Padding="14,8" BorderThickness="0" Cursor="Hand" ToolTip="Add a new custom radio stream URL">
+                <Border Background="{DynamicResource FluentBrand80}" CornerRadius="6">
+                    <Button Click="OnAddCustomStationClicked" Background="Transparent" Foreground="White" Padding="14,8" BorderThickness="0" Cursor="Hand" ToolTip="Add a new custom radio stream URL" FontFamily="{StaticResource FluentFontFamily}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="➕ " FontFamily="Segoe UI Emoji" FontSize="12"/>
-                            <TextBlock Text="Add Stream" FontWeight="Bold" FontSize="12"/>
+                            <TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Add Stream" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Border>
@@ -71,8 +71,8 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Station Icon -->
-                <Border Grid.Column="0" Width="64" Height="64" CornerRadius="32" Background="#21A1F7" Margin="0,0,16,0" VerticalAlignment="Center">
-                    <TextBlock x:Name="HeroIconText" Text="📻" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border Grid.Column="0" Width="64" Height="64" CornerRadius="32" Background="{DynamicResource FluentBrandTint}" Margin="0,0,16,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="HeroIconText" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="30" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
 
                 <!-- Station Metadata & Status -->

@@ -2,7 +2,28 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.1.0] - 2026-08-06 (Latest Stable Release)
+## [2.3.6] - 2026-08-06 (Latest Stable Release)
+
+### Fixed
+- **Version badge showing wrong version** — The dashboard version badge (`TxtVersionBadge`) was displaying `v2.1.0` at runtime because it is populated dynamically from `AssemblyVersion`. Updated `Properties/AssemblyInfo.cs` to `2.3.6.0`, `CurrentVersion` const in `MainWindow.xaml.cs`, the hardcoded "Check for Updates" dialog in `SettingsPage.xaml.cs`, and the fallback XAML strings in `AboutWindow.xaml` and `DashboardPage.xaml`.
+
+### Changed — Fluent 2 Design System Compliance
+- **Segoe Fluent Icons** — Replaced all emoji used in UI chrome (buttons, headers, status indicators) with proper `Segoe Fluent Icons` font glyphs across all pages:
+  - `DashboardPage`: Refresh button `&#xE72C;`, project folder icon `&#xED25;`
+  - `WellbeingPage`: Focus `&#xE7C3;`, Break `&#xEA86;`, Breathing `&#xE9F5;`, info icon `&#xE82F;`
+  - `SearchCopyPage`: Search `&#xE721;`, Copy Path `&#xE8C8;`, Copy Folder `&#xE7C5;`, Image Gallery `&#xEB9F;`
+  - `RadioPage`: Header icon `&#xE768;`, Import `&#xE8B5;`, Reset `&#xE72C;`, Add Stream `&#xE710;`, Hero icon `&#xE768;`
+- **Token-based colour system** — Removed all raw hex colour literals from `WellbeingPage.xaml`, `SearchCopyPage.xaml`, `RadioPage.xaml`. All foreground, background, border, and status colours now reference `FluentBrand80`, `FluentLightTextPrimary`, `FluentLightTextSecondary`, `FluentLightCardBg`, `FluentLightCardSubBg`, `FluentLightStroke`, `FluentBrandLight`, `FluentBrandTint`, `FluentDanger`, and `FluentSuccess` token brushes defined in `Styles/Fluent2Styles.xaml`.
+- **Typography consistency** — Applied `{StaticResource FluentFontFamily}` to all TextBlocks that previously used hard-coded `Segoe UI Variable Text` or `Segoe UI Variable Display` font family strings.
+- **Button spec** — All primary action buttons now use `FluentBrand80` background / White foreground with `BorderThickness="0"` and `Cursor="Hand"`. Secondary buttons use `FluentLightCardSubBg`. Danger-zone buttons use `FluentDanger`.
+
+### Integrity
+
+| File | Details |
+|---|---|
+| `SS-CAM-v2.3.6.exe` | Compiled Native C# WPF Single-File Executable (4.71 MB) |
+
+## [2.1.0] - 2026-08-06 (Stable Release)
 
 ### Added
 - **Radio & Focus Stream Player Module**:
