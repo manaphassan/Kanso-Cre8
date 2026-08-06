@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -219,6 +220,7 @@ namespace SS_CAM.Services
         public RadioPlaybackState State { get; private set; }
         public RadioStation CurrentStation { get; private set; }
         public List<RadioStation> AllStations { get; private set; }
+        public bool IsWebStation { get; private set; }
 
         public double Volume
         {
@@ -348,13 +350,20 @@ namespace SS_CAM.Services
             {
                 AllStations = new List<RadioStation>(_config.SavedStations);
 
-                // Check if Initial D station exists, if not prepend it
+                // Ensure Initial D is present
                 if (!AllStations.Any(s => s.StreamUrl.Contains("165.227.19.100") || s.Name.Contains("Initial D")))
                 {
                     AllStations.Insert(0, GetInitialDStation());
-                    SyncConfigStations();
-                    SaveConfig();
                 }
+
+                // Ensure BABYMETAL Radio (Jango) is present
+                if (!AllStations.Any(s => s.StreamUrl.Contains("379987623") || s.Name.Contains("BABYMETAL")))
+                {
+                    AllStations.Insert(1, GetBabymetalStation());
+                }
+
+                SyncConfigStations();
+                SaveConfig();
             }
             else
             {
@@ -396,11 +405,26 @@ namespace SS_CAM.Services
             };
         }
 
+        public static RadioStation GetBabymetalStation()
+        {
+            return new RadioStation
+            {
+                Id = "preset_babymetal",
+                Name = "BABYMETAL Radio (Jango)",
+                Genre = "J-Rock / Kawaii Metal",
+                StreamUrl = "https://www.jango.com/stations/379987623",
+                IconEmoji = "🦊",
+                IsPreset = true,
+                Description = "BABYMETAL & J-Rock radio station on Jango Web Radio."
+            };
+        }
+
         public static List<RadioStation> GetDefaultPresetStations()
         {
             return new List<RadioStation>
             {
                 GetInitialDStation(),
+                GetBabymetalStation(),
                 new RadioStation
                 {
                     Id = "preset_bfm899",
@@ -486,9 +510,38 @@ namespace SS_CAM.Services
             {
                 StationChanged(CurrentStation);
             }
-            SetState(RadioPlaybackState.Buffering);
 
-            _localProxy.Start(station.StreamUrl.Trim());
+            string url = station.StreamUrl.Trim();
+
+            // Detect if this is a web page radio (e.g. Jango, Spotify, YouTube web player)
+            if (url.Contains("jango.com") || url.Contains("youtube.com") || url.Contains("spotify.com") || !url.Contains(":") || (url.StartsWith("http") && !url.Contains(".") && !url.Contains(":")))
+            {
+                IsWebStation = true;
+                Stop();
+
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true
+                    });
+                    SetState(RadioPlaybackState.Playing);
+                }
+                catch (Exception ex)
+                {
+                    SetState(RadioPlaybackState.Error);
+                    if (ErrorOccurred != null)
+                    {
+                        ErrorOccurred("Failed to open web station: " + ex.Message);
+                    }
+                }
+                return;
+            }
+
+            IsWebStation = false;
+            SetState(RadioPlaybackState.Buffering);
+            _localProxy.Start(url);
 
             EnsureUI(() =>
             {
@@ -684,7 +737,6 @@ namespace SS_CAM.Services
 
                 if (ext == ".pls" || text.Contains("[playlist]"))
                 {
-                    // PLS format parsing
                     Dictionary<int, string> files = new Dictionary<int, string>();
                     Dictionary<int, string> titles = new Dictionary<int, string>();
 
@@ -735,7 +787,6 @@ namespace SS_CAM.Services
                 }
                 else if (ext == ".m3u" || ext == ".m3u8" || text.Contains("#EXTM3U"))
                 {
-                    // M3U format parsing
                     string[] lines = File.ReadAllLines(filePath);
                     string lastTitle = "";
                     foreach (string l in lines)
@@ -814,9 +865,9 @@ namespace SS_CAM.Services
                 {
                     string ctype = response.ContentType != null ? response.ContentType.ToLower() : "";
                     if (response.StatusCode == HttpStatusCode.OK ||
-                        ctype.Contains("audio") || ctype.Contains("mpeg") || ctype.Contains("aac") || ctype.Contains("ogg") || ctype.Contains("stream"))
+                        ctype.Contains("audio") || ctype.Contains("mpeg") || ctype.Contains("aac") || ctype.Contains("ogg") || ctype.Contains("stream") || ctype.Contains("html"))
                     {
-                        statusMessage = "Stream connection successful (" + (response.ContentType ?? "Audio Stream") + ")!";
+                        statusMessage = "Stream/Web Station connection successful!";
                         return true;
                     }
                     else

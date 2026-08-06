@@ -101,12 +101,14 @@ namespace SS_CAM.Views
 
         private void UpdatePlaybackStateUI(RadioPlaybackState state)
         {
+            bool isWeb = _radioService != null && _radioService.IsWebStation;
+
             switch (state)
             {
                 case RadioPlaybackState.Playing:
                     HeroPlayBtnText.Text = "⏸";
                     HeroStatusDot.Text = "🟢 ";
-                    HeroStatusText.Text = "Live Stream Playing";
+                    HeroStatusText.Text = isWeb ? "🌐 Web Station Active in Browser" : "Live Stream Playing";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
                     VisualizerBars.Visibility = Visibility.Visible;
                     if (_visualizerTimer != null && !_visualizerTimer.IsEnabled) _visualizerTimer.Start();
