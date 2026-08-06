@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -173,6 +175,37 @@ namespace SS_CAM.Services
             }
         }
 
+        static RadioStreamService()
+        {
+            EnableUnsafeHeaderParsing();
+        }
+
+        private static void EnableUnsafeHeaderParsing()
+        {
+            try
+            {
+                Type settingsType = Type.GetType("System.Net.Configuration.SettingsSectionInternal, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+                if (settingsType != null)
+                {
+                    object instance = settingsType.InvokeMember("Section",
+                        BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.NonPublic,
+                        null, null, new object[] { });
+
+                    if (instance != null)
+                    {
+                        FieldInfo useUnsafeHeaderParsingField = settingsType.GetField("useUnsafeHeaderParsing",
+                            BindingFlags.Instance | BindingFlags.NonPublic);
+
+                        if (useUnsafeHeaderParsingField != null)
+                        {
+                            useUnsafeHeaderParsingField.SetValue(instance, true);
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
         private MediaPlayer _mediaPlayer;
         private LocalAudioProxy _localProxy;
         private readonly string _configFilePath;
@@ -314,6 +347,14 @@ namespace SS_CAM.Services
             if (_config.SavedStations != null && _config.SavedStations.Count > 0)
             {
                 AllStations = new List<RadioStation>(_config.SavedStations);
+
+                // Check if Initial D station exists, if not prepend it
+                if (!AllStations.Any(s => s.StreamUrl.Contains("165.227.19.100") || s.Name.Contains("Initial D")))
+                {
+                    AllStations.Insert(0, GetInitialDStation());
+                    SyncConfigStations();
+                    SaveConfig();
+                }
             }
             else
             {
@@ -341,10 +382,25 @@ namespace SS_CAM.Services
             }
         }
 
+        public static RadioStation GetInitialDStation()
+        {
+            return new RadioStation
+            {
+                Id = "preset_initiald",
+                Name = "Initial D World Radio Broadcast",
+                Genre = "Eurobeat / High Energy",
+                StreamUrl = "http://165.227.19.100:9001/listen.aac",
+                IconEmoji = "🏎️",
+                IsPreset = true,
+                Description = "24/7 Initial D & Eurobeat high-energy workstation radio."
+            };
+        }
+
         public static List<RadioStation> GetDefaultPresetStations()
         {
             return new List<RadioStation>
             {
+                GetInitialDStation(),
                 new RadioStation
                 {
                     Id = "preset_bfm899",
@@ -432,7 +488,6 @@ namespace SS_CAM.Services
             }
             SetState(RadioPlaybackState.Buffering);
 
-            // Start Local Audio Proxy for seamless HTTPS streaming
             _localProxy.Start(station.StreamUrl.Trim());
 
             EnsureUI(() =>
@@ -443,7 +498,6 @@ namespace SS_CAM.Services
                     _mediaPlayer.Stop();
                     _mediaPlayer.Close();
 
-                    // Open through Local Audio Loopback Proxy
                     Uri streamUri = new Uri(_localProxy.LocalProxyUrl, UriKind.Absolute);
                     _mediaPlayer.Open(streamUri);
                     _mediaPlayer.Volume = _config.IsMuted ? 0.0 : _config.Volume;
@@ -616,6 +670,106 @@ namespace SS_CAM.Services
             {
                 StationChanged(CurrentStation);
             }
+        }
+
+        public List<RadioStation> ImportPlaylistFile(string filePath)
+        {
+            List<RadioStation> imported = new List<RadioStation>();
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) return imported;
+
+            try
+            {
+                string text = File.ReadAllText(filePath);
+                string ext = Path.GetExtension(filePath).ToLower();
+
+                if (ext == ".pls" || text.Contains("[playlist]"))
+                {
+                    // PLS format parsing
+                    Dictionary<int, string> files = new Dictionary<int, string>();
+                    Dictionary<int, string> titles = new Dictionary<int, string>();
+
+                    string[] lines = File.ReadAllLines(filePath);
+                    foreach (string l in lines)
+                    {
+                        string line = l.Trim();
+                        if (line.StartsWith("File", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var match = Regex.Match(line, @"File(\d+)=(.*)", RegexOptions.IgnoreCase);
+                            if (match.Success)
+                            {
+                                int idx = int.Parse(match.Groups[1].Value);
+                                files[idx] = match.Groups[2].Value.Trim();
+                            }
+                        }
+                        else if (line.StartsWith("Title", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var match = Regex.Match(line, @"Title(\d+)=(.*)", RegexOptions.IgnoreCase);
+                            if (match.Success)
+                            {
+                                int idx = int.Parse(match.Groups[1].Value);
+                                titles[idx] = match.Groups[2].Value.Trim();
+                            }
+                        }
+                    }
+
+                    foreach (var kvp in files)
+                    {
+                        int idx = kvp.Key;
+                        string url = kvp.Value;
+                        string title = titles.ContainsKey(idx) ? titles[idx] : Path.GetFileNameWithoutExtension(filePath);
+
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            RadioStation station = new RadioStation
+                            {
+                                Name = title,
+                                StreamUrl = url,
+                                Genre = "Imported",
+                                IconEmoji = "🎵",
+                                Description = "Imported from PLS playlist (" + Path.GetFileName(filePath) + ")"
+                            };
+                            imported.Add(station);
+                            AddStation(station);
+                        }
+                    }
+                }
+                else if (ext == ".m3u" || ext == ".m3u8" || text.Contains("#EXTM3U"))
+                {
+                    // M3U format parsing
+                    string[] lines = File.ReadAllLines(filePath);
+                    string lastTitle = "";
+                    foreach (string l in lines)
+                    {
+                        string line = l.Trim();
+                        if (line.StartsWith("#EXTINF:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            int commaIdx = line.IndexOf(',');
+                            if (commaIdx >= 0)
+                            {
+                                lastTitle = line.Substring(commaIdx + 1).Trim();
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"))
+                        {
+                            string title = !string.IsNullOrWhiteSpace(lastTitle) ? lastTitle : Path.GetFileNameWithoutExtension(filePath);
+                            RadioStation station = new RadioStation
+                            {
+                                Name = title,
+                                StreamUrl = line,
+                                Genre = "Imported",
+                                IconEmoji = "🎵",
+                                Description = "Imported from M3U playlist (" + Path.GetFileName(filePath) + ")"
+                            };
+                            imported.Add(station);
+                            AddStation(station);
+                            lastTitle = "";
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return imported;
         }
 
         private void SyncConfigStations()

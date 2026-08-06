@@ -317,6 +317,35 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.Filter = "Radio Playlist Files (*.pls;*.m3u;*.m3u8)|*.pls;*.m3u;*.m3u8|All Files (*.*)|*.*";
+                dlg.Title = "Select Radio Playlist File (.pls / .m3u)";
+
+                if (dlg.ShowDialog() == true)
+                {
+                    List<RadioStation> imported = _radioService.ImportPlaylistFile(dlg.FileName);
+                    if (imported != null && imported.Count > 0)
+                    {
+                        ApplyFilter(_activeFilter);
+                        string msg = string.Format("Successfully imported {0} station(s) from '{1}'!", imported.Count, System.IO.Path.GetFileName(dlg.FileName));
+                        MessageBox.Show(msg, "Playlist Imported", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("No valid stream entries found in the selected playlist file.", "Import Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to import playlist: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void OnResetDefaultsClicked(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Reset playlist to default recommended radio stations?", "Reset Playlist", MessageBoxButton.YesNo, MessageBoxImage.Question);

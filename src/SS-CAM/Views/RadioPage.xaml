@@ -33,6 +33,15 @@
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                 <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+                    <Button Click="OnImportPlaylistClicked" Background="Transparent" Foreground="#475569" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Import .pls or .m3u radio playlist file">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📥 " FontFamily="Segoe UI Emoji" FontSize="11"/>
+                            <TextBlock Text="Import Playlist" FontWeight="SemiBold" FontSize="11"/>
+                        </StackPanel>
+                    </Button>
+                </Border>
+
+                <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
                     <Button Click="OnResetDefaultsClicked" Background="Transparent" Foreground="#475569" Padding="10,6" BorderThickness="0" Cursor="Hand" ToolTip="Reset playlist to default stations">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="🔄 " FontFamily="Segoe UI Emoji" FontSize="11"/>
