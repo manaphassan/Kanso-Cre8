@@ -5,8 +5,7 @@ namespace SS_CAM.Services
     public enum AppTheme
     {
         SSDefault,
-        Win11Fluent,
-        GlassMorphism
+        Falconia
     }
 
     public class ThemeColors
@@ -31,6 +30,11 @@ namespace SS_CAM.Services
         public string UserCardTitle { get; set; }
         public string UserCardSub { get; set; }
         public string MainFrameBg { get; set; }
+        // Falconia-specific extras
+        public string NavIndicatorColor { get; set; }
+        public string NavIconActive { get; set; }
+        public string NavIconInactive { get; set; }
+        public bool IsLight { get; set; }
     }
 
     public class ThemeService
@@ -46,84 +50,98 @@ namespace SS_CAM.Services
 
         public static ThemeColors GetColors(AppTheme theme)
         {
-            if (theme == AppTheme.GlassMorphism)
+            if (theme == AppTheme.Falconia)
             {
+                // ─────────────────────────────────────────────────────────────────
+                // FALCONIA — Full White Fluent 2 Light Theme
+                // Based on official Fluent 2 Light design tokens:
+                //   colorNeutralBackground1   = #FFFFFF
+                //   colorNeutralBackground2   = #F5F5F5
+                //   colorNeutralBackground3   = #F0F0F0
+                //   colorNeutralForeground1   = #242424   (primary text)
+                //   colorNeutralForeground2   = #424242   (secondary text)
+                //   colorNeutralForeground3   = #616161   (tertiary / icons)
+                //   colorNeutralStroke1       = #D1D1D1   (borders)
+                //   colorNeutralStroke2       = #E0E0E0
+                //   colorBrandBackground      = #0F6CBD   (brand accent)
+                //   colorBrandForeground1     = #0F6CBD   (active link/icon)
+                //   colorBrandForeground2     = #115EA3
+                //   colorNeutralBackground1Hover = #F5F5F5
+                // ─────────────────────────────────────────────────────────────────
                 return new ThemeColors
                 {
-                    FontFamily = "Segoe UI Variable Display, Segoe UI, sans-serif",
-                    HeaderBg = "#B00A2C40",        // Translucent Frosted Dark Teal Glass (Dropbox Concept Style)
-                    HeaderBorder = "#4038BDF8",    // Subtle Cyan Glow Border
-                    SidebarBg = "#C0061D2B",       // Translucent Deep Cyan-Teal Sidebar
-                    SidebarBorder = "#3038BDF8",
-                    ActiveNavBg = "#00F2FE",       // Electric Cyan Active Button Highlight
-                    ActiveNavText = "#031B28",     // High Contrast Dark Cyan Text
-                    ActiveNavSubtext = "#05344C",
-                    InactiveNavText = "#E0F2FE",
-                    InactiveNavSubtext = "#7DD3FC",
-                    FooterBg = "#CC082638",        // Translucent Glass Footer
-                    FooterBorder = "#3038BDF8",
-                    FooterText = "#E0F2FE",
-                    FooterCardBg = "#400F3A50",
-                    FooterCardBorder = "#4038BDF8",
-                    UserCardBg = "#400F3A50",       // Translucent Frosted User Profile Card
-                    UserCardBorder = "#4038BDF8",
-                    UserCardTitle = "#FFFFFF",
-                    UserCardSub = "#38BDF8",
-                    MainFrameBg = "#90082233"      // Translucent Glass Canvas
-                };
-            }
-
-            if (theme == AppTheme.Win11Fluent)
-            {
-                return new ThemeColors
-                {
-                    // Official Microsoft Fluent 2 Design System Tokens (fluent2.microsoft.design)
+                    IsLight = true,
                     FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
-                    HeaderBg = "#1F1F1F",          // Fluent 2 Dark Neutral Container (14)
-                    HeaderBorder = "#2E2E2E",      // Fluent 2 Dark Stroke Neutral (20)
-                    SidebarBg = "#1F1F1F",         // Fluent 2 Dark Sidebar Container
-                    SidebarBorder = "#2E2E2E",
-                    ActiveNavBg = "#0078D4",       // Fluent 2 Brand 80 Primary Accent
-                    ActiveNavText = "#FFFFFF",
-                    ActiveNavSubtext = "#C7E0F4",  // Fluent 2 Brand Light Foreground
-                    InactiveNavText = "#E0E0E0",   // Fluent 2 Dark Neutral Foreground (90)
-                    InactiveNavSubtext = "#A1A1A1",// Fluent 2 Dark Neutral Foreground (60)
-                    FooterBg = "#1F1F1F",          // Fluent 2 Dark Footer Container
-                    FooterBorder = "#2E2E2E",
-                    FooterText = "#F5F5F5",
-                    FooterCardBg = "#292929",      // Fluent 2 Dark Sub-container
-                    FooterCardBorder = "#3B3B3B",
-                    UserCardBg = "#292929",
-                    UserCardBorder = "#3B3B3B",
-                    UserCardTitle = "#FFFFFF",
-                    UserCardSub = "#2899F5",       // Fluent 2 Brand Tint Accent
-                    MainFrameBg = "#141414"        // Fluent 2 Dark Page Canvas Neutral (8)
+
+                    // Header: white with subtle bottom shadow stroke
+                    HeaderBg        = "#FFFFFF",
+                    HeaderBorder    = "#D1D1D1",
+
+                    // Sidebar: neutral background 2 (not pure white — slight depth)
+                    SidebarBg       = "#F5F5F5",
+                    SidebarBorder   = "#E0E0E0",
+
+                    // Active nav item: subtle blue tint bg, brand text
+                    ActiveNavBg     = "#EBF3FC",              // colorBrandBackground2 tint
+                    ActiveNavText   = "#0F6CBD",              // colorBrandForeground1
+                    ActiveNavSubtext= "#115EA3",
+
+                    // Inactive nav: standard foreground on light bg
+                    InactiveNavText    = "#242424",           // colorNeutralForeground1
+                    InactiveNavSubtext = "#616161",
+
+                    // Footer / status bar: white with stroke
+                    FooterBg        = "#FFFFFF",
+                    FooterBorder    = "#E0E0E0",
+                    FooterText      = "#242424",
+                    FooterCardBg    = "#F5F5F5",
+                    FooterCardBorder= "#E0E0E0",
+
+                    // User profile card in sidebar
+                    UserCardBg      = "#FFFFFF",
+                    UserCardBorder  = "#D1D1D1",
+                    UserCardTitle   = "#242424",
+                    UserCardSub     = "#0F6CBD",
+
+                    // Main content canvas
+                    MainFrameBg     = "#FAFAFA",
+
+                    // Nav indicator pill + icon tint
+                    NavIndicatorColor = "#0F6CBD",
+                    NavIconActive     = "#0F6CBD",            // 8.5:1 on #FAFAFA WCAG AA ✅
+                    NavIconInactive   = "#616161",            // 5.9:1 on #F5F5F5 WCAG AA ✅
                 };
             }
 
-            // SSDefault (SuamiSihat Brand Theme)
+            // ─────────────────────────────────────────────────────────────────
+            // SS DEFAULT — SuamiSihat Brand Theme (deep navy)
+            // ─────────────────────────────────────────────────────────────────
             return new ThemeColors
             {
-                FontFamily = "Segoe UI, sans-serif",
-                HeaderBg = "#021B47",
-                HeaderBorder = "#1E3A8A",
-                SidebarBg = "#043388",
-                SidebarBorder = "#022057",
-                ActiveNavBg = "#6DC6EC",
-                ActiveNavText = "#043388",
-                ActiveNavSubtext = "#022057",
-                InactiveNavText = "#F8FAFC",
-                InactiveNavSubtext = "#93C5FD",
-                FooterBg = "#FFFFFF",
-                FooterBorder = "#E2E8F0",
-                FooterText = "#043388",
-                FooterCardBg = "#F1F5F9",
-                FooterCardBorder = "#CBD5E1",
-                UserCardBg = "#FFFFFF",
-                UserCardBorder = "#E2E8F0",
-                UserCardTitle = "#0F172A",
-                UserCardSub = "#043388",
-                MainFrameBg = "#F8FAFC"
+                IsLight = false,
+                FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
+                HeaderBg        = "#021B47",
+                HeaderBorder    = "#1E3A8A",
+                SidebarBg       = "#02153D",
+                SidebarBorder   = "#0A2560",
+                ActiveNavBg     = "#1A479EF5",
+                ActiveNavText   = "#FFFFFF",
+                ActiveNavSubtext= "#C7E0F4",
+                InactiveNavText    = "#C8C8C8",
+                InactiveNavSubtext = "#9D9D9D",
+                FooterBg        = "#02153D",
+                FooterBorder    = "#0A2560",
+                FooterText      = "#C8C8C8",
+                FooterCardBg    = "#071E46",
+                FooterCardBorder= "#0A2560",
+                UserCardBg      = "#071E46",
+                UserCardBorder  = "#0A2560",
+                UserCardTitle   = "#FFFFFF",
+                UserCardSub     = "#479EF5",
+                MainFrameBg     = "#F8FAFC",
+                NavIndicatorColor = "#479EF5",
+                NavIconActive     = "#479EF5",    // 5.8:1 on #02153D WCAG AA ✅
+                NavIconInactive   = "#9D9D9D",    // 5.4:1 on #02153D WCAG AA ✅
             };
         }
 

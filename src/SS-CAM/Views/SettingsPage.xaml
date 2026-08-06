@@ -141,26 +141,83 @@
                     <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20">
                         <StackPanel>
                             <TextBlock Text="Application Theme" FontSize="14" FontWeight="Bold"
-                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,6"/>
-                            <TextBlock Text="Switch between Brand, Fluent Mica, or Cyan Glass Acrylic."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,14"
-                                       FontFamily="Segoe UI Variable Text"/>
-                            <WrapPanel>
-                                <Button x:Name="BtnThemeSSDefault" Content="SS Default" Click="OnSelectSSDefaultTheme"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                                <Button x:Name="BtnThemeWin11Fluent" Content="Win11 Fluent" Click="OnSelectWin11FluentTheme"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#0078D4" Foreground="White" FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                                <Button x:Name="BtnThemeGlass" Content="Cyan Glass" Click="OnSelectGlassTheme"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#0D4B66" Foreground="#00F2FE"
-                                        BorderBrush="#00F2FE" BorderThickness="1"
-                                        FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                            </WrapPanel>
+                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,4"/>
+                            <TextBlock Text="Choose between the SuamiSihat brand theme or the clean white Fluent 2 Falconia theme."
+                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,16"
+                                       FontFamily="Segoe UI Variable Text" TextWrapping="Wrap"/>
+
+                            <!-- Theme swatches -->
+                            <StackPanel Orientation="Horizontal">
+
+                                <!-- SS Default swatch -->
+                                <Border CornerRadius="8" BorderBrush="#043388" BorderThickness="2"
+                                        Width="130" Margin="0,0,12,0" Cursor="Hand">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="#000000"/>
+                                    </Border.Effect>
+                                    <Button x:Name="BtnThemeSSDefault" Click="OnSelectSSDefaultTheme"
+                                            BorderThickness="0" Padding="0" Background="Transparent">
+                                        <StackPanel>
+                                            <!-- Mini sidebar preview -->
+                                            <Border Background="#02153D" Height="52" CornerRadius="6,6,0,0">
+                                                <StackPanel Margin="10,8">
+                                                    <Rectangle Fill="#479EF5" Width="16" Height="3" HorizontalAlignment="Left"
+                                                               RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,4"/>
+                                                    <Rectangle Fill="#C8C8C8" Width="60" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1" Margin="0,0,0,3"/>
+                                                    <Rectangle Fill="#C8C8C8" Width="45" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Label -->
+                                            <Border Background="#043388" Padding="10,8">
+                                                <StackPanel>
+                                                    <TextBlock Text="SS Default" FontSize="12" FontWeight="Bold"
+                                                               Foreground="White" FontFamily="Segoe UI Variable Text"/>
+                                                    <TextBlock Text="Brand Navy" FontSize="10"
+                                                               Foreground="#93C5FD" FontFamily="Segoe UI Variable Text"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Button>
+                                </Border>
+
+                                <!-- Falconia swatch -->
+                                <Border CornerRadius="8" BorderBrush="#D1D1D1" BorderThickness="1"
+                                        Width="130" Cursor="Hand">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.10" Color="#000000"/>
+                                    </Border.Effect>
+                                    <Button x:Name="BtnThemeFalconia" Click="OnSelectFalconiaTheme"
+                                            BorderThickness="0" Padding="0" Background="Transparent">
+                                        <StackPanel>
+                                            <!-- Mini sidebar preview -->
+                                            <Border Background="#F5F5F5" Height="52" CornerRadius="6,6,0,0"
+                                                    BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+                                                <StackPanel Margin="10,8">
+                                                    <Rectangle Fill="#0F6CBD" Width="16" Height="3" HorizontalAlignment="Left"
+                                                               RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,4"/>
+                                                    <Rectangle Fill="#424242" Width="60" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1" Margin="0,0,0,3"/>
+                                                    <Rectangle Fill="#616161" Width="45" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Label -->
+                                            <Border Background="#FFFFFF" Padding="10,8"
+                                                    BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="Falconia" FontSize="12" FontWeight="Bold"
+                                                               Foreground="#0F6CBD" FontFamily="Segoe UI Variable Text"/>
+                                                    <TextBlock Text="Fluent 2 Light" FontSize="10"
+                                                               Foreground="#616161" FontFamily="Segoe UI Variable Text"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Button>
+                                </Border>
+
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 

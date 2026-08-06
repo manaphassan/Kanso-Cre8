@@ -169,19 +169,13 @@ namespace SS_CAM.Views
         private void OnSelectSSDefaultTheme(object sender, RoutedEventArgs e)
         {
             ThemeService.ApplyTheme(AppTheme.SSDefault);
-            MessageBox.Show("Applied SS Default (SuamiSihat Brand Theme).", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Applied SS Default — SuamiSihat Brand Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void OnSelectWin11FluentTheme(object sender, RoutedEventArgs e)
+        private void OnSelectFalconiaTheme(object sender, RoutedEventArgs e)
         {
-            ThemeService.ApplyTheme(AppTheme.Win11Fluent);
-            MessageBox.Show("Applied Windows 11 Fluent (Mica Slate Theme).", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void OnSelectGlassTheme(object sender, RoutedEventArgs e)
-        {
-            ThemeService.ApplyTheme(AppTheme.GlassMorphism);
-            MessageBox.Show("Applied Cyan Glass Acrylic Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            ThemeService.ApplyTheme(AppTheme.Falconia);
+            MessageBox.Show("Applied Falconia — Full White Fluent 2 Light Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
 

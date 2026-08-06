@@ -476,20 +476,10 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
         {
-            AppTheme nextTheme = AppTheme.SSDefault;
-            if (ThemeService.CurrentTheme == AppTheme.SSDefault)
-            {
-                nextTheme = AppTheme.Win11Fluent;
-            }
-            else if (ThemeService.CurrentTheme == AppTheme.Win11Fluent)
-            {
-                nextTheme = AppTheme.GlassMorphism;
-            }
-            else
-            {
-                nextTheme = AppTheme.SSDefault;
-            }
-
+            // Cycle: SS Default ↔ Falconia
+            AppTheme nextTheme = (ThemeService.CurrentTheme == AppTheme.SSDefault)
+                ? AppTheme.Falconia
+                : AppTheme.SSDefault;
             ThemeService.ApplyTheme(nextTheme);
         }
 
@@ -498,58 +488,74 @@ namespace SS_CAM
             ThemeColors c = ThemeService.GetColors(theme);
 
             if (!string.IsNullOrEmpty(c.FontFamily))
-            {
-                FontFamily = new FontFamily(c.FontFamily);
-            }
+                FontFamily = new System.Windows.Media.FontFamily(c.FontFamily);
 
-            if (theme == AppTheme.GlassMorphism)
+            if (theme == AppTheme.Falconia)
             {
-                WindowBackdropType = WindowBackdropType.Acrylic;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B00A2C40"));
-            }
-            else if (theme == AppTheme.Win11Fluent)
-            {
+                // Falconia: full white Fluent 2 light — use Mica (system light backdrop)
                 WindowBackdropType = WindowBackdropType.Mica;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141414"));
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
             }
             else
             {
+                // SS Default: dark navy brand theme
                 WindowBackdropType = WindowBackdropType.Mica;
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02153D"));
             }
 
             if (StatusThemeText != null)
             {
-                if (theme == AppTheme.GlassMorphism) StatusThemeText.Text = "Theme: Cyan Glass";
-                else if (theme == AppTheme.Win11Fluent) StatusThemeText.Text = "Theme: Win11 Fluent";
-                else StatusThemeText.Text = "Theme: SS Default";
+                StatusThemeText.Text = (theme == AppTheme.Falconia)
+                    ? "Theme: Falconia"
+                    : "Theme: SS Default";
             }
 
+            // Sidebar
             if (SidebarBorder != null)
             {
-                SidebarBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+                SidebarBorder.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
                 SidebarBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
             }
 
-            if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            // Sidebar nav text colours (inactive)
+            if (NavDashboardBtn != null)
+            {
+                System.Windows.Controls.Button[] navBtns = new[]
+                {
+                    NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
+                    NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn
+                };
+                foreach (var btn in navBtns)
+                {
+                    if (btn != null)
+                        btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
+                }
+            }
 
+            // Foot / status row text
+            if (StatusNasText != null)
+                StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+
+            // User card
             if (SidebarUserCard != null)
             {
-                SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+                SidebarUserCard.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
                 SidebarUserCard.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBorder));
             }
 
+            // Main content frame
             if (MainFrame != null)
-            {
                 MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.MainFrameBg));
-            }
 
+            // Re-apply nav highlight with correct active colour for this theme
             ResetNavHighlight();
             if (_lastActiveNavBtn != null)
             {
-                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A479EF5"));
+                string activeBg  = c.IsLight ? "#1A0F6CBD" : "#1A479EF5";
+                string activeIcon = c.IsLight ? c.NavIconActive : c.NavIconActive;
+                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(activeBg));
                 SetNavIndicator(_lastActiveNavBtn, true);
-                SetNavIconColor(_lastActiveNavBtn, "#479EF5");
+                SetNavIconColor(_lastActiveNavBtn, activeIcon);
             }
         }
 
@@ -569,25 +575,27 @@ namespace SS_CAM
             ResetNavHighlight();
             if (activeBtn != null)
             {
-                // Fluent 2: 3px accent pill + subtle 10% blue background — no full fill
-                // Use #479EF5 (colorBrandForeground1 dark-theme) — 5.8:1 contrast on #02153D ✅ WCAG AA
-                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A479EF5"));
+                // Pick active colours from current theme
+                ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
+                string activeBg = tc.IsLight ? "#1A0F6CBD" : "#1A479EF5";
+                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(activeBg));
                 SetNavIndicator(activeBtn, true);
-                SetNavIconColor(activeBtn, "#479EF5");
+                SetNavIconColor(activeBtn, tc.NavIconActive);
             }
         }
 
         private void ResetNavHighlight()
         {
+            ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
             System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
             foreach (System.Windows.Controls.Button btn in navBtns)
             {
                 if (btn != null)
                 {
                     btn.Background = Brushes.Transparent;
-                    btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C8C8C8"));
+                    btn.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tc.InactiveNavText));
                     SetNavIndicator(btn, false);
-                    SetNavIconColor(btn, "#9D9D9D");
+                    SetNavIconColor(btn, tc.NavIconInactive);
                 }
             }
         }
