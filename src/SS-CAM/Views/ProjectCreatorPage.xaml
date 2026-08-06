@@ -4,139 +4,253 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Project Creator">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
-        <StackPanel>
-            <!-- Header -->
-            <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="Standardized Project Creator" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
-                <TextBlock Text="Generate structured SuamiSihat project folders, starter canvas templates, briefs, and Job IDs." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
-            </StackPanel>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.3*"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Left Column: Form Controls -->
-                <StackPanel Grid.Column="0">
-                    <!-- Project Identity Group -->
-                    <GroupBox Header="01. Project Identity &amp; Job ID" Margin="0,0,0,16">
-                        <StackPanel Margin="8">
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <!-- Year -->
-                                <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                                    <TextBlock Text="Year" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="YearComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                                <!-- Sub-brand -->
-                                <StackPanel Grid.Column="1" Margin="3,0,3,0">
-                                    <TextBlock Text="Sub-Brand" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="SubBrandComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                                <!-- Job ID Suffix Code -->
-                                <StackPanel Grid.Column="2" Margin="6,0,0,0">
-                                    <TextBlock Text="Job ID Suffix" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ui:TextBox x:Name="JobIdInput" Text="0001D" Height="36" TextChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                            </Grid>
-
-                            <StackPanel Margin="0,0,0,12">
-                                <TextBlock Text="Project Title / Descriptor" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                <ui:TextBox x:Name="ProjectNameInput" Text="brand campaign" Height="36" TextChanged="OnFormInputChanged"/>
-                            </StackPanel>
-
-                            <StackPanel>
-                                <TextBlock Text="Project Brief / Remarks" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                <ui:TextBox x:Name="ProjectDescriptionInput" PlaceholderText="Enter optional project scope, requirements, or client notes..." AcceptsReturn="True" Height="60"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-
-                    <!-- Template & Platform Configuration -->
-                    <GroupBox Header="02. Preset &amp; Starter Canvas Template" Margin="0,0,0,16">
-                        <StackPanel Margin="8">
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <!-- Category Preset -->
-                                <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                                    <TextBlock Text="Category Preset" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="PresetComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                                <!-- Target Platform -->
-                                <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                                    <TextBlock Text="Target Platform" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="PlatformComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                            </Grid>
-
-                            <!-- Target Platform Specifications Info Card -->
-                            <Border Background="#EFF6FF" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="📐 Platform Specs: " FontWeight="Bold" Foreground="#043388" FontSize="11"/>
-                                    <TextBlock x:Name="PlatformSpecsText" Text="1080 x 1080 px · 72 DPI · sRGB Color Mode" Foreground="#1E293B" FontSize="11" FontWeight="SemiBold"/>
-                                </StackPanel>
-                            </Border>
-
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                    <TextBlock Text="Master Canvas Extension" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="TemplateExtensionComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
-                                </StackPanel>
-                                <CheckBox x:Name="InjectCanvasCheck" Grid.Column="1" Content="Inject Starter Canvas" IsChecked="True" VerticalAlignment="Bottom" Margin="0,0,0,8" Click="OnFormInputChanged"/>
-                            </Grid>
-
-                            <WrapPanel Margin="0,4,0,0">
-                                <CheckBox x:Name="IncludeRevisionsCheck" Content="Include 'Client Revisions' Folder" IsChecked="True" Margin="0,0,16,0" Click="OnFormInputChanged"/>
-                                <CheckBox x:Name="IncludeRawMediaCheck" Content="Include 'RAW Media' Folder" IsChecked="True" Click="OnFormInputChanged"/>
-                            </WrapPanel>
-                        </StackPanel>
-                    </GroupBox>
-
-                    <!-- Submit Actions -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
-                        <Button Content="Copy Folder Name" Click="OnCopyFolderNameClicked" Background="#E2E8F0" Foreground="#1E293B" Height="40" Padding="14,0" Margin="0,0,10,0" FontWeight="SemiBold"/>
-                        <Button Content="🚀 Create Project Folders" Click="OnCreateProjectClicked" Background="#043388" Foreground="White" Height="40" Padding="18,0" FontWeight="Bold"/>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel>
+                <!-- Header -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Standardized Project Creator" FontSize="26" FontWeight="Bold" Foreground="#043388"/>
+                        <TextBlock Text="Generate structured SuamiSihat project folders, starter canvas templates, briefs, and Job IDs." Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
                     </StackPanel>
 
-                    <TextBlock x:Name="CreateStatusText" Text="" Foreground="#10B981" FontSize="13" FontWeight="Bold" Margin="0,10,0,0" HorizontalAlignment="Right"/>
-                </StackPanel>
+                    <Border Grid.Column="1" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" VerticalAlignment="Center">
+                        <Button Click="OnManagePresetsClicked" Background="Transparent" Foreground="#043388" Padding="12,8" BorderThickness="0" Cursor="Hand" ToolTip="Add, edit, or customize category presets &amp; folder tree structures">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚙️ " FontFamily="Segoe UI Emoji" FontSize="12"/>
+                                <TextBlock Text="Manage Category Presets &amp; Folders" FontWeight="Bold" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+                </Grid>
 
-                <!-- Right Column: Real-time Live Preview & Recent Projects -->
-                <StackPanel Grid.Column="2">
-                    <!-- Real-time Live Preview -->
-                    <GroupBox Header="Live Directory Structure Preview" Margin="0,0,0,16">
-                        <StackPanel Margin="8">
-                            <TextBlock Text="Target Folder Path:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                            <TextBlock x:Name="PreviewPathText" Text="D:\Testing\Brand\202608_0001D_SS_brand campaign" Foreground="#043388" FontWeight="Bold" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" FontFamily="Consolas"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.3*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Directory Tree Structure:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
-                            <TextBox x:Name="FolderStructureBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Height="190" FontFamily="Consolas" FontSize="12" Background="#F8FAFC" BorderBrush="#CBD5E1" Padding="10"/>
+                    <!-- Left Column: Form Controls -->
+                    <StackPanel Grid.Column="0">
+                        <!-- Project Identity Group -->
+                        <GroupBox Header="01. Project Identity &amp; Job ID" Margin="0,0,0,16">
+                            <StackPanel Margin="8">
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Year -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                        <TextBlock Text="Year" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="YearComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                    <!-- Sub-brand -->
+                                    <StackPanel Grid.Column="1" Margin="3,0,3,0">
+                                        <TextBlock Text="Sub-Brand" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="SubBrandComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                    <!-- Job ID Suffix Code -->
+                                    <StackPanel Grid.Column="2" Margin="6,0,0,0">
+                                        <TextBlock Text="Job ID Suffix" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                        <ui:TextBox x:Name="JobIdInput" Text="0001D" Height="36" TextChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Margin="0,0,0,12">
+                                    <TextBlock Text="Project Title / Descriptor" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ui:TextBox x:Name="ProjectNameInput" Text="brand campaign" Height="36" TextChanged="OnFormInputChanged"/>
+                                </StackPanel>
+
+                                <StackPanel>
+                                    <TextBlock Text="Project Brief / Remarks" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ui:TextBox x:Name="ProjectDescriptionInput" PlaceholderText="Enter optional project scope, requirements, or client notes..." AcceptsReturn="True" Height="60"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Template & Platform Configuration -->
+                        <GroupBox Header="02. Preset &amp; Starter Canvas Template" Margin="0,0,0,16">
+                            <StackPanel Margin="8">
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Category Preset -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                        <Grid Margin="0,0,0,4">
+                                            <TextBlock Text="Category Preset" FontSize="11" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center"/>
+                                            <Button Click="OnManagePresetsClicked" HorizontalAlignment="Right" Background="Transparent" Foreground="#043388" BorderThickness="0" FontSize="10" FontWeight="Bold" Cursor="Hand" Content="⚙️ Edit Presets"/>
+                                        </Grid>
+                                        <ComboBox x:Name="PresetComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                    <!-- Target Platform -->
+                                    <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                        <TextBlock Text="Target Platform" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="PlatformComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Target Platform Specifications Info Card -->
+                                <Border Background="#EFF6FF" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="📐 Platform Specs: " FontWeight="Bold" Foreground="#043388" FontSize="11"/>
+                                        <TextBlock x:Name="PlatformSpecsText" Text="1080 x 1080 px · 72 DPI · sRGB Color Mode" Foreground="#1E293B" FontSize="11" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                        <TextBlock Text="Master Canvas Extension" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                        <ComboBox x:Name="TemplateExtensionComboBox" Height="36" SelectionChanged="OnFormInputChanged"/>
+                                    </StackPanel>
+                                    <CheckBox x:Name="InjectCanvasCheck" Grid.Column="1" Content="Inject Starter Canvas" IsChecked="True" VerticalAlignment="Bottom" Margin="0,0,0,8" Click="OnFormInputChanged"/>
+                                </Grid>
+
+                                <WrapPanel Margin="0,4,0,0">
+                                    <CheckBox x:Name="IncludeRevisionsCheck" Content="Include 'Client Revisions' Folder" IsChecked="True" Margin="0,0,16,0" Click="OnFormInputChanged"/>
+                                    <CheckBox x:Name="IncludeRawMediaCheck" Content="Include 'RAW Media' Folder" IsChecked="True" Click="OnFormInputChanged"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Submit Actions -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                            <Button Content="Copy Folder Name" Click="OnCopyFolderNameClicked" Background="#E2E8F0" Foreground="#1E293B" Height="40" Padding="14,0" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                            <Button Content="🚀 Create Project Folders" Click="OnCreateProjectClicked" Background="#043388" Foreground="White" Height="40" Padding="18,0" FontWeight="Bold"/>
                         </StackPanel>
-                    </GroupBox>
 
-                    <!-- Recent Projects Quick Launcher -->
-                    <GroupBox Header="Recent Projects Launcher">
-                        <DockPanel Margin="8" LastChildFill="True">
-                            <TextBlock Text="Double-click any recent project to open in File Explorer:" DockPanel.Dock="Top" FontSize="11" Foreground="#64748B" Margin="0,0,0,8"/>
-                            <ListBox x:Name="RecentProjectsList" Height="140" MouseDoubleClick="OnRecentProjectDoubleClicked"/>
-                        </DockPanel>
-                    </GroupBox>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
-    </ScrollViewer>
+                        <TextBlock x:Name="CreateStatusText" Text="" Foreground="#10B981" FontSize="13" FontWeight="Bold" Margin="0,10,0,0" HorizontalAlignment="Right"/>
+                    </StackPanel>
+
+                    <!-- Right Column: Real-time Live Preview & Recent Projects -->
+                    <StackPanel Grid.Column="2">
+                        <!-- Real-time Live Preview -->
+                        <GroupBox Header="Live Directory Structure Preview" Margin="0,0,0,16">
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Target Folder Path:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <TextBlock x:Name="PreviewPathText" Text="D:\Testing\Brand\202608_0001D_SS_brand campaign" Foreground="#043388" FontWeight="Bold" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" FontFamily="Consolas"/>
+
+                                <TextBlock Text="Directory Tree Structure:" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                <TextBox x:Name="FolderStructureBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Height="190" FontFamily="Consolas" FontSize="12" Background="#F8FAFC" BorderBrush="#CBD5E1" Padding="10"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Recent Projects Quick Launcher -->
+                        <GroupBox Header="Recent Projects Launcher">
+                            <DockPanel Margin="8" LastChildFill="True">
+                                <TextBlock Text="Double-click any recent project to open in File Explorer:" DockPanel.Dock="Top" FontSize="11" Foreground="#64748B" Margin="0,0,0,8"/>
+                                <ListBox x:Name="RecentProjectsList" Height="140" MouseDoubleClick="OnRecentProjectDoubleClicked"/>
+                            </DockPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Category Preset & Folder Structure Manager Modal -->
+        <Grid x:Name="ManagePresetsModal" Background="#80000000" Visibility="Collapsed">
+            <Border Background="White" CornerRadius="12" Width="680" Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="620">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Modal Header -->
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="⚙️ Category Presets &amp; Folder Structure Manager" FontSize="18" FontWeight="Bold" Foreground="#043388"/>
+                            <TextBlock Text="Add, edit, or customize project category presets and subfolder directory trees." FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Button Click="OnClosePresetsModalClicked" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Foreground="#64748B" BorderThickness="0" FontSize="14" FontWeight="Bold" Cursor="Hand">✕</Button>
+                    </Grid>
+
+                    <!-- Modal Body: Split view of Preset List (Left) and Editor (Right) -->
+                    <Grid Grid.Row="1" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="260"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left Column: Existing Presets List -->
+                        <Border Grid.Column="0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <DockPanel LastChildFill="True">
+                                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                                    <Grid Margin="0,0,0,6">
+                                        <TextBlock Text="Category Presets" FontSize="11" FontWeight="Bold" Foreground="#475569"/>
+                                        <Button Click="OnAddNewPresetClicked" HorizontalAlignment="Right" Background="Transparent" Foreground="#043388" BorderThickness="0" FontSize="11" FontWeight="Bold" Cursor="Hand" Content="➕ New"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <ListBox x:Name="PresetsListBox" SelectionChanged="OnPresetSelectionChanged" BorderThickness="0" Background="Transparent">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="4,2">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="12" Foreground="#0F172A"/>
+                                                    <TextBlock Text="{Binding Folders.Count, StringFormat='{}{0} Subfolders'}" FontSize="10" Foreground="#64748B"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Right Column: Add / Edit Form -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock x:Name="PresetFormTitle" Text="✏️ Edit Category Preset" FontSize="14" FontWeight="Bold" Foreground="#043388" Margin="0,0,0,12"/>
+
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="90"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Name -->
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="Category Preset Name" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                                    <ui:TextBox x:Name="TxtPresetName" Height="36"/>
+                                </StackPanel>
+
+                                <!-- Suffix -->
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Job ID Suffix" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                                    <ui:TextBox x:Name="TxtPresetSuffix" Height="36" TextAlignment="Center" MaxLength="3" ToolTip="Code appended to Job IDs (e.g. D, S, V, P, E)"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Folder Structure Text Box -->
+                            <TextBlock Text="Directory Subfolder Structure (One folder per line)" FontSize="11" FontWeight="Bold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtPresetFolders" AcceptsReturn="True" Height="170" FontFamily="Consolas" FontSize="12" Padding="8" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+                            <TextBlock Text="Tip: Name subfolders starting with '01_' to place starter master canvas files in that folder." FontSize="10" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Modal Footer Actions -->
+                    <Grid Grid.Row="2">
+                        <Button Click="OnResetPresetsToDefaultClicked" Content="🔄 Reset to Defaults" Background="Transparent" Foreground="#64748B" BorderThickness="0" FontWeight="SemiBold" FontSize="11" Cursor="Hand" HorizontalAlignment="Left"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Click="OnDeletePresetClicked" x:Name="BtnDeletePreset" Content="🗑️ Delete Preset" Background="#FEF2F2" Foreground="#EF4444" BorderThickness="1" BorderBrush="#FECACA" Padding="12,6" Margin="0,0,8,0" FontWeight="SemiBold" Cursor="Hand"/>
+                            <Button Click="OnSavePresetClicked" Content="💾 Save Preset" Background="#043388" Foreground="White" Padding="16,6" FontWeight="Bold" Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </Page>

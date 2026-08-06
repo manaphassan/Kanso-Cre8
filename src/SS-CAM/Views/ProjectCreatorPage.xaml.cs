@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,8 @@ namespace SS_CAM.Views
     {
         private string workspaceRoot = @"D:\Testing";
         private UserProfile currentProfile;
+        private List<CategoryPreset> _categoryPresets;
+        private CategoryPreset _selectedEditingPreset;
 
         public ProjectCreatorPage()
         {
@@ -30,10 +33,38 @@ namespace SS_CAM.Views
                 workspaceRoot = currentProfile.WorkspaceRoot;
             }
 
+            ReloadCategoryPresets();
             PopulateDropdowns();
             AutoCalculateNextJobId();
             UpdateLivePreview();
             LoadRecentProjects();
+        }
+
+        private void ReloadCategoryPresets()
+        {
+            _categoryPresets = CategoryPresetService.LoadPresets();
+            
+            int prevIdx = PresetComboBox != null ? PresetComboBox.SelectedIndex : 0;
+            if (PresetComboBox != null)
+            {
+                PresetComboBox.ItemsSource = _categoryPresets.Select(p => p.Name).ToList();
+                PresetComboBox.SelectedIndex = prevIdx >= 0 && prevIdx < _categoryPresets.Count ? prevIdx : 0;
+            }
+
+            if (PresetsListBox != null)
+            {
+                PresetsListBox.ItemsSource = null;
+                PresetsListBox.ItemsSource = _categoryPresets;
+            }
+        }
+
+        private CategoryPreset GetSelectedCategoryPreset()
+        {
+            if (_categoryPresets == null || _categoryPresets.Count == 0) return null;
+            
+            string selectedName = PresetComboBox != null && PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "";
+            CategoryPreset preset = _categoryPresets.FirstOrDefault(p => p.Name.Equals(selectedName, StringComparison.OrdinalIgnoreCase));
+            return preset ?? _categoryPresets[0];
         }
 
         private void AutoCalculateNextJobId()
@@ -48,7 +79,6 @@ namespace SS_CAM.Views
                 if (Directory.Exists(targetDir))
                 {
                     string[] dirs = Directory.GetDirectories(targetDir);
-                    // Match folder names like: 202608_0001D_SS_project
                     Regex regex = new Regex(@"^\d{6}_(\d{4})[A-Z]_");
                     
                     foreach (string dir in dirs)
@@ -66,10 +96,10 @@ namespace SS_CAM.Views
                     }
                 }
 
-                maxId++; // Start at 1 if maxId was 0, or next if found
+                maxId++;
                 
-                string preset = PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "";
-                string suffix = GetPresetSuffix(preset);
+                CategoryPreset selectedPreset = GetSelectedCategoryPreset();
+                string suffix = selectedPreset != null ? selectedPreset.Suffix : "D";
 
                 JobIdInput.Text = maxId.ToString("D4") + suffix;
             }
@@ -97,18 +127,6 @@ namespace SS_CAM.Views
             };
             SubBrandComboBox.ItemsSource = subBrands;
             SubBrandComboBox.SelectedIndex = 0;
-
-            // Presets matching v1.9.10
-            List<string> presets = new List<string>
-            {
-                "Graphic & Print Design",
-                "Social Media Content",
-                "Video Production",
-                "Brand Identity",
-                "E-Commerce"
-            };
-            PresetComboBox.ItemsSource = presets;
-            PresetComboBox.SelectedIndex = 0;
 
             // Target Platforms
             List<string> platforms = new List<string>
@@ -139,50 +157,23 @@ namespace SS_CAM.Views
             return "SS";
         }
 
-        private string GetPresetSuffix(string presetName)
+        private List<string> GetPresetFolders(CategoryPreset preset)
         {
-            if (string.IsNullOrWhiteSpace(presetName)) return "D";
-            if (presetName.Contains("Video")) return "V";
-            if (presetName.Contains("Brand")) return "P";
-            if (presetName.Contains("Social")) return "S";
-            if (presetName.Contains("Commerce")) return "E";
-            return "D";
-        }
-
-        private List<string> GetPresetFolders(string preset)
-        {
-            List<string> subFolders = new List<string>();
-            string lowerPreset = preset != null ? preset.ToLowerInvariant() : "";
-            
-            if (lowerPreset.Contains("social"))
+            if (preset != null && preset.Folders != null && preset.Folders.Count > 0)
             {
-                subFolders.AddRange(new[] { "01_Working_Files", "02_Source_Assets", "03_Copywriting", "04_Final_Exports" });
+                return new List<string>(preset.Folders);
             }
-            else if (lowerPreset.Contains("video"))
-            {
-                subFolders.AddRange(new[] { "01_Project_Files", "02_Footage", "03_Audio", "04_Renders", "05_Final_Exports" });
-            }
-            else if (lowerPreset.Contains("brand"))
-            {
-                subFolders.AddRange(new[] { "01_Vector_Master", "02_Brand_Guidelines", "03_Colour_Palettes", "04_Export_Packages" });
-            }
-            else
-            {
-                subFolders.AddRange(new[] { "01_Artwork_Design", "02_Artwork_Mockup", "03_Assets", "04_Production" });
-            }
-
-            return subFolders;
+            return new List<string> { "01_Artwork_Design", "02_Artwork_Mockup", "03_Assets", "04_Production" };
         }
 
         private void OnFormInputChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsLoaded) return;
 
-            // Update Job ID Suffix automatically when Preset changes
             if (sender == PresetComboBox && PresetComboBox.SelectedItem != null)
             {
-                string preset = PresetComboBox.SelectedItem.ToString();
-                string suffix = GetPresetSuffix(preset);
+                CategoryPreset preset = GetSelectedCategoryPreset();
+                string suffix = preset != null ? preset.Suffix : "D";
                 string currentNum = "0001";
                 if (!string.IsNullOrWhiteSpace(JobIdInput.Text))
                 {
@@ -192,7 +183,6 @@ namespace SS_CAM.Views
                 JobIdInput.Text = string.Format("{0}{1}", currentNum, suffix);
             }
 
-            // Update Target Platform Specifications Info Card
             if (PlatformComboBox.SelectedItem != null)
             {
                 string platform = PlatformComboBox.SelectedItem.ToString();
@@ -236,8 +226,8 @@ namespace SS_CAM.Views
 
             PreviewPathText.Text = targetPath;
 
-            string preset = PresetComboBox != null && PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "";
-            List<string> presetFolders = GetPresetFolders(preset);
+            CategoryPreset selectedPreset = GetSelectedCategoryPreset();
+            List<string> presetFolders = GetPresetFolders(selectedPreset);
 
             List<string> lines = new List<string>();
             lines.Add("📁 " + folderName);
@@ -282,15 +272,14 @@ namespace SS_CAM.Views
                 CreateStatusText.Text = "Creating project folders...";
                 if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
 
-                string preset = PresetComboBox != null && PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "";
-                List<string> presetFolders = GetPresetFolders(preset);
+                CategoryPreset selectedPreset = GetSelectedCategoryPreset();
+                List<string> presetFolders = GetPresetFolders(selectedPreset);
 
                 foreach (var folder in presetFolders)
                 {
                     string fPath = Path.Combine(targetDir, folder);
                     Directory.CreateDirectory(fPath);
 
-                    // Inject Starter Master Canvas File into the first folder
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         string ext = TemplateExtensionComboBox.SelectedItem != null ? TemplateExtensionComboBox.SelectedItem.ToString() : ".afdesign";
@@ -307,7 +296,6 @@ namespace SS_CAM.Views
                 if (IncludeRawMediaCheck.IsChecked == true)
                     Directory.CreateDirectory(Path.Combine(targetDir, "RAW_Media"));
 
-                // Create README.md with project brief
                 string readmeContent = string.Format(@"# {0}
 
 - **Created**: {1:yyyy-MM-dd HH:mm}
@@ -326,7 +314,6 @@ namespace SS_CAM.Views
                 CreateStatusText.Text = "Project created successfully!";
                 LoadRecentProjects();
                 
-                // Auto-increment for the next project
                 AutoCalculateNextJobId();
                 ProjectNameInput.Text = "";
 
@@ -359,5 +346,134 @@ namespace SS_CAM.Views
                 catch { }
             }
         }
+
+        #region Category Presets & Folder Structure Manager Modal Handlers
+
+        private void OnManagePresetsClicked(object sender, RoutedEventArgs e)
+        {
+            ReloadCategoryPresets();
+            if (_categoryPresets.Count > 0)
+            {
+                PresetsListBox.SelectedIndex = 0;
+            }
+            ManagePresetsModal.Visibility = Visibility.Visible;
+        }
+
+        private void OnClosePresetsModalClicked(object sender, RoutedEventArgs e)
+        {
+            ManagePresetsModal.Visibility = Visibility.Collapsed;
+            ReloadCategoryPresets();
+            AutoCalculateNextJobId();
+            UpdateLivePreview();
+        }
+
+        private void OnPresetSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CategoryPreset selected = PresetsListBox.SelectedItem as CategoryPreset;
+            if (selected != null)
+            {
+                _selectedEditingPreset = selected;
+                PresetFormTitle.Text = "✏️ Edit Category Preset — " + selected.Name;
+                TxtPresetName.Text = selected.Name;
+                TxtPresetSuffix.Text = selected.Suffix;
+                TxtPresetFolders.Text = string.Join(Environment.NewLine, selected.Folders != null ? selected.Folders.ToArray() : new string[0]);
+
+                BtnDeletePreset.IsEnabled = true;
+            }
+        }
+
+        private void OnAddNewPresetClicked(object sender, RoutedEventArgs e)
+        {
+            _selectedEditingPreset = null;
+            PresetsListBox.SelectedIndex = -1;
+            PresetFormTitle.Text = "➕ Add New Category Preset";
+            TxtPresetName.Text = "";
+            TxtPresetSuffix.Text = "N";
+            TxtPresetFolders.Text = "01_Artwork_Design" + Environment.NewLine + "02_Source_Assets" + Environment.NewLine + "03_Final_Exports";
+
+            BtnDeletePreset.IsEnabled = false;
+        }
+
+        private void OnSavePresetClicked(object sender, RoutedEventArgs e)
+        {
+            string name = TxtPresetName.Text != null ? TxtPresetName.Text.Trim() : "";
+            string suffix = TxtPresetSuffix.Text != null ? TxtPresetSuffix.Text.Trim().ToUpper() : "D";
+            string folderText = TxtPresetFolders.Text != null ? TxtPresetFolders.Text : "";
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.Show("Please enter a category preset name.", "Validation Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(suffix))
+            {
+                suffix = "D";
+            }
+
+            List<string> folders = folderText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                                             .Select(f => f.Trim())
+                                             .Where(f => !string.IsNullOrWhiteSpace(f))
+                                             .ToList();
+
+            if (folders.Count == 0)
+            {
+                folders = new List<string> { "01_Artwork_Design", "02_Source_Assets", "03_Final_Exports" };
+            }
+
+            if (_selectedEditingPreset != null)
+            {
+                _selectedEditingPreset.Name = name;
+                _selectedEditingPreset.Suffix = suffix;
+                _selectedEditingPreset.Folders = folders;
+
+                CategoryPresetService.AddOrUpdatePreset(_selectedEditingPreset);
+            }
+            else
+            {
+                CategoryPreset newPreset = new CategoryPreset
+                {
+                    Name = name,
+                    Suffix = suffix,
+                    Folders = folders,
+                    IsDefault = false
+                };
+
+                CategoryPresetService.AddOrUpdatePreset(newPreset);
+            }
+
+            ReloadCategoryPresets();
+            MessageBox.Show("Category Preset & Directory Structure saved successfully!", "Preset Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OnDeletePresetClicked(object sender, RoutedEventArgs e)
+        {
+            if (_selectedEditingPreset != null)
+            {
+                var result = MessageBox.Show(string.Format("Delete preset '{0}'?", _selectedEditingPreset.Name), "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    CategoryPresetService.DeletePreset(_selectedEditingPreset.Id);
+                    _selectedEditingPreset = null;
+                    ReloadCategoryPresets();
+                    if (_categoryPresets.Count > 0) PresetsListBox.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void OnResetPresetsToDefaultClicked(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Reset all category presets and subfolder structures to default guidelines?", "Reset Presets", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                CategoryPresetService.ResetToDefaults();
+                _selectedEditingPreset = null;
+                ReloadCategoryPresets();
+                if (_categoryPresets.Count > 0) PresetsListBox.SelectedIndex = 0;
+                MessageBox.Show("All category presets reset to default!", "Presets Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        #endregion
     }
 }

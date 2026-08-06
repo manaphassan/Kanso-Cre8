@@ -118,6 +118,7 @@
     <Compile Include="Models\DashboardModels.cs" />
     <Compile Include="Models\UserProfileModels.cs" />
     <Compile Include="Models\RadioStation.cs" />
+    <Compile Include="Models\CategoryPreset.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Services\PayloadInstallerService.cs" />
     <Compile Include="Services\AudioFeedbackService.cs" />
     <Compile Include="Services\RadioStreamService.cs" />
+    <Compile Include="Services\CategoryPresetService.cs" />
     <Compile Include="Views\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
       <SubType>Code</SubType>

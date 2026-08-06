@@ -95,7 +95,7 @@
                     </StackPanel>
                 </GroupBox>
 
-                <!-- Maintenance & Payload Provisioning Tools -->
+                <!-- Workstation Payload & Maintenance -->
                 <GroupBox Header="Workstation Payload &amp; Maintenance" Margin="0,0,0,20">
                     <StackPanel Margin="16">
                         <TextBlock Text="Install bundled brand fonts into Windows, deploy asset libraries, or check for application updates." Foreground="#64748B" FontSize="12" Margin="0,0,0,14"/>
@@ -103,6 +103,16 @@
                             <Button Content="🔤 Install Brand Fonts" Click="OnRepairFonts" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"/>
                             <Button Content="📦 Deploy Asset Libraries" Click="OnDeployAssets" Height="36" Margin="0,0,12,0" Padding="16,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"/>
                             <Button Content="Check for Updates" Click="OnCheckUpdates" Height="36" Padding="16,0" Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Category Presets & Directory Structure Manager -->
+                <GroupBox Header="Category Presets &amp; Folder Structure Manager" Margin="0,0,0,20">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Configure standardized project folder templates, subfolder tree structures, and Job ID suffix codes." Foreground="#64748B" FontSize="12" Margin="0,0,0,14"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="⚙️ Manage Category Presets &amp; Folder Trees" Click="OnManageCategoryPresetsClicked" Height="36" Padding="18,0" Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand" ToolTip="Open Category Preset &amp; Folder Structure Manager"/>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>

@@ -154,7 +154,16 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You are running SS-CAM v2.0.7. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("You are running SS-CAM v2.1.0. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current != null && Application.Current.MainWindow is MainWindow)
+            {
+                MainWindow mainWin = Application.Current.MainWindow as MainWindow;
+                mainWin.NavigateTo(typeof(ProjectCreatorPage), mainWin.NavProjectsBtn);
+            }
         }
 
         public void OnDownloadSoftwareClicked(object sender, RoutedEventArgs e)
