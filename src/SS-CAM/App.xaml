@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Light" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="Styles/Fluent2Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <!-- SuamiSihat v1.9.10 Brand Colors -->

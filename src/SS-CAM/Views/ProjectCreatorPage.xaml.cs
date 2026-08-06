@@ -334,6 +334,15 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnBrowseTargetDirectory(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                TargetDirectoryInput.Text = dialog.SelectedPath;
+            }
+        }
+
         private async void LoadRecentProjects()
         {
             string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
