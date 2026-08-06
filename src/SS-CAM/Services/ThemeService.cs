@@ -5,7 +5,8 @@ namespace SS_CAM.Services
     public enum AppTheme
     {
         SSDefault,
-        Win11Fluent
+        Win11Fluent,
+        GlassMorphism
     }
 
     public class ThemeColors
@@ -44,6 +45,32 @@ namespace SS_CAM.Services
 
         public static ThemeColors GetColors(AppTheme theme)
         {
+            if (theme == AppTheme.GlassMorphism)
+            {
+                return new ThemeColors
+                {
+                    HeaderBg = "#B00A2C40",        // Translucent Frosted Dark Teal Glass (Dropbox Concept Style)
+                    HeaderBorder = "#4038BDF8",    // Subtle Cyan Glow Border
+                    SidebarBg = "#C0061D2B",       // Translucent Deep Cyan-Teal Sidebar
+                    SidebarBorder = "#3038BDF8",
+                    ActiveNavBg = "#00F2FE",       // Electric Cyan Active Button Highlight
+                    ActiveNavText = "#031B28",     // High Contrast Dark Cyan Text
+                    ActiveNavSubtext = "#05344C",
+                    InactiveNavText = "#E0F2FE",
+                    InactiveNavSubtext = "#7DD3FC",
+                    FooterBg = "#CC082638",        // Translucent Glass Footer
+                    FooterBorder = "#3038BDF8",
+                    FooterText = "#E0F2FE",
+                    FooterCardBg = "#400F3A50",
+                    FooterCardBorder = "#4038BDF8",
+                    UserCardBg = "#400F3A50",       // Translucent Frosted User Profile Card
+                    UserCardBorder = "#4038BDF8",
+                    UserCardTitle = "#FFFFFF",
+                    UserCardSub = "#38BDF8",
+                    MainFrameBg = "#90082233"      // Translucent Glass Canvas
+                };
+            }
+
             if (theme == AppTheme.Win11Fluent)
             {
                 return new ThemeColors

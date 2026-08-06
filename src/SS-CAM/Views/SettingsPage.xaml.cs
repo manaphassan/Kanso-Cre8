@@ -178,6 +178,12 @@ namespace SS_CAM.Views
             MessageBox.Show("Applied Windows 11 Fluent (Mica Slate Theme).", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        private void OnSelectGlassTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.GlassMorphism);
+            MessageBox.Show("Applied Cyan Glass Acrylic Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
 
         public void OnDownloadSoftwareClicked(object sender, RoutedEventArgs e)
         {

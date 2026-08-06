@@ -469,7 +469,20 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
         {
-            AppTheme nextTheme = ThemeService.CurrentTheme == AppTheme.SSDefault ? AppTheme.Win11Fluent : AppTheme.SSDefault;
+            AppTheme nextTheme = AppTheme.SSDefault;
+            if (ThemeService.CurrentTheme == AppTheme.SSDefault)
+            {
+                nextTheme = AppTheme.Win11Fluent;
+            }
+            else if (ThemeService.CurrentTheme == AppTheme.Win11Fluent)
+            {
+                nextTheme = AppTheme.GlassMorphism;
+            }
+            else
+            {
+                nextTheme = AppTheme.SSDefault;
+            }
+
             ThemeService.ApplyTheme(nextTheme);
         }
 
@@ -477,9 +490,27 @@ namespace SS_CAM
         {
             ThemeColors c = ThemeService.GetColors(theme);
 
+            if (theme == AppTheme.GlassMorphism)
+            {
+                WindowBackdropType = WindowBackdropType.Acrylic;
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B00A2C40"));
+            }
+            else if (theme == AppTheme.Win11Fluent)
+            {
+                WindowBackdropType = WindowBackdropType.Mica;
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A"));
+            }
+            else
+            {
+                WindowBackdropType = WindowBackdropType.Mica;
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02153D"));
+            }
+
             if (StatusThemeText != null)
             {
-                StatusThemeText.Text = theme == AppTheme.Win11Fluent ? "Theme: Win11 Fluent" : "Theme: SS Default";
+                if (theme == AppTheme.GlassMorphism) StatusThemeText.Text = "Theme: Cyan Glass";
+                else if (theme == AppTheme.Win11Fluent) StatusThemeText.Text = "Theme: Win11 Fluent";
+                else StatusThemeText.Text = "Theme: SS Default";
             }
 
             if (HeaderBorder != null && RadioStreamService.Instance.State != RadioPlaybackState.Playing)
