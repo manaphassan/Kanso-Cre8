@@ -147,6 +147,15 @@ namespace SS_CAM
         {
             currentProfile = UserProfileService.LoadProfile();
 
+            // Update sidebar persona name & department
+            if (SidebarDesignerName != null)
+                SidebarDesignerName.Text = string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? "Brand" : currentProfile.DesignerName;
+            if (SidebarDepartment != null)
+                SidebarDepartment.Text = string.IsNullOrWhiteSpace(currentProfile.Department) ? "Creative & Brand" : currentProfile.Department;
+            // Update initials letter on avatar circle
+            if (AvatarEmojiText != null && !string.IsNullOrWhiteSpace(currentProfile.DesignerName))
+                AvatarEmojiText.Text = currentProfile.DesignerName.Substring(0, 1).ToUpper();
+
             if (!string.IsNullOrWhiteSpace(currentProfile.AvatarPath) && File.Exists(currentProfile.AvatarPath))
             {
                 try
@@ -268,27 +277,11 @@ namespace SS_CAM
 
                 bool isPlaying = RadioStreamService.Instance.State == RadioPlaybackState.Playing;
 
-                // Dynamic Header Background Transition between Active Visual Synthesizer and Normal Ambient Header
+                // Dynamic header state tracking (sidebar background can be updated here in future)
                 if (isPlaying != wasPlayingLastTick)
                 {
                     wasPlayingLastTick = isPlaying;
-                    if (HeaderBorder != null)
-                    {
-                        if (isPlaying)
-                        {
-                            // Active Music: Dynamic Dark Void Visualizer Header & Hide Subtitle to avoid overlapping
-                            HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02091A"));
-                            HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7"));
-                            if (HeaderSubtitle != null) HeaderSubtitle.Visibility = Visibility.Collapsed;
-                        }
-                        else
-                        {
-                            // Stopped/Paused: Restore Standard SuamiSihat Midnight Header & Show Subtitle
-                            HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#021B47"));
-                            HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E3A8A"));
-                            if (HeaderSubtitle != null) HeaderSubtitle.Visibility = Visibility.Visible;
-                        }
-                    }
+                    if (HeaderSubtitle != null) HeaderSubtitle.Visibility = Visibility.Collapsed;
                 }
 
                 // Ambient floating circles
@@ -360,7 +353,29 @@ namespace SS_CAM
         private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
         {
             isSidebarExpanded = !isSidebarExpanded;
-            SidebarColumn.Width = isSidebarExpanded ? new GridLength(256) : new GridLength(56);
+            // Fluent 2 nav: expanded = 240px (icon+label), collapsed = 48px (icon-only)
+            SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(48);
+
+            Visibility labelVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
+
+            // Hide/show text labels, section header, search bar, status rows
+            if (SidebarModulesHeader != null) SidebarModulesHeader.Visibility = labelVis;
+            if (AppTitlePanel != null) AppTitlePanel.Visibility = labelVis;
+            if (SidebarUserText != null) SidebarUserText.Visibility = labelVis;
+            if (TopGlobalSearchInput != null) TopGlobalSearchInput.Visibility = labelVis;
+            if (StatusNasText != null) StatusNasText.Visibility = labelVis;
+            if (StatusTimerText != null) StatusTimerText.Visibility = labelVis;
+            if (StatusRadioText != null) StatusRadioText.Visibility = labelVis;
+            if (StatusThemeText != null) StatusThemeText.Visibility = labelVis;
+
+            // Nav item labels
+            if (NavDashboardLabel != null) NavDashboardLabel.Visibility = labelVis;
+            if (NavWellbeingText != null) NavWellbeingText.Visibility = labelVis;
+            if (NavProjectsText != null) NavProjectsText.Visibility = labelVis;
+            if (NavSearchText != null) NavSearchText.Visibility = labelVis;
+            if (NavBrandAssetsText != null) NavBrandAssetsText.Visibility = labelVis;
+            if (NavRadioText != null) NavRadioText.Visibility = labelVis;
+            if (NavWorkstationHealthText != null) NavWorkstationHealthText.Visibility = labelVis;
         }
 
         private void OnTopSearchInputChanged(object sender, TextChangedEventArgs e)
@@ -508,12 +523,6 @@ namespace SS_CAM
                 if (theme == AppTheme.GlassMorphism) StatusThemeText.Text = "Theme: Cyan Glass";
                 else if (theme == AppTheme.Win11Fluent) StatusThemeText.Text = "Theme: Win11 Fluent";
                 else StatusThemeText.Text = "Theme: SS Default";
-            }
-
-            if (HeaderBorder != null && RadioStreamService.Instance.State != RadioPlaybackState.Playing)
-            {
-                HeaderBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.HeaderBg));
-                HeaderBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.HeaderBorder));
             }
 
             if (SidebarBorder != null)
