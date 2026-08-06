@@ -35,6 +35,13 @@ namespace SS_CAM.Views
             await RefreshDashboard();
         }
 
+        private void OnVersionBadgeClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var aboutWin = new AboutWindow();
+            aboutWin.Owner = Window.GetWindow(this);
+            aboutWin.ShowDialog();
+        }
+
         private async System.Threading.Tasks.Task RefreshDashboard()
         {
             TxtStatus.Text = "Scanning workspace folders...";

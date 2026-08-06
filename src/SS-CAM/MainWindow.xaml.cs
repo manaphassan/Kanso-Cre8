@@ -405,6 +405,10 @@ namespace SS_CAM
             {
                 SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(8, 0, 8, 8);
             }
+            if (SidebarDivider2 != null)
+            {
+                SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(8, 10, 8, 4);
+            }
 
             // Align status row icons (centered along X = 24px when collapsed)
             Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
@@ -423,8 +427,8 @@ namespace SS_CAM
             }
             if (SidebarUserCard != null)
             {
-                SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(6, 6, 6, 6);
-                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(4, 0, 4, 0);
+                SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(0, 6, 0, 6);
+                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 0, 0, 0);
             }
 
             // Update Nav Panel margins (0 left/right margin when collapsed for full 48px button width)
@@ -437,7 +441,7 @@ namespace SS_CAM
             System.Windows.Controls.Button[] navBtns = new[]
             {
                 NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
-                NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn
+                NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn, NavSettingsBtn
             };
 
             foreach (var btn in navBtns)
