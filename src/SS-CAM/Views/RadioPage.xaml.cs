@@ -82,21 +82,19 @@ namespace SS_CAM.Views
             var station = _radioService.CurrentStation;
             if (station != null)
             {
-                HeroIconText.Text = station.IconEmoji;
+                HeroIconText.Text = "\uE768"; // Radio glyph fallback
                 HeroStationName.Text = station.Name;
                 HeroGenreText.Text = station.Genre;
-                HeroDescriptionText.Text = string.IsNullOrWhiteSpace(station.Description) ? station.StreamUrl : station.Description;
             }
             else
             {
-                HeroIconText.Text = "📻";
-                HeroStationName.Text = "Select a Station";
-                HeroGenreText.Text = "Radio";
-                HeroDescriptionText.Text = "Choose a station from the list below to start listening.";
+                HeroIconText.Text = "\uE768";
+                HeroStationName.Text = "No station selected";
+                HeroGenreText.Text = "";
             }
 
             HeroVolumeSlider.Value = _radioService.Volume * 100;
-            HeroMuteIcon.Text = _radioService.IsMuted ? "🔇" : "🔊";
+            HeroMuteIcon.Text = _radioService.IsMuted ? "\uE74F" : "\uE767"; // Mute / Volume
 
             UpdatePlaybackStateUI(_radioService.State);
         }
