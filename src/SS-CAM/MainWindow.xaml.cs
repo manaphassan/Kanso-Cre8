@@ -482,7 +482,7 @@ namespace SS_CAM
             System.Windows.Controls.Button[] navBtns = new[]
             {
                 NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
-                NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn, NavSettingsBtn
+                NavSearchBtn, NavBrandAssetsBtn, NavDesignTokensBtn, NavRadioBtn, NavWorkstationHealthBtn, NavSettingsBtn
             };
 
             foreach (var btn in navBtns)
@@ -591,6 +591,11 @@ namespace SS_CAM
         private void OnNavBrandAssetsClicked(object sender, RoutedEventArgs e)
         {
             NavigateTo(typeof(BrandAssetsPage), NavBrandAssetsBtn);
+        }
+
+        private void OnNavDesignTokensClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(DesignTokensPage), NavDesignTokensBtn);
         }
 
         private void OnNavRadioClicked(object sender, RoutedEventArgs e)
@@ -771,7 +776,7 @@ namespace SS_CAM
         private void ResetNavHighlight()
         {
             ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
-            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
+            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavDesignTokensBtn, NavRadioBtn, NavWorkstationHealthBtn };
             foreach (System.Windows.Controls.Button btn in navBtns)
             {
                 if (btn != null)

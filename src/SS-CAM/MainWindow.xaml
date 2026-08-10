@@ -416,6 +416,37 @@
                                 </Grid>
                             </Button>
 
+                            <!-- Design Tokens nav item -->
+                            <Button x:Name="NavDesignTokensBtn" Click="OnNavDesignTokensClicked"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent" Foreground="#C8C8C8"
+                                    BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
+                                    Padding="0" ToolTip="Design Tokens">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavDesignTokensIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
+                                               RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
+                                        <TextBlock x:Name="NavDesignTokensIcon" Text="&#xE790;"
+                                                   FontFamily="Segoe Fluent Icons" FontSize="16"
+                                                   Foreground="#9D9D9D"
+                                                   Width="20" VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock x:Name="NavDesignTokensText"
+                                                   Text="Design Tokens"
+                                                   Foreground="#C8C8C8" FontSize="13"
+                                                   FontFamily="Segoe UI Variable Text"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
                             <!-- Radio Player nav item -->
                             <Button x:Name="NavRadioBtn" Click="OnNavRadioClicked"
                                     Height="36" HorizontalContentAlignment="Stretch"
