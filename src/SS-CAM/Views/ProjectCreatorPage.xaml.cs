@@ -304,18 +304,31 @@ namespace SS_CAM.Views
                 if (IncludeRawMediaCheck.IsChecked == true)
                     Directory.CreateDirectory(Path.Combine(targetDir, "RAW_Media"));
 
-                string readmeContent = string.Format(@"# {0}
+                // Build sub-brand code from the ComboBox selection
+                string subBrandCode = "SS";
+                if (SubBrandComboBox != null && SubBrandComboBox.SelectedItem != null)
+                {
+                    string sb = SubBrandComboBox.SelectedItem.ToString().Trim();
+                    System.Text.RegularExpressions.Match brandMatch =
+                        System.Text.RegularExpressions.Regex.Match(sb, @"^([A-Z]{2,4})\s");
+                    if (brandMatch.Success) subBrandCode = brandMatch.Groups[1].Value;
+                    else if (sb.Length >= 2) subBrandCode = sb.Substring(0, Math.Min(4, sb.Length)).ToUpper();
+                }
 
-- **Created**: {1:yyyy-MM-dd HH:mm}
-- **Designer**: {2}
-- **Job ID**: {3}
-- **Preset**: {4}
-- **Platform**: {5}
-- **Platform Specs**: {6}
+                string frontmatter = FrontmatterService.BuildDefaultFrontmatter(
+                    currentProfile.StaffId ?? "",
+                    subBrandCode);
 
-## Project Brief & Remarks
-{7}
-", folderName, DateTime.Now, designerFolder, JobIdInput.Text, PresetComboBox.SelectedItem, PlatformComboBox.SelectedItem, PlatformSpecsText.Text, ProjectDescriptionInput.Text);
+                string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Job ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
+                    frontmatter,
+                    folderName,
+                    DateTime.Now,
+                    designerFolder,
+                    JobIdInput.Text,
+                    PresetComboBox.SelectedItem,
+                    PlatformComboBox.SelectedItem,
+                    PlatformSpecsText.Text,
+                    ProjectDescriptionInput.Text);
 
                 File.WriteAllText(Path.Combine(targetDir, "README.md"), readmeContent);
 

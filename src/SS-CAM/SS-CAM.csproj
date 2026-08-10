@@ -109,6 +109,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\QuickNotePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TaskManagerPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -123,6 +131,8 @@
     <Compile Include="Models\UserProfileModels.cs" />
     <Compile Include="Models\RadioStation.cs" />
     <Compile Include="Models\CategoryPreset.cs" />
+    <Compile Include="Models\TeamNote.cs" />
+    <Compile Include="Models\ProjectStatus.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
@@ -135,6 +145,9 @@
     <Compile Include="Services\RadioStreamService.cs" />
     <Compile Include="Services\CategoryPresetService.cs" />
     <Compile Include="Services\ThemeService.cs" />
+    <Compile Include="Services\QuickNoteService.cs" />
+    <Compile Include="Services\FrontmatterService.cs" />
+    <Compile Include="Services\TeamBoardService.cs" />
     <Compile Include="Views\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -169,6 +182,14 @@
     </Compile>
     <Compile Include="Views\RadioPage.xaml.cs">
       <DependentUpon>RadioPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\QuickNotePage.xaml.cs">
+      <DependentUpon>QuickNotePage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\TaskManagerPage.xaml.cs">
+      <DependentUpon>TaskManagerPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -598,6 +598,16 @@ namespace SS_CAM
             NavigateTo(typeof(RadioPage), NavRadioBtn);
         }
 
+        private void OnNavQuickNoteClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(QuickNotePage), NavQuickNoteBtn);
+        }
+
+        private void OnNavTaskManagerClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(TaskManagerPage), NavTaskManagerBtn);
+        }
+
         private void OnNavWorkstationHealthClicked(object sender, RoutedEventArgs e)
         {
             NavigateTo(typeof(WorkstationHealthPage), NavWorkstationHealthBtn);

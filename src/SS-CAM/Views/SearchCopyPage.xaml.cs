@@ -35,12 +35,29 @@ namespace SS_CAM.Views
                 workspaceRoot = profile.WorkspaceRoot;
             }
 
-            // Populate Designer filter with only current user's name (no 'All Designers' noise)
-            string myName = !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : "Brand";
-            List<string> designers = new List<string> { myName };
-            DesignerFilterCmb.ItemsSource = designers;
-            DesignerFilterCmb.SelectedIndex = 0;
-            DesignerFilterCmb.Visibility = System.Windows.Visibility.Collapsed; // hide single-item filter
+            // Populate Designer filter by scanning workspace root
+            DesignerFilterCmb.Items.Clear();
+            DesignerFilterCmb.Items.Add("All Designers");
+            List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(workspaceRoot);
+            foreach (DesignerFolderChoice d in designers)
+                DesignerFilterCmb.Items.Add(d.StaffId);
+
+            // Default to current user's Staff ID if it appears in the list
+            bool found = false;
+            if (!string.IsNullOrWhiteSpace(profile.StaffId))
+            {
+                for (int i = 0; i < DesignerFilterCmb.Items.Count; i++)
+                {
+                    if (string.Equals(DesignerFilterCmb.Items[i].ToString(), profile.StaffId,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        DesignerFilterCmb.SelectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) DesignerFilterCmb.SelectedIndex = 0;
 
             await PerformSearch();
         }
@@ -49,6 +66,89 @@ namespace SS_CAM.Views
         {
             if (IsLoaded) await PerformSearch();
         }
+
+        // ─── Edit Brief ──────────────────────────────────────────────────────
+
+        private void OnEditBriefClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null) return;
+            // Pre-load the editor with the current raw README (incl. frontmatter if present)
+            BriefEditor.Text = rawReadmeText;
+            // Hide README viewer; show editor
+            RenderedMarkdownViewer.Visibility = Visibility.Collapsed;
+            RawMarkdownBox.Visibility = Visibility.Collapsed;
+            EditBriefPanel.Visibility = Visibility.Visible;
+        }
+
+        private void OnSaveBriefClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null) return;
+            string readmePath = Path.Combine(selectedItem.FullPath, "README.md");
+            try
+            {
+                File.WriteAllText(readmePath, BriefEditor.Text, System.Text.Encoding.UTF8);
+                rawReadmeText = BriefEditor.Text;
+                cleanedReadmeText = StripFrontmatter(rawReadmeText);
+                MessageBox.Show("README.md saved successfully.", "Saved",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Save failed: {0}", ex.Message), "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            OnCancelEditClicked(sender, e);
+        }
+
+        private void OnCancelEditClicked(object sender, RoutedEventArgs e)
+        {
+            EditBriefPanel.Visibility = Visibility.Collapsed;
+            // Restore whichever view mode was active
+            RenderedMarkdownViewer.Visibility = Visibility.Visible;
+            RawMarkdownBox.Visibility = Visibility.Collapsed;
+            RenderFormattedMarkdown(cleanedReadmeText);
+        }
+
+        // ─── Edit Brief Markdown Toolbar ─────────────────────────────────────
+
+        private void ApplyEditMarkdownWrap(string prefix, string suffix, bool linePrefix)
+        {
+            if (suffix == null) suffix = prefix;
+            int start = BriefEditor.SelectionStart;
+            int length = BriefEditor.SelectionLength;
+
+            if (linePrefix)
+            {
+                int lineStart = start > 0 ? BriefEditor.Text.LastIndexOf('\n', start - 1) : -1;
+                lineStart = lineStart < 0 ? 0 : lineStart + 1;
+                BriefEditor.Select(lineStart, 0);
+                BriefEditor.SelectedText = prefix;
+                BriefEditor.SelectionStart = lineStart + prefix.Length + length;
+                BriefEditor.Focus();
+                return;
+            }
+
+            string replacement;
+            if (length > 0)
+            {
+                replacement = prefix + BriefEditor.SelectedText + suffix;
+                BriefEditor.SelectedText = replacement;
+                BriefEditor.SelectionStart = start + replacement.Length;
+            }
+            else
+            {
+                replacement = prefix + "text" + suffix;
+                BriefEditor.SelectedText = replacement;
+                BriefEditor.Select(start + prefix.Length, 4);
+            }
+            BriefEditor.Focus();
+        }
+
+        private void OnEditMdBold(object sender, RoutedEventArgs e) { ApplyEditMarkdownWrap("**", "**", false); }
+        private void OnEditMdItalic(object sender, RoutedEventArgs e) { ApplyEditMarkdownWrap("*", "*", false); }
+        private void OnEditMdCode(object sender, RoutedEventArgs e) { ApplyEditMarkdownWrap("`", "`", false); }
+        private void OnEditMdH2(object sender, RoutedEventArgs e) { ApplyEditMarkdownWrap("## ", "", true); }
+        private void OnEditMdList(object sender, RoutedEventArgs e) { ApplyEditMarkdownWrap("- ", "", true); }
 
         private async void OnSearchInputChanged(object sender, TextChangedEventArgs e)
         {

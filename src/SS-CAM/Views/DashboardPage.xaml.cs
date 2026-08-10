@@ -103,6 +103,9 @@ namespace SS_CAM.Views
             _tipIndex = new Random().Next(0, _tips.Length);
             ShowCurrentTip();
             StartTipTimer();
+
+            // Initialise Team Board with 30-second polling
+            InitTeamBoard();
         }
 
         private void OnPageUnloaded(object sender, RoutedEventArgs e)
@@ -112,6 +115,7 @@ namespace SS_CAM.Views
                 _tipTimer.Stop();
                 _tipTimer = null;
             }
+            StopTeamBoard();
         }
 
         private async void OnRefreshClicked(object sender, RoutedEventArgs e)
@@ -301,6 +305,80 @@ namespace SS_CAM.Views
                     catch { }
                 }
             }
+        }
+
+        // ─── Team Board ───────────────────────────────────────────────────────
+
+        private DispatcherTimer _teamPollTimer;
+
+        private void InitTeamBoard()
+        {
+            LoadTeamBoard();
+            _teamPollTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+            _teamPollTimer.Tick += delegate { LoadTeamBoard(); };
+            _teamPollTimer.Start();
+        }
+
+        private void StopTeamBoard()
+        {
+            if (_teamPollTimer != null) { _teamPollTimer.Stop(); _teamPollTimer = null; }
+        }
+
+        private void LoadTeamBoard()
+        {
+            try
+            {
+                System.Collections.Generic.List<TeamNote> notes = TeamBoardService.LoadNotes(workspaceRoot);
+                // Show max 10
+                if (notes.Count > 10) notes = notes.GetRange(0, 10);
+                TeamNoteFeed.ItemsSource = notes;
+                TxtTeamBoardStatus.Text = string.Format("Last updated {0}", DateTime.Now.ToString("HH:mm"));
+            }
+            catch
+            {
+                TxtTeamBoardStatus.Text = "Could not load team notes";
+            }
+        }
+
+        private void OnPostTeamNoteClicked(object sender, RoutedEventArgs e)
+        {
+            string content = NewTeamNoteInput.Text.Trim();
+            if (string.IsNullOrWhiteSpace(content)) return;
+
+            UserProfile profile = UserProfileService.LoadProfile();
+            string staffId = !string.IsNullOrWhiteSpace(profile.StaffId) ? profile.StaffId : "----";
+            string name = !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : "Designer";
+
+            bool ok = TeamBoardService.PostNote(workspaceRoot, staffId, name, content);
+            if (ok)
+            {
+                NewTeamNoteInput.Text = "";
+                LoadTeamBoard();
+            }
+            else
+            {
+                TxtTeamBoardStatus.Text = "Could not post note. Check NAS connection.";
+            }
+        }
+
+        private void OnPinNoteClicked(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn == null) return;
+            string id = btn.Tag as string;
+            if (string.IsNullOrWhiteSpace(id)) return;
+            TeamBoardService.TogglePin(workspaceRoot, id);
+            LoadTeamBoard();
+        }
+
+        private void OnDeleteTeamNoteClicked(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn == null) return;
+            string id = btn.Tag as string;
+            if (string.IsNullOrWhiteSpace(id)) return;
+            TeamBoardService.DeleteNote(workspaceRoot, id);
+            LoadTeamBoard();
         }
     }
 

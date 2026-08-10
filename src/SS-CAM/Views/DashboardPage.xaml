@@ -16,7 +16,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <TextBlock Text="Designer Intelligence Dashboard" FontFamily="{StaticResource FluentFontFamily}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextPrimary}"/>
                         <Border Background="{DynamicResource FluentBrand80}" CornerRadius="12" Padding="8,2" VerticalAlignment="Center" Margin="12,0,0,0" Cursor="Hand" MouseLeftButtonDown="OnVersionBadgeClicked" ToolTip="About SuamiSihat CAM">
-                            <TextBlock x:Name="TxtVersionBadge" Text="v2.3.6" FontFamily="{StaticResource FluentFontFamily}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock x:Name="TxtVersionBadge" Text="v2.5.0" FontFamily="{StaticResource FluentFontFamily}" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                         </Border>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
@@ -223,6 +223,125 @@
                     </StackPanel>
                 </Grid>
             </Border>
+
+            <!-- ── Team Board Card ──────────────────────────────────────── -->
+            <Border Background="{DynamicResource FluentLightCardBg}"
+                    BorderBrush="{DynamicResource FluentLightStroke}"
+                    BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,16,0,0">
+                <StackPanel>
+                    <!-- Header -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE716;" FontFamily="Segoe Fluent Icons" FontSize="18"
+                                       Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Team Board" FontFamily="{StaticResource FluentFontFamily}"
+                                       FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" x:Name="TxtTeamBoardStatus" Text=""
+                                   FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                                   Foreground="{DynamicResource FluentLightTextSecondary}"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Notes Feed -->
+                    <ItemsControl x:Name="TeamNoteFeed" Margin="0,0,0,12">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,6" Padding="10,8"
+                                        Background="{DynamicResource FluentLightCardSubBg}"
+                                        BorderBrush="{DynamicResource FluentLightStroke}"
+                                        BorderThickness="1" CornerRadius="6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                                <TextBlock Text="{Binding Author}"
+                                                           FontFamily="{StaticResource FluentFontFamily}"
+                                                           FontSize="10" FontWeight="Bold"
+                                                           Foreground="{DynamicResource FluentBrand80}"
+                                                           Margin="0,0,8,0"/>
+                                                <TextBlock Text="{Binding DisplayTimestamp}"
+                                                           FontFamily="{StaticResource FluentFontFamily}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                                                       FontFamily="{StaticResource FluentFontFamily}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource FluentLightTextPrimary}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                                            <Button Tag="{Binding Id}" Click="OnPinNoteClicked"
+                                                    Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                                    Padding="4" ToolTip="{Binding PinTooltip}">
+                                                <TextBlock Text="{Binding PinIcon}" FontFamily="Segoe Fluent Icons"
+                                                           FontSize="13" Foreground="{DynamicResource FluentBrand80}"/>
+                                            </Button>
+                                            <Button Tag="{Binding Id}" Click="OnDeleteTeamNoteClicked"
+                                                    Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="4">
+                                                <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons"
+                                                           FontSize="12" Foreground="#94A3B8"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Post Note Row -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" BorderBrush="{DynamicResource FluentLightStroke}"
+                                BorderThickness="1" CornerRadius="6" Margin="0,0,8,0">
+                            <Grid>
+                                <TextBox x:Name="NewTeamNoteInput"
+                                         Height="36" Padding="10,8" BorderThickness="0"
+                                         Background="Transparent"
+                                         FontFamily="{StaticResource FluentFontFamily}" FontSize="12"/>
+                                <TextBlock IsHitTestVisible="False"
+                                           Text="Post a note to the team..."
+                                           VerticalAlignment="Center" Margin="11,0,0,0"
+                                           FontFamily="{StaticResource FluentFontFamily}" FontSize="12"
+                                           Foreground="{DynamicResource FluentLightTextSecondary}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=NewTeamNoteInput}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" CornerRadius="6" Background="{DynamicResource FluentBrand80}">
+                            <Button Click="OnPostTeamNoteClicked" Background="Transparent" Foreground="White"
+                                    Height="36" Padding="16,0" BorderThickness="0" Cursor="Hand"
+                                    FontFamily="{StaticResource FluentFontFamily}" FontWeight="Bold" FontSize="12">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE724;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                               Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Post" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
         </StackPanel>
     </ScrollViewer>
 </Page>

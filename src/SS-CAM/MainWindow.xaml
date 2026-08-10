@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v2.3.6" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v2.5.0" Height="820" Width="1280"
         MinHeight="660" MinWidth="980"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
@@ -440,6 +440,68 @@
                                                    Margin="0,0,8,0"/>
                                         <TextBlock x:Name="NavRadioText"
                                                    Text="Radio Player"
+                                                   Foreground="#C8C8C8" FontSize="13"
+                                                   FontFamily="Segoe UI Variable Text"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <!-- Quick Note nav item -->
+                            <Button x:Name="NavQuickNoteBtn" Click="OnNavQuickNoteClicked"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent" Foreground="#C8C8C8"
+                                    BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
+                                    Padding="0" ToolTip="Quick Notes">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavQuickNoteIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
+                                               RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
+                                        <TextBlock x:Name="NavQuickNoteIcon" Text="&#xE70B;"
+                                                   FontFamily="Segoe Fluent Icons" FontSize="16"
+                                                   Foreground="#9D9D9D"
+                                                   Width="20" VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock x:Name="NavQuickNoteText"
+                                                   Text="Quick Notes"
+                                                   Foreground="#C8C8C8" FontSize="13"
+                                                   FontFamily="Segoe UI Variable Text"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <!-- Task Manager nav item -->
+                            <Button x:Name="NavTaskManagerBtn" Click="OnNavTaskManagerClicked"
+                                    Height="36" HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent" Foreground="#C8C8C8"
+                                    BorderThickness="0" Margin="0,1,0,1" Cursor="Hand"
+                                    Padding="0" ToolTip="Task Manager">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle x:Name="NavTaskManagerIndicator" Grid.Column="0"
+                                               VerticalAlignment="Stretch"
+                                               Fill="#0078D4"
+                                               RadiusX="1.5" RadiusY="1.5" Visibility="Collapsed"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,8,0">
+                                        <TextBlock x:Name="NavTaskManagerIcon" Text="&#xE9D5;"
+                                                   FontFamily="Segoe Fluent Icons" FontSize="16"
+                                                   Foreground="#9D9D9D"
+                                                   Width="20" VerticalAlignment="Center"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock x:Name="NavTaskManagerText"
+                                                   Text="Task Manager"
                                                    Foreground="#C8C8C8" FontSize="13"
                                                    FontFamily="Segoe UI Variable Text"
                                                    VerticalAlignment="Center"/>

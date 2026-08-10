@@ -72,19 +72,25 @@
                     <!-- Sidebar Header -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
                             BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1"
-                            CornerRadius="8,8,0,0" Padding="12,10">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xED25;" FontFamily="Segoe Fluent Icons" FontSize="14"
-                                       Foreground="{DynamicResource FluentBrand80}"
-                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <StackPanel>
-                                <TextBlock Text="PROJECT FOLDERS" FontFamily="{StaticResource FluentFontFamily}"
-                                           FontSize="10" FontWeight="Bold"
-                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                <TextBlock x:Name="TxtProjectCount" Text="Loading..."
-                                           FontFamily="{StaticResource FluentFontFamily}" FontSize="11"
-                                           Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                            CornerRadius="8,8,0,0" Padding="10,8">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="&#xED25;" FontFamily="Segoe Fluent Icons" FontSize="14"
+                                           Foreground="{DynamicResource FluentBrand80}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="PROJECT FOLDERS" FontFamily="{StaticResource FluentFontFamily}"
+                                               FontSize="10" FontWeight="Bold"
+                                               Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    <TextBlock x:Name="TxtProjectCount" Text="Loading..."
+                                               FontFamily="{StaticResource FluentFontFamily}" FontSize="11"
+                                               Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                </StackPanel>
                             </StackPanel>
+                            <!-- Designer Filter -->
+                            <ComboBox x:Name="DesignerFilterCmb" Height="28" FontSize="11"
+                                      FontFamily="{StaticResource FluentFontFamily}"
+                                      SelectionChanged="OnFilterChanged"/>
                         </StackPanel>
                     </Border>
 
@@ -241,7 +247,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Action Footer: Copy buttons -->
+                    <!-- Action Footer: Copy buttons + Edit Brief -->
                     <Border DockPanel.Dock="Bottom"
                             Background="{DynamicResource FluentLightCardSubBg}"
                             BorderBrush="{DynamicResource FluentLightStroke}"
@@ -262,6 +268,21 @@
                                     </StackPanel>
                                 </Button>
                             </Border>
+                            <Border CornerRadius="6" Background="{DynamicResource FluentLightCardSubBg}"
+                                    BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1"
+                                    Margin="0,0,8,0">
+                                <Button x:Name="BtnEditBrief" Click="OnEditBriefClicked"
+                                        Background="Transparent"
+                                        Foreground="{DynamicResource FluentLightTextPrimary}"
+                                        Height="34" Padding="12,0" BorderThickness="0"
+                                        Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons"
+                                                   FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Edit Brief" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Border>
                             <Border CornerRadius="6" Background="{DynamicResource FluentBrand80}">
                                 <Button Click="OnCopyWholeFolderClicked"
                                         Background="Transparent" Foreground="White"
@@ -277,6 +298,67 @@
                             </Border>
                         </StackPanel>
                     </Border>
+
+                    <!-- Edit Mode Panel (Collapsed by default) -->
+                    <DockPanel x:Name="EditBriefPanel" Visibility="Collapsed">
+                        <!-- Edit Toolbar -->
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
+                                BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1" Padding="8,4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <Button Content="B" Click="OnEditMdBold" Height="24" Width="28" Background="Transparent"
+                                            Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
+                                            BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}"/>
+                                    <Button Content="I" Click="OnEditMdItalic" Height="24" Width="28" Background="Transparent"
+                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontStyle="Italic"
+                                            FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
+                                    <Button Click="OnEditMdCode" Height="24" Width="28" Background="Transparent"
+                                            BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
+                                        <TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"
+                                                   Foreground="{DynamicResource FluentLightTextPrimary}"/>
+                                    </Button>
+                                    <Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
+                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
+                                            FontWeight="SemiBold" FontFamily="{StaticResource FluentFontFamily}" BorderThickness="0" Cursor="Hand"/>
+                                    <Button Content="• List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
+                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
+                                            FontFamily="{StaticResource FluentFontFamily}" BorderThickness="0" Cursor="Hand"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Border CornerRadius="4" Background="{DynamicResource FluentBrand80}" Margin="0,0,6,0">
+                                        <Button Click="OnSaveBriefClicked" Background="Transparent" Foreground="White"
+                                                Height="26" Padding="10,0" FontSize="11" FontWeight="Bold"
+                                                BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="&#xE74E;" FontFamily="Segoe Fluent Icons" FontSize="12"
+                                                           Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Save" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Border>
+                                    <Border CornerRadius="4" Background="{DynamicResource FluentLightCardBg}"
+                                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1">
+                                        <Button Click="OnCancelEditClicked" Background="Transparent"
+                                                Foreground="{DynamicResource FluentLightTextPrimary}"
+                                                Height="26" Padding="10,0" FontSize="11"
+                                                BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}">
+                                            Cancel
+                                        </Button>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <!-- Brief Editor TextBox -->
+                        <TextBox x:Name="BriefEditor"
+                                 AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas" FontSize="12"
+                                 Padding="14" BorderThickness="0" Background="#FAFAFA"/>
+                    </DockPanel>
 
                     <!-- Rendered Markdown — primary focus, fills all remaining height -->
                     <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
@@ -335,9 +417,6 @@
                 </DockPanel>
             </Border>
         </Grid>
-
-        <!-- Hidden designer filter preserved for code-behind compat -->
-        <ComboBox x:Name="DesignerFilterCmb" Visibility="Collapsed" SelectionChanged="OnFilterChanged"/>
 
     </Grid>
 </Page>

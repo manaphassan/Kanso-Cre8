@@ -188,6 +188,40 @@ namespace SS_CAM.Services
             return Task.Factory.StartNew(() => ListDesignerFolders(root, staffId, query, limit));
         }
 
+        /// <summary>
+        /// Scans the workspace root for first-level subdirectories that appear to be
+        /// designer Staff ID folders (e.g. 0001D, 0002S, 0003P).
+        /// Returns them as DesignerFolderChoice items for the filter dropdown.
+        /// </summary>
+        public static List<DesignerFolderChoice> GetDesignerFolders(string root)
+        {
+            List<DesignerFolderChoice> result = new List<DesignerFolderChoice>();
+            if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root)) return result;
+
+            string[] dirs;
+            try { dirs = Directory.GetDirectories(root); }
+            catch { return result; }
+
+            System.Text.RegularExpressions.Regex staffPattern =
+                new System.Text.RegularExpressions.Regex(@"^\d{4}[A-Z]$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            foreach (string dir in dirs)
+            {
+                string name = Path.GetFileName(dir);
+                // Accept standard Staff ID format OR any folder starting with a digit sequence
+                if (staffPattern.IsMatch(name) || System.Text.RegularExpressions.Regex.IsMatch(name, @"^\d+[A-Z]", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    result.Add(new DesignerFolderChoice { Name = name, StaffId = name });
+                }
+            }
+
+            result.Sort(delegate(DesignerFolderChoice a, DesignerFolderChoice b)
+            {
+                return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
+            });
+            return result;
+        }
+
         public static List<DesignerFolderItem> ListDesignerFolders(string root, string staffId, string query, int limit)
         {
             List<DesignerFolderItem> results = new List<DesignerFolderItem>();
