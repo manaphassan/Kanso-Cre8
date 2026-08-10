@@ -2,6 +2,45 @@
 
 All notable SS-CAM changes are documented here.
 
+## [2.5.0] - 2026-08-10 (Latest)
+
+### Added — Quick Notes Module
+- **`QuickNotePage`** — Full-page Markdown note editor backed by `QuickNoteService`. Notes are saved as `.md` files in `%APPDATA%\SS-CAM\notes\` with automatic 3-second debounce via `DispatcherTimer`.
+- **Sidebar nav item** (📝 Quick Notes) between Radio Player and Workstation Health.
+
+### Added — Task Manager Module
+- **`TaskManagerPage`** — Kanban-style board reading project status from `README.md` YAML frontmatter via `FrontmatterService`. Columns: Not Started · In Progress · Review · Done · On Hold.
+- **Inline drawer** — Clicking a project card opens a slide-in editor with status, priority, deadline, and brief fields that writes back to frontmatter on save.
+- **Sidebar nav item** (🗂 Task Manager) between Quick Notes and Workstation Health.
+
+### Added — Team Board (Dashboard)
+- **Team Board card** on the Dashboard page — displays last 10 shared notes from `_Team/team-notes.json` on NAS, with Author, timestamp, pin toggle, and delete actions.
+- **Post Note input row** — Post a message visible to all team members; falls back gracefully when NAS is offline.
+- **30-second auto-refresh** via `DispatcherTimer` that starts/stops cleanly with page navigation lifecycle.
+
+### Added — Services
+- **`QuickNoteService`** — Load/save personal Markdown notes to `%APPDATA%\SS-CAM\notes\`.
+- **`FrontmatterService`** — Read and write YAML frontmatter blocks (`--- ... ---`) in any Markdown file without disturbing body content. Includes `BuildDefaultFrontmatter()` for new projects.
+- **`TeamBoardService`** — Load, post, pin/unpin, and delete team notes via a shared `_Team/team-notes.json` file on the NAS workspace root.
+
+### Changed — Project Creator: Frontmatter Injection
+- **README.md now includes YAML frontmatter** — Every newly created project folder generates a `README.md` prefixed with a default frontmatter block (`status`, `priority`, `designer`, `brand`, `deadline`, `revision`, `tags`) so the Task Manager can index it from day one.
+- Sub-brand code is extracted from the ComboBox selection and written into the `brand:` field automatically.
+
+### Changed — Navigation
+- **MainWindow nav** — Two new nav buttons registered and routed: Quick Notes (icon `&#xE70B;`) and Task Manager (icon `&#xE9D5;`).
+
+### Changed — Version
+- Version badge bumped from `v2.3.6` → `v2.5.0` in `DashboardPage.xaml` and window title.
+
+### Integrity
+
+| File | Details |
+|---|---|
+| `SS-CAM-v2.5.0.exe` | Compiled Native C# WPF Single-File Executable |
+
+---
+
 ## [2.4.0] - 2026-08-10 (Latest Stable Release)
 
 ### Added — Dashboard: Designer Inspiration Widget
