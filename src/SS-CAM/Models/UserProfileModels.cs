@@ -13,6 +13,10 @@ namespace SS_CAM.Models
         public int NextJobNumber { get; set; }
         /// <summary>Persisted theme name: "SS Default" or "Metamorphosis".</summary>
         public string Theme { get; set; }
+        /// <summary>JAKIM prayer time zone code, e.g. "WLY01".</summary>
+        public string PrayerZone { get; set; }
+        /// <summary>Whether adhan reminders are enabled.</summary>
+        public bool PrayerRemindersEnabled { get; set; }
 
         public UserProfile()
         {
@@ -24,6 +28,8 @@ namespace SS_CAM.Models
             WorkspaceRoot = @"D:\Testing";
             NextJobNumber = 1;
             Theme = null;   // null = SS Default (ThemeService treats null as SSDefault)
+            PrayerZone = "WLY01";
+            PrayerRemindersEnabled = true;
         }
     }
 

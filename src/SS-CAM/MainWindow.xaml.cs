@@ -578,6 +578,11 @@ namespace SS_CAM
             NavigateTo(typeof(WellbeingPage), NavWellbeingBtn);
         }
 
+        private void OnNavWaktuSolatClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(Views.WaktuSolatPage), NavWaktuSolatBtn);
+        }
+
         private void OnNavProjectsClicked(object sender, RoutedEventArgs e)
         {
             NavigateTo(typeof(ProjectCreatorPage), NavProjectsBtn);

@@ -583,6 +583,7 @@ namespace SS_CAM.Services
                     Name = "BFM 89.9",
                     Genre = "Talk / News",
                     StreamUrl = "https://stream.rcs.revma.com/s91qy9p0zs3vv",
+                    CoverImageUrl = "https://media.bfm.my/images/bfm-logo-square.jpg",
                     IconEmoji = "🎙️",
                     IsPreset = true,
                     Description = "The Business Station — News, interviews, and intellectual discussion."
@@ -593,6 +594,7 @@ namespace SS_CAM.Services
                     Name = "Lo-Fi Focus Beats",
                     Genre = "Focus / Lo-Fi",
                     StreamUrl = "https://stream.bigfm.de/lofifocus/mp3-128/radiobrowser",
+                    CoverImageUrl = "https://i.scdn.co/image/ab67706f00000002e4eadd417a05b2546e866aa8",
                     IconEmoji = "🎧",
                     IsPreset = true,
                     Description = "Chillhop lo-fi beats to relax and code/design to."
@@ -603,6 +605,7 @@ namespace SS_CAM.Services
                     Name = "Chillhop Lounge",
                     Genre = "Focus / Lo-Fi",
                     StreamUrl = "https://stream.laut.fm/lofi",
+                    CoverImageUrl = "https://i.scdn.co/image/ab67706f000000025f9e3d83c3ec9c8a95e41b48",
                     IconEmoji = "☕",
                     IsPreset = true,
                     Description = "Smooth lo-fi chillhop background tracks."
@@ -613,6 +616,7 @@ namespace SS_CAM.Services
                     Name = "CITYPlus FM",
                     Genre = "Talk / News",
                     StreamUrl = "https://stream.rcs.revma.com/9ykdmcawe1bwv",
+                    CoverImageUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/CITYplusFM_logo.png/250px-CITYplusFM_logo.png",
                     IconEmoji = "🔥",
                     IsPreset = true,
                     Description = "Malaysia business radio & financial insights."
@@ -623,6 +627,7 @@ namespace SS_CAM.Services
                     Name = "Smooth Jazz Workstation",
                     Genre = "Jazz / Chill",
                     StreamUrl = "https://0nlineradio.radioho.st/0r-jazz?ref=radio-browser",
+                    CoverImageUrl = "https://i.scdn.co/image/ab67706f000000025a9f8f8e5e5e5e5e5e5e5e5e",
                     IconEmoji = "🎷",
                     IsPreset = true,
                     Description = "Smooth instrumental jazz for deep concentration."

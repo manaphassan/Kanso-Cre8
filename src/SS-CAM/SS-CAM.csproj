@@ -85,6 +85,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\WaktuSolatPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ProjectCreatorPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -158,8 +162,12 @@
     </Compile>
     <Compile Include="Views\WellbeingPage.xaml.cs">
       <DependentUpon>WellbeingPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\WaktuSolatPage.xaml.cs">
+      <DependentUpon>WaktuSolatPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PrayerTimeModels.cs"/>
+    <Compile Include="Services\PrayerTimeService.cs"/>
     <Compile Include="Views\ProjectCreatorPage.xaml.cs">
       <DependentUpon>ProjectCreatorPage.xaml</DependentUpon>
       <SubType>Code</SubType>
