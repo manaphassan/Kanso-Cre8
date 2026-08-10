@@ -2,7 +2,33 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.3.6] - 2026-08-06 (Latest Stable Release)
+## [2.4.0] - 2026-08-10 (Latest Stable Release)
+
+### Added — Dashboard: Designer Inspiration Widget
+- **Designer Insight card** — Full-width widget below the metric tiles showing a rotating pool of 40 curated design tips (colour theory, print production, typography, file hygiene, brand discipline, creative wellbeing, and more).
+- **Auto-advance timer** — Tips rotate automatically every 60 seconds via a `DispatcherTimer` that is cleanly stopped on page unload.
+- **Next Tip button** — Manually advance to the next tip at any time.
+- **Smashing Magazine RSS feed** — Toggle the "Articles" button to fetch and display the 5 latest design articles from Smashing Magazine as clickable links. Falls back silently to offline tip pool if the network is unavailable or times out (6-second threshold).
+
+### Changed — Project Creator: Three Refinements
+- **Editable canvas extension** — `TemplateExtensionComboBox` is now editable (`IsEditable="True"`), allowing designers to type any custom file extension (e.g. `.indd`, `.sketch`, `.fla`). The live directory tree preview and the generated file on disk reflect the typed value immediately.
+- **Project Brief → Markdown Editor** — Replaced the 64px `ui:TextBox` for *Project Brief / Remarks* with a taller 200px scrollable `TextBox` preceded by a 6-button **Markdown toolbar**: Bold (`**`), Italic (`*`), Inline Code (`` ` ``), H2 Heading (`##`), List Item (`-`), and Horizontal Rule (`---`). Toolbar buttons wrap or prefix selected text; if no text is selected they insert a placeholder. The richer Markdown content is written verbatim into `README.md` on folder creation.
+- **Checkbox labels cleaned** — Removed numeric folder-prefix noise from checkbox labels: `Include 05_Revisions folder` → `Include Client Revisions folder`, `Include 06_Raw_Media folder` → `Include Raw Media folder`. The created folder names on disk are unchanged.
+
+### Changed — Search & Copy: Catalog Book Layout
+- **Catalog book layout** — Completely redesigned from a wide DataGrid + narrow sidebar to a **270px fixed sidebar + dominant README pane**: the right README preview now fills all available vertical height using `DockPanel.LastChildFill` rather than a fixed `Height="360"` DataGrid.
+- **Project sidebar cards** — Replaced the `DataGrid` with a styled `ListBox` of folder cards. Each card shows a folder icon glyph, project name, and a compact metadata line (`files · size · modified date`). Selected card is highlighted with `FluentBrandLight` background and `FluentBrandTint` border.
+- **Mode toggle strip** — PREVIEW / Raw / Gallery toggle buttons moved from below the search bar into the selected project header badge for immediate access without scrolling.
+- **Action buttons docked to footer** — Copy Path and Copy Whole Project Folder buttons repositioned to a docked footer panel at the bottom of the right pane, keeping the README preview area unobstructed.
+- **Live project count** — The sidebar header now shows a live count label (e.g. "42 projects") that updates after every search.
+
+### Integrity
+
+| File | Details |
+|---|---|
+| `SS-CAM-v2.4.0.exe` | Compiled Native C# WPF Single-File Executable (4.73 MB) |
+
+## [2.3.6] - 2026-08-06 (Stable Release)
 
 ### Fixed
 - **Version badge showing wrong version** — The dashboard version badge (`TxtVersionBadge`) was displaying `v2.1.0` at runtime because it is populated dynamically from `AssemblyVersion`. Updated `Properties/AssemblyInfo.cs` to `2.3.6.0`, `CurrentVersion` const in `MainWindow.xaml.cs`, the hardcoded "Check for Updates" dialog in `SettingsPage.xaml.cs`, and the fallback XAML strings in `AboutWindow.xaml` and `DashboardPage.xaml`.
