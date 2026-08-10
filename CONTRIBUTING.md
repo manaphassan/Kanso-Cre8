@@ -38,10 +38,12 @@ Dependency Mgmt   NuGet (packages.config)
 
 | Module | Namespace | Description |
 | --- | --- | --- |
-| **Dashboard** | `SS_CAM.Views.DashboardPage` | Workspace intelligence metrics, storage analytics, and sub-brand charts |
-| **Project Creator** | `SS_CAM.Views.ProjectCreatorPage` | Standardized folder generator with auto Job ID and live preview |
-| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Workspace file browser with rendered README preview and image gallery |
-| **Radio Player** | `SS_CAM.Views.RadioPage` | Live Malaysian radio & lo-fi focus streams; persistent status-bar mini-player |
+| **Dashboard** | `SS_CAM.Views.DashboardPage` | Workspace intelligence metrics, storage analytics, sub-brand charts, and Designer Inspiration widget |
+| **Project Creator** | `SS_CAM.Views.ProjectCreatorPage` | Standardized folder generator with auto Job ID, live preview, and Markdown brief editor |
+| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Catalog-book workspace browser with rendered README preview, gallery, designer filter, and inline README editor |
+| **Task Manager** | `SS_CAM.Views.TaskManagerPage` | Project status board driven by YAML frontmatter in each project's `README.md` _(v2.5.0)_ |
+| **Quick Note** | `SS_CAM.Views.QuickNotePage` | Persistent Markdown scratchpad with two-panel layout and auto-save _(v2.5.0)_ |
+| **Radio Player** | `SS_CAM.Views.RadioPage` | Live Malaysian radio & lo-fi focus streams; card grid with cover art and genre filter tabs |
 | **Creative Wellbeing** | `SS_CAM.Views.WellbeingPage` | Focus timer, breathing guides, energy check-ins, DPAPI encrypted Mind Drops |
 | **Brand Assets** | `SS_CAM.Views.BrandAssetsPage` | Asset library, logo, palette, and report launcher |
 | **Settings** | `SS_CAM.Views.SettingsPage` | Designer identity, workspace config, update checker |
@@ -51,12 +53,16 @@ Dependency Mgmt   NuGet (packages.config)
 
 | Service | Description |
 | --- | --- |
-| `WorkspaceScanner` | Scans workspace directories, aggregates metrics, builds chart datasets |
+| `WorkspaceScanner` | Scans workspace directories, aggregates metrics, builds chart datasets, enumerates designer folders |
 | `UserProfileService` | Loads and persists designer identity, workspace root, avatar |
 | `AudioFeedbackService` | Plays ambient/interaction audio via MediaElement |
 | `WellbeingTimerService` | Monotonic focus session tracking with idle detection |
 | `WellbeingDataService` | DPAPI-encrypted Mind Drop storage and energy check-in persistence |
 | `PayloadInstallerService` | Deploys fonts and brand assets to the Windows user profile |
+| `QuickNoteService` | Creates, loads, saves, and deletes Markdown note files from `%LOCALAPPDATA%\SS-CAM\Notes\` _(v2.5.0)_ |
+| `FrontmatterService` | Parses and writes YAML frontmatter blocks from/to project `README.md` files _(v2.5.0)_ |
+| `TeamBoardService` | Reads/writes shared `_Team/team-notes.json` on NAS; provides polling for collaboration _(v2.5.0)_ |
+| `RadioStreamService` | Manages station list, `.pls`/`.m3u` import, playback control, and cover image download |
 
 ---
 
@@ -66,7 +72,7 @@ Dependency Mgmt   NuGet (packages.config)
 SS-Brand-Assets/
 ├── src/
 │   └── SS-CAM/                        C# WPF application source
-│       ├── Models/                    Data models (Dashboard, UserProfile, Wellbeing)
+│       ├── Models/                    Data models (Dashboard, UserProfile, Wellbeing, Radio, Team)
 │       ├── Services/                  Business logic and data access services
 │       ├── Views/                     XAML pages and code-behind
 │       ├── Properties/                Assembly metadata (version, GUID)
@@ -91,7 +97,8 @@ SS-Brand-Assets/
 ├── dist/                              Build output — not committed (see .gitignore)
 ├── CHANGELOG.md                       Release history with integrity hashes
 ├── CONTRIBUTING.md                    This document
-├── FOLDER-STRUCTURE.md                Workspace folder naming convention
+├── FOLDER-STRUCTURE.md                Workspace folder naming convention and frontmatter spec
+├── ROADMAP.md                         Living feature roadmap and version milestones
 └── README.md                          End-user deployment and setup guide
 ```
 
@@ -128,14 +135,16 @@ The build system uses MSBuild with a PowerShell wrapper. Two build paths exist d
 powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1
 
 # Build with explicit version
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.3.6
+powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.5.0
 ```
 
 **Build output:**
 
 ```
-dist\SS-CAM-v2.3.6.exe   (~4.7 MB, single-file, all dependencies embedded)
+dist\SS-CAM-v2.5.0.exe   (~5 MB, single-file, all dependencies embedded)
 ```
+
+> **C# Language Version:** The MSBuild compiler at `C:\Windows\Microsoft.NET\Framework64\v4.0.30319` only accepts `/langversion:5` (C# 5). Do **not** add `<LangVersion>` to the `.csproj` or use features requiring C# 6+ (expression-bodied members, null-conditional operators, string interpolation). Use `string.Format()` and explicit null checks throughout.
 
 ### Legacy v1.x Bootstrapper Build
 

@@ -1,0 +1,98 @@
+# SS-CAM Project Roadmap
+
+> **Living document.** Updated with every release. Last updated: 2026-08-10.
+
+---
+
+## ✅ Released Milestones
+
+| Version | Date | Highlights |
+|---------|------|-----------|
+| **v1.9.0** | 2024 | Initial internal release — Project Creator, basic dashboard |
+| **v2.0.0** | 2025-01 | WPF-UI Fluent 2 redesign, Wellbeing module, Mind Drop notes |
+| **v2.1.0** | 2025-03 | Radio player, Brand Assets vault |
+| **v2.2.0** | 2025-06 | Workstation Health scanner, dark mode tokens |
+| **v2.3.0** | 2026-01 | Search & Copy v1, Markdown README preview |
+| **v2.3.6** | 2026-08-06 | Version badge fix, AV metadata patch, stability improvements |
+| **v2.4.0** | 2026-08-10 | Dashboard Inspiration Widget (40 tips + RSS), Project Brief Markdown Editor, Search & Copy Catalog layout |
+
+---
+
+## 🔄 In Progress — v2.5.0 (Target: Q3 2026)
+
+### 1. Quick Note — Markdown Scratchpad
+A dedicated scratchpad module for capturing ideas, client call notes, and creative briefs in Markdown format. Two-panel layout: note list sidebar + full editor with Markdown toolbar and live preview toggle. Auto-saves on idle.
+
+### 2. Task Manager — Project Status Board
+Reads `status`, `deadline`, `priority`, and `revision` from YAML frontmatter embedded in each project's `README.md`. Presents all projects as a filterable status board (Backlog / In Progress / Review / Done). Designers can update status inline; SS-CAM writes changes back to the frontmatter without touching the rest of the document.
+
+**Frontmatter spec (v2.5.0):**
+```yaml
+---
+status: in-progress          # backlog | in-progress | review | done | on-hold
+designer: 0001D
+client: SS
+deadline: 2026-09-30
+priority: high               # low | medium | high | urgent
+tags: [branding, print]
+revision: 2
+---
+```
+
+### 3. NAS File Structure — Designer Filter in Search & Copy
+Makes the designer folder filter in the Search & Copy catalog functional. SS-CAM enumerates first-level subdirectories of the workspace root to discover all designer folders, populates a dropdown, and scopes search results accordingly.
+
+### 4. Search & Copy — Edit README In-App
+Adds an "Edit Brief" button to the project detail pane. One click switches to edit mode with a Markdown-capable textarea (same toolbar as Project Creator). Saves changes directly back to the project `README.md` on disk.
+
+### 5. Radio Player — UI Overhaul + Station Cover Art
+Redesigns the radio player with an album-art-first card grid, genre filter tabs, a persistent mini-player bar, and lazily-loaded station cover images (from community radio API or local cache). Falls back to a branded monogram tile when no image is available.
+
+### 6. Collaboration — Team Notes Board
+A lightweight, serverless team board stored as a JSON file on the shared NAS workspace (`_Team/team-notes.json`). Designers can post, read, and pin team announcements directly in SS-CAM. Auto-refreshes every 30 seconds.
+
+---
+
+## 🗓️ Planned — v2.6.0 (Target: Q4 2026)
+
+| Feature | Description |
+|---------|-------------|
+| **Kanban Drag-and-Drop** | Full drag-and-drop between Kanban columns in the Task Manager |
+| **Project Timeline View** | Gantt-style timeline visualising all active projects and their deadlines |
+| **Asset Quick Export** | Right-click an artboard in the Brand Assets vault to export as PNG/PDF without opening Affinity |
+| **Client Portal Link Generator** | Generate a shareable read-only link to a project's `Artwork Mockup` folder (via Synology sharing API) |
+| **Notification Centre** | In-app toast for approaching deadlines and team note mentions |
+
+---
+
+## 🔭 Future Exploration — v3.x
+
+| Area | Idea |
+|------|------|
+| **AI Brief Generation** | Input client name + campaign type → generate a structured Markdown project brief using a local or cloud LLM |
+| **Version Control** | Track revision history for key asset files using lightweight Git operations via `LibGit2Sharp` |
+| **Multi-workspace** | Support multiple NAS mount points (e.g. one per business unit) switchable from the settings page |
+| **Mobile Companion** | Read-only Android/iOS app to view project status and team notes while away from the workstation |
+| **Design Review Mode** | Full-screen presentation mode for showing mockups to stakeholders directly from SS-CAM |
+
+---
+
+## Architecture Constraints
+
+The following constraints apply to all versions and must be respected in planning:
+
+| Constraint | Reason |
+|-----------|--------|
+| **C# 5 syntax only** | MSBuild `v4.0.30319` on the build machine caps at `/langversion:5` |
+| **No new NuGet packages** | `Costura.Fody` single-file bundling makes adding packages complex and risky |
+| **`System.Net.Http`** | Already a framework assembly on .NET 4.8; use for all HTTP instead of `WebClient` |
+| **`System.Xml.Linq`** | Available; use for RSS/XML parsing |
+| **No WPF-UI breaking changes** | Locked to `WPF-UI 3.0.4` |
+| **JSON via Newtonsoft.Json** | Already bundled; use for all serialisation |
+| **NAS path separator** | Always use `Path.Combine` — never hardcode `\` or `/` |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for architecture, namespace conventions, and build instructions.
