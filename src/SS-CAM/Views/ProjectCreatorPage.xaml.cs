@@ -244,7 +244,7 @@ namespace SS_CAM.Views
                     lines.Add(" ├── 📁 " + folder);
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
-                        lines.Add(" │   └── 📄 " + folderName + (TemplateExtensionComboBox.SelectedItem ?? ".afdesign"));
+                        lines.Add(" │   └── 📄 " + folderName + GetSelectedExtension());
                     }
                 }
             }
@@ -290,7 +290,7 @@ namespace SS_CAM.Views
 
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
-                        string ext = TemplateExtensionComboBox.SelectedItem != null ? TemplateExtensionComboBox.SelectedItem.ToString() : ".afdesign";
+                        string ext = GetSelectedExtension();
                         string canvasFilePath = Path.Combine(fPath, string.Format("{0}{1}", folderName, ext));
                         
                         string sampleHeader = string.Format("// SuamiSihat Master Canvas Template\n// Created: {0:yyyy-MM-dd HH:mm}\n// Project: {1}\n", DateTime.Now, folderName);
@@ -489,5 +489,107 @@ namespace SS_CAM.Views
         }
 
         #endregion
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Markdown Toolbar Helpers
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Returns the current selected canvas extension from the editable ComboBox.
+        /// Falls back to .afdesign if the field is empty.
+        /// </summary>
+        private string GetSelectedExtension()
+        {
+            string val = TemplateExtensionComboBox.Text;
+            if (string.IsNullOrWhiteSpace(val))
+                return ".afdesign";
+            // Ensure it starts with a dot
+            return val.StartsWith(".") ? val : "." + val;
+        }
+
+        /// <summary>
+        /// Wraps the currently selected text in ProjectDescriptionInput with
+        /// the given prefix and suffix. If nothing is selected, inserts a
+        /// placeholder at the caret position.
+        /// </summary>
+        private void ApplyMarkdownWrap(string prefix, string suffix = null, bool linePrefix = false)
+        {
+            if (suffix == null) suffix = prefix;
+            int start = ProjectDescriptionInput.SelectionStart;
+            int length = ProjectDescriptionInput.SelectionLength;
+            string selected = ProjectDescriptionInput.SelectedText;
+
+            string replacement;
+            int newCaret;
+
+            if (linePrefix)
+            {
+                // Insert prefix at the beginning of the current line
+                int lineStart = ProjectDescriptionInput.Text.LastIndexOf('\n', start > 0 ? start - 1 : 0);
+                lineStart = lineStart < 0 ? 0 : lineStart + 1;
+                ProjectDescriptionInput.Select(lineStart, 0);
+                ProjectDescriptionInput.SelectedText = prefix;
+                ProjectDescriptionInput.SelectionStart = lineStart + prefix.Length + (length > 0 ? length : 0);
+                ProjectDescriptionInput.Focus();
+                return;
+            }
+
+            if (length > 0)
+            {
+                replacement = prefix + selected + suffix;
+                newCaret = start + replacement.Length;
+            }
+            else
+            {
+                replacement = prefix + "text" + suffix;
+                newCaret = start + prefix.Length;
+            }
+
+            ProjectDescriptionInput.SelectedText = replacement;
+            if (length == 0)
+            {
+                // Select the placeholder word so user can type over it
+                ProjectDescriptionInput.Select(start + prefix.Length, 4);
+            }
+            else
+            {
+                ProjectDescriptionInput.SelectionStart = newCaret;
+            }
+            ProjectDescriptionInput.Focus();
+        }
+
+        private void OnMdBold(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ApplyMarkdownWrap("**");
+        }
+
+        private void OnMdItalic(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ApplyMarkdownWrap("*");
+        }
+
+        private void OnMdCode(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ApplyMarkdownWrap("`");
+        }
+
+        private void OnMdHeading(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ApplyMarkdownWrap("## ", "", true);
+        }
+
+        private void OnMdList(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ApplyMarkdownWrap("- ", "", true);
+        }
+
+        private void OnMdSep(object sender, System.Windows.RoutedEventArgs e)
+        {
+            int pos = ProjectDescriptionInput.SelectionStart;
+            string insert = "\n---\n";
+            ProjectDescriptionInput.Text = ProjectDescriptionInput.Text.Insert(pos, insert);
+            ProjectDescriptionInput.SelectionStart = pos + insert.Length;
+            ProjectDescriptionInput.Focus();
+        }
     }
 }

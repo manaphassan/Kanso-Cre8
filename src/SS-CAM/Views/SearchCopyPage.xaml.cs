@@ -68,11 +68,14 @@ namespace SS_CAM.Views
             string query = SearchInput != null ? SearchInput.Text.Trim() : "";
 
             allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, selectedDesigner, query, 50);
-            ResultsGrid.ItemsSource = allItems;
+            ResultsListBox.ItemsSource = allItems;
+
+            // Update sidebar project count label
+            TxtProjectCount.Text = allItems.Count == 1 ? "1 project" : string.Format("{0} projects", allItems.Count);
 
             if (allItems.Count > 0)
             {
-                ResultsGrid.SelectedIndex = 0;
+                ResultsListBox.SelectedIndex = 0;
             }
             else
             {
@@ -81,9 +84,9 @@ namespace SS_CAM.Views
             }
         }
 
-        private void OnGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selectedItem = ResultsGrid.SelectedItem as DesignerFolderItem;
+            selectedItem = ResultsListBox.SelectedItem as DesignerFolderItem;
             UpdateReadmeDisplay();
         }
 

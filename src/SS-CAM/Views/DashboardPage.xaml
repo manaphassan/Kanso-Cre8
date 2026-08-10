@@ -155,6 +155,74 @@
                 <ItemsControl x:Name="StorageChartControl"/>
                 <ItemsControl x:Name="ActivityChartControl"/>
             </StackPanel>
+
+            <!-- Designer Inspiration Widget -->
+            <Border Background="{DynamicResource FluentLightCardBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,24" Effect="{StaticResource FluentDepth4}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: Tip Display -->
+                    <StackPanel Grid.Column="0" Margin="0,0,24,0">
+                        <!-- Card Header -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Border Background="{DynamicResource FluentBrandLight}" CornerRadius="6" Width="34" Height="34" Margin="0,0,10,0">
+                                <TextBlock x:Name="TxtInsightIcon" Text="&#xE82F;" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{DynamicResource FluentBrand80}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="DESIGNER INSIGHT" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                <TextBlock x:Name="TxtInsightMode" Text="Tip of the Day" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Tip Content -->
+                        <StackPanel x:Name="PanelTipContent">
+                            <TextBlock x:Name="TxtTipTitle" Text="Loading tip..." FontFamily="{StaticResource FluentFontFamily}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextPrimary}" Margin="0,0,0,6" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="TxtTipBody" Text="" FontFamily="{StaticResource FluentFontFamily}" FontSize="12" Foreground="{DynamicResource FluentLightTextSecondary}" TextWrapping="Wrap" LineHeight="18"/>
+                        </StackPanel>
+
+                        <!-- RSS Articles Panel (hidden by default) -->
+                        <StackPanel x:Name="PanelArticles" Visibility="Collapsed" Margin="0,4,0,0">
+                            <TextBlock x:Name="TxtArticlesStatus" Text="Fetching latest articles..." FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,6"/>
+                            <ItemsControl x:Name="ArticlesList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,4" Padding="8,6" Background="{DynamicResource FluentLightCardSubBg}" CornerRadius="4" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" Cursor="Hand" MouseLeftButtonDown="OnArticleClicked">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Title}" FontFamily="{StaticResource FluentFontFamily}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrand80}" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding PublishedDate}" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Right: Controls -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="130">
+                        <Border CornerRadius="6" Background="{DynamicResource FluentBrand80}" Margin="0,0,0,8">
+                            <Button x:Name="BtnNextTip" Click="OnNextTipClicked" Height="32" Background="Transparent" Foreground="White" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}" FontWeight="Bold" FontSize="11">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Next Tip" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                        <Border CornerRadius="6" Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1">
+                            <Button x:Name="BtnToggleArticles" Click="OnToggleArticlesClicked" Height="32" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" BorderThickness="0" Cursor="Hand" FontFamily="{StaticResource FluentFontFamily}" FontSize="11">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtArticlesBtn" Text="Articles" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                        <TextBlock x:Name="TxtTipCounter" Text="1 / 40" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" Foreground="{DynamicResource FluentLightTextSecondary}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

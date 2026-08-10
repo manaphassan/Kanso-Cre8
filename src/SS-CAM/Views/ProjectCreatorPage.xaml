@@ -71,8 +71,33 @@
                                 </StackPanel>
 
                                 <StackPanel>
-                                    <TextBlock Text="Project Brief / Remarks" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,6"/>
-                                    <ui:TextBox x:Name="ProjectDescriptionInput" PlaceholderText="Enter optional project scope, requirements, or client notes..." AcceptsReturn="True" Height="64"/>
+                                    <TextBlock Text="Project Brief / Remarks" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"/>
+
+                                    <!-- Markdown Toolbar -->
+                                    <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1,1,1,0" CornerRadius="6,6,0,0" Padding="6,4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button x:Name="MdBold" Content="B" Click="OnMdBold" Height="24" Width="28" Background="Transparent" Foreground="{DynamicResource FluentBrand80}" FontFamily="{StaticResource FluentFontFamily}" FontWeight="Bold" FontSize="12" BorderThickness="0" Cursor="Hand" ToolTip="Bold (**text**)"/>
+                                            <Button x:Name="MdItalic" Content="I" Click="OnMdItalic" Height="24" Width="28" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" FontFamily="Georgia, serif" FontStyle="Italic" FontSize="12" BorderThickness="0" Cursor="Hand" ToolTip="Italic (*text*)"/>
+                                            <Button x:Name="MdCode" Click="OnMdCode" Height="24" Width="28" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" FontFamily="Consolas" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Inline code (`text`)">
+                                                <TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"/>
+                                            </Button>
+                                            <Border Width="1" Background="{DynamicResource FluentLightStroke}" Margin="4,3"/>
+                                            <Button x:Name="MdHeading" Content="H2" Click="OnMdHeading" Height="24" Width="32" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" FontFamily="{StaticResource FluentFontFamily}" FontWeight="SemiBold" FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## heading)"/>
+                                            <Button x:Name="MdList" Content="• List" Click="OnMdList" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="List item (- item)"/>
+                                            <Button x:Name="MdSep" Content="─ HR" Click="OnMdSep" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBox x:Name="ProjectDescriptionInput"
+                                             AcceptsReturn="True" AcceptsTab="True"
+                                             Height="200"
+                                             VerticalScrollBarVisibility="Auto"
+                                             TextWrapping="Wrap"
+                                             FontFamily="{StaticResource FluentFontFamily}"
+                                             FontSize="12"
+                                             Padding="8"
+                                             BorderBrush="{DynamicResource FluentLightStroke}"
+                                             BorderThickness="1"
+                                             Background="White"/>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
@@ -108,12 +133,12 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <CheckBox x:Name="InjectCanvasCheck" Content="Generate Starter Canvas File" IsChecked="True" FontFamily="{StaticResource FluentFontFamily}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource FluentLightTextPrimary}" VerticalAlignment="Center" Click="OnFormInputChanged"/>
-                                    <ComboBox x:Name="TemplateExtensionComboBox" Grid.Column="2" Width="120" Height="34" SelectionChanged="OnFormInputChanged"/>
+                                    <ComboBox x:Name="TemplateExtensionComboBox" Grid.Column="2" Width="140" Height="34" IsEditable="True" SelectionChanged="OnFormInputChanged" TextBoxBase.TextChanged="OnFormInputChanged"/>
                                 </Grid>
 
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                    <CheckBox x:Name="IncludeRevisionsCheck" Content="Include 05_Revisions folder" IsChecked="True" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,16,0" Click="OnFormInputChanged"/>
-                                    <CheckBox x:Name="IncludeRawMediaCheck" Content="Include 06_Raw_Media folder" IsChecked="True" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentLightTextSecondary}" Click="OnFormInputChanged"/>
+                                    <CheckBox x:Name="IncludeRevisionsCheck" Content="Include Client Revisions folder" IsChecked="True" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,16,0" Click="OnFormInputChanged"/>
+                                    <CheckBox x:Name="IncludeRawMediaCheck" Content="Include Raw Media folder" IsChecked="True" FontFamily="{StaticResource FluentFontFamily}" FontSize="11" Foreground="{DynamicResource FluentLightTextSecondary}" Click="OnFormInputChanged"/>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
