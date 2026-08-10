@@ -649,10 +649,15 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
         {
-            // Cycle: SS Default ↔ Falconia
-            AppTheme nextTheme = (ThemeService.CurrentTheme == AppTheme.SSDefault)
-                ? AppTheme.Falconia
-                : AppTheme.SSDefault;
+            // Cycle: SS Default → Falconia → Metamorphosis → SS Default
+            AppTheme nextTheme;
+            if (ThemeService.CurrentTheme == AppTheme.SSDefault)
+                nextTheme = AppTheme.Falconia;
+            else if (ThemeService.CurrentTheme == AppTheme.Falconia)
+                nextTheme = AppTheme.Metamorphosis;
+            else
+                nextTheme = AppTheme.SSDefault;
+
             ThemeService.ApplyTheme(nextTheme);
         }
 
@@ -668,6 +673,12 @@ namespace SS_CAM
                 // Falconia: full white Fluent 2 light — use Mica (system light backdrop)
                 WindowBackdropType = WindowBackdropType.Mica;
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+            }
+            else if (theme == AppTheme.Metamorphosis)
+            {
+                // Metamorphosis: deep space navy glassmorphism
+                WindowBackdropType = WindowBackdropType.None;
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#080D1F"));
             }
             else
             {
@@ -701,9 +712,12 @@ namespace SS_CAM
 
             if (StatusThemeText != null)
             {
-                StatusThemeText.Text = (theme == AppTheme.Falconia)
-                    ? "Theme: Falconia"
-                    : "Theme: SS Default";
+                if (theme == AppTheme.Falconia)
+                    StatusThemeText.Text = "Theme: Falconia";
+                else if (theme == AppTheme.Metamorphosis)
+                    StatusThemeText.Text = "Theme: Metamorphosis";
+                else
+                    StatusThemeText.Text = "Theme: SS Default";
             }
 
             // Sidebar Container

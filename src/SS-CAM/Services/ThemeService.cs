@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows;
 using Newtonsoft.Json;
 
 namespace SS_CAM.Services
@@ -7,7 +8,8 @@ namespace SS_CAM.Services
     public enum AppTheme
     {
         SSDefault,
-        Falconia
+        Falconia,
+        Metamorphosis    // Glassmorphism — deep navy + electric cyan + violet glow
     }
 
     public class ThemeColors
@@ -95,6 +97,9 @@ namespace SS_CAM.Services
 
         public static ThemeColors GetColors(AppTheme theme)
         {
+            if (theme == AppTheme.Metamorphosis)
+                return GetMetamorphosisColors();
+
             if (theme == AppTheme.Falconia)
             {
                 // ─────────────────────────────────────────────────────────────────
@@ -206,14 +211,101 @@ namespace SS_CAM.Services
             };
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // METAMORPHOSIS — Glassmorphism (deep space navy + electric cyan)
+        // Sidebar stays dark navy; content pages pick up glass card tokens
+        // from MetamorphosisTheme.xaml via ResourceDictionary swap.
+        // ─────────────────────────────────────────────────────────────────────
+        private static ThemeColors GetMetamorphosisColors()
+        {
+            return new ThemeColors
+            {
+                IsLight = false,
+                FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
+
+                TitleBarForeground = "#F1F5F9",
+
+                // Main content frame uses the dark canvas defined in MetamorphosisTheme.xaml
+                HeaderBg     = "#08122E",
+                HeaderBorder = "#1E2D5A",
+                MainFrameBg  = "#080D1F",   // overridden by MetaCanvasGradient in code
+
+                // Deep navy sidebar (slightly lighter than canvas)
+                SidebarBg     = "#0C1535",
+                SidebarBorder = "#1B2B56",
+
+                // Glass search box
+                SearchBg          = "#14203A",
+                SearchBorder      = "#2A3F6A",
+                SearchText        = "#F1F5F9",
+                SearchPlaceholder = "#64748B",
+
+                // Active nav: electric cyan accent
+                ActiveNavBg      = "#1400CFFF",    // #14 = 8% opacity cyan
+                ActiveNavText    = "#00CFFF",
+                ActiveNavSubtext = "#67E8F9",
+
+                // Inactive nav: muted blue-grey
+                InactiveNavText    = "#94A3B8",
+                InactiveNavSubtext = "#64748B",
+
+                FooterBg        = "#0C1535",
+                FooterBorder    = "#1B2B56",
+                FooterText      = "#94A3B8",
+                FooterCardBg    = "#14203A",
+                FooterCardBorder= "#2A3F6A",
+
+                // User persona card
+                UserCardBg     = "#14203A",
+                UserCardBorder = "#2A3F6A",
+                UserCardTitle  = "#F1F5F9",
+                UserCardSub    = "#00CFFF",
+
+                // Nav indicator: electric cyan glow
+                NavIndicatorColor = "#00CFFF",
+                NavIconActive     = "#00CFFF",
+                NavIconInactive   = "#64748B",
+
+                // Spectrum visualiser: cyan bars
+                SpectrumBarColor  = "#00CFFF"
+            };
+        }
+
         public static void ApplyTheme(AppTheme theme)
         {
             _currentTheme = theme;
             SaveTheme(theme);
+
+            // Swap the XAML resource dictionary for Metamorphosis vs Fluent default
+            SwapResourceDictionary(theme);
+
             if (ThemeChanged != null)
-            {
                 ThemeChanged(theme);
+        }
+
+        /// <summary>
+        /// Hot-swaps the 3rd MergedDictionary entry between Fluent2Styles.xaml
+        /// (all other themes) and MetamorphosisTheme.xaml.
+        /// Index 0 = WpfUi ThemesDictionary, 1 = WpfUi ControlsDictionary, 2 = app theme.
+        /// </summary>
+        private static void SwapResourceDictionary(AppTheme theme)
+        {
+            try
+            {
+                string source = (theme == AppTheme.Metamorphosis)
+                    ? "Styles/MetamorphosisTheme.xaml"
+                    : "Styles/Fluent2Styles.xaml";
+
+                var merged = Application.Current.Resources.MergedDictionaries;
+                const int idx = 2;
+                if (merged.Count > idx)
+                    merged.RemoveAt(idx);
+
+                var dict = new ResourceDictionary();
+                dict.Source = new Uri(source, UriKind.Relative);
+                merged.Insert(idx, dict);
             }
+            catch { }
         }
 
         private static void SaveTheme(AppTheme theme)

@@ -11,6 +11,8 @@ namespace SS_CAM.Models
         public string AvatarPath { get; set; }
         public string WorkspaceRoot { get; set; }
         public int NextJobNumber { get; set; }
+        /// <summary>Persisted theme name: "SS Default" or "Metamorphosis".</summary>
+        public string Theme { get; set; }
 
         public UserProfile()
         {
@@ -21,6 +23,7 @@ namespace SS_CAM.Models
             AvatarPath = "";
             WorkspaceRoot = @"D:\Testing";
             NextJobNumber = 1;
+            Theme = null;   // null = SS Default (ThemeService treats null as SSDefault)
         }
     }
 
