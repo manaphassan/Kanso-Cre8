@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SS_CAM.Models;
 using SS_CAM.Services;
@@ -33,10 +35,11 @@ namespace SS_CAM.Views
             _radioService = RadioStreamService.Instance;
 
             _radioService.PlaybackStateChanged += OnPlaybackStateChanged;
-            _radioService.StationChanged += OnStationChanged;
-            _radioService.VolumeChanged += OnVolumeChanged;
-            _radioService.ErrorOccurred += OnErrorOccurred;
-            _radioService.StreamTitleChanged += OnStreamTitleChanged;
+            _radioService.StationChanged       += OnStationChanged;
+            _radioService.VolumeChanged        += OnVolumeChanged;
+            _radioService.ErrorOccurred        += OnErrorOccurred;
+            _radioService.StreamTitleChanged   += OnStreamTitleChanged;
+            _radioService.CoverDownloaded      += OnCoverDownloaded;
 
             InitVisualizerTimer();
             RefreshHeroUI();
@@ -48,16 +51,15 @@ namespace SS_CAM.Views
             if (_radioService != null)
             {
                 _radioService.PlaybackStateChanged -= OnPlaybackStateChanged;
-                _radioService.StationChanged -= OnStationChanged;
-                _radioService.VolumeChanged -= OnVolumeChanged;
-                _radioService.ErrorOccurred -= OnErrorOccurred;
-                _radioService.StreamTitleChanged -= OnStreamTitleChanged;
+                _radioService.StationChanged       -= OnStationChanged;
+                _radioService.VolumeChanged        -= OnVolumeChanged;
+                _radioService.ErrorOccurred        -= OnErrorOccurred;
+                _radioService.StreamTitleChanged   -= OnStreamTitleChanged;
+                _radioService.CoverDownloaded      -= OnCoverDownloaded;
             }
 
             if (_visualizerTimer != null)
-            {
                 _visualizerTimer.Stop();
-            }
         }
 
         private void InitVisualizerTimer()
@@ -97,6 +99,9 @@ namespace SS_CAM.Views
             HeroMuteIcon.Text = _radioService.IsMuted ? "\uE74F" : "\uE767"; // Mute / Volume
 
             UpdatePlaybackStateUI(_radioService.State);
+
+            // Restore cached cover art immediately (if available from a previous session)
+            UpdateHeroCoverImage(station);
         }
 
         private void UpdatePlaybackStateUI(RadioPlaybackState state)
@@ -160,12 +165,16 @@ namespace SS_CAM.Views
         private void OnStationChanged(RadioStation station)
         {
             RefreshHeroUI();
+
+            // Kick off cover art download in the background (no-op if already cached)
+            if (station != null)
+                _radioService.DownloadCoverAsync(station);
         }
 
         private void OnVolumeChanged(double volume, bool isMuted)
         {
             HeroVolumeSlider.Value = volume * 100;
-            HeroMuteIcon.Text = isMuted ? "🔇" : "🔊";
+            HeroMuteIcon.Text = isMuted ? "\uE74F" : "\uE767"; // Mute / Volume glyphs
         }
 
         private void OnErrorOccurred(string errorMsg)
@@ -179,13 +188,59 @@ namespace SS_CAM.Views
             {
                 if (!string.IsNullOrEmpty(title) && _radioService.State == RadioPlaybackState.Playing)
                 {
-                    HeroStreamTitleText.Text = "Now Playing: " + title;
+                    HeroStreamTitleText.Text = title;
                     HeroStreamTitleText.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     HeroStreamTitleText.Visibility = Visibility.Collapsed;
                 }
+            }
+        }
+
+        // Called on the UI thread by RadioStreamService after a cover download completes
+        private void OnCoverDownloaded(RadioStation station)
+        {
+            // Update hero bar only if the downloaded station is still the active one
+            if (_radioService.CurrentStation != null &&
+                _radioService.CurrentStation.Id == station.Id)
+            {
+                UpdateHeroCoverImage(station);
+            }
+        }
+
+        /// <summary>
+        /// Loads station.LocalCoverPath into the hero transport bar's cover Image element.
+        /// Shows the Image and hides the fallback glyph TextBlock.
+        /// </summary>
+        private void UpdateHeroCoverImage(RadioStation station)
+        {
+            if (station == null || !station.HasLocalCover)
+            {
+                HeroCoverImage.Visibility = Visibility.Collapsed;
+                HeroIconText.Visibility   = Visibility.Visible;
+                return;
+            }
+
+            try
+            {
+                var bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.UriSource      = new Uri(station.LocalCoverPath, UriKind.Absolute);
+                bmp.CacheOption    = BitmapCacheOption.OnLoad;
+                bmp.DecodePixelWidth = 92; // 2x display size for retina clarity
+                bmp.EndInit();
+                bmp.Freeze();
+
+                HeroCoverImage.Source     = bmp;
+                HeroCoverImage.Visibility = Visibility.Visible;
+                HeroIconText.Visibility   = Visibility.Collapsed;
+            }
+            catch
+            {
+                // Silently fall back to glyph icon on any load error
+                HeroCoverImage.Visibility = Visibility.Collapsed;
+                HeroIconText.Visibility   = Visibility.Visible;
             }
         }
 

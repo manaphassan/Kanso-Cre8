@@ -1011,5 +1011,70 @@ namespace SS_CAM.Services
             }
             catch { }
         }
+
+        // ── Cover Art ─────────────────────────────────────────────────────
+        //
+        // Downloads a station cover image on a background thread and caches
+        // it to %APPDATA%\SS-CAM\covers\<stationId>.jpg.
+        // Fires CoverDownloaded on the WPF Dispatcher when complete.
+
+        public event Action<RadioStation> CoverDownloaded;
+
+        private static readonly string _coversDir =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                         "SS-CAM", "covers");
+
+        /// <summary>
+        /// Downloads the cover image for the given station (if a URL is set and
+        /// no valid local copy exists yet). The download is fire-and-forget on a
+        /// background thread. On completion, station.LocalCoverPath is set and the
+        /// CoverDownloaded event is raised on the UI thread.
+        /// </summary>
+        public void DownloadCoverAsync(RadioStation station)
+        {
+            if (station == null) return;
+            if (string.IsNullOrWhiteSpace(station.CoverImageUrl)) return;
+            if (station.HasLocalCover) return;   // already cached
+
+            ThreadPool.QueueUserWorkItem(delegate(object state)
+            {
+                try
+                {
+                    if (!Directory.Exists(_coversDir))
+                        Directory.CreateDirectory(_coversDir);
+
+                    // Sanitise filename: use station id (alphanumeric only)
+                    string safeId = System.Text.RegularExpressions.Regex.Replace(station.Id, "[^a-zA-Z0-9_-]", "");
+                    string localPath = Path.Combine(_coversDir, safeId + ".jpg");
+
+                    if (!File.Exists(localPath))
+                    {
+                        using (var wc = new WebClient())
+                        {
+                            wc.Headers["User-Agent"] = "SS-CAM/2.5.1";
+                            byte[] data = wc.DownloadData(station.CoverImageUrl);
+                            File.WriteAllBytes(localPath, data);
+                        }
+                    }
+
+                    station.LocalCoverPath = localPath;
+
+                    // Update the JSON config so the path persists across restarts
+                    SaveConfig();
+
+                    // Notify UI on the Dispatcher
+                    Application.Current.Dispatcher.BeginInvoke(
+                        new Action(delegate()
+                        {
+                            if (CoverDownloaded != null)
+                                CoverDownloaded(station);
+                        }));
+                }
+                catch
+                {
+                    // Silent fail — UI falls back to the glyph icon
+                }
+            });
+        }
     }
 }

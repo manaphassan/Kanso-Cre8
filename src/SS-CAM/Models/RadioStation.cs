@@ -44,5 +44,14 @@ namespace SS_CAM.Models
         {
             get { return !string.IsNullOrWhiteSpace(LocalCoverPath) && System.IO.File.Exists(LocalCoverPath); }
         }
+
+        /// <summary>
+        /// Segoe Fluent Icons glyph for the favourite toggle button on station cards.
+        /// Filled star (\uE735) when favourite, outline star (\uE734) otherwise.
+        /// </summary>
+        public string FavIcon
+        {
+            get { return IsFavorite ? "\uE735" : "\uE734"; }
+        }
     }
 }
