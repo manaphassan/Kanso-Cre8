@@ -1,5 +1,34 @@
 # SS-CAM FIX LOG
 
+## v2.6.3 — 2026-08-11 (Art-Director & Architecture Audit Remediation)
+
+### Phase P0: Git Hygiene & Core Logic Fixes
+- **Binary Untracking**: Un-tracked ~50 MB of binary files (`src/SS-CAM/packages/`, `SS-CAM-v2.6.1.exe`, `nuget.exe`) from Git tracking.
+- **Regex Capture Fix**: Updated `ProjectPattern` in `WorkspaceScanner.cs` to `^(\d{6})_([A-Z0-9]+)(?:_([A-Z0-9_-]+))?` to parse job and brand codes.
+- **Hardcoded Path Clean**: Removed machine-specific `e:\Dev\...` path fallback from `PayloadInstallerService.cs`.
+
+### Phase P1: Async Network & Timer Leak Prevention
+- **Async Network Fetch**: Replaced synchronous `HttpWebRequest` in `PrayerTimeService.cs` with static `HttpClient` singleton and `FetchTodayAsync`.
+- **UI Responsiveness**: Made `WaktuSolatPage.xaml.cs` fetch asynchronous to eliminate 2–9s UI thread freezes.
+- **Timer Leak Fixes**: Added `Unloaded` handlers to stop `DispatcherTimer` instances on `WaktuSolatPage`, `WellbeingPage`, and `DesignTokensPage`.
+- **Dark Mode Repair**: Fixed hardcoded hex avatar border colors in `SettingsPage.xaml` using `{DynamicResource FluentBrand80}` and `{DynamicResource FluentBrand70}`.
+
+### Phase P2: UI/UX Token & Icon Standardization
+- **Dynamic Surface Tokens**: Converted hardcoded white backgrounds in `SearchCopyPage.xaml`, `QuickNotePage.xaml`, `TaskManagerPage.xaml`, and `ProjectCreatorPage.xaml` to `{DynamicResource TextControlBackground}` and card tokens.
+- **Icon Vector Migration**: Replaced raw text emojis in `ProjectCreatorPage.xaml` with vector Segoe Fluent icons (`&#xE713;`, `&#xE8B7;`, `&#xE8EA;`, `&#xE8B2;`, `&#xE749;`).
+- **Control Template Target**: Fixed `ControlTemplate TargetType="ui:Button"` in `DesignTokensPage.xaml`.
+
+### Phase P3: Synology NAS & Diagnostics Safety
+- **NAS File Lock Resilience**: Added 3-attempt exponential backoff retry loop for `IOException` in `TeamBoardService.Save`.
+- **MAX_PATH Protection**: Added 240-character path validation to `ProjectGeneratorService.cs`.
+- **Diagnostic Logging**: Replaced all silent `catch {}` blocks across `PrayerTimeService`, `ThemeService`, `ProjectCreatorPage`, `SearchCopyPage`, and `MainWindow` with `Debug.WriteLine` logging.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+
+---
+
 ## v2.6.1 — 2026-08-11 (Header Title Rebranding & Persistent SS Blue Wavelength Player)
 
 ### Key Updates & Fixes
