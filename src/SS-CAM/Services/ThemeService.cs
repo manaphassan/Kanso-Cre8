@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
@@ -294,10 +294,15 @@ namespace SS_CAM.Services
             // Nav item foreground is overridden in MainWindow.OnThemeModeChanged.
             try
             {
-                if (theme == AppTheme.Metamorphosis)
-                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
-                else
+                if (theme == AppTheme.Falconia)
+                    // Falconia: full white light mode
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
+                else
+                    // SS Default + Metamorphosis: both have dark navy sidebars,
+                    // so use Dark WPF-UI mode. This makes NavigationViewContentBackground
+                    // resolve to the dark token, which we then override to our brand color.
+                    // Page content backgrounds are set per-page and are not affected.
+                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
             }
             catch { }
 

@@ -411,18 +411,12 @@ namespace SS_CAM
         {
             ThemeColors c = ThemeService.GetColors(theme);
 
-            // ── NavigationView sidebar background ────────────────────────────
-            // WPF-UI NavigationView pane uses DynamicResource keys, NOT TemplateBinding Background.
-            // Swap the resource values in NavigationView.Resources to override the theme.
-            // This survives ApplicationThemeManager.Apply() because local Resources scope
-            // takes priority over merged ApplicationTheme dictionaries.
+            // -- NavigationView sidebar background --
+            // With ApplicationTheme.Dark active for SS Default + Metamorphosis,
+            // the NavigationView pane correctly renders the Background property.
+            // For Falconia (Light theme), SidebarBg is #F5F5F5 (matches WPF-UI Light default).
             if (RootNavigation != null)
-            {
-                var sidebarColor = (Color)ColorConverter.ConvertFromString(c.SidebarBg);
-                RootNavigation.Resources["NavigationViewContentBackground"] = new SolidColorBrush(sidebarColor);
-                RootNavigation.Resources["NavigationViewItemBackground"]    = new SolidColorBrush(sidebarColor);
-                RootNavigation.Background = new SolidColorBrush(sidebarColor); // fallback
-            }
+                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
 
             // ── TitleBar strip ───────────────────────────────────────────────
             if (AppTitleBar != null)

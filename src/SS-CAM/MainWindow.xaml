@@ -210,34 +210,7 @@
                            OpenPaneLength="200"
                            Background="#021B47">
 
-            <!--
-                ══════════════════════════════════════════════════════════════
-                SIDEBAR COLOR OVERRIDE (SS Default theme: SS Navy)
-
-                WPF-UI's NavigationView pane does NOT honour the Background
-                property — its template binds the pane panel to
-                {DynamicResource NavigationViewContentBackground} directly.
-
-                The only reliable fix: override those DynamicResource keys
-                inside NavigationView.Resources. Local-scope resources win
-                over merged ApplicationTheme dictionaries, so this survives
-                ApplicationThemeManager.Apply(Light) without needing any
-                code-behind Dispatcher hacks.
-
-                Keys discovered by scanning light.baml from Wpf.Ui.dll:
-                  NavigationViewContentBackground  — the pane panel itself
-                  NavigationViewItemBackground     — each nav item row bg
-
-                These are swapped at runtime in OnThemeModeChanged() for
-                Falconia (white sidebar) and Metamorphosis (dark navy).
-                ══════════════════════════════════════════════════════════════
-            -->
-            <ui:NavigationView.Resources>
-                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#021B47"/>
-                <SolidColorBrush x:Key="NavigationViewItemBackground"    Color="#021B47"/>
-            </ui:NavigationView.Resources>
-
-            <!-- ── Nav groups ─────────────────────────────────────────────── -->
+            <!-- Nav groups -->
             <ui:NavigationView.MenuItems>
 
                 <ui:NavigationViewItemHeader Text="OVERVIEW"/>
