@@ -36,7 +36,6 @@ namespace SS_CAM.Services
         public string UserCardSub { get; set; }
         public string MainFrameBg { get; set; }
         public string TitleBarForeground { get; set; }
-        public string TitleBarBg { get; set; }
         public string SearchBg { get; set; }
         public string SearchBorder { get; set; }
         public string SearchText { get; set; }
@@ -111,7 +110,6 @@ namespace SS_CAM.Services
                     FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                     TitleBarForeground = "#242424",
-                    TitleBarBg         = "#FFFFFF",
 
                     // Header & Canvas
                     HeaderBg        = "#FFFFFF",
@@ -167,23 +165,21 @@ namespace SS_CAM.Services
             // —————————————————————————————————————————————————————————
             return new ThemeColors
             {
-                IsLight = false,   // dark navy sidebar + azure title bar — not a light theme
+                IsLight = false,
                 FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
-                // TitleBar strip -- Azure (Fluent 2 accent blue)
                 TitleBarForeground = "#FFFFFF",
-                TitleBarBg         = "#0078D4",
 
                 // Header area -- deep brand navy
-                HeaderBg        = "#021B47",
+                HeaderBg        = "#0B2358",
                 HeaderBorder    = "#1E3A8A",
 
                 // Content frame -- white (Light WPF-UI mode)
                 MainFrameBg     = "#FFFFFF",
 
-                // Sidebar -- SS Navy (SuamiSihat brand dark navy)
-                SidebarBg       = "#021B47",
-                SidebarBorder   = "#0A2560",
+                // Sidebar -- readable deep navy (matches v2.3.6)
+                SidebarBg       = "#0B2358",
+                SidebarBorder   = "#1E3A8A",
 
                 // Search box inside sidebar
                 SearchBg          = "#0D2A5C",
@@ -201,15 +197,15 @@ namespace SS_CAM.Services
                 InactiveNavSubtext = "#9D9D9D",
 
                 // Footer / status bar
-                FooterBg        = "#021B47",
-                FooterBorder    = "#0A2560",
+                FooterBg        = "#0B2358",
+                FooterBorder    = "#1E3A8A",
                 FooterText      = "#C8C8C8",
                 FooterCardBg    = "#0D2A5C",
-                FooterCardBorder= "#0A2560",
+                FooterCardBorder= "#1E3A8A",
 
                 // Designer Profile card in sidebar
                 UserCardBg      = "#0D2A5C",
-                UserCardBorder  = "#0A2560",
+                UserCardBorder  = "#1E3A8A",
                 UserCardTitle   = "#FFFFFF",
                 UserCardSub     = "#479EF5",
 
@@ -235,7 +231,6 @@ namespace SS_CAM.Services
                 FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                 TitleBarForeground = "#F1F5F9",
-                TitleBarBg         = "#08122E",
 
                 // Main content frame uses the dark canvas defined in MetamorphosisTheme.xaml
                 HeaderBg     = "#08122E",
@@ -288,20 +283,18 @@ namespace SS_CAM.Services
             _currentTheme = theme;
             SaveTheme(theme);
 
-            // Keep SS Default and Falconia in Light mode to match their light canvas
-            // and card resource dictionaries. Metamorphosis owns the dark mode.
+            // Swap WPF-UI application theme (Light vs Dark) so controls render correctly.
+            // SS Default and Falconia use Light mode — content area cards are white.
+            // Metamorphosis uses Dark mode — glass dark cards.
+            // Nav item foreground is overridden in MainWindow.OnThemeModeChanged.
             try
             {
-                // SS Default + Falconia: Light WPF-UI mode gives the correct white content area.
-                // The dark navy pane is applied via NavigationViewExpandedPaneBackground at
-                // control level in OnThemeModeChanged, which overrides the light pane default.
-                // Metamorphosis: full Dark mode (dark canvas + glass cards).
-                if (theme == AppTheme.SSDefault || theme == AppTheme.Falconia)
-                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
-                else
+                if (theme == AppTheme.Metamorphosis)
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
+                else
+                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+            catch { }
 
             // Swap the style resource dictionary
             SwapResourceDictionary(theme);
@@ -344,7 +337,7 @@ namespace SS_CAM.Services
                 dict.Source = new Uri(newSource, UriKind.Relative);
                 merged.Add(dict);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+            catch { }
         }
 
         private static void SaveTheme(AppTheme theme)
