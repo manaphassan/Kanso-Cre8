@@ -118,19 +118,30 @@ namespace SS_CAM.Services
 
         private static bool Save(string workspaceRoot, List<TeamNote> notes)
         {
-            try
+            string path = GetNotesPath(workspaceRoot);
+            if (string.IsNullOrEmpty(path)) return false; // workspace offline or unconfigured
+            string json = JsonConvert.SerializeObject(notes, Formatting.Indented);
+
+            for (int attempt = 1; attempt <= 3; attempt++)
             {
-                string path = GetNotesPath(workspaceRoot);
-                if (string.IsNullOrEmpty(path)) return false; // workspace offline or unconfigured
-                string json = JsonConvert.SerializeObject(notes, Formatting.Indented);
-                File.WriteAllText(path, json, Encoding.UTF8);
-                return true;
+                try
+                {
+                    File.WriteAllText(path, json, Encoding.UTF8);
+                    return true;
+                }
+                catch (IOException ex)
+                {
+                    Debug.WriteLine(string.Format("[TeamBoardService] Save attempt {0} failed (NAS lock): {1}", attempt, ex.Message));
+                    if (attempt == 3) return false;
+                    System.Threading.Thread.Sleep(50 * attempt);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(string.Format("[TeamBoardService] Save failed: {0}", ex.Message));
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(string.Format("[TeamBoardService] Save failed: {0}", ex.Message));
-                return false;
-            }
+            return false;
         }
     }
 }

@@ -78,8 +78,9 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine("[ThemeService] Static ctor: " + ex.Message);
                 _currentTheme = AppTheme.Falconia;
             }
         }
@@ -214,7 +215,7 @@ namespace SS_CAM.Services
                 else
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] ApplyTheme WpfUI: " + ex.Message); }
 
             SwapResourceDictionary(theme);
 
@@ -248,7 +249,7 @@ namespace SS_CAM.Services
                 dict.Source = new Uri(newSource, UriKind.Relative);
                 merged.Add(dict);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] SwapResourceDictionary: " + ex.Message); }
         }
 
         private static void SaveTheme(AppTheme theme)

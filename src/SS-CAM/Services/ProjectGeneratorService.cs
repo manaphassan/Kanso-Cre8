@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -60,6 +60,11 @@ namespace SS_CAM.Services
             var yearPath = Path.Combine(yearRoot, yearFolder);
             var monthlyRoot = Path.Combine(yearPath, monthFolder);
             var projectRoot = Path.Combine(monthlyRoot, folderName);
+
+            if (projectRoot.Length > 240)
+            {
+                throw new InvalidOperationException(string.Format("Target project path exceeds Windows MAX_PATH safety limit ({0} characters):\n{1}", projectRoot.Length, projectRoot));
+            }
 
             var subFolders = new List<string>();
             var lowerPreset = presetType != null ? presetType.ToLowerInvariant() : "";

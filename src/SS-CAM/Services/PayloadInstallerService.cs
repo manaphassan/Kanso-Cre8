@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -26,10 +26,6 @@ namespace SS_CAM.Services
                 if (Directory.Exists(checkPath)) return checkPath;
                 current = current.Parent;
             }
-
-            // Fallback hardcoded dev path
-            string devPayload = @"e:\Dev\Projects\SS-Brand-Assets\payload";
-            if (Directory.Exists(devPayload)) return devPayload;
 
             return "";
         }

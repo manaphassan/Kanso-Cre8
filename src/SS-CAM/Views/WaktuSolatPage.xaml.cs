@@ -57,12 +57,14 @@ namespace SS_CAM.Views
             _timer.Tick += OnTimerTick;
             _timer.Start();
 
-            // Initial fetch (background thread)
+            Unloaded += (s, e) => { if (_timer != null) _timer.Stop(); };
+
+            // Initial fetch
             FetchAsync(_currentZone);
         }
 
         // ── Fetch ─────────────────────────────────────────────────────────────
-        private void FetchAsync(string zone)
+        private async void FetchAsync(string zone)
         {
             if (_loading) return;
             _loading = true;
@@ -70,26 +72,20 @@ namespace SS_CAM.Views
             TxtNextPrayer.Text  = "...";
             TxtHijriDate.Text   = "";
 
-            System.Threading.ThreadPool.QueueUserWorkItem(s =>
-            {
-                var entry = PrayerTimeService.FetchToday(zone);
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    _loading = false;
-                    _entry   = entry;
+            var entry = await PrayerTimeService.FetchTodayAsync(zone);
+            _loading = false;
+            _entry   = entry;
 
-                    if (_entry == null)
-                    {
-                        TxtCountdown.Text  = "Gagal memuatkan";
-                        TxtNextPrayer.Text = "Tiada data";
-                        TxtCurrentLabel.Text = "Semak sambungan internet anda.";
-                    }
-                    else
-                    {
-                        UpdateUI();
-                    }
-                }));
-            });
+            if (_entry == null)
+            {
+                TxtCountdown.Text  = "Gagal memuatkan";
+                TxtNextPrayer.Text = "Tiada data";
+                TxtCurrentLabel.Text = "Semak sambungan internet anda.";
+            }
+            else
+            {
+                UpdateUI();
+            }
         }
 
         // ── Timer tick ────────────────────────────────────────────────────────

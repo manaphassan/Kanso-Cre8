@@ -18,7 +18,7 @@
                 <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold"
                            Foreground="{DynamicResource FluentBrand80}"
                            />
-                <ui:TextBlock Text="Browse your workspace like a catalog — select a project to inspect its brief, assets, and images."
+                <ui:TextBlock Text="Browse your workspace like a catalog - select a project to inspect its brief, assets, and images."
                            Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
                            Margin="0,3,0,0" />
             </StackPanel>
@@ -33,7 +33,7 @@
                     </Grid.ColumnDefinitions>
 
                     <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="36"
-                                PlaceholderText="&#xE721;  Search project title, Project ID..." 
+                                PlaceholderText="Search project title, Project ID..." 
                                 TextChanged="OnSearchInputChanged"
                                 />
 
@@ -276,7 +276,7 @@
                                     <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
                                             Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
                                             FontWeight="SemiBold"  BorderThickness="0" Cursor="Hand"/>
-                                    <ui:Button Content="• List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
+                                    <ui:Button Content="* List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
                                             Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
                                              BorderThickness="0" Cursor="Hand"/>
                                 </StackPanel>
@@ -301,13 +301,13 @@
                                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto"
                                  FontFamily="Consolas" FontSize="12"
-                                 Padding="14" BorderThickness="0" Background="#FAFAFA"/>
+                                 Padding="14" BorderThickness="0" Background="{DynamicResource TextControlBackground}"/>
                     </DockPanel>
 
                     <!-- Rendered Markdown — primary focus, fills all remaining height -->
                     <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
                                              VerticalScrollBarVisibility="Auto"
-                                             Background="White"
+                                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                              BorderThickness="0"
                                              Padding="16"/>
 
@@ -317,12 +317,12 @@
                              VerticalScrollBarVisibility="Auto"
                              Visibility="Collapsed"
                              FontFamily="Consolas" FontSize="11"
-                             Background="#F8FAFC" BorderThickness="0" Padding="16"/>
+                             Background="{DynamicResource TextControlBackground}" BorderThickness="0" Padding="16"/>
 
                     <!-- Image Gallery Grid (Collapsed by default) -->
                     <ScrollViewer x:Name="ImageGalleryViewer"
                                   VerticalScrollBarVisibility="Auto"
-                                  Background="#F8FAFC"
+                                  Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                   BorderThickness="0"
                                   Padding="12"
                                   Visibility="Collapsed">
@@ -336,20 +336,20 @@
                             </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="White" BorderBrush="#CBD5E1"
+                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1" CornerRadius="6"
                                             Width="140" Margin="5" Padding="6" Cursor="Hand">
                                         <StackPanel>
-                                            <Border Height="100" Background="#E2E8F0"
+                                            <Border Height="100" Background="{DynamicResource TextControlBackground}"
                                                     CornerRadius="4" Margin="0,0,0,6">
                                                 <Image Source="{Binding ImagePath}" Stretch="Uniform"/>
                                             </Border>
                                             <ui:TextBlock Text="{Binding FileName}"
                                                        FontSize="11" FontWeight="Bold"
-                                                       Foreground="#043388"
+                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                        TextTrimming="CharacterEllipsis"/>
                                             <ui:TextBlock Text="{Binding SubFolder}"
-                                                       FontSize="9" Foreground="#64748B"
+                                                       FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                        TextTrimming="CharacterEllipsis"/>
                                         </StackPanel>
                                     </Border>

@@ -174,18 +174,14 @@
                                             FontSize="10" BorderThickness="0" Cursor="Hand"
                                             />
                                 </Border>
-                                <Border CornerRadius="4" Background="#FFEEEE" BorderBrush="#FFAAAA" BorderThickness="1">
-                                    <ui:Button x:Name="BtnDeleteNote" Click="OnDeleteNoteClicked"
-                                            Height="26" Padding="8,0" Background="Transparent" Foreground="#CC0000"
-                                            FontSize="10" BorderThickness="0" Cursor="Hand"
-                                            >
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="11"
-                                                       Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="Delete" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </ui:Button>
-                                </Border>
+                                <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
+                                           Height="26" Padding="8,0" FontSize="10" Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                                   Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Delete" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
                             </StackPanel>
                         </Grid>
                     </Border>

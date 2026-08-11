@@ -405,7 +405,10 @@ namespace SS_CAM.Views
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] LoadImageGallery: " + ex.Message);
+            }
 
             ImageGalleryList.ItemsSource = images;
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SS_CAM.Models;
 using SS_CAM.Utilities;
@@ -72,9 +74,16 @@ namespace SS_CAM.Services
             new PrayerZoneInfo { Code = "TRG03", Name = "TRG03 \u2012 Hulu Terengganu, Dungun, Kemaman" },
         };
 
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(9) };
+
         // ── Public API ────────────────────────────────────────────────────────
 
         public static PrayerTimeEntry FetchToday(string zone)
+        {
+            return Task.Run(() => FetchTodayAsync(zone)).GetAwaiter().GetResult();
+        }
+
+        public static async Task<PrayerTimeEntry> FetchTodayAsync(string zone)
         {
             try
             {
@@ -99,19 +108,19 @@ namespace SS_CAM.Services
 
                     string url = ApiBase + zone + "?period=today";
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | (SecurityProtocolType)768 | (SecurityProtocolType)192;
-                    var req = (HttpWebRequest)WebRequest.Create(url);
-                    req.Timeout = 9000;
-                    req.Method = "GET";
-                    req.Accept = "application/json";
-                    req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 
-                    using (var resp = (HttpWebResponse)req.GetResponse())
-                    using (var reader = new StreamReader(resp.GetResponseStream()))
+                    using (var req = new HttpRequestMessage(HttpMethod.Get, url))
                     {
-                        json = reader.ReadToEnd();
-                    }
+                        req.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
+                        req.Headers.Accept.ParseAdd("application/json");
 
-                    File.WriteAllText(cacheFile, json);
+                        var resp = await _httpClient.SendAsync(req).ConfigureAwait(false);
+                        if (resp.IsSuccessStatusCode)
+                        {
+                            json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            File.WriteAllText(cacheFile, json);
+                        }
+                    }
                 }
 
                 var entry = ParseEntry(zone, json);
@@ -121,7 +130,11 @@ namespace SS_CAM.Services
                 }
                 return entry;
             }
-            catch (Exception ex) { File.WriteAllText(System.IO.Path.Combine(CacheDir, "error.log"), ex.ToString()); return null; }
+            catch (Exception ex)
+            {
+                try { File.WriteAllText(System.IO.Path.Combine(CacheDir, "error.log"), ex.ToString()); } catch (Exception logEx) { System.Diagnostics.Debug.WriteLine("[PrayerTimeService] Write error log: " + logEx.Message); }
+                return null;
+            }
         }
 
         public static PrayerState ComputeState(PrayerTimeEntry entry)
@@ -261,7 +274,7 @@ namespace SS_CAM.Services
                 }
                 return DateTime.MinValue;
             }
-            catch { return DateTime.MinValue; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[PrayerTimeService] ParseTime: " + ex.Message); return DateTime.MinValue; }
         }
 
         private static void FireAdhanIfNeeded(string prayerName)

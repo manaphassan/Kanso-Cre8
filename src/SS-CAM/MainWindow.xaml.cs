@@ -202,7 +202,7 @@ namespace SS_CAM
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                try { DragMove(); } catch { }
+                try { DragMove(); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] DragMove: " + ex.Message); }
             }
         }
 
@@ -273,7 +273,7 @@ namespace SS_CAM
                     if (SidebarAvatarInitials != null)
                         SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] LoadSidebarAvatar: " + ex.Message); }
             }
             else
             {
@@ -753,7 +753,7 @@ namespace SS_CAM
                         UseShellExecute = true
                     });
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OpenUpdateUrl: " + ex.Message); }
             }
         }
 
@@ -929,7 +929,7 @@ namespace SS_CAM
                     SpecWaveFillPath.Data = fillGeom;
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] DrawSpectrumWave: " + ex.Message); }
         }
     }
 }

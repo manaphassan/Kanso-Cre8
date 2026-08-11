@@ -59,12 +59,12 @@
                 <!-- Backlog Column -->
                 <ui:Card Width="240" Margin="0,0,12,0" Padding="0" ClipToBounds="True">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="#E2E8F0" Padding="12,8">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8">
                             <StackPanel Orientation="Horizontal">
                                 <Border Width="10" Height="10" CornerRadius="5" Background="#94A3B8" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="Backlog" FontWeight="Bold" FontSize="12" Foreground="#475569"/>
-                                <Border Background="#CBD5E1" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
-                                    <ui:TextBlock x:Name="CountBacklog" Text="0" FontSize="10" Foreground="#475569"/>
+                                <ui:TextBlock Text="Backlog" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <Border Background="{DynamicResource TextControlBackground}" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
+                                    <ui:TextBlock x:Name="CountBacklog" Text="0" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                 </Border>
                             </StackPanel>
                         </Border>
@@ -93,12 +93,12 @@
                 <!-- In Progress Column -->
                 <ui:Card Width="240" Margin="0,0,12,0" Padding="0" ClipToBounds="True">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="#DBEAFE" Padding="12,8">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8">
                             <StackPanel Orientation="Horizontal">
                                 <Border Width="10" Height="10" CornerRadius="5" Background="#3B82F6" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="In Progress" FontWeight="Bold" FontSize="12" Foreground="#1D4ED8"/>
-                                <Border Background="#BFDBFE" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
-                                    <ui:TextBlock x:Name="CountInProgress" Text="0" FontSize="10" Foreground="#1D4ED8"/>
+                                <ui:TextBlock Text="In Progress" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
+                                <Border Background="{DynamicResource TextControlBackground}" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
+                                    <ui:TextBlock x:Name="CountInProgress" Text="0" FontSize="10" Foreground="{DynamicResource FluentBrand80}"/>
                                 </Border>
                             </StackPanel>
                         </Border>
@@ -128,12 +128,12 @@
                 <!-- Review Column -->
                 <ui:Card Width="240" Margin="0,0,12,0" Padding="0" ClipToBounds="True">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="#FEF3C7" Padding="12,8">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8">
                             <StackPanel Orientation="Horizontal">
                                 <Border Width="10" Height="10" CornerRadius="5" Background="#F59E0B" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="Review" FontWeight="Bold" FontSize="12" Foreground="#B45309"/>
-                                <Border Background="#FDE68A" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
-                                    <ui:TextBlock x:Name="CountReview" Text="0" FontSize="10" Foreground="#B45309"/>
+                                <ui:TextBlock Text="Review" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}"/>
+                                <Border Background="{DynamicResource TextControlBackground}" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
+                                    <ui:TextBlock x:Name="CountReview" Text="0" FontSize="10" Foreground="{DynamicResource SystemFillColorCautionBrush}"/>
                                 </Border>
                             </StackPanel>
                         </Border>
@@ -162,12 +162,12 @@
                 <!-- Done Column -->
                 <ui:Card Width="240" Margin="0,0,12,0" Padding="0" ClipToBounds="True">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="#D1FAE5" Padding="12,8">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8">
                             <StackPanel Orientation="Horizontal">
                                 <Border Width="10" Height="10" CornerRadius="5" Background="#10B981" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="Done" FontWeight="Bold" FontSize="12" Foreground="#065F46"/>
-                                <Border Background="#A7F3D0" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
-                                    <ui:TextBlock x:Name="CountDone" Text="0" FontSize="10" Foreground="#065F46"/>
+                                <ui:TextBlock Text="Done" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource SystemFillColorSuccessBrush}"/>
+                                <Border Background="{DynamicResource TextControlBackground}" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
+                                    <ui:TextBlock x:Name="CountDone" Text="0" FontSize="10" Foreground="{DynamicResource SystemFillColorSuccessBrush}"/>
                                 </Border>
                             </StackPanel>
                         </Border>
@@ -191,12 +191,12 @@
                 <!-- On Hold / Untracked Column -->
                 <ui:Card Width="240" Padding="0" ClipToBounds="True">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="#F1F5F9" Padding="12,8">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8">
                             <StackPanel Orientation="Horizontal">
                                 <Border Width="10" Height="10" CornerRadius="5" Background="#94A3B8" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="On Hold / Untracked" FontWeight="Bold" FontSize="12" Foreground="#64748B"/>
-                                <Border Background="#E2E8F0" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
-                                    <ui:TextBlock x:Name="CountOther" Text="0" FontSize="10" Foreground="#64748B"/>
+                                <ui:TextBlock Text="On Hold / Untracked" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <Border Background="{DynamicResource TextControlBackground}" CornerRadius="8" Padding="5,1" Margin="8,0,0,0">
+                                    <ui:TextBlock x:Name="CountOther" Text="0" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                 </Border>
                             </StackPanel>
                         </Border>

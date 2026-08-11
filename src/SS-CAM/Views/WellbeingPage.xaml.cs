@@ -48,6 +48,12 @@ namespace SS_CAM.Views
                 UpdateRadarChart();
             };
 
+            Unloaded += (s, e) =>
+            {
+                if (_uiTimer != null) _uiTimer.Stop();
+                if (_animTimer != null) _animTimer.Stop();
+            };
+
             RefreshMetrics();
             UpdateTimerUI();
             UpdateRadarChart();

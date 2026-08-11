@@ -95,7 +95,7 @@
                             BorderBrush="#3A3A3A" Padding="14,6" Cursor="Hand" FontSize="11"
                             FontFamily="Segoe UI Variable Text">
                         <ui:Button.Template>
-                            <ControlTemplate TargetType="Button">
+                            <ControlTemplate TargetType="ui:Button">
                                 <Border Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"

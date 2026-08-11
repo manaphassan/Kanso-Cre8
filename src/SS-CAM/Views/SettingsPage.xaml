@@ -35,8 +35,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Center">
-                                    <Border Width="72" Height="72" CornerRadius="36" Background="#21A1F7"
-                                            BorderBrush="#043388" BorderThickness="2" ClipToBounds="True"
+                                    <Border Width="72" Height="72" CornerRadius="36" Background="{DynamicResource FluentBrand80}"
+                                            BorderBrush="{DynamicResource FluentBrand70}" BorderThickness="2" ClipToBounds="True"
                                             HorizontalAlignment="Center">
                                         <Grid>
                                             <ui:TextBlock x:Name="AvatarEmojiText" Text="&#xE77B;" FontFamily="Segoe Fluent Icons" FontSize="34"

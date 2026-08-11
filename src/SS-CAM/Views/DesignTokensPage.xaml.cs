@@ -37,6 +37,7 @@ namespace SS_CAM.Views
             _copiedTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
             _copiedTimer.Tick += (s, e) => { CopiedNotice.Text = ""; _copiedTimer.Stop(); };
             Loaded += (s, e) => LoadTokensAsync();
+            Unloaded += (s, e) => { if (_copiedTimer != null) _copiedTimer.Stop(); };
         }
 
         // ── Load / parse ──────────────────────────────────────────────────────

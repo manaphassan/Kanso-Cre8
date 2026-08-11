@@ -10,7 +10,7 @@ namespace SS_CAM.Services
     public static class WorkspaceScanner
     {
         private static readonly Regex ProjectPattern = new Regex(
-            @"^\d{6}_[A-Z0-9_-]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            @"^\d{6}_([A-Z0-9]+)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private static readonly string[] ChartColors = new[] { "#21A1F7", "#043388", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
 
