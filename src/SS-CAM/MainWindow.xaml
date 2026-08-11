@@ -7,26 +7,17 @@
         MinHeight="660" MinWidth="980"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
-        WindowBackdropType="Mica"
-        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="None"
         WindowCornerPreference="Round">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>   <!-- TitleBar -->
-            <RowDefinition Height="Auto"/>   <!-- Update Banner -->
+            <RowDefinition Height="Auto"/>   <!-- Update Banner (hidden by default) -->
             <RowDefinition Height="*"/>      <!-- Main Body -->
         </Grid.RowDefinitions>
 
-        <!-- Fluent 2 Window TitleBar -->
-        <ui:TitleBar Grid.Row="0" x:Name="AppTitleBar"
-                     Title="SuamiSihat Creative Assets Management"
-                     Icon="app.ico"
-                     Foreground="White"
-                     Background="Transparent"/>
-
         <!-- Update Notification Banner -->
-        <Border x:Name="UpdateBanner" Grid.Row="1" Background="#FEF9C3" BorderBrush="#EAB308"
+        <Border x:Name="UpdateBanner" Grid.Row="0" Background="#FEF9C3" BorderBrush="#EAB308"
                 BorderThickness="0,0,0,1" Padding="16,6" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -35,7 +26,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="🆕 " FontFamily="Segoe UI Emoji" FontSize="13" VerticalAlignment="Center"/>
+                    <TextBlock Text="&#x1F195; " FontFamily="Segoe UI Emoji" FontSize="13" VerticalAlignment="Center"/>
                     <TextBlock x:Name="UpdateBannerText" Text="A new version of SS-CAM is available!"
                                FontSize="12" FontWeight="SemiBold" Foreground="#78350F" VerticalAlignment="Center"
                                FontFamily="Segoe UI Variable Text"/>
@@ -44,19 +35,20 @@
                         Click="OnDownloadUpdateClicked" Height="26" Padding="12,0" Margin="12,0,8,0"
                         Background="#EAB308" Foreground="White" FontWeight="SemiBold" FontSize="11"
                         BorderThickness="0" Cursor="Hand" FontFamily="Segoe UI Variable Text"/>
-                <Button Grid.Column="2" Content="✖" Click="OnDismissUpdateBanner" Width="26" Height="26"
+                <Button Grid.Column="2" Content="&#x2716;" Click="OnDismissUpdateBanner" Width="26" Height="26"
                         Background="Transparent" Foreground="#92400E" BorderThickness="0" FontSize="12"
                         FontWeight="Bold" Cursor="Hand"/>
             </Grid>
         </Border>
 
-        <!-- Main Body: Fluent 2 Single-Column Nav + Content -->
-        <ui:NavigationView x:Name="RootNavigation" Grid.Row="2" PaneDisplayMode="Left"
-                           IsBackButtonVisible="Collapsed" OpenPaneLength="200">
+        <!-- Main Body: Fluent 2 NavigationView (always expanded — Left pane with text labels) -->
+        <ui:NavigationView x:Name="RootNavigation" Grid.Row="1"
+                           PaneDisplayMode="Left"
+                           IsPaneOpen="True"
+                           IsBackButtonVisible="Collapsed"
+                           OpenPaneLength="200">
 
-            <!-- ═══════════════════════════════════════════════════════ -->
-            <!-- PANE HEADER: Search box + Modules label                 -->
-            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- PANE HEADER: Search box + Modules label -->
             <ui:NavigationView.PaneHeader>
                 <StackPanel Margin="12,6,12,4">
                     <!-- Search box -->
@@ -80,9 +72,7 @@
                 </StackPanel>
             </ui:NavigationView.PaneHeader>
 
-            <!-- ═══════════════════════════════════════════════════════ -->
-            <!-- MENU ITEMS                                               -->
-            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- MENU ITEMS -->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Dashboard"         Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
                 <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
@@ -96,16 +86,12 @@
                 <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"  TargetPageType="{x:Type views:WorkstationHealthPage}" />
             </ui:NavigationView.MenuItems>
 
-            <!-- ═══════════════════════════════════════════════════════ -->
-            <!-- FOOTER MENU ITEMS                                        -->
-            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- FOOTER MENU ITEMS -->
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>
 
-            <!-- ═══════════════════════════════════════════════════════ -->
-            <!-- PANE FOOTER: Status rows + User profile card            -->
-            <!-- ═══════════════════════════════════════════════════════ -->
+            <!-- PANE FOOTER: Status rows + User profile card -->
             <ui:NavigationView.PaneFooter>
                 <StackPanel>
                     <!-- Status rows -->
@@ -128,11 +114,11 @@
                                        MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
                                        ToolTip="Open Wellbeing &amp; Focus Timer"/>
                         </StackPanel>
-                        <!-- Active theme — click to cycle themes -->
+                        <!-- Active theme - click to cycle themes -->
                         <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
                                     Focusable="False"
                                     MouseLeftButtonDown="OnStatusThemeToggle"
-                                    ToolTip="Click to cycle: SS Default -&gt; Falconia -&gt; Metamorphosis">
+                                    ToolTip="Click to cycle: SS Default -> Falconia -> Metamorphosis">
                             <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="#5A7FA8"
                                        FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
                                        Focusable="False"/>
@@ -198,12 +184,9 @@
                 </StackPanel>
             </ui:NavigationView.PaneFooter>
         </ui:NavigationView>
-        
-        <!-- Visualizer / Header Canvas (hidden, kept for audio animation) -->
+
+        <!-- Hidden elements for audio animation (kept for backward compatibility) -->
         <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <TextBlock x:Name="HeaderSubtitle" Grid.Row="0" Visibility="Collapsed"/>
     </Grid>
 </ui:FluentWindow>
-
-
-

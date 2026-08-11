@@ -170,36 +170,46 @@ namespace SS_CAM.Services
 
                 TitleBarForeground = "#FFFFFF",
 
-                HeaderBg        = "#021B47",
+                // Header area -- deep brand navy
+                HeaderBg        = "#0B2358",
                 HeaderBorder    = "#1E3A8A",
-                MainFrameBg     = "#071324",
 
-                SidebarBg       = "#02153D",
-                SidebarBorder   = "#0A2560",
+                // Content frame -- white (Light WPF-UI mode)
+                MainFrameBg     = "#FFFFFF",
 
-                SearchBg          = "#071E46",
+                // Sidebar -- readable deep navy (matches v2.3.6)
+                SidebarBg       = "#0B2358",
+                SidebarBorder   = "#1E3A8A",
+
+                // Search box inside sidebar
+                SearchBg          = "#0D2A5C",
                 SearchBorder      = "#1E3A8A",
                 SearchText        = "#FFFFFF",
                 SearchPlaceholder = "#9D9D9D",
 
+                // Active nav item: semi-transparent blue tint + white text
                 ActiveNavBg     = "#1A479EF5",
-                ActiveNavText   = "#FFFFFF",              // white text when selected!
+                ActiveNavText   = "#FFFFFF",
                 ActiveNavSubtext= "#C7E0F4",
 
-                InactiveNavText    = "#9D9D9D",           // grey text when inactive!
+                // Inactive nav: grey text
+                InactiveNavText    = "#9D9D9D",
                 InactiveNavSubtext = "#9D9D9D",
 
-                FooterBg        = "#02153D",
-                FooterBorder    = "#0A2560",
+                // Footer / status bar
+                FooterBg        = "#0B2358",
+                FooterBorder    = "#1E3A8A",
                 FooterText      = "#C8C8C8",
-                FooterCardBg    = "#071E46",
-                FooterCardBorder= "#0A2560",
+                FooterCardBg    = "#0D2A5C",
+                FooterCardBorder= "#1E3A8A",
 
-                UserCardBg      = "#071E46",
-                UserCardBorder  = "#0A2560",
+                // Designer Profile card in sidebar
+                UserCardBg      = "#0D2A5C",
+                UserCardBorder  = "#1E3A8A",
                 UserCardTitle   = "#FFFFFF",
                 UserCardSub     = "#479EF5",
 
+                // Nav indicator pill + icon tint
                 NavIndicatorColor = "#479EF5",
                 NavIconActive     = "#479EF5",
                 NavIconInactive   = "#9D9D9D",
