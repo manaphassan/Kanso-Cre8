@@ -292,10 +292,11 @@ namespace SS_CAM.Services
             // and card resource dictionaries. Metamorphosis owns the dark mode.
             try
             {
-                // Falconia is the only truly Light-mode theme.
-                // SS Default has a dark navy sidebar — Dark mode lets the pane Background bind correctly.
-                // Content area is overridden to white in OnThemeModeChanged.
-                if (theme == AppTheme.Falconia)
+                // SS Default + Falconia: Light WPF-UI mode gives the correct white content area.
+                // The dark navy pane is applied via NavigationViewExpandedPaneBackground at
+                // control level in OnThemeModeChanged, which overrides the light pane default.
+                // Metamorphosis: full Dark mode (dark canvas + glass cards).
+                if (theme == AppTheme.SSDefault || theme == AppTheme.Falconia)
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
                 else
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);

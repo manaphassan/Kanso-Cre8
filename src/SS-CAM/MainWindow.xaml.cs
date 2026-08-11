@@ -521,7 +521,10 @@ namespace SS_CAM
             // CORRECT WPF-UI 3.x resource keys:
             //   NavigationViewExpandedPaneBackground  = pane in Left (expanded) mode
             //   NavigationViewDefaultPaneBackground   = pane in LeftCompact / LeftMinimal mode
-            // Do NOT set RootNavigation.Background — that controls the content frame, not the pane.
+            // RootNavigation.Background also appears to colour the pane in WPF-UI 3.0.x (v2.6.0 approach).
+            if (RootNavigation != null)
+                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+
 
             // ── TitleBar strip ───────────────────────────────────────────────
             if (AppTitleBar != null)
@@ -631,39 +634,8 @@ namespace SS_CAM
                 }
             }
 
-            // ── Content-area token override ──────────────────────────────────────────────────
-            // SS Default runs WPF-UI in Dark mode so the navy pane Background binds correctly.
-            // The content frame must still look like a Light canvas — override the key
-            // WPF-UI Dark tokens back to white values at Application level.
-            // These keys are NOT set on RootNavigation.Resources, so they do not affect
-            // NavigationViewItem templates which use NavigationViewItemForeground instead.
-            if (theme == AppTheme.SSDefault)
-            {
-                Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0xF5, 0xF5));
-                Application.Current.Resources["CardBackgroundFillColorDefaultBrush"]  = new SolidColorBrush(Colors.White);
-                Application.Current.Resources["CardBackgroundFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromRgb(0xF8, 0xFA, 0xFC));
-                Application.Current.Resources["CardStrokeColorDefaultBrush"]          = new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0));
-                Application.Current.Resources["TextFillColorPrimaryBrush"]            = new SolidColorBrush(Color.FromRgb(0x24, 0x24, 0x24));
-                Application.Current.Resources["TextFillColorSecondaryBrush"]          = new SolidColorBrush(Color.FromRgb(0x61, 0x61, 0x61));
-                Application.Current.Resources["TextControlBackground"]                = new SolidColorBrush(Colors.White);
-                Application.Current.Resources["TextControlBackgroundFocused"]         = new SolidColorBrush(Colors.White);
-                Application.Current.Resources["TextControlBackgroundPointerOver"]     = new SolidColorBrush(Color.FromRgb(0xF0, 0xF0, 0xF0));
-            }
-            else if (theme == AppTheme.Falconia)
-            {
-                // Falconia uses WPF-UI Light mode — remove any SS Default content overrides.
-                // WPF-UI’s own Light theme will reset these from its merged dictionaries.
-                Application.Current.Resources.Remove("ApplicationPageBackgroundThemeBrush");
-                Application.Current.Resources.Remove("CardBackgroundFillColorDefaultBrush");
-                Application.Current.Resources.Remove("CardBackgroundFillColorSecondaryBrush");
-                Application.Current.Resources.Remove("CardStrokeColorDefaultBrush");
-                Application.Current.Resources.Remove("TextFillColorPrimaryBrush");
-                Application.Current.Resources.Remove("TextFillColorSecondaryBrush");
-                Application.Current.Resources.Remove("TextControlBackground");
-                Application.Current.Resources.Remove("TextControlBackgroundFocused");
-                Application.Current.Resources.Remove("TextControlBackgroundPointerOver");
-            }
-            // Metamorphosis: full Dark WPF-UI mode, no content overrides needed.
+            // SS Default + Falconia: WPF-UI Light mode manages the content area correctly.
+            // Metamorphosis: full Dark WPF-UI mode — no manual overrides needed.
         }
 
         private void OnFooterTimerClicked(object sender, MouseButtonEventArgs e)
