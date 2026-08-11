@@ -1,6 +1,24 @@
 # SS-CAM FIX LOG
 
-## v2.6.2 — 2026-08-11 (Creative Workflow Modernization & Automation Release)
+## v2.6.1 — 2026-08-11 (Header Title Rebranding & Persistent SS Blue Wavelength Player)
+
+### Key Updates & Fixes
+- **Header Title Rebranding**: Rebranded app title to `SS Creative Assets Management` with a 100% full-width `#022057` SuamiSihat deep blue TitleBar strip, transparent window caption buttons (`— 🗖 ✕`), and native window dragging (`DragMove`).
+- **Persistent SS Blue Bottom Radio Player Bar**:
+  - Full SuamiSihat deep blue background (`#022057`) with `#043388` accent border.
+  - **Fluid Wavelength Vector Audio Visualizer**: 60 FPS real-time vector path visualizer (`StreamGeometry`) featuring a 4-stop gradient stroke (`#60A5FA` → `#38BDF8` → `#34D399` → `#818CF8`) and ambient gradient fill under the wave curve.
+  - **Station Cover Image**: Integrated station cover art image loader (`BitmapImage`) supporting local/remote artwork with seamless emoji fallback.
+  - **Aligned Now-Playing Layout**: Aligned Station Name + Emerald Green `LIVE` Pill on Line 1, and `NOW PLAYING:` tag + track subtext on Line 2, centered vertically alongside the 40x40 cover image.
+- **Top Hero Featured Radio Player Banner**: Refactored `RadioPage.xaml` into a 4-row layout featuring a Top Hero Featured Station Banner, eliminating player redundancy.
+- **Strict Equal-Height Dashboard KPI Grid**: Enforced `UniformGrid Rows="2" Columns="4" Height="224"` with `VerticalAlignment="Stretch"` on all 8 KPI widgets for 100% uniform cell heights across all rows.
+- **Sidebar Cleanup**: Removed redundant radio status text from left navigation sidebar footer (`PaneFooter`).
+
+### Verification
+- Release Build: PASS (`bin\Release\SS-CAM.exe`).
+- Source Guardian: PASS with 0 FAIL findings (`verify-sscam.ps1`).
+- Package Executables: `SS-CAM-v2.6.1.exe` and `dist\SS-CAM-v2.6.1.exe` verified.
+
+---
 
 ### Phase 1 — UI/UX Modernization
 - **Dashboard Enhancements**: Updated metric cards with relative time calculations ("Today", "2 days ago") and replaced GroupBox containers with elevated `<ui:Card>` components.
