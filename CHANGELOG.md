@@ -5,21 +5,25 @@ All notable SS-CAM changes are documented here.
 ## [2.6.0] - 2026-08-11 (Latest)
 
 ### Fixed — Critical (P0)
+
 - **`FrontmatterService.ParseFrontmatter`** — Parser discarded all successfully-parsed key-value pairs when a README.md was missing its closing `---` delimiter (fell through to `return null`). Changed to `return result` so partially-formed frontmatter is still honoured. Affected Task Manager column placement for any project with a malformed README.
 
 ### Fixed — High (P1)
+
 - **Theme toggle** — `OnStatusThemeToggle` event handler existed but had no XAML binding. Added `MouseLeftButtonDown` and `Cursor="Hand"` to the Theme status row in the sidebar footer with a `ToolTip` describing the cycle order (SS Default → Falconia → Metamorphosis).
 - **Orphaned handlers removed** — `OnOpenGithub` and `OnOpenAboutWindow` were dead code-behind methods with no XAML targets. Removed to reduce maintenance surface.
 - **Dead sidebar-collapse fields removed** — `isSidebarExpanded` (bool) and `_lastActiveNavBtn` (Button) were written but never read. These were remnants of the pre-WPF-UI custom sidebar. Removed; compiler warnings eliminated.
 
 ### Fixed — Medium (P2)
+
 - **Hardcoded `D:\Testing` workspace default** — `DashboardPage`, `SearchCopyPage`, and `ProjectCreatorPage` all used `D:\Testing` as the initial `workspaceRoot` value. Changed to `string.Empty` so unconfigured installs show an empty/graceful state instead of silently scanning a non-existent path.
 - **Team Board offline write** — `TeamBoardService.GetNotesPath` previously created the `_Team` folder on whatever path was provided, including local fallbacks. Added an early guard (`Directory.Exists(workspaceRoot)`) that returns `null` for inaccessible roots. `Save()` now checks for a `null` path and returns `false` immediately, propagating the correct error to the UI.
 - **Workstation Health rescan count** — `OnRescanSoftwareClicked` showed a hardcoded "11 design software packages" confirmation regardless of actual scan results. Refactored to call `ScanInstalledDesignSoftware()` once and use the real count with proper pluralisation.
 - **Static `HttpClient`** — `FetchDesignArticlesAsync` created a new `HttpClient` instance per fetch. Replaced with a `private static readonly HttpClient _httpClient` singleton on `DashboardPage` to prevent socket exhaustion. `UserAgent` is now cleared and re-set on each call.
-- **Quick Notes H3 preview** — `RenderPreview` handled `# H1` and `## H2` but had no branch for `### H3`. Added `### ` case with `FontSize=14, FontWeight=SemiBold`. Corrected check order to `### → ## → #` to prevent prefix collision.
+- **Quick Notes H3 preview** — `RenderPreview` handled `# H1` and `## H2` but had no branch for `### H3`. Added `###` case with `FontSize=14, FontWeight=SemiBold`. Corrected check order to `### → ## → #` to prevent prefix collision.
 
 ### Fixed — Low (P3)
+
 - **Silent `catch {}` blocks** — `FrontmatterService` (ReadStatus, WriteStatus) and `TeamBoardService` (LoadNotes, Save, GetNotesPath) now log exceptions via `System.Diagnostics.Debug.WriteLine` with `[ServiceName]` prefixes instead of silently discarding errors. Aligns with AGENTS.md error-handling rules.
 
 ### Integrity

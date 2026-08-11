@@ -23,12 +23,15 @@
 ## 🔄 In Progress — v2.7.0 (Target: Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
+
 A dedicated scratchpad module for capturing ideas, client call notes, and creative briefs in Markdown format. Two-panel layout: note list sidebar + full editor with Markdown toolbar and live preview toggle. Auto-saves on idle.
 
 ### 2. Task Manager — Project Status Board
+
 Reads `status`, `deadline`, `priority`, and `revision` from YAML frontmatter embedded in each project's `README.md`. Presents all projects as a filterable status board (Backlog / In Progress / Review / Done). Designers can update status inline; SS-CAM writes changes back to the frontmatter without touching the rest of the document.
 
 **Frontmatter spec (v2.5.0):**
+
 ```yaml
 ---
 status: in-progress          # backlog | in-progress | review | done | on-hold
@@ -42,15 +45,19 @@ revision: 2
 ```
 
 ### 3. NAS File Structure — Designer Filter in Search & Copy
+
 Makes the designer folder filter in the Search & Copy catalog functional. SS-CAM enumerates first-level subdirectories of the workspace root to discover all designer folders, populates a dropdown, and scopes search results accordingly.
 
 ### 4. Search & Copy — Edit README In-App
+
 Adds an "Edit Brief" button to the project detail pane. One click switches to edit mode with a Markdown-capable textarea (same toolbar as Project Creator). Saves changes directly back to the project `README.md` on disk.
 
 ### 5. Radio Player — UI Overhaul + Station Cover Art
+
 Redesigns the radio player with an album-art-first card grid, genre filter tabs, a persistent mini-player bar, and lazily-loaded station cover images (from community radio API or local cache). Falls back to a branded monogram tile when no image is available.
 
 ### 6. Collaboration — Team Notes Board
+
 A lightweight, serverless team board stored as a JSON file on the shared NAS workspace (`_Team/team-notes.json`). Designers can post, read, and pin team announcements directly in SS-CAM. Auto-refreshes every 30 seconds.
 
 ---
