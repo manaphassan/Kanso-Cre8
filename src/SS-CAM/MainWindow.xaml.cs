@@ -170,16 +170,17 @@ namespace SS_CAM
             currentProfile = UserProfileService.LoadProfile();
 
             // Update sidebar persona name & department
-            if (SidebarPersonaName != null)
-                SidebarPersonaName.Text = currentProfile.DesignerName ?? "Designer";
-            if (SidebarPersonaDept != null)
-                SidebarPersonaDept.Text = currentProfile.Department ?? "Creative Department";
+            // Update avatar tooltip with name + department
+            string personaName = currentProfile.DesignerName ?? "Designer";
+            string personaDept = currentProfile.Department ?? "Creative Department";
+            if (TitleBarAvatarBtn != null)
+                TitleBarAvatarBtn.ToolTip = personaName + " — " + personaDept + "\nClick to open Settings & Profile";
 
             // Initials from first letter of designer name
-            if (SidebarAvatarInitials != null)
+            if (TitleBarAvatarInitials != null)
             {
                 string name = currentProfile.DesignerName ?? "D";
-                SidebarAvatarInitials.Text = name.Length > 0 ? name[0].ToString().ToUpper() : "D";
+                TitleBarAvatarInitials.Text = name.Length > 0 ? name[0].ToString().ToUpper() : "D";
             }
 
             // Update avatar photo if set
@@ -192,22 +193,22 @@ namespace SS_CAM
                     bmp.UriSource = new Uri(currentProfile.AvatarPath, UriKind.Absolute);
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.EndInit();
-                    if (SidebarAvatarImage != null)
+                    if (TitleBarAvatarImage != null)
                     {
-                        SidebarAvatarImage.Source = bmp;
-                        SidebarAvatarImage.Visibility = System.Windows.Visibility.Visible;
+                        TitleBarAvatarImage.Source = bmp;
+                        TitleBarAvatarImage.Visibility = System.Windows.Visibility.Visible;
                     }
-                    if (SidebarAvatarInitials != null)
-                        SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
+                    if (TitleBarAvatarInitials != null)
+                        TitleBarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
                 }
                 catch { }
             }
             else
             {
-                if (SidebarAvatarImage != null)
-                    SidebarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
-                if (SidebarAvatarInitials != null)
-                    SidebarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
+                if (TitleBarAvatarImage != null)
+                    TitleBarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
+                if (TitleBarAvatarInitials != null)
+                    TitleBarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -414,47 +415,40 @@ namespace SS_CAM
             if (RootNavigation != null)
                 RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
 
-            // -- TitleBar background: independent from sidebar (Azure for SS Default) --
+            // -- TitleBar background + foreground (Azure for SS Default) --
             if (AppTitleBar != null)
             {
                 AppTitleBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarBg ?? c.SidebarBg));
                 AppTitleBar.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
             }
 
-            // -- PaneHeader: search box container --
-            if (SidebarSearchBorder != null)
-                SidebarSearchBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBg));
-
-            // -- PaneHeader: search text foreground --
-            if (SidebarSearchBox != null)
+            // -- TitleBar: search box bg (semi-transparent on Azure; light grey on white) --
+            if (TitleBarSearchBorder != null)
             {
-                SidebarSearchBox.Foreground   = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
-                SidebarSearchBox.CaretBrush   = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
+                TitleBarSearchBorder.Background = c.IsLight
+                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EBEBEB"))
+                    : new SolidColorBrush(Color.FromArgb(0x26, 0xFF, 0xFF, 0xFF));
+            }
+            if (TitleBarSearchBox != null)
+            {
+                var searchFg = c.IsLight ? "#242424" : "#FFFFFF";
+                TitleBarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(searchFg));
+                TitleBarSearchBox.CaretBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(searchFg));
             }
 
-            // -- PaneHeader: MODULES section label --
+            // -- TitleBar: timer + avatar tint follow title bar foreground --
+            if (TitleBarTimerText != null)
+                TitleBarTimerText.Foreground = c.IsLight
+                    ? new SolidColorBrush(Color.FromArgb(0xCC, 0x24, 0x24, 0x24))
+                    : new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
+            if (TitleBarAvatarBtn != null)
+                TitleBarAvatarBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+
+            // -- Sidebar: MODULES section label --
             if (SidebarModulesLabel != null)
                 SidebarModulesLabel.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
 
-            // -- PaneFooter: horizontal divider --
-            if (SidebarDivider != null)
-                SidebarDivider.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
-
-            // -- PaneFooter: user profile card background --
-            if (SidebarUserCard != null)
-                SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
-
-            // -- PaneFooter: avatar ring background --
-            if (SidebarAvatarRing != null)
-                SidebarAvatarRing.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterCardBg));
-
-            // -- PaneFooter: persona name + department text colors --
-            if (SidebarPersonaName != null)
-                SidebarPersonaName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
-            if (SidebarPersonaDept != null)
-                SidebarPersonaDept.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
-
-            // -- Update theme name label in sidebar footer --
+            // -- Sidebar footer: theme label --
             if (StatusThemeText != null)
             {
                 string themeName;
@@ -514,23 +508,19 @@ namespace SS_CAM
 
         private void TriggerNasHealthCheck()
         {
-            if (StatusNasText != null)
-            {
-                StatusNasText.Text = "SSNAS Checking...";
-                StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
-            }
-            if (NasStatusDot != null)
-                NasStatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
+            // Set dot to grey (checking)
+            if (TitleBarNasDot != null)
+                TitleBarNasDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
+            if (TitleBarNasClickTarget != null)
+                TitleBarNasClickTarget.ToolTip = "SSNAS — Checking...";
 
             CheckNasOnlineAsync((isOnline, statusText) =>
             {
-                if (StatusNasText != null)
-                {
-                    StatusNasText.Text = statusText;
-                    StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
-                }
-                if (NasStatusDot != null)
-                    NasStatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
+                string color = isOnline ? "#10B981" : "#EF4444";
+                if (TitleBarNasDot != null)
+                    TitleBarNasDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
+                if (TitleBarNasClickTarget != null)
+                    TitleBarNasClickTarget.ToolTip = statusText + " — click to re-check or open NAS";
             });
         }
 
@@ -721,34 +711,43 @@ namespace SS_CAM
             return json.Substring(open + 1, close - open - 1);
         }
 
-        // ─── Sidebar Search Box ─────────────────────────────────────────────────
+        // ─── Title Bar Search Box ───────────────────────────────────────────────
         // Filters nav items by label text (case-insensitive substring match).
+        // Search box has moved from sidebar PaneHeader to the title bar Header slot.
         private static readonly string SearchPlaceholder = "Search modules...";
 
         private void OnSearchBoxGotFocus(object sender, RoutedEventArgs e)
         {
-            if (SidebarSearchBox.Text == SearchPlaceholder)
+            if (TitleBarSearchBox != null && TitleBarSearchBox.Text == SearchPlaceholder)
             {
-                SidebarSearchBox.Text = "";
-                SidebarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C8D8E8"));
+                TitleBarSearchBox.Text = "";
+                TitleBarSearchBox.Foreground = new SolidColorBrush(Colors.White);
             }
         }
 
         private void OnSearchBoxLostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SidebarSearchBox.Text))
+            if (TitleBarSearchBox != null && string.IsNullOrWhiteSpace(TitleBarSearchBox.Text))
             {
-                SidebarSearchBox.Text = SearchPlaceholder;
-                SidebarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5A7FA8"));
+                TitleBarSearchBox.Text = SearchPlaceholder;
+                TitleBarSearchBox.Foreground = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
             }
             FilterNavItems("");
         }
 
         private void OnSearchBoxTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            string q = SidebarSearchBox.Text.Trim();
+            if (TitleBarSearchBox == null) return;
+            string q = TitleBarSearchBox.Text.Trim();
             if (q == SearchPlaceholder) q = "";
             FilterNavItems(q);
+        }
+
+        // ─── Pane Toggle ────────────────────────────────────────────────────────
+        private void OnPaneToggleClicked(object sender, RoutedEventArgs e)
+        {
+            if (RootNavigation != null)
+                RootNavigation.IsPaneOpen = !RootNavigation.IsPaneOpen;
         }
 
         private void FilterNavItems(string query)
