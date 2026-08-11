@@ -1,8 +1,8 @@
 <div align="center">
 
-# SS-CAM — SuamiSihat Creative Assets Management
+# SS-CAM — SuamiSihat™ Creative Assets Management
 
-**The official creative workstation management suite for SuamiSihat design teams.**
+**The official creative workstation management suite for SuamiSihat™ design teams.**
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 

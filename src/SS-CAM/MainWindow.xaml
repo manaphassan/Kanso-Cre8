@@ -97,7 +97,7 @@
                         </Border>
 
                         <!-- App wordmark -->
-                        <TextBlock Text="SS-CAM"
+                        <TextBlock Text="SS Design Assets Manager"
                                    Foreground="White" FontSize="13" FontWeight="SemiBold"
                                    VerticalAlignment="Center" Margin="2,0,0,0"
                                    FontFamily="Segoe UI Variable Display"/>
@@ -146,7 +146,7 @@
 
                         <!-- User avatar (circular 32 px, clipped) -->
                         <Border x:Name="TitleBarAvatarBtn"
-                                Width="32" Height="32" CornerRadius="16"
+                                Width="32" Height="32" CornerRadius="50"
                                 Background="#60007ACC" Cursor="Hand"
                                 ClipToBounds="True"
                                 VerticalAlignment="Center"
