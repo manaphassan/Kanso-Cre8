@@ -412,17 +412,17 @@ namespace SS_CAM
             ThemeColors c = ThemeService.GetColors(theme);
 
             // ── NavigationView sidebar background ────────────────────────────
-            // Dispatch at Render priority so our value is applied AFTER WPF-UI's
-            // ApplicationThemeManager has finished resetting theme resources.
-            // Without this, the Light/Dark theme application overwrites the local value.
-            SolidColorBrush sidebarBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            // WPF-UI NavigationView pane uses DynamicResource keys, NOT TemplateBinding Background.
+            // Swap the resource values in NavigationView.Resources to override the theme.
+            // This survives ApplicationThemeManager.Apply() because local Resources scope
+            // takes priority over merged ApplicationTheme dictionaries.
             if (RootNavigation != null)
-                RootNavigation.Background = sidebarBrush;
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, new Action(() =>
             {
-                if (RootNavigation != null)
-                    RootNavigation.Background = sidebarBrush;
-            }));
+                var sidebarColor = (Color)ColorConverter.ConvertFromString(c.SidebarBg);
+                RootNavigation.Resources["NavigationViewContentBackground"] = new SolidColorBrush(sidebarColor);
+                RootNavigation.Resources["NavigationViewItemBackground"]    = new SolidColorBrush(sidebarColor);
+                RootNavigation.Background = new SolidColorBrush(sidebarColor); // fallback
+            }
 
             // ── TitleBar strip ───────────────────────────────────────────────
             if (AppTitleBar != null)
