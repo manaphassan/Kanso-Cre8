@@ -1,1 +1,19 @@
+﻿# ── Build outputs ──────────────────────────────────────────────
+src/SS-CAM/bin/
+src/SS-CAM/obj/
+*.pdb
+*.user
+
+# ── Historical dist builds (kept locally, not in repo) ─────────
 dist/
+
+# ── Scratch / temp test files ──────────────────────────────────
+test_*.cs
+test_*.exe
+src/SS-CAM/test_*.cs
+
+# ── Editor & OS ────────────────────────────────────────────────
+.vs/
+*.suo
+Thumbs.db
+desktop.ini

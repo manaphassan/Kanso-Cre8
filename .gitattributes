@@ -1,0 +1,24 @@
+﻿# SS-CAM — Git text attribute rules
+# Force UTF-8 for all source files. Prevents encoding drift between
+# developer machines with different system code pages (e.g. Windows-1252).
+
+# Global: normalize line endings to CRLF on Windows checkout
+* text=auto eol=crlf
+
+# C# source — must be UTF-8 (compiler reads BOM to detect encoding)
+*.cs    text eol=crlf working-tree-encoding=UTF-8
+*.xaml  text eol=crlf working-tree-encoding=UTF-8
+*.xml   text eol=crlf working-tree-encoding=UTF-8
+*.json  text eol=crlf working-tree-encoding=UTF-8
+*.md    text eol=crlf working-tree-encoding=UTF-8
+*.ps1   text eol=crlf working-tree-encoding=UTF-8
+*.txt   text eol=crlf
+
+# Binary — never diff or convert
+*.exe   binary
+*.dll   binary
+*.pdb   binary
+*.png   binary
+*.ico   binary
+*.afdesign binary
+*.compressed binary
