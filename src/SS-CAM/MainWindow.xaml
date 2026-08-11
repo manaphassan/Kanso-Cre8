@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow x:Class="SS_CAM.MainWindow"
+<ui:FluentWindow x:Class="SS_CAM.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -11,61 +11,10 @@
         WindowCornerPreference="Round">
 
     <ui:FluentWindow.Resources>
-        <!-- Style: Custom TitleBar template that stretches Header flush from X=0 -->
-        <Style TargetType="{x:Type ui:TitleBar}">
-            <Setter Property="Background" Value="#0078D4"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Height" Value="44"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ui:TitleBar}">
-                        <Grid Background="{TemplateBinding Background}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>     <!-- Header Content from X=0 -->
-                                <ColumnDefinition Width="Auto"/>  <!-- Chrome Buttons (─ □ ✕) -->
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Header content presenter (flush left) -->
-                            <ContentPresenter Grid.Column="0"
-                                              Content="{TemplateBinding Header}"
-                                              HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Stretch"/>
-
-                            <!-- Window control buttons (─ □ ✕) -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:TitleBarButton ButtonType="Help"     x:Name="PART_HelpButton"     VerticalAlignment="Center"/>
-                                <ui:TitleBarButton ButtonType="Minimize" x:Name="PART_MinimizeButton" VerticalAlignment="Center"/>
-                                <ui:TitleBarButton ButtonType="Maximize" x:Name="PART_MaximizeButton" VerticalAlignment="Center"/>
-                                <ui:TitleBarButton ButtonType="Close"    x:Name="PART_CloseButton"    VerticalAlignment="Center"
-                                                   MouseOverButtonsForeground="#FFFFFFFF"
-                                                   MouseOverBackground="{DynamicResource PaletteRedBrush}"/>
-                            </StackPanel>
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="ShowHelp" Value="False">
-                                <Setter TargetName="PART_HelpButton" Property="Visibility" Value="Collapsed"/>
-                            </Trigger>
-                            <Trigger Property="ShowMinimize" Value="False">
-                                <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed"/>
-                            </Trigger>
-                            <Trigger Property="ShowMaximize" Value="False">
-                                <Setter TargetName="PART_MaximizeButton" Property="Visibility" Value="Collapsed"/>
-                            </Trigger>
-                            <Trigger Property="ShowClose" Value="False">
-                                <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="ShowMaximize" Value="True"/>
-                                    <Condition Property="IsMaximized" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="PART_MaximizeButton" Property="ButtonType" Value="Restore"/>
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+        <!-- Style: Centre the WPF-UI chrome buttons (─ □ ✕) vertically -->
+        <Style TargetType="{x:Type ui:TitleBarButton}"
+               BasedOn="{StaticResource {x:Type ui:TitleBarButton}}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
         <!-- Style: Give NavigationViewItemHeader clean Fluent 2 left margin -->
@@ -86,125 +35,124 @@
         </Grid.RowDefinitions>
 
         <!-- ══════════════════════════════════════════════════════════════════
-             TITLE BAR (Row 0)
-             Uses custom ControlTemplate where Header starts flush at X=0.
-             All title bar controls live inside Header so clicks work natively.
+             TITLE BAR NATIVE HEADER (Starts flush at X = 0)
+             Controls are inside TitleBar.Header so click events fire reliably natively
+             without triggering window maximize double-clicks.
              ══════════════════════════════════════════════════════════════════ -->
         <ui:TitleBar x:Name="AppTitleBar" Grid.Row="0"
                      Title=""
                      Background="#0078D4"
                      Foreground="White"
                      Height="44">
-
             <ui:TitleBar.Header>
                 <Grid Height="44">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>  <!-- Col 0: Left group (Flush left X=0) -->
+                        <ColumnDefinition Width="Auto"/>  <!-- Col 0: Left group (Flush left at X=0) -->
                         <ColumnDefinition Width="*"/>     <!-- Col 1: Left drag area -->
                         <ColumnDefinition Width="Auto"/>  <!-- Col 2: Search box (Centred) -->
                         <ColumnDefinition Width="*"/>     <!-- Col 3: Right drag area -->
                         <ColumnDefinition Width="Auto"/>  <!-- Col 4: Right group (Timer, Avatar) -->
-                        <ColumnDefinition Width="8"/>     <!-- Col 5: Right margin before chrome buttons -->
+                        <ColumnDefinition Width="8"/>     <!-- Col 5: Spacer before buttons -->
                     </Grid.ColumnDefinitions>
 
-                    <!-- ── Col 0: Left group ─── [☰] [● NAS] [SS Design Assets Manager] ── -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal"
-                                VerticalAlignment="Center" Margin="6,0,0,0">
+            <!-- ── Col 0: Left group ─── [☰] [● NAS] [SS Design Assets Manager] ── -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal"
+                        VerticalAlignment="Center" Margin="6,0,0,0">
 
-                        <!-- Hamburger Pane Toggle (☰) — Toggles sidebar open/closed -->
-                        <Button x:Name="TitleBarPaneToggle"
-                                Width="38" Height="38" Padding="0"
-                                Background="Transparent" BorderThickness="0"
-                                Cursor="Hand"
-                                WindowChrome.IsHitTestVisibleInChrome="True"
-                                Click="OnPaneToggleClicked"
-                                ToolTip="Toggle navigation pane">
-                            <TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons"
-                                       Foreground="White" FontSize="15"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Button>
+                <!-- Hamburger Pane Toggle (☰) — Toggles sidebar open/closed -->
+                <Button x:Name="TitleBarPaneToggle"
+                        Width="38" Height="38" Padding="0"
+                        Background="Transparent" BorderThickness="0"
+                        Cursor="Hand"
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="OnPaneToggleClicked"
+                        ToolTip="Toggle navigation pane">
+                    <TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons"
+                               Foreground="White" FontSize="15"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
 
-                        <!-- NAS status dot (click to re-check connection) -->
-                        <Border x:Name="TitleBarNasClickTarget"
-                                Width="22" Height="38" Background="Transparent"
-                                Cursor="Hand"
-                                WindowChrome.IsHitTestVisibleInChrome="True"
-                                MouseLeftButtonDown="OnCheckNasStatusClicked"
-                                ToolTip="SSNAS — click to check connection">
-                            <Ellipse x:Name="TitleBarNasDot" Width="8" Height="8"
-                                     Fill="#94A3B8"
-                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+                <!-- NAS status dot (click to re-check connection) -->
+                <Border x:Name="TitleBarNasClickTarget"
+                        Width="22" Height="38" Background="Transparent"
+                        Cursor="Hand"
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        MouseLeftButtonDown="OnCheckNasStatusClicked"
+                        ToolTip="SSNAS — click to check connection">
+                    <Ellipse x:Name="TitleBarNasDot" Width="8" Height="8"
+                             Fill="#94A3B8"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
 
-                        <!-- App wordmark -->
-                        <TextBlock Text="SS Design Assets Manager"
-                                   Foreground="White" FontSize="13" FontWeight="SemiBold"
-                                   VerticalAlignment="Center" Margin="2,0,12,0"
-                                   FontFamily="Segoe UI Variable Display"/>
-                    </StackPanel>
+                <!-- App wordmark -->
+                <TextBlock Text="SS Design Assets Manager"
+                           Foreground="White" FontSize="13" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="2,0,12,0"
+                           FontFamily="Segoe UI Variable Display"/>
+            </StackPanel>
 
-                    <!-- ── Col 2: Search box (Centred) ─────────────────────────── -->
-                    <Border x:Name="TitleBarSearchBorder" Grid.Column="2"
-                            Background="#26FFFFFF" CornerRadius="4"
-                            BorderBrush="#40FFFFFF" BorderThickness="1"
-                            Padding="8,0" Width="240" Height="28"
-                            VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons"
-                                       Foreground="#CCFFFFFF" FontSize="12"
-                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBox x:Name="TitleBarSearchBox"
-                                     Background="Transparent" BorderThickness="0"
-                                     Foreground="White" CaretBrush="White"
-                                     FontSize="12" VerticalAlignment="Center"
-                                     MinWidth="170"
-                                     WindowChrome.IsHitTestVisibleInChrome="True"
-                                     GotFocus="OnSearchBoxGotFocus"
-                                     LostFocus="OnSearchBoxLostFocus"
-                                     TextChanged="OnSearchBoxTextChanged"/>
-                        </StackPanel>
-                    </Border>
+            <!-- ── Col 2: Search box (Centred) ─────────────────────────── -->
+            <Border x:Name="TitleBarSearchBorder" Grid.Column="2"
+                    Background="#26FFFFFF" CornerRadius="4"
+                    BorderBrush="#40FFFFFF" BorderThickness="1"
+                    Padding="8,0" Width="240" Height="28"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons"
+                               Foreground="#CCFFFFFF" FontSize="12"
+                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="TitleBarSearchBox"
+                             Background="Transparent" BorderThickness="0"
+                             Foreground="White" CaretBrush="White"
+                             FontSize="12" VerticalAlignment="Center"
+                             MinWidth="170"
+                             WindowChrome.IsHitTestVisibleInChrome="True"
+                             GotFocus="OnSearchBoxGotFocus"
+                             LostFocus="OnSearchBoxLostFocus"
+                             TextChanged="OnSearchBoxTextChanged"/>
+                </StackPanel>
+            </Border>
 
-                    <!-- ── Col 4: Right group ─── [⏱ Timer] [👤 Avatar] ─────────── -->
-                    <StackPanel Grid.Column="4" Orientation="Horizontal"
-                                VerticalAlignment="Center">
+            <!-- ── Col 4: Right group ─── [⏱ Timer] [👤 Avatar] ─────────── -->
+            <StackPanel Grid.Column="4" Orientation="Horizontal"
+                        VerticalAlignment="Center">
 
-                        <!-- Focus timer badge -->
-                        <StackPanel x:Name="TitleBarTimerBadge"
-                                    Orientation="Horizontal" Margin="0,0,12,0"
-                                    Cursor="Hand"
-                                    WindowChrome.IsHitTestVisibleInChrome="True"
-                                    MouseLeftButtonDown="OnFooterTimerClicked"
-                                    ToolTip="Focus timer — click to open Wellbeing page">
-                            <TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons"
-                                       Foreground="#CCFFFFFF" FontSize="11"
-                                       VerticalAlignment="Center" Margin="0,0,5,0"/>
-                            <TextBlock x:Name="TitleBarTimerText" Text="Timer: Ready"
-                                       Foreground="#CCFFFFFF" FontSize="11"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
+                <!-- Focus timer badge -->
+                <StackPanel x:Name="TitleBarTimerBadge"
+                            Orientation="Horizontal" Margin="0,0,12,0"
+                            Cursor="Hand"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            MouseLeftButtonDown="OnFooterTimerClicked"
+                            ToolTip="Focus timer — click to open Wellbeing page">
+                    <TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons"
+                               Foreground="#CCFFFFFF" FontSize="11"
+                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock x:Name="TitleBarTimerText" Text="Timer: Ready"
+                               Foreground="#CCFFFFFF" FontSize="11"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
-                        <!-- User avatar (circular 32 px, clipped) -->
-                        <Border x:Name="TitleBarAvatarBtn"
-                                Width="32" Height="32" CornerRadius="50"
-                                Background="#60007ACC" Cursor="Hand"
-                                ClipToBounds="True"
-                                VerticalAlignment="Center"
-                                WindowChrome.IsHitTestVisibleInChrome="True"
-                                MouseLeftButtonDown="OnProfileCardClicked"
-                                ToolTip="Settings &amp; Profile">
-                            <Grid>
-                                <Image x:Name="TitleBarAvatarImage"
-                                       Stretch="UniformToFill"
-                                       RenderOptions.BitmapScalingMode="HighQuality"
-                                       Visibility="Collapsed"/>
-                                <TextBlock x:Name="TitleBarAvatarInitials" Text="H"
-                                           Foreground="White" FontSize="13" FontWeight="Bold"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                        </Border>
+                <!-- User avatar (circular 32 px, clipped) -->
+                <Border x:Name="TitleBarAvatarBtn"
+                        Width="32" Height="32" CornerRadius="50"
+                        Background="#60007ACC" Cursor="Hand"
+                        ClipToBounds="True"
+                        VerticalAlignment="Center"
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        MouseLeftButtonDown="OnProfileCardClicked"
+                        ToolTip="Settings &amp; Profile">
+                    <Grid>
+                        <Image x:Name="TitleBarAvatarImage"
+                               Stretch="UniformToFill"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="Collapsed"/>
+                        <TextBlock x:Name="TitleBarAvatarInitials" Text="H"
+                                   Foreground="White" FontSize="13" FontWeight="Bold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
 
-                    </StackPanel>
+            </StackPanel>
                 </Grid>
             </ui:TitleBar.Header>
         </ui:TitleBar>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -63,6 +63,9 @@ namespace SS_CAM
             // 5. Apply Theme on Launch (loads saved theme from ThemeService)
             ThemeService.ApplyTheme(ThemeService.CurrentTheme);
 
+            // 5.1 Fix WPF-UI TitleBar Header alignment natively using VisualTreeHelper
+            FixTitleBarHeaderAlignment();
+
             // Global Fluent 2 Accent Color (Brand Cyan)
             
 
@@ -93,6 +96,32 @@ namespace SS_CAM
         private void OnRadioStreamTitleChanged(string title)
         {
             UpdateRadioStatusUI();
+        }
+
+        private void FixTitleBarHeaderAlignment()
+        {
+            try
+            {
+                var cp = FindVisualChild<ContentPresenter>(AppTitleBar);
+                if (cp != null && cp.Content == AppTitleBar.Header)
+                {
+                    cp.HorizontalAlignment = HorizontalAlignment.Stretch;
+                }
+            }
+            catch { }
+        }
+
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                T typedChild = child as T;
+                if (typedChild != null) return typedChild;
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null) return childOfChild;
+            }
+            return null;
         }
 
         private void UpdateRadioStatusUI()
