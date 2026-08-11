@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-10.
+> **Living document.** Updated with every release. Last updated: 2026-08-11.
 
 ---
 
@@ -15,10 +15,12 @@
 | **v2.3.0** | 2026-01 | Search & Copy v1, Markdown README preview |
 | **v2.3.6** | 2026-08-06 | Version badge fix, AV metadata patch, stability improvements |
 | **v2.4.0** | 2026-08-10 | Dashboard Inspiration Widget (40 tips + RSS), Project Brief Markdown Editor, Search & Copy Catalog layout |
+| **v2.5.0** | 2026-08-10 | Quick Notes module, Task Manager Kanban, Team Board, Frontmatter injection in Project Creator |
+| **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, hardcoded D:\Testing paths eliminated, Team Board offline guard, dynamic rescan count, static HttpClient, H3 preview, Debug logging |
 
 ---
 
-## 🔄 In Progress — v2.5.0 (Target: Q3 2026)
+## 🔄 In Progress — v2.7.0 (Target: Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
 A dedicated scratchpad module for capturing ideas, client call notes, and creative briefs in Markdown format. Two-panel layout: note list sidebar + full editor with Markdown toolbar and live preview toggle. Auto-saves on idle.
@@ -53,7 +55,7 @@ A lightweight, serverless team board stored as a JSON file on the shared NAS wor
 
 ---
 
-## 🗓️ Planned — v2.6.0 (Target: Q4 2026)
+## 🗓️ Planned — v2.7.0 (Target: Q1 2027)
 
 | Feature | Description |
 |---------|-------------|
