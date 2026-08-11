@@ -6,7 +6,7 @@
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 
-[![Latest Release](https://img.shields.io/badge/release-v2.6.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v2.6.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![Design](https://img.shields.io/badge/design-Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -24,10 +24,17 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 
 ---
 
-## What's New in v2.6.0
+## What's New in v2.6.1
 
 | # | Change | Details |
 |---|--------|---------|
+| 1 | **Header Title Rebranding** | Header title rebranded to `SS Creative Assets Management` with a 100% full-width `#022057` SuamiSihat deep blue TitleBar. |
+| 2 | **SS Blue Bottom Player Bar** | Full SuamiSihat deep blue background (`#022057`) with `#043388` accent border. |
+| 3 | **Fluid Wavelength Audio Visualizer** | 60 FPS real-time vector path visualizer (`StreamGeometry`) with 4-stop gradient stroke and ambient fill under curve. |
+| 4 | **Station Cover Image Support** | Displays station cover art (`BitmapImage`) with seamless fallback to station emoji. |
+| 5 | **Aligned Now-Playing Layout** | Aligned Station Title + `LIVE` pill on Line 1, and `NOW PLAYING:` tag + track subtext on Line 2 centered with cover art. |
+| 6 | **Hero Featured Radio Banner** | Top Hero Player Banner in `RadioPage.xaml`, eliminating bottom player redundancy. |
+| 7 | **Equal-Height Dashboard KPI Cards** | Strict `UniformGrid Rows="2" Columns="4"` layout enforcing equal height across all 8 KPI widgets. |
 | 1 | **Waktu Solat** | Live JAKIM API prayer times for all 41 Malaysian zones, countdown to next prayer, adhan reminder notifications |
 | 2 | **Quick Notes** | Rich-text note editor with Markdown preview, persistent storage, keyboard shortcuts |
 | 3 | **Task Manager** | YAML frontmatter board — reads project README.md files, status columns, due-date tracking |
