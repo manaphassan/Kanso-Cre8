@@ -10,7 +10,7 @@ namespace SS_CAM.Services
     public static class WorkspaceScanner
     {
         private static readonly Regex ProjectPattern = new Regex(
-            @"^\d{6}_((?:[A-Z-]+\d+)|(?:\d+[A-Z-]+))_([A-Z]{2,8})_.+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            @"^\d{6}_[A-Z0-9_-]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private static readonly string[] ChartColors = new[] { "#21A1F7", "#043388", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
 
@@ -202,14 +202,11 @@ namespace SS_CAM.Services
             try { dirs = Directory.GetDirectories(root); }
             catch { return result; }
 
-            System.Text.RegularExpressions.Regex staffPattern =
-                new System.Text.RegularExpressions.Regex(@"^\d{4}[A-Z]$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
             foreach (string dir in dirs)
             {
                 string name = Path.GetFileName(dir);
-                // Accept standard Staff ID format OR any folder starting with a digit sequence
-                if (staffPattern.IsMatch(name) || System.Text.RegularExpressions.Regex.IsMatch(name, @"^\d+[A-Z]", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                // Include any non-system subfolder that is not a project directory itself
+                if (!name.StartsWith("_") && !name.StartsWith(".") && !ProjectPattern.IsMatch(name))
                 {
                     result.Add(new DesignerFolderChoice { Name = name, StaffId = name });
                 }
@@ -252,13 +249,18 @@ namespace SS_CAM.Services
                         DateTime modified;
                         try { modified = Directory.GetLastWriteTime(directory); } catch { modified = DateTime.MinValue; }
 
+                        long fileCount = 0;
+                        long sizeInBytes = GetDirectoryBytes(directory, out fileCount);
+
                         results.Add(new DesignerFolderItem
                         {
                             Designer = designer,
                             Project = name,
                             FullPath = directory,
                             Modified = modified.ToString("dd MMM yyyy HH:mm"),
-                            ModifiedTicks = modified.Ticks
+                            ModifiedTicks = modified.Ticks,
+                            FileCount = (int)fileCount,
+                            FormattedSize = FormatBytes(sizeInBytes)
                         });
 
                         if (results.Count >= limit) break;

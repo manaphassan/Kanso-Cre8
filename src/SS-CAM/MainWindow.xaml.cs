@@ -582,17 +582,15 @@ namespace SS_CAM
                 StatusThemeText.Text = "Theme: " + themeName;
             }
 
-            // -- Nav item foreground --
-            // SS Default: dark navy sidebar in Light WPF-UI mode — force nav text white.
-            // Metamorphosis: dark sidebar in Dark WPF-UI mode — force nav text white.
-            // Falconia: white sidebar in Light WPF-UI mode — clear override (WPF-UI default = dark).
+            // -- Nav item foreground & sidebar pane background --
             bool forceWhiteNavText = (theme == AppTheme.SSDefault || theme == AppTheme.Metamorphosis);
-            var navFg = forceWhiteNavText
-                ? new SolidColorBrush(Colors.White)
-                : null;
 
             if (RootNavigation != null)
             {
+                var sidebarBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+                RootNavigation.Resources["NavigationViewPaneBackground"] = sidebarBrush;
+                RootNavigation.Resources["NavigationViewBackground"] = sidebarBrush;
+
                 if (forceWhiteNavText)
                 {
                     var whiteBrush = new SolidColorBrush(Colors.White);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SS_CAM.Models
@@ -27,6 +27,8 @@ namespace SS_CAM.Models
         public string FullPath { get; set; }
         public string Modified { get; set; }
         public long ModifiedTicks { get; set; }
+        public int FileCount { get; set; }
+        public string FormattedSize { get; set; }
     }
 
     public class FileSearchItem
