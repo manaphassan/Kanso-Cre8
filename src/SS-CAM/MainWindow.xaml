@@ -130,12 +130,15 @@
                         </StackPanel>
                         <!-- Active theme — click to cycle themes -->
                         <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
+                                    Focusable="False"
                                     MouseLeftButtonDown="OnStatusThemeToggle"
-                                    ToolTip="Click to cycle themes: SS Default → Falconia → Metamorphosis">
+                                    ToolTip="Click to cycle: SS Default -&gt; Falconia -&gt; Metamorphosis">
                             <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="#5A7FA8"
-                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
+                                       Focusable="False"/>
                             <TextBlock x:Name="StatusThemeText" Text="Theme: SS Default" Foreground="#C8C8C8"
-                                       FontSize="11" VerticalAlignment="Center"/>
+                                       FontSize="11" VerticalAlignment="Center"
+                                       Focusable="False"/>
                         </StackPanel>
                         <!-- Radio row (shown only when playing) -->
                         <Grid Visibility="Collapsed" x:Name="RadioFooterRow" Margin="0,3">

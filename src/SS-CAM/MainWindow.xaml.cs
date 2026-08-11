@@ -394,7 +394,7 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, MouseButtonEventArgs e)
         {
-            // Cycle: SS Default â†’ Falconia â†’ Metamorphosis â†’ SS Default
+            // Cycle: SS Default -> Falconia -> Metamorphosis -> SS Default
             AppTheme nextTheme;
             if (ThemeService.CurrentTheme == AppTheme.SSDefault)
                 nextTheme = AppTheme.Falconia;
