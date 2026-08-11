@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -411,44 +411,64 @@ namespace SS_CAM
         {
             ThemeColors c = ThemeService.GetColors(theme);
 
-            // -- NavigationView pane background --
+            // ── NavigationView sidebar background ────────────────────────────
+            // Dispatch at Render priority so our value is applied AFTER WPF-UI's
+            // ApplicationThemeManager has finished resetting theme resources.
+            // Without this, the Light/Dark theme application overwrites the local value.
+            SolidColorBrush sidebarBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
             if (RootNavigation != null)
-                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+                RootNavigation.Background = sidebarBrush;
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, new Action(() =>
+            {
+                if (RootNavigation != null)
+                    RootNavigation.Background = sidebarBrush;
+            }));
 
-            // -- TitleBar background + foreground (Azure for SS Default) --
+            // ── TitleBar strip ───────────────────────────────────────────────
             if (AppTitleBar != null)
             {
                 AppTitleBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarBg ?? c.SidebarBg));
                 AppTitleBar.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
             }
 
-            // -- TitleBar: search box bg (semi-transparent on Azure; light grey on white) --
+            // ── TitleBar: search box appearance ─────────────────────────────
+            // Dark TitleBar (SS Default = Azure, Metamorphosis = deep navy) → white text
+            // Light TitleBar (Falconia = white) → dark text + grey box bg
+            bool darkTitleBar = !c.IsLight;  // SS Default & Metamorphosis have dark title bars
             if (TitleBarSearchBorder != null)
             {
-                TitleBarSearchBorder.Background = c.IsLight
-                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EBEBEB"))
-                    : new SolidColorBrush(Color.FromArgb(0x26, 0xFF, 0xFF, 0xFF));
+                TitleBarSearchBorder.Background = darkTitleBar
+                    ? new SolidColorBrush(Color.FromArgb(0x26, 0xFF, 0xFF, 0xFF))  // semi-white on azure
+                    : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EBEBEB"));  // grey on white
             }
             if (TitleBarSearchBox != null)
             {
-                var searchFg = c.IsLight ? "#242424" : "#FFFFFF";
+                string searchFg = darkTitleBar ? "#FFFFFF" : "#242424";
                 TitleBarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(searchFg));
                 TitleBarSearchBox.CaretBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(searchFg));
             }
 
-            // -- TitleBar: timer + avatar tint follow title bar foreground --
+            // ── TitleBar: timer text + NAS area ─────────────────────────────
+            SolidColorBrush trayFg = darkTitleBar
+                ? new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF))
+                : new SolidColorBrush(Color.FromArgb(0xCC, 0x24, 0x24, 0x24));
             if (TitleBarTimerText != null)
-                TitleBarTimerText.Foreground = c.IsLight
-                    ? new SolidColorBrush(Color.FromArgb(0xCC, 0x24, 0x24, 0x24))
-                    : new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
-            if (TitleBarAvatarBtn != null)
-                TitleBarAvatarBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+                TitleBarTimerText.Foreground = trayFg;
 
-            // -- Sidebar: MODULES section label --
+            // ── TitleBar: avatar ring ────────────────────────────────────────
+            if (TitleBarAvatarBtn != null)
+            {
+                // On dark TitleBar use a mid-blue ring; on light TitleBar use a neutral ring
+                TitleBarAvatarBtn.Background = darkTitleBar
+                    ? new SolidColorBrush(Color.FromArgb(0x60, 0x00, 0x78, 0xD4))  // semi-azure
+                    : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D1D1D1"));  // grey
+            }
+
+            // ── Sidebar: MODULES section label (null-safe — element may be hidden) ──
             if (SidebarModulesLabel != null)
                 SidebarModulesLabel.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
 
-            // -- Sidebar footer: theme label --
+            // ── Sidebar footer: theme name label ─────────────────────────────
             if (StatusThemeText != null)
             {
                 string themeName;

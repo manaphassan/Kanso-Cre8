@@ -13,70 +13,63 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="44"/>   <!-- Custom TitleBar row -->
-            <RowDefinition Height="Auto"/> <!-- Update Banner -->
-            <RowDefinition Height="*"/>    <!-- Main Body -->
+            <RowDefinition Height="44"/>   <!-- Title bar strip (44px — Teams-style) -->
+            <RowDefinition Height="Auto"/> <!-- Update Banner (collapsed by default) -->
+            <RowDefinition Height="*"/>    <!-- Main body: NavigationView -->
         </Grid.RowDefinitions>
 
         <!-- ═══════════════════════════════════════════════════════════════════
-             CUSTOM TITLE BAR ROW (Grid.Row=0, Height=44)
-             Uses ui:TitleBar with Header only (WPF-UI 3.0.4 has no Tray slot).
-             The Header fills left-to-right; right-side controls are pushed right
-             using a Grid with * column.
+             TITLE BAR  (Azure · 44px · Teams-style)
+             Layout: [● NAS] [SS-CAM wordmark] [🔍 Search] ─── drag ─── [⏱ Timer] [👤]  [─ □ ✕]
+
+             Notes:
+             • No hamburger/pane-toggle — sidebar is always open.
+             • All interactive controls have WindowChrome.IsHitTestVisibleInChrome="True"
+               so clicks reach the control rather than triggering a window-drag.
+             • Col 3 (Width=*) is the passive drag region — no interactive children.
              ═══════════════════════════════════════════════════════════════════ -->
         <ui:TitleBar x:Name="AppTitleBar" Grid.Row="0"
                      Title=""
-                     Foreground="White"
                      Background="#0078D4"
-                     MinHeight="44">
+                     Foreground="White"
+                     Height="44">
 
             <ui:TitleBar.Header>
-                <!-- Full-width grid: left controls | stretch spacer | right controls -->
-                <Grid Height="44">
+                <Grid Height="44" Margin="4,0,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>  <!-- Pane toggle -->
                         <ColumnDefinition Width="Auto"/>  <!-- NAS dot + wordmark -->
                         <ColumnDefinition Width="Auto"/>  <!-- Search box -->
-                        <ColumnDefinition Width="*"/>     <!-- Drag spacer -->
+                        <ColumnDefinition Width="*"/>     <!-- Passive drag area -->
                         <ColumnDefinition Width="Auto"/>  <!-- Timer badge -->
                         <ColumnDefinition Width="Auto"/>  <!-- Avatar -->
-                        <ColumnDefinition Width="8"/>     <!-- Right padding -->
+                        <ColumnDefinition Width="6"/>     <!-- Right gutter before chrome buttons -->
                     </Grid.ColumnDefinitions>
 
-                    <!-- Col 0: Sidebar pane toggle -->
-                    <Button x:Name="TitleBarPaneToggle" Grid.Column="0"
-                            Width="38" Height="38" Padding="0"
-                            Background="Transparent" BorderThickness="0"
-                            Cursor="Hand"
-                            WindowChrome.IsHitTestVisibleInChrome="True"
-                            Click="OnPaneToggleClicked"
-                            ToolTip="Toggle navigation pane">
-                        <TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons"
-                                   Foreground="White" FontSize="15"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-
-                    <!-- Col 1: NAS dot + wordmark -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Col 0 ── NAS status dot + app wordmark -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- NAS dot: grey=checking, green=online, red=offline -->
                         <Border x:Name="TitleBarNasClickTarget"
-                                Width="20" Height="38" Background="Transparent"
+                                Width="22" Height="44" Background="Transparent"
                                 Cursor="Hand"
                                 WindowChrome.IsHitTestVisibleInChrome="True"
                                 MouseLeftButtonDown="OnCheckNasStatusClicked"
-                                ToolTip="SSNAS — click to check connection">
-                            <Ellipse x:Name="TitleBarNasDot" Width="8" Height="8" Fill="#94A3B8"
+                                ToolTip="SSNAS — click to check / open NAS">
+                            <Ellipse x:Name="TitleBarNasDot" Width="8" Height="8"
+                                     Fill="#94A3B8"
                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="SS-CAM" Foreground="White" FontSize="13" FontWeight="SemiBold"
-                                   VerticalAlignment="Center" Margin="4,0,12,0"
+                        <!-- App wordmark -->
+                        <TextBlock Text="SS-CAM"
+                                   Foreground="White" FontSize="13" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="2,0,14,0"
                                    FontFamily="Segoe UI Variable Display"/>
                     </StackPanel>
 
-                    <!-- Col 2: Global search box -->
-                    <Border x:Name="TitleBarSearchBorder" Grid.Column="2"
+                    <!-- Col 1 ── Global search -->
+                    <Border x:Name="TitleBarSearchBorder" Grid.Column="1"
                             Background="#26FFFFFF" CornerRadius="4"
                             BorderBrush="#40FFFFFF" BorderThickness="1"
-                            Padding="8,0" Width="220" Height="28"
+                            Padding="8,0" Width="224" Height="28"
                             VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons"
@@ -86,7 +79,7 @@
                                      Background="Transparent" BorderThickness="0"
                                      Foreground="White" CaretBrush="White"
                                      FontSize="12" VerticalAlignment="Center"
-                                     MinWidth="156"
+                                     MinWidth="160"
                                      WindowChrome.IsHitTestVisibleInChrome="True"
                                      GotFocus="OnSearchBoxGotFocus"
                                      LostFocus="OnSearchBoxLostFocus"
@@ -94,13 +87,12 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Col 3: Drag spacer — this column is drag-only, no content -->
+                    <!-- Col 2 ── Passive drag region (no children) -->
 
-                    <!-- Col 4: Focus timer badge -->
-                    <StackPanel x:Name="TitleBarTimerBadge" Grid.Column="4"
-                                Orientation="Horizontal" Margin="0,0,10,0"
-                                VerticalAlignment="Center"
-                                Cursor="Hand"
+                    <!-- Col 3 ── Focus timer badge -->
+                    <StackPanel x:Name="TitleBarTimerBadge" Grid.Column="3"
+                                Orientation="Horizontal" Margin="0,0,12,0"
+                                VerticalAlignment="Center" Cursor="Hand"
                                 WindowChrome.IsHitTestVisibleInChrome="True"
                                 MouseLeftButtonDown="OnFooterTimerClicked"
                                 ToolTip="Focus timer — click to open Wellbeing page">
@@ -108,23 +100,26 @@
                                    Foreground="#CCFFFFFF" FontSize="11"
                                    VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBlock x:Name="TitleBarTimerText" Text="Timer: Ready"
-                                   Foreground="#CCFFFFFF" FontSize="11" VerticalAlignment="Center"/>
+                                   Foreground="#CCFFFFFF" FontSize="11"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Col 5: User avatar -->
-                    <Border x:Name="TitleBarAvatarBtn" Grid.Column="5"
-                            Width="30" Height="30" CornerRadius="15"
+                    <!-- Col 4 ── User avatar (circular, 32px) -->
+                    <Border x:Name="TitleBarAvatarBtn" Grid.Column="4"
+                            Width="32" Height="32" CornerRadius="16"
                             Background="#1A3D7A" Cursor="Hand"
+                            ClipToBounds="True"
                             VerticalAlignment="Center"
                             WindowChrome.IsHitTestVisibleInChrome="True"
                             MouseLeftButtonDown="OnProfileCardClicked"
                             ToolTip="Settings &amp; Profile">
                         <Grid>
-                            <Image x:Name="TitleBarAvatarImage" Stretch="UniformToFill"
+                            <Image x:Name="TitleBarAvatarImage"
+                                   Stretch="UniformToFill"
                                    RenderOptions.BitmapScalingMode="HighQuality"
                                    Visibility="Collapsed"/>
                             <TextBlock x:Name="TitleBarAvatarInitials" Text="H"
-                                       Foreground="White" FontSize="12" FontWeight="Bold"
+                                       Foreground="White" FontSize="13" FontWeight="Bold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
@@ -134,10 +129,11 @@
         </ui:TitleBar>
 
         <!-- ═══════════════════════════════════════════════════════════════════
-             UPDATE BANNER
+             UPDATE NOTIFICATION BANNER  (collapsed by default)
              ═══════════════════════════════════════════════════════════════════ -->
-        <Border x:Name="UpdateBanner" Grid.Row="1" Background="#FEF9C3" BorderBrush="#EAB308"
-                BorderThickness="0,0,0,1" Padding="16,6" Visibility="Collapsed">
+        <Border x:Name="UpdateBanner" Grid.Row="1"
+                Background="#FEF9C3" BorderBrush="#EAB308" BorderThickness="0,0,0,1"
+                Padding="16,6" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -147,79 +143,124 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="&#x1F195; " FontFamily="Segoe UI Emoji" FontSize="13" VerticalAlignment="Center"/>
                     <TextBlock x:Name="UpdateBannerText" Text="A new version of SS-CAM is available!"
-                               FontSize="12" FontWeight="SemiBold" Foreground="#78350F" VerticalAlignment="Center"
-                               FontFamily="Segoe UI Variable Text"/>
+                               FontSize="12" FontWeight="SemiBold" Foreground="#78350F"
+                               VerticalAlignment="Center" FontFamily="Segoe UI Variable Text"/>
                 </StackPanel>
                 <Button x:Name="UpdateDownloadBtn" Grid.Column="1" Content="Download Update"
                         Click="OnDownloadUpdateClicked" Height="26" Padding="12,0" Margin="12,0,8,0"
                         Background="#EAB308" Foreground="White" FontWeight="SemiBold" FontSize="11"
                         BorderThickness="0" Cursor="Hand" FontFamily="Segoe UI Variable Text"/>
-                <Button Grid.Column="2" Content="&#x2716;" Click="OnDismissUpdateBanner" Width="26" Height="26"
-                        Background="Transparent" Foreground="#92400E" BorderThickness="0" FontSize="12"
-                        FontWeight="Bold" Cursor="Hand"/>
+                <Button Grid.Column="2" Content="&#x2716;" Click="OnDismissUpdateBanner"
+                        Width="26" Height="26" Background="Transparent" Foreground="#92400E"
+                        BorderThickness="0" FontSize="12" FontWeight="Bold" Cursor="Hand"/>
             </Grid>
         </Border>
 
         <!-- ═══════════════════════════════════════════════════════════════════
              MAIN BODY — NavigationView
-             Sidebar: pure navigation — search and avatar moved to title bar
+             ───────────────────────────────────────────────────────────────────
+             Sidebar design (SS Default theme):
+             • Background = SS Navy (#021B47) — set in code-behind via theme engine
+             • Initial value "#021B47" set here so first-render is correct
+             • IsPaneToggleVisible="False" — no hamburger, sidebar is always open
+             • Grouped nav items with NavigationViewItemHeader section labels
+
+             Groups:
+               OVERVIEW  — Dashboard
+               WELLNESS  — Creative Wellbeing · Waktu Solat
+               PROJECTS  — Project Creator · Search & Copy · Brand Assets
+               TOOLS     — Radio · Quick Notes · Task Manager · Workstation Health
              ═══════════════════════════════════════════════════════════════════ -->
         <ui:NavigationView x:Name="RootNavigation" Grid.Row="2"
                            PaneDisplayMode="Left"
                            IsPaneOpen="True"
+                           IsPaneToggleVisible="False"
                            IsBackButtonVisible="Collapsed"
-                           OpenPaneLength="200">
+                           OpenPaneLength="200"
+                           Background="#021B47">
 
-            <!-- Pane Header: MODULES label only -->
-            <ui:NavigationView.PaneHeader>
-                <TextBlock x:Name="SidebarModulesLabel" Text="MODULES"
-                           Foreground="#5A7FA8" FontSize="10" FontWeight="Bold"
-                           Margin="16,10,0,4"/>
-            </ui:NavigationView.PaneHeader>
-
-            <!-- Menu Items -->
+            <!-- ── Menu Items: grouped by function ── -->
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
-                <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
-                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
-                <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
-                <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
-                <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
-                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
-                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
-                <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
-                <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
+
+                <!-- ─ OVERVIEW ─────────────────────────────────────────────── -->
+                <ui:NavigationViewItemHeader Text="OVERVIEW"/>
+                <ui:NavigationViewItem Content="Dashboard"
+                                       Icon="{ui:SymbolIcon Home24}"
+                                       TargetPageType="{x:Type views:DashboardPage}"/>
+
+                <!-- ─ WELLNESS ─────────────────────────────────────────────── -->
+                <ui:NavigationViewItemHeader Text="WELLNESS"/>
+                <ui:NavigationViewItem Content="Creative Wellbeing"
+                                       Icon="{ui:SymbolIcon Heart24}"
+                                       TargetPageType="{x:Type views:WellbeingPage}"/>
+                <ui:NavigationViewItem Content="Waktu Solat"
+                                       Icon="{ui:SymbolIcon Clock24}"
+                                       TargetPageType="{x:Type views:WaktuSolatPage}"/>
+
+                <!-- ─ PROJECTS ─────────────────────────────────────────────── -->
+                <ui:NavigationViewItemHeader Text="PROJECTS"/>
+                <ui:NavigationViewItem Content="Project Creator"
+                                       Icon="{ui:SymbolIcon Folder24}"
+                                       TargetPageType="{x:Type views:ProjectCreatorPage}"/>
+                <ui:NavigationViewItem Content="Search &amp; Copy"
+                                       Icon="{ui:SymbolIcon Search24}"
+                                       TargetPageType="{x:Type views:SearchCopyPage}"/>
+                <ui:NavigationViewItem Content="Brand Assets"
+                                       Icon="{ui:SymbolIcon Library24}"
+                                       TargetPageType="{x:Type views:BrandAssetsPage}"/>
+
+                <!-- ─ TOOLS ────────────────────────────────────────────────── -->
+                <ui:NavigationViewItemHeader Text="TOOLS"/>
+                <ui:NavigationViewItem Content="Radio Player"
+                                       Icon="{ui:SymbolIcon MusicNote224}"
+                                       TargetPageType="{x:Type views:RadioPage}"/>
+                <ui:NavigationViewItem Content="Quick Notes"
+                                       Icon="{ui:SymbolIcon Document24}"
+                                       TargetPageType="{x:Type views:QuickNotePage}"/>
+                <ui:NavigationViewItem Content="Task Manager"
+                                       Icon="{ui:SymbolIcon Checkmark24}"
+                                       TargetPageType="{x:Type views:TaskManagerPage}"/>
+                <ui:NavigationViewItem Content="Workstation Health"
+                                       Icon="{ui:SymbolIcon Important24}"
+                                       TargetPageType="{x:Type views:WorkstationHealthPage}"/>
+
             </ui:NavigationView.MenuItems>
 
-            <!-- Footer Menu Items -->
+            <!-- ── Footer: Settings ── -->
             <ui:NavigationView.FooterMenuItems>
-                <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
+                <ui:NavigationViewItem Content="Settings &amp; Profile"
+                                       Icon="{ui:SymbolIcon Settings24}"
+                                       TargetPageType="{x:Type views:SettingsPage}"/>
             </ui:NavigationView.FooterMenuItems>
 
-            <!-- Pane Footer: theme toggle + radio row only -->
+            <!-- ── Pane Footer: theme toggle + radio row only ── -->
             <ui:NavigationView.PaneFooter>
                 <StackPanel Margin="0,4,0,10">
 
-                    <!-- Theme toggle -->
+                    <!-- Theme toggle (click to cycle SS Default → Falconia → Metamorphosis) -->
                     <StackPanel Orientation="Horizontal" Margin="16,4" Cursor="Hand"
                                 Focusable="False"
                                 MouseLeftButtonDown="OnStatusThemeToggle"
                                 ToolTip="Click to cycle: SS Default &#x2192; Falconia &#x2192; Metamorphosis">
-                        <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="#5A7FA8"
-                                   FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0" Focusable="False"/>
+                        <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons"
+                                   Foreground="#5A7FA8" FontSize="11"
+                                   VerticalAlignment="Center" Margin="0,0,7,0" Focusable="False"/>
                         <TextBlock x:Name="StatusThemeText" Text="Theme: SS Default"
-                                   Foreground="#C8C8C8" FontSize="11" VerticalAlignment="Center" Focusable="False"/>
+                                   Foreground="#C8C8C8" FontSize="11"
+                                   VerticalAlignment="Center" Focusable="False"/>
                     </StackPanel>
 
-                    <!-- Radio row (visible only when station is playing) -->
+                    <!-- Radio now-playing row (Collapsed until a station plays) -->
                     <Grid x:Name="RadioFooterRow" Visibility="Collapsed" Margin="0,2">
                         <StackPanel Orientation="Horizontal" Margin="16,0">
-                            <TextBlock Text="&#xE8D6;" FontFamily="Segoe Fluent Icons" Foreground="#0078D4"
-                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                            <TextBlock Text="&#xE8D6;" FontFamily="Segoe Fluent Icons"
+                                       Foreground="#0078D4" FontSize="11"
+                                       VerticalAlignment="Center" Margin="0,0,7,0"/>
                             <TextBlock x:Name="StatusRadioText" Text="Radio"
-                                       Foreground="#C8C8C8" FontSize="11" VerticalAlignment="Center"
-                                       MouseLeftButtonDown="OnFooterRadioClicked" Cursor="Hand"
-                                       ToolTip="Open Radio Player"/>
+                                       Foreground="#C8C8C8" FontSize="11"
+                                       VerticalAlignment="Center"
+                                       MouseLeftButtonDown="OnFooterRadioClicked"
+                                       Cursor="Hand" ToolTip="Open Radio Player"/>
                         </StackPanel>
                         <Button x:Name="StatusRadioPlayBtn" Click="OnStatusRadioPlayToggle"
                                 Background="Transparent" BorderThickness="0"
@@ -234,8 +275,12 @@
 
         </ui:NavigationView>
 
-        <!-- Legacy hidden elements kept for audio animation backward compat -->
-        <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
+        <!-- Legacy hidden elements kept for audio visualiser backward-compat -->
+        <Canvas x:Name="HeaderCanvas"   Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <TextBlock x:Name="HeaderSubtitle" Grid.Row="0" Visibility="Collapsed"/>
+
+        <!-- Retained null-sink so code-behind null-checks for removed elements pass cleanly -->
+        <TextBlock x:Name="SidebarModulesLabel" Visibility="Collapsed"/>
+
     </Grid>
 </ui:FluentWindow>
