@@ -40,8 +40,12 @@ namespace SS_CAM.Views
         private void OnRescanSoftwareClicked(object sender, RoutedEventArgs e)
         {
             LoadHardwareSpecs();
-            LoadSoftwareHealthData();
-            MessageBox.Show("Workstation hardware specs and 11 design software packages rescanned successfully.", "Software Health Rescan", MessageBoxButton.OK, MessageBoxImage.Information);
+            List<SoftwareHealthItem> items = UserProfileService.ScanInstalledDesignSoftware();
+            SoftwareHealthList.ItemsSource = items;
+            int count = items != null ? items.Count : 0;
+            MessageBox.Show(
+                string.Format("Workstation hardware specs and {0} design software package{1} rescanned successfully.", count, count == 1 ? "" : "s"),
+                "Software Health Rescan", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnDownloadSoftwareClicked(object sender, RoutedEventArgs e)

@@ -1,4 +1,4 @@
-<Page x:Class="SS_CAM.Views.QuickNotePage"
+﻿<Page x:Class="SS_CAM.Views.QuickNotePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -13,14 +13,14 @@
         <!-- Page Header -->
         <StackPanel Grid.Row="0" Margin="24,20,24,14">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="22"
+                <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="22"
                            Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <TextBlock Text="Quick Notes" FontSize="22" FontWeight="Bold"
-                           Foreground="{DynamicResource FluentBrand80}" FontFamily="{StaticResource FluentFontFamily}"/>
+                <ui:TextBlock Text="Quick Notes" FontSize="22" FontWeight="Bold"
+                           Foreground="{DynamicResource FluentBrand80}" />
             </StackPanel>
-            <TextBlock Text="Personal Markdown scratchpad. Auto-saves as you type."
+            <ui:TextBlock Text="Personal Markdown scratchpad. Auto-saves as you type."
                        Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
-                       Margin="0,3,0,0" FontFamily="{StaticResource FluentFontFamily}"/>
+                       Margin="0,3,0,0" />
         </StackPanel>
 
         <!-- Main Two-Panel Body -->
@@ -31,29 +31,29 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ── Left: Notes List Sidebar ────────────────────────── -->
+            <!-- â”€â”€ Left: Notes List Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
             <Border Grid.Column="0" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
                     <!-- New Note Button -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource FluentBrand80}"
                             CornerRadius="8,8,0,0">
-                        <Button Click="OnNewNoteClicked" Background="Transparent" Foreground="White"
+                        <ui:Button Click="OnNewNoteClicked" Background="Transparent" Foreground="White"
                                 Height="40" BorderThickness="0" Cursor="Hand"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="14"
+                                <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="14"
                                            Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="New Note" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="New Note" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
 
                     <!-- Note count label -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
                             BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1" Padding="10,6">
-                        <TextBlock x:Name="TxtNoteCount" Text="0 notes"
-                                   FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                        <ui:TextBlock x:Name="TxtNoteCount" Text="0 notes"
+                                    FontSize="10"
                                    Foreground="{DynamicResource FluentLightTextSecondary}"/>
                     </Border>
 
@@ -87,13 +87,13 @@
                                         </Style>
                                     </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Title}"
-                                                   FontFamily="{StaticResource FluentFontFamily}"
+                                        <ui:TextBlock Text="{Binding Title}"
+                                                   
                                                    FontSize="12" FontWeight="SemiBold"
                                                    Foreground="{DynamicResource FluentLightTextPrimary}"
                                                    TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding ModifiedDisplay}"
-                                                   FontFamily="{StaticResource FluentFontFamily}"
+                                        <ui:TextBlock Text="{Binding ModifiedDisplay}"
+                                                   
                                                    FontSize="10"
                                                    Foreground="{DynamicResource FluentLightTextSecondary}"
                                                    Margin="0,2,0,0"/>
@@ -105,7 +105,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- ── Right: Editor Pane ──────────────────────────────── -->
+            <!-- â”€â”€ Right: Editor Pane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
             <Border Grid.Column="2" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
@@ -120,71 +120,71 @@
                             </Grid.ColumnDefinitions>
                             <!-- Markdown Toolbar -->
                             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                <Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="26" Width="28"
+                                <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="26" Width="28"
                                         Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
-                                        FontFamily="{StaticResource FluentFontFamily}" FontWeight="Bold"
+                                         FontWeight="Bold"
                                         FontSize="12" BorderThickness="0" Cursor="Hand" ToolTip="Bold"/>
-                                <Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="26" Width="28"
+                                <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="26" Width="28"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
                                         FontFamily="Georgia, serif" FontStyle="Italic" FontSize="12"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Italic"/>
-                                <Button x:Name="NMdCode" Click="OnNMdCode" Height="26" Width="28"
+                                <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="26" Width="28"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
                                         FontFamily="Consolas" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Inline code">
-                                    <TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"/>
-                                </Button>
+                                    <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"/>
+                                </ui:Button>
                                 <Border Width="1" Background="{DynamicResource FluentLightStroke}" Margin="4,3"/>
-                                <Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="26" Width="32"
+                                <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="26" Width="32"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="{StaticResource FluentFontFamily}" FontWeight="SemiBold"
+                                         FontWeight="SemiBold"
                                         FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2"/>
-                                <Button x:Name="NMdList" Content="• List" Click="OnNMdList" Height="26" Padding="4,0"
+                                <ui:Button x:Name="NMdList" Content="• List" Click="OnNMdList" Height="26" Padding="4,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                                         FontSize="10"
                                         BorderThickness="0" Cursor="Hand" ToolTip="List item"/>
-                                <Button x:Name="NMdHR" Content="─ HR" Click="OnNMdHR" Height="26" Padding="4,0"
+                                <ui:Button x:Name="NMdHR" Content="â”€ HR" Click="OnNMdHR" Height="26" Padding="4,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                                         FontSize="10"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule"/>
-                                <Button x:Name="NMdLink" Click="OnNMdLink" Height="26" Padding="4,0"
+                                <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="26" Padding="4,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                                         FontSize="10"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
-                                    <TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="12"/>
-                                </Button>
+                                    <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="12"/>
+                                </ui:Button>
                             </StackPanel>
 
                             <!-- Mode + Status -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock x:Name="TxtSavedStatus" Text=""
-                                           FontFamily="{StaticResource FluentFontFamily}" FontSize="10"
+                                <ui:TextBlock x:Name="TxtSavedStatus" Text=""
+                                            FontSize="10"
                                            Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center"
                                            Margin="0,0,12,0"/>
                                 <Border CornerRadius="4" Margin="0,0,4,0" Background="{DynamicResource FluentBrand80}">
-                                    <Button x:Name="BtnModeEdit" Content="Edit" Click="OnModeEdit"
+                                    <ui:Button x:Name="BtnModeEdit" Content="Edit" Click="OnModeEdit"
                                             Height="26" Padding="8,0" Background="Transparent" Foreground="White"
                                             FontSize="10" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
-                                            FontFamily="{StaticResource FluentFontFamily}"/>
+                                            />
                                 </Border>
                                 <Border CornerRadius="4" Background="{DynamicResource FluentLightCardSubBg}"
                                         BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" Margin="0,0,8,0">
-                                    <Button x:Name="BtnModePreview" Content="Preview" Click="OnModePreview"
+                                    <ui:Button x:Name="BtnModePreview" Content="Preview" Click="OnModePreview"
                                             Height="26" Padding="8,0" Background="Transparent"
                                             Foreground="{DynamicResource FluentLightTextPrimary}"
                                             FontSize="10" BorderThickness="0" Cursor="Hand"
-                                            FontFamily="{StaticResource FluentFontFamily}"/>
+                                            />
                                 </Border>
                                 <Border CornerRadius="4" Background="#FFEEEE" BorderBrush="#FFAAAA" BorderThickness="1">
-                                    <Button x:Name="BtnDeleteNote" Click="OnDeleteNoteClicked"
+                                    <ui:Button x:Name="BtnDeleteNote" Click="OnDeleteNoteClicked"
                                             Height="26" Padding="8,0" Background="Transparent" Foreground="#CC0000"
                                             FontSize="10" BorderThickness="0" Cursor="Hand"
-                                            FontFamily="{StaticResource FluentFontFamily}">
+                                            >
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                            <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                                        Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Delete" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                    </Button>
+                                    </ui:Button>
                                 </Border>
                             </StackPanel>
                         </Grid>
@@ -192,11 +192,11 @@
 
                     <!-- Empty state (no note selected) -->
                     <StackPanel x:Name="PanelEmptyState" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="48"
+                        <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="48"
                                    Foreground="{DynamicResource FluentLightTextSecondary}"
                                    HorizontalAlignment="Center" Margin="0,0,0,12"/>
-                        <TextBlock Text="Select a note or create a new one"
-                                   FontFamily="{StaticResource FluentFontFamily}" FontSize="14"
+                        <ui:TextBlock Text="Select a note or create a new one"
+                                    FontSize="14"
                                    Foreground="{DynamicResource FluentLightTextSecondary}" HorizontalAlignment="Center"/>
                     </StackPanel>
 
@@ -221,3 +221,4 @@
         </Grid>
     </Grid>
 </Page>
+

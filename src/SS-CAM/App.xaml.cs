@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -10,8 +10,22 @@ namespace SS_CAM
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += (s, args) => LogException(args.ExceptionObject as Exception);
+            DispatcherUnhandledException += (s, args) => { LogException(args.Exception); args.Handled = true; };
+
             base.OnStartup(e);
             RegisterUserAppPlacement();
+        }
+
+        private static void LogException(Exception ex)
+        {
+            if (ex == null) return;
+            try
+            {
+                string log = string.Format("[{0}] UNHANDLED EXCEPTION:\n{1}\n\n", DateTime.Now, ex.ToString());
+                File.AppendAllText(@"e:\Dev\Projects\SS-Brand-Assets\crash_log.txt", log);
+            }
+            catch { }
         }
 
         public static void RegisterUserAppPlacement()

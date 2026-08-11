@@ -1,0 +1,44 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ================================================================= -->
+    <!--  SS DEFAULT THEME  .  SS-CAM v2.6.0+                              -->
+    <!--  SuamiSihat Brand Navy sidebar, white content area.               -->
+    <!--  WPF-UI runs in Light mode so cards are white. Nav item text is   -->
+    <!--  overridden to white in code (OnThemeModeChanged).                -->
+    <!-- ================================================================= -->
+
+    <!-- Brand Accent — SS Blue -->
+    <SolidColorBrush x:Key="FluentBrand80"    Color="#0078D4"/>
+    <SolidColorBrush x:Key="FluentBrand70"    Color="#106EBE"/>
+    <SolidColorBrush x:Key="FluentBrandLight" Color="#DBEAFE"/>
+    <SolidColorBrush x:Key="FluentBrandTint"  Color="#2899F5"/>
+
+    <!-- Canvas / Page Backgrounds — clean white -->
+    <SolidColorBrush x:Key="FluentLightCanvasBg"  Color="#F5F5F5"/>
+
+    <!-- Card Surfaces — white -->
+    <SolidColorBrush x:Key="FluentLightCardBg"    Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="FluentLightCardSubBg" Color="#F8FAFC"/>
+
+    <!-- Borders -->
+    <SolidColorBrush x:Key="FluentLightStroke"    Color="#E0E0E0"/>
+
+    <!-- Typography — dark text on white -->
+    <SolidColorBrush x:Key="FluentLightTextPrimary"   Color="#242424"/>
+    <SolidColorBrush x:Key="FluentLightTextSecondary" Color="#616161"/>
+
+    <!-- Status tokens -->
+    <SolidColorBrush x:Key="FluentSuccess" Color="#107C41"/>
+    <SolidColorBrush x:Key="FluentWarning" Color="#797700"/>
+    <SolidColorBrush x:Key="FluentDanger"  Color="#C50F1F"/>
+
+    <!-- Typography unchanged -->
+    <FontFamily x:Key="FluentFontFamily">Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif</FontFamily>
+
+    <!-- Elevation Depth Shadows -->
+    <DropShadowEffect x:Key="FluentDepth4"  BlurRadius="6"  ShadowDepth="2" Direction="270" Color="#000000" Opacity="0.14"/>
+    <DropShadowEffect x:Key="FluentDepth8"  BlurRadius="12" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.20"/>
+    <DropShadowEffect x:Key="FluentDepth16" BlurRadius="24" ShadowDepth="8" Direction="270" Color="#000000" Opacity="0.28"/>
+
+</ResourceDictionary>

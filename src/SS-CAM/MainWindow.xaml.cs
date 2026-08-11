@@ -25,12 +25,9 @@ namespace SS_CAM
             public double Diameter { get; set; }
         }
 
-        private bool isSidebarExpanded = true;
         private DispatcherTimer headerAnimTimer;
         private List<AnimShapeItem> animItems;
         private UserProfile currentProfile;
-
-        private System.Windows.Controls.Button _lastActiveNavBtn = null;
 
         public MainWindow()
         {
@@ -53,23 +50,24 @@ namespace SS_CAM
             // 2. Play Intro Sound Effect on App Launch
             AudioFeedbackService.PlayIntroSound();
 
-            // 2. Load User Profile
+            // 2. Load Designer Profile
             RefreshProfileUI();
 
             // 3. Initialize Real-Time Footer Status Bar Timer & NAS Online Check
-            InitFooterTimer();
             InitNasHealthCheck();
             InitUpdateCheck();
             InitRadioStatusListeners();
 
             // 4. Initialize Faded Animated Audio Spectrum Visualizer in Sidebar Background
-            InitSidebarSpectrumVisualizer();
 
             // 5. Apply Theme on Launch (loads saved theme from ThemeService)
             ThemeService.ApplyTheme(ThemeService.CurrentTheme);
 
+            // Global Fluent 2 Accent Color (Brand Cyan)
+            
+
             // 6. Navigate to Dashboard on startup
-            NavigateTo(typeof(DashboardPage), NavDashboardBtn);
+            RootNavigation.Navigate(typeof(DashboardPage));
         }
 
         private void InitRadioStatusListeners()
@@ -145,7 +143,7 @@ namespace SS_CAM
 
         private void OnFooterRadioClicked(object sender, MouseButtonEventArgs e)
         {
-            NavigateTo(typeof(RadioPage), NavRadioBtn);
+            RootNavigation.Navigate(typeof(RadioPage));
         }
 
         private void OnClosed(object sender, EventArgs e)
@@ -154,33 +152,37 @@ namespace SS_CAM
             {
                 headerAnimTimer.Stop();
             }
-            if (footerTimer != null)
-            {
-                footerTimer.Stop();
-            }
+            
             if (nasCheckTimer != null)
             {
                 nasCheckTimer.Stop();
             }
-            if (_spectrumTimer != null)
-            {
-                _spectrumTimer.Stop();
-            }
+            
         }
+
+        public void NavigateTo(Type pageType, object dummy = null)
+{
+    RootNavigation.Navigate(pageType);
+}
 
         public void RefreshProfileUI()
         {
             currentProfile = UserProfileService.LoadProfile();
 
             // Update sidebar persona name & department
-            if (SidebarDesignerName != null)
-                SidebarDesignerName.Text = string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? "Brand" : currentProfile.DesignerName;
-            if (SidebarDepartment != null)
-                SidebarDepartment.Text = string.IsNullOrWhiteSpace(currentProfile.Department) ? "Creative & Brand" : currentProfile.Department;
-            // Update initials letter on avatar circle
-            if (AvatarEmojiText != null && !string.IsNullOrWhiteSpace(currentProfile.DesignerName))
-                AvatarEmojiText.Text = currentProfile.DesignerName.Substring(0, 1).ToUpper();
+            if (SidebarPersonaName != null)
+                SidebarPersonaName.Text = currentProfile.DesignerName ?? "Designer";
+            if (SidebarPersonaDept != null)
+                SidebarPersonaDept.Text = currentProfile.Department ?? "Creative Department";
 
+            // Initials from first letter of designer name
+            if (SidebarAvatarInitials != null)
+            {
+                string name = currentProfile.DesignerName ?? "D";
+                SidebarAvatarInitials.Text = name.Length > 0 ? name[0].ToString().ToUpper() : "D";
+            }
+
+            // Update avatar photo if set
             if (!string.IsNullOrWhiteSpace(currentProfile.AvatarPath) && File.Exists(currentProfile.AvatarPath))
             {
                 try
@@ -190,24 +192,22 @@ namespace SS_CAM
                     bmp.UriSource = new Uri(currentProfile.AvatarPath, UriKind.Absolute);
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.EndInit();
-
-                    if (SidebarAvatarImg != null)
+                    if (SidebarAvatarImage != null)
                     {
-                        SidebarAvatarImg.Source = bmp;
-                        SidebarAvatarImg.Visibility = Visibility.Visible;
+                        SidebarAvatarImage.Source = bmp;
+                        SidebarAvatarImage.Visibility = System.Windows.Visibility.Visible;
                     }
-                    if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Collapsed;
+                    if (SidebarAvatarInitials != null)
+                        SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
                 }
-                catch
-                {
-                    if (SidebarAvatarImg != null) SidebarAvatarImg.Visibility = Visibility.Collapsed;
-                    if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Visible;
-                }
+                catch { }
             }
             else
             {
-                if (SidebarAvatarImg != null) SidebarAvatarImg.Visibility = Visibility.Collapsed;
-                if (AvatarEmojiText != null) AvatarEmojiText.Visibility = Visibility.Visible;
+                if (SidebarAvatarImage != null)
+                    SidebarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
+                if (SidebarAvatarInitials != null)
+                    SidebarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -375,286 +375,26 @@ namespace SS_CAM
         }
 
 
-        private void OnToggleSidebarClicked(object sender, RoutedEventArgs e)
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        private void OnStatusThemeToggle(object sender, MouseButtonEventArgs e)
         {
-            isSidebarExpanded = !isSidebarExpanded;
-            // Fluent 2 nav: expanded = 240px, collapsed = 64px (v2.1.0 standard navigation rail)
-            SidebarColumn.Width = isSidebarExpanded ? new GridLength(240) : new GridLength(64);
-
-            Visibility labelVis = isSidebarExpanded ? Visibility.Visible : Visibility.Collapsed;
-
-            // Top Header: remove padding & center hamburger button when collapsed
-            if (TopHeaderBorder != null)
-            {
-                TopHeaderBorder.Padding = isSidebarExpanded ? new Thickness(12, 10, 12, 6) : new Thickness(8, 10, 8, 6);
-            }
-            if (TopHeaderStackPanel != null)
-            {
-                TopHeaderStackPanel.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-            }
-            if (ToggleSidebarBtn != null)
-            {
-                ToggleSidebarBtn.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
-                ToggleSidebarBtn.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-            }
-
-            // Hide/show search bar outer border (eliminates search box / clipped search icon when collapsed)
-            if (SearchBoxOuterBorder != null) SearchBoxOuterBorder.Visibility = labelVis;
-            if (SearchBoxBorder != null) SearchBoxBorder.Visibility = labelVis;
-
-            // Hide/show section header, title panel, profile text
-            if (SidebarModulesHeader != null) SidebarModulesHeader.Visibility = labelVis;
-            if (AppTitlePanel != null) AppTitlePanel.Visibility = labelVis;
-            if (SidebarUserText != null) SidebarUserText.Visibility = labelVis;
-
-            // Hide/show status row text
-            if (StatusNasText != null) StatusNasText.Visibility = labelVis;
-            if (StatusTimerText != null) StatusTimerText.Visibility = labelVis;
-            if (StatusRadioText != null) StatusRadioText.Visibility = labelVis;
-            if (StatusThemeText != null) StatusThemeText.Visibility = labelVis;
-
-            // Align bottom status panel margins
-            if (SidebarBottomPanel != null)
-            {
-                SidebarBottomPanel.Margin = isSidebarExpanded ? new Thickness(8, 8, 8, 12) : new Thickness(8, 8, 8, 12);
-            }
-
-            // Align dividers
-            if (SidebarDivider1 != null)
-            {
-                SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(4, 0, 4, 8);
-            }
-            if (SidebarDivider2 != null)
-            {
-                SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(4, 10, 4, 4);
-            }
-                
-            // Align status row icons (centered along X = 32px when collapsed)
-            Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
-            HorizontalAlignment panelAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-
-            if (StatusNasDot != null) StatusNasDot.Margin = iconMargin;
-            if (StatusTimerIcon != null) StatusTimerIcon.Margin = iconMargin;
-            if (StatusRadioIcon != null) StatusRadioIcon.Margin = iconMargin;
-            if (StatusThemeIcon != null) StatusThemeIcon.Margin = iconMargin;
-
-            if (StatusNasPanel != null) StatusNasPanel.HorizontalAlignment = panelAlign;
-            if (StatusTimerPanel != null) StatusTimerPanel.HorizontalAlignment = panelAlign;
-            if (StatusThemePanel != null) StatusThemePanel.HorizontalAlignment = panelAlign;
-
-            if (NasPill != null)
-            {
-                NasPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
-            }
-            if (TimerPill != null)
-            {
-                TimerPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
-            }
-            if (StatusThemeBtn != null)
-            {
-                StatusThemeBtn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
-                StatusThemeBtn.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
-            }
-
-            // Align user avatar circle
-            if (SidebarAvatarCircle != null)
-            {
-                SidebarAvatarCircle.Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
-                SidebarAvatarCircle.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-            }
-            if (SidebarUserGrid != null)
-            {
-                SidebarUserGrid.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
-            }
-            if (SidebarUserCard != null)
-            {
-                SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(0, 6, 0, 6);
-                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0);
-            }
-
-            // Update Nav Panel margins (always keep 8px left/right margins for clean spacing)
-            if (SidebarNavPanel != null)
-            {
-                SidebarNavPanel.Margin = isSidebarExpanded ? new Thickness(8, 4, 8, 4) : new Thickness(8, 4, 8, 4);
-            }
-
-            // Update all Nav Items (center icon when collapsed, restore margins when expanded)
-            System.Windows.Controls.Button[] navBtns = new[]
-            {
-                NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
-                NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn, NavSettingsBtn
-            };
-
-            foreach (var btn in navBtns)
-            {
-                if (btn == null) continue;
-                btn.Width = double.NaN; // Stretches to panel width (which is 64 - 16 = 48px when collapsed)
-                btn.HorizontalAlignment = HorizontalAlignment.Stretch;
-                btn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
-
-                var grid = btn.Content as Grid;
-                if (grid == null) continue;
-
-                foreach (var child in grid.Children)
-                {
-                    var rect = child as System.Windows.Shapes.Rectangle;
-                    if (rect != null)
-                    {
-                        // 3px indicator pill — lives in its own Grid column, no horizontal override needed
-                        rect.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 4, 0, 4);
-                    }
-
-                    var sp = child as StackPanel;
-                    if (sp != null)
-                    {
-                        // Fluent 2: expanded = 8px left gap from indicator column; collapsed = centered
-                        sp.Margin = isSidebarExpanded ? new Thickness(8, 0, 8, 0) : new Thickness(0);
-                        sp.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-                        
-                        // Icon margin: 8px right gap to label when expanded, 0 when collapsed (icon-only)
-                        if (sp.Children.Count > 0)
-                        {
-                            var icon = sp.Children[0] as FrameworkElement;
-                            if (icon != null)
-                            {
-                                icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
-                                icon.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
-                                icon.Width = 20;
-                            }
-                        }
-                        if (sp.Children.Count > 1)
-                        {
-                            var label = sp.Children[1] as System.Windows.Controls.TextBlock;
-                            if (label != null)
-                            {
-                                label.Visibility = labelVis;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Update spectrum canvas width
-            if (SidebarSpectrumCanvas != null)
-            {
-                SidebarSpectrumCanvas.Width = isSidebarExpanded ? 240 : 48;
-            }
-        }
-
-        private void OnTopSearchInputChanged(object sender, TextChangedEventArgs e)
-        {
-            if (TopGlobalSearchInput != null && !string.IsNullOrWhiteSpace(TopGlobalSearchInput.Text))
-            {
-                if (MainFrame.Content == null || !(MainFrame.Content is SearchCopyPage))
-                {
-                    NavigateTo(typeof(SearchCopyPage), NavSearchBtn);
-                }
-            }
-        }
-
-        private void OnNavBackClicked(object sender, RoutedEventArgs e)
-        {
-            if (MainFrame != null && MainFrame.CanGoBack)
-            {
-                MainFrame.GoBack();
-            }
-        }
-
-        private void OnNavForwardClicked(object sender, RoutedEventArgs e)
-        {
-            if (MainFrame != null && MainFrame.CanGoForward)
-            {
-                MainFrame.GoForward();
-            }
-        }
-
-        private void OnNavDashboardClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(DashboardPage), NavDashboardBtn);
-        }
-
-        private void OnNavWellbeingClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(WellbeingPage), NavWellbeingBtn);
-        }
-
-        private void OnNavWaktuSolatClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(Views.WaktuSolatPage), NavWaktuSolatBtn);
-        }
-
-        private void OnNavProjectsClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(ProjectCreatorPage), NavProjectsBtn);
-        }
-
-        private void OnNavSearchClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(SearchCopyPage), NavSearchBtn);
-        }
-
-        private void OnNavBrandAssetsClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(BrandAssetsPage), NavBrandAssetsBtn);
-        }
-
-        private void OnNavRadioClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(RadioPage), NavRadioBtn);
-        }
-
-        private void OnNavQuickNoteClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(QuickNotePage), NavQuickNoteBtn);
-        }
-
-        private void OnNavTaskManagerClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(TaskManagerPage), NavTaskManagerBtn);
-        }
-
-        private void OnNavWorkstationHealthClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(WorkstationHealthPage), NavWorkstationHealthBtn);
-        }
-
-        private void OnNavSettingsClicked(object sender, RoutedEventArgs e)
-        {
-            NavigateTo(typeof(SettingsPage), null);
-        }
-
-        private void OnNavProfileClicked(object sender, MouseButtonEventArgs e)
-        {
-            NavigateTo(typeof(SettingsPage), null);
-        }
-
-        private void OnOpenGithub(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://github.com/SuamiSihat/ss_cam",
-                    UseShellExecute = true
-                });
-            }
-            catch { }
-        }
-
-        private void OnOpenAboutWindow(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                AboutWindow about = new AboutWindow();
-                about.Owner = this;
-                about.ShowDialog();
-            }
-            catch { }
-        }
-
-        private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
-        {
-            // Cycle: SS Default → Falconia → Metamorphosis → SS Default
+            // Cycle: SS Default â†’ Falconia â†’ Metamorphosis â†’ SS Default
             AppTheme nextTheme;
             if (ThemeService.CurrentTheme == AppTheme.SSDefault)
                 nextTheme = AppTheme.Falconia;
@@ -669,426 +409,54 @@ namespace SS_CAM
         private void OnThemeModeChanged(AppTheme theme)
         {
             ThemeColors c = ThemeService.GetColors(theme);
+            if (RootNavigation != null)
+                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
 
-            if (!string.IsNullOrEmpty(c.FontFamily))
-                FontFamily = new System.Windows.Media.FontFamily(c.FontFamily);
-
-            if (theme == AppTheme.Falconia)
-            {
-                // Falconia: full white Fluent 2 light — use Mica (system light backdrop)
-                WindowBackdropType = WindowBackdropType.Mica;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-            }
-            else if (theme == AppTheme.Metamorphosis)
-            {
-                // Metamorphosis: deep space navy glassmorphism
-                WindowBackdropType = WindowBackdropType.None;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#080D1F"));
-            }
-            else
-            {
-                // SS Default: dark navy brand theme
-                WindowBackdropType = WindowBackdropType.Mica;
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#02153D"));
-            }
-
-            // Window TitleBar Text / Foreground
-            if (AppTitleBar != null)
-            {
-                AppTitleBar.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
-            }
-
-            // Top Header & Hamburger
-            if (ToggleSidebarIcon != null) ToggleSidebarIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
-            if (SidebarAppTitleText != null) SidebarAppTitleText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavText));
-
-            // Search Box
-            if (SearchBoxBorder != null)
-            {
-                SearchBoxBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBg));
-                SearchBoxBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBorder));
-            }
-            if (SearchBoxIcon != null) SearchBoxIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchPlaceholder));
-            if (TopGlobalSearchInput != null) TopGlobalSearchInput.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
-
-            // Section Header & Dividers
-            if (SidebarModulesHeader != null) SidebarModulesHeader.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
-            if (SidebarDivider1 != null) SidebarDivider1.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
-
+            // Update theme name label in sidebar footer
             if (StatusThemeText != null)
             {
-                if (theme == AppTheme.Falconia)
-                    StatusThemeText.Text = "Theme: Falconia";
-                else if (theme == AppTheme.Metamorphosis)
-                    StatusThemeText.Text = "Theme: Metamorphosis";
-                else
-                    StatusThemeText.Text = "Theme: SS Default";
+                string themeName;
+                if (theme == AppTheme.Metamorphosis) themeName = "Metamorphosis";
+                else if (theme == AppTheme.Falconia)  themeName = "Falconia";
+                else                                   themeName = "SS Default";
+                StatusThemeText.Text = "Theme: " + themeName;
             }
 
-            // Sidebar Container
-            if (SidebarBorder != null)
+            // SS Default has a dark navy sidebar but WPF-UI is in Light mode,
+            // so nav item text defaults to dark — force it white for readability.
+            // Metamorphosis also needs white nav text (Dark WPF-UI handles it, but explicit is safer).
+            // Falconia has white sidebar and Light WPF-UI — leave foreground default (dark).
+            bool forceWhiteNavText = (theme == AppTheme.SSDefault || theme == AppTheme.Metamorphosis);
+            var navFg = forceWhiteNavText
+                ? new SolidColorBrush(Colors.White)
+                : null;
+
+            if (RootNavigation != null)
             {
-                SidebarBorder.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
-                SidebarBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
-            }
-
-            // Status Row Text & Icons
-            if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-            if (StatusTimerIcon != null) StatusTimerIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
-            if (StatusTimerText != null) StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-            if (StatusRadioIcon != null) StatusRadioIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
-            if (StatusRadioText != null) StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-            if (StatusThemeIcon != null) StatusThemeIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
-            if (StatusThemeText != null) StatusThemeText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
-
-            // User Profile Persona Card
-            if (SidebarUserCard != null)
-            {
-                SidebarUserCard.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
-                SidebarUserCard.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBorder));
-            }
-            if (SidebarDesignerName != null) SidebarDesignerName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
-            if (SidebarDepartment != null) SidebarDepartment.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
-
-            // Main Content Frame
-            if (MainFrame != null)
-                MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.MainFrameBg));
-
-            // Re-apply Spectrum Visualizer Bar Colors
-            if (_spectrumBars != null && _spectrumBars.Count > 0)
-            {
-                Color baseColor = (Color)ColorConverter.ConvertFromString(c.SpectrumBarColor);
-                byte alpha = c.IsLight ? (byte)60 : (byte)45;
-                Brush barBrush = new SolidColorBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
-                Brush dotBrush = new SolidColorBrush(Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B));
-
-                foreach (var bar in _spectrumBars) bar.Fill = barBrush;
-                foreach (var dot in _spectrumPeakDots) dot.Fill = dotBrush;
-            }
-
-            // Re-apply Nav Highlights
-            ResetNavHighlight();
-            if (_lastActiveNavBtn != null)
-            {
-                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavBg));
-                SetNavItemColors(_lastActiveNavBtn, c.NavIconActive, c.ActiveNavText, c.NavIndicatorColor, true);
-            }
-        }
-
-        private readonly Dictionary<Type, Page> _pageCache = new Dictionary<Type, Page>();
-
-        public void NavigateTo(Type pageType, System.Windows.Controls.Button activeBtn)
-        {
-            _lastActiveNavBtn = activeBtn;
-            Page instance = null;
-            if (!_pageCache.TryGetValue(pageType, out instance))
-            {
-                instance = Activator.CreateInstance(pageType) as Page;
-                _pageCache[pageType] = instance;
-            }
-
-            MainFrame.Navigate(instance);
-            ResetNavHighlight();
-            if (activeBtn != null)
-            {
-                ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
-                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tc.ActiveNavBg));
-                SetNavItemColors(activeBtn, tc.NavIconActive, tc.ActiveNavText, tc.NavIndicatorColor, true);
-            }
-        }
-
-        private void ResetNavHighlight()
-        {
-            ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
-            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavRadioBtn, NavWorkstationHealthBtn };
-            foreach (System.Windows.Controls.Button btn in navBtns)
-            {
-                if (btn != null)
+                foreach (object item in RootNavigation.MenuItems)
                 {
-                    btn.Background = Brushes.Transparent;
-                    SetNavItemColors(btn, tc.NavIconInactive, tc.InactiveNavText, tc.NavIndicatorColor, false);
-                }
-            }
-        }
-
-        private static readonly Dictionary<System.Windows.Controls.Button, string> _indicatorNames = new Dictionary<System.Windows.Controls.Button, string>();
-
-        private void SetNavItemColors(System.Windows.Controls.Button btn, string iconColorHex, string textColorHex, string indicatorColorHex, bool isIndicatorVisible)
-        {
-            if (btn == null) return;
-            var grid = btn.Content as System.Windows.Controls.Grid;
-            if (grid == null) return;
-
-            foreach (var child in grid.Children)
-            {
-                var rect = child as System.Windows.Shapes.Rectangle;
-                if (rect != null)
-                {
-                    rect.Visibility = isIndicatorVisible ? Visibility.Visible : Visibility.Collapsed;
-                    if (!string.IsNullOrEmpty(indicatorColorHex))
-                        rect.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(indicatorColorHex));
-                }
-
-                var sp = child as System.Windows.Controls.StackPanel;
-                if (sp != null)
-                {
-                    if (sp.Children.Count > 0)
+                    var navItem = item as Wpf.Ui.Controls.NavigationViewItem;
+                    if (navItem != null)
                     {
-                        var icon = sp.Children[0] as System.Windows.Controls.TextBlock;
-                        if (icon != null)
-                            icon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(iconColorHex));
+                        if (navFg != null) navItem.Foreground = navFg;
+                        else navItem.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
                     }
-                    if (sp.Children.Count > 1)
+                }
+                foreach (object item in RootNavigation.FooterMenuItems)
+                {
+                    var navItem2 = item as Wpf.Ui.Controls.NavigationViewItem;
+                    if (navItem2 != null)
                     {
-                        var label = sp.Children[1] as System.Windows.Controls.TextBlock;
-                        if (label != null)
-                            label.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(textColorHex));
+                        if (navFg != null) navItem2.Foreground = navFg;
+                        else navItem2.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
                     }
                 }
             }
-        }
-
-        private void SetButtonTextColors(System.Windows.Controls.Button btn, string mainColorHex, string subColorHex)
-        {
-            if (btn == null) return;
-            StackPanel sp = btn.Content as StackPanel;
-            if (sp == null) return;
-
-            foreach (var child in sp.Children)
-            {
-                StackPanel textSp = child as StackPanel;
-                if (textSp != null)
-                {
-                    if (textSp.Children.Count > 0 && textSp.Children[0] is System.Windows.Controls.TextBlock)
-                    {
-                        System.Windows.Controls.TextBlock tbMain = textSp.Children[0] as System.Windows.Controls.TextBlock;
-                        if (tbMain != null)
-                        {
-                            tbMain.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(mainColorHex));
-                        }
-                    }
-                    if (textSp.Children.Count > 1 && textSp.Children[1] is System.Windows.Controls.TextBlock)
-                    {
-                        System.Windows.Controls.TextBlock tbSub = textSp.Children[1] as System.Windows.Controls.TextBlock;
-                        if (tbSub != null)
-                        {
-                            tbSub.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(subColorHex));
-                        }
-                    }
-                }
-            }
-        }
-
-        private DispatcherTimer footerTimer;
-
-        // ─────────────────────────────────────────────────────────────────
-        // REAL-TIME FADED AUDIO SPECTRUM VISUALIZER (SIDEBAR BACKGROUND)
-        // ─────────────────────────────────────────────────────────────────
-        private DispatcherTimer _spectrumTimer;
-        private readonly List<Rectangle> _spectrumBars = new List<Rectangle>();
-        private readonly List<Ellipse> _spectrumPeakDots = new List<Ellipse>();
-        private readonly double[] _spectrumCurrentHeights = new double[24];
-        private readonly double[] _spectrumPeakY = new double[24];
-        private readonly double[] _spectrumPeakVel = new double[24];
-
-        private void InitSidebarSpectrumVisualizer()
-        {
-            if (SidebarSpectrumCanvas == null) return;
-            SidebarSpectrumCanvas.Children.Clear();
-            _spectrumBars.Clear();
-            _spectrumPeakDots.Clear();
-
-            int numBars = 24;
-            double canvasWidth = 240.0;
-            double canvasHeight = 240.0;
-            double barGap = 3.0;
-            double totalGapWidth = barGap * (numBars + 1);
-            double barWidth = (canvasWidth - totalGapWidth) / numBars;
-
-            ThemeColors c = ThemeService.GetColors(ThemeService.CurrentTheme);
-            Color baseColor = (Color)ColorConverter.ConvertFromString(c.SpectrumBarColor);
-            byte alpha = c.IsLight ? (byte)60 : (byte)45;
-            Brush barBrush = new SolidColorBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
-            Brush dotBrush = new SolidColorBrush(Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B));
-
-            for (int i = 0; i < numBars; i++)
-            {
-                double xPos = barGap + i * (barWidth + barGap);
-
-                // Vertical Bar
-                Rectangle bar = new Rectangle
-                {
-                    Width = barWidth,
-                    Height = 0,
-                    RadiusX = 2,
-                    RadiusY = 2,
-                    Fill = barBrush,
-                    RenderTransformOrigin = new Point(0.5, 1.0)
-                };
-                Canvas.SetLeft(bar, xPos);
-                Canvas.SetBottom(bar, 0);
-                SidebarSpectrumCanvas.Children.Add(bar);
-                _spectrumBars.Add(bar);
-
-                // Peak Cap Dot
-                Ellipse dot = new Ellipse
-                {
-                    Width = barWidth,
-                    Height = 2.5,
-                    Fill = dotBrush,
-                    Visibility = Visibility.Collapsed
-                };
-                Canvas.SetLeft(dot, xPos);
-                Canvas.SetBottom(dot, 0);
-                SidebarSpectrumCanvas.Children.Add(dot);
-                _spectrumPeakDots.Add(dot);
-
-                _spectrumCurrentHeights[i] = 0;
-                _spectrumPeakY[i] = 0;
-                _spectrumPeakVel[i] = 0;
-            }
-
-            _spectrumTimer = new DispatcherTimer();
-            _spectrumTimer.Interval = TimeSpan.FromMilliseconds(33); // ~30 FPS
-            _spectrumTimer.Tick += OnSpectrumTick;
-            _spectrumTimer.Start();
-        }
-
-        private void OnSpectrumTick(object sender, EventArgs e)
-        {
-            if (SidebarSpectrumCanvas == null) return;
-
-            var radio = RadioStreamService.Instance;
-            bool isPlaying = (radio.State == RadioPlaybackState.Playing || radio.State == RadioPlaybackState.Buffering);
-
-            // Target canvas opacity: smoothly fade in when playing, fade out when stopped
-            double targetCanvasOpacity = isPlaying ? 0.35 : 0.0;
-            SidebarSpectrumCanvas.Opacity += (targetCanvasOpacity - SidebarSpectrumCanvas.Opacity) * 0.15;
-
-            if (SidebarSpectrumCanvas.Opacity < 0.005 && !isPlaying)
-            {
-                // Idle when not playing
-                return;
-            }
-
-            double[] liveBands = radio.LocalProxy != null ? radio.LocalProxy.CurrentSpectrumData : null;
-            double peakAmp = radio.LocalProxy != null ? radio.LocalProxy.CurrentPeakAmplitude : 0.0;
-
-            int numBars = _spectrumBars.Count;
-            double maxHeight = SidebarSpectrumCanvas.ActualHeight > 0 ? SidebarSpectrumCanvas.ActualHeight : 240.0;
-
-            Random rnd = null;
-
-            for (int i = 0; i < numBars; i++)
-            {
-                double targetH = 0;
-
-                if (isPlaying)
-                {
-                    if (liveBands != null && liveBands.Length >= 48)
-                    {
-                        // Map 48 frequency bands to 24 display bars
-                        int bandIndex = i * 2;
-                        double val1 = liveBands[bandIndex];
-                        double val2 = (bandIndex + 1 < 48) ? liveBands[bandIndex + 1] : val1;
-                        double rawVal = (val1 + val2) * 0.5;
-
-                        // Frequency weighting: curve mid and bass frequencies
-                        double frequencyMultiplier = 1.0 + Math.Sin((i / (double)numBars) * Math.PI) * 0.4;
-                        targetH = rawVal * maxHeight * 0.85 * frequencyMultiplier;
-                    }
-                    else
-                    {
-                        // Fallback wave equalizing animation
-                        if (rnd == null) rnd = new Random();
-                        targetH = (0.15 + rnd.NextDouble() * 0.70) * maxHeight * (peakAmp > 0 ? peakAmp : 0.5);
-                    }
-                }
-
-                // Smooth exponential lerp
-                _spectrumCurrentHeights[i] += (targetH - _spectrumCurrentHeights[i]) * 0.30;
-                double h = Math.Max(0, _spectrumCurrentHeights[i]);
-
-                Rectangle bar = _spectrumBars[i];
-                bar.Height = h;
-
-                // Update Peak Cap Dot with gravity drop-off
-                Ellipse dot = _spectrumPeakDots[i];
-                if (h > _spectrumPeakY[i])
-                {
-                    _spectrumPeakY[i] = h + 3;
-                    _spectrumPeakVel[i] = 0;
-                }
-                else
-                {
-                    _spectrumPeakVel[i] += 0.4; // Gravity acceleration
-                    _spectrumPeakY[i] -= _spectrumPeakVel[i];
-                    if (_spectrumPeakY[i] < h) _spectrumPeakY[i] = h;
-                }
-
-                if (_spectrumPeakY[i] > 2)
-                {
-                    dot.Visibility = Visibility.Visible;
-                    Canvas.SetBottom(dot, Math.Max(0, _spectrumPeakY[i]));
-                }
-                else
-                {
-                    dot.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        private void InitFooterTimer()
-        {
-            footerTimer = new DispatcherTimer();
-            footerTimer.Interval = TimeSpan.FromSeconds(1);
-            footerTimer.Tick += UpdateFooterTimerUI;
-            footerTimer.Start();
-            UpdateFooterTimerUI(null, null);
-        }
-
-        private void UpdateFooterTimerUI(object sender, EventArgs e)
-        {
-            try
-            {
-                var timer = WellbeingTimerService.SharedInstance;
-                if (timer == null || StatusTimerText == null) return;
-
-                if (timer.State == WellbeingTimerService.TimerState.Running)
-                {
-                    int totalSecs = timer.GetLiveRemainingSeconds();
-                    int mins = totalSecs / 60;
-                    int secs = totalSecs % 60;
-                    StatusTimerText.Text = string.Format("{0} · {1:D2}:{2:D2} remaining", timer.SessionType, mins, secs);
-                    // #C8D9FF on #02153D = 5.8:1 ✅ WCAG AA (was #043388 = 1.1:1 ❌ invisible)
-                    StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C8D9FF"));
-                }
-                else if (timer.State == WellbeingTimerService.TimerState.Paused)
-                {
-                    int totalSecs = timer.GetLiveRemainingSeconds();
-                    int mins = totalSecs / 60;
-                    int secs = totalSecs % 60;
-                    StatusTimerText.Text = string.Format("Paused: {0} · {1:D2}:{2:D2}", timer.SessionType, mins, secs);
-                    StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-                }
-                else if (timer.State == WellbeingTimerService.TimerState.Completed)
-                {
-                    StatusTimerText.Text = "🎉 Session Completed!";
-                    StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
-                }
-                else
-                {
-                    StatusTimerText.Text = "Focus Timer: Ready";
-                    // #9DB8D2 on #02153D = 4.6:1 ✅ WCAG AA (was #475569 = 2.4:1 ❌)
-                    StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9DB8D2"));
-                }
-            }
-            catch { }
         }
 
         private void OnFooterTimerClicked(object sender, MouseButtonEventArgs e)
         {
-            NavigateTo(typeof(WellbeingPage), NavWellbeingBtn);
+            RootNavigation.Navigate(typeof(WellbeingPage));
         }
 
         private DispatcherTimer nasCheckTimer;
@@ -1109,16 +477,18 @@ namespace SS_CAM
                 StatusNasText.Text = "SSNAS Checking...";
                 StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
             }
+            if (NasStatusDot != null)
+                NasStatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
 
             CheckNasOnlineAsync((isOnline, statusText) =>
             {
-                if (StatusNasDot != null && StatusNasText != null)
+                if (StatusNasText != null)
                 {
-                    StatusNasDot.Text = "\uE839"; // Server icon
                     StatusNasText.Text = statusText;
                     StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
-                    StatusNasDot.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
                 }
+                if (NasStatusDot != null)
+                    NasStatusDot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isOnline ? "#10B981" : "#EF4444"));
             });
         }
 
@@ -1191,7 +561,7 @@ namespace SS_CAM
             TriggerNasHealthCheck();
         }
 
-        // ─── Auto-Update Check ────────────────────────────────────────────
+        // â”€â”€â”€ Auto-Update Check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Hosts a version.json at: https://suamisihat.myds.me/ss-cam/version.json
         // Format:
         // {
@@ -1200,7 +570,7 @@ namespace SS_CAM
         //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "2.3.6";
+        private const string CurrentVersion = "2.6.0";
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 
@@ -1308,5 +678,65 @@ namespace SS_CAM
             if (close < 0) return "";
             return json.Substring(open + 1, close - open - 1);
         }
+
+        // ─── Sidebar Search Box ─────────────────────────────────────────────────
+        // Filters nav items by label text (case-insensitive substring match).
+        private static readonly string SearchPlaceholder = "Search modules...";
+
+        private void OnSearchBoxGotFocus(object sender, RoutedEventArgs e)
+        {
+            if (SidebarSearchBox.Text == SearchPlaceholder)
+            {
+                SidebarSearchBox.Text = "";
+                SidebarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C8D8E8"));
+            }
+        }
+
+        private void OnSearchBoxLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(SidebarSearchBox.Text))
+            {
+                SidebarSearchBox.Text = SearchPlaceholder;
+                SidebarSearchBox.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5A7FA8"));
+            }
+            FilterNavItems("");
+        }
+
+        private void OnSearchBoxTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            string q = SidebarSearchBox.Text.Trim();
+            if (q == SearchPlaceholder) q = "";
+            FilterNavItems(q);
+        }
+
+        private void FilterNavItems(string query)
+        {
+            foreach (object item in RootNavigation.MenuItems)
+            {
+                var navItem = item as Wpf.Ui.Controls.NavigationViewItem;
+                if (navItem == null) continue;
+                string label = navItem.Content != null ? navItem.Content.ToString() : "";
+                bool matches = string.IsNullOrEmpty(query) ||
+                               label.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+                navItem.Visibility = matches ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        // ─── Profile Card ───────────────────────────────────────────────────────
+        private void OnProfileCardClicked(object sender, MouseButtonEventArgs e)
+        {
+            RootNavigation.Navigate(typeof(SettingsPage));
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+

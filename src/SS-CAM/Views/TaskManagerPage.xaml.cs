@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +14,8 @@ namespace SS_CAM.Views
         private List<ProjectStatusItem> _allProjects = new List<ProjectStatusItem>();
         private ProjectStatusItem _editingProject = null;
 
+        private bool _isPopulatingFilter = false;
+
         public TaskManagerPage()
         {
             InitializeComponent();
@@ -22,102 +24,162 @@ namespace SS_CAM.Views
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
-            _workspaceRoot = UserProfileService.LoadProfile().WorkspaceRoot;
-            PopulateDesignerFilter();
-            LoadProjects();
+            try
+            {
+                var profile = UserProfileService.LoadProfile();
+                _workspaceRoot = profile != null ? profile.WorkspaceRoot : "";
+                PopulateDesignerFilter();
+                LoadProjects();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("TaskManager PageLoad error: " + ex);
+            }
         }
 
         private void PopulateDesignerFilter()
         {
-            DesignerFilterTM.Items.Clear();
-            DesignerFilterTM.Items.Add("All Designers");
+            try
+            {
+                _isPopulatingFilter = true;
+                DesignerFilterTM.Items.Clear();
+                DesignerFilterTM.Items.Add("All Designers");
 
-            List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(_workspaceRoot);
-            foreach (DesignerFolderChoice d in designers)
-                DesignerFilterTM.Items.Add(d.StaffId);
+                if (!string.IsNullOrWhiteSpace(_workspaceRoot))
+                {
+                    List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(_workspaceRoot);
+                    if (designers != null)
+                    {
+                        foreach (DesignerFolderChoice d in designers)
+                        {
+                            if (d != null && !string.IsNullOrEmpty(d.StaffId))
+                                DesignerFilterTM.Items.Add(d.StaffId);
+                        }
+                    }
+                }
 
-            DesignerFilterTM.SelectedIndex = 0;
+                DesignerFilterTM.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("PopulateFilter error: " + ex);
+            }
+            finally
+            {
+                _isPopulatingFilter = false;
+            }
         }
 
         private void LoadProjects()
         {
-            _allProjects.Clear();
-
-            if (string.IsNullOrWhiteSpace(_workspaceRoot) ||
-                !System.IO.Directory.Exists(_workspaceRoot))
+            try
             {
+                _allProjects.Clear();
+
+                if (string.IsNullOrWhiteSpace(_workspaceRoot) ||
+                    !System.IO.Directory.Exists(_workspaceRoot))
+                {
+                    UpdateBoard();
+                    return;
+                }
+
+                // Scan all project folders via WorkspaceScanner then read their frontmatter
+                List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(_workspaceRoot, "", "", 500);
+                if (folders != null)
+                {
+                    foreach (DesignerFolderItem folder in folders)
+                    {
+                        if (folder != null && !string.IsNullOrEmpty(folder.FullPath))
+                        {
+                            ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
+                            if (item != null)
+                                _allProjects.Add(item);
+                        }
+                    }
+                }
+
+                ApplyFiltersAndUpdateBoard();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("LoadProjects error: " + ex);
                 UpdateBoard();
-                return;
             }
-
-            // Scan all project folders via WorkspaceScanner then read their frontmatter
-            List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(_workspaceRoot, "", "", 500);
-            foreach (DesignerFolderItem folder in folders)
-            {
-                ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
-                _allProjects.Add(item);
-            }
-
-            ApplyFiltersAndUpdateBoard();
         }
 
         private void ApplyFiltersAndUpdateBoard()
         {
-            string designerFilter = DesignerFilterTM.SelectedItem != null
-                ? DesignerFilterTM.SelectedItem.ToString() : "All Designers";
-            string priorityFilter = "";
-            if (PriorityFilter.SelectedItem is ComboBoxItem)
+            try
             {
-                string sel = ((ComboBoxItem)PriorityFilter.SelectedItem).Content.ToString();
-                if (sel != "All Priorities") priorityFilter = sel;
-            }
+                string designerFilter = DesignerFilterTM.SelectedItem != null
+                    ? DesignerFilterTM.SelectedItem.ToString() : "All Designers";
+                string priorityFilter = "";
+                if (PriorityFilter != null && PriorityFilter.SelectedItem is ComboBoxItem)
+                {
+                    string sel = ((ComboBoxItem)PriorityFilter.SelectedItem).Content.ToString();
+                    if (sel != "All Priorities") priorityFilter = sel;
+                }
 
-            List<ProjectStatusItem> filtered = new List<ProjectStatusItem>();
-            foreach (ProjectStatusItem p in _allProjects)
+                List<ProjectStatusItem> filtered = new List<ProjectStatusItem>();
+                foreach (ProjectStatusItem p in _allProjects)
+                {
+                    if (p == null) continue;
+                    if (designerFilter != "All Designers" &&
+                        !string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!string.IsNullOrEmpty(priorityFilter) &&
+                        !string.Equals(p.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    filtered.Add(p);
+                }
+
+                UpdateBoard(filtered);
+            }
+            catch (Exception ex)
             {
-                if (designerFilter != "All Designers" &&
-                    !string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase)) continue;
-                if (!string.IsNullOrEmpty(priorityFilter) &&
-                    !string.Equals(p.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase)) continue;
-                filtered.Add(p);
+                System.Diagnostics.Debug.WriteLine("ApplyFilters error: " + ex);
             }
-
-            UpdateBoard(filtered);
         }
 
         private void UpdateBoard(List<ProjectStatusItem> projects = null)
         {
-            if (projects == null) projects = _allProjects;
-
-            List<ProjectStatusItem> backlog = new List<ProjectStatusItem>();
-            List<ProjectStatusItem> inProgress = new List<ProjectStatusItem>();
-            List<ProjectStatusItem> review = new List<ProjectStatusItem>();
-            List<ProjectStatusItem> done = new List<ProjectStatusItem>();
-            List<ProjectStatusItem> other = new List<ProjectStatusItem>();
-
-            foreach (ProjectStatusItem p in projects)
+            try
             {
-                string s = (p.Status ?? "").ToLowerInvariant();
-                if (s == "backlog") backlog.Add(p);
-                else if (s == "in-progress") inProgress.Add(p);
-                else if (s == "review") review.Add(p);
-                else if (s == "done") done.Add(p);
-                else other.Add(p);   // on-hold, untracked, empty
+                if (projects == null) projects = _allProjects;
+
+                List<ProjectStatusItem> backlog = new List<ProjectStatusItem>();
+                List<ProjectStatusItem> inProgress = new List<ProjectStatusItem>();
+                List<ProjectStatusItem> review = new List<ProjectStatusItem>();
+                List<ProjectStatusItem> done = new List<ProjectStatusItem>();
+                List<ProjectStatusItem> other = new List<ProjectStatusItem>();
+
+                foreach (ProjectStatusItem p in projects)
+                {
+                    if (p == null) continue;
+                    string s = (p.Status ?? "").ToLowerInvariant();
+                    if (s == "backlog") backlog.Add(p);
+                    else if (s == "in-progress") inProgress.Add(p);
+                    else if (s == "review") review.Add(p);
+                    else if (s == "done") done.Add(p);
+                    else other.Add(p);   // on-hold, untracked, empty
+                }
+
+                if (ListBacklog != null) ListBacklog.ItemsSource = backlog;
+                if (ListInProgress != null) ListInProgress.ItemsSource = inProgress;
+                if (ListReview != null) ListReview.ItemsSource = review;
+                if (ListDone != null) ListDone.ItemsSource = done;
+                if (ListOther != null) ListOther.ItemsSource = other;
+
+                if (CountBacklog != null) CountBacklog.Text = backlog.Count.ToString();
+                if (CountInProgress != null) CountInProgress.Text = inProgress.Count.ToString();
+                if (CountReview != null) CountReview.Text = review.Count.ToString();
+                if (CountDone != null) CountDone.Text = done.Count.ToString();
+                if (CountOther != null) CountOther.Text = other.Count.ToString();
+
+                if (TxtTaskCount != null) TxtTaskCount.Text = string.Format("{0} projects", projects.Count);
             }
-
-            ListBacklog.ItemsSource = backlog;
-            ListInProgress.ItemsSource = inProgress;
-            ListReview.ItemsSource = review;
-            ListDone.ItemsSource = done;
-            ListOther.ItemsSource = other;
-
-            CountBacklog.Text = backlog.Count.ToString();
-            CountInProgress.Text = inProgress.Count.ToString();
-            CountReview.Text = review.Count.ToString();
-            CountDone.Text = done.Count.ToString();
-            CountOther.Text = other.Count.ToString();
-
-            TxtTaskCount.Text = string.Format("{0} projects", projects.Count);
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("UpdateBoard error: " + ex);
+            }
         }
 
         private void OnTMRefreshClicked(object sender, RoutedEventArgs e)
@@ -127,12 +189,13 @@ namespace SS_CAM.Views
 
         private void OnTMFilterChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!IsLoaded || _isPopulatingFilter) return;
             ApplyFiltersAndUpdateBoard();
         }
 
-        // ─── Project Card Click → Open Detail Drawer ─────────────────────────
+        // â”€â”€â”€ Project Card Click â†’ Open Detail Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-        private void OnProjectCardClicked(object sender, MouseButtonEventArgs e)
+        private void OnProjectCardClicked(object sender, RoutedEventArgs e)
         {
             FrameworkElement el = sender as FrameworkElement;
             if (el == null) return;
@@ -198,3 +261,4 @@ namespace SS_CAM.Views
         }
     }
 }
+

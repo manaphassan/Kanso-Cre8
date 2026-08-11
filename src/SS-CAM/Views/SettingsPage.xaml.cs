@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -154,7 +154,7 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You are running SS-CAM v2.3.6. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("You are running SS-CAM v2.6.0. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)
@@ -162,20 +162,23 @@ namespace SS_CAM.Views
             if (Application.Current != null && Application.Current.MainWindow is MainWindow)
             {
                 MainWindow mainWin = Application.Current.MainWindow as MainWindow;
-                mainWin.NavigateTo(typeof(ProjectCreatorPage), mainWin.NavProjectsBtn);
+                mainWin.NavigateTo(typeof(ProjectCreatorPage));
             }
         }
 
         private void OnSelectSSDefaultTheme(object sender, RoutedEventArgs e)
         {
             ThemeService.ApplyTheme(AppTheme.SSDefault);
-            MessageBox.Show("Applied SS Default — SuamiSihat Brand Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnSelectFalconiaTheme(object sender, RoutedEventArgs e)
         {
             ThemeService.ApplyTheme(AppTheme.Falconia);
-            MessageBox.Show("Applied Falconia — Full White Fluent 2 Light Theme.", "Theme Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OnSelectMetamorphosisTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.Metamorphosis);
         }
 
 
@@ -243,3 +246,7 @@ namespace SS_CAM.Views
         }
     }
 }
+
+
+
+

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
 {
@@ -67,15 +68,11 @@ namespace SS_CAM.Services
         {
             try
             {
-                string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string ssDir = Path.Combine(appData, "SuamiSihat");
-                if (!Directory.Exists(ssDir)) Directory.CreateDirectory(ssDir);
-                _configPath = Path.Combine(ssDir, "theme_config.json");
+                _configPath = Path.Combine(AppPaths.AppDataFolder, "theme_config.json");
 
                 if (File.Exists(_configPath))
                 {
-                    string json = File.ReadAllText(_configPath);
-                    var cfg = JsonConvert.DeserializeObject<ThemeConfig>(json);
+                    var cfg = JsonPersistenceHelper.Load<ThemeConfig>(_configPath);
                     if (cfg != null)
                     {
                         _currentTheme = cfg.SelectedTheme;
@@ -102,11 +99,11 @@ namespace SS_CAM.Services
 
             if (theme == AppTheme.Falconia)
             {
-                // ─────────────────────────────────────────────────────────────────
+                // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 // FALCONIA — Full White Fluent 2 Light Theme
                 // - Active item: text = SAME color as active icon (#0F6CBD)
                 // - Inactive items: text = dark grey (#424242), icon = medium grey (#616161)
-                // ─────────────────────────────────────────────────────────────────
+                // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 return new ThemeColors
                 {
                     IsLight = true,
@@ -145,7 +142,7 @@ namespace SS_CAM.Services
                     FooterCardBg    = "#FFFFFF",
                     FooterCardBorder= "#E0E0E0",
 
-                    // User profile card in sidebar
+                    // Designer Profile card in sidebar
                     UserCardBg      = "#FFFFFF",
                     UserCardBorder  = "#D1D1D1",
                     UserCardTitle   = "#242424",
@@ -161,11 +158,11 @@ namespace SS_CAM.Services
                 };
             }
 
-            // ─────────────────────────────────────────────────────────────────
-            // SS DEFAULT — SuamiSihat Brand Theme (deep navy)
+            // —————————————————————————————————————————————————————————
+            // SS DEFAULT — SuamiSihat Brand Theme (deep navy sidebar + crisp light canvas)
             // - Active item: text = WHITE (#FFFFFF), icon = #479EF5
             // - Inactive items: text = GREY (#9D9D9D), icon = #9D9D9D
-            // ─────────────────────────────────────────────────────────────────
+            // —————————————————————————————————————————————————————————
             return new ThemeColors
             {
                 IsLight = false,
@@ -175,7 +172,7 @@ namespace SS_CAM.Services
 
                 HeaderBg        = "#021B47",
                 HeaderBorder    = "#1E3A8A",
-                MainFrameBg     = "#F8FAFC",
+                MainFrameBg     = "#071324",
 
                 SidebarBg       = "#02153D",
                 SidebarBorder   = "#0A2560",
@@ -211,11 +208,11 @@ namespace SS_CAM.Services
             };
         }
 
-        // ─────────────────────────────────────────────────────────────────────
+        // —————————————————————————————————————————————————————————————————
         // METAMORPHOSIS — Glassmorphism (deep space navy + electric cyan)
         // Sidebar stays dark navy; content pages pick up glass card tokens
         // from MetamorphosisTheme.xaml via ResourceDictionary swap.
-        // ─────────────────────────────────────────────────────────────────────
+        // —————————————————————————————————————————————————————————————————
         private static ThemeColors GetMetamorphosisColors()
         {
             return new ThemeColors
@@ -276,7 +273,20 @@ namespace SS_CAM.Services
             _currentTheme = theme;
             SaveTheme(theme);
 
-            // Swap the XAML resource dictionary for Metamorphosis vs Fluent default
+            // Swap WPF-UI application theme (Light vs Dark) so controls render correctly.
+            // SS Default and Falconia use Light mode — content area cards are white.
+            // Metamorphosis uses Dark mode — glass dark cards.
+            // Nav item foreground is overridden in MainWindow.OnThemeModeChanged.
+            try
+            {
+                if (theme == AppTheme.Metamorphosis)
+                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
+                else
+                    Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
+            }
+            catch { }
+
+            // Swap the style resource dictionary
             SwapResourceDictionary(theme);
 
             if (ThemeChanged != null)
@@ -284,41 +294,50 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
-        /// Hot-swaps the 3rd MergedDictionary entry between Fluent2Styles.xaml
-        /// (all other themes) and MetamorphosisTheme.xaml.
-        /// Index 0 = WpfUi ThemesDictionary, 1 = WpfUi ControlsDictionary, 2 = app theme.
+        /// Hot-swaps the app style dictionary among SSDefaultTheme.xaml, Fluent2Styles.xaml
+        /// and MetamorphosisTheme.xaml. Searches by source URI instead of a hardcoded
+        /// index so it survives WPF-UI re-ordering its own dictionaries.
         /// </summary>
         private static void SwapResourceDictionary(AppTheme theme)
         {
             try
             {
-                string source = (theme == AppTheme.Metamorphosis)
-                    ? "Styles/MetamorphosisTheme.xaml"
-                    : "Styles/Fluent2Styles.xaml";
+                string newSource;
+                if (theme == AppTheme.Metamorphosis)
+                    newSource = "Styles/MetamorphosisTheme.xaml";
+                else if (theme == AppTheme.SSDefault)
+                    newSource = "Styles/SSDefaultTheme.xaml";
+                else
+                    newSource = "Styles/Fluent2Styles.xaml";
 
                 var merged = Application.Current.Resources.MergedDictionaries;
-                const int idx = 2;
-                if (merged.Count > idx)
-                    merged.RemoveAt(idx);
+
+                // Find and remove any existing app-theme dictionary by source URI
+                for (int i = merged.Count - 1; i >= 0; i--)
+                {
+                    var src = merged[i].Source != null ? merged[i].Source.OriginalString : "";
+                    if (src.Contains("Fluent2Styles") || src.Contains("MetamorphosisTheme") || src.Contains("SSDefaultTheme"))
+                    {
+                        merged.RemoveAt(i);
+                        break;
+                    }
+                }
 
                 var dict = new ResourceDictionary();
-                dict.Source = new Uri(source, UriKind.Relative);
-                merged.Insert(idx, dict);
+                dict.Source = new Uri(newSource, UriKind.Relative);
+                merged.Add(dict);
             }
             catch { }
         }
 
         private static void SaveTheme(AppTheme theme)
         {
-            try
+            if (!string.IsNullOrEmpty(_configPath))
             {
-                if (!string.IsNullOrEmpty(_configPath))
-                {
-                    string json = JsonConvert.SerializeObject(new ThemeConfig { SelectedTheme = theme }, Formatting.Indented);
-                    File.WriteAllText(_configPath, json);
-                }
+                JsonPersistenceHelper.Save(_configPath, new ThemeConfig { SelectedTheme = theme });
             }
-            catch { }
         }
     }
 }
+
+

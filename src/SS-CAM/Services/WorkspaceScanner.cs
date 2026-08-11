@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -68,10 +68,10 @@ namespace SS_CAM.Services
                     result.TotalProjects++;
                     string job = match.Groups[1].Value.ToUpperInvariant();
                     string brand = match.Groups[2].Value.ToUpperInvariant();
-                    string jobCode = GetJobCode(job);
-                    string type = jobCode.StartsWith("S") ? "Social Media" :
-                        jobCode.StartsWith("V") ? "Video" :
-                        jobCode.StartsWith("P") ? "Brand Identity" : "Graphic / Print";
+                    string projectCode = GetProjectCode(job);
+                    string type = projectCode.StartsWith("S") ? "Social Media" :
+                        projectCode.StartsWith("V") ? "Video" :
+                        projectCode.StartsWith("P") ? "Brand Identity" : "Graphic / Print";
 
                     AddCount(types, type);
                     AddCount(brands, brand);
@@ -447,7 +447,7 @@ namespace SS_CAM.Services
             return result;
         }
 
-        private static string GetJobCode(string job)
+        private static string GetProjectCode(string job)
         {
             Match oldFormat = Regex.Match(job, @"^([A-Z-]+)\d+$", RegexOptions.IgnoreCase);
             if (oldFormat.Success) return oldFormat.Groups[1].Value.ToUpperInvariant();
@@ -488,3 +488,5 @@ namespace SS_CAM.Services
         }
     }
 }
+
+

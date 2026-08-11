@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SS_CAM.Models
 {
@@ -10,7 +10,7 @@ namespace SS_CAM.Models
         public string Email { get; set; }
         public string AvatarPath { get; set; }
         public string WorkspaceRoot { get; set; }
-        public int NextJobNumber { get; set; }
+        public int NextProjectNumber { get; set; }
         /// <summary>Persisted theme name: "SS Default" or "Metamorphosis".</summary>
         public string Theme { get; set; }
         /// <summary>JAKIM prayer time zone code, e.g. "WLY01".</summary>
@@ -26,7 +26,7 @@ namespace SS_CAM.Models
             Email = "brand@suamisihat.com";
             AvatarPath = "";
             WorkspaceRoot = @"D:\Testing";
-            NextJobNumber = 1;
+            NextProjectNumber = 1;
             Theme = null;   // null = SS Default (ThemeService treats null as SSDefault)
             PrayerZone = "WLY01";
             PrayerRemindersEnabled = true;
@@ -79,3 +79,4 @@ namespace SS_CAM.Models
         }
     }
 }
+

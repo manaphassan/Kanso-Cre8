@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -12,7 +12,7 @@ namespace SS_CAM.Services
             string projectName, 
             string subBrand, 
             string year, 
-            string jobNumber, 
+            string projectNumber, 
             string presetType, 
             List<string> extraSubFolders)
         {
@@ -47,11 +47,11 @@ namespace SS_CAM.Services
             var monthFolder = string.Format("{0}{1}_{2}", cleanYear, curMonthNum, curMonthFull);
             var dateCode = string.Format("{0}{1}", cleanYear, curMonthNum);
 
-            var cleanJob = jobNumber != null ? jobNumber.Trim() : string.Empty;
-            if (Regex.IsMatch(cleanJob, @"^\d+$")) cleanJob = string.Format("{0}D", cleanJob);
-            if (string.IsNullOrWhiteSpace(cleanJob)) cleanJob = "0001D";
+            var cleanProjectNumber = projectNumber != null ? projectNumber.Trim() : string.Empty;
+            if (Regex.IsMatch(cleanProjectNumber, @"^\d+$")) cleanProjectNumber = string.Format("{0}D", cleanProjectNumber);
+            if (string.IsNullOrWhiteSpace(cleanProjectNumber)) cleanProjectNumber = "0001D";
 
-            var folderName = string.Format("{0}_{1}_{2}_{3}", dateCode, cleanJob, cleanSubBrand, cleanProjectName);
+            var folderName = string.Format("{0}_{1}_{2}_{3}", dateCode, cleanProjectNumber, cleanSubBrand, cleanProjectName);
             
             var yearRoot = Regex.IsMatch(rootDirectory, @"\\SS-\d{4}$") 
                 ? Path.GetDirectoryName(rootDirectory) 
@@ -102,3 +102,5 @@ namespace SS_CAM.Services
         }
     }
 }
+
+

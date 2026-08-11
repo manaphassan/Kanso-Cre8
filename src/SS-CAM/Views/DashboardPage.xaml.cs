@@ -14,11 +14,14 @@ namespace SS_CAM.Views
 {
     public partial class DashboardPage : Page
     {
-        private string workspaceRoot = @"D:\Testing";
+        private string workspaceRoot = string.Empty;
         private DispatcherTimer _tipTimer;
         private int _tipIndex = 0;
         private bool _articlesVisible = false;
         private bool _articlesFetched = false;
+
+        // Singleton HttpClient — avoids socket exhaustion on repeated use
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(6) };
 
         // ────────────────────────────────────────────────
         // Design Tip data class (C#5 compatible — no tuples)
@@ -244,12 +247,10 @@ namespace SS_CAM.Views
                 TxtArticlesStatus.Text = "Fetching latest design articles...";
                 ArticlesList.ItemsSource = null;
 
-                using (var client = new HttpClient())
-                {
-                    client.Timeout = TimeSpan.FromSeconds(6);
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("SS-CAM/2.4 (+SuamiSihat)");
+                _httpClient.DefaultRequestHeaders.UserAgent.Clear();
+                _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SS-CAM/2.6 (+SuamiSihat)");
 
-                    string xml = await client.GetStringAsync("https://www.smashingmagazine.com/feed/");
+                string xml = await _httpClient.GetStringAsync("https://www.smashingmagazine.com/feed/");
                     XDocument doc = XDocument.Parse(xml);
 
                     List<DesignArticleItem> items = new List<DesignArticleItem>();
@@ -280,7 +281,6 @@ namespace SS_CAM.Views
                     {
                         TxtArticlesStatus.Text = "No articles found in feed. Check network connection.";
                     }
-                }
             }
             catch
             {
@@ -293,7 +293,7 @@ namespace SS_CAM.Views
             }
         }
 
-        private void OnArticleClicked(object sender, MouseButtonEventArgs e)
+        private void OnArticleClicked(object sender, RoutedEventArgs e)
         {
             FrameworkElement border = sender as FrameworkElement;
             if (border != null)

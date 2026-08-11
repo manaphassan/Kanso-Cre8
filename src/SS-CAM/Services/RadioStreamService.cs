@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Media;
 using Newtonsoft.Json;
 using SS_CAM.Models;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
 {
@@ -424,12 +425,7 @@ namespace SS_CAM.Services
             _localProxy = new LocalAudioProxy();
             _localProxy.StreamTitleChanged += (title) => { if (StreamTitleChanged != null) StreamTitleChanged(title); };
 
-            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string ssDir = Path.Combine(appData, "SuamiSihat");
-            if (!Directory.Exists(ssDir))
-            {
-                Directory.CreateDirectory(ssDir);
-            }
+            string ssDir = AppPaths.AppDataFolder;
             _configFilePath = Path.Combine(ssDir, "radio_config.json");
 
             LoadStations();
@@ -995,26 +991,12 @@ namespace SS_CAM.Services
 
         private RadioConfigData LoadConfig()
         {
-            try
-            {
-                if (File.Exists(_configFilePath))
-                {
-                    string json = File.ReadAllText(_configFilePath);
-                    return JsonConvert.DeserializeObject<RadioConfigData>(json) ?? new RadioConfigData();
-                }
-            }
-            catch { }
-            return new RadioConfigData();
+            return JsonPersistenceHelper.Load<RadioConfigData>(_configFilePath);
         }
 
         private void SaveConfig()
         {
-            try
-            {
-                string json = JsonConvert.SerializeObject(_config, Formatting.Indented);
-                File.WriteAllText(_configFilePath, json);
-            }
-            catch { }
+            JsonPersistenceHelper.Save(_configFilePath, _config);
         }
 
         // ── Cover Art ─────────────────────────────────────────────────────
@@ -1026,8 +1008,7 @@ namespace SS_CAM.Services
         public event Action<RadioStation> CoverDownloaded;
 
         private static readonly string _coversDir =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                         "SS-CAM", "covers");
+            Path.Combine(AppPaths.AppDataFolder, "covers");
 
         /// <summary>
         /// Downloads the cover image for the given station (if a URL is set and

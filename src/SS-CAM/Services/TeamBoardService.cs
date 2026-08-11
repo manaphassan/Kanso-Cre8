@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
@@ -18,10 +19,19 @@ namespace SS_CAM.Services
 
         private static string GetNotesPath(string workspaceRoot)
         {
+            // Guard: refuse to create local folders for an unconfigured workspace
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+                return null;
+
             string teamDir = Path.Combine(workspaceRoot, TeamFolder);
             if (!Directory.Exists(teamDir))
             {
-                try { Directory.CreateDirectory(teamDir); } catch { }
+                try { Directory.CreateDirectory(teamDir); }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(string.Format("[TeamBoardService] Cannot create _Team folder at '{0}': {1}", teamDir, ex.Message));
+                    return null;
+                }
             }
             return Path.Combine(teamDir, NotesFile);
         }
@@ -52,7 +62,11 @@ namespace SS_CAM.Services
                 });
                 return notes;
             }
-            catch { return new List<TeamNote>(); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[TeamBoardService] LoadNotes failed: {0}", ex.Message));
+                return new List<TeamNote>();
+            }
         }
 
         /// <summary>
@@ -107,11 +121,16 @@ namespace SS_CAM.Services
             try
             {
                 string path = GetNotesPath(workspaceRoot);
+                if (string.IsNullOrEmpty(path)) return false; // workspace offline or unconfigured
                 string json = JsonConvert.SerializeObject(notes, Formatting.Indented);
                 File.WriteAllText(path, json, Encoding.UTF8);
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[TeamBoardService] Save failed: {0}", ex.Message));
+                return false;
+            }
         }
     }
 }

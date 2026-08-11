@@ -1,4 +1,4 @@
-<Page x:Class="SS_CAM.Views.RadioPage"
+﻿<Page x:Class="SS_CAM.Views.RadioPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -13,11 +13,7 @@
     <DockPanel>
 
         <!-- ══ NOW PLAYING TRANSPORT BAR (bottom-docked, Fluent Media Player style) ══ -->
-        <Border DockPanel.Dock="Bottom"
-                Background="{DynamicResource FluentLightCardBg}"
-                BorderBrush="{DynamicResource FluentLightStroke}"
-                BorderThickness="0,1,0,0"
-                Height="76">
+        <ui:Card DockPanel.Dock="Bottom" Padding="0" Height="76" VerticalAlignment="Bottom">
             <Grid Margin="20,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="260"/>   <!-- Station identity -->
@@ -32,7 +28,7 @@
                             Background="{DynamicResource FluentBrandLight}"
                             Margin="0,0,12,0" ClipToBounds="True">
                         <Grid>
-                            <TextBlock x:Name="HeroIconText"
+                            <ui:TextBlock x:Name="HeroIconText"
                                        Text="&#xE768;" FontFamily="Segoe Fluent Icons"
                                        FontSize="22" Foreground="{DynamicResource FluentBrand80}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -44,29 +40,29 @@
                     </Border>
                     <!-- Station info -->
                     <StackPanel VerticalAlignment="Center" MaxWidth="190">
-                        <TextBlock x:Name="HeroStationName" Text="No station selected"
-                                   FontFamily="{StaticResource FluentFontFamily}"
+                        <ui:TextBlock x:Name="HeroStationName" Text="No station selected"
+                                   
                                    FontSize="13" FontWeight="Bold"
                                    Foreground="{DynamicResource FluentLightTextPrimary}"
                                    TextTrimming="CharacterEllipsis"/>
-                        <TextBlock x:Name="HeroStreamTitleText" Text=""
-                                   FontFamily="{StaticResource FluentFontFamily}"
+                        <ui:TextBlock x:Name="HeroStreamTitleText" Text=""
+                                   
                                    FontSize="11" Foreground="{DynamicResource FluentBrand80}"
                                    TextTrimming="CharacterEllipsis" Visibility="Collapsed"/>
                         <!-- Status + genre badge row -->
                         <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                            <TextBlock x:Name="HeroStatusDot" Text="&#xE73E;"
+                            <ui:TextBlock x:Name="HeroStatusDot" Text="&#xE73E;"
                                        FontFamily="Segoe Fluent Icons" FontSize="10"
                                        Foreground="{DynamicResource FluentLightTextSecondary}"
                                        VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <TextBlock x:Name="HeroStatusText" Text="Ready"
-                                       FontFamily="{StaticResource FluentFontFamily}"
+                            <ui:TextBlock x:Name="HeroStatusText" Text="Ready"
+                                       
                                        FontSize="10" Foreground="{DynamicResource FluentLightTextSecondary}"
                                        VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <Border x:Name="HeroGenreBadge" Background="{DynamicResource FluentBrandLight}"
                                     CornerRadius="4" Padding="5,1" VerticalAlignment="Center">
-                                <TextBlock x:Name="HeroGenreText" Text=""
-                                           FontFamily="{StaticResource FluentFontFamily}"
+                                <ui:TextBlock x:Name="HeroGenreText" Text=""
+                                           
                                            FontSize="9" FontWeight="Bold"
                                            Foreground="{DynamicResource FluentBrand80}"/>
                             </Border>
@@ -78,22 +74,22 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal"
                             HorizontalAlignment="Center" VerticalAlignment="Center">
                     <!-- Stop -->
-                    <Button x:Name="HeroStopBtn" Click="OnHeroStopClicked"
+                    <ui:Button x:Name="HeroStopBtn" Click="OnHeroStopClicked"
                             Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                             BorderThickness="0" Cursor="Hand" ToolTip="Stop Stream" Padding="8">
-                        <TextBlock Text="&#xE71A;" FontFamily="Segoe Fluent Icons" FontSize="16"/>
-                    </Button>
+                        <ui:TextBlock Text="&#xE71A;" FontFamily="Segoe Fluent Icons" FontSize="16"/>
+                    </ui:Button>
 
                     <!-- Play / Pause (primary CTA) -->
                     <Border Width="40" Height="40" CornerRadius="20"
                             Background="{DynamicResource FluentBrand80}" Margin="6,0">
-                        <Button x:Name="HeroPlayBtn" Click="OnHeroPlayClicked"
+                        <ui:Button x:Name="HeroPlayBtn" Click="OnHeroPlayClicked"
                                 Background="Transparent" Foreground="White"
                                 BorderThickness="0" Cursor="Hand" ToolTip="Play / Pause">
-                            <TextBlock x:Name="HeroPlayBtnText" Text="&#xE768;"
+                            <ui:TextBlock x:Name="HeroPlayBtnText" Text="&#xE768;"
                                        FontFamily="Segoe Fluent Icons" FontSize="18"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Button>
+                        </ui:Button>
                     </Border>
 
                     <!-- Visualizer bars (shown when playing) -->
@@ -111,19 +107,19 @@
                 <!-- Right: Mute + Volume Slider -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal"
                             VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked"
+                    <ui:Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked"
                             Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                             BorderThickness="0" Cursor="Hand" ToolTip="Mute / Unmute" Padding="4,0,8,0">
-                        <TextBlock x:Name="HeroMuteIcon" Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="16"/>
-                    </Button>
+                        <ui:TextBlock x:Name="HeroMuteIcon" Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="16"/>
+                    </ui:Button>
                     <Slider x:Name="HeroVolumeSlider" Width="110" Minimum="0" Maximum="100"
                             Value="80" ValueChanged="OnHeroVolumeChanged"
                             VerticalAlignment="Center" ToolTip="Volume"/>
                 </StackPanel>
             </Grid>
-        </Border>
+        </ui:Card>
 
-        <!-- ══ MAIN CONTENT AREA ══ -->
+        <!-- â•â• MAIN CONTENT AREA â•â• -->
         <Grid Margin="24,20,24,12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>   <!-- Page header -->
@@ -139,152 +135,134 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="22"
+                        <ui:TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="22"
                                    Foreground="{DynamicResource FluentBrand80}"
                                    VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock Text="Radio &amp; Focus Streams" FontSize="22" FontWeight="Bold"
+                        <ui:TextBlock Text="Radio &amp; Focus Streams" FontSize="22" FontWeight="Bold"
                                    Foreground="{DynamicResource FluentLightTextPrimary}"
-                                   VerticalAlignment="Center" FontFamily="{StaticResource FluentFontFamily}"/>
+                                   VerticalAlignment="Center" />
                     </StackPanel>
-                    <TextBlock Text="Click any station card to tune in. Now Playing bar updates at the bottom."
+                    <ui:TextBlock Text="Click any station card to tune in. Now Playing bar updates at the bottom."
                                Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
-                               Margin="0,4,0,0" FontFamily="{StaticResource FluentFontFamily}"/>
+                               Margin="0,4,0,0" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1"
-                            CornerRadius="6" Margin="0,0,8,0">
-                        <Button Click="OnImportPlaylistClicked" Background="Transparent"
-                                Foreground="{DynamicResource FluentLightTextSecondary}"
-                                Padding="10,6" BorderThickness="0" Cursor="Hand"
-                                ToolTip="Import .pls or .m3u" FontFamily="{StaticResource FluentFontFamily}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8B5;" FontFamily="Segoe Fluent Icons" FontSize="12"
-                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Import" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </Border>
-                    <Border Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1"
-                            CornerRadius="6" Margin="0,0,8,0">
-                        <Button Click="OnResetDefaultsClicked" Background="Transparent"
-                                Foreground="{DynamicResource FluentLightTextSecondary}"
-                                Padding="10,6" BorderThickness="0" Cursor="Hand"
-                                ToolTip="Reset to defaults" FontFamily="{StaticResource FluentFontFamily}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="12"
-                                           Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Reset" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </Border>
-                    <Border Background="{DynamicResource FluentBrand80}" CornerRadius="6">
-                        <Button Click="OnAddCustomStationClicked" Background="Transparent" Foreground="White"
-                                Padding="14,8" BorderThickness="0" Cursor="Hand"
-                                ToolTip="Add a custom stream URL" FontFamily="{StaticResource FluentFontFamily}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                           Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Add Stream" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </Border>
+                    <ui:Button Appearance="Secondary" Click="OnImportPlaylistClicked" Margin="0,0,8,0"
+                            Padding="10,6" Cursor="Hand" ToolTip="Import .pls or .m3u" >
+                        <StackPanel Orientation="Horizontal">
+                            <ui:TextBlock Text="&#xE8B5;" FontFamily="Segoe Fluent Icons" FontSize="12"
+                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="Import" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ui:Button>
+                    <ui:Button Appearance="Secondary" Click="OnResetDefaultsClicked" Margin="0,0,8,0"
+                            Padding="10,6" Cursor="Hand" ToolTip="Reset to defaults" >
+                        <StackPanel Orientation="Horizontal">
+                            <ui:TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="12"
+                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="Reset" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ui:Button>
+                    <ui:Button Appearance="Primary" Click="OnAddCustomStationClicked"
+                            Padding="14,8" Cursor="Hand" ToolTip="Add a custom stream URL" >
+                        <StackPanel Orientation="Horizontal">
+                            <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                       Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="Add Stream" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ui:Button>
                 </StackPanel>
             </Grid>
 
             <!-- Genre Filter Tabs -->
-            <Border Grid.Row="1"
-                    Background="{DynamicResource FluentLightCardSubBg}"
-                    BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1"
-                    CornerRadius="8" Padding="6" Margin="0,0,0,16">
+            <ui:Card Grid.Row="1" Padding="6" Margin="0,0,0,16">
                 <WrapPanel x:Name="FilterCategoryPanel">
                     <Border x:Name="TabAll" CornerRadius="6" Background="{DynamicResource FluentBrand80}" Margin="2">
-                        <Button Tag="ALL" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="ALL" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="White"
                                 BorderThickness="0" FontWeight="Bold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8FD;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE8FD;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="All" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="All" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabFav" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="FAV" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="FAV" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE734;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE734;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Favourites" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Favourites" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabFocus" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="FOCUS" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="FOCUS" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE7C3;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE7C3;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Focus / Lo-Fi" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Focus / Lo-Fi" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabPop" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="POP" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="POP" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Pop / Hits" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Pop / Hits" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabTalk" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="TALK" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="TALK" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8D4;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE8D4;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Talk / News" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Talk / News" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabJazz" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="JAZZ" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="JAZZ" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xEC4F;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xEC4F;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Jazz / Chill" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Jazz / Chill" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                     <Border x:Name="TabCustom" CornerRadius="6" Background="Transparent" Margin="2">
-                        <Button Tag="CUSTOM" Click="OnFilterClicked" Padding="12,6"
+                        <ui:Button Tag="CUSTOM" Click="OnFilterClicked" Padding="12,6"
                                 Background="Transparent" Foreground="{DynamicResource FluentLightTextSecondary}"
                                 BorderThickness="0" FontWeight="SemiBold" FontSize="11"
-                                FontFamily="{StaticResource FluentFontFamily}">
+                                >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="11"
                                            Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Custom" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Custom" VerticalAlignment="Center"/>
                             </StackPanel>
-                        </Button>
+                        </ui:Button>
                     </Border>
                 </WrapPanel>
-            </Border>
+            </ui:Card>
 
             <!-- Station Cards (3-column, scrollable) -->
             <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -296,10 +274,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="{DynamicResource FluentLightCardBg}"
-                                    BorderBrush="{DynamicResource FluentLightStroke}"
-                                    BorderThickness="1" CornerRadius="10" Margin="5"
-                                    Cursor="Hand">
+                            <ui:Card Margin="5" Padding="0">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="54"/>   <!-- Cover strip -->
@@ -312,7 +287,7 @@
                                             Background="{DynamicResource FluentLightCardSubBg}"
                                             ClipToBounds="True">
                                         <Grid>
-                                            <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons"
+                                            <ui:TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons"
                                                        FontSize="22" Opacity="0.25"
                                                        Foreground="{DynamicResource FluentBrand80}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -328,25 +303,25 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                            <ui:TextBlock Grid.Column="0" Text="{Binding Name}"
                                                        FontWeight="Bold" FontSize="13"
                                                        Foreground="{DynamicResource FluentLightTextPrimary}"
-                                                       FontFamily="{StaticResource FluentFontFamily}"
+                                                       
                                                        TextTrimming="CharacterEllipsis"
                                                        VerticalAlignment="Center"/>
                                             <Border Grid.Column="1" Background="{DynamicResource FluentBrandLight}"
                                                     CornerRadius="4" Padding="5,1" VerticalAlignment="Center" Margin="4,0,0,0">
-                                                <TextBlock Text="{Binding Genre}"
+                                                <ui:TextBlock Text="{Binding Genre}"
                                                            Foreground="{DynamicResource FluentBrand80}"
                                                            FontSize="9" FontWeight="Bold"
-                                                           FontFamily="{StaticResource FluentFontFamily}"/>
+                                                           />
                                             </Border>
                                         </Grid>
-                                        <TextBlock Text="{Binding Description}"
+                                        <ui:TextBlock Text="{Binding Description}"
                                                    Foreground="{DynamicResource FluentLightTextSecondary}"
                                                    FontSize="10" Margin="0,3,0,0"
                                                    TextTrimming="CharacterEllipsis"
-                                                   FontFamily="{StaticResource FluentFontFamily}"/>
+                                                   />
                                     </StackPanel>
 
                                     <!-- Action row -->
@@ -362,40 +337,40 @@
                                             </Grid.ColumnDefinitions>
                                             <!-- Favourite + Edit -->
                                             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                                <Button Click="OnStationFavoriteClicked" Tag="{Binding}"
+                                                <ui:Button Click="OnStationFavoriteClicked" Tag="{Binding}"
                                                         Background="Transparent" BorderThickness="0"
                                                         Cursor="Hand" ToolTip="Toggle Favourite" Padding="4">
-                                                    <TextBlock Text="{Binding FavIcon}" FontFamily="Segoe Fluent Icons"
+                                                    <ui:TextBlock Text="{Binding FavIcon}" FontFamily="Segoe Fluent Icons"
                                                                FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                                                </Button>
-                                                <Button Click="OnStationEditClicked" Tag="{Binding}"
+                                                </ui:Button>
+                                                <ui:Button Click="OnStationEditClicked" Tag="{Binding}"
                                                         Background="Transparent" BorderThickness="0"
                                                         Cursor="Hand" ToolTip="Edit" Padding="4">
-                                                    <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons"
+                                                    <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons"
                                                                FontSize="13" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                                </Button>
+                                                </ui:Button>
                                             </StackPanel>
                                             <!-- Play button (primary, centred) -->
                                             <Border Grid.Column="1" HorizontalAlignment="Center"
                                                     Width="32" Height="32" CornerRadius="16"
                                                     Background="{DynamicResource FluentBrand80}">
-                                                <Button Click="OnStationPlayClicked" Tag="{Binding}"
+                                                <ui:Button Click="OnStationPlayClicked" Tag="{Binding}"
                                                         Background="Transparent" Foreground="White"
                                                         BorderThickness="0" Cursor="Hand" ToolTip="Tune In">
-                                                    <TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons"
+                                                    <ui:TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons"
                                                                FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Button>
+                                                </ui:Button>
                                             </Border>
                                             <!-- Delete -->
-                                            <Button Grid.Column="2" Click="OnStationDeleteClicked" Tag="{Binding}"
+                                            <ui:Button Grid.Column="2" Click="OnStationDeleteClicked" Tag="{Binding}"
                                                     Background="Transparent" Foreground="#EF4444"
                                                     BorderThickness="0" Cursor="Hand" ToolTip="Remove" Padding="4">
-                                                <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
-                                            </Button>
+                                                <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
+                                            </ui:Button>
                                         </Grid>
                                     </Border>
                                 </Grid>
-                            </Border>
+                            </ui:Card>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -411,55 +386,52 @@
                     <StackPanel>
                         <Grid Margin="0,0,0,16">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="16"
+                                <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="16"
                                            Foreground="{DynamicResource FluentBrand80}"
                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock x:Name="ModalTitleText" Text="Add Custom Radio Stream"
+                                <ui:TextBlock x:Name="ModalTitleText" Text="Add Custom Radio Stream"
                                            FontSize="16" FontWeight="Bold"
                                            Foreground="{DynamicResource FluentBrand80}"
                                            VerticalAlignment="Center"
-                                           FontFamily="{StaticResource FluentFontFamily}"/>
+                                           />
                             </StackPanel>
-                            <Button Click="OnCloseModalClicked" HorizontalAlignment="Right"
+                            <ui:Button Click="OnCloseModalClicked" HorizontalAlignment="Right"
                                     Background="Transparent"
                                     Foreground="{DynamicResource FluentLightTextSecondary}"
                                     BorderThickness="0" Cursor="Hand" Padding="4">
-                                <TextBlock Text="&#xE711;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
-                            </Button>
+                                <ui:TextBlock Text="&#xE711;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
+                            </ui:Button>
                         </Grid>
 
-                        <TextBlock Text="Station Name" FontSize="11" FontWeight="Bold"
+                        <ui:TextBlock Text="Station Name" FontSize="11" FontWeight="Bold"
                                    Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
-                                   FontFamily="{StaticResource FluentFontFamily}"/>
+                                   />
                         <TextBox x:Name="TxtStationName" Padding="8,6" Margin="0,0,0,12" FontSize="12"/>
 
-                        <TextBlock Text="Stream URL" FontSize="11" FontWeight="Bold"
+                        <ui:TextBlock Text="Stream URL" FontSize="11" FontWeight="Bold"
                                    Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
-                                   FontFamily="{StaticResource FluentFontFamily}"/>
+                                   />
                         <Grid Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name="TxtStreamUrl" Grid.Column="0" Padding="8,6" FontSize="12" Text="https://"/>
-                            <Border Grid.Column="1" CornerRadius="4" Background="#21A1F7" Margin="6,0,0,0">
-                                <Button Click="OnTestStreamClicked" Padding="10,0"
-                                        Background="Transparent" Foreground="White"
-                                        FontWeight="Bold" FontSize="11" BorderThickness="0" Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="&#xE945;" FontFamily="Segoe Fluent Icons" FontSize="11"
-                                                   Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Test" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                            </Border>
+                            <ui:Button Grid.Column="1" Appearance="Primary" Click="OnTestStreamClicked" Padding="10,0"
+                                    FontWeight="Bold" FontSize="11" Cursor="Hand" Margin="6,0,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE945;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                               Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Test" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
                         </Grid>
                         <Border x:Name="StreamTestBadge"
                                 Background="{DynamicResource FluentLightCardSubBg}"
                                 CornerRadius="4" Padding="8,4" Margin="0,0,0,12" Visibility="Collapsed">
-                            <TextBlock x:Name="StreamTestText" Text="Stream status" FontSize="10"
+                            <ui:TextBlock x:Name="StreamTestText" Text="Stream status" FontSize="10"
                                        FontWeight="SemiBold" TextWrapping="Wrap"
-                                       FontFamily="{StaticResource FluentFontFamily}"/>
+                                       />
                         </Border>
 
                         <Grid Margin="0,0,0,12">
@@ -468,9 +440,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Genre" FontSize="11" FontWeight="Bold"
+                                <ui:TextBlock Text="Genre" FontSize="11" FontWeight="Bold"
                                            Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
-                                           FontFamily="{StaticResource FluentFontFamily}"/>
+                                           />
                                 <ComboBox x:Name="CmbGenre" Padding="8,6" FontSize="12" IsEditable="True">
                                     <ComboBoxItem Content="Focus / Lo-Fi" IsSelected="True"/>
                                     <ComboBoxItem Content="Pop / Hits"/>
@@ -481,34 +453,23 @@
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
-                                <TextBlock Text="Emoji" FontSize="11" FontWeight="Bold"
+                                <ui:TextBlock Text="Emoji" FontSize="11" FontWeight="Bold"
                                            Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
-                                           FontFamily="{StaticResource FluentFontFamily}"/>
+                                           />
                                 <TextBox x:Name="TxtEmoji" Text="📻" Padding="8,6"
                                          Width="56" TextAlignment="Center" FontSize="14"/>
                             </StackPanel>
                         </Grid>
 
-                        <TextBlock Text="Description (Optional)" FontSize="11" FontWeight="Bold"
+                        <ui:TextBlock Text="Description (Optional)" FontSize="11" FontWeight="Bold"
                                    Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
-                                   FontFamily="{StaticResource FluentFontFamily}"/>
+                                   />
                         <TextBox x:Name="TxtDescription" Padding="8,6" Margin="0,0,0,20" FontSize="12"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Border CornerRadius="6"
-                                    Background="{DynamicResource FluentLightCardSubBg}" Margin="0,0,8,0">
-                                <Button Click="OnCloseModalClicked" Content="Cancel" Padding="14,6"
-                                        Background="Transparent"
-                                        Foreground="{DynamicResource FluentLightTextSecondary}"
-                                        BorderThickness="0" Cursor="Hand"
-                                        FontFamily="{StaticResource FluentFontFamily}"/>
-                            </Border>
-                            <Border CornerRadius="6" Background="{DynamicResource FluentBrand80}">
-                                <Button Click="OnSaveCustomStationClicked" Content="Save Station" Padding="16,6"
-                                        Background="Transparent" Foreground="White" FontWeight="Bold"
-                                        BorderThickness="0" Cursor="Hand"
-                                        FontFamily="{StaticResource FluentFontFamily}"/>
-                            </Border>
+                            <ui:Button Appearance="Secondary" Click="OnCloseModalClicked" Content="Cancel" Padding="14,6" Margin="0,0,8,0" Cursor="Hand"/>
+                            <ui:Button Appearance="Primary" Click="OnSaveCustomStationClicked" Content="Save Station" Padding="16,6"
+                                    FontWeight="Bold" Cursor="Hand" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -516,3 +477,4 @@
         </Grid>
     </DockPanel>
 </Page>
+

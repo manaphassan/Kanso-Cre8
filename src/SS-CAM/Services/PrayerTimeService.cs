@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using SS_CAM.Models;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
 {
@@ -17,8 +18,7 @@ namespace SS_CAM.Services
 
         // ── Cache ─────────────────────────────────────────────────────────────
         private static readonly string CacheDir = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "SS-CAM", "prayertimes");
+            AppPaths.AppDataFolder, "prayertimes");
 
         // ── Adhan reminder ────────────────────────────────────────────────────
         /// <summary>Raised (on caller thread) when a prayer time is reached.</summary>
@@ -74,11 +74,6 @@ namespace SS_CAM.Services
 
         // ── Public API ────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Returns today's prayer times for the given zone.
-        /// Checks local cache first; fetches from JAKIM API if stale.
-        /// Returns null if both cache and network fail.
-        /// </summary>
         public static PrayerTimeEntry FetchToday(string zone)
         {
             try
@@ -97,19 +92,18 @@ namespace SS_CAM.Services
                 }
                 else
                 {
-                    // Delete yesterday's cache for this zone
                     foreach (var old in Directory.GetFiles(CacheDir, zone + "-*.json"))
                     {
                         try { File.Delete(old); } catch { }
                     }
 
                     string url = ApiBase + zone + "?period=today";
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | (SecurityProtocolType)768 | (SecurityProtocolType)192;
                     var req = (HttpWebRequest)WebRequest.Create(url);
                     req.Timeout = 9000;
                     req.Method = "GET";
                     req.Accept = "application/json";
-                    req.UserAgent = "SS-CAM/2.6.0";
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
 
                     using (var resp = (HttpWebResponse)req.GetResponse())
                     using (var reader = new StreamReader(resp.GetResponseStream()))
@@ -120,15 +114,16 @@ namespace SS_CAM.Services
                     File.WriteAllText(cacheFile, json);
                 }
 
-                return ParseEntry(zone, json);
+                var entry = ParseEntry(zone, json);
+                if (entry == null && File.Exists(cacheFile))
+                {
+                    try { File.Delete(cacheFile); } catch { }
+                }
+                return entry;
             }
-            catch
-            {
-                return null;
-            }
+            catch (Exception ex) { File.WriteAllText(System.IO.Path.Combine(CacheDir, "error.log"), ex.ToString()); return null; }
         }
 
-        /// <summary>Computes real-time prayer state from a loaded entry.</summary>
         public static PrayerState ComputeState(PrayerTimeEntry entry)
         {
             if (entry == null) return null;
@@ -145,7 +140,6 @@ namespace SS_CAM.Services
                 new { Name = "Isyak",   Time = entry.Isyak   },
             };
 
-            // Find next prayer
             int nextIdx = -1;
             for (int i = 0; i < prayers.Length; i++)
             {
@@ -156,7 +150,6 @@ namespace SS_CAM.Services
 
             if (nextIdx < 0)
             {
-                // Past Isyak
                 state.CurrentPrayer    = "Isyak";
                 state.CurrentPrayerKey = "Isyak";
                 state.NextPrayer       = "Subuh (Esok)";
@@ -169,7 +162,6 @@ namespace SS_CAM.Services
             }
             else if (nextIdx == 0)
             {
-                // Before Subuh
                 state.CurrentPrayer    = "Isyak (Semalam)";
                 state.CurrentPrayerKey = "";
                 state.NextPrayer       = "Subuh";
@@ -194,7 +186,6 @@ namespace SS_CAM.Services
                     ? Math.Min(100, elapsed.TotalSeconds / total.TotalSeconds * 100) : 0;
             }
 
-            // Adhan alert window: within 45 seconds of any prayer
             state.IsPrayerTime = false;
             foreach (var p in prayers)
             {
@@ -210,51 +201,65 @@ namespace SS_CAM.Services
             return state;
         }
 
-        // ── Private helpers ───────────────────────────────────────────────────
-
         private static PrayerTimeEntry ParseEntry(string zone, string json)
         {
             try
             {
                 var jObj = JObject.Parse(json);
-                var arr  = jObj["prayerTime"] as JArray;
+                var arr = (jObj["prayers"] ?? jObj["prayerTime"]) as JArray;
                 if (arr == null || arr.Count == 0) return null;
-                var item = arr[0];
 
-                string dateStr = item["date"]  != null ? item["date"].ToString()  : DateTime.Today.ToString("dd-MM-yyyy");
-                string hijri   = item["hijri"] != null ? item["hijri"].ToString() : "";
-                string day     = item["day"]   != null ? item["day"].ToString()   : "";
+                int todayDay = DateTime.Today.Day;
+                JToken item = null;
+                foreach (var tok in arr)
+                {
+                    if (tok["day"] != null)
+                    {
+                        int d;
+                        if (int.TryParse(tok["day"].ToString(), out d) && d == todayDay)
+                        {
+                            item = tok;
+                            break;
+                        }
+                    }
+                }
+                if (item == null) item = arr[0];
+
+                string hijri = item["hijri"] != null ? item["hijri"].ToString() : "";
+                string day = item["day"] != null ? item["day"].ToString() : "";
+                string dateStr = DateTime.Today.ToString("dd-MM-yyyy");
 
                 var e = new PrayerTimeEntry
                 {
-                    Zone    = zone,
-                    Date    = dateStr,
-                    Hijri   = hijri,
-                    Day     = day,
-                    Imsak   = ParseTime(dateStr, item["imsak"]),
-                    Subuh   = ParseTime(dateStr, item["fajr"]),
-                    Syuruk  = ParseTime(dateStr, item["syuruk"]),
-                    Zohor   = ParseTime(dateStr, item["dhuhr"]),
-                    Asar    = ParseTime(dateStr, item["asr"]),
-                    Maghrib = ParseTime(dateStr, item["maghrib"]),
-                    Isyak   = ParseTime(dateStr, item["isha"]),
+                    Zone = zone,
+                    Date = dateStr,
+                    Hijri = hijri,
+                    Day = day,
+                    Imsak = ParseTime(item["imsak"]),
+                    Subuh = ParseTime(item["fajr"]),
+                    Syuruk = ParseTime(item["syuruk"]),
+                    Zohor = ParseTime(item["dhuhr"]),
+                    Asar = ParseTime(item["asr"]),
+                    Maghrib = ParseTime(item["maghrib"]),
+                    Isyak = ParseTime(item["isha"]),
                 };
                 return e;
             }
-            catch { return null; }
+            catch (Exception ex) { File.WriteAllText(System.IO.Path.Combine(CacheDir, "error.log"), ex.ToString()); return null; }
         }
 
-        private static DateTime ParseTime(string dateStr, JToken token)
+        private static DateTime ParseTime(JToken token)
         {
             if (token == null) return DateTime.MinValue;
             try
             {
-                // dateStr = "10-08-2026"
-                var dp = dateStr.Split('-');
-                int d = int.Parse(dp[0]), m = int.Parse(dp[1]), y = int.Parse(dp[2]);
-                var tp = token.ToString().Split(':');
-                int h = int.Parse(tp[0]), min = int.Parse(tp[1]);
-                return new DateTime(y, m, d, h, min, 0);
+                long seconds;
+                if (long.TryParse(token.ToString(), out seconds))
+                {
+                    DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    return epoch.AddSeconds(seconds).ToLocalTime();
+                }
+                return DateTime.MinValue;
             }
             catch { return DateTime.MinValue; }
         }
@@ -268,3 +273,4 @@ namespace SS_CAM.Services
         }
     }
 }
+

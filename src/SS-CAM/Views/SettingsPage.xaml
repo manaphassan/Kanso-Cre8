@@ -1,17 +1,15 @@
-<Page x:Class="SS_CAM.Views.SettingsPage"
+﻿<Page x:Class="SS_CAM.Views.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      Title="User Profile &amp; Settings">
+      Title="Designer Profile &amp; Settings">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,20,24,24">
         <StackPanel>
             <!-- Page Header -->
             <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="Settings" FontSize="26" FontWeight="Bold" Foreground="#043388"
-                           FontFamily="Segoe UI Variable Display"/>
-                <TextBlock Text="Manage your designer profile, workspace paths, themes, and maintenance tools."
-                           Foreground="#64748B" FontSize="13" Margin="0,4,0,0" FontFamily="Segoe UI Variable Text"/>
+                <ui:TextBlock Text="Settings" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:TextBlock Text="Manage your designer profile, workspace paths, themes, and maintenance tools." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0" />
             </StackPanel>
 
             <!-- 2-Column Grid -->
@@ -26,10 +24,9 @@
                 <StackPanel Grid.Column="0">
 
                     <!-- Designer Profile Card -->
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                    <ui:Card Margin="0,0,0,16" Padding="20">
                         <StackPanel>
-                            <TextBlock Text="Designer Profile" FontSize="14" FontWeight="Bold" Foreground="#043388"
-                                       FontFamily="Segoe UI Variable Text" Margin="0,0,0,16"/>
+                            <ui:TextBlock Text="Designer Profile" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,16"/>
 
                             <!-- Avatar + Identity Overview -->
                             <Grid Margin="0,0,0,16">
@@ -42,26 +39,20 @@
                                             BorderBrush="#043388" BorderThickness="2" ClipToBounds="True"
                                             HorizontalAlignment="Center">
                                         <Grid>
-                                            <TextBlock x:Name="AvatarEmojiText" Text="👤" FontSize="34"
+                                            <ui:TextBlock x:Name="AvatarEmojiText" Text="👤" FontSize="34"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <Image x:Name="AvatarPreviewImg" Stretch="UniformToFill" Visibility="Collapsed"/>
                                         </Grid>
                                     </Border>
-                                    <Button Content="Change" Click="OnChangeAvatarClicked" Height="26"
+                                    <ui:Button Content="Change" Click="OnChangeAvatarClicked" Height="26"
                                             Margin="0,6,0,0" Padding="8,0" FontSize="11"
                                             Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"
                                             HorizontalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock x:Name="ProfileHeaderName" Text="Brand" FontSize="18"
-                                               FontWeight="Bold" Foreground="#043388"
-                                               FontFamily="Segoe UI Variable Text"/>
-                                    <TextBlock x:Name="ProfileHeaderDept" Text="Creative &amp; Brand"
-                                               Foreground="#64748B" FontSize="12"
-                                               FontFamily="Segoe UI Variable Text"/>
-                                    <TextBlock x:Name="ProfileHeaderStaffId" Text="Staff ID: 0001D"
-                                               Foreground="#21A1F7" FontSize="11" FontWeight="SemiBold"
-                                               FontFamily="Segoe UI Variable Text" Margin="0,3,0,0"/>
+                                    <ui:TextBlock x:Name="ProfileHeaderName" Text="Brand" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock x:Name="ProfileHeaderDept" Text="Creative &amp; Brand" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"/>
+                                    <ui:TextBlock x:Name="ProfileHeaderStaffId" Text="Staff ID: 0001D" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold" Margin="0,3,0,0"/>
                                 </StackPanel>
                             </Grid>
 
@@ -73,15 +64,11 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Designer Name" FontSize="11" FontWeight="SemiBold"
-                                               Foreground="#64748B" Margin="0,0,0,4"
-                                               FontFamily="Segoe UI Variable Text"/>
+                                    <ui:TextBlock Text="Designer Name" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
                                     <ui:TextBox x:Name="DesignerNameInput" Text="Brand" Height="34"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Staff ID" FontSize="11" FontWeight="SemiBold"
-                                               Foreground="#64748B" Margin="0,0,0,4"
-                                               FontFamily="Segoe UI Variable Text"/>
+                                    <ui:TextBlock Text="Staff ID" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
                                     <ui:TextBox x:Name="StaffIdInput" Text="0001D" Height="34"/>
                                 </StackPanel>
                             </Grid>
@@ -92,37 +79,25 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Department / Role" FontSize="11" FontWeight="SemiBold"
-                                               Foreground="#64748B" Margin="0,0,0,4"
-                                               FontFamily="Segoe UI Variable Text"/>
+                                    <ui:TextBlock Text="Department / Role" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
                                     <ui:TextBox x:Name="DepartmentInput" Text="Creative &amp; Brand" Height="34"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Email" FontSize="11" FontWeight="SemiBold"
-                                               Foreground="#64748B" Margin="0,0,0,4"
-                                               FontFamily="Segoe UI Variable Text"/>
+                                    <ui:TextBlock Text="Email" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
                                     <ui:TextBox x:Name="EmailInput" Text="brand@suamisihat.com" Height="34"/>
                                 </StackPanel>
                             </Grid>
 
-                            <Button Content="Save Profile" Click="OnSaveProfileClicked"
-                                    Background="#043388" Foreground="White" Height="34"
-                                    Padding="18,0" FontWeight="Bold" HorizontalAlignment="Left"
-                                    Cursor="Hand" FontFamily="Segoe UI Variable Text"/>
-                            <TextBlock x:Name="ProfileSaveStatus" Text="" Foreground="#10B981"
-                                       FontSize="12" FontWeight="Bold" Margin="0,8,0,0"
-                                       FontFamily="Segoe UI Variable Text"/>
+                            <ui:Button Appearance="Primary" Content="Save Profile" Click="OnSaveProfileClicked" Height="34" Padding="18,0" FontWeight="Bold" HorizontalAlignment="Left" Cursor="Hand" />
+                            <ui:TextBlock x:Name="ProfileSaveStatus" Text="" Foreground="{DynamicResource SystemFillColorSuccessBrush}" FontSize="12" FontWeight="Bold" Margin="0,8,0,0"/>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                     <!-- Workspace Storage -->
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                    <ui:Card Margin="0,0,0,16" Padding="20">
                         <StackPanel>
-                            <TextBlock Text="Workspace Storage" FontSize="14" FontWeight="Bold"
-                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,6"/>
-                            <TextBlock Text="Root path of your Synology / local drive workspace."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,12"
-                                       FontFamily="Segoe UI Variable Text"/>
+                            <ui:TextBlock Text="Workspace Storage" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="Root path of your Synology / local drive workspace." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -130,32 +105,27 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <ui:TextBox x:Name="WorkspaceRootInput" Text="D:\Testing" Height="34"/>
-                                <Button Content="Browse..." Click="OnBrowseWorkspace"
-                                        Height="34" Width="90" Grid.Column="2"
-                                        Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"/>
+                                <ui:Button Appearance="Secondary" Content="Browse..." Click="OnBrowseWorkspace" Height="34" Width="90" Grid.Column="2" Cursor="Hand"/>
                             </Grid>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                     <!-- App Theme -->
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <ui:Card Padding="20">
                         <StackPanel>
-                            <TextBlock Text="Application Theme" FontSize="14" FontWeight="Bold"
-                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,4"/>
-                            <TextBlock Text="Choose between the SuamiSihat brand theme or the clean white Fluent 2 Falconia theme."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,16"
-                                       FontFamily="Segoe UI Variable Text" TextWrapping="Wrap"/>
+                            <ui:TextBlock Text="Application Theme" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,4"/>
+                            <ui:TextBlock Text="Choose between SuamiSihat Navy, clean white Falconia, or Metamorphosis Glassmorphism." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16" TextWrapping="Wrap"/>
 
                             <!-- Theme swatches -->
                             <StackPanel Orientation="Horizontal">
 
                                 <!-- SS Default swatch -->
                                 <Border CornerRadius="8" BorderBrush="#043388" BorderThickness="2"
-                                        Width="130" Margin="0,0,12,0" Cursor="Hand">
+                                        Width="120" Margin="0,0,10,0" Cursor="Hand">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="#000000"/>
                                     </Border.Effect>
-                                    <Button x:Name="BtnThemeSSDefault" Click="OnSelectSSDefaultTheme"
+                                    <ui:Button x:Name="BtnThemeSSDefault" Click="OnSelectSSDefaultTheme"
                                             BorderThickness="0" Padding="0" Background="Transparent">
                                         <StackPanel>
                                             <!-- Mini sidebar preview -->
@@ -172,23 +142,23 @@
                                             <!-- Label -->
                                             <Border Background="#043388" Padding="10,8">
                                                 <StackPanel>
-                                                    <TextBlock Text="SS Default" FontSize="12" FontWeight="Bold"
-                                                               Foreground="White" FontFamily="Segoe UI Variable Text"/>
-                                                    <TextBlock Text="Brand Navy" FontSize="10"
-                                                               Foreground="#93C5FD" FontFamily="Segoe UI Variable Text"/>
+                                                    <ui:TextBlock Text="SS Default" FontSize="12" FontWeight="Bold"
+                                                               Foreground="White" />
+                                                    <ui:TextBlock Text="Brand Navy" FontSize="10"
+                                                               Foreground="#93C5FD" />
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
-                                    </Button>
+                                    </ui:Button>
                                 </Border>
 
                                 <!-- Falconia swatch -->
                                 <Border CornerRadius="8" BorderBrush="#D1D1D1" BorderThickness="1"
-                                        Width="130" Cursor="Hand">
+                                        Width="120" Margin="0,0,10,0" Cursor="Hand">
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.10" Color="#000000"/>
                                     </Border.Effect>
-                                    <Button x:Name="BtnThemeFalconia" Click="OnSelectFalconiaTheme"
+                                    <ui:Button x:Name="BtnThemeFalconia" Click="OnSelectFalconiaTheme"
                                             BorderThickness="0" Padding="0" Background="Transparent">
                                         <StackPanel>
                                             <!-- Mini sidebar preview -->
@@ -207,19 +177,54 @@
                                             <Border Background="#FFFFFF" Padding="10,8"
                                                     BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
                                                 <StackPanel>
-                                                    <TextBlock Text="Falconia" FontSize="12" FontWeight="Bold"
-                                                               Foreground="#0F6CBD" FontFamily="Segoe UI Variable Text"/>
-                                                    <TextBlock Text="Fluent 2 Light" FontSize="10"
-                                                               Foreground="#616161" FontFamily="Segoe UI Variable Text"/>
+                                                    <ui:TextBlock Text="Falconia" FontSize="12" FontWeight="Bold"
+                                                               Foreground="#0F6CBD" />
+                                                    <ui:TextBlock Text="Fluent 2 Light" FontSize="10"
+                                                               Foreground="#616161" />
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
-                                    </Button>
+                                    </ui:Button>
+                                </Border>
+
+                                <!-- Metamorphosis (Glass) swatch -->
+                                <Border CornerRadius="8" BorderBrush="#00CFFF" BorderThickness="1"
+                                        Width="120" Cursor="Hand">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15" Color="#00CFFF"/>
+                                    </Border.Effect>
+                                    <ui:Button x:Name="BtnThemeMetamorphosis" Click="OnSelectMetamorphosisTheme"
+                                            BorderThickness="0" Padding="0" Background="Transparent">
+                                        <StackPanel>
+                                            <!-- Mini sidebar preview -->
+                                            <Border Background="#0C1535" Height="52" CornerRadius="6,6,0,0"
+                                                    BorderBrush="#1B2B56" BorderThickness="0,0,0,1">
+                                                <StackPanel Margin="10,8">
+                                                    <Rectangle Fill="#00CFFF" Width="16" Height="3" HorizontalAlignment="Left"
+                                                               RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,4"/>
+                                                    <Rectangle Fill="#94A3B8" Width="60" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1" Margin="0,0,0,3"/>
+                                                    <Rectangle Fill="#64748B" Width="45" Height="2" HorizontalAlignment="Left"
+                                                               RadiusX="1" RadiusY="1"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Label -->
+                                            <Border Background="#080D1F" Padding="10,8"
+                                                    BorderBrush="#1B2B56" BorderThickness="0,1,0,0">
+                                                <StackPanel>
+                                                    <ui:TextBlock Text="Metamorphosis" FontSize="12" FontWeight="Bold"
+                                                               Foreground="#00CFFF" />
+                                                    <ui:TextBlock Text="Glassmorphism" FontSize="10"
+                                                               Foreground="#94A3B8" />
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </ui:Button>
                                 </Border>
 
                             </StackPanel>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                 </StackPanel>
 
@@ -227,73 +232,43 @@
                 <StackPanel Grid.Column="2">
 
                     <!-- Workstation Payload -->
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                    <ui:Card Margin="0,0,0,16" Padding="20">
                         <StackPanel>
-                            <TextBlock Text="Workstation Payload" FontSize="14" FontWeight="Bold"
-                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,6"/>
-                            <TextBlock Text="Install brand fonts, deploy asset libraries, or check for updates."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,14"
-                                       FontFamily="Segoe UI Variable Text"/>
+                            <ui:TextBlock Text="Workstation Payload" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="Install brand fonts, deploy asset libraries, or check for updates." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,14"/>
                             <WrapPanel>
-                                <Button Content="Install Brand Fonts" Click="OnRepairFonts"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                                <Button Content="Deploy Asset Libraries" Click="OnDeployAssets"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#043388" Foreground="White" FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                                <Button Content="Check for Updates" Click="OnCheckUpdates"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
+                                <ui:Button Appearance="Primary" Content="Install Brand Fonts" Click="OnRepairFonts" Height="34" Margin="0,0,8,8" Padding="14,0" FontWeight="Bold" Cursor="Hand"/>
+                                <ui:Button Appearance="Primary" Content="Deploy Asset Libraries" Click="OnDeployAssets" Height="34" Margin="0,0,8,8" Padding="14,0" FontWeight="Bold" Cursor="Hand"/>
+                                <ui:Button Appearance="Secondary" Content="Check for Updates" Click="OnCheckUpdates" Height="34" Margin="0,0,8,8" Padding="14,0" Cursor="Hand"/>
                             </WrapPanel>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                     <!-- Category Presets -->
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                    <ui:Card Margin="0,0,0,16" Padding="20">
                         <StackPanel>
-                            <TextBlock Text="Category Presets &amp; Folder Structure" FontSize="14" FontWeight="Bold"
-                                       Foreground="#043388" FontFamily="Segoe UI Variable Text" Margin="0,0,0,6"/>
-                            <TextBlock Text="Configure project folder templates, subfolder trees, and Job ID suffix codes."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,14"
-                                       FontFamily="Segoe UI Variable Text" TextWrapping="Wrap"/>
-                            <Button Content="Manage Category Presets &amp; Folder Trees"
-                                    Click="OnManageCategoryPresetsClicked"
-                                    Height="34" Padding="16,0"
-                                    Background="#043388" Foreground="White" FontWeight="Bold"
-                                    Cursor="Hand" HorizontalAlignment="Left"
-                                    FontFamily="Segoe UI Variable Text"/>
+                            <ui:TextBlock Text="Category Presets &amp; Folder Structure" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="Configure project folder templates, subfolder trees, and Project ID suffix codes." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,14" TextWrapping="Wrap"/>
+                            <ui:Button Appearance="Primary" Content="Manage Category Presets &amp; Folder Trees" Click="OnManageCategoryPresetsClicked" Height="34" Padding="16,0" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Left"/>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                     <!-- Reset & Maintenance -->
-                    <Border Background="#FEF2F2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <ui:Card Padding="20" Background="{DynamicResource SystemFillColorCriticalBackgroundBrush}">
                         <StackPanel>
-                            <TextBlock Text="Reset &amp; Data Maintenance" FontSize="14" FontWeight="Bold"
-                                       Foreground="#DC2626" FontFamily="Segoe UI Variable Text" Margin="0,0,0,6"/>
-                            <TextBlock Text="Reset profile to defaults or clear all local session data."
-                                       Foreground="#64748B" FontSize="12" Margin="0,0,0,14"
-                                       FontFamily="Segoe UI Variable Text"/>
+                            <ui:TextBlock Text="Reset &amp; Data Maintenance" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="Reset profile to defaults or clear all local session data." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,14"/>
                             <WrapPanel>
-                                <Button Content="Reset Profile Defaults" Click="OnResetProfileDefaults"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#EFF6FF" Foreground="#043388"
-                                        BorderBrush="#21A1F7" BorderThickness="1"
-                                        FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
-                                <Button Content="Clear Cache &amp; Reset All" Click="OnClearAllData"
-                                        Height="34" Margin="0,0,8,8" Padding="14,0"
-                                        Background="#DC2626" Foreground="White"
-                                        FontWeight="Bold" Cursor="Hand"
-                                        FontFamily="Segoe UI Variable Text"/>
+                                <ui:Button Appearance="Secondary" Content="Reset Profile Defaults" Click="OnResetProfileDefaults" Height="34" Margin="0,0,8,8" Padding="14,0" FontWeight="Bold" Cursor="Hand"/>
+                                <ui:Button Appearance="Danger" Content="Clear Cache &amp; Reset All" Click="OnClearAllData" Height="34" Margin="0,0,8,8" Padding="14,0" FontWeight="Bold" Cursor="Hand"/>
                             </WrapPanel>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
                 </StackPanel>
             </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>
+
+

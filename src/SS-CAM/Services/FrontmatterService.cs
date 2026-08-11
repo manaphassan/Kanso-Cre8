@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using SS_CAM.Models;
@@ -46,7 +47,10 @@ namespace SS_CAM.Services
                 string tagsRaw = GetValue(fm, "tags", "");
                 item.Tags = ParseTags(tagsRaw);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[FrontmatterService] ReadStatus failed for '{0}': {1}", projectFolderPath, ex.Message));
+            }
 
             return item;
         }
@@ -87,7 +91,10 @@ namespace SS_CAM.Services
             }
 
             try { File.WriteAllText(readmePath, sb.ToString(), Encoding.UTF8); }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[FrontmatterService] WriteStatus failed for '{0}': {1}", item.FullPath, ex.Message));
+            }
         }
 
         /// <summary>
@@ -127,7 +134,7 @@ namespace SS_CAM.Services
                     result[key] = val;
                 }
             }
-            return null; // never closed
+            return result; // no closing delimiter found — return whatever was parsed
         }
 
         private static string ExtractBody(string[] lines)

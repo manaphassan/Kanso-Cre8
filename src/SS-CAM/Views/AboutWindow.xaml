@@ -1,6 +1,7 @@
-<Window x:Class="SS_CAM.Views.AboutWindow"
+﻿<Window x:Class="SS_CAM.Views.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="About SuamiSihat CAM" Height="540" Width="600"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Background="White">
@@ -24,47 +25,47 @@
                         </Viewbox>
                     </Border>
 
-                    <TextBlock Text="SuamiSihat Creative Assets Management" Foreground="#043388" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <ui:TextBlock Text="SuamiSihat Creative Assets Management" Foreground="#043388" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
                         <Border Background="#043388" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
-                            <TextBlock x:Name="TxtVersionBadge" Text="Version 2.3.6 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                            <ui:TextBlock x:Name="TxtVersionBadge" Text="Version 2.6.0 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
                         </Border>
                         <Border Background="#10B981" CornerRadius="4" Padding="8,3">
-                            <TextBlock Text="Production Release" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                            <ui:TextBlock Text="Production Release" Foreground="White" FontSize="11" FontWeight="Bold"/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Footer Close Button (No song text or player controls shown) -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
-                    <Button Content="Close Window" Click="OnCloseClicked" Background="#043388" Foreground="White" Height="36" Width="140" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <ui:Button Content="Close Window" Click="OnCloseClicked" Background="#043388" Foreground="White" Height="36" Width="140" FontWeight="Bold" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Middle Content: Version Changelog -->
-                <GroupBox x:Name="GroupChangelog" Header="v2.3.6 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
+                <GroupBox x:Name="GroupChangelog" Header="v2.6.0 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                         <StackPanel Margin="6">
-                            <TextBlock x:Name="TxtWhatsNew" Text="✨ What's New in Version 2.3.6:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
+                            <ui:TextBlock x:Name="TxtWhatsNew" Text="✨ What's New in Version 2.6.0:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
 
-                            <TextBlock Text="• Radio &amp; Focus Stream Player: Live Malaysian radio streams (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga) &amp; lo-fi focus audio streams." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Radio &amp; Focus Stream Player: Live Malaysian radio streams (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga) &amp; lo-fi focus audio streams." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Custom Stream Manager: Add, test, and manage custom HTTP/HTTPS/M3U8 radio stream URLs." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Custom Stream Manager: Add, test, and manage custom HTTP/HTTPS/M3U8 radio stream URLs." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Status Bar Mini-Player: Persistent audio controls and station playback status accessible from any page." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Status Bar Mini-Player: Persistent audio controls and station playback status accessible from any page." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Animated Header Geometry Loop: Modernized header with dynamic smooth particle background." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Animated Header Geometry Loop: Modernized header with dynamic smooth particle background." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Extended Designer Dashboard: Displays last 6 inline recent projects and output productivity comparison metrics (+/- vs last month)." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Extended Designer Dashboard: Displays last 6 inline recent projects and output productivity comparison metrics (+/- vs last month)." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Interactive Creative Wellbeing: Dynamic radar chart, animated focus/breathing timer, and sound effect cues." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Interactive Creative Wellbeing: Dynamic radar chart, animated focus/breathing timer, and sound effect cues." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Project Creator Pipeline: Target platform specs preview (resolution, size, color mode), job suffix auto-assignment, and starter canvas injection toggle." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Project Creator Pipeline: Target platform specs preview (resolution, size, color mode), project suffix auto-assignment, and starter canvas injection toggle." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Search &amp; Copy Grid Preview: Fixed markdown README inspection and added full-screen thumbnail image viewer." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Search &amp; Copy Grid Preview: Fixed markdown README inspection and added full-screen thumbnail image viewer." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• Official Brand Color System: Standardized HEX, RGB, CMYK, and Pantone swatch cards with hover lift-up elevation." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="• Official Brand Color System: Standardized HEX, RGB, CMYK, and Pantone swatch cards with hover lift-up elevation." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <TextBlock Text="• 2-Column Workstation Diagnostics: Integrated PC hardware specs, GPU OpenCL rendering info, and Design Suite Software Health Checker." Foreground="#334155" FontSize="11" TextWrapping="Wrap"/>
+                            <ui:TextBlock Text="• 2-Column Workstation Diagnostics: Integrated PC hardware specs, GPU OpenCL rendering info, and Design Suite Software Health Checker." Foreground="#334155" FontSize="11" TextWrapping="Wrap"/>
                         </StackPanel>
                     </ScrollViewer>
                 </GroupBox>
@@ -72,3 +73,7 @@
         </Border>
     </Grid>
 </Window>
+
+
+
+

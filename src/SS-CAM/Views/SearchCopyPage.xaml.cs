@@ -15,7 +15,7 @@ namespace SS_CAM.Views
 {
     public partial class SearchCopyPage : Page
     {
-        private string workspaceRoot = @"D:\Testing";
+        private string workspaceRoot = string.Empty;
         private List<DesignerFolderItem> allItems = new List<DesignerFolderItem>();
         private DesignerFolderItem selectedItem;
         private string rawReadmeText = "";

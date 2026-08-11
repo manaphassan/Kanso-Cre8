@@ -179,7 +179,12 @@ namespace SS_CAM.Views
                 Paragraph para = new Paragraph();
                 para.Margin = new Thickness(0, 2, 0, 2);
 
-                if (l.StartsWith("## "))
+                if (l.StartsWith("### "))
+                {
+                    para.FontSize = 14; para.FontWeight = FontWeights.SemiBold;
+                    para.Inlines.Add(l.Substring(4));
+                }
+                else if (l.StartsWith("## "))
                 {
                     para.FontSize = 16; para.FontWeight = FontWeights.Bold;
                     para.Inlines.Add(l.Substring(3));

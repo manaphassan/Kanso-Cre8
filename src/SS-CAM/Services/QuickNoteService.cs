@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
 {
@@ -15,9 +16,7 @@ namespace SS_CAM.Services
         {
             get
             {
-                string dir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "SuamiSihat", "SS-CAM", "Notes");
+                string dir = Path.Combine(AppPaths.AppDataFolder, "Notes");
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                 return dir;
             }

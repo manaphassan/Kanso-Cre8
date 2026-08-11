@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -15,22 +15,22 @@ namespace SS_CAM.Views
             InitializeComponent();
         }
 
-        private void OnOpenServiceDashboard(object sender, MouseButtonEventArgs e)
+        private void OnOpenServiceDashboard(object sender, RoutedEventArgs e)
         {
             OpenUrl("https://suamisihat.myds.me");
         }
 
-        private void OnOpenInternalAssets(object sender, MouseButtonEventArgs e)
+        private void OnOpenInternalAssets(object sender, RoutedEventArgs e)
         {
             OpenUrl("https://assets.suamisihat.myds.me/");
         }
 
-        private void OnOpenPublicAssets(object sender, MouseButtonEventArgs e)
+        private void OnOpenPublicAssets(object sender, RoutedEventArgs e)
         {
             OpenUrl("https://suamisihat.com.my/brand-assets");
         }
 
-        private void OnSwatchClicked(object sender, MouseButtonEventArgs e)
+        private void OnSwatchClicked(object sender, RoutedEventArgs e)
         {
             FrameworkElement element = sender as FrameworkElement;
             if (element != null && element.Tag != null)

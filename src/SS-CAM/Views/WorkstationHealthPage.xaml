@@ -1,6 +1,7 @@
-<Page x:Class="SS_CAM.Views.WorkstationHealthPage"
+﻿<Page x:Class="SS_CAM.Views.WorkstationHealthPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Workstation Health &amp; Software Diagnostics">
 
     <Page.Resources>
@@ -11,8 +12,8 @@
         <StackPanel HorizontalAlignment="Stretch">
             <!-- Fluent 2 Page Header -->
             <StackPanel Margin="0,0,0,24">
-                <TextBlock Text="Workstation &amp; Software Health" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="24" FontWeight="Bold"/>
-                <TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status." FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0"/>
+                <ui:TextBlock Text="Workstation &amp; Software Health"  Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="24" FontWeight="Bold"/>
+                <ui:TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status."  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0"/>
             </StackPanel>
 
             <Grid HorizontalAlignment="Stretch">
@@ -24,60 +25,60 @@
 
                 <!-- Left Column: Workstation Hardware Specs (Fluent 2 Card) -->
                 <StackPanel Grid.Column="0">
-                    <GroupBox Header="Workstation Hardware Specs" Margin="0,0,0,16">
+                    <StackPanel Margin="0,0,0,16">                        <ui:TextBlock Text="Workstation Hardware Specs" FontTypography="BodyStrong" Margin="0,0,0,8"/>
                         <StackPanel Margin="12">
-                            <TextBlock Text="Hardware capabilities for GPU rendering, OpenCL acceleration &amp; exports." FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,0,0,14" TextWrapping="Wrap"/>
+                            <ui:TextBlock Text="Hardware capabilities for GPU rendering, OpenCL acceleration &amp; exports."  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,0,0,14" TextWrapping="Wrap"/>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <TextBlock Text="OPERATING SYSTEM" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecOS" Text="Windows 11 (64-bit)" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <ui:TextBlock Text="OPERATING SYSTEM"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecOS" Text="Windows 11 (64-bit)"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <TextBlock Text="PROCESSOR (CPU)" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecCPU" Text="AMD Ryzen / Intel Core" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <ui:TextBlock Text="PROCESSOR (CPU)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecCPU" Text="AMD Ryzen / Intel Core"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <TextBlock Text="SYSTEM MEMORY (RAM)" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecRAM" Text="16 GB RAM" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
+                                    <ui:TextBlock Text="SYSTEM MEMORY (RAM)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecRAM" Text="16 GB RAM"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <TextBlock Text="GRAPHICS ADAPTER (GPU)" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecGPU" Text="NVIDIA / AMD Graphics" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <ui:TextBlock Text="GRAPHICS ADAPTER (GPU)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecGPU" Text="NVIDIA / AMD Graphics"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
                                 <StackPanel>
-                                    <TextBlock Text="PRIMARY DISPLAY" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecDisplay" Text="1920 x 1080" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
+                                    <ui:TextBlock Text="PRIMARY DISPLAY"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecDisplay" Text="1920 x 1080"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12">
                                 <StackPanel>
-                                    <TextBlock Text="AVAILABLE SCRATCH STORAGE" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <TextBlock x:Name="SpecStorage" Text="Drive C: 84.9 GB free" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <ui:TextBlock Text="AVAILABLE SCRATCH STORAGE"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecStorage" Text="Drive C: 84.9 GB free"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
-                    </GroupBox>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- Right Column: Standardized Software Suite Health Table -->
                 <StackPanel Grid.Column="2" HorizontalAlignment="Stretch">
-                    <GroupBox Header="Design Suite Software Scanner" HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                    <StackPanel Margin="0,0,0,16">                        <ui:TextBlock Text="Design Suite Software Scanner" HorizontalAlignment="Stretch" FontTypography="BodyStrong" Margin="0,0,0,8"/>
                         <StackPanel Margin="16" HorizontalAlignment="Stretch">
-                            <TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Checks" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12" Margin="0,0,0,14"/>
+                            <ui:TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Checks"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12" Margin="0,0,0,14"/>
 
                             <!-- Minimalist Table Header -->
                             <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
@@ -88,10 +89,10 @@
                                         <ColumnDefinition Width="130"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="SOFTWARE" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <TextBlock Grid.Column="1" Text="VERSION" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <TextBlock Grid.Column="2" Text="STATUS" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <TextBlock Grid.Column="3" Text="ACTION" FontFamily="{StaticResource FluentFontFamily}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    <ui:TextBlock Text="SOFTWARE"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    <ui:TextBlock Grid.Column="1" Text="VERSION"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    <ui:TextBlock Grid.Column="2" Text="STATUS"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    <ui:TextBlock Grid.Column="3" Text="ACTION"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
                                 </Grid>
                             </Border>
 
@@ -111,35 +112,36 @@
                                                 <!-- App Name & Icon -->
                                                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                                     <Border Width="30" Height="30" CornerRadius="15" Background="{DynamicResource FluentLightCardSubBg}" Margin="0,0,10,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Icon}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <ui:TextBlock Text="{Binding Icon}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     </Border>
                                                     <StackPanel VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding SoftwareName}" FontFamily="{StaticResource FluentFontFamily}" FontWeight="SemiBold" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="12"/>
-                                                        <TextBlock Text="{Binding Category}" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10"/>
+                                                        <ui:TextBlock Text="{Binding SoftwareName}"  FontWeight="SemiBold" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="12"/>
+                                                        <ui:TextBlock Text="{Binding Category}"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10"/>
                                                     </StackPanel>
                                                 </StackPanel>
 
                                                 <!-- Version -->
-                                                <TextBlock Grid.Column="1" Text="{Binding ScannedVersion}" FontFamily="{StaticResource FluentFontFamily}" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" VerticalAlignment="Center"/>
+                                                <ui:TextBlock Grid.Column="1" Text="{Binding ScannedVersion}"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" VerticalAlignment="Center"/>
 
                                                 <!-- Status -->
                                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding StatusText}" FontFamily="{StaticResource FluentFontFamily}" Foreground="{Binding StatusColor}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding StatusText}"  Foreground="{Binding StatusColor}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                                 </StackPanel>
 
                                                 <!-- Action Button (Visible if missing) -->
-                                                <Border Grid.Column="3" CornerRadius="4" Background="#0078D4" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                    <Button Content="⬇️ Get Software" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Height="28" Padding="10,0" Background="Transparent" Foreground="White" FontFamily="{StaticResource FluentFontFamily}" FontSize="10.5" FontWeight="Bold" BorderThickness="0" Cursor="Hand"/>
-                                                </Border>
+                                                <ui:Button Grid.Column="3" Content="⬇️ Get Software" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Primary" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
-                    </GroupBox>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>
+
+
+

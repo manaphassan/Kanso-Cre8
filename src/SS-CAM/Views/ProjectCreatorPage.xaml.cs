@@ -14,7 +14,7 @@ namespace SS_CAM.Views
 {
     public partial class ProjectCreatorPage : Page
     {
-        private string workspaceRoot = @"D:\Testing";
+        private string workspaceRoot = string.Empty;
         private UserProfile currentProfile;
         private List<CategoryPreset> _categoryPresets;
         private CategoryPreset _selectedEditingPreset;
@@ -35,7 +35,7 @@ namespace SS_CAM.Views
 
             ReloadCategoryPresets();
             PopulateDropdowns();
-            AutoCalculateNextJobId();
+            AutoCalculateNextProjectId();
             UpdateLivePreview();
             LoadRecentProjects();
         }
@@ -67,7 +67,7 @@ namespace SS_CAM.Views
             return preset ?? _categoryPresets[0];
         }
 
-        private void AutoCalculateNextJobId()
+        private void AutoCalculateNextProjectId()
         {
             try
             {
@@ -101,7 +101,7 @@ namespace SS_CAM.Views
                 CategoryPreset selectedPreset = GetSelectedCategoryPreset();
                 string suffix = selectedPreset != null ? selectedPreset.Suffix : "D";
 
-                JobIdInput.Text = maxId.ToString("D4") + suffix;
+                ProjectIdInput.Text = maxId.ToString("D4") + suffix;
             }
             catch { }
         }
@@ -175,22 +175,22 @@ namespace SS_CAM.Views
                 CategoryPreset preset = GetSelectedCategoryPreset();
                 string suffix = preset != null ? preset.Suffix : "D";
                 string currentNum = "0001";
-                if (!string.IsNullOrWhiteSpace(JobIdInput.Text))
+                if (!string.IsNullOrWhiteSpace(ProjectIdInput.Text))
                 {
-                    Match m = Regex.Match(JobIdInput.Text, @"^(\d+)");
+                    Match m = Regex.Match(ProjectIdInput.Text, @"^(\d+)");
                     if (m.Success) currentNum = m.Groups[1].Value;
                 }
-                JobIdInput.Text = string.Format("{0}{1}", currentNum, suffix);
+                ProjectIdInput.Text = string.Format("{0}{1}", currentNum, suffix);
             }
 
             if (PlatformComboBox.SelectedItem != null)
             {
                 string platform = PlatformComboBox.SelectedItem.ToString();
-                if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px · 72 DPI · sRGB Color Mode";
-                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px · 72 DPI · sRGB Color Mode";
-                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px · 72 DPI · sRGB Color Mode";
-                else if (platform.Contains("Print")) PlatformSpecsText.Text = "A4 / Custom · 300 DPI · CMYK Color Mode";
-                else PlatformSpecsText.Text = "Custom Dimensions · Flexible DPI & Color Mode";
+                if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px Â· 72 DPI Â· sRGB Color Mode";
+                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px Â· 72 DPI Â· sRGB Color Mode";
+                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px Â· 72 DPI Â· sRGB Color Mode";
+                else if (platform.Contains("Print")) PlatformSpecsText.Text = "A4 / Custom Â· 300 DPI Â· CMYK Color Mode";
+                else PlatformSpecsText.Text = "Custom Dimensions Â· Flexible DPI & Color Mode";
             }
 
             UpdateLivePreview();
@@ -209,7 +209,7 @@ namespace SS_CAM.Views
         private string GenerateFolderName()
         {
             string datePrefix = DateTime.Now.ToString("yyyyMM");
-            string jobId = JobIdInput != null && !string.IsNullOrWhiteSpace(JobIdInput.Text) ? JobIdInput.Text.Trim() : "0001D";
+            string jobId = ProjectIdInput != null && !string.IsNullOrWhiteSpace(ProjectIdInput.Text) ? ProjectIdInput.Text.Trim() : "0001D";
             string selectedBrandFull = SubBrandComboBox != null && SubBrandComboBox.SelectedItem != null ? SubBrandComboBox.SelectedItem.ToString() : "SS";
             string brandCode = GetSubBrandCode(selectedBrandFull);
             string name = ProjectNameInput != null && !string.IsNullOrWhiteSpace(ProjectNameInput.Text) ? ProjectNameInput.Text.Trim() : "project name";
@@ -230,18 +230,18 @@ namespace SS_CAM.Views
             List<string> presetFolders = GetPresetFolders(selectedPreset);
 
             List<string> lines = new List<string>();
-            lines.Add("📁 " + folderName);
+            lines.Add("ðŸ“ " + folderName);
             
             foreach (var folder in presetFolders)
             {
                 if (folder.Contains(Path.DirectorySeparatorChar.ToString()) || folder.Contains("/"))
                 {
                     string[] parts = folder.Split(new[] { Path.DirectorySeparatorChar, '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    lines.Add(" │   └── 📁 " + string.Join("/", parts.Skip(1)));
+                    lines.Add(" │   └── ðŸ“ " + string.Join("/", parts.Skip(1)));
                 }
                 else
                 {
-                    lines.Add(" ├── 📁 " + folder);
+                    lines.Add(" ├── ðŸ“ " + folder);
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         lines.Add(" │   └── 📄 " + folderName + GetSelectedExtension());
@@ -251,11 +251,11 @@ namespace SS_CAM.Views
 
             if (IncludeRevisionsCheck != null && IncludeRevisionsCheck.IsChecked == true)
             {
-                lines.Add(" ├── 📁 Client_Revisions");
+                lines.Add(" ├── ðŸ“ Client_Revisions");
             }
             if (IncludeRawMediaCheck != null && IncludeRawMediaCheck.IsChecked == true)
             {
-                lines.Add(" ├── 📁 RAW_Media");
+                lines.Add(" ├── ðŸ“ RAW_Media");
             }
             lines.Add(" └── 📄 README.md");
 
@@ -319,12 +319,12 @@ namespace SS_CAM.Views
                     currentProfile.StaffId ?? "",
                     subBrandCode);
 
-                string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Job ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
+                string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Project ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
                     frontmatter,
                     folderName,
                     DateTime.Now,
                     designerFolder,
-                    JobIdInput.Text,
+                    ProjectIdInput.Text,
                     PresetComboBox.SelectedItem,
                     PlatformComboBox.SelectedItem,
                     PlatformSpecsText.Text,
@@ -335,7 +335,7 @@ namespace SS_CAM.Views
                 CreateStatusText.Text = "Project created successfully!";
                 LoadRecentProjects();
                 
-                AutoCalculateNextJobId();
+                AutoCalculateNextProjectId();
                 ProjectNameInput.Text = "";
 
                 Process.Start("explorer.exe", targetDir);
@@ -393,7 +393,7 @@ namespace SS_CAM.Views
         {
             ManagePresetsModal.Visibility = Visibility.Collapsed;
             ReloadCategoryPresets();
-            AutoCalculateNextJobId();
+            AutoCalculateNextProjectId();
             UpdateLivePreview();
         }
 
@@ -403,7 +403,7 @@ namespace SS_CAM.Views
             if (selected != null)
             {
                 _selectedEditingPreset = selected;
-                PresetFormTitle.Text = "✏️ Edit Category Preset — " + selected.Name;
+                PresetFormTitle.Text = "âœï¸ Edit Category Preset — " + selected.Name;
                 TxtPresetName.Text = selected.Name;
                 TxtPresetSuffix.Text = selected.Suffix;
                 TxtPresetFolders.Text = string.Join(Environment.NewLine, selected.Folders != null ? selected.Folders.ToArray() : new string[0]);
@@ -606,3 +606,4 @@ namespace SS_CAM.Views
         }
     }
 }
+
