@@ -6,6 +6,12 @@ obj/
 dist/
 *.pdb
 *.user
+src/SS-CAM/packages/
+packages/
+SS-CAM-v*.exe
+nuget.exe
+src/nuget.exe
+*.nupkg
 
 # ── Scratch / temp test files ──────────────────────────────────
 test_*.cs
