@@ -45,27 +45,27 @@
                 <GroupBox x:Name="GroupChangelog" Header="v2.6.0 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                         <StackPanel Margin="6">
-                            <ui:TextBlock x:Name="TxtWhatsNew" Text="✨ What's New in Version 2.6.0:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
+                            <ui:TextBlock x:Name="TxtWhatsNew" Text="&#x2728; What's New in Version 2.6.0:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
 
-                            <ui:TextBlock Text="• Radio &amp; Focus Stream Player: Live Malaysian radio streams (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga) &amp; lo-fi focus audio streams." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Radio &amp; Focus Stream Player: Live Malaysian radio streams (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga) &amp; lo-fi focus audio streams." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Custom Stream Manager: Add, test, and manage custom HTTP/HTTPS/M3U8 radio stream URLs." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Custom Stream Manager: Add, test, and manage custom HTTP/HTTPS/M3U8 radio stream URLs." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Status Bar Mini-Player: Persistent audio controls and station playback status accessible from any page." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Status Bar Mini-Player: Persistent audio controls and station playback status accessible from any page." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Animated Header Geometry Loop: Modernized header with dynamic smooth particle background." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Animated Header Geometry Loop: Modernized header with dynamic smooth particle background." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Extended Designer Dashboard: Displays last 6 inline recent projects and output productivity comparison metrics (+/- vs last month)." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Extended Designer Dashboard: Displays last 6 inline recent projects and output productivity comparison metrics (+/- vs last month)." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Interactive Creative Wellbeing: Dynamic radar chart, animated focus/breathing timer, and sound effect cues." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Interactive Creative Wellbeing: Dynamic radar chart, animated focus/breathing timer, and sound effect cues." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Project Creator Pipeline: Target platform specs preview (resolution, size, color mode), project suffix auto-assignment, and starter canvas injection toggle." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Project Creator Pipeline: Target platform specs preview (resolution, size, color mode), project suffix auto-assignment, and starter canvas injection toggle." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Search &amp; Copy Grid Preview: Fixed markdown README inspection and added full-screen thumbnail image viewer." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Search &amp; Copy Grid Preview: Fixed markdown README inspection and added full-screen thumbnail image viewer." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• Official Brand Color System: Standardized HEX, RGB, CMYK, and Pantone swatch cards with hover lift-up elevation." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Official Brand Color System: Standardized HEX, RGB, CMYK, and Pantone swatch cards with hover lift-up elevation." Foreground="#334155" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="• 2-Column Workstation Diagnostics: Integrated PC hardware specs, GPU OpenCL rendering info, and Design Suite Software Health Checker." Foreground="#334155" FontSize="11" TextWrapping="Wrap"/>
+                            <ui:TextBlock Text="&#x2022; 2-Column Workstation Diagnostics: Integrated PC hardware specs, GPU OpenCL rendering info, and Design Suite Software Health Checker." Foreground="#334155" FontSize="11" TextWrapping="Wrap"/>
                         </StackPanel>
                     </ScrollViewer>
                 </GroupBox>

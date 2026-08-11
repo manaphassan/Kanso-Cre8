@@ -82,8 +82,8 @@
                                             </ui:Button>
                                             <Border Width="1" Background="{DynamicResource FluentLightStroke}" Margin="4,3"/>
                                             <ui:Button x:Name="MdHeading" Content="H2" Click="OnMdHeading" Height="24" Width="32" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"  FontWeight="SemiBold" FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## heading)"/>
-                                            <ui:Button x:Name="MdList" Content="• List" Click="OnMdList" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"  FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="List item (- item)"/>
-                                            <ui:Button x:Name="MdSep" Content="─ HR" Click="OnMdSep" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"  FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)"/>
+                                            <ui:Button x:Name="MdList" Content="&#x2022; List" Click="OnMdList" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"  FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="List item (- item)"/>
+                                            <ui:Button x:Name="MdSep" Content="&#x2500; HR" Click="OnMdSep" Height="24" Padding="4,0" Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"  FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)"/>
                                         </StackPanel>
                                     </Border>
                                     <TextBox x:Name="ProjectDescriptionInput"
@@ -172,7 +172,7 @@
                         </StackPanel>
 
                         <!-- Primary Action Button -->
-                        <ui:Button Appearance="Primary" Content="⚡ Generate Standardized Project Folder" Click="OnCreateProjectClicked" Height="44" FontSize="14" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Stretch"/>
+                        <ui:Button Appearance="Primary" Content="&#x26A1; Generate Standardized Project Folder" Click="OnCreateProjectClicked" Height="44" FontSize="14" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Stretch"/>
                     </StackPanel>
 
                     <!-- Right Column: Live Directory Tree Preview (Fluent 2 Card) -->
@@ -197,7 +197,7 @@
                             <!-- Tree Hierarchy View -->
                             <ui:Card DockPanel.Dock="Top" Padding="12" Margin="0,0,0,16">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="220">
-                                    <ui:TextBlock x:Name="FolderStructureBox" Text="📁 2026_SS_BRAND_0001D_brand_campaign&#10;├── 📁 01_Product_Shots&#10;├── 📁 02_Raw_Footage&#10;└── 📁 03_Final_Exports" FontFamily="Consolas, Segoe UI Mono, monospace" FontSize="11.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}" LineHeight="20"/>
+                                    <ui:TextBlock x:Name="FolderStructureBox" Text="[Dir] 2026_SS_BRAND_0001D_brand_campaign&#10;&#x251C;&#x2500;&#x2500; [Dir] 01_Product_Shots&#10;&#x251C;&#x2500;&#x2500; [Dir] 02_Raw_Footage&#10;&#x2514;&#x2500;&#x2500; [Dir] 03_Final_Exports" FontFamily="Consolas, Segoe UI Mono, monospace" FontSize="11.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}" LineHeight="20"/>
                                 </ScrollViewer>
                             </ui:Card>
 

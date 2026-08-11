@@ -18,7 +18,7 @@
                 <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold"
                            Foreground="{DynamicResource FluentBrand80}"
                            />
-                <ui:TextBlock Text="Browse your workspace like a catalog — select a project to inspect its brief, assets, and images."
+                <ui:TextBlock Text="Browse your workspace like a catalog &#x2014; select a project to inspect its brief, assets, and images."
                            Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
                            Margin="0,3,0,0" />
             </StackPanel>
@@ -293,7 +293,7 @@
                                     <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
                                             Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
                                             FontWeight="SemiBold"  BorderThickness="0" Cursor="Hand"/>
-                                    <ui:Button Content="• List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
+                                    <ui:Button Content="&#x2022; List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
                                             Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
                                              BorderThickness="0" Cursor="Hand"/>
                                 </StackPanel>

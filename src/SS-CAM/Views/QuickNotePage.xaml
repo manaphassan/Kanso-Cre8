@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- â”€â”€ Left: Notes List Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <!-- â"EURâ"EUR Left: Notes List Sidebar â"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EUR -->
             <Border Grid.Column="0" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
@@ -105,7 +105,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- â”€â”€ Right: Editor Pane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <!-- â"EURâ"EUR Right: Editor Pane â"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EUR -->
             <Border Grid.Column="2" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
@@ -138,11 +138,11 @@
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
                                          FontWeight="SemiBold"
                                         FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2"/>
-                                <ui:Button x:Name="NMdList" Content="• List" Click="OnNMdList" Height="26" Padding="4,0"
+                                <ui:Button x:Name="NMdList" Content="&#x2022; List" Click="OnNMdList" Height="26" Padding="4,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
                                          FontSize="10"
                                         BorderThickness="0" Cursor="Hand" ToolTip="List item"/>
-                                <ui:Button x:Name="NMdHR" Content="â”€ HR" Click="OnNMdHR" Height="26" Padding="4,0"
+                                <ui:Button x:Name="NMdHR" Content="&#x2500; HR" Click="OnNMdHR" Height="26" Padding="4,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
                                          FontSize="10"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule"/>

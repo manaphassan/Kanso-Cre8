@@ -12,7 +12,7 @@
     <!-- Root DockPanel: Now Playing bar docked to bottom, content fills rest -->
     <DockPanel>
 
-        <!-- ══ NOW PLAYING TRANSPORT BAR (bottom-docked, Fluent Media Player style) ══ -->
+        <!-- == NOW PLAYING TRANSPORT BAR (bottom-docked, Fluent Media Player style) == -->
         <ui:Card DockPanel.Dock="Bottom" Padding="0" Height="76" VerticalAlignment="Bottom">
             <Grid Margin="20,0">
                 <Grid.ColumnDefinitions>
@@ -119,7 +119,7 @@
             </Grid>
         </ui:Card>
 
-        <!-- â•â• MAIN CONTENT AREA â•â• -->
+        <!-- â-â- MAIN CONTENT AREA â-â- -->
         <Grid Margin="24,20,24,12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>   <!-- Page header -->
@@ -456,7 +456,7 @@
                                 <ui:TextBlock Text="Emoji" FontSize="11" FontWeight="Bold"
                                            Foreground="{DynamicResource FluentLightTextSecondary}" Margin="0,0,0,4"
                                            />
-                                <TextBox x:Name="TxtEmoji" Text="📻" Padding="8,6"
+                                <TextBox x:Name="TxtEmoji" Text="" Padding="8,6"
                                          Width="56" TextAlignment="Center" FontSize="14"/>
                             </StackPanel>
                         </Grid>

@@ -129,7 +129,7 @@
                                                 </StackPanel>
 
                                                 <!-- Action Button (Visible if missing) -->
-                                                <ui:Button Grid.Column="3" Content="⬇️ Get Software" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Primary" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <ui:Button Grid.Column="3" Content="&#x2B07;&#xFE0F; Get Software" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Primary" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

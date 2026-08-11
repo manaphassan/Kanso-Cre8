@@ -87,14 +87,14 @@
 
                 <!-- Refresh + open-in-browser buttons -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button x:Name="RefreshBtn" Click="OnRefreshClicked"
+                    <ui:Button x:Name="RefreshBtn" Click="OnRefreshClicked"
                             Style="{StaticResource CopyBtnStyle}"
-                            Content="⟳  Refresh" Margin="0,0,8,0" Padding="14,6"/>
-                    <Button x:Name="OpenBrowserBtn" Click="OnOpenInBrowserClicked"
+                            Content="&#x27F3;  Refresh" Margin="0,0,8,0" Padding="14,6"/>
+                    <ui:Button x:Name="OpenBrowserBtn" Click="OnOpenInBrowserClicked"
                             Background="#2A2A2A" Foreground="#C8C8C8" BorderThickness="1"
                             BorderBrush="#3A3A3A" Padding="14,6" Cursor="Hand" FontSize="11"
                             FontFamily="Segoe UI Variable Text">
-                        <Button.Template>
+                        <ui:Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
@@ -108,10 +108,10 @@
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
-                        </Button.Template>
-                        <TextBlock Text="🌐  Open in Browser" Foreground="#C8C8C8" FontSize="11"
+                        </ui:Button.Template>
+                        <ui:TextBlock Text="&#x1F310;  Open in Browser" Foreground="#C8C8C8" FontSize="11"
                                    FontFamily="Segoe UI Variable Text"/>
-                    </Button>
+                    </ui:Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -151,7 +151,7 @@
                                                 <Setter.Value>
                                                     <VisualBrush Stretch="None" AlignmentX="Left">
                                                         <VisualBrush.Visual>
-                                                            <TextBlock Text="Filter tokens…" Foreground="#505050"
+                                                            <TextBlock Text="Filter tokens&#x2026;" Foreground="#505050"
                                                                        FontSize="12" FontFamily="Segoe UI Variable Text"
                                                                        Margin="0"/>
                                                         </VisualBrush.Visual>
@@ -168,7 +168,7 @@
 
                 <!-- Token count + copied notice -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock x:Name="TokenCountText" Text="—"
+                    <TextBlock x:Name="TokenCountText" Text="&#x2014;"
                                Foreground="#606060" FontSize="11"
                                FontFamily="Segoe UI Variable Text" VerticalAlignment="Center" Margin="0,0,16,0"/>
                     <TextBlock x:Name="CopiedNotice" Text=""
@@ -182,7 +182,7 @@
         <Grid Grid.Row="2">
             <!-- Loading overlay -->
             <StackPanel x:Name="LoadingPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="Fetching fluent.css from server…"
+                <TextBlock Text="Fetching fluent.css from server&#x2026;"
                            Foreground="#9D9D9D" FontSize="13" HorizontalAlignment="Center"
                            FontFamily="Segoe UI Variable Text"/>
                 <ProgressBar IsIndeterminate="True" Width="200" Height="4"
@@ -193,11 +193,11 @@
             <!-- Error panel -->
             <StackPanel x:Name="ErrorPanel" Visibility="Collapsed"
                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="⚠" FontSize="32" HorizontalAlignment="Center" Foreground="#EAB308"/>
+                <TextBlock Text="&#x26A0;" FontSize="32" HorizontalAlignment="Center" Foreground="#EAB308"/>
                 <TextBlock x:Name="ErrorText" Text="Could not load tokens."
                            Foreground="#9D9D9D" FontSize="13" HorizontalAlignment="Center"
                            FontFamily="Segoe UI Variable Text" Margin="0,8,0,0"/>
-                <Button Content="Try Again" Click="OnRefreshClicked"
+                <ui:Button Content="Try Again" Click="OnRefreshClicked"
                         Style="{StaticResource CopyBtnStyle}"
                         Margin="0,16,0,0" HorizontalAlignment="Center" Padding="20,7"/>
             </StackPanel>

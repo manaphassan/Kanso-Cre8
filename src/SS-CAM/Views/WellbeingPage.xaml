@@ -57,9 +57,9 @@
                     <ui:Card Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrand80}" Padding="16" Margin="0,0,0,16">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><ui:TextBlock Text="&#xE82F;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/><ui:TextBlock Text="Quick Guide to Maintaining a Healthy Mind" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="13"  VerticalAlignment="Center"/></StackPanel>
-                            <ui:TextBlock Text="• Focus Mode (25m): 25 minutes of uninterrupted design work gets you into a flow state without mental fatigue." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
-                            <ui:TextBlock Text="• 5-Min Break: Step away, stretch your shoulders, look out a window (20-20-20 rule to prevent eye strain)." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
-                            <ui:TextBlock Text="• 2-Min Breathing: Follow the pulsing circle — 4s Inhale, 4s Hold, 4s Exhale to reset your nervous system." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" TextWrapping="Wrap" />
+                            <ui:TextBlock Text="&#x2022; Focus Mode (25m): 25 minutes of uninterrupted design work gets you into a flow state without mental fatigue." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
+                            <ui:TextBlock Text="&#x2022; 5-Min Break: Step away, stretch your shoulders, look out a window (20-20-20 rule to prevent eye strain)." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
+                            <ui:TextBlock Text="&#x2022; 2-Min Breathing: Follow the pulsing circle &#x2014; 4s Inhale, 4s Hold, 4s Exhale to reset your nervous system." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" TextWrapping="Wrap" />
                         </StackPanel>
                     </ui:Card>
 
