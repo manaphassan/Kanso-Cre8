@@ -51,7 +51,9 @@
         <ui:NavigationView x:Name="RootNavigation" Grid.Row="2"
                            PaneDisplayMode="Left"
                            IsPaneOpen="True"
+                           IsPaneToggleVisible="False"
                            IsBackButtonVisible="Collapsed"
+                           HeaderVisibility="Collapsed"
                            OpenPaneLength="200">
 
             <!-- PANE HEADER: Search box + Modules label -->

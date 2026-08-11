@@ -60,8 +60,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- â”€â”€ Left Sidebar: Project Cards List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-            <ui:Card Grid.Column="0" Padding="0">
+            <!-- ————————————————— Left Sidebar: Project Cards List ————————————————— -->
+            <ui:Card Grid.Column="0" Padding="0" VerticalAlignment="Stretch">
                 <DockPanel>
                     <!-- Sidebar Header -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
@@ -173,8 +173,8 @@
                 </DockPanel>
             </ui:Card>
 
-            <!-- â”€â”€ Right Pane: Catalog README Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-            <ui:Card Grid.Column="2" Padding="0">
+            <!-- ————————————————— Right Pane: Catalog README Preview ————————————————— -->
+            <ui:Card Grid.Column="2" Padding="0" VerticalAlignment="Stretch">
                 <DockPanel>
 
                     <!-- Selected Project Header Badge -->
