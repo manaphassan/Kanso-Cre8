@@ -7,17 +7,28 @@
         MinHeight="660" MinWidth="980"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
-        WindowBackdropType="None"
+        WindowBackdropType="Mica"
+        ExtendsContentIntoTitleBar="True"
         WindowCornerPreference="Round">
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- TitleBar drag region -->
             <RowDefinition Height="Auto"/>   <!-- Update Banner (hidden by default) -->
             <RowDefinition Height="*"/>      <!-- Main Body -->
         </Grid.RowDefinitions>
 
+        <!-- Window TitleBar: provides drag region + close/min/max.
+             Background matches sidebar so it blends into the nav pane.
+             Height is minimal (32px) so it does not create a visible gap. -->
+        <ui:TitleBar x:Name="AppTitleBar" Grid.Row="0"
+                     Title=""
+                     Foreground="White"
+                     Background="#0B2358"
+                     MinHeight="32" Height="32"/>
+
         <!-- Update Notification Banner -->
-        <Border x:Name="UpdateBanner" Grid.Row="0" Background="#FEF9C3" BorderBrush="#EAB308"
+        <Border x:Name="UpdateBanner" Grid.Row="1" Background="#FEF9C3" BorderBrush="#EAB308"
                 BorderThickness="0,0,0,1" Padding="16,6" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -41,8 +52,8 @@
             </Grid>
         </Border>
 
-        <!-- Main Body: Fluent 2 NavigationView (always expanded — Left pane with text labels) -->
-        <ui:NavigationView x:Name="RootNavigation" Grid.Row="1"
+        <!-- Main Body: Fluent 2 NavigationView (always expanded) -->
+        <ui:NavigationView x:Name="RootNavigation" Grid.Row="2"
                            PaneDisplayMode="Left"
                            IsPaneOpen="True"
                            IsBackButtonVisible="Collapsed"
@@ -74,16 +85,16 @@
 
             <!-- MENU ITEMS -->
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Dashboard"         Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
+                <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
                 <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
-                <ui:NavigationViewItem Content="Waktu Solat"       Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
-                <ui:NavigationViewItem Content="Project Creator"   Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
-                <ui:NavigationViewItem Content="Search &amp; Copy" Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
-                <ui:NavigationViewItem Content="Brand Assets"      Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
-                <ui:NavigationViewItem Content="Radio Player"      Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
-                <ui:NavigationViewItem Content="Quick Notes"       Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
-                <ui:NavigationViewItem Content="Task Manager"      Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
-                <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"  TargetPageType="{x:Type views:WorkstationHealthPage}" />
+                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
+                <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
+                <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
+                <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
+                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
+                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
+                <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
+                <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
             </ui:NavigationView.MenuItems>
 
             <!-- FOOTER MENU ITEMS -->
@@ -114,7 +125,7 @@
                                        MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
                                        ToolTip="Open Wellbeing &amp; Focus Timer"/>
                         </StackPanel>
-                        <!-- Active theme - click to cycle themes -->
+                        <!-- Active theme - click to cycle -->
                         <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
                                     Focusable="False"
                                     MouseLeftButtonDown="OnStatusThemeToggle"
@@ -185,7 +196,7 @@
             </ui:NavigationView.PaneFooter>
         </ui:NavigationView>
 
-        <!-- Hidden elements for audio animation (kept for backward compatibility) -->
+        <!-- Hidden elements (kept for backward compatibility) -->
         <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <TextBlock x:Name="HeaderSubtitle" Grid.Row="0" Visibility="Collapsed"/>
     </Grid>
