@@ -18,13 +18,13 @@
             <RowDefinition Height="*"/>      <!-- Main Body -->
         </Grid.RowDefinitions>
 
-        <!-- Window TitleBar: provides drag region + close/min/max.
-             Background matches sidebar so it blends into the nav pane.
-             Height is minimal (32px) so it does not create a visible gap. -->
+        <!-- Window TitleBar: Azure accent strip — provides drag region + close/min/max.
+             Background=#0078D4 (Azure/Fluent accent) with white text.
+             Height=32 is the minimum that reliably captures the drag hit-test. -->
         <ui:TitleBar x:Name="AppTitleBar" Grid.Row="0"
                      Title=""
                      Foreground="White"
-                     Background="#0B2358"
+                     Background="#0078D4"
                      MinHeight="32" Height="32"/>
 
         <!-- Update Notification Banner -->

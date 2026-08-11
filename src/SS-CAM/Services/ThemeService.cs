@@ -36,6 +36,7 @@ namespace SS_CAM.Services
         public string UserCardSub { get; set; }
         public string MainFrameBg { get; set; }
         public string TitleBarForeground { get; set; }
+        public string TitleBarBg { get; set; }
         public string SearchBg { get; set; }
         public string SearchBorder { get; set; }
         public string SearchText { get; set; }
@@ -110,6 +111,7 @@ namespace SS_CAM.Services
                     FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                     TitleBarForeground = "#242424",
+                    TitleBarBg         = "#FFFFFF",
 
                     // Header & Canvas
                     HeaderBg        = "#FFFFFF",
@@ -168,18 +170,20 @@ namespace SS_CAM.Services
                 IsLight = false,
                 FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
+                // TitleBar strip -- Azure (Fluent 2 accent blue)
                 TitleBarForeground = "#FFFFFF",
+                TitleBarBg         = "#0078D4",
 
                 // Header area -- deep brand navy
-                HeaderBg        = "#0B2358",
+                HeaderBg        = "#021B47",
                 HeaderBorder    = "#1E3A8A",
 
                 // Content frame -- white (Light WPF-UI mode)
                 MainFrameBg     = "#FFFFFF",
 
-                // Sidebar -- readable deep navy (matches v2.3.6)
-                SidebarBg       = "#0B2358",
-                SidebarBorder   = "#1E3A8A",
+                // Sidebar -- SS Navy (SuamiSihat brand dark navy)
+                SidebarBg       = "#021B47",
+                SidebarBorder   = "#0A2560",
 
                 // Search box inside sidebar
                 SearchBg          = "#0D2A5C",
@@ -197,15 +201,15 @@ namespace SS_CAM.Services
                 InactiveNavSubtext = "#9D9D9D",
 
                 // Footer / status bar
-                FooterBg        = "#0B2358",
-                FooterBorder    = "#1E3A8A",
+                FooterBg        = "#021B47",
+                FooterBorder    = "#0A2560",
                 FooterText      = "#C8C8C8",
                 FooterCardBg    = "#0D2A5C",
-                FooterCardBorder= "#1E3A8A",
+                FooterCardBorder= "#0A2560",
 
                 // Designer Profile card in sidebar
                 UserCardBg      = "#0D2A5C",
-                UserCardBorder  = "#1E3A8A",
+                UserCardBorder  = "#0A2560",
                 UserCardTitle   = "#FFFFFF",
                 UserCardSub     = "#479EF5",
 
@@ -231,6 +235,7 @@ namespace SS_CAM.Services
                 FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                 TitleBarForeground = "#F1F5F9",
+                TitleBarBg         = "#08122E",
 
                 // Main content frame uses the dark canvas defined in MetamorphosisTheme.xaml
                 HeaderBg     = "#08122E",

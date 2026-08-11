@@ -414,9 +414,12 @@ namespace SS_CAM
             if (RootNavigation != null)
                 RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
 
-            // -- TitleBar background: must match sidebar so they merge visually --
+            // -- TitleBar background: independent from sidebar (Azure for SS Default) --
             if (AppTitleBar != null)
-                AppTitleBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            {
+                AppTitleBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarBg ?? c.SidebarBg));
+                AppTitleBar.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
+            }
 
             // -- PaneHeader: search box container --
             if (SidebarSearchBorder != null)
