@@ -167,7 +167,7 @@ namespace SS_CAM.Services
             // —————————————————————————————————————————————————————————
             return new ThemeColors
             {
-                IsLight = false,
+                IsLight = true,
                 FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                 // TitleBar strip -- Azure (Fluent 2 accent blue)

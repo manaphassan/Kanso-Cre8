@@ -102,9 +102,6 @@ namespace SS_CAM
         {
             try
             {
-                // Wpf.Ui's NavigationView automatically injects a 210px margin/padding 
-                // into the TitleBar when ExtendsContentIntoTitleBar="True".
-                // We aggressively strip this on layout updates to ensure our TitleBar remains flush left.
                 AppTitleBar.LayoutUpdated += (s, e) =>
                 {
                     if (AppTitleBar.Padding.Left != 0) AppTitleBar.Padding = new Thickness(0);
@@ -117,6 +114,24 @@ namespace SS_CAM
                             cp.HorizontalAlignment = HorizontalAlignment.Stretch;
                         if (cp.Margin.Left != 0)
                             cp.Margin = new Thickness(0);
+
+                        // CRITICAL FIX: Wpf.Ui's internal TitleBar template places the Header ContentPresenter 
+                        // in a Grid Column with Width="Auto". This prevents our internal star columns from expanding.
+                        // We must forcefully reach into the template and change that column to Width="*".
+                        var parent = VisualTreeHelper.GetParent(cp);
+                        Grid parentGrid = parent as Grid;
+                        if (parentGrid != null)
+                        {
+                            int colIndex = Grid.GetColumn(cp);
+                            if (colIndex >= 0 && colIndex < parentGrid.ColumnDefinitions.Count)
+                            {
+                                var colDef = parentGrid.ColumnDefinitions[colIndex];
+                                if (!colDef.Width.IsStar)
+                                {
+                                    colDef.Width = new GridLength(1, GridUnitType.Star);
+                                }
+                            }
+                        }
                     }
                 };
             }
