@@ -42,7 +42,7 @@
                 </StackPanel>
 
                 <!-- Middle Content: Version Changelog -->
-                <GroupBox x:Name="GroupChangelog" Header="v2.6.1 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
+                <GroupBox x:Name="GroupChangelog" Header="v2.6.3 Release Highlights &amp; Changelog" Foreground="#043388" FontWeight="Bold">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                         <StackPanel Margin="6">
                             <ui:TextBlock x:Name="TxtWhatsNew" Text="&#x2728; What's New in Version 2.6.1:" FontWeight="Bold" Foreground="#043388" FontSize="13" Margin="0,0,0,8"/>
