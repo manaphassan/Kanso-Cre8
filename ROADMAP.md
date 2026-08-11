@@ -17,6 +17,7 @@
 | **v2.4.0** | 2026-08-10 | Dashboard Inspiration Widget (40 tips + RSS), Project Brief Markdown Editor, Search & Copy Catalog layout |
 | **v2.5.0** | 2026-08-10 | Quick Notes module, Task Manager Kanban, Team Board, Frontmatter injection in Project Creator |
 | **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, hardcoded D:\Testing paths eliminated, Team Board offline guard, dynamic rescan count, static HttpClient, H3 preview, Debug logging |
+| **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: Modernized Dashboard & Project Creator cards, Adobe/Affinity app bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray popover, Visual Asset Lightbox modal, Revision Timeline view, SS Default theme contrast fix |
 
 ---
 
