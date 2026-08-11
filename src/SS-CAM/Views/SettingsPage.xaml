@@ -114,43 +114,10 @@
                     <ui:Card Padding="20">
                         <StackPanel>
                             <ui:TextBlock Text="Application Theme" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,4"/>
-                            <ui:TextBlock Text="Choose between SuamiSihat Navy, clean white Falconia, or Metamorphosis Glassmorphism." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16" TextWrapping="Wrap"/>
+                            <ui:TextBlock Text="Choose between clean white Falconia Light or Metamorphosis Dark Glassmorphism." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16" TextWrapping="Wrap"/>
 
                             <!-- Theme swatches -->
                             <StackPanel Orientation="Horizontal">
-
-                                <!-- SS Default swatch -->
-                                <Border CornerRadius="8" BorderBrush="#043388" BorderThickness="2"
-                                        Width="120" Margin="0,0,10,0" Cursor="Hand">
-                                    <Border.Effect>
-                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="#000000"/>
-                                    </Border.Effect>
-                                    <ui:Button x:Name="BtnThemeSSDefault" Click="OnSelectSSDefaultTheme"
-                                            BorderThickness="0" Padding="0" Background="Transparent">
-                                        <StackPanel>
-                                            <!-- Mini sidebar preview -->
-                                            <Border Background="#02153D" Height="52" CornerRadius="6,6,0,0">
-                                                <StackPanel Margin="10,8">
-                                                    <Rectangle Fill="#479EF5" Width="16" Height="3" HorizontalAlignment="Left"
-                                                               RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,4"/>
-                                                    <Rectangle Fill="#C8C8C8" Width="60" Height="2" HorizontalAlignment="Left"
-                                                               RadiusX="1" RadiusY="1" Margin="0,0,0,3"/>
-                                                    <Rectangle Fill="#C8C8C8" Width="45" Height="2" HorizontalAlignment="Left"
-                                                               RadiusX="1" RadiusY="1"/>
-                                                </StackPanel>
-                                            </Border>
-                                            <!-- Label -->
-                                            <Border Background="#043388" Padding="10,8">
-                                                <StackPanel>
-                                                    <ui:TextBlock Text="SS Default" FontSize="12" FontWeight="Bold"
-                                                               Foreground="White" />
-                                                    <ui:TextBlock Text="Brand Navy" FontSize="10"
-                                                               Foreground="#93C5FD" />
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                    </ui:Button>
-                                </Border>
 
                                 <!-- Falconia swatch -->
                                 <Border CornerRadius="8" BorderBrush="#D1D1D1" BorderThickness="1"

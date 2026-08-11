@@ -154,7 +154,7 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You are running SS-CAM v2.6.0. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("You are running SS-CAM v2.6.1. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)
@@ -164,11 +164,6 @@ namespace SS_CAM.Views
                 MainWindow mainWin = Application.Current.MainWindow as MainWindow;
                 mainWin.NavigateTo(typeof(ProjectCreatorPage));
             }
-        }
-
-        private void OnSelectSSDefaultTheme(object sender, RoutedEventArgs e)
-        {
-            ThemeService.ApplyTheme(AppTheme.SSDefault);
         }
 
         private void OnSelectFalconiaTheme(object sender, RoutedEventArgs e)

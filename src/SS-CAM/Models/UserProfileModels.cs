@@ -11,7 +11,7 @@ namespace SS_CAM.Models
         public string AvatarPath { get; set; }
         public string WorkspaceRoot { get; set; }
         public int NextProjectNumber { get; set; }
-        /// <summary>Persisted theme name: "SS Default" or "Metamorphosis".</summary>
+        /// <summary>Persisted theme name: "Falconia" or "Metamorphosis".</summary>
         public string Theme { get; set; }
         /// <summary>JAKIM prayer time zone code, e.g. "WLY01".</summary>
         public string PrayerZone { get; set; }
@@ -27,7 +27,7 @@ namespace SS_CAM.Models
             AvatarPath = "";
             WorkspaceRoot = @"D:\Testing";
             NextProjectNumber = 1;
-            Theme = null;   // null = SS Default (ThemeService treats null as SSDefault)
+            Theme = "Falconia";
             PrayerZone = "WLY01";
             PrayerRemindersEnabled = true;
         }

@@ -394,14 +394,10 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, MouseButtonEventArgs e)
         {
-            // Cycle: SS Default -> Falconia -> Metamorphosis -> SS Default
-            AppTheme nextTheme;
-            if (ThemeService.CurrentTheme == AppTheme.SSDefault)
-                nextTheme = AppTheme.Falconia;
-            else if (ThemeService.CurrentTheme == AppTheme.Falconia)
-                nextTheme = AppTheme.Metamorphosis;
-            else
-                nextTheme = AppTheme.SSDefault;
+            // Toggle between Falconia (Light) and Metamorphosis (Dark)
+            AppTheme nextTheme = (ThemeService.CurrentTheme == AppTheme.Falconia)
+                ? AppTheme.Metamorphosis
+                : AppTheme.Falconia;
 
             ThemeService.ApplyTheme(nextTheme);
         }
@@ -464,18 +460,14 @@ namespace SS_CAM
             // -- Update theme name label in sidebar footer --
             if (StatusThemeText != null)
             {
-                string themeName;
-                if      (theme == AppTheme.Metamorphosis) themeName = "Metamorphosis";
-                else if (theme == AppTheme.Falconia)       themeName = "Falconia";
-                else                                        themeName = "SS Default";
+                string themeName = (theme == AppTheme.Metamorphosis) ? "Metamorphosis" : "Falconia";
                 StatusThemeText.Text = "Theme: " + themeName;
             }
 
             // -- Nav item foreground --
-            // SS Default: dark navy sidebar in Light WPF-UI mode — force nav text white.
             // Metamorphosis: dark sidebar in Dark WPF-UI mode — force nav text white.
             // Falconia: white sidebar in Light WPF-UI mode — clear override (WPF-UI default = dark).
-            bool forceWhiteNavText = (theme == AppTheme.SSDefault || theme == AppTheme.Metamorphosis);
+            bool forceWhiteNavText = (theme == AppTheme.Metamorphosis);
             var navFg = forceWhiteNavText
                 ? new SolidColorBrush(Colors.White)
                 : null;
@@ -619,7 +611,7 @@ namespace SS_CAM
         //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "2.6.0";
+        private const string CurrentVersion = "2.6.1";
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 
