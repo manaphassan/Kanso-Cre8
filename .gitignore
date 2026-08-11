@@ -1,9 +1,11 @@
 # ── Build outputs ──────────────────────────────────────────────
 src/SS-CAM/bin/
 src/SS-CAM/obj/
+bin/
+obj/
+dist/
 *.pdb
 *.user
-
 
 # ── Scratch / temp test files ──────────────────────────────────
 test_*.cs
