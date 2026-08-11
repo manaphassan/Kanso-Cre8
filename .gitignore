@@ -11,6 +11,10 @@ dist/
 test_*.cs
 test_*.exe
 src/SS-CAM/test_*.cs
+desktop_capture_*.png
+stdout.txt
+stderr.txt
+*.exe.old
 
 # ── Editor & OS ────────────────────────────────────────────────
 .vs/
