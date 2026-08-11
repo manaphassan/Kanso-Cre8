@@ -324,7 +324,7 @@
                     <!-- Rendered Markdown — primary focus, fills all remaining height -->
                     <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
                                              VerticalScrollBarVisibility="Auto"
-                                             Background="White"
+                                             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                              BorderThickness="0"
                                              Padding="16"/>
 
@@ -353,7 +353,7 @@
                             </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="White" BorderBrush="#CBD5E1"
+                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                             BorderThickness="1" CornerRadius="6"
                                             Width="140" Margin="5" Padding="6" Cursor="Hand">
                                         <StackPanel>

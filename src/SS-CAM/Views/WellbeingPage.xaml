@@ -8,7 +8,7 @@
         <StackPanel>
             <!-- Header with Casual Healthy Mind Tips -->
             <StackPanel Margin="0,0,0,20">
-                <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" />
+                <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" />
                 <ui:TextBlock Text="Your personal space to stay focused, rest your eyes &amp; spine, and keep a calm, healthy mind while designing." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0" />
             </StackPanel>
 

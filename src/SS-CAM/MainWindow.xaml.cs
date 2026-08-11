@@ -135,9 +135,8 @@ namespace SS_CAM
                     }
                 };
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] FixTitleBarHeaderAlignment: " + ex.Message); }
         }
-
         private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
@@ -188,9 +187,8 @@ namespace SS_CAM
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] UpdateRadioStatusUI: " + ex.Message); }
         }
-
         private void OnStatusRadioPlayToggle(object sender, RoutedEventArgs e)
         {
             RadioStreamService.Instance.TogglePlayPause();
@@ -257,7 +255,7 @@ namespace SS_CAM
                     if (TitleBarAvatarInitials != null)
                         TitleBarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] RefreshProfileUI avatar load: " + ex.Message); }
             }
             else
             {
@@ -494,9 +492,8 @@ namespace SS_CAM
                     UseShellExecute = true
                 });
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnOpenGithub shell launch: " + ex.Message); }
         }
-
         private void OnOpenAboutWindow(object sender, MouseButtonEventArgs e)
         {
             try
@@ -505,9 +502,8 @@ namespace SS_CAM
                 about.Owner = this;
                 about.ShowDialog();
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnOpenAboutWindow: " + ex.Message); }
         }
-
         private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
         {
             // Cycle: SS Default ↔ Falconia
@@ -820,7 +816,7 @@ namespace SS_CAM
                         UseShellExecute = true
                     });
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] Download URL shell launch: " + ex.Message); }
             }
         }
 

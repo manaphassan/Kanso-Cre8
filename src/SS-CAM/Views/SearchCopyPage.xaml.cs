@@ -499,7 +499,7 @@ namespace SS_CAM.Views
                     StackPanel btns = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
                     string targetFile = f.FullName;
                     Button btnOpen = new Button { Content = "Open", Height = 26, Padding = new Thickness(8, 0, 8, 0), Margin = new Thickness(0, 0, 4, 0), FontSize = 11, Cursor = Cursors.Hand };
-                    btnOpen.Click += (s, e) => { try { System.Diagnostics.Process.Start(targetFile); } catch { } };
+                    btnOpen.Click += (s, e) => { try { System.Diagnostics.Process.Start(targetFile); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SearchCopy] Open file: " + ex.Message); } };
 
                     Button btnCopy = new Button { Content = "Copy Path", Height = 26, Padding = new Thickness(8, 0, 8, 0), FontSize = 11, Cursor = Cursors.Hand };
                     btnCopy.Click += (s, e) => { Clipboard.SetText(targetFile); MessageBox.Show("Path copied!", "Copied", MessageBoxButton.OK, MessageBoxImage.Information); };
@@ -555,7 +555,7 @@ namespace SS_CAM.Views
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SearchCopy] LoadImageGallery scan: " + ex.Message); }
 
             ImageGalleryList.ItemsSource = images;
         }
@@ -640,7 +640,7 @@ namespace SS_CAM.Views
                 btnCopyPath.Click += (s, e) => { Clipboard.SetText(imagePath); MessageBox.Show("Image path copied to clipboard!", "Copied", MessageBoxButton.OK, MessageBoxImage.Information); };
 
                 Button btnOpenApp = new Button { Content = "⚡ Open File", Height = 32, Padding = new Thickness(12, 0, 12, 0), Margin = new Thickness(0, 0, 8, 0), Cursor = Cursors.Hand };
-                btnOpenApp.Click += (s, e) => { try { System.Diagnostics.Process.Start(imagePath); } catch { } };
+                btnOpenApp.Click += (s, e) => { try { System.Diagnostics.Process.Start(imagePath); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SearchCopy] Open image: " + ex.Message); } };
 
                 Button btnClose = new Button { Content = "Close", Height = 32, Padding = new Thickness(16, 0, 16, 0), Cursor = Cursors.Hand };
                 btnClose.Click += (s, e) => win.Close();

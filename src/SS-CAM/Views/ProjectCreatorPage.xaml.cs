@@ -104,7 +104,7 @@ namespace SS_CAM.Views
 
                 ProjectIdInput.Text = maxId.ToString("D4") + suffix;
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ProjectCreator] AutoIncrementProjectId: " + ex.Message); }
         }
 
         private void PopulateDropdowns()
@@ -404,7 +404,7 @@ namespace SS_CAM.Views
                 {
                     Process.Start("explorer.exe", selected.FullPath);
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ProjectCreator] OnRecentProjectDoubleClicked Explorer.Start: " + ex.Message); }
             }
         }
 

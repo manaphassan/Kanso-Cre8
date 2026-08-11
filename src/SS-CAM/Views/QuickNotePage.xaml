@@ -13,10 +13,10 @@
         <!-- Page Header -->
         <StackPanel Grid.Row="0" Margin="24,20,24,14">
             <StackPanel Orientation="Horizontal">
-                <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="22"
+                <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="24"
                            Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ui:TextBlock Text="Quick Notes" FontSize="22" FontWeight="Bold"
-                           Foreground="{DynamicResource FluentBrand80}" />
+                <ui:TextBlock Text="Quick Notes" FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource FluentBrand80}"/>
             </StackPanel>
             <ui:TextBlock Text="Personal Markdown scratchpad. Auto-saves as you type."
                        Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
@@ -207,14 +207,14 @@
                              VerticalScrollBarVisibility="Auto"
                              FontFamily="Consolas" FontSize="12"
                              Padding="16" BorderThickness="0"
-                             Background="White"
+                             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                              Visibility="Collapsed"
                              TextChanged="OnNoteEditorChanged"/>
 
                     <!-- Preview Mode -->
                     <FlowDocumentScrollViewer x:Name="NotePreviewViewer"
                                              VerticalScrollBarVisibility="Auto"
-                                             Background="White" BorderThickness="0"
+                                             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" BorderThickness="0"
                                              Padding="16" Visibility="Collapsed"/>
                 </DockPanel>
             </Border>

@@ -257,7 +257,7 @@ namespace SS_CAM.Views
                         byte.Parse(rgb.Groups[3].Value)));
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[DesignTokens] ParseColorString: " + ex.Message); }
             return null;
         }
 
@@ -307,7 +307,7 @@ namespace SS_CAM.Views
                     UseShellExecute = true,
                 });
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[DesignTokens] OnOpenInBrowserClicked shell launch: " + ex.Message); }
         }
 
         // ── UI state helpers ──────────────────────────────────────────────────

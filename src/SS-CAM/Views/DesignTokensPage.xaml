@@ -77,9 +77,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Design Tokens" FontSize="22" FontWeight="Bold"
+                    <ui:TextBlock Text="Design Tokens" FontSize="24" FontWeight="Bold"
                                Foreground="#FFFFFF" FontFamily="Segoe UI Variable Display"/>
-                    <TextBlock x:Name="SubtitleText"
+                    <ui:TextBlock x:Name="SubtitleText"
                                Text="Live token reference from fluent.css on the server."
                                Foreground="#9D9D9D" FontSize="12" Margin="0,3,0,0"
                                FontFamily="Segoe UI Variable Text"/>

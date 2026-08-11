@@ -96,7 +96,7 @@
                                              Padding="8"
                                              BorderBrush="{DynamicResource FluentLightStroke}"
                                              BorderThickness="1"
-                                             Background="White"/>
+                                             Background="{DynamicResource TextControlBackground}"/>
                                 </StackPanel>
                             </StackPanel>
                         </ui:Card>

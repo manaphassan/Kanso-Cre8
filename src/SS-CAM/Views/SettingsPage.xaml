@@ -8,7 +8,7 @@
         <StackPanel>
             <!-- Page Header -->
             <StackPanel Margin="0,0,0,20">
-                <ui:TextBlock Text="Settings" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:TextBlock Text="Settings" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                 <ui:TextBlock Text="Manage your designer profile, workspace paths, themes, and maintenance tools." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0" />
             </StackPanel>
 
@@ -46,7 +46,7 @@
                                     </Border>
                                     <ui:Button Content="Change" Click="OnChangeAvatarClicked" Height="26"
                                             Margin="0,6,0,0" Padding="8,0" FontSize="11"
-                                            Background="#E2E8F0" Foreground="#1E293B" Cursor="Hand"
+                                            Appearance="Secondary" Cursor="Hand"
                                             HorizontalAlignment="Center"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
