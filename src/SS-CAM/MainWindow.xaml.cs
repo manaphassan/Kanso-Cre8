@@ -590,15 +590,15 @@ namespace SS_CAM
                 if (forceWhiteNavText)
                 {
                     var whiteBrush = new SolidColorBrush(Colors.White);
-                    var hoverBgBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)); // Semi-transparent white
-                    
-                    RootNavigation.Resources["TextFillColorPrimaryBrush"] = whiteBrush;
-                    RootNavigation.Resources["TextFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
+                    var hoverBgBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF));
+
+                    // NavigationViewItem-specific keys only.
+                    // Do NOT set TextFillColorPrimaryBrush here — it cascades to content pages.
                     RootNavigation.Resources["NavigationViewItemForeground"] = whiteBrush;
                     RootNavigation.Resources["NavigationViewItemForegroundPointerOver"] = whiteBrush;
                     RootNavigation.Resources["NavigationViewItemForegroundPressed"] = whiteBrush;
                     RootNavigation.Resources["NavigationViewItemForegroundSelected"] = whiteBrush;
-                    
+
                     RootNavigation.Resources["ControlFillColorSecondaryBrush"] = hoverBgBrush;
                     RootNavigation.Resources["ControlFillColorTertiaryBrush"] = hoverBgBrush;
                     RootNavigation.Resources["NavigationViewItemBackgroundPointerOver"] = hoverBgBrush;
@@ -606,13 +606,11 @@ namespace SS_CAM
                 }
                 else
                 {
-                    RootNavigation.Resources.Remove("TextFillColorPrimaryBrush");
-                    RootNavigation.Resources.Remove("TextFillColorSecondaryBrush");
                     RootNavigation.Resources.Remove("NavigationViewItemForeground");
                     RootNavigation.Resources.Remove("NavigationViewItemForegroundPointerOver");
                     RootNavigation.Resources.Remove("NavigationViewItemForegroundPressed");
                     RootNavigation.Resources.Remove("NavigationViewItemForegroundSelected");
-                    
+
                     RootNavigation.Resources.Remove("ControlFillColorSecondaryBrush");
                     RootNavigation.Resources.Remove("ControlFillColorTertiaryBrush");
                     RootNavigation.Resources.Remove("NavigationViewItemBackgroundPointerOver");
@@ -631,6 +629,40 @@ namespace SS_CAM
                     if (navItem2 != null) navItem2.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
                 }
             }
+
+            // ── Content-area token override ──────────────────────────────────────────────────
+            // SS Default runs WPF-UI in Dark mode so the navy pane Background binds correctly.
+            // The content frame must still look like a Light canvas — override the key
+            // WPF-UI Dark tokens back to white values at Application level.
+            // These keys are NOT set on RootNavigation.Resources, so they do not affect
+            // NavigationViewItem templates which use NavigationViewItemForeground instead.
+            if (theme == AppTheme.SSDefault)
+            {
+                Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0xF5, 0xF5));
+                Application.Current.Resources["CardBackgroundFillColorDefaultBrush"]  = new SolidColorBrush(Colors.White);
+                Application.Current.Resources["CardBackgroundFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromRgb(0xF8, 0xFA, 0xFC));
+                Application.Current.Resources["CardStrokeColorDefaultBrush"]          = new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0));
+                Application.Current.Resources["TextFillColorPrimaryBrush"]            = new SolidColorBrush(Color.FromRgb(0x24, 0x24, 0x24));
+                Application.Current.Resources["TextFillColorSecondaryBrush"]          = new SolidColorBrush(Color.FromRgb(0x61, 0x61, 0x61));
+                Application.Current.Resources["TextControlBackground"]                = new SolidColorBrush(Colors.White);
+                Application.Current.Resources["TextControlBackgroundFocused"]         = new SolidColorBrush(Colors.White);
+                Application.Current.Resources["TextControlBackgroundPointerOver"]     = new SolidColorBrush(Color.FromRgb(0xF0, 0xF0, 0xF0));
+            }
+            else if (theme == AppTheme.Falconia)
+            {
+                // Falconia uses WPF-UI Light mode — remove any SS Default content overrides.
+                // WPF-UI’s own Light theme will reset these from its merged dictionaries.
+                Application.Current.Resources.Remove("ApplicationPageBackgroundThemeBrush");
+                Application.Current.Resources.Remove("CardBackgroundFillColorDefaultBrush");
+                Application.Current.Resources.Remove("CardBackgroundFillColorSecondaryBrush");
+                Application.Current.Resources.Remove("CardStrokeColorDefaultBrush");
+                Application.Current.Resources.Remove("TextFillColorPrimaryBrush");
+                Application.Current.Resources.Remove("TextFillColorSecondaryBrush");
+                Application.Current.Resources.Remove("TextControlBackground");
+                Application.Current.Resources.Remove("TextControlBackgroundFocused");
+                Application.Current.Resources.Remove("TextControlBackgroundPointerOver");
+            }
+            // Metamorphosis: full Dark WPF-UI mode, no content overrides needed.
         }
 
         private void OnFooterTimerClicked(object sender, MouseButtonEventArgs e)

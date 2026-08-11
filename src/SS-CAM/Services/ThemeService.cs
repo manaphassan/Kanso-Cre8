@@ -167,7 +167,7 @@ namespace SS_CAM.Services
             // —————————————————————————————————————————————————————————
             return new ThemeColors
             {
-                IsLight = true,
+                IsLight = false,   // dark navy sidebar + azure title bar — not a light theme
                 FontFamily      = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
                 // TitleBar strip -- Azure (Fluent 2 accent blue)
@@ -292,7 +292,10 @@ namespace SS_CAM.Services
             // and card resource dictionaries. Metamorphosis owns the dark mode.
             try
             {
-                if (theme == AppTheme.SSDefault || theme == AppTheme.Falconia)
+                // Falconia is the only truly Light-mode theme.
+                // SS Default has a dark navy sidebar — Dark mode lets the pane Background bind correctly.
+                // Content area is overridden to white in OnThemeModeChanged.
+                if (theme == AppTheme.Falconia)
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
                 else
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
