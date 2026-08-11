@@ -518,11 +518,10 @@ namespace SS_CAM
             ThemeColors c = ThemeService.GetColors(theme);
 
             // -- NavigationView sidebar background --
-            // With ApplicationTheme.Dark active for SS Default + Metamorphosis,
-            // the NavigationView pane correctly renders the Background property.
-            // For Falconia (Light theme), SidebarBg is #F5F5F5 (matches WPF-UI Light default).
-            if (RootNavigation != null)
-                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            // CORRECT WPF-UI 3.x resource keys:
+            //   NavigationViewExpandedPaneBackground  = pane in Left (expanded) mode
+            //   NavigationViewDefaultPaneBackground   = pane in LeftCompact / LeftMinimal mode
+            // Do NOT set RootNavigation.Background — that controls the content frame, not the pane.
 
             // ── TitleBar strip ───────────────────────────────────────────────
             if (AppTitleBar != null)
@@ -584,8 +583,10 @@ namespace SS_CAM
             if (RootNavigation != null)
             {
                 var sidebarBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
-                RootNavigation.Resources["NavigationViewPaneBackground"] = sidebarBrush;
-                RootNavigation.Resources["NavigationViewBackground"] = sidebarBrush;
+                // NavigationViewExpandedPaneBackground = Left (expanded) pane
+                // NavigationViewDefaultPaneBackground  = LeftCompact / LeftMinimal pane
+                RootNavigation.Resources["NavigationViewExpandedPaneBackground"] = sidebarBrush;
+                RootNavigation.Resources["NavigationViewDefaultPaneBackground"]  = sidebarBrush;
 
                 if (forceWhiteNavText)
                 {
