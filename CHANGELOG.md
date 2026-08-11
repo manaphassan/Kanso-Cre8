@@ -2,7 +2,28 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.6.1] - 2026-08-11 (Latest)
+## [2.6.3] - 2026-08-11 (Latest)
+
+### Added & Refined
+- **Art Director & Architectural Audit Remediation**: Comprehensive 4-phase audit remediation across all 12 modules.
+- **Dynamic Surface & Control Tokens**: Refactored `SearchCopyPage`, `QuickNotePage`, `TaskManagerPage`, and `ProjectCreatorPage` to utilize dynamic Fluent 2 theme tokens (`TextControlBackground`, `CardBackgroundFillColorDefaultBrush`), eliminating broken dark mode backgrounds.
+- **Icon Vector Standardization**: Replaced raw text emojis in `ProjectCreatorPage` with vector Segoe Fluent icons (`&#xE713;`, `&#xE8B7;`, `&#xE8EA;`, `&#xE8B2;`, `&#xE749;`).
+- **Synology NAS Resilience**: Added 3-attempt exponential backoff retry loop for `IOException` (file lock collisions) in `TeamBoardService.Save` and 240-character `MAX_PATH` guard rails in `ProjectGeneratorService`.
+
+### Fixed & Remediated
+- **Diagnostic Logging**: Replaced all silent `catch {}` blocks across `PrayerTimeService`, `ThemeService`, `ProjectCreatorPage`, `SearchCopyPage`, and `MainWindow` with `Debug.WriteLine` diagnostic logging.
+- **100% Clean Source Guardian**: Resolved all UTF-8 BOM, XAML unicode attribute strings, and control template target types (9/9 passed, 0 warnings, 0 fails).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v2.6.3.exe` | Compiled Native C# WPF Single-File Executable |
+| `AssemblyVersion` | 2.6.3.0 |
+| `AssemblyFileVersion` | 2.6.3.0 |
+
+---
+
+## [2.6.1] - 2026-08-11
 
 ### Added & Refined
 - **Header Title Rebranding & TitleBar Overhaul**: Rebranded app header title to `SS Creative Assets Management`. Applied a 100% full-width `#022057` SuamiSihat deep blue TitleBar with transparent caption buttons (`— 🗖 ✕`) and window dragging capability (`DragMove`).
