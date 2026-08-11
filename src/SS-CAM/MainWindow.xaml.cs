@@ -411,8 +411,18 @@ namespace SS_CAM
             ThemeColors c = ThemeService.GetColors(theme);
 
             // -- NavigationView pane background --
+            // RootNavigation.Background targets the control root, not the pane panel in WPF-UI 3.x.
+            // The correct pane-specific keys must be set in RootNavigation.Resources.
             if (RootNavigation != null)
-                RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            {
+                var sidebarBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+                RootNavigation.Background = sidebarBrush;
+                // WPF-UI 3.x NavigationView pane resource keys:
+                //   NavigationViewExpandedPaneBackground = Left (expanded) pane
+                //   NavigationViewDefaultPaneBackground  = LeftCompact / LeftMinimal pane
+                RootNavigation.Resources["NavigationViewExpandedPaneBackground"] = sidebarBrush;
+                RootNavigation.Resources["NavigationViewDefaultPaneBackground"]  = sidebarBrush;
+            }
 
             // -- TitleBar background: must match sidebar so they merge visually --
             if (AppTitleBar != null)
