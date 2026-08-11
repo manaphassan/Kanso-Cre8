@@ -303,22 +303,6 @@
 
         <!-- Legacy compatibility stubs (hidden) -->
         <Canvas x:Name="HeaderCanvas"      Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
-                </DockPanel>
-            </Grid>
-        </Border>
-
-            <!-- ═══════════════════════════════════════
-                 MAIN CONTENT FRAME
-                 100% vertical height, no bottom footer
-                 ═══════════════════════════════════════ -->
-            <Frame x:Name="MainFrame" Grid.Column="1"
-                   NavigationUIVisibility="Hidden"
-                   Background="#141414"/>
-        </Grid>
-
-        <!-- Visualizer / Header Canvas (hidden, kept for audio animation) -->
-        <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
->>>>>>> origin/SS-Master
         <TextBlock x:Name="HeaderSubtitle" Grid.Row="0" Visibility="Collapsed"/>
         <TextBlock x:Name="SidebarModulesLabel" Visibility="Collapsed"/>
 
