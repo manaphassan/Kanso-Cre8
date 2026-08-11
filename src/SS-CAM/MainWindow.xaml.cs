@@ -102,11 +102,23 @@ namespace SS_CAM
         {
             try
             {
-                var cp = FindVisualChild<ContentPresenter>(AppTitleBar);
-                if (cp != null && cp.Content == AppTitleBar.Header)
+                // Wpf.Ui's NavigationView automatically injects a 210px margin/padding 
+                // into the TitleBar when ExtendsContentIntoTitleBar="True".
+                // We aggressively strip this on layout updates to ensure our TitleBar remains flush left.
+                AppTitleBar.LayoutUpdated += (s, e) =>
                 {
-                    cp.HorizontalAlignment = HorizontalAlignment.Stretch;
-                }
+                    if (AppTitleBar.Padding.Left != 0) AppTitleBar.Padding = new Thickness(0);
+                    if (AppTitleBar.Margin.Left != 0) AppTitleBar.Margin = new Thickness(0);
+
+                    var cp = FindVisualChild<ContentPresenter>(AppTitleBar);
+                    if (cp != null && cp.Content == AppTitleBar.Header)
+                    {
+                        if (cp.HorizontalAlignment != HorizontalAlignment.Stretch)
+                            cp.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        if (cp.Margin.Left != 0)
+                            cp.Margin = new Thickness(0);
+                    }
+                };
             }
             catch { }
         }
