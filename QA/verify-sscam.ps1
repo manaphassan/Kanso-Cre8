@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 #  SS-CAM Source Guardian — QA/verify-sscam.ps1
 #  Run before every commit and as part of agent code review.
 #
@@ -58,11 +58,21 @@ if ($noBomFiles.Count -eq 0) {
     Write-Check "UTF-8 BOM on all high-byte source files" "FAIL" "$($noBomFiles.Count) file(s) missing BOM$fixNote`n$(($noBomFiles | ForEach-Object { $_.Name }) -join "`n")"
 }
 
-# ── CHECK 2: No raw non-ASCII in XAML ToolTip/Text attributes ─────────────────
+# ── CHECK 2: No raw non-ASCII in XAML attribute strings ──────────────────────
 $rawUnicodeXaml = @()
 foreach ($xf in ($allSrc | Where-Object { $_.Extension -eq ".xaml" })) {
     $text = [System.IO.File]::ReadAllText($xf.FullName, [System.Text.Encoding]::UTF8)
-    if ($text -match 'ToolTip\s*=\s*"[^"]*[\u0100-\uFFFF]') { $rawUnicodeXaml += $xf.Name }
+    # Match attribute values (Text=, Content=, ToolTip=, Header=, Tag=, Title=) and check if value itself has high chars
+    $found = $false
+    $attrMatches = [regex]::Matches($text, '(?:Text|Content|ToolTip|Header|Tag|Title|PlaceholderText)\s*=\s*"([^"]*)"')
+    foreach ($m in $attrMatches) {
+        $val = $m.Groups[1].Value
+        foreach ($c in $val.ToCharArray()) {
+            if ([int]$c -gt 0xFF) { $found = $true; break }
+        }
+        if ($found) { break }
+    }
+    if ($found) { $rawUnicodeXaml += $xf.Name }
 }
 if ($rawUnicodeXaml.Count -eq 0) {
     Write-Check "No raw Unicode U+0100+ in XAML attribute strings" "PASS" ""
