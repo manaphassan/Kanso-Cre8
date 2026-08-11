@@ -23,7 +23,10 @@ namespace SS_CAM
             try
             {
                 string log = string.Format("[{0}] UNHANDLED EXCEPTION:\n{1}\n\n", DateTime.Now, ex.ToString());
-                File.AppendAllText(@"e:\Dev\Projects\SS-Brand-Assets\crash_log.txt", log);
+                string logPath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "SuamiSihat", "crash_log.txt");
+                File.AppendAllText(logPath, log);
             }
             catch { }
         }
