@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -266,6 +266,29 @@ namespace SS_CAM
                 if (TitleBarAvatarInitials != null)
                     TitleBarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
             }
+        }
+
+        private void OnBrandKitTrayClicked(object sender, MouseButtonEventArgs e)
+        {
+            if (BrandKitTrayPopup != null)
+                BrandKitTrayPopup.IsOpen = !BrandKitTrayPopup.IsOpen;
+        }
+
+        private void OnQuickSwatchClicked(object sender, MouseButtonEventArgs e)
+        {
+            Border border = sender as Border;
+            if (border != null && border.Tag != null)
+            {
+                string hex = border.Tag.ToString();
+                Clipboard.SetText(hex);
+                System.Windows.MessageBox.Show(string.Format("Copied {0} to clipboard!", hex), "Swatch Copied", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+        }
+
+        private void OnOpenFullBrandAssetsClicked(object sender, RoutedEventArgs e)
+        {
+            if (BrandKitTrayPopup != null) BrandKitTrayPopup.IsOpen = false;
+            NavigateTo(typeof(Views.BrandAssetsPage));
         }
 
         private List<Rectangle> visBars;
@@ -539,23 +562,48 @@ namespace SS_CAM
 
             if (RootNavigation != null)
             {
+                if (forceWhiteNavText)
+                {
+                    var whiteBrush = new SolidColorBrush(Colors.White);
+                    var hoverBgBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)); // Semi-transparent white
+                    
+                    RootNavigation.Resources["TextFillColorPrimaryBrush"] = whiteBrush;
+                    RootNavigation.Resources["TextFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
+                    RootNavigation.Resources["NavigationViewItemForeground"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundPointerOver"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundPressed"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundSelected"] = whiteBrush;
+                    
+                    RootNavigation.Resources["ControlFillColorSecondaryBrush"] = hoverBgBrush;
+                    RootNavigation.Resources["ControlFillColorTertiaryBrush"] = hoverBgBrush;
+                    RootNavigation.Resources["NavigationViewItemBackgroundPointerOver"] = hoverBgBrush;
+                    RootNavigation.Resources["NavigationViewItemBackgroundPressed"] = hoverBgBrush;
+                }
+                else
+                {
+                    RootNavigation.Resources.Remove("TextFillColorPrimaryBrush");
+                    RootNavigation.Resources.Remove("TextFillColorSecondaryBrush");
+                    RootNavigation.Resources.Remove("NavigationViewItemForeground");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundPointerOver");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundPressed");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundSelected");
+                    
+                    RootNavigation.Resources.Remove("ControlFillColorSecondaryBrush");
+                    RootNavigation.Resources.Remove("ControlFillColorTertiaryBrush");
+                    RootNavigation.Resources.Remove("NavigationViewItemBackgroundPointerOver");
+                    RootNavigation.Resources.Remove("NavigationViewItemBackgroundPressed");
+                }
+                
+                // Clear any lingering local overrides that break the hover style
                 foreach (object item in RootNavigation.MenuItems)
                 {
                     var navItem = item as Wpf.Ui.Controls.NavigationViewItem;
-                    if (navItem != null)
-                    {
-                        if (navFg != null) navItem.Foreground = navFg;
-                        else navItem.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
-                    }
+                    if (navItem != null) navItem.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
                 }
                 foreach (object item in RootNavigation.FooterMenuItems)
                 {
                     var navItem2 = item as Wpf.Ui.Controls.NavigationViewItem;
-                    if (navItem2 != null)
-                    {
-                        if (navFg != null) navItem2.Foreground = navFg;
-                        else navItem2.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
-                    }
+                    if (navItem2 != null) navItem2.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
                 }
             }
         }

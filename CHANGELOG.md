@@ -2,7 +2,32 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.6.0] - 2026-08-11 (Latest)
+## [2.6.2] - 2026-08-11 (Latest)
+
+### Added — Phase 1: High-Impact UI/UX Modernization
+- **Dashboard Metric Cards**: Standardized rhythm with large relative time readouts ("Today", "2 days ago") and elevated Fluent 2 `<ui:Card>` containers.
+- **Project Creator UI**: Replaced legacy `GroupBox` containers with elevated `<ui:Card>` components and converted text emojis to scalable `ui:SymbolIcon` vector icons.
+
+### Added — Phase 2: High-Impact Workflow Automation
+- **Deep Adobe/Figma App Bridge**: Added dynamic canvas launcher button ("Open in Photoshop / Illustrator / Affinity") to Project Creator upon canvas generation.
+- **One-Click Project Finalizer**: Integrated "Finalize & Archive..." feature into Search & Copy inspector. Automatically locates and compresses `04_Production`/`_Deliverables` and `01_Artwork_Design`/`_Raw_Assets` into standardized ZIP archives.
+- **Dependencies**: Added `System.IO.Compression` and `System.IO.Compression.FileSystem` assembly references to `SS-CAM.csproj`.
+
+### Added — Phase 3: Visual Tools & Assets Management
+- **Global Brand Kit Quick-Tray**: Added `🎨 Brand Kit` quick button to title bar with a popover tray for 1-click HEX color swatch clipboard copying application-wide.
+- **Visual Asset Lightbox**: Upgraded image previewer in Search & Copy to a high-definition dark Fluent 2 Lightbox modal backdrop (`#0B1120`) displaying pixel dimensions, file size, format badges, and action controls (`📋 Copy Path`, `⚡ Open File`).
+- **Visual Version Control Timeline View**: Added `Timeline` tab to Search & Copy inspector. Scans project directory and renders chronological revision timeline with color-coded status badges (`Revision`, `Production`, `Master Canvas`, `Asset`).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v2.6.2-Phase3.exe` | Compiled Native C# WPF Single-File Executable |
+| `AssemblyVersion` | 2.6.2.0 |
+| `AssemblyFileVersion` | 2.6.2.0 |
+
+---
+
+## [2.6.0] - 2026-08-11
 
 ### Fixed — Critical (P0)
 

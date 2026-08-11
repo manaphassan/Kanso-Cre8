@@ -288,23 +288,16 @@ namespace SS_CAM.Services
             _currentTheme = theme;
             SaveTheme(theme);
 
-            // Swap WPF-UI application theme (Light vs Dark) so controls render correctly.
-            // SS Default and Falconia use Light mode — content area cards are white.
-            // Metamorphosis uses Dark mode — glass dark cards.
-            // Nav item foreground is overridden in MainWindow.OnThemeModeChanged.
+            // Keep SS Default and Falconia in Light mode to match their light canvas
+            // and card resource dictionaries. Metamorphosis owns the dark mode.
             try
             {
-                if (theme == AppTheme.Falconia)
-                    // Falconia: full white light mode
+                if (theme == AppTheme.SSDefault || theme == AppTheme.Falconia)
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Light);
                 else
-                    // SS Default + Metamorphosis: both have dark navy sidebars,
-                    // so use Dark WPF-UI mode. This makes NavigationViewContentBackground
-                    // resolve to the dark token, which we then override to our brand color.
-                    // Page content backgrounds are set per-page and are not affected.
                     Wpf.Ui.Appearance.ApplicationThemeManager.Apply(Wpf.Ui.Appearance.ApplicationTheme.Dark);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
             // Swap the style resource dictionary
             SwapResourceDictionary(theme);
@@ -347,7 +340,7 @@ namespace SS_CAM.Services
                 dict.Source = new Uri(newSource, UriKind.Relative);
                 merged.Add(dict);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         private static void SaveTheme(AppTheme theme)

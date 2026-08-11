@@ -53,6 +53,8 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Security" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="Wpf.Ui">
       <HintPath>packages\WPF-UI.3.0.4\lib\net472\Wpf.Ui.dll</HintPath>
     </Reference>

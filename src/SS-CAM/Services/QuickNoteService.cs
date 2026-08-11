@@ -51,7 +51,7 @@ namespace SS_CAM.Services
                         ModifiedDisplay = modified.ToString("dd MMM yyyy, HH:mm")
                     });
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
 
             notes.Sort(delegate(QuickNoteItem a, QuickNoteItem b) { return b.ModifiedTicks.CompareTo(a.ModifiedTicks); });
@@ -78,7 +78,7 @@ namespace SS_CAM.Services
         {
             if (string.IsNullOrWhiteSpace(filePath)) return;
             try { File.WriteAllText(filePath, content, Encoding.UTF8); }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SS_CAM.Services
         {
             if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) return;
             try { File.Delete(filePath); }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         /// <summary>

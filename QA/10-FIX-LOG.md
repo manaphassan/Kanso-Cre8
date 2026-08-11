@@ -1,5 +1,47 @@
 # SS-CAM FIX LOG
 
+## v2.6.2 — 2026-08-11 (Creative Workflow Modernization & Automation Release)
+
+### Phase 1 — UI/UX Modernization
+- **Dashboard Enhancements**: Updated metric cards with relative time calculations ("Today", "2 days ago") and replaced GroupBox containers with elevated `<ui:Card>` components.
+- **Project Creator Polish**: Replaced all GroupBox containers with Fluent 2 `<ui:Card>` wrappers and migrated text emojis to `ui:SymbolIcon` vector icons.
+
+### Phase 2 — High-Impact Workflow Automation
+- **Deep App Bridge**: Added dynamic canvas launcher button ("Open in Photoshop / Illustrator / Affinity") to Project Creator success UI.
+- **One-Click Project Finalizer**: Added "Finalize & Archive..." feature to Search & Copy inspector. Automatically locates and compresses `04_Production`/`_Deliverables` and `01_Artwork_Design`/`_Raw_Assets` into standardized ZIP archives.
+- **Dependencies**: Added `System.IO.Compression` and `System.IO.Compression.FileSystem` assembly references.
+
+### Phase 3 — Visual Tools & Assets Management
+- **Global Brand Kit Quick-Tray**: Added `🎨 Brand Kit` title bar button and popover tray with 1-click HEX swatch clipboard copying accessible anywhere in the app.
+- **Visual Asset Lightbox**: Upgraded image previewer in Search & Copy to a dark Fluent 2 Lightbox modal (`#0B1120`) displaying pixel dimensions, file size, format badges, and action controls.
+- **Visual Version Control Timeline View**: Added `Timeline` mode tab to Search & Copy inspector. Scans project directory and renders chronological revision timeline with color-coded status badges (`Revision`, `Production`, `Master Canvas`, `Asset`).
+
+### Verification
+- Debug Build: PASS (`SS-CAM -> bin\Debug\SS-CAM.exe`).
+- Source Guardian: PASS with zero FAIL findings (`verify-sscam.ps1`).
+- Package Executable: [`SS-CAM-v2.6.2-Phase3.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/SS-CAM-v2.6.2-Phase3.exe) generated and verified.
+
+## Unreleased — 2026-08-11 (SS Default Theme and Title Bar)
+
+### P1 — High
+
+- **BUG-11** SS Default applied WPF-UI Dark mode despite declaring a light canvas and card palette. It now applies Light mode, restoring the intended light content surface while retaining the SS navy navigation pane and blue title bar.
+
+### P2 — Medium
+
+- **BUG-12** Title bar header content was allowed to measure to its content width, leaving a large left gap before the navigation toggle. The title bar header now stretches through the supported WPF-UI content-alignment properties; the explicit toggle inset was also removed.
+
+### P3 — Low
+
+- **BUG-13** Replaced all silent `catch {}` blocks with diagnostic logging, including best-effort cleanup paths, so recoverable failures remain traceable without changing existing fallback behaviour.
+- **BUG-14** Replaced raw Unicode title-bar tooltip characters with XML entities to prevent source encoding regressions.
+
+### Verification
+
+- Debug build: PASS.
+- Source Guardian: PASS with no warnings.
+- Visual desktop confirmation: BLOCKED; the available desktop-capture session could not initialize.
+
 ## v2.6.0 — 2026-08-11 (Smoke Test Bug Fix Release)
 
 ### P0 — Critical

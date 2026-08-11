@@ -94,7 +94,7 @@ namespace SS_CAM.Services
                 {
                     foreach (var old in Directory.GetFiles(CacheDir, zone + "-*.json"))
                     {
-                        try { File.Delete(old); } catch { }
+                        try { File.Delete(old); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                     }
 
                     string url = ApiBase + zone + "?period=today";
@@ -117,7 +117,7 @@ namespace SS_CAM.Services
                 var entry = ParseEntry(zone, json);
                 if (entry == null && File.Exists(cacheFile))
                 {
-                    try { File.Delete(cacheFile); } catch { }
+                    try { File.Delete(cacheFile); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
                 return entry;
             }

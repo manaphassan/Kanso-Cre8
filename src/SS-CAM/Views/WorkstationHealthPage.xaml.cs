@@ -64,7 +64,7 @@ namespace SS_CAM.Views
                             UseShellExecute = true
                         });
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
             }
         }

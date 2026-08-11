@@ -92,7 +92,7 @@ namespace SS_CAM.Services
                             if (parts.Length >= 4 && !Regex.IsMatch(parts[0], @"^\d{4}$")) designers.Add(parts[0]);
                         }
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
                     DateTime modified;
                     try { modified = Directory.GetLastWriteTime(directory); }
@@ -309,10 +309,10 @@ namespace SS_CAM.Services
                                 Modified = info.LastWriteTime.ToString("dd MMM yyyy HH:mm")
                             });
                         }
-                        catch { }
+                        catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                     }
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
             return results;
         }
@@ -339,11 +339,11 @@ namespace SS_CAM.Services
                 {
                     foreach (string file in Directory.GetFiles(current))
                     {
-                        try { total += new FileInfo(file).Length; fileCount++; } catch { }
+                        try { total += new FileInfo(file).Length; fileCount++; } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                     }
                     foreach (string directory in Directory.GetDirectories(current)) pending.Enqueue(directory);
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
             return total;
         }
@@ -430,7 +430,7 @@ namespace SS_CAM.Services
                     DateTime dt = DateTime.ParseExact(pair.Key, "yyyyMM", null);
                     monthLabel = dt.ToString("MMM");
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
                 double height = max > 0 ? (double)pair.Value / max * 110 : 4;
                 if (height < 4) height = 4;
@@ -483,7 +483,7 @@ namespace SS_CAM.Services
                     if (parts.Length > 0) return parts[0];
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             return "Shared";
         }
     }

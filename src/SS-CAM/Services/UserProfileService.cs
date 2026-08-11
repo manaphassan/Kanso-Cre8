@@ -100,11 +100,11 @@ namespace SS_CAM.Services
                                             found[displayName] = version;
                                     }
                                 }
-                                catch { }
+                                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                             }
                         }
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
             }
 
@@ -151,7 +151,7 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
     }
 }

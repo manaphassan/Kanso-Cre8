@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -338,6 +340,7 @@ namespace SS_CAM.Views
             RenderedMarkdownViewer.Visibility = Visibility.Visible;
             RawMarkdownBox.Visibility = Visibility.Collapsed;
             ImageGalleryViewer.Visibility = Visibility.Collapsed;
+            TimelineViewer.Visibility = Visibility.Collapsed;
 
             BtnModeRendered.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
             BtnModeRendered.Foreground = Brushes.White;
@@ -345,6 +348,8 @@ namespace SS_CAM.Views
             BtnModeRaw.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
             BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
             BtnModeImages.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeTimeline.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeTimeline.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
         }
 
         private void OnModeRawClicked(object sender, RoutedEventArgs e)
@@ -352,6 +357,7 @@ namespace SS_CAM.Views
             RenderedMarkdownViewer.Visibility = Visibility.Collapsed;
             RawMarkdownBox.Visibility = Visibility.Visible;
             ImageGalleryViewer.Visibility = Visibility.Collapsed;
+            TimelineViewer.Visibility = Visibility.Collapsed;
 
             BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
             BtnModeRaw.Foreground = Brushes.White;
@@ -359,6 +365,8 @@ namespace SS_CAM.Views
             BtnModeRendered.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
             BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
             BtnModeImages.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeTimeline.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeTimeline.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
         }
 
         private void OnModeImagesClicked(object sender, RoutedEventArgs e)
@@ -366,6 +374,7 @@ namespace SS_CAM.Views
             RenderedMarkdownViewer.Visibility = Visibility.Collapsed;
             RawMarkdownBox.Visibility = Visibility.Collapsed;
             ImageGalleryViewer.Visibility = Visibility.Visible;
+            TimelineViewer.Visibility = Visibility.Collapsed;
 
             BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
             BtnModeImages.Foreground = Brushes.White;
@@ -373,8 +382,149 @@ namespace SS_CAM.Views
             BtnModeRendered.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
             BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
             BtnModeRaw.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeTimeline.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeTimeline.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
 
             LoadProjectImages();
+        }
+
+        private void OnModeTimelineClicked(object sender, RoutedEventArgs e)
+        {
+            RenderedMarkdownViewer.Visibility = Visibility.Collapsed;
+            RawMarkdownBox.Visibility = Visibility.Collapsed;
+            ImageGalleryViewer.Visibility = Visibility.Collapsed;
+            TimelineViewer.Visibility = Visibility.Visible;
+
+            BtnModeTimeline.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
+            BtnModeTimeline.Foreground = Brushes.White;
+            BtnModeRendered.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeRendered.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeRaw.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            BtnModeImages.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+
+            LoadProjectTimeline();
+        }
+
+        private void LoadProjectTimeline()
+        {
+            TimelineStack.Children.Clear();
+
+            if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
+            {
+                TimelineStack.Children.Add(new TextBlock { Text = "Select a project to view its revision timeline.", Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B")), Margin = new Thickness(0, 10, 0, 0) });
+                return;
+            }
+
+            try
+            {
+                var files = new DirectoryInfo(selectedItem.FullPath)
+                    .GetFiles("*.*", SearchOption.AllDirectories)
+                    .Where(f => !f.Name.Equals("README.md", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(f => f.LastWriteTime)
+                    .Take(30)
+                    .ToList();
+
+                if (files.Count == 0)
+                {
+                    TimelineStack.Children.Add(new TextBlock { Text = "No revision files found in this project folder.", Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B")) });
+                    return;
+                }
+
+                foreach (var f in files)
+                {
+                    string relPath = f.FullName.Replace(selectedItem.FullPath, "").TrimStart('\\', '/');
+                    double sizeMb = (double)f.Length / (1024 * 1024);
+                    string sizeStr = sizeMb >= 1.0 ? string.Format("{0:F2} MB", sizeMb) : string.Format("{0:F0} KB", f.Length / 1024.0);
+                    string ext = f.Extension.ToLower();
+
+                    // Determine status tag & dot color
+                    string tagText = "Asset";
+                    string dotColor = "#043388"; // SS Blue
+                    if (relPath.Contains("Client_Revisions")) { tagText = "Revision"; dotColor = "#EAB308"; }
+                    else if (relPath.Contains("04_Production") || relPath.Contains("_Deliverables")) { tagText = "Production"; dotColor = "#10B981"; }
+                    else if (ext == ".psd" || ext == ".ai" || ext == ".afdesign") { tagText = "Master Canvas"; dotColor = "#6366F1"; }
+
+                    // Build timeline node
+                    Grid nodeGrid = new Grid { Margin = new Thickness(0, 0, 0, 16) };
+                    nodeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(28) });
+                    nodeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                    // Timeline line & dot
+                    StackPanel lineCol = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+                    Border dot = new Border
+                    {
+                        Width = 12,
+                        Height = 12,
+                        CornerRadius = new CornerRadius(6),
+                        Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dotColor)),
+                        Margin = new Thickness(0, 4, 0, 0)
+                    };
+                    lineCol.Children.Add(dot);
+                    Grid.SetColumn(lineCol, 0);
+
+                    // Content card
+                    Border card = new Border
+                    {
+                        Background = Brushes.White,
+                        BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0")),
+                        BorderThickness = new Thickness(1),
+                        CornerRadius = new CornerRadius(6),
+                        Padding = new Thickness(12, 10, 12, 10)
+                    };
+                    Grid cardGrid = new Grid();
+                    cardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    cardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                    StackPanel cardText = new StackPanel();
+                    StackPanel titleRow = new StackPanel { Orientation = Orientation.Horizontal };
+                    titleRow.Children.Add(new TextBlock { Text = f.Name, FontWeight = FontWeights.Bold, FontSize = 12, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A")) });
+                    
+                    Border badge = new Border
+                    {
+                        Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dotColor + "20")),
+                        CornerRadius = new CornerRadius(4),
+                        Padding = new Thickness(6, 1, 6, 1),
+                        Margin = new Thickness(8, 0, 0, 0)
+                    };
+                    badge.Child = new TextBlock { Text = tagText, FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dotColor)) };
+                    titleRow.Children.Add(badge);
+                    cardText.Children.Add(titleRow);
+
+                    string subText = string.Format("{0:yyyy-MM-dd HH:mm}  •  {1}  •  {2}", f.LastWriteTime, sizeStr, relPath);
+                    cardText.Children.Add(new TextBlock { Text = subText, FontSize = 11, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B")), Margin = new Thickness(0, 4, 0, 0) });
+
+                    // Action buttons on card
+                    StackPanel btns = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+                    string targetFile = f.FullName;
+                    Button btnOpen = new Button { Content = "Open", Height = 26, Padding = new Thickness(8, 0, 8, 0), Margin = new Thickness(0, 0, 4, 0), FontSize = 11, Cursor = Cursors.Hand };
+                    btnOpen.Click += (s, e) => { try { System.Diagnostics.Process.Start(targetFile); } catch { } };
+
+                    Button btnCopy = new Button { Content = "Copy Path", Height = 26, Padding = new Thickness(8, 0, 8, 0), FontSize = 11, Cursor = Cursors.Hand };
+                    btnCopy.Click += (s, e) => { Clipboard.SetText(targetFile); MessageBox.Show("Path copied!", "Copied", MessageBoxButton.OK, MessageBoxImage.Information); };
+
+                    btns.Children.Add(btnOpen);
+                    btns.Children.Add(btnCopy);
+
+                    Grid.SetColumn(cardText, 0);
+                    Grid.SetColumn(btns, 1);
+                    cardGrid.Children.Add(cardText);
+                    cardGrid.Children.Add(btns);
+
+                    card.Child = cardGrid;
+                    Grid.SetColumn(card, 1);
+
+                    nodeGrid.Children.Add(lineCol);
+                    nodeGrid.Children.Add(card);
+
+                    TimelineStack.Children.Add(nodeGrid);
+                }
+            }
+            catch (Exception ex)
+            {
+                TimelineStack.Children.Add(new TextBlock { Text = string.Format("Error loading timeline: {0}", ex.Message), Foreground = Brushes.Red });
+            }
         }
 
         private void LoadProjectImages()
@@ -421,25 +571,97 @@ namespace SS_CAM.Views
 
         private void ShowFullImageModal(string imagePath, string title)
         {
-            Window win = new Window
+            try
             {
-                Title = title,
-                Width = 900,
-                Height = 650,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F172A"))
-            };
+                FileInfo fi = new FileInfo(imagePath);
+                var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(imagePath);
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
 
-            Grid g = new Grid();
-            Image img = new Image
+                double sizeMb = fi.Exists ? (double)fi.Length / (1024 * 1024) : 0;
+                string sizeStr = sizeMb >= 1.0 ? string.Format("{0:F2} MB", sizeMb) : string.Format("{0:F0} KB", fi.Length / 1024.0);
+                string metaInfo = string.Format("{0} × {1} px  •  {2}  •  {3}", bitmap.PixelWidth, bitmap.PixelHeight, sizeStr, fi.Extension.ToUpper().TrimStart('.'));
+
+                Window win = new Window
+                {
+                    Title = string.Format("Lightbox — {0}", title),
+                    Width = 980,
+                    Height = 700,
+                    MinWidth = 600,
+                    MinHeight = 450,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0B1120")),
+                    Foreground = Brushes.White
+                };
+
+                Grid mainGrid = new Grid();
+                mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(50) });
+                mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(54) });
+
+                // Top Header Panel
+                Border header = new Border
+                {
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B")),
+                    Padding = new Thickness(16, 8, 16, 8),
+                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                    BorderThickness = new Thickness(0, 0, 0, 1)
+                };
+                StackPanel headerText = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+                headerText.Children.Add(new TextBlock { Text = title, FontSize = 14, FontWeight = FontWeights.Bold, Foreground = Brushes.White });
+                headerText.Children.Add(new TextBlock { Text = metaInfo, FontSize = 11, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")), Margin = new Thickness(0, 2, 0, 0) });
+                header.Child = headerText;
+                Grid.SetRow(header, 0);
+
+                // Image Viewer Container
+                Border imgBorder = new Border { Padding = new Thickness(20), Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#090D16")) };
+                Image img = new Image
+                {
+                    Source = bitmap,
+                    Stretch = Stretch.Uniform
+                };
+                RenderOptions.SetBitmapScalingMode(img, BitmapScalingMode.HighQuality);
+                imgBorder.Child = img;
+                Grid.SetRow(imgBorder, 1);
+
+                // Bottom Action Footer Bar
+                Border footer = new Border
+                {
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B")),
+                    Padding = new Thickness(16, 8, 16, 8),
+                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155")),
+                    BorderThickness = new Thickness(0, 1, 0, 0)
+                };
+                StackPanel actionPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+
+                Button btnCopyPath = new Button { Content = "📋 Copy Path", Height = 32, Padding = new Thickness(12, 0, 12, 0), Margin = new Thickness(0, 0, 8, 0), Cursor = Cursors.Hand };
+                btnCopyPath.Click += (s, e) => { Clipboard.SetText(imagePath); MessageBox.Show("Image path copied to clipboard!", "Copied", MessageBoxButton.OK, MessageBoxImage.Information); };
+
+                Button btnOpenApp = new Button { Content = "⚡ Open File", Height = 32, Padding = new Thickness(12, 0, 12, 0), Margin = new Thickness(0, 0, 8, 0), Cursor = Cursors.Hand };
+                btnOpenApp.Click += (s, e) => { try { System.Diagnostics.Process.Start(imagePath); } catch { } };
+
+                Button btnClose = new Button { Content = "Close", Height = 32, Padding = new Thickness(16, 0, 16, 0), Cursor = Cursors.Hand };
+                btnClose.Click += (s, e) => win.Close();
+
+                actionPanel.Children.Add(btnCopyPath);
+                actionPanel.Children.Add(btnOpenApp);
+                actionPanel.Children.Add(btnClose);
+                footer.Child = actionPanel;
+                Grid.SetRow(footer, 2);
+
+                mainGrid.Children.Add(header);
+                mainGrid.Children.Add(imgBorder);
+                mainGrid.Children.Add(footer);
+
+                win.Content = mainGrid;
+                win.ShowDialog();
+            }
+            catch (Exception ex)
             {
-                Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(imagePath)),
-                Stretch = Stretch.Uniform,
-                Margin = new Thickness(16)
-            };
-            g.Children.Add(img);
-            win.Content = g;
-            win.ShowDialog();
+                MessageBox.Show(string.Format("Could not open lightbox: {0}", ex.Message), "Lightbox Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void OnCopyPathClicked(object sender, RoutedEventArgs e)
@@ -495,6 +717,50 @@ namespace SS_CAM.Views
             {
                 string targetSubDir = Path.Combine(destinationDir, subDir.Name);
                 CopyDirectory(subDir.FullName, targetSubDir);
+            }
+        }
+
+        private void OnFinalizeProjectClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
+            {
+                MessageBox.Show("Select a valid project folder first.", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            MessageBoxResult confirm = MessageBox.Show(string.Format("This will archive deliverables and raw assets for '{0}'.\nProceed?", selectedItem.Project), "Confirm Finalize", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            try
+            {
+                // Deliverables mapping
+                string delivPath = Path.Combine(selectedItem.FullPath, "04_Production");
+                if (!Directory.Exists(delivPath)) delivPath = Path.Combine(selectedItem.FullPath, "03_Final_Exports");
+                if (!Directory.Exists(delivPath)) delivPath = Path.Combine(selectedItem.FullPath, "_Deliverables");
+
+                if (Directory.Exists(delivPath))
+                {
+                    string delivZip = Path.Combine(selectedItem.FullPath, string.Format("{0}_Deliverables.zip", selectedItem.Project));
+                    if (!File.Exists(delivZip)) ZipFile.CreateFromDirectory(delivPath, delivZip);
+                }
+
+                // Raw Assets mapping
+                string rawPath = Path.Combine(selectedItem.FullPath, "01_Artwork_Design");
+                if (!Directory.Exists(rawPath)) rawPath = Path.Combine(selectedItem.FullPath, "RAW_Media");
+                if (!Directory.Exists(rawPath)) rawPath = Path.Combine(selectedItem.FullPath, "_Raw_Assets");
+
+                if (Directory.Exists(rawPath))
+                {
+                    string rawZip = Path.Combine(selectedItem.FullPath, string.Format("{0}_Raw_Archive.zip", selectedItem.Project));
+                    if (!File.Exists(rawZip)) ZipFile.CreateFromDirectory(rawPath, rawZip);
+                }
+
+                MessageBox.Show("Project successfully finalized and archived.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Diagnostics.Process.Start("explorer.exe", selectedItem.FullPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Error finalizing project: {0}", ex.Message), "Finalize Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

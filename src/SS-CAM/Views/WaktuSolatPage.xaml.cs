@@ -40,7 +40,7 @@ namespace SS_CAM.Views
                         ? "\uEA8F" : "\uEA8F"; // bell icon
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
             // Select saved zone in combo
             for (int i = 0; i < PrayerTimeService.Zones.Length; i++)
@@ -326,7 +326,7 @@ namespace SS_CAM.Views
                 profile.PrayerZone = _currentZone;
                 UserProfileService.SaveProfile(profile);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         private void OnReminderToggle(object sender, RoutedEventArgs e)
@@ -339,7 +339,7 @@ namespace SS_CAM.Views
                 ReminderText.Text = profile.PrayerRemindersEnabled
                     ? "Peringatan: ON" : "Peringatan: OFF";
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         // ── Helpers ───────────────────────────────────────────────────────────

@@ -107,7 +107,7 @@ namespace SS_CAM.Views
                 _mediaPlayer.Volume = 0.8;
                 _mediaPlayer.Play();
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         private void OnMediaEnded(object sender, EventArgs e)
@@ -129,7 +129,7 @@ namespace SS_CAM.Views
                     _mediaPlayer.Stop();
                     _mediaPlayer.Close();
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
         }
 

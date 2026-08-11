@@ -1,4 +1,4 @@
-<ui:FluentWindow x:Class="SS_CAM.MainWindow"
+﻿<ui:FluentWindow x:Class="SS_CAM.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -113,9 +113,24 @@
                 </StackPanel>
             </Border>
 
-            <!-- ── Col 4: Right group ─── [⏱ Timer] [👤 Avatar] ─────────── -->
+            <!-- ── Col 4: Right group ─── [🎨 Brand Kit] [⏱ Timer] [👤 Avatar] ─────────── -->
             <StackPanel Grid.Column="4" Orientation="Horizontal"
                         VerticalAlignment="Center">
+
+                <!-- Brand Kit Quick-Tray Badge -->
+                <StackPanel x:Name="TitleBarBrandKitBtn"
+                            Orientation="Horizontal" Margin="0,0,12,0"
+                            Cursor="Hand"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            MouseLeftButtonDown="OnBrandKitTrayClicked"
+                            ToolTip="Brand Kit Quick-Tray — click to copy brand colors">
+                    <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons"
+                               Foreground="#FFD700" FontSize="11"
+                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock Text="Brand Kit"
+                               Foreground="#CCFFFFFF" FontSize="11" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
                 <!-- Focus timer badge -->
                 <StackPanel x:Name="TitleBarTimerBadge"
@@ -197,7 +212,7 @@
                            IsBackButtonVisible="Collapsed"
                            OpenPaneLength="210"
                            CompactPaneLength="50"
-                           Background="#021B47"
+                           Background="Transparent"
                            Padding="4,0,0,0">
 
             <!-- Nav groups -->
@@ -290,6 +305,32 @@
         <Canvas x:Name="HeaderCanvas"      Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <TextBlock x:Name="HeaderSubtitle" Grid.Row="0" Visibility="Collapsed"/>
         <TextBlock x:Name="SidebarModulesLabel" Visibility="Collapsed"/>
+
+        <!-- Brand Kit Quick-Tray Popup -->
+        <Popup x:Name="BrandKitTrayPopup" StaysOpen="False" Placement="Bottom" PlacementTarget="{Binding ElementName=TitleBarBrandKitBtn}" VerticalOffset="4">
+            <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14" Width="320">
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                        <TextBlock Text="🎨 Brand Kit Quick-Tray" Foreground="White" FontWeight="Bold" FontSize="13"/>
+                        <TextBlock Text="Click to copy HEX" Foreground="#94A3B8" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Swatches grid -->
+                    <UniformGrid Columns="4" Margin="0,0,0,10">
+                        <Border Background="#022057" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="SS Prussian Blue (#022057)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#022057"/>
+                        <Border Background="#043388" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="SS Blue (#043388)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#043388"/>
+                        <Border Background="#21A1F7" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Azure (#21A1F7)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#21A1F7"/>
+                        <Border Background="#6DC6EC" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Malibu (#6DC6EC)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#6DC6EC"/>
+                        <Border Background="#BD9A73" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Lion (#BD9A73)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#BD9A73"/>
+                        <Border Background="#CCAC8D" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Fawn (#CCAC8D)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#CCAC8D"/>
+                        <Border Background="#E5D15C" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Arylide Yellow (#E5D15C)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#E5D15C"/>
+                        <Border Background="#FCE53D" Height="36" CornerRadius="4" Margin="2" Cursor="Hand" ToolTip="Banana Yellow (#FCE53D)" MouseLeftButtonDown="OnQuickSwatchClicked" Tag="#FCE53D"/>
+                    </UniformGrid>
+
+                    <Button Content="Open Full Brand Assets Page" Click="OnOpenFullBrandAssetsClicked" Height="28" Background="#043388" Foreground="White" FontWeight="Bold" FontSize="11" BorderThickness="0" Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+        </Popup>
 
     </Grid>
 </ui:FluentWindow>

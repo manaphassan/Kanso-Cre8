@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -14,7 +14,9 @@ namespace SS_CAM
             DispatcherUnhandledException += (s, args) => { LogException(args.Exception); args.Handled = true; };
 
             base.OnStartup(e);
-            RegisterUserAppPlacement();
+            
+            // Run placement/installation tasks in the background so it doesn't block the UI thread
+            System.Threading.Tasks.Task.Run(() => RegisterUserAppPlacement());
         }
 
         private static void LogException(Exception ex)
@@ -28,7 +30,7 @@ namespace SS_CAM
                     "SuamiSihat", "crash_log.txt");
                 File.AppendAllText(logPath, log);
             }
-            catch { }
+            catch (Exception innerEx) { System.Diagnostics.Debug.WriteLine(innerEx); }
         }
 
         public static void RegisterUserAppPlacement()
@@ -49,7 +51,7 @@ namespace SS_CAM
                     {
                         File.Copy(currentExe, targetExe, true);
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
 
                 // Deploy Brand Assets & Fonts to LocalAppData automatically
@@ -81,7 +83,7 @@ namespace SS_CAM
                     p.WaitForExit(3000);
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
     }
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SS-CAM QA"
+  short_description: "Run and record SS-CAM QA safely"
+  default_prompt: "Use $sscam-qa to verify the requested SS-CAM workflow and record the evidence."

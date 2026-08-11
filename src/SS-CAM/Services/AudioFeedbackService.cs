@@ -26,7 +26,7 @@ namespace SS_CAM.Services
                             _ambientPlayer.Play();
                         }
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 };
 
                 _ambientPlayer.MediaEnded += (s, e) =>
@@ -39,7 +39,7 @@ namespace SS_CAM.Services
                             _ambientPlayer.Play();
                         }
                     }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 };
             }
         }
@@ -100,7 +100,7 @@ namespace SS_CAM.Services
                     _ambientPlayer.Volume = 0.95;
                     _ambientPlayer.Play();
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             };
 
             if (Application.Current.Dispatcher.CheckAccess())
@@ -126,7 +126,7 @@ namespace SS_CAM.Services
                         _ambientPlayer.Pause();
                     }
                 }
-                catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             };
 
             if (Application.Current.Dispatcher.CheckAccess())
@@ -152,7 +152,7 @@ namespace SS_CAM.Services
                         _ambientPlayer.Play();
                     }
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             };
 
             if (Application.Current.Dispatcher.CheckAccess())
@@ -180,7 +180,7 @@ namespace SS_CAM.Services
                         _ambientPlayer = null;
                     }
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             };
 
             if (Application.Current.Dispatcher.CheckAccess())

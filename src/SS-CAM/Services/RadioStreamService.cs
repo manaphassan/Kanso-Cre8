@@ -105,11 +105,11 @@ namespace SS_CAM.Services
                     _listener = null;
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
             if (_listenerThread != null && _listenerThread.IsAlive)
             {
-                try { _listenerThread.Abort(); } catch { }
+                try { _listenerThread.Abort(); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 _listenerThread = null;
             }
         }
@@ -223,13 +223,13 @@ namespace SS_CAM.Services
             }
             catch
             {
-                try { response.StatusCode = 500; } catch { }
+                try { response.StatusCode = 500; } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
             finally
             {
-                try { if (remoteStream != null) remoteStream.Close(); } catch { }
-                try { if (remoteResp != null) remoteResp.Close(); } catch { }
-                try { response.Close(); } catch { }
+                try { if (remoteStream != null) remoteStream.Close(); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+                try { if (remoteResp != null) remoteResp.Close(); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+                try { response.Close(); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             }
         }
 
@@ -259,7 +259,7 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         private void AnalyzeAudioBuffer(byte[] buffer, int length)
@@ -294,7 +294,7 @@ namespace SS_CAM.Services
 
                 CurrentSpectrumData = bands;
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
     }
 
@@ -341,7 +341,7 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         private MediaPlayer _mediaPlayer;
@@ -703,7 +703,7 @@ namespace SS_CAM.Services
                     }
                     SetState(RadioPlaybackState.Paused);
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             });
         }
 
@@ -725,7 +725,7 @@ namespace SS_CAM.Services
                     }
                     SetState(RadioPlaybackState.Stopped);
                 }
-                catch { }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             });
         }
 
@@ -923,7 +923,7 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
             return imported;
         }

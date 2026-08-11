@@ -114,7 +114,7 @@ namespace SS_CAM.Services
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
             List<CategoryPreset> defaults = GetDefaultPresets();
             SavePresets(defaults);
@@ -134,7 +134,7 @@ namespace SS_CAM.Services
                 string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
                 File.WriteAllText(ConfigFilePath, json);
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 
         public static void AddOrUpdatePreset(CategoryPreset preset)

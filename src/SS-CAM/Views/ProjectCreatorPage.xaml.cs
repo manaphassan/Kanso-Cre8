@@ -18,6 +18,7 @@ namespace SS_CAM.Views
         private UserProfile currentProfile;
         private List<CategoryPreset> _categoryPresets;
         private CategoryPreset _selectedEditingPreset;
+        private string _lastCreatedCanvasPath = string.Empty;
 
         public ProjectCreatorPage()
         {
@@ -271,6 +272,9 @@ namespace SS_CAM.Views
 
         private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
         {
+            _lastCreatedCanvasPath = string.Empty;
+            BtnOpenInApp.Visibility = Visibility.Collapsed;
+
             string folderName = GenerateFolderName();
             string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
             string targetDir = Path.Combine(workspaceRoot, designerFolder, folderName);
@@ -292,6 +296,7 @@ namespace SS_CAM.Views
                     {
                         string ext = GetSelectedExtension();
                         string canvasFilePath = Path.Combine(fPath, string.Format("{0}{1}", folderName, ext));
+                        _lastCreatedCanvasPath = canvasFilePath;
                         
                         string sampleHeader = string.Format("// SuamiSihat Master Canvas Template\n// Created: {0:yyyy-MM-dd HH:mm}\n// Project: {1}\n", DateTime.Now, folderName);
                         File.WriteAllText(canvasFilePath, sampleHeader);
@@ -338,12 +343,38 @@ namespace SS_CAM.Views
                 AutoCalculateNextProjectId();
                 ProjectNameInput.Text = "";
 
+                if (!string.IsNullOrEmpty(_lastCreatedCanvasPath) && File.Exists(_lastCreatedCanvasPath))
+                {
+                    BtnOpenInApp.Visibility = Visibility.Visible;
+                    string ext = Path.GetExtension(_lastCreatedCanvasPath).ToLower();
+                    if (ext == ".psd") TxtOpenInApp.Text = "Open in Photoshop";
+                    else if (ext == ".ai") TxtOpenInApp.Text = "Open in Illustrator";
+                    else if (ext == ".prproj") TxtOpenInApp.Text = "Open in Premiere";
+                    else if (ext == ".afdesign") TxtOpenInApp.Text = "Open in Affinity";
+                    else TxtOpenInApp.Text = "Open Canvas File";
+                }
+
                 Process.Start("explorer.exe", targetDir);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(string.Format("Could not create project: {0}", ex.Message), "Creation Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateStatusText.Text = "Project creation failed.";
+            }
+        }
+
+        private void OnOpenInAppClicked(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_lastCreatedCanvasPath) && File.Exists(_lastCreatedCanvasPath))
+            {
+                try
+                {
+                    Process.Start(_lastCreatedCanvasPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Could not open file: {0}", ex.Message), "Launch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

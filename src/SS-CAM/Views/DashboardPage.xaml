@@ -4,10 +4,10 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Dashboard">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24" Background="Transparent">
         <StackPanel>
             <!-- Fluent 2 Page Header Bar -->
-            <Grid Margin="0,0,0,24">
+            <Grid Margin="0,0,0,40">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -58,8 +58,8 @@
                 <ui:Card Padding="16" Margin="6" MinHeight="96" Effect="{StaticResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Top">
                         <ui:TextBlock Text="LATEST CREATED" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
-                        <ui:TextBlock x:Name="MetricLatestProject" Text="None" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="0,8,0,0" TextTrimming="CharacterEllipsis"/>
-                        <ui:TextBlock Text="Most recent project" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
+                        <ui:TextBlock x:Name="MetricLatestProject" Text="-" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="26" FontWeight="Bold" Margin="0,6,0,0" TextTrimming="CharacterEllipsis"/>
+                        <ui:TextBlock x:Name="MetricLatestProjectSubtext" Text="Most recent project" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
                     </StackPanel>
                 </ui:Card>
 
@@ -103,20 +103,17 @@
                 <ui:Card Padding="16" Margin="6" MinHeight="96" Effect="{StaticResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Top">
                         <ui:TextBlock Text="CREATIVE TEAM FLOW" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                            <ui:TextBlock x:Name="FlowDesignerCount" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text=" Designers &#x00B7; " FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                            <ui:TextBlock x:Name="FlowProjectCount" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                            <ui:TextBlock Text=" Projects" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                        </StackPanel>
+                        <ui:TextBlock x:Name="FlowDesignerCount" Text="0 Designers, 0 Projects" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,6,0,0"/>
                         <ui:TextBlock x:Name="FlowFileCount" Text="0 files indexed" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
                     </StackPanel>
                 </ui:Card>
             </UniformGrid>
 
             <!-- Inline 6 Last Created Projects List (Fluent 2 Card Container) -->
-            <GroupBox Header="Recent Past Projects (Last 6 Created)" Margin="0,0,0,24">
-                <ItemsControl x:Name="Recent6ProjectsControl" Margin="8">
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+                <StackPanel>
+                    <ui:TextBlock Text="Recent Past Projects (Last 6 Created)" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,16"/>
+                    <ItemsControl x:Name="Recent6ProjectsControl" Margin="0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid Columns="3"/>
@@ -146,8 +143,9 @@
                             </ui:Card>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </GroupBox>
+                    </ItemsControl>
+                </StackPanel>
+            </ui:Card>
 
             <!-- Hidden chart controls for data binding compatibility -->
             <StackPanel Visibility="Collapsed">

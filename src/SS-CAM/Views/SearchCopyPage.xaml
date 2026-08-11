@@ -211,12 +211,20 @@
                                         Height="28" Padding="10,0" Margin="0,0,4,0"
                                         FontSize="11" Cursor="Hand" />
                                 <ui:Button x:Name="BtnModeImages" Appearance="Secondary" Click="OnModeImagesClicked"
-                                        Height="28" Padding="10,0"
+                                        Height="28" Padding="10,0" Margin="0,0,4,0"
                                         FontSize="11" Cursor="Hand" >
                                     <StackPanel Orientation="Horizontal">
                                         <ui:TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="12"
                                                    Margin="0,0,5,0" VerticalAlignment="Center"/>
                                         <ui:TextBlock Text="Gallery" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                                <ui:Button x:Name="BtnModeTimeline" Appearance="Secondary" Click="OnModeTimelineClicked"
+                                        Height="28" Padding="10,0"
+                                        FontSize="11" Cursor="Hand" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="History24" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Timeline" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
                             </StackPanel>
@@ -232,25 +240,29 @@
                             <ui:Button Appearance="Secondary" Click="OnCopyPathClicked"
                                     Height="34" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Copy24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
                                     <ui:TextBlock Text="Copy Path" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button x:Name="BtnEditBrief" Appearance="Secondary" Click="OnEditBriefClicked"
                                     Height="34" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Edit24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
                                     <ui:TextBlock Text="Edit Brief" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </ui:Button>
-                            <ui:Button Appearance="Primary" Click="OnCopyWholeFolderClicked"
-                                    Height="34" Padding="14,0" FontWeight="Bold" Cursor="Hand">
+                            <ui:Button Appearance="Secondary" Click="OnCopyWholeFolderClicked"
+                                    Height="34" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE7C5;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock Text="Copy Whole Project Folder..." VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="FolderCopy24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Copy Folder" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+                            <ui:Button Appearance="Primary" Click="OnFinalizeProjectClicked"
+                                    Height="34" Padding="14,0" FontWeight="Bold" Cursor="Hand" Background="{DynamicResource SystemFillColorSuccessBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Archive24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center" Foreground="White"/>
+                                    <ui:TextBlock Text="Finalize &amp; Archive..." VerticalAlignment="Center" Foreground="White"/>
                                 </StackPanel>
                             </ui:Button>
                         </StackPanel>
@@ -361,6 +373,18 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+                    </ScrollViewer>
+
+                    <!-- Timeline View Container (Collapsed by default) -->
+                    <ScrollViewer x:Name="TimelineViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Background="#F8FAFC"
+                                  BorderThickness="0"
+                                  Padding="16"
+                                  Visibility="Collapsed">
+                        <StackPanel x:Name="TimelineStack" MaxWidth="850" HorizontalAlignment="Left">
+                            <!-- Populated dynamically with revision nodes -->
+                        </StackPanel>
                     </ScrollViewer>
 
                 </DockPanel>

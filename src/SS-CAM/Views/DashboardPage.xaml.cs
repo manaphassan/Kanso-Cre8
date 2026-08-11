@@ -140,7 +140,22 @@ namespace SS_CAM.Views
             DashboardSnapshot snapshot = await WorkspaceScanner.ScanAsync(workspaceRoot);
 
             MetricTotalProjects.Text = snapshot.TotalProjects.ToString();
-            MetricLatestProject.Text = string.IsNullOrWhiteSpace(snapshot.LatestProject) ? "None" : snapshot.LatestProject;
+            
+            if (snapshot.RecentProjects != null && snapshot.RecentProjects.Count > 0)
+            {
+                var latest = snapshot.RecentProjects[0];
+                TimeSpan diff = DateTime.Now - new DateTime(latest.ModifiedTicks);
+                if (diff.TotalDays < 1) MetricLatestProject.Text = "Today";
+                else if (diff.TotalDays < 2) MetricLatestProject.Text = "Yesterday";
+                else MetricLatestProject.Text = string.Format("{0} days ago", (int)diff.TotalDays);
+                
+                MetricLatestProjectSubtext.Text = string.IsNullOrWhiteSpace(latest.Project) ? "Unknown" : latest.Project;
+            }
+            else
+            {
+                MetricLatestProject.Text = "-";
+                MetricLatestProjectSubtext.Text = "None";
+            }
             MetricFileSize.Text = snapshot.FormattedTotalSize;
             MetricThisMonth.Text = snapshot.ThisMonth.ToString();
             MetricMonthComparison.Text = snapshot.MonthComparisonText;
@@ -167,7 +182,7 @@ namespace SS_CAM.Views
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             MetricActiveWIP.Text = activeWip.ToString();
 
             // Charts
@@ -177,9 +192,8 @@ namespace SS_CAM.Views
             ActivityChartControl.ItemsSource = snapshot.ActivityChart;
 
             // Flow
-            FlowDesignerCount.Text = snapshot.DesignerCount.ToString();
-            FlowProjectCount.Text = snapshot.TotalProjects.ToString();
-            FlowFileCount.Text = snapshot.TotalFiles.ToString();
+            FlowDesignerCount.Text = string.Format("{0} Designers, {1} Projects", snapshot.DesignerCount, snapshot.TotalProjects);
+            FlowFileCount.Text = string.Format("{0} files indexed", snapshot.TotalFiles);
 
             TxtStatus.Text = string.Format("Scan complete at {0:HH:mm:ss}. Connected to Synology Workspace.", DateTime.Now);
         }
@@ -302,7 +316,7 @@ namespace SS_CAM.Views
                 if (article != null && !string.IsNullOrWhiteSpace(article.Url))
                 {
                     try { System.Diagnostics.Process.Start(article.Url); }
-                    catch { }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
             }
         }
