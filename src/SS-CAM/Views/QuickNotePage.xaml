@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- â"EURâ"EUR Left: Notes List Sidebar â"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EUR -->
+            <!-- ── Left: Notes List Sidebar ── -->
             <Border Grid.Column="0" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
@@ -105,7 +105,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- â"EURâ"EUR Right: Editor Pane â"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EURâ"EUR -->
+            <!-- ── Right: Editor Pane ── -->
             <Border Grid.Column="2" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>

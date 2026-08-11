@@ -12,7 +12,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- â”€â”€ Page Header + Search Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+        <!-- ── Page Header + Search Bar ── -->
         <StackPanel Grid.Row="0" Margin="24,20,24,0">
             <StackPanel Margin="0,0,0,14">
                 <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold"
@@ -49,7 +49,7 @@
             </ui:Card>
         </StackPanel>
 
-        <!-- â”€â”€ Catalog Body: Narrow Sidebar + Wide README Pane â”€â”€â”€â”€â”€â”€â”€â”€ -->
+        <!-- ── Catalog Body: Narrow Sidebar + Wide README Pane ── -->
         <Grid Grid.Row="1" Margin="24,0,24,20">
             <Grid.ColumnDefinitions>
                 <!-- Fixed narrow project list sidebar -->
@@ -133,23 +133,18 @@
                                                        TextWrapping="NoWrap"/>
                                             <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                                                 <ui:TextBlock Text="{Binding FileCount}"
-                                                           
                                                            FontSize="10"
                                                            Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                                <ui:TextBlock Text=" files Â· "
-                                                           
+                                                <ui:TextBlock Text=" files &#x00B7; "
                                                            FontSize="10"
                                                            Foreground="{DynamicResource FluentLightTextSecondary}"/>
                                                 <ui:TextBlock Text="{Binding FormattedSize}"
-                                                           
                                                            FontSize="10"
                                                            Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                                <ui:TextBlock Text=" Â· "
-                                                           
+                                                <ui:TextBlock Text=" &#x00B7; "
                                                            FontSize="10"
                                                            Foreground="{DynamicResource FluentLightTextSecondary}"/>
                                                 <ui:TextBlock Text="{Binding Modified}"
-                                                           
                                                            FontSize="10"
                                                            Foreground="{DynamicResource FluentLightTextSecondary}"/>
                                             </StackPanel>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -22,6 +22,14 @@
     <SolidColorBrush x:Key="FluentLightStroke"        Color="#E0E0E0"/>
     <SolidColorBrush x:Key="FluentLightTextPrimary"   Color="#242424"/>
     <SolidColorBrush x:Key="FluentLightTextSecondary" Color="#616161"/>
+
+    <!-- Sidebar Semantic Tokens -->
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#022057"/>
+    <SolidColorBrush x:Key="SidebarSearchBackgroundBrush" Color="#043388"/>
+    <SolidColorBrush x:Key="SidebarTextPrimaryBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SidebarTextSecondaryBrush" Color="#8AAACF"/>
+    <SolidColorBrush x:Key="SidebarUserCardBackgroundBrush" Color="#00000000"/>
+    <SolidColorBrush x:Key="SidebarDividerBrush" Color="#163B75"/>
 
     <!-- Neutral Dark Tokens: same values as Fluent2Styles.xaml.
          Required so pages using FluentDark* keys do not fall back to

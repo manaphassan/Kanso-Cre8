@@ -1,4 +1,4 @@
-﻿<Page x:Class="SS_CAM.Views.WellbeingPage"
+<Page x:Class="SS_CAM.Views.WellbeingPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -66,7 +66,7 @@
                     <!-- Energy Check-in -->
                     <ui:Card Padding="18">
                         <StackPanel>
-                            <ui:TextBlock Text="ENERGY CHECK-IN (1 = Low Battery Â· 5 = Full Power)" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="Bold" Margin="0,0,0,12" />
+                            <ui:TextBlock Text="ENERGY CHECK-IN (1 = Low Battery &#x00B7; 5 = Full Power)" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="Bold" Margin="0,0,0,12" />
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                 <ui:Button x:Name="BtnE1" Content="1" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="1" Appearance="Secondary" Cursor="Hand" />
                                 <ui:Button x:Name="BtnE2" Content="2" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="2" Appearance="Secondary" Cursor="Hand" />

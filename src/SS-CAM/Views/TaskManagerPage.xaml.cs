@@ -193,7 +193,7 @@ namespace SS_CAM.Views
             ApplyFiltersAndUpdateBoard();
         }
 
-        // â”€â”€â”€ Project Card Click â†’ Open Detail Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ─── Project Card Click → Open Detail Drawer ───────────────────────────
 
         private void OnProjectCardClicked(object sender, RoutedEventArgs e)
         {

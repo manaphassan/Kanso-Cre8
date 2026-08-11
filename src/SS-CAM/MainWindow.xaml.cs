@@ -78,6 +78,7 @@ namespace SS_CAM
             radio.StreamTitleChanged += OnRadioStreamTitleChanged;
 
             UpdateRadioStatusUI();
+            InitializeRadioSpectrumAnimator();
         }
 
         private void OnRadioPlaybackStateChanged(RadioPlaybackState state)
@@ -100,39 +101,78 @@ namespace SS_CAM
             try
             {
                 var radio = RadioStreamService.Instance;
-                bool isActive = radio.State == RadioPlaybackState.Playing || radio.State == RadioPlaybackState.Buffering;
+                if (radio == null) return;
 
-                // Show radio footer row only when playing or buffering
-                if (RadioFooterRow != null)
-                    RadioFooterRow.Visibility = isActive ? Visibility.Visible : Visibility.Collapsed;
-
-                if (StatusRadioText != null && StatusRadioPlayIcon != null)
+                bool isPlayingOrBuffering = (radio.State == RadioPlaybackState.Playing || radio.State == RadioPlaybackState.Buffering || radio.State == RadioPlaybackState.Paused);
+                if (BottomRadioPlayerBar != null)
                 {
-                    string stationName = radio.CurrentStation != null ? radio.CurrentStation.Name : "BFM 89.9";
-                    string streamTitle = radio.LocalProxy != null ? radio.LocalProxy.CurrentStreamTitle : null;
-                    
-                    if (radio.State == RadioPlaybackState.Playing)
+                    BottomRadioPlayerBar.Visibility = isPlayingOrBuffering ? Visibility.Visible : Visibility.Collapsed;
+                }
+                
+                string stationName = radio.CurrentStation != null ? radio.CurrentStation.Name : "Radio Stream";
+                string emoji = radio.CurrentStation != null ? radio.CurrentStation.IconEmoji : "📻";
+                string streamTitle = radio.LocalProxy != null ? radio.LocalProxy.CurrentStreamTitle : null;
+                
+                if (TxtBottomRadioEmoji != null) TxtBottomRadioEmoji.Text = string.IsNullOrWhiteSpace(emoji) ? "📻" : emoji;
+                if (TxtBottomRadioTitle != null) TxtBottomRadioTitle.Text = stationName;
+
+                // Load station cover image if available
+                if (radio.CurrentStation != null && ImgBottomRadioCover != null)
+                {
+                    string coverPath = radio.CurrentStation.HasLocalCover ? radio.CurrentStation.LocalCoverPath : radio.CurrentStation.CoverImageUrl;
+                    if (!string.IsNullOrWhiteSpace(coverPath))
                     {
-                        StatusRadioPlayIcon.Text = "\uE769"; // Pause icon
-                        if (!string.IsNullOrEmpty(streamTitle))
+                        try
                         {
-                            StatusRadioText.Text = stationName + " ▶ " + streamTitle;
+                            var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.UriSource = new Uri(coverPath, UriKind.RelativeOrAbsolute);
+                            bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            ImgBottomRadioCover.Source = bitmap;
+                            ImgBottomRadioCover.Visibility = Visibility.Visible;
+                            if (TxtBottomRadioEmoji != null) TxtBottomRadioEmoji.Visibility = Visibility.Collapsed;
                         }
-                        else
+                        catch
                         {
-                            StatusRadioText.Text = stationName + " ▶ Live";
+                            ImgBottomRadioCover.Visibility = Visibility.Collapsed;
+                            if (TxtBottomRadioEmoji != null) TxtBottomRadioEmoji.Visibility = Visibility.Visible;
                         }
-                        StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
                     }
-                    else if (radio.State == RadioPlaybackState.Buffering)
+                    else
                     {
-                        StatusRadioPlayIcon.Text = "\uE823"; // Processing icon
-                        StatusRadioText.Text = "Connecting...";
-                        StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+                        ImgBottomRadioCover.Visibility = Visibility.Collapsed;
+                        if (TxtBottomRadioEmoji != null) TxtBottomRadioEmoji.Visibility = Visibility.Visible;
                     }
                 }
+                
+                if (radio.State == RadioPlaybackState.Playing)
+                {
+                    if (TxtBottomRadioPlayIcon != null) TxtBottomRadioPlayIcon.Text = "\uE769";
+                    string trackText = !string.IsNullOrEmpty(streamTitle) ? streamTitle : "Live Audio Stream";
+                    if (TxtBottomRadioTrack != null) TxtBottomRadioTrack.Text = trackText;
+                }
+                else if (radio.State == RadioPlaybackState.Buffering)
+                {
+                    if (TxtBottomRadioPlayIcon != null) TxtBottomRadioPlayIcon.Text = "\uE823";
+                    if (TxtBottomRadioTrack != null) TxtBottomRadioTrack.Text = "Connecting to stream...";
+                }
+                else
+                {
+                    if (TxtBottomRadioPlayIcon != null) TxtBottomRadioPlayIcon.Text = "\uE768";
+                    if (TxtBottomRadioTrack != null) TxtBottomRadioTrack.Text = "Paused";
+                }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] UpdateRadioStatusUI: " + ex.Message); }
+        }
+
+        private void OnBottomRadioVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            try
+            {
+                RadioStreamService.Instance.Volume = e.NewValue / 100.0;
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnBottomRadioVolumeChanged: " + ex.Message); }
         }
 
         private void OnStatusRadioPlayToggle(object sender, RoutedEventArgs e)
@@ -144,6 +184,39 @@ namespace SS_CAM
         private void OnFooterRadioClicked(object sender, MouseButtonEventArgs e)
         {
             RootNavigation.Navigate(typeof(RadioPage));
+        }
+
+        private void OnTitleBarNavToggleClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (RootNavigation != null)
+                {
+                    RootNavigation.IsPaneOpen = !RootNavigation.IsPaneOpen;
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnTitleBarNavToggleClicked: " + ex.Message); }
+        }
+
+        private void OnTitleBarDragWindow(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                try { DragMove(); } catch { }
+            }
+        }
+
+        private void OnVersionBadgeClicked(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (RootNavigation != null)
+                {
+                    RootNavigation.Navigate(typeof(WorkstationHealthPage));
+                }
+                e.Handled = true;
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnVersionBadgeClicked: " + ex.Message); }
         }
 
         private void OnClosed(object sender, EventArgs e)
@@ -435,17 +508,15 @@ namespace SS_CAM
                 SidebarSearchBox.CaretBrush   = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
             }
 
-            // -- PaneHeader: MODULES section label --
-            if (SidebarModulesLabel != null)
-                SidebarModulesLabel.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
-
             // -- PaneFooter: horizontal divider --
             if (SidebarDivider != null)
                 SidebarDivider.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
 
             // -- PaneFooter: user profile card background --
             if (SidebarUserCard != null)
-                SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+                SidebarUserCard.Background = Brushes.Transparent;
+            if (AppTitleBar != null)
+                AppTitleBar.Background = Brushes.Transparent;
 
             // -- PaneFooter: avatar ring background --
             if (SidebarAvatarRing != null)
@@ -453,7 +524,7 @@ namespace SS_CAM
 
             // -- PaneFooter: persona name + department text colors --
             if (SidebarPersonaName != null)
-                SidebarPersonaName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
+                SidebarPersonaName.Foreground = Brushes.White;
             if (SidebarPersonaDept != null)
                 SidebarPersonaDept.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
 
@@ -602,7 +673,7 @@ namespace SS_CAM
             TriggerNasHealthCheck();
         }
 
-        // â”€â”€â”€ Auto-Update Check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ─── Auto-Update Check ────────────────────────────────────────────────
         // Hosts a version.json at: https://suamisihat.myds.me/ss-cam/version.json
         // Format:
         // {
@@ -767,6 +838,98 @@ namespace SS_CAM
         private void OnProfileCardClicked(object sender, MouseButtonEventArgs e)
         {
             RootNavigation.Navigate(typeof(SettingsPage));
+        }
+
+        // ─── Persistent Bottom Radio Controls & Dynamic 60 FPS Background Spectrum Visualizer ───
+        private System.Windows.Threading.DispatcherTimer _spectrumTimer;
+        private static readonly Random _specRand = new Random();
+
+        private void InitializeRadioSpectrumAnimator()
+        {
+            try
+            {
+                _spectrumTimer = new System.Windows.Threading.DispatcherTimer();
+                _spectrumTimer.Interval = TimeSpan.FromMilliseconds(16); // 60 FPS real-time
+                _spectrumTimer.Tick += UpdateSpectrumVisualizer;
+                _spectrumTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainWindow] InitializeRadioSpectrumAnimator: " + ex.Message);
+            }
+        }
+
+        private void UpdateSpectrumVisualizer(object sender, EventArgs e)
+        {
+            try
+            {
+                var service = RadioStreamService.Instance;
+                bool isPlaying = service != null && service.State == RadioPlaybackState.Playing;
+                double[] specData = (service != null && service.LocalProxy != null) ? service.LocalProxy.CurrentSpectrumData : null;
+
+                if (BottomRadioSpectrumPanel == null || SpecWaveLinePath == null) return;
+
+                double actualW = BottomRadioSpectrumPanel.ActualWidth;
+                if (actualW < 100) actualW = 1000;
+                double baseH = 40.0;
+
+                int pointCount = 48;
+                double stepX = actualW / (pointCount - 1);
+                Point[] pts = new Point[pointCount];
+
+                double phase = Environment.TickCount * 0.009;
+
+                for (int i = 0; i < pointCount; i++)
+                {
+                    double normX = (double)i / (pointCount - 1);
+                    double y = baseH - 4.0;
+
+                    if (isPlaying)
+                    {
+                        double audioAmp = 0.5;
+                        if (specData != null && specData.Length > (i % 24))
+                        {
+                            audioAmp = specData[i % 24];
+                        }
+
+                        // Organic liquid wavelength equation combining 3 harmonic sine waves + live audio amplitude
+                        double wave1 = Math.Sin(normX * 10.0 + phase) * 11.0;
+                        double wave2 = Math.Cos(normX * 20.0 - phase * 1.6) * 7.0;
+                        double wave3 = Math.Sin(normX * 32.0 + phase * 2.3) * 4.0;
+
+                        double totalH = (wave1 + wave2 + wave3) * (0.35 + audioAmp * 1.25);
+                        y = Math.Max(4.0, Math.Min(baseH - 2.0, baseH - 18.0 - totalH));
+                    }
+
+                    pts[i] = new Point(i * stepX, y);
+                }
+
+                // Build line stroke geometry
+                StreamGeometry strokeGeom = new StreamGeometry();
+                using (StreamGeometryContext ctx = strokeGeom.Open())
+                {
+                    ctx.BeginFigure(pts[0], false, false);
+                    ctx.PolyLineTo(pts, true, true);
+                }
+                strokeGeom.Freeze();
+                SpecWaveLinePath.Data = strokeGeom;
+
+                // Build gradient fill geometry under wave
+                if (SpecWaveFillPath != null)
+                {
+                    StreamGeometry fillGeom = new StreamGeometry();
+                    using (StreamGeometryContext ctx = fillGeom.Open())
+                    {
+                        ctx.BeginFigure(pts[0], true, true);
+                        ctx.PolyLineTo(pts, true, true);
+                        ctx.LineTo(new Point(actualW, baseH), true, false);
+                        ctx.LineTo(new Point(0, baseH), true, false);
+                    }
+                    fillGeom.Freeze();
+                    SpecWaveFillPath.Data = fillGeom;
+                }
+            }
+            catch { }
         }
     }
 }

@@ -63,7 +63,7 @@
             </Grid>
 
             <!-- ── HERO CARD: NEXT PRAYER ────────────────────────────────── -->
-            <Border Background="{DynamicResource FluentLightCardBg}"
+            <Border x:Name="HeroCardBorder" Background="{DynamicResource FluentLightCardBg}"
                     BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1"
                     CornerRadius="12" Padding="28,24,28,24" Margin="0,0,0,14"
                     Effect="{DynamicResource FluentDepth8}">

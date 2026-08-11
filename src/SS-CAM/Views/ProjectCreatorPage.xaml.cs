@@ -186,14 +186,32 @@ namespace SS_CAM.Views
             if (PlatformComboBox.SelectedItem != null)
             {
                 string platform = PlatformComboBox.SelectedItem.ToString();
-                if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px Â· 72 DPI Â· sRGB Color Mode";
-                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px Â· 72 DPI Â· sRGB Color Mode";
-                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px Â· 72 DPI Â· sRGB Color Mode";
-                else if (platform.Contains("Print")) PlatformSpecsText.Text = "A4 / Custom Â· 300 DPI Â· CMYK Color Mode";
-                else PlatformSpecsText.Text = "Custom Dimensions Â· Flexible DPI & Color Mode";
+                if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px • 72 DPI • sRGB Color Mode";
+                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px • 72 DPI • sRGB Color Mode";
+                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px • 72 DPI • sRGB Color Mode";
+                else if (platform.Contains("Print")) PlatformSpecsText.Text = "A4 / Custom • 300 DPI • CMYK Color Mode";
+                else PlatformSpecsText.Text = "Custom Dimensions • Flexible DPI & Color Mode";
             }
 
             UpdateLivePreview();
+        }
+
+        private void OnVisualPlatformCardClicked(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as FrameworkElement;
+            if (btn != null && btn.Tag != null)
+            {
+                string tag = btn.Tag.ToString();
+                for (int i = 0; i < PlatformComboBox.Items.Count; i++)
+                {
+                    string itemStr = PlatformComboBox.Items[i].ToString();
+                    if (itemStr.Contains(tag))
+                    {
+                        PlatformComboBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
         }
 
         private void OnFormInputChanged(object sender, TextChangedEventArgs e)

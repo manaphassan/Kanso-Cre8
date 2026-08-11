@@ -4,13 +4,20 @@ All notable SS-CAM changes are documented here.
 
 ## [2.6.1] - 2026-08-11 (Latest)
 
-### Fixed
-- **Source Guardian WARNs resolved to PASS (9/9)**: All raw Unicode characters (`•`, `─`, `⚡`, `…`, `—`, `▲`, folder/radio emoji) in XAML attribute strings converted to XML entities (`&#xNNNN;`) across 11 XAML files. WPF 4.8 XML parser no longer rejects invalid surrogate pair entities.
-- **DesignTokensPage native Button → ui:Button**: Migrated 3 remaining native WPF `<Button>` elements to `<ui:Button>` for full Fluent 2 compliance.
-- **SettingsPage avatar icon**: Replaced invalid surrogate emoji with Segoe Fluent Icons glyph `&#xE77B;` (Contact/Person) for correct cross-theme rendering.
-- **Source Guardian CHECK 2 false positive**: Fixed regex pattern in `QA/verify-sscam.ps1` that incorrectly flagged files containing both a `ToolTip` attribute and any high-byte char anywhere in the file. Now uses accurate per-attribute value matching.
-- **BUG-15 to BUG-22**: Hardcoded background colors, button colors, silent `catch {}` blocks, and 22px page titles remediated. All page titles standardized to 24px.
-- **AGENTS.md code integrity rules**: Added mandatory XAML/C# edit safety rules and dynamic color token table to prevent future AI-introduced regressions.
+### Added & Refined
+- **Header Title Rebranding & TitleBar Overhaul**: Rebranded app header title to `SS Creative Assets Management`. Applied a 100% full-width `#022057` SuamiSihat deep blue TitleBar with transparent caption buttons (`— 🗖 ✕`) and window dragging capability (`DragMove`).
+- **Persistent SS Blue Bottom Player Bar**:
+  - Styled bottom player with full SuamiSihat deep blue background (`#022057`) and `#043388` accent border.
+  - **Fluid Wavelength Audio Visualizer**: Integrated a 60 FPS real-time vector path visualizer (`StreamGeometry`) featuring a 4-stop gradient stroke (`#60A5FA` → `#38BDF8` → `#34D399` → `#818CF8`) and ambient gradient fill under the wave curve.
+  - **Station Cover Image**: Integrated station cover art image loader (`BitmapImage`) supporting local/remote artwork with seamless emoji fallback.
+  - **Aligned Now-Playing Layout**: Aligned Station Name + Emerald Green `LIVE` Pill on Line 1, and `NOW PLAYING:` tag + track subtext on Line 2, centered vertically alongside the 40x40 cover image.
+- **Top Hero Featured Radio Player Banner**: Refactored `RadioPage.xaml` into a 4-row layout featuring a Top Hero Featured Station Banner, eliminating player redundancy.
+- **Strict Equal-Height Dashboard KPI Grid**: Enforced `UniformGrid Rows="2" Columns="4" Height="224"` with `VerticalAlignment="Stretch"` on all 8 KPI widgets for 100% uniform cell heights across all rows.
+- **Sidebar Cleanup**: Removed redundant radio status text from left navigation sidebar footer (`PaneFooter`).
+
+### Fixed & Remediated
+- **Source Guardian Checks**: Resolved all UTF-8 BOM encoding issues and verified full Fluent 2 design compliance across all XAML and C# files.
+- **TitleBar Background Mismatches**: Removed white background behind user profile card and window control buttons.
 
 ### Integrity
 | File | Details |

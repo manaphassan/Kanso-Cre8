@@ -142,6 +142,22 @@ namespace SS_CAM.Views
                 AdhanBadge.Visibility = Visibility.Collapsed;
             }
 
+            // Update time-of-day ambient hero border accent
+            if (HeroCardBorder != null && state != null)
+            {
+                string nextP = state.NextPrayer != null ? state.NextPrayer.ToLower() : "";
+                if (nextP.Contains("subuh"))
+                    HeroCardBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#818CF8"));
+                else if (nextP.Contains("zohor") || nextP.Contains("syuruq"))
+                    HeroCardBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#38BDF8"));
+                else if (nextP.Contains("asar"))
+                    HeroCardBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+                else if (nextP.Contains("maghrib"))
+                    HeroCardBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F43F5E"));
+                else if (nextP.Contains("isyak"))
+                    HeroCardBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            }
+
             // Rebuild prayer list rows
             RefreshPrayerList(state);
         }

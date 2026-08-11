@@ -39,7 +39,12 @@
             </StackPanel>
 
             <!-- Status Banner -->
-            <ui:TextBlock x:Name="CopyStatusText" Text="Click any color swatch below to copy its HEX color code to your clipboard." Foreground="{DynamicResource FluentBrandTint}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,14"/>
+            <Border Background="{DynamicResource FluentBrandLight}" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ui:TextBlock x:Name="CopyStatusText" Text="Click any color swatch below to copy its HEX color code to your clipboard." Foreground="{DynamicResource FluentBrand80}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
 
             <!-- Primary Colour Palette -->
             <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Primary Colour Palette" FontTypography="BodyStrong" Margin="0,0,0,8"/>

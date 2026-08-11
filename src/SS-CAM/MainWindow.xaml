@@ -9,18 +9,112 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica">
 
+    <ui:FluentWindow.Resources>
+        <ResourceDictionary>
+            <!-- TitleBar Full Blue Caption Button Theme Overrides -->
+            <SolidColorBrush x:Key="TitleBarBackgroundThemeBrush" Color="#022057"/>
+            <SolidColorBrush x:Key="TitleBarButtonBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="TitleBarButtonForeground" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TitleBarButtonHoverBackground" Color="#163B75"/>
+            <SolidColorBrush x:Key="TitleBarButtonHoverForeground" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TitleBarButtonPressedBackground" Color="#0D2A5C"/>
+            <SolidColorBrush x:Key="TitleBarButtonPressedForeground" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TitleBarButtonInactiveBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="TitleBarButtonInactiveForeground" Color="#8AAACF"/>
+        </ResourceDictionary>
+    </ui:FluentWindow.Resources>
+
     <Grid Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <!-- Main Layout Rows -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>   <!-- TitleBar drag region -->
             <RowDefinition Height="Auto"/>   <!-- Update Banner (hidden by default) -->
             <RowDefinition Height="*"/>      <!-- Main Body -->
+            <RowDefinition Height="Auto"/>   <!-- Persistent Bottom Radio Bar -->
         </Grid.RowDefinitions>
 
-        <!-- TITLE BAR STRIP -->
-        <ui:TitleBar x:Name="AppTitleBar" Grid.Row="0"
-                     Title=""
-                     MinHeight="32" Height="32"/>
+        <!-- TITLE BAR STRIP (Extended TitleBar Header with Toggle Button, Central Search & Profile Card) -->
+        <Grid Grid.Row="0" Height="42" Background="#022057"
+              MouseLeftButtonDown="OnTitleBarDragWindow">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>   <!-- Navigation Toggle + App Brand -->
+                <ColumnDefinition Width="*"/>      <!-- Centered Global Search Box -->
+                <ColumnDefinition Width="Auto"/>   <!-- User Profile Card + TitleBar Controls -->
+            </Grid.ColumnDefinitions>
+
+            <!-- 1. Navigation Toggle + Full Logo Brand Title -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,12,0">
+                <ui:Button x:Name="TitleBarNavToggleBtn" Click="OnTitleBarNavToggleClicked"
+                           Appearance="Secondary" Width="30" Height="30" Padding="0" Margin="0,0,10,0"
+                           Cursor="Hand" ToolTip="Toggle Navigation Sidebar">
+                    <ui:TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                  Foreground="White"/>
+                </ui:Button>
+
+                <ui:TextBlock Text="SS Creative Assets Management" FontSize="13" FontWeight="Bold"
+                              Foreground="White" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- 2. Centered Global Search Box -->
+            <Grid Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="340">
+                <Border x:Name="SidebarSearchBorder" Background="#043388" CornerRadius="6" Padding="8,4" Height="28">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" Foreground="#8AAACF"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBox x:Name="SidebarSearchBox" Grid.Column="1" Background="Transparent" BorderThickness="0"
+                                 Foreground="White" CaretBrush="White"
+                                 Text="" Tag="Search modules, projects (Ctrl+K)..."
+                                 FontSize="11.5" VerticalAlignment="Center"
+                                 GotFocus="OnSearchBoxGotFocus"
+                                 LostFocus="OnSearchBoxLostFocus"
+                                 TextChanged="OnSearchBoxTextChanged"/>
+                        <Border Grid.Column="2" Background="#163B75" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
+                            <ui:TextBlock Text="Ctrl+K" FontSize="8.5" Foreground="#8AAACF" FontWeight="SemiBold"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 3. Profile Pill Card & Window Controls -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- User profile card (Transparent background, clean circle avatar) -->
+                <Border x:Name="SidebarUserCard" Margin="0,0,6,0" CornerRadius="14" Padding="6,2"
+                        Background="Transparent" Cursor="Hand"
+                        MouseLeftButtonDown="OnProfileCardClicked"
+                        ToolTip="Open Settings &amp; Profile">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border x:Name="SidebarAvatarRing" Width="28" Height="28" CornerRadius="14"
+                                Background="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,6,0">
+                            <Grid>
+                                <Image x:Name="SidebarAvatarImage" Stretch="UniformToFill"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Visibility="Collapsed"/>
+                                <ui:TextBlock x:Name="SidebarAvatarInitials" Text="H"
+                                           Foreground="White" FontSize="12" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,4,0">
+                            <ui:TextBlock x:Name="SidebarPersonaName" Text="Designer"
+                                       Foreground="White" FontSize="11.5" FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <ui:TextBlock x:Name="SidebarPersonaDept" Text="Creative" Visibility="Collapsed"
+                                       Foreground="#8AAACF" FontSize="9"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Native TitleBar for Window Minimize/Maximize/Close buttons (Transparent background, White foreground) -->
+                <ui:TitleBar x:Name="AppTitleBar" Title="" MinHeight="42" Height="42" VerticalAlignment="Center"
+                             Background="Transparent" Foreground="White"/>
+            </StackPanel>
+        </Grid>
 
         <!-- Update Notification Banner -->
         <Border x:Name="UpdateBanner" Grid.Row="1" Background="#FEF9C3" BorderBrush="#EAB308"
@@ -56,30 +150,6 @@
                            HeaderVisibility="Collapsed"
                            OpenPaneLength="200">
 
-            <!-- PANE HEADER: Search box + Modules label -->
-            <ui:NavigationView.PaneHeader>
-                <StackPanel Margin="12,6,12,4">
-                    <!-- Search box -->
-                    <Border x:Name="SidebarSearchBorder" Background="#0D2A5C" CornerRadius="6" Padding="8,6" Margin="0,0,0,10">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" Foreground="#8AAACF"
-                                       FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
-                            <TextBox x:Name="SidebarSearchBox" Background="Transparent" BorderThickness="0"
-                                     Foreground="#C8D8E8" CaretBrush="White"
-                                     Text="" Tag="Search modules..."
-                                     FontSize="12" VerticalAlignment="Center"
-                                     MinWidth="130"
-                                     GotFocus="OnSearchBoxGotFocus"
-                                     LostFocus="OnSearchBoxLostFocus"
-                                     TextChanged="OnSearchBoxTextChanged"/>
-                        </StackPanel>
-                    </Border>
-                    <!-- MODULES section label -->
-                    <TextBlock x:Name="SidebarModulesLabel" Text="MODULES" Foreground="#5A7FA8" FontSize="10" FontWeight="Bold"
-                               Margin="4,0,0,4"/>
-                </StackPanel>
-            </ui:NavigationView.PaneHeader>
-
             <!-- MENU ITEMS -->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
@@ -99,99 +169,126 @@
                 <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>
 
-            <!-- PANE FOOTER: Status rows + User profile card -->
+            <!-- PANE FOOTER: Status rows -->
             <ui:NavigationView.PaneFooter>
-                <StackPanel>
-                    <!-- Status rows -->
-                    <StackPanel Margin="0,6,0,4">
-                        <!-- NAS status -->
-                        <StackPanel Orientation="Horizontal" Margin="16,3">
-                            <Ellipse x:Name="NasStatusDot" Width="8" Height="8" Fill="#94A3B8"
-                                     VerticalAlignment="Center" Margin="0,0,7,0"/>
-                            <TextBlock x:Name="StatusNasText" Text="SSNAS Offline" Foreground="#C8C8C8"
-                                       FontSize="11" VerticalAlignment="Center"
-                                       MouseLeftButtonDown="OnCheckNasStatusClicked" Cursor="Hand"
-                                       ToolTip="Click to re-check Synology NAS connection"/>
-                        </StackPanel>
-                        <!-- Focus timer -->
-                        <StackPanel Orientation="Horizontal" Margin="16,3">
-                            <TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons" Foreground="#5A7FA8"
-                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
-                            <TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="#C8C8C8"
-                                       FontSize="11" VerticalAlignment="Center"
-                                       MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
-                                       ToolTip="Open Wellbeing &amp; Focus Timer"/>
-                        </StackPanel>
-                        <!-- Active theme - click to cycle -->
-                        <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
-                                    Focusable="False"
-                                    MouseLeftButtonDown="OnStatusThemeToggle"
-                                    ToolTip="Click to toggle theme (Falconia / Metamorphosis)">
-                            <TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="#5A7FA8"
-                                       FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
-                                       Focusable="False"/>
-                            <TextBlock x:Name="StatusThemeText" Text="Theme: Falconia" Foreground="#C8C8C8"
-                                       FontSize="11" VerticalAlignment="Center"
-                                       Focusable="False"/>
-                        </StackPanel>
-                        <!-- Radio row (shown only when playing) -->
-                        <Grid Visibility="Collapsed" x:Name="RadioFooterRow" Margin="0,3">
-                            <StackPanel Orientation="Horizontal" Margin="16,0">
-                                <TextBlock Text="&#xE8D6;" FontFamily="Segoe Fluent Icons" Foreground="#0078D4"
-                                           FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
-                                <TextBlock x:Name="StatusRadioText" Text="Radio" Foreground="#C8C8C8"
-                                           FontSize="11" VerticalAlignment="Center"
-                                           MouseLeftButtonDown="OnFooterRadioClicked" Cursor="Hand"
-                                           ToolTip="Open Radio Player"/>
-                            </StackPanel>
-                            <Button x:Name="StatusRadioPlayBtn" Click="OnStatusRadioPlayToggle"
-                                    Background="Transparent" BorderThickness="0"
-                                    HorizontalAlignment="Right" Margin="0,0,12,0" Cursor="Hand">
-                                <TextBlock x:Name="StatusRadioPlayIcon" Text="&#xE768;"
-                                           FontFamily="Segoe Fluent Icons" Foreground="#0078D4"/>
-                            </Button>
-                        </Grid>
+                <StackPanel Margin="0,6,0,12">
+                    <Border x:Name="SidebarDivider" Height="1" Background="{DynamicResource SidebarDividerBrush}" Margin="12,0,12,6"/>
+                    <!-- NAS status -->
+                    <StackPanel Orientation="Horizontal" Margin="16,3">
+                        <Ellipse x:Name="NasStatusDot" Width="8" Height="8" Fill="#94A3B8"
+                                 VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <ui:TextBlock x:Name="StatusNasText" Text="SSNAS Offline" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="11" VerticalAlignment="Center"
+                                   MouseLeftButtonDown="OnCheckNasStatusClicked" Cursor="Hand"
+                                   ToolTip="Click to re-check Synology NAS connection"/>
                     </StackPanel>
-
-                    <!-- Divider -->
-                    <Border x:Name="SidebarDivider" Height="1" Background="#0D2A5C" Margin="12,4"/>
-
-                    <!-- User profile card -->
-                    <Border x:Name="SidebarUserCard" Margin="10,6,10,10" CornerRadius="8" Padding="10,8"
-                            Background="#0D2A5C" Cursor="Hand"
-                            MouseLeftButtonDown="OnProfileCardClicked"
-                            ToolTip="Open Settings &amp; Profile">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="36"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <!-- Avatar circle -->
-                            <Border x:Name="SidebarAvatarRing" Width="32" Height="32" CornerRadius="16"
-                                    Background="#1A3D7A" VerticalAlignment="Center">
-                                <Grid>
-                                    <Image x:Name="SidebarAvatarImage" Stretch="UniformToFill"
-                                           RenderOptions.BitmapScalingMode="HighQuality"
-                                           Visibility="Collapsed"/>
-                                    <TextBlock x:Name="SidebarAvatarInitials" Text="H"
-                                               Foreground="White" FontSize="13" FontWeight="Bold"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                            <!-- Name + department -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0,0,0">
-                                <TextBlock x:Name="SidebarPersonaName" Text="Designer"
-                                           Foreground="White" FontSize="12" FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis"/>
-                                <TextBlock x:Name="SidebarPersonaDept" Text="Creative Department"
-                                           Foreground="#8AAACF" FontSize="10"
-                                           TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
+                    <!-- Focus timer -->
+                    <StackPanel Orientation="Horizontal" Margin="16,3">
+                        <ui:TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <ui:TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="11" VerticalAlignment="Center"
+                                   MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
+                                   ToolTip="Open Wellbeing &amp; Focus Timer"/>
+                    </StackPanel>
+                    <!-- Active theme - click to cycle -->
+                    <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
+                                Focusable="False"
+                                MouseLeftButtonDown="OnStatusThemeToggle"
+                                ToolTip="Click to toggle theme (Falconia / Metamorphosis)">
+                        <ui:TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
+                                   Focusable="False"/>
+                        <ui:TextBlock x:Name="StatusThemeText" Text="Theme: Falconia" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="11" VerticalAlignment="Center"
+                                   Focusable="False"/>
+                    </StackPanel>
                 </StackPanel>
             </ui:NavigationView.PaneFooter>
         </ui:NavigationView>
+
+        <!-- PERSISTENT BOTTOM RADIO PLAYER BAR (Full SuamiSihat Deep Blue + Faded Background Wave Visualizer) -->
+        <Border x:Name="BottomRadioPlayerBar" Grid.Row="3"
+                Background="#022057" BorderBrush="#043388"
+                BorderThickness="0,1,0,0" Padding="16,10" Visibility="Collapsed">
+            <Grid>
+                <!-- Ambient Wavelength Audio Visualizer Background Layer -->
+                <Grid x:Name="BottomRadioSpectrumPanel" Height="42" VerticalAlignment="Bottom"
+                      HorizontalAlignment="Stretch" IsHitTestVisible="False" Opacity="0.35" Margin="-16,0,-16,-10">
+                    <!-- Gradient Fill under wavelength -->
+                    <Path x:Name="SpecWaveFillPath" Opacity="0.25">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#3B82F6" Offset="0"/>
+                                <GradientStop Color="Transparent" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+
+                    <!-- Glowing Wavelength Vector Line -->
+                    <Path x:Name="SpecWaveLinePath" StrokeThickness="2.5">
+                        <Path.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#60A5FA" Offset="0.0"/>
+                                <GradientStop Color="#38BDF8" Offset="0.3"/>
+                                <GradientStop Color="#34D399" Offset="0.7"/>
+                                <GradientStop Color="#818CF8" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Path.Stroke>
+                    </Path>
+                </Grid>
+
+                <!-- Interactive Foreground Controls -->
+                <Grid Panel.ZIndex="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>   <!-- Cover Art / Emoji badge -->
+                        <ColumnDefinition Width="*"/>      <!-- Track info -->
+                        <ColumnDefinition Width="Auto"/>   <!-- Controls: Play/Pause, Vol -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Station Cover Art / Emoji Badge -->
+                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8"
+                            Background="#043388" Margin="0,0,12,0" VerticalAlignment="Center" ClipToBounds="True">
+                        <Grid>
+                            <Image x:Name="ImgBottomRadioCover" Stretch="UniformToFill" Visibility="Collapsed"/>
+                            <ui:TextBlock x:Name="TxtBottomRadioEmoji" Text="&#x1F4FB;" FontSize="18"
+                                          Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Station Name, Live Badge & Now Playing Track Info -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:TextBlock x:Name="TxtBottomRadioTitle" Text="Radio Stream" FontWeight="Bold" FontSize="13"
+                                          Foreground="White" VerticalAlignment="Center"/>
+                            <Border Background="#10B981" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <ui:TextBlock Text="LIVE" Foreground="White" FontSize="9" FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0" VerticalAlignment="Center">
+                            <ui:TextBlock Text="NOW PLAYING:" FontSize="10" FontWeight="SemiBold"
+                                          Foreground="#60A5FA" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock x:Name="TxtBottomRadioTrack" Text="Now Playing..." FontSize="11"
+                                          Foreground="#93C5FD" VerticalAlignment="Center"
+                                          TextTrimming="CharacterEllipsis" MaxWidth="420"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Controls: Play/Pause, Volume -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <ui:Button x:Name="BtnBottomRadioPlay" Click="OnStatusRadioPlayToggle" Appearance="Primary"
+                                   Width="34" Height="34" Padding="0" Margin="0,0,12,0" Cursor="Hand" ToolTip="Play / Pause">
+                            <ui:TextBlock x:Name="TxtBottomRadioPlayIcon" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="White"/>
+                        </ui:Button>
+
+                        <ui:TextBlock Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                      Foreground="#8AAACF" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Slider x:Name="BottomRadioVolumeSlider" Width="100" Minimum="0" Maximum="100" Value="80"
+                                ValueChanged="OnBottomRadioVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
 
         <!-- Hidden elements (kept for backward compatibility) -->
         <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>

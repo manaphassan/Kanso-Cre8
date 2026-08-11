@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SS_CAM.Models
@@ -79,6 +79,30 @@ namespace SS_CAM.Models
                     return "#10B981";
                 }
                 return "#64748B";
+            }
+        }
+
+        public string DesignerColor
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Designer)) return "#0078D4";
+                int hash = Math.Abs(Designer.GetHashCode());
+                string[] palette = new[] { "#0078D4", "#106EBE", "#043388", "#21A1F7", "#059669", "#D97706", "#7C3AED" };
+                return palette[hash % palette.Length];
+            }
+        }
+
+        public string DesignerInitials
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Designer)) return "S";
+                string d = Designer.Trim();
+                if (d.Length <= 2) return d.ToUpper();
+                string[] parts = d.Split(new[] { ' ', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2) return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+                return d.Substring(0, 1).ToUpper();
             }
         }
     }
