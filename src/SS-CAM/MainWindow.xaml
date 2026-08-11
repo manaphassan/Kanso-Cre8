@@ -60,7 +60,7 @@
             <ui:NavigationView.PaneHeader>
                 <StackPanel Margin="12,6,12,4">
                     <!-- Search box -->
-                    <Border Background="#0D2A5C" CornerRadius="6" Padding="8,6" Margin="0,0,0,10">
+                    <Border x:Name="SidebarSearchBorder" Background="#0D2A5C" CornerRadius="6" Padding="8,6" Margin="0,0,0,10">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" Foreground="#8AAACF"
                                        FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
@@ -75,7 +75,7 @@
                         </StackPanel>
                     </Border>
                     <!-- MODULES section label -->
-                    <TextBlock Text="MODULES" Foreground="#5A7FA8" FontSize="10" FontWeight="Bold"
+                    <TextBlock x:Name="SidebarModulesLabel" Text="MODULES" Foreground="#5A7FA8" FontSize="10" FontWeight="Bold"
                                Margin="4,0,0,4"/>
                 </StackPanel>
             </ui:NavigationView.PaneHeader>
@@ -160,10 +160,10 @@
                     </StackPanel>
 
                     <!-- Divider -->
-                    <Border Height="1" Background="#0D2A5C" Margin="12,4"/>
+                    <Border x:Name="SidebarDivider" Height="1" Background="#0D2A5C" Margin="12,4"/>
 
                     <!-- User profile card -->
-                    <Border Margin="10,6,10,10" CornerRadius="8" Padding="10,8"
+                    <Border x:Name="SidebarUserCard" Margin="10,6,10,10" CornerRadius="8" Padding="10,8"
                             Background="#0D2A5C" Cursor="Hand"
                             MouseLeftButtonDown="OnProfileCardClicked"
                             ToolTip="Open Settings &amp; Profile">
@@ -173,7 +173,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <!-- Avatar circle -->
-                            <Border Width="32" Height="32" CornerRadius="16"
+                            <Border x:Name="SidebarAvatarRing" Width="32" Height="32" CornerRadius="16"
                                     Background="#1A3D7A" VerticalAlignment="Center">
                                 <Grid>
                                     <Image x:Name="SidebarAvatarImage" Stretch="UniformToFill"

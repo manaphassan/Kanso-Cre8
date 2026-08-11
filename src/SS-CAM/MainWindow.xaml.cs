@@ -409,23 +409,58 @@ namespace SS_CAM
         private void OnThemeModeChanged(AppTheme theme)
         {
             ThemeColors c = ThemeService.GetColors(theme);
+
+            // -- NavigationView pane background --
             if (RootNavigation != null)
                 RootNavigation.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
 
-            // Update theme name label in sidebar footer
+            // -- PaneHeader: search box container --
+            if (SidebarSearchBorder != null)
+                SidebarSearchBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchBg));
+
+            // -- PaneHeader: search text foreground --
+            if (SidebarSearchBox != null)
+            {
+                SidebarSearchBox.Foreground   = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
+                SidebarSearchBox.CaretBrush   = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText));
+            }
+
+            // -- PaneHeader: MODULES section label --
+            if (SidebarModulesLabel != null)
+                SidebarModulesLabel.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.InactiveNavSubtext));
+
+            // -- PaneFooter: horizontal divider --
+            if (SidebarDivider != null)
+                SidebarDivider.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBorder));
+
+            // -- PaneFooter: user profile card background --
+            if (SidebarUserCard != null)
+                SidebarUserCard.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+
+            // -- PaneFooter: avatar ring background --
+            if (SidebarAvatarRing != null)
+                SidebarAvatarRing.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterCardBg));
+
+            // -- PaneFooter: persona name + department text colors --
+            if (SidebarPersonaName != null)
+                SidebarPersonaName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
+            if (SidebarPersonaDept != null)
+                SidebarPersonaDept.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
+
+            // -- Update theme name label in sidebar footer --
             if (StatusThemeText != null)
             {
                 string themeName;
-                if (theme == AppTheme.Metamorphosis) themeName = "Metamorphosis";
-                else if (theme == AppTheme.Falconia)  themeName = "Falconia";
-                else                                   themeName = "SS Default";
+                if      (theme == AppTheme.Metamorphosis) themeName = "Metamorphosis";
+                else if (theme == AppTheme.Falconia)       themeName = "Falconia";
+                else                                        themeName = "SS Default";
                 StatusThemeText.Text = "Theme: " + themeName;
             }
 
-            // SS Default has a dark navy sidebar but WPF-UI is in Light mode,
-            // so nav item text defaults to dark — force it white for readability.
-            // Metamorphosis also needs white nav text (Dark WPF-UI handles it, but explicit is safer).
-            // Falconia has white sidebar and Light WPF-UI — leave foreground default (dark).
+            // -- Nav item foreground --
+            // SS Default: dark navy sidebar in Light WPF-UI mode — force nav text white.
+            // Metamorphosis: dark sidebar in Dark WPF-UI mode — force nav text white.
+            // Falconia: white sidebar in Light WPF-UI mode — clear override (WPF-UI default = dark).
             bool forceWhiteNavText = (theme == AppTheme.SSDefault || theme == AppTheme.Metamorphosis);
             var navFg = forceWhiteNavText
                 ? new SolidColorBrush(Colors.White)
