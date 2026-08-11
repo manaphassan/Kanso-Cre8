@@ -2,7 +2,26 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.6.2] - 2026-08-11 (Latest)
+## [2.6.1] - 2026-08-11 (Latest)
+
+### Fixed
+- **Source Guardian WARNs resolved to PASS (9/9)**: All raw Unicode characters (`•`, `─`, `⚡`, `…`, `—`, `▲`, folder/radio emoji) in XAML attribute strings converted to XML entities (`&#xNNNN;`) across 11 XAML files. WPF 4.8 XML parser no longer rejects invalid surrogate pair entities.
+- **DesignTokensPage native Button → ui:Button**: Migrated 3 remaining native WPF `<Button>` elements to `<ui:Button>` for full Fluent 2 compliance.
+- **SettingsPage avatar icon**: Replaced invalid surrogate emoji with Segoe Fluent Icons glyph `&#xE77B;` (Contact/Person) for correct cross-theme rendering.
+- **Source Guardian CHECK 2 false positive**: Fixed regex pattern in `QA/verify-sscam.ps1` that incorrectly flagged files containing both a `ToolTip` attribute and any high-byte char anywhere in the file. Now uses accurate per-attribute value matching.
+- **BUG-15 to BUG-22**: Hardcoded background colors, button colors, silent `catch {}` blocks, and 22px page titles remediated. All page titles standardized to 24px.
+- **AGENTS.md code integrity rules**: Added mandatory XAML/C# edit safety rules and dynamic color token table to prevent future AI-introduced regressions.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v2.6.1.exe` | Compiled Native C# WPF Single-File Executable |
+| `AssemblyVersion` | 2.6.1.0 |
+| `AssemblyFileVersion` | 2.6.1.0 |
+
+---
+
+## [2.6.2] - 2026-08-11
 
 ### Added — Phase 1: High-Impact UI/UX Modernization
 - **Dashboard Metric Cards**: Standardized rhythm with large relative time readouts ("Today", "2 days ago") and elevated Fluent 2 `<ui:Card>` containers.
