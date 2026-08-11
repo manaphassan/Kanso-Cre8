@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -471,7 +471,6 @@ namespace SS_CAM
         
 
         
-
         private void OnStatusThemeToggle(object sender, MouseButtonEventArgs e)
         {
             // Cycle: SS Default -> Falconia -> Metamorphosis -> SS Default
@@ -483,6 +482,242 @@ namespace SS_CAM
             else
                 nextTheme = AppTheme.SSDefault;
 
+            // Align bottom status panel margins
+            if (SidebarBottomPanel != null)
+            {
+                SidebarBottomPanel.Margin = isSidebarExpanded ? new Thickness(8, 8, 8, 12) : new Thickness(8, 8, 8, 12);
+            }
+
+            // Align dividers
+            if (SidebarDivider1 != null)
+            {
+                SidebarDivider1.Margin = isSidebarExpanded ? new Thickness(4, 0, 4, 8) : new Thickness(4, 0, 4, 8);
+            }
+            if (SidebarDivider2 != null)
+            {
+                SidebarDivider2.Margin = isSidebarExpanded ? new Thickness(12, 10, 12, 4) : new Thickness(4, 10, 4, 4);
+            }
+                
+            // Align status row icons (centered along X = 32px when collapsed)
+            Thickness iconMargin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
+            HorizontalAlignment panelAlign = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+
+            if (StatusNasDot != null) StatusNasDot.Margin = iconMargin;
+            if (StatusTimerIcon != null) StatusTimerIcon.Margin = iconMargin;
+            if (StatusRadioIcon != null) StatusRadioIcon.Margin = iconMargin;
+            if (StatusThemeIcon != null) StatusThemeIcon.Margin = iconMargin;
+
+            if (StatusNasPanel != null) StatusNasPanel.HorizontalAlignment = panelAlign;
+            if (StatusTimerPanel != null) StatusTimerPanel.HorizontalAlignment = panelAlign;
+            if (StatusThemePanel != null) StatusThemePanel.HorizontalAlignment = panelAlign;
+
+            if (NasPill != null)
+            {
+                NasPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
+            }
+            if (TimerPill != null)
+            {
+                TimerPill.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
+            }
+            if (StatusThemeBtn != null)
+            {
+                StatusThemeBtn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
+                StatusThemeBtn.Padding = isSidebarExpanded ? new Thickness(8, 6, 8, 6) : new Thickness(0, 6, 0, 6);
+            }
+
+            // Align user avatar circle
+            if (SidebarAvatarCircle != null)
+            {
+                SidebarAvatarCircle.Margin = isSidebarExpanded ? new Thickness(0, 0, 10, 0) : new Thickness(0);
+                SidebarAvatarCircle.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+            }
+            if (SidebarUserGrid != null)
+            {
+                SidebarUserGrid.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+            }
+            if (SidebarUserCard != null)
+            {
+                SidebarUserCard.Padding = isSidebarExpanded ? new Thickness(8, 8, 8, 8) : new Thickness(0, 6, 0, 6);
+                SidebarUserCard.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0);
+            }
+
+            // Update Nav Panel margins (always keep 8px left/right margins for clean spacing)
+            if (SidebarNavPanel != null)
+            {
+                SidebarNavPanel.Margin = isSidebarExpanded ? new Thickness(8, 4, 8, 4) : new Thickness(8, 4, 8, 4);
+            }
+
+            // Update all Nav Items (center icon when collapsed, restore margins when expanded)
+            System.Windows.Controls.Button[] navBtns = new[]
+            {
+                NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn,
+                NavSearchBtn, NavBrandAssetsBtn, NavDesignTokensBtn, NavRadioBtn, NavWorkstationHealthBtn, NavSettingsBtn
+            };
+
+            foreach (var btn in navBtns)
+            {
+                if (btn == null) continue;
+                btn.Width = double.NaN; // Stretches to panel width (which is 64 - 16 = 48px when collapsed)
+                btn.HorizontalAlignment = HorizontalAlignment.Stretch;
+                btn.HorizontalContentAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Stretch;
+
+                var grid = btn.Content as Grid;
+                if (grid == null) continue;
+
+                foreach (var child in grid.Children)
+                {
+                    var rect = child as System.Windows.Shapes.Rectangle;
+                    if (rect != null)
+                    {
+                        // 3px indicator pill — lives in its own Grid column, no horizontal override needed
+                        rect.Margin = isSidebarExpanded ? new Thickness(0) : new Thickness(0, 4, 0, 4);
+                    }
+
+                    var sp = child as StackPanel;
+                    if (sp != null)
+                    {
+                        // Fluent 2: expanded = 8px left gap from indicator column; collapsed = centered
+                        sp.Margin = isSidebarExpanded ? new Thickness(8, 0, 8, 0) : new Thickness(0);
+                        sp.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                        
+                        // Icon margin: 8px right gap to label when expanded, 0 when collapsed (icon-only)
+                        if (sp.Children.Count > 0)
+                        {
+                            var icon = sp.Children[0] as FrameworkElement;
+                            if (icon != null)
+                            {
+                                icon.Margin = isSidebarExpanded ? new Thickness(0, 0, 8, 0) : new Thickness(0);
+                                icon.HorizontalAlignment = isSidebarExpanded ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                                icon.Width = 20;
+                            }
+                        }
+                        if (sp.Children.Count > 1)
+                        {
+                            var label = sp.Children[1] as System.Windows.Controls.TextBlock;
+                            if (label != null)
+                            {
+                                label.Visibility = labelVis;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Update spectrum canvas width
+            if (SidebarSpectrumCanvas != null)
+            {
+                SidebarSpectrumCanvas.Width = isSidebarExpanded ? 240 : 48;
+            }
+        }
+
+        private void OnTopSearchInputChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TopGlobalSearchInput != null && !string.IsNullOrWhiteSpace(TopGlobalSearchInput.Text))
+            {
+                if (MainFrame.Content == null || !(MainFrame.Content is SearchCopyPage))
+                {
+                    NavigateTo(typeof(SearchCopyPage), NavSearchBtn);
+                }
+            }
+        }
+
+        private void OnNavBackClicked(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null && MainFrame.CanGoBack)
+            {
+                MainFrame.GoBack();
+            }
+        }
+
+        private void OnNavForwardClicked(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null && MainFrame.CanGoForward)
+            {
+                MainFrame.GoForward();
+            }
+        }
+
+        private void OnNavDashboardClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(DashboardPage), NavDashboardBtn);
+        }
+
+        private void OnNavWellbeingClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(WellbeingPage), NavWellbeingBtn);
+        }
+
+        private void OnNavProjectsClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(ProjectCreatorPage), NavProjectsBtn);
+        }
+
+        private void OnNavSearchClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(SearchCopyPage), NavSearchBtn);
+        }
+
+        private void OnNavBrandAssetsClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(BrandAssetsPage), NavBrandAssetsBtn);
+        }
+
+        private void OnNavDesignTokensClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(DesignTokensPage), NavDesignTokensBtn);
+        }
+
+        private void OnNavRadioClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(RadioPage), NavRadioBtn);
+        }
+
+        private void OnNavWorkstationHealthClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(WorkstationHealthPage), NavWorkstationHealthBtn);
+        }
+
+        private void OnNavSettingsClicked(object sender, RoutedEventArgs e)
+        {
+            NavigateTo(typeof(SettingsPage), null);
+        }
+
+        private void OnNavProfileClicked(object sender, MouseButtonEventArgs e)
+        {
+            NavigateTo(typeof(SettingsPage), null);
+        }
+
+        private void OnOpenGithub(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "https://github.com/SuamiSihat/ss_cam",
+                    UseShellExecute = true
+                });
+            }
+            catch { }
+        }
+
+        private void OnOpenAboutWindow(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                AboutWindow about = new AboutWindow();
+                about.Owner = this;
+                about.ShowDialog();
+            }
+            catch { }
+        }
+
+        private void OnStatusThemeToggle(object sender, RoutedEventArgs e)
+        {
+            // Cycle: SS Default ↔ Falconia
+            AppTheme nextTheme = (ThemeService.CurrentTheme == AppTheme.SSDefault)
+                ? AppTheme.Falconia
+                : AppTheme.SSDefault;
+>>>>>>> origin/SS-Master
             ThemeService.ApplyTheme(nextTheme);
         }
 
@@ -563,6 +798,122 @@ namespace SS_CAM
             if (RootNavigation != null)
             {
                 if (forceWhiteNavText)
+                {
+                    var whiteBrush = new SolidColorBrush(Colors.White);
+                    var hoverBgBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)); // Semi-transparent white
+                    
+                    RootNavigation.Resources["TextFillColorPrimaryBrush"] = whiteBrush;
+                    RootNavigation.Resources["TextFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromArgb(0xCC, 0xFF, 0xFF, 0xFF));
+                    RootNavigation.Resources["NavigationViewItemForeground"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundPointerOver"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundPressed"] = whiteBrush;
+                    RootNavigation.Resources["NavigationViewItemForegroundSelected"] = whiteBrush;
+                    
+                    RootNavigation.Resources["ControlFillColorSecondaryBrush"] = hoverBgBrush;
+                    RootNavigation.Resources["ControlFillColorTertiaryBrush"] = hoverBgBrush;
+                    RootNavigation.Resources["NavigationViewItemBackgroundPointerOver"] = hoverBgBrush;
+                    RootNavigation.Resources["NavigationViewItemBackgroundPressed"] = hoverBgBrush;
+                }
+                else
+                {
+                    RootNavigation.Resources.Remove("TextFillColorPrimaryBrush");
+                    RootNavigation.Resources.Remove("TextFillColorSecondaryBrush");
+                    RootNavigation.Resources.Remove("NavigationViewItemForeground");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundPointerOver");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundPressed");
+                    RootNavigation.Resources.Remove("NavigationViewItemForegroundSelected");
+                    
+                    RootNavigation.Resources.Remove("ControlFillColorSecondaryBrush");
+                    RootNavigation.Resources.Remove("ControlFillColorTertiaryBrush");
+                    RootNavigation.Resources.Remove("NavigationViewItemBackgroundPointerOver");
+                    RootNavigation.Resources.Remove("NavigationViewItemBackgroundPressed");
+                }
+                
+                // Clear any lingering local overrides that break the hover style
+                foreach (object item in RootNavigation.MenuItems)
+                {
+                    var navItem = item as Wpf.Ui.Controls.NavigationViewItem;
+                    if (navItem != null) navItem.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
+                }
+                foreach (object item in RootNavigation.FooterMenuItems)
+                {
+                    var navItem2 = item as Wpf.Ui.Controls.NavigationViewItem;
+                    if (navItem2 != null) navItem2.ClearValue(Wpf.Ui.Controls.NavigationViewItem.ForegroundProperty);
+                }
+            }
+
+            // Status Row Text & Icons
+            if (StatusNasText != null) StatusNasText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusTimerIcon != null) StatusTimerIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusTimerText != null) StatusTimerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusRadioIcon != null) StatusRadioIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusRadioText != null) StatusRadioText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+            if (StatusThemeIcon != null) StatusThemeIcon.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.NavIconInactive));
+            if (StatusThemeText != null) StatusThemeText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.FooterText));
+
+            // User Profile Persona Card
+            if (SidebarUserCard != null)
+            {
+                SidebarUserCard.Background  = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBg));
+                SidebarUserCard.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardBorder));
+            }
+            if (SidebarDesignerName != null) SidebarDesignerName.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardTitle));
+            if (SidebarDepartment != null) SidebarDepartment.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
+
+            // Main Content Frame
+            if (MainFrame != null)
+                MainFrame.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.MainFrameBg));
+
+            // Re-apply Spectrum Visualizer Bar Colors
+            if (_spectrumBars != null && _spectrumBars.Count > 0)
+            {
+                Color baseColor = (Color)ColorConverter.ConvertFromString(c.SpectrumBarColor);
+                byte alpha = c.IsLight ? (byte)60 : (byte)45;
+                Brush barBrush = new SolidColorBrush(Color.FromArgb(alpha, baseColor.R, baseColor.G, baseColor.B));
+                Brush dotBrush = new SolidColorBrush(Color.FromArgb(140, baseColor.R, baseColor.G, baseColor.B));
+
+                foreach (var bar in _spectrumBars) bar.Fill = barBrush;
+                foreach (var dot in _spectrumPeakDots) dot.Fill = dotBrush;
+            }
+
+            // Re-apply Nav Highlights
+            ResetNavHighlight();
+            if (_lastActiveNavBtn != null)
+            {
+                _lastActiveNavBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.ActiveNavBg));
+                SetNavItemColors(_lastActiveNavBtn, c.NavIconActive, c.ActiveNavText, c.NavIndicatorColor, true);
+            }
+        }
+
+        private readonly Dictionary<Type, Page> _pageCache = new Dictionary<Type, Page>();
+
+        public void NavigateTo(Type pageType, System.Windows.Controls.Button activeBtn)
+        {
+            _lastActiveNavBtn = activeBtn;
+            Page instance = null;
+            if (!_pageCache.TryGetValue(pageType, out instance))
+            {
+                instance = Activator.CreateInstance(pageType) as Page;
+                _pageCache[pageType] = instance;
+            }
+
+            MainFrame.Navigate(instance);
+            ResetNavHighlight();
+            if (activeBtn != null)
+            {
+                ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
+                activeBtn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(tc.ActiveNavBg));
+                SetNavItemColors(activeBtn, tc.NavIconActive, tc.ActiveNavText, tc.NavIndicatorColor, true);
+            }
+        }
+
+        private void ResetNavHighlight()
+        {
+            ThemeColors tc = ThemeService.GetColors(ThemeService.CurrentTheme);
+            System.Windows.Controls.Button[] navBtns = new[] { NavDashboardBtn, NavWellbeingBtn, NavProjectsBtn, NavSearchBtn, NavBrandAssetsBtn, NavDesignTokensBtn, NavRadioBtn, NavWorkstationHealthBtn };
+            foreach (System.Windows.Controls.Button btn in navBtns)
+            {
+                if (btn != null)
                 {
                     var whiteBrush = new SolidColorBrush(Colors.White);
                     var hoverBgBrush = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)); // Semi-transparent white
