@@ -45,9 +45,19 @@ namespace SS_CAM.Views
                     if (!string.IsNullOrEmpty(profile.PrayerZone))
                         _currentZone = profile.PrayerZone;
 
-                    ReminderText.Text = profile.PrayerRemindersEnabled
-                        ? "Peringatan: ON" : "Peringatan: OFF";
-                    ReminderIcon.Text = "\uEA8F";
+                    if (BtnReminder != null)
+                    {
+                        BtnReminder.Appearance = profile.PrayerRemindersEnabled
+                            ? Wpf.Ui.Controls.ControlAppearance.Primary
+                            : Wpf.Ui.Controls.ControlAppearance.Secondary;
+                        BtnReminder.ToolTip = profile.PrayerRemindersEnabled
+                            ? "Peringatan Waktu Solat: ON (Klik untuk Matikan)"
+                            : "Peringatan Waktu Solat: OFF (Klik untuk Hidupkan)";
+                    }
+                    if (ReminderIcon != null)
+                    {
+                        ReminderIcon.Text = profile.PrayerRemindersEnabled ? "\uEA8F" : "\uE7ED";
+                    }
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[WaktuSolatPage] Ctor: " + ex.Message); }
@@ -265,8 +275,14 @@ namespace SS_CAM.Views
         private void OnFormatToggle(object sender, RoutedEventArgs e)
         {
             _use24HourFormat = !_use24HourFormat;
-            TxtFormatLabel.Text = _use24HourFormat ? "Format: 24-Jam" : "Format: 12-Jam";
-            TxtHeaderTimeFormatLabel.Text = _use24HourFormat ? "WAKTU 24-JAM" : "WAKTU 12-JAM (AM/PM)";
+            if (BtnFormatToggle != null)
+            {
+                BtnFormatToggle.ToolTip = _use24HourFormat
+                    ? "Format Masa: 24-Jam (Klik untuk 12-Jam)"
+                    : "Format Masa: 12-Jam (Klik untuk 24-Jam)";
+            }
+            if (TxtHeaderTimeFormatLabel != null)
+                TxtHeaderTimeFormatLabel.Text = _use24HourFormat ? "WAKTU 24-JAM" : "WAKTU 12-JAM (AM/PM)";
             if (_entry != null) UpdateUI();
         }
 
@@ -595,8 +611,20 @@ namespace SS_CAM.Views
                 var profile = UserProfileService.LoadProfile() ?? new UserProfile();
                 profile.PrayerRemindersEnabled = !profile.PrayerRemindersEnabled;
                 UserProfileService.SaveProfile(profile);
-                ReminderText.Text = profile.PrayerRemindersEnabled
-                    ? "Peringatan: ON" : "Peringatan: OFF";
+
+                if (BtnReminder != null)
+                {
+                    BtnReminder.Appearance = profile.PrayerRemindersEnabled
+                        ? Wpf.Ui.Controls.ControlAppearance.Primary
+                        : Wpf.Ui.Controls.ControlAppearance.Secondary;
+                    BtnReminder.ToolTip = profile.PrayerRemindersEnabled
+                        ? "Peringatan Waktu Solat: ON (Klik untuk Matikan)"
+                        : "Peringatan Waktu Solat: OFF (Klik untuk Hidupkan)";
+                }
+                if (ReminderIcon != null)
+                {
+                    ReminderIcon.Text = profile.PrayerRemindersEnabled ? "\uEA8F" : "\uE7ED";
+                }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[WaktuSolatPage] OnReminderToggle: " + ex.Message); }
         }

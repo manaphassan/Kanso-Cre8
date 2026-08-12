@@ -54,22 +54,20 @@
                             <ComboBox x:Name="ZoneCombo" Width="190" Height="34" FontSize="11.5"
                                       SelectionChanged="OnZoneChanged" Margin="0,0,8,0"/>
 
-                            <!-- 12H / 24H Toggle Button -->
+                            <!-- 12H / 24H Toggle Button (Icon-Only) -->
                             <ui:Button x:Name="BtnFormatToggle" Click="OnFormatToggle"
-                                    Height="34" Padding="10,0" Appearance="Secondary" Cursor="Hand" Margin="0,0,8,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE815;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                    <ui:TextBlock x:Name="TxtFormatLabel" Text="Format: 12-Jam" FontSize="11.5" VerticalAlignment="Center"/>
-                                </StackPanel>
+                                    Height="34" Width="34" Padding="0" Appearance="Secondary" Cursor="Hand" Margin="0,0,8,0"
+                                    ToolTip="Format Masa: 12-Jam (Klik untuk 24-Jam)">
+                                <ui:TextBlock x:Name="TxtFormatIcon" Text="&#xE815;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </ui:Button>
 
-                            <!-- Reminder Toggle Button -->
+                            <!-- Reminder Toggle Button (Icon-Only) -->
                             <ui:Button x:Name="BtnReminder" Click="OnReminderToggle"
-                                    Height="34" Padding="10,0" Appearance="Primary" Cursor="Hand">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock x:Name="ReminderIcon" Text="&#xEA8F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                    <ui:TextBlock x:Name="ReminderText" Text="Peringatan: ON" FontSize="11.5" VerticalAlignment="Center"/>
-                                </StackPanel>
+                                    Height="34" Width="34" Padding="0" Appearance="Primary" Cursor="Hand"
+                                    ToolTip="Peringatan Waktu Solat: ON">
+                                <ui:TextBlock x:Name="ReminderIcon" Text="&#xEA8F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </ui:Button>
                         </StackPanel>
                     </Grid>
