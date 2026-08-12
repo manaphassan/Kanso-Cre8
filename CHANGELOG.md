@@ -2,7 +2,22 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.1.1] - 2026-08-12 (Latest)
+## [3.1.2] - 2026-08-12 (Latest)
+
+### Added & Refined — Patch Release
+- **Multi-User Isolation on Shared NAS (`NasConfigSyncService`)**: Implemented Windows username scoping (`_{username}`) for personal profile settings, visual themes, and Quick Notes files stored on NAS.
+- **Shared Team Resources**: Maintains shared team presets (`category_presets.json`) and shared team board announcements (`_Team\team-notes.json`) while isolating personal user configs across multiple team members on the same NAS share.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.1.2.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.1.2.0 |
+| `AssemblyFileVersion` | 3.1.2.0 |
+
+---
+
+## [3.1.1] - 2026-08-12
 
 ### Added & Refined — Patch Release
 - **Native NAS Settings & Preferences Auto-Sync (`NasConfigSyncService`)**: Automatic real-time mirroring and auto-syncing of user profile (`user_profile.json`), theme preferences (`theme_config.json`), category presets (`category_presets.json`), and Quick Notes (`Notes/`) to `<WorkspaceRoot>\_Team\_Config\` on the NAS / Synology Drive.
