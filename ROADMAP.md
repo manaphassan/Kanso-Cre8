@@ -21,10 +21,11 @@
 | **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Phase 1-4 audit fixes, dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization, 100% clean Source Guardian |
 | **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, Designer Profile & Settings 2-column revamp, 5 switchable theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord), Workstation Payload installer |
 | **v3.0.1** | 2026-08-12 | Categorized Fluent 2 sidebar navigation (5 visual categories + headers/separators), adaptive bottom live bar collapse state |
+| **v3.1.0** | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |
 
 ---
 
-## 🔄 In Progress — v3.1.0 (Target: Q4 2026 / Q1 2027)
+## 🔄 In Progress — v3.2.0 (Target: Q4 2026 / Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
 
