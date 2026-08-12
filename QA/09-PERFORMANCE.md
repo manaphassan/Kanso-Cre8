@@ -1,6 +1,5 @@
-﻿# 09 Performance QA — SS-CAM
-
-Last updated: 2026-08-11 | Version: v2.6.0
+# 09 — Performance Profiling
+Last updated: 2026-08-12 | Version: v3.0.0
 
 ---
 

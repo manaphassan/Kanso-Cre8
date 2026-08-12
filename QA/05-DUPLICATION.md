@@ -1,5 +1,5 @@
-# 05 — Duplication Scan
-**SS-CAM v2.6.0** | Last updated: 2026-08-10
+# 05 — Duplication Audit
+**SS-CAM v3.0.0** | Last updated: 2026-08-12
 
 ---
 

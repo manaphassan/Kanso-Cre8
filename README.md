@@ -159,13 +159,15 @@ Skills are in `.agents/skills/`. Verification script: `QA/verify-sscam.ps1`.
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| v2.6.0 | 2026-08-11 | Waktu Solat, Quick Notes, Task Manager, Workstation Health, Metamorphosis theme, encoding fix |
+| v3.0.0 | 2026-08-12 | Major Release: Full 12-module Fluent 2 overhaul, 5 switchable theme profiles, Settings revamp, Workstation Payload installer |
+| v2.6.3 | 2026-08-11 | Art Director & Architecture audit remediation, 100% clean Source Guardian |
+| v2.6.1 | 2026-08-11 | Header rebranding, persistent deep blue bottom player bar, fluid 60 FPS wavelength visualizer |
+| v2.6.0 | 2026-08-11 | Waktu Solat, Quick Notes, Task Manager, Workstation Health, Metamorphosis theme |
 | v2.5.1 | 2026-07 | Metamorphosis glassmorphism theme foundation |
 | v2.4.0 | 2026-07 | Brand Assets page, NAS health monitor |
 | v2.3.x | 2026-06 | Radio Player with Malaysian stations, lo-fi beats |
 | v2.2.0 | 2026-06 | Creative Wellbeing — box breathing, fatigue rules |
 | v2.1.0 | 2026-05 | Search & Copy with README preview |
-| v2.0.x | 2026-05 | Dashboard intelligence, Project Creator |
 
 Full history: [CHANGELOG.md](./CHANGELOG.md)
 
