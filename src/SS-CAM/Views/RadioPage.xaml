@@ -146,12 +146,12 @@
                     </Canvas>
 
                     <!-- Mars Male Symbol ♂ Backdrop Emblem (Pulsing with rhythm) -->
-                    <Canvas Canvas.Right="70" Canvas.Top="-10" IsHitTestVisible="False">
-                        <Grid Width="120" Height="120">
+                    <Canvas Canvas.Right="120" Canvas.Top="-10" IsHitTestVisible="False">
+                        <Grid Width="110" Height="110">
                             <Grid.RenderTransform>
-                                <ScaleTransform x:Name="MenIconScale" CenterX="60" CenterY="60" ScaleX="1.0" ScaleY="1.0"/>
+                                <ScaleTransform x:Name="MenIconScale" CenterX="55" CenterY="55" ScaleX="1.0" ScaleY="1.0"/>
                             </Grid.RenderTransform>
-                            <Viewbox Width="95" Height="95" Opacity="0.32" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Viewbox Width="90" Height="90" Opacity="0.35" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Canvas Width="100" Height="100">
                                     <Path Data="M 42,68 A 24,24 0 1 1 60,50 M 55,45 L 85,15 M 65,15 L 85,15 L 85,35"
                                           Stroke="#21A1F7" StrokeThickness="7.5"
