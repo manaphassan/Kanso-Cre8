@@ -27,3 +27,7 @@ stderr.txt
 *.suo
 Thumbs.db
 desktop.ini
+
+# ── Agent Temp / Wiki ─────────────────────────────────────────
+.agents/wiki/
+.agents/skills/sscam-release-publisher/scratch/
