@@ -143,35 +143,72 @@
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1"
                             CornerRadius="8,8,0,0" Padding="12,8">
                         <StackPanel>
-                            <!-- Toolbar Row 1: Formatting buttons -->
+                            <!-- Toolbar Row 1: Formatting buttons - full set -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="28" MinWidth="28" Padding="6,0"
+                                <!-- Headings -->
+                                <ui:Button x:Name="NMdH1" Content="H1" Click="OnNMdH1" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        FontWeight="Bold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 1 (# text)"/>
+                                <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## text)"/>
+                                <ui:Button x:Name="NMdH3" Content="H3" Click="OnNMdH3" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 3 (### text)"/>
+
+                                <Border Width="1" Height="14" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="4,0"/>
+
+                                <!-- Inline styles -->
+                                <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="28" MinWidth="28" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
                                         FontWeight="Bold" FontSize="13" BorderThickness="0" Cursor="Hand" ToolTip="Bold (**text**)"/>
-                                <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="28" MinWidth="28" Padding="6,0"
+                                <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="28" MinWidth="28" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         FontFamily="Georgia, serif" FontStyle="Italic" FontSize="13"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Italic (*text*)"/>
-                                <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="28" MinWidth="28" Padding="6,0"
+                                <ui:Button x:Name="NMdStrike" Click="OnNMdStrike" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Strikethrough (~~text~~)">
+                                    <ui:TextBlock Text="S" FontSize="13" TextDecorations="Strikethrough" VerticalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="28" MinWidth="28" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Inline code (`code`)">
                                     <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
                                 </ui:Button>
+                                <ui:Button x:Name="NMdCodeBlock" Click="OnNMdCodeBlock" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Code block (``` block ```)">
+                                    <ui:TextBlock Text="&#xE943;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
 
-                                <Border Width="1" Height="14" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="6,0"/>
+                                <Border Width="1" Height="14" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="4,0"/>
 
-                                <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="28" MinWidth="32" Padding="6,0"
+                                <!-- Block elements -->
+                                <ui:Button x:Name="NMdQuote" Click="OnNMdQuote" Height="28" MinWidth="28" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## text)"/>
-                                <ui:Button x:Name="NMdList" Click="OnNMdList" Height="28" MinWidth="44" Padding="6,0"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Blockquote (&gt; text)">
+                                    <ui:TextBlock Text="&#xE8D2;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdList" Click="OnNMdList" Height="28" MinWidth="44" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        BorderThickness="0" Cursor="Hand" ToolTip="List item (- text)">
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Bullet list (- text)">
                                     <StackPanel Orientation="Horizontal">
                                         <ui:TextBlock Text="&#x2022;" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
                                         <ui:TextBlock Text="List" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
-                                <ui:Button x:Name="NMdHR" Click="OnNMdHR" Height="28" MinWidth="40" Padding="6,0"
+                                <ui:Button x:Name="NMdNumList" Click="OnNMdNumList" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Numbered list (1. text)">
+                                    <ui:TextBlock Text="&#xE8FD;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdCheck" Click="OnNMdCheck" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Task checkbox (- [ ] text)">
+                                    <ui:TextBlock Text="&#xE73A;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdHR" Click="OnNMdHR" Height="28" MinWidth="36" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)">
                                     <StackPanel Orientation="Horizontal">
@@ -179,12 +216,22 @@
                                         <ui:TextBlock Text="HR" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
-                                <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="28" MinWidth="28" Padding="6,0"
+
+                                <Border Width="1" Height="14" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="4,0"/>
+
+                                <!-- Insert -->
+                                <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="28" MinWidth="28" Padding="5,0"
                                         Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
                                     <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
                                 </ui:Button>
+                                <ui:Button x:Name="NMdImage" Click="OnNMdImage" Height="28" MinWidth="28" Padding="5,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Image ![alt](url)">
+                                    <ui:TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
                             </StackPanel>
+
 
                             <!-- Toolbar Row 2: Status + Actions -->
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

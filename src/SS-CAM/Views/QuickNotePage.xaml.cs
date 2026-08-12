@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using SS_CAM.Services;
 
@@ -238,61 +239,243 @@ namespace SS_CAM.Views
             doc.PagePadding = new Thickness(0);
 
             System.Windows.Media.Brush mainTextBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
-            if (mainTextBrush != null)
-            {
-                doc.Foreground = mainTextBrush;
-            }
+            System.Windows.Media.Brush brandBrush    = FindResource("FluentBrand80")             as System.Windows.Media.Brush;
+            System.Windows.Media.Brush secondaryBrush = FindResource("TextFillColorSecondaryBrush") as System.Windows.Media.Brush;
 
+            if (mainTextBrush != null) doc.Foreground = mainTextBrush;
             if (string.IsNullOrWhiteSpace(markdown)) { NotePreviewViewer.Document = doc; return; }
 
-            // Hide frontmatter in preview (only show when in edit mode)
             string content = QuickNoteService.StripFrontmatter(markdown);
+            bool inCodeBlock = false;
+            Paragraph codePara = null;
 
             foreach (string line in content.Split(new char[] { '\n' }))
             {
                 string l = line.TrimEnd('\r');
-                Paragraph para = new Paragraph();
-                para.Margin = new Thickness(0, 2, 0, 2);
 
+                // ── Code fence (``` ... ```) ───────────────────────────────────
+                if (l.TrimStart().StartsWith("```"))
+                {
+                    inCodeBlock = !inCodeBlock;
+                    if (inCodeBlock)
+                    {
+                        codePara = new Paragraph();
+                        codePara.Margin = new Thickness(0, 4, 0, 4);
+                        codePara.FontFamily = new System.Windows.Media.FontFamily("Consolas");
+                        codePara.FontSize = 12;
+                        if (secondaryBrush != null) codePara.Foreground = secondaryBrush;
+                    }
+                    else if (codePara != null)
+                    {
+                        doc.Blocks.Add(codePara);
+                        codePara = null;
+                    }
+                    continue;
+                }
+                if (inCodeBlock)
+                {
+                    if (codePara != null) codePara.Inlines.Add(new Run(l + "\n"));
+                    continue;
+                }
+
+                // ── Headings ───────────────────────────────────────────────────
                 if (l.StartsWith("### "))
                 {
-                    para.FontSize = 14; para.FontWeight = FontWeights.SemiBold;
-                    para.Inlines.Add(l.Substring(4));
+                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 6, 0, 2);
+                    p.FontSize = 14; p.FontWeight = FontWeights.SemiBold;
+                    AddInlines(p.Inlines, l.Substring(4), brandBrush, mainTextBrush);
+                    doc.Blocks.Add(p); continue;
                 }
-                else if (l.StartsWith("## "))
+                if (l.StartsWith("## "))
                 {
-                    para.FontSize = 16; para.FontWeight = FontWeights.Bold;
-                    System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
-                    if (brandBrush != null) para.Foreground = brandBrush;
-                    para.Inlines.Add(l.Substring(3));
+                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 8, 0, 2);
+                    p.FontSize = 16; p.FontWeight = FontWeights.Bold;
+                    if (brandBrush != null) p.Foreground = brandBrush;
+                    AddInlines(p.Inlines, l.Substring(3), brandBrush, mainTextBrush);
+                    doc.Blocks.Add(p); continue;
                 }
-                else if (l.StartsWith("# "))
+                if (l.StartsWith("# "))
                 {
-                    para.FontSize = 20; para.FontWeight = FontWeights.Bold;
-                    System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
-                    if (brandBrush != null) para.Foreground = brandBrush;
-                    para.Inlines.Add(l.Substring(2));
+                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 10, 0, 4);
+                    p.FontSize = 20; p.FontWeight = FontWeights.Bold;
+                    if (brandBrush != null) p.Foreground = brandBrush;
+                    AddInlines(p.Inlines, l.Substring(2), brandBrush, mainTextBrush);
+                    doc.Blocks.Add(p); continue;
                 }
-                else if (l == "---")
+
+                // ── Horizontal rule ────────────────────────────────────────────
+                if (l == "---" || l == "***" || l == "___")
                 {
-                    doc.Blocks.Add(new BlockUIContainer(new Separator()));
+                    doc.Blocks.Add(new BlockUIContainer(new System.Windows.Controls.Separator()));
                     continue;
                 }
-                else if (l.StartsWith("- "))
+
+                // ── Blockquote ─────────────────────────────────────────────────
+                if (l.StartsWith("> "))
+                {
+                    Paragraph p = new Paragraph(); p.Margin = new Thickness(16, 2, 0, 2);
+                    p.BorderBrush = brandBrush; p.BorderThickness = new Thickness(3, 0, 0, 0);
+                    p.Padding = new Thickness(8, 0, 0, 0);
+                    if (secondaryBrush != null) p.Foreground = secondaryBrush;
+                    AddInlines(p.Inlines, l.Substring(2), brandBrush, mainTextBrush);
+                    doc.Blocks.Add(p); continue;
+                }
+
+                // ── Task checkbox ──────────────────────────────────────────────
+                if (l.StartsWith("- [ ] ") || l.StartsWith("- [x] ") || l.StartsWith("- [X] "))
+                {
+                    bool done = l[3] != ' ';
+                    List taskList = new List(); taskList.MarkerStyle = TextMarkerStyle.None;
+                    Paragraph inner = new Paragraph();
+                    inner.Inlines.Add(new Run(done ? "\u2611 " : "\u2610 "));
+                    AddInlines(inner.Inlines, l.Substring(6), brandBrush, mainTextBrush);
+                    if (done && secondaryBrush != null) inner.TextDecorations = TextDecorations.Strikethrough;
+                    taskList.ListItems.Add(new ListItem(inner));
+                    doc.Blocks.Add(taskList); continue;
+                }
+
+                // ── Bullet list ────────────────────────────────────────────────
+                if (l.StartsWith("- ") || l.StartsWith("* "))
                 {
                     List list = new List();
-                    ListItem li = new ListItem(new Paragraph(new Run(l.Substring(2))));
-                    list.ListItems.Add(li);
-                    doc.Blocks.Add(list);
-                    continue;
+                    Paragraph inner = new Paragraph();
+                    AddInlines(inner.Inlines, l.Substring(2), brandBrush, mainTextBrush);
+                    list.ListItems.Add(new ListItem(inner));
+                    doc.Blocks.Add(list); continue;
                 }
-                else
+
+                // ── Numbered list ──────────────────────────────────────────────
+                int dotIdx = l.IndexOf(". ");
+                if (dotIdx > 0 && dotIdx < 4)
                 {
-                    para.Inlines.Add(l);
+                    string numStr = l.Substring(0, dotIdx);
+                    int dummy;
+                    if (int.TryParse(numStr, out dummy))
+                    {
+                        List list = new List(); list.MarkerStyle = TextMarkerStyle.Decimal;
+                        Paragraph inner = new Paragraph();
+                        AddInlines(inner.Inlines, l.Substring(dotIdx + 2), brandBrush, mainTextBrush);
+                        list.ListItems.Add(new ListItem(inner));
+                        doc.Blocks.Add(list); continue;
+                    }
                 }
+
+                // ── Normal paragraph ───────────────────────────────────────────
+                Paragraph para = new Paragraph(); para.Margin = new Thickness(0, 2, 0, 2);
+                AddInlines(para.Inlines, l, brandBrush, mainTextBrush);
                 doc.Blocks.Add(para);
             }
+
+            if (codePara != null) doc.Blocks.Add(codePara); // unclosed fence
             NotePreviewViewer.Document = doc;
+        }
+
+        // ── Inline span parser: bold, italic, code, links ─────────────────────
+        private void AddInlines(InlineCollection inlines, string text,
+                                System.Windows.Media.Brush brandBrush,
+                                System.Windows.Media.Brush mainTextBrush)
+        {
+            int i = 0;
+            while (i < text.Length)
+            {
+                // Bold+Italic ***text***
+                if (i + 2 < text.Length && text[i] == '*' && text[i+1] == '*' && text[i+2] == '*')
+                {
+                    int end = text.IndexOf("***", i + 3);
+                    if (end >= 0)
+                    {
+                        var r = new Run(text.Substring(i + 3, end - i - 3));
+                        r.FontWeight = FontWeights.Bold; r.FontStyle = FontStyles.Italic;
+                        inlines.Add(r); i = end + 3; continue;
+                    }
+                }
+                // Bold **text**
+                if (i + 1 < text.Length && text[i] == '*' && text[i+1] == '*')
+                {
+                    int end = text.IndexOf("**", i + 2);
+                    if (end >= 0)
+                    {
+                        var r = new Run(text.Substring(i + 2, end - i - 2));
+                        r.FontWeight = FontWeights.Bold; inlines.Add(r); i = end + 2; continue;
+                    }
+                }
+                // Italic *text*
+                if (text[i] == '*')
+                {
+                    int end = text.IndexOf('*', i + 1);
+                    if (end >= 0)
+                    {
+                        var r = new Run(text.Substring(i + 1, end - i - 1));
+                        r.FontStyle = FontStyles.Italic; inlines.Add(r); i = end + 1; continue;
+                    }
+                }
+                // Strikethrough ~~text~~
+                if (i + 1 < text.Length && text[i] == '~' && text[i+1] == '~')
+                {
+                    int end = text.IndexOf("~~", i + 2);
+                    if (end >= 0)
+                    {
+                        var r = new Run(text.Substring(i + 2, end - i - 2));
+                        r.TextDecorations = TextDecorations.Strikethrough; inlines.Add(r); i = end + 2; continue;
+                    }
+                }
+                // Inline code `text`
+                if (text[i] == '`')
+                {
+                    int end = text.IndexOf('`', i + 1);
+                    if (end >= 0)
+                    {
+                        var r = new Run(text.Substring(i + 1, end - i - 1));
+                        r.FontFamily = new System.Windows.Media.FontFamily("Consolas");
+                        r.FontSize = 12; inlines.Add(r); i = end + 1; continue;
+                    }
+                }
+                // Link [text](url)
+                if (text[i] == '[')
+                {
+                    int closeBracket = text.IndexOf(']', i + 1);
+                    if (closeBracket >= 0 && closeBracket + 1 < text.Length && text[closeBracket + 1] == '(')
+                    {
+                        int closeParen = text.IndexOf(')', closeBracket + 2);
+                        if (closeParen >= 0)
+                        {
+                            string linkText = text.Substring(i + 1, closeBracket - i - 1);
+                            string url      = text.Substring(closeBracket + 2, closeParen - closeBracket - 2);
+                            try
+                            {
+                                Hyperlink hl = new Hyperlink(new Run(linkText));
+                                hl.NavigateUri = new Uri(url, UriKind.RelativeOrAbsolute);
+                                hl.RequestNavigate += (s, ev) => { System.Diagnostics.Process.Start(ev.Uri.AbsoluteUri); ev.Handled = true; };
+                                if (brandBrush != null) hl.Foreground = brandBrush;
+                                inlines.Add(hl);
+                            }
+                            catch { inlines.Add(new Run(string.Format("[{0}]({1})", linkText, url))); }
+                            i = closeParen + 1; continue;
+                        }
+                    }
+                }
+                // Image ![alt](url) — show alt text in italics
+                if (i + 1 < text.Length && text[i] == '!' && text[i+1] == '[')
+                {
+                    int closeBracket = text.IndexOf(']', i + 2);
+                    if (closeBracket >= 0 && closeBracket + 1 < text.Length && text[closeBracket + 1] == '(')
+                    {
+                        int closeParen = text.IndexOf(')', closeBracket + 2);
+                        if (closeParen >= 0)
+                        {
+                            string alt = text.Substring(i + 2, closeBracket - i - 2);
+                            var r = new Run(string.Format("[image: {0}]", alt)); r.FontStyle = FontStyles.Italic;
+                            if (brandBrush != null) r.Foreground = brandBrush;
+                            inlines.Add(r); i = closeParen + 1; continue;
+                        }
+                    }
+                }
+                // Plain character
+                int runStart = i;
+                while (i < text.Length && text[i] != '*' && text[i] != '`' && text[i] != '[' && text[i] != '~' && !(i + 1 < text.Length && text[i] == '!' && text[i+1] == '['))
+                    i++;
+                if (i > runStart) inlines.Add(new Run(text.Substring(runStart, i - runStart)));
+            }
         }
 
         // ─── Markdown Toolbar ─────────────────────────────────────────────────
@@ -330,11 +513,25 @@ namespace SS_CAM.Views
             NoteEditor.Focus();
         }
 
-        private void OnNMdBold(object sender, RoutedEventArgs e) { ApplyMarkdownWrap("**", "**", false); }
-        private void OnNMdItalic(object sender, RoutedEventArgs e) { ApplyMarkdownWrap("*", "*", false); }
-        private void OnNMdCode(object sender, RoutedEventArgs e) { ApplyMarkdownWrap("`", "`", false); }
-        private void OnNMdH2(object sender, RoutedEventArgs e) { ApplyMarkdownWrap("## ", "", true); }
-        private void OnNMdList(object sender, RoutedEventArgs e) { ApplyMarkdownWrap("- ", "", true); }
+        private void OnNMdBold(object sender, RoutedEventArgs e)      { ApplyMarkdownWrap("**", "**", false); }
+        private void OnNMdItalic(object sender, RoutedEventArgs e)    { ApplyMarkdownWrap("*", "*", false); }
+        private void OnNMdStrike(object sender, RoutedEventArgs e)    { ApplyMarkdownWrap("~~", "~~", false); }
+        private void OnNMdCode(object sender, RoutedEventArgs e)      { ApplyMarkdownWrap("`", "`", false); }
+        private void OnNMdH1(object sender, RoutedEventArgs e)        { ApplyMarkdownWrap("# ", "", true); }
+        private void OnNMdH2(object sender, RoutedEventArgs e)        { ApplyMarkdownWrap("## ", "", true); }
+        private void OnNMdH3(object sender, RoutedEventArgs e)        { ApplyMarkdownWrap("### ", "", true); }
+        private void OnNMdList(object sender, RoutedEventArgs e)      { ApplyMarkdownWrap("- ", "", true); }
+        private void OnNMdNumList(object sender, RoutedEventArgs e)   { ApplyMarkdownWrap("1. ", "", true); }
+        private void OnNMdCheck(object sender, RoutedEventArgs e)     { ApplyMarkdownWrap("- [ ] ", "", true); }
+        private void OnNMdQuote(object sender, RoutedEventArgs e)     { ApplyMarkdownWrap("> ", "", true); }
+        private void OnNMdCodeBlock(object sender, RoutedEventArgs e)
+        {
+            int pos = NoteEditor.SelectionStart;
+            string insert = "\n```\ncode\n```\n";
+            NoteEditor.Text = NoteEditor.Text.Insert(pos, insert);
+            NoteEditor.Select(pos + 5, 4);
+            NoteEditor.Focus();
+        }
         private void OnNMdHR(object sender, RoutedEventArgs e)
         {
             int pos = NoteEditor.SelectionStart;
@@ -346,11 +543,21 @@ namespace SS_CAM.Views
         private void OnNMdLink(object sender, RoutedEventArgs e)
         {
             int start = NoteEditor.SelectionStart;
-            int length = NoteEditor.SelectionLength;
             string selected = NoteEditor.SelectedText;
             string replacement = string.IsNullOrWhiteSpace(selected)
                 ? "[link text](url)"
                 : string.Format("[{0}](url)", selected);
+            NoteEditor.SelectedText = replacement;
+            NoteEditor.SelectionStart = start + replacement.Length;
+            NoteEditor.Focus();
+        }
+        private void OnNMdImage(object sender, RoutedEventArgs e)
+        {
+            int start = NoteEditor.SelectionStart;
+            string selected = NoteEditor.SelectedText;
+            string replacement = string.IsNullOrWhiteSpace(selected)
+                ? "![alt text](url)"
+                : string.Format("![{0}](url)", selected);
             NoteEditor.SelectedText = replacement;
             NoteEditor.SelectionStart = start + replacement.Length;
             NoteEditor.Focus();
