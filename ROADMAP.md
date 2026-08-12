@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-11.
+> **Living document.** Updated with every release. Last updated: 2026-08-12.
 
 ---
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 🔄 In Progress — v2.7.0 (Target: Q1 2027)
+## 🔄 In Progress — v3.1.0 (Target: Q4 2026 / Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
 

@@ -1,6 +1,6 @@
-﻿# 07 Windows Platform QA — SS-CAM
+# 07 — Windows Platform QA
 
-Last updated: 2026-08-11 | Version: v2.6.0
+Last updated: 2026-08-12 | Version: v3.0.0
 
 ---
 
