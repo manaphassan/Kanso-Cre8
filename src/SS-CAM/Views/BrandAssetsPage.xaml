@@ -5,6 +5,57 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Brand Assets">
 
+    <Page.Resources>
+        <!-- Swatch card hover: subtle scale lift + drop shadow -->
+        <Style x:Key="SwatchCardStyle" TargetType="ui:Card">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" Opacity="0.08" BlurRadius="8" ShadowDepth="2" Direction="270"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                 To="1.03" Duration="0:0:0.15"
+                                                 EasingFunction="{x:Null}"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                 To="1.03" Duration="0:0:0.15"
+                                                 EasingFunction="{x:Null}"/>
+                                <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity"
+                                                 To="0.22" Duration="0:0:0.15"/>
+                                <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius"
+                                                 To="18" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                 To="1.0" Duration="0:0:0.12"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                 To="1.0" Duration="0:0:0.12"/>
+                                <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity"
+                                                 To="0.08" Duration="0:0:0.12"/>
+                                <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius"
+                                                 To="8" Duration="0:0:0.12"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel>
             <!-- Header -->
@@ -69,7 +120,7 @@
                 <ui:TextBlock Text="Primary Colour Palette" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
                 <UniformGrid Columns="4">
                     <!-- SS Prussian Blue -->
-                    <ui:Card Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|281 C|SS Prussian Blue">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|281 C|SS Prussian Blue">
                         <StackPanel>
                             <Border Height="60" Background="#022057" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="SS Prussian Blue" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -81,7 +132,7 @@
                     </ui:Card>
 
                     <!-- SS Blue -->
-                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|287 C|SS Blue">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|287 C|SS Blue">
                         <StackPanel>
                             <Border Height="60" Background="#043388" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="SS Blue" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -93,7 +144,7 @@
                     </ui:Card>
 
                     <!-- Azure -->
-                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|299 C|Azure">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|299 C|Azure">
                         <StackPanel>
                             <Border Height="60" Background="#21A1F7" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Azure" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -105,7 +156,7 @@
                     </ui:Card>
 
                     <!-- Malibu -->
-                    <ui:Card Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|297 C|Malibu">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|297 C|Malibu">
                         <StackPanel>
                             <Border Height="60" Background="#6DC6EC" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Malibu" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -123,7 +174,7 @@
                 <ui:TextBlock Text="Secondary Colour Palette" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
                 <UniformGrid Columns="4">
                     <!-- Lion -->
-                    <ui:Card Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|4655 C|Lion">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|4655 C|Lion">
                         <StackPanel>
                             <Border Height="60" Background="#BD9A73" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Lion" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -135,7 +186,7 @@
                     </ui:Card>
 
                     <!-- Fawn -->
-                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|4665 C|Fawn">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|4665 C|Fawn">
                         <StackPanel>
                             <Border Height="60" Background="#CCAC8D" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Fawn" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -147,7 +198,7 @@
                     </ui:Card>
 
                     <!-- Arylide Yellow -->
-                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|108 C|Arylide Yellow">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|108 C|Arylide Yellow">
                         <StackPanel>
                             <Border Height="60" Background="#E5D15C" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Arylide Yellow" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
@@ -159,7 +210,7 @@
                     </ui:Card>
 
                     <!-- Banana Yellow -->
-                    <ui:Card Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|102 C|Banana Yellow">
+                    <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|102 C|Banana Yellow">
                         <StackPanel>
                             <Border Height="60" Background="#FCE53D" CornerRadius="4" Margin="0,0,0,10"/>
                             <ui:TextBlock Text="Banana Yellow" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
