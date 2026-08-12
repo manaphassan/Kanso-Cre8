@@ -617,9 +617,24 @@ namespace SS_CAM
                 RootNavigation.Resources["NavigationViewDefaultPaneBackground"]  = sidebarBrush;
             }
 
-            // -- TitleBar background: must match sidebar so they merge visually --
+            // -- TitleBar strip & caption buttons background + foreground: match theme --
+            var titleBgBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            var titleFgBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.TitleBarForeground));
+
+            if (TitleBarStrip != null)
+                TitleBarStrip.Background = titleBgBrush;
+
+            if (TitleBarAppTitle != null)
+                TitleBarAppTitle.Foreground = titleFgBrush;
+
+            if (TitleBarNavToggleIcon != null)
+                TitleBarNavToggleIcon.Foreground = titleFgBrush;
+
             if (AppTitleBar != null)
-                AppTitleBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SidebarBg));
+            {
+                AppTitleBar.Background = Brushes.Transparent;
+                AppTitleBar.Foreground = titleFgBrush;
+            }
 
             // -- PaneHeader: search box container --
             if (SidebarSearchBorder != null)
@@ -639,8 +654,6 @@ namespace SS_CAM
             // -- PaneFooter: user profile card background --
             if (SidebarUserCard != null)
                 SidebarUserCard.Background = Brushes.Transparent;
-            if (AppTitleBar != null)
-                AppTitleBar.Background = Brushes.Transparent;
 
             // -- PaneFooter: avatar ring background --
             if (SidebarAvatarRing != null)
@@ -648,9 +661,7 @@ namespace SS_CAM
 
             // -- PaneFooter: persona name + department text colors --
             if (SidebarPersonaName != null)
-                SidebarPersonaName.Foreground = (theme == AppTheme.Falconia || theme == AppTheme.Nord)
-                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText))
-                    : Brushes.White;
+                SidebarPersonaName.Foreground = titleFgBrush;
             if (SidebarPersonaDept != null)
                 SidebarPersonaDept.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
 

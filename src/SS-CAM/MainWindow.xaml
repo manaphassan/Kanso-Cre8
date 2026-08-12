@@ -34,7 +34,7 @@
         </Grid.RowDefinitions>
 
         <!-- TITLE BAR STRIP (Extended TitleBar Header with Toggle Button, Central Search & Profile Card) -->
-        <Grid Grid.Row="0" Height="42" Background="#022057"
+        <Grid x:Name="TitleBarStrip" Grid.Row="0" Height="42" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
               MouseLeftButtonDown="OnTitleBarDragWindow">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>   <!-- Navigation Toggle + App Brand -->
@@ -47,34 +47,35 @@
                 <ui:Button x:Name="TitleBarNavToggleBtn" Click="OnTitleBarNavToggleClicked"
                            Appearance="Secondary" Width="30" Height="30" Padding="0" Margin="0,0,10,0"
                            Cursor="Hand" ToolTip="Toggle Navigation Sidebar">
-                    <ui:TextBlock Text="&#xE700;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                  Foreground="White"/>
+                    <ui:TextBlock x:Name="TitleBarNavToggleIcon" Text="&#xE700;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                 </ui:Button>
 
-                <ui:TextBlock Text="SS Creative Assets Management" FontSize="13" FontWeight="Bold"
-                              Foreground="White" VerticalAlignment="Center"/>
+                <ui:TextBlock x:Name="TitleBarAppTitle" Text="SS Creative Assets Management" FontSize="13" FontWeight="Bold"
+                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- 2. Centered Global Search Box -->
             <Grid Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="340">
-                <Border x:Name="SidebarSearchBorder" Background="#043388" CornerRadius="6" Padding="8,4" Height="28">
+                <Border x:Name="SidebarSearchBorder" Background="{DynamicResource TextControlBackground}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8,4" Height="28">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ui:TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" Foreground="#8AAACF"
+                        <ui:TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                    FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
                         <TextBox x:Name="SidebarSearchBox" Grid.Column="1" Background="Transparent" BorderThickness="0"
-                                 Foreground="White" CaretBrush="White"
+                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
                                  Text="" Tag="Search modules, projects (Ctrl+K)..."
                                  FontSize="11.5" VerticalAlignment="Center"
                                  GotFocus="OnSearchBoxGotFocus"
                                  LostFocus="OnSearchBoxLostFocus"
                                  TextChanged="OnSearchBoxTextChanged"/>
-                        <Border Grid.Column="2" Background="#163B75" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
-                            <ui:TextBlock Text="Ctrl+K" FontSize="8.5" Foreground="#8AAACF" FontWeight="SemiBold"/>
+                        <Border Grid.Column="2" Background="{DynamicResource ControlFillColorSecondaryBrush}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
+                            <ui:TextBlock Text="Ctrl+K" FontSize="8.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontWeight="SemiBold"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -101,18 +102,18 @@
                         </Border>
                         <StackPanel VerticalAlignment="Center" Margin="0,0,4,0">
                             <ui:TextBlock x:Name="SidebarPersonaName" Text="Designer"
-                                       Foreground="White" FontSize="11.5" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="11.5" FontWeight="SemiBold"
                                        TextTrimming="CharacterEllipsis"/>
                             <ui:TextBlock x:Name="SidebarPersonaDept" Text="Creative" Visibility="Collapsed"
-                                       Foreground="#8AAACF" FontSize="9"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9"
                                        TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Native TitleBar for Window Minimize/Maximize/Close buttons (Transparent background, White foreground) -->
+                <!-- Native TitleBar for Window Minimize/Maximize/Close buttons -->
                 <ui:TitleBar x:Name="AppTitleBar" Title="" MinHeight="42" Height="42" VerticalAlignment="Center"
-                             Background="Transparent" Foreground="White"/>
+                             Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
             </StackPanel>
         </Grid>
 
