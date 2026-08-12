@@ -142,68 +142,60 @@
                     <Border DockPanel.Dock="Top" Background="{DynamicResource SubtitleBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1"
                             CornerRadius="8,8,0,0" Padding="12,8">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <!-- Markdown Toolbar Scrollable / Flexible Container -->
-                            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
-                                          Focusable="False">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="32" MinWidth="32" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
-                                            FontWeight="Bold" FontSize="13" BorderThickness="0" Cursor="Hand" ToolTip="Bold (**text**)"/>
-                                    <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="32" MinWidth="32" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            FontFamily="Georgia, serif" FontStyle="Italic" FontSize="13"
-                                            BorderThickness="0" Cursor="Hand" ToolTip="Italic (*text*)"/>
-                                    <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="32" MinWidth="32" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            BorderThickness="0" Cursor="Hand" ToolTip="Inline code (`code`)">
-                                        <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
-                                    </ui:Button>
-                                    
-                                    <Border Width="1" Height="16" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="6,0"/>
-                                    
-                                    <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="32" MinWidth="36" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## text)"/>
-                                    <ui:Button x:Name="NMdList" Click="OnNMdList" Height="32" MinWidth="48" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            BorderThickness="0" Cursor="Hand" ToolTip="List item (- text)">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:TextBlock Text="&#x2022;" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="List" FontSize="11" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </ui:Button>
-                                    <ui:Button x:Name="NMdHR" Click="OnNMdHR" Height="32" MinWidth="44" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:TextBlock Text="&#x2500;" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="HR" FontSize="11" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </ui:Button>
-                                    <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="32" MinWidth="32" Padding="6,0"
-                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
-                                        <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
-                                    </ui:Button>
-                                </StackPanel>
-                            </ScrollViewer>
+                        <StackPanel>
+                            <!-- Toolbar Row 1: Formatting buttons -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="28" MinWidth="28" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
+                                        FontWeight="Bold" FontSize="13" BorderThickness="0" Cursor="Hand" ToolTip="Bold (**text**)"/>
+                                <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="28" MinWidth="28" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        FontFamily="Georgia, serif" FontStyle="Italic" FontSize="13"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Italic (*text*)"/>
+                                <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="28" MinWidth="28" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Inline code (`code`)">
+                                    <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
+                                </ui:Button>
 
-                            <!-- Mode + Pin + Priority + Delete Actions -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <Border Width="1" Height="14" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="6,0"/>
+
+                                <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="28" MinWidth="32" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## text)"/>
+                                <ui:Button x:Name="NMdList" Click="OnNMdList" Height="28" MinWidth="44" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="List item (- text)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#x2022;" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="List" FontSize="11" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdHR" Click="OnNMdHR" Height="28" MinWidth="40" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#x2500;" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="HR" FontSize="11" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                                <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="28" MinWidth="28" Padding="6,0"
+                                        Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
+                                    <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                </ui:Button>
+                            </StackPanel>
+
+                            <!-- Toolbar Row 2: Status + Actions -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <ui:TextBlock x:Name="TxtSavedStatus" Text=""
                                             FontSize="11" FontWeight="Medium"
                                             Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center"
                                             Margin="0,0,12,0"/>
 
-                                <!-- Pin Toggle Button (Icon-only 32x32) -->
+                                <!-- Pin Toggle Button -->
                                 <ui:Button x:Name="BtnTogglePin" Click="OnTogglePinClicked"
-                                           Height="32" Width="32" Padding="0" Cursor="Hand" Margin="0,0,6,0"
+                                           Height="28" Width="28" Padding="0" Cursor="Hand" Margin="0,0,6,0"
                                            ToolTip="Pin note to top">
                                     <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="13"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -211,24 +203,24 @@
 
                                 <!-- Priority Dropdown -->
                                 <ComboBox x:Name="CmbPriority" SelectionChanged="OnPriorityChanged"
-                                          Height="32" Width="92" FontSize="11" Margin="0,0,6,0"
+                                          Height="28" Width="92" FontSize="11" Margin="0,0,6,0"
                                           Padding="8,0" VerticalContentAlignment="Center" ToolTip="Set note priority">
                                     <ComboBoxItem Content="Normal"/>
                                     <ComboBoxItem Content="Medium"/>
                                     <ComboBoxItem Content="High"/>
                                 </ComboBox>
-                                
-                                <!-- Mode Toggle Segmented Control (Icon-only 32x32) -->
+
+                                <!-- Mode Toggle Segmented Control -->
                                 <Border CornerRadius="4" Margin="0,0,6,0" Background="{DynamicResource ControlFillColorSecondaryBrush}">
                                     <StackPanel Orientation="Horizontal">
                                         <ui:Button x:Name="BtnModeEdit" Click="OnModeEdit"
-                                                Height="32" Width="32" Padding="0" Background="{DynamicResource FluentBrand80}"
+                                                Height="28" Width="28" Padding="0" Background="{DynamicResource FluentBrand80}"
                                                 Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Edit Note">
                                             <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons" FontSize="13"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </ui:Button>
                                         <ui:Button x:Name="BtnModePreview" Click="OnModePreview"
-                                                Height="32" Width="32" Padding="0" Background="Transparent"
+                                                Height="28" Width="28" Padding="0" Background="Transparent"
                                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                 BorderThickness="0" Cursor="Hand" ToolTip="Preview Markdown">
                                             <ui:TextBlock Text="&#xE890;" FontFamily="Segoe Fluent Icons" FontSize="13"
@@ -237,14 +229,15 @@
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Delete Note Button (Icon-only 32x32) -->
+                                <!-- Delete Note Button -->
                                 <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
-                                           Height="32" Width="32" Padding="0" Cursor="Hand" ToolTip="Delete Note">
+                                           Height="28" Width="28" Padding="0" Cursor="Hand" ToolTip="Delete Note">
                                     <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </ui:Button>
                             </StackPanel>
-                        </Grid>
+                        </StackPanel>
+
                     </Border>
 
                     <!-- Main Editor Body Container -->
