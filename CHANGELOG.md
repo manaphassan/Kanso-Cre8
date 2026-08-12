@@ -2,7 +2,22 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.1.0] - 2026-08-12 (Latest)
+## [3.1.1] - 2026-08-12 (Latest)
+
+### Added & Refined — Patch Release
+- **Native NAS Settings & Preferences Auto-Sync (`NasConfigSyncService`)**: Automatic real-time mirroring and auto-syncing of user profile (`user_profile.json`), theme preferences (`theme_config.json`), category presets (`category_presets.json`), and Quick Notes (`Notes/`) to `<WorkspaceRoot>\_Team\_Config\` on the NAS / Synology Drive.
+- **Multi-PC Workstation Sync**: Automatically detects newer settings saved on PC 1 when launching SS-CAM on PC 2 without requiring manual config copying.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.1.1.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.1.1.0 |
+| `AssemblyFileVersion` | 3.1.1.0 |
+
+---
+
+## [3.1.0] - 2026-08-12
 
 ### Added & Refined — Minor Release
 - **QR Code Studio & Generator Module (`QrCodePage`)**: Native vector/raster QR Code Generator supporting URL, Plain Text, Wi-Fi network, and VCard payload formats with custom brand palette styling, PNG file export, and instant Clipboard copy integration.
