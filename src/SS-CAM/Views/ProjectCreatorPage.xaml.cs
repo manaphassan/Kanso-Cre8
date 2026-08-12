@@ -46,12 +46,25 @@ namespace SS_CAM.Views
             Loaded += OnPageLoaded;
         }
 
+        private void SyncWorkspaceRootFromInput()
+        {
+            if (TargetDirectoryInput != null && !string.IsNullOrWhiteSpace(TargetDirectoryInput.Text))
+            {
+                workspaceRoot = TargetDirectoryInput.Text.Trim();
+            }
+        }
+
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             currentProfile = UserProfileService.LoadProfile();
-            if (!string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot))
+            string root = !string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot)
+                ? currentProfile.WorkspaceRoot
+                : @"D:\Testing";
+
+            workspaceRoot = root;
+            if (TargetDirectoryInput != null)
             {
-                workspaceRoot = currentProfile.WorkspaceRoot;
+                TargetDirectoryInput.Text = root;
             }
 
             ReloadCategoryPresets();
@@ -92,6 +105,7 @@ namespace SS_CAM.Views
         {
             try
             {
+                SyncWorkspaceRootFromInput();
                 string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
                 string targetDir = Path.Combine(workspaceRoot, designerFolder);
                 
@@ -108,25 +122,31 @@ namespace SS_CAM.Views
                         Match m = regex.Match(dirName);
                         if (m.Success)
                         {
-                            int id;
-                            if (int.TryParse(m.Groups[1].Value, out id))
+                            int idVal;
+                            if (int.TryParse(m.Groups[1].Value, out idVal))
                             {
-                                if (id > maxId) maxId = id;
+                                if (idVal > maxId) maxId = idVal;
                             }
                         }
                     }
                 }
 
-                maxId++;
-                
-                CategoryPreset selectedPreset = GetSelectedCategoryPreset();
-                string suffix = selectedPreset != null ? selectedPreset.Suffix : "D";
+                int nextId = maxId + 1;
+                string staffChar = "D";
+                if (!string.IsNullOrWhiteSpace(currentProfile.StaffId))
+                {
+                    string lastChar = currentProfile.StaffId.Trim().Substring(currentProfile.StaffId.Trim().Length - 1).ToUpper();
+                    if (Regex.IsMatch(lastChar, @"[A-Z]")) staffChar = lastChar;
+                }
 
-                ProjectIdInput.Text = maxId.ToString("D4") + suffix;
+                if (ProjectIdInput != null)
+                {
+                    ProjectIdInput.Text = string.Format("{0:D4}{1}", nextId, staffChar);
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] AutoGenerateNextProjectId: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] AutoCalculateNextProjectId error: " + ex.Message);
             }
         }
 
@@ -424,14 +444,23 @@ namespace SS_CAM.Views
         private void OnBrowseTargetDirectory(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (TargetDirectoryInput != null && !string.IsNullOrWhiteSpace(TargetDirectoryInput.Text))
+            {
+                dialog.SelectedPath = TargetDirectoryInput.Text;
+            }
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 TargetDirectoryInput.Text = dialog.SelectedPath;
+                SyncWorkspaceRootFromInput();
+                AutoCalculateNextProjectId();
+                UpdateLivePreview();
+                LoadRecentProjects();
             }
         }
 
         private async void LoadRecentProjects()
         {
+            SyncWorkspaceRootFromInput();
             string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
             List<DesignerFolderItem> items = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, designerFolder, "", 10);
             RecentProjectsList.ItemsSource = items;

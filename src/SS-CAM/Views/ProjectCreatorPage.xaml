@@ -204,7 +204,7 @@
                                         <ColumnDefinition Width="10"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <ui:TextBox x:Name="TargetDirectoryInput" Text="D:\Testing" Height="36" Grid.Column="0" TextChanged="OnFormInputChanged"/>
+                                    <ui:TextBox x:Name="TargetDirectoryInput" Height="36" Grid.Column="0" TextChanged="OnFormInputChanged"/>
                                     <ui:Button Grid.Column="2" Appearance="Secondary" Content="Browse..." Click="OnBrowseTargetDirectory" Height="34" Width="100" FontWeight="SemiBold" Cursor="Hand"/>
                                 </Grid>
                             </StackPanel>
