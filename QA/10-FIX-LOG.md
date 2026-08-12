@@ -1,5 +1,20 @@
 # SS-CAM FIX LOG
 
+## v3.0.1 — 2026-08-12 (Art Director Full QA Run)
+
+### Sidebar Navigation & Footer Collapse
+- **Categorized Navigation**: Grouped all 11 application modules into 5 logical categories (`OVERVIEW`, `CREATION & ASSETS`, `PRODUCTIVITY`, `WELLBEING & FAITH`, `SYSTEM`) using `ui:NavigationViewItemHeader` and `ui:NavigationViewItemSeparator`.
+- **Adaptive Footer Collapse**: `OnNavigationPaneOpened` / `OnNavigationPaneClosed` handlers hide status text and switch bottom player to compact mode when sidebar collapses.
+- **Footer Icon Centering**: Status icons correctly centered in compact collapsed mode.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+- GitHub Release: PUBLISHED (v3.0.1 set as Latest on SuamiSihat/ss_cam).
+- Documentation: Updated (README, FINAL-QA-REPORT, QA/README, 10-FIX-LOG aligned to v3.0.1).
+
+---
+
 ## v3.0.0 — 2026-08-12 (Major Release)
 
 ### Major UI/UX & Settings Module Overhaul

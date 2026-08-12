@@ -1,8 +1,8 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v3.0.0 Major Architecture & Complete Module Revamp
+## Status: PASS — v3.0.1 Categorized Navigation & Adaptive Footer
 
-**QA Date**: 2026-08-12 (post major architecture & complete module revamp)  
+**QA Date**: 2026-08-12 (post v3.0.1 sidebar navigation & footer collapse release)  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**
 
@@ -35,4 +35,4 @@
 
 ### Executable Binary
 - Release Package: [`src/SS-CAM/bin/Release/SS-CAM.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/bin/Release/SS-CAM.exe)
-- Release Dist Binary: [`dist/SS-CAM-v3.0.0.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v3.0.0.exe)
+- Release Dist Binary: [`dist/SS-CAM-v3.0.1.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v3.0.1.exe)

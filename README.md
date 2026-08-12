@@ -24,7 +24,14 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 
 ---
 
-## What's New in v3.0.0
+## What's New in v3.0.1
+
+| # | Change | Details |
+|---|--------|---------|
+| 1 | **Categorized Fluent 2 Sidebar Navigation** | All 11 modules grouped into 5 logical categories (`OVERVIEW`, `CREATION & ASSETS`, `PRODUCTIVITY`, `WELLBEING & FAITH`, `SYSTEM`) with `NavigationViewItemHeader` labels and visual separators. |
+| 2 | **Adaptive Bottom Live Bar Collapse** | Status text hides and bottom player transitions to compact mode when the sidebar pane is collapsed — maximizing canvas space. |
+
+### Previous: v3.0.0 Highlights
 
 | # | Change | Details |
 |---|--------|---------|
@@ -33,15 +40,6 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 | 3 | **5 Switchable Theme Profiles** | Native support for Falconia, Metamorphosis, Catppuccin, Rosé Pine, and Nord themes. |
 | 4 | **Workstation Payload Installer** | One-click font installation and asset library deployment built into Settings. |
 | 5 | **Synology NAS Resilience** | Exponential backoff retry loops and MAX_PATH guardrails for high-reliability file operations. |
-| 1 | **Waktu Solat** | Live JAKIM API prayer times for all 41 Malaysian zones, countdown to next prayer, adhan reminder notifications |
-| 2 | **Quick Notes** | Rich-text note editor with Markdown preview, persistent storage, keyboard shortcuts |
-| 3 | **Task Manager** | YAML frontmatter board — reads project README.md files, status columns, due-date tracking |
-| 4 | **Workstation Health** | Real-time CPU, RAM, and disk monitoring with threshold alerts |
-| 5 | **Metamorphosis Theme** | Glassmorphism skin — deep space navy canvas, electric cyan accent, glass-card surfaces |
-| 6 | **3-Way Theme Cycle** | Status-bar theme toggle: SS Default → Falconia → Metamorphosis |
-| 7 | **Radio Cover Art** | Album art display in Radio Player from stream metadata |
-| 8 | **Encoding Fix** | All source files re-saved as UTF-8 BOM — eliminates mojibake on all locales |
-| 9 | **Source Guardian** | Pre-commit verification script (`QA/verify-sscam.ps1`) and agent skills |
 
 ---
 
@@ -103,7 +101,7 @@ Switch themes by clicking the theme indicator in the sidebar status bar.
 
 ## Installation
 
-1. Download `SS-CAM-v2.6.0.exe` from the [Releases](https://github.com/SuamiSihat/ss_cam/releases/latest) page
+1. Download `SS-CAM-v3.0.1.exe` from the [Releases](https://github.com/SuamiSihat/ss_cam/releases/latest) page
 2. Run the exe — no installation step required
 3. On first launch, SS-CAM will:
    - Copy itself to `%LocalAppData%\Programs\SuamiSihat\`
