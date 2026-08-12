@@ -18,6 +18,12 @@ namespace SS_CAM.Views
         {
             InitializeComponent();
             Loaded += OnPageLoaded;
+            Unloaded += OnPageUnloaded;
+        }
+
+        private void OnPageUnloaded(object sender, RoutedEventArgs e)
+        {
+            // Reserved for future cleanup
         }
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
@@ -154,7 +160,7 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You are running SS-CAM v2.6.3. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("You are running SS-CAM v2.6.1. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)
@@ -174,6 +180,33 @@ namespace SS_CAM.Views
         private void OnSelectMetamorphosisTheme(object sender, RoutedEventArgs e)
         {
             ThemeService.ApplyTheme(AppTheme.Metamorphosis);
+        }
+
+        private void OnSelectCatppuccinTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.Catppuccin);
+        }
+
+        private void OnSelectRosePineTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.RosePine);
+        }
+
+        private void OnSelectNordTheme(object sender, RoutedEventArgs e)
+        {
+            ThemeService.ApplyTheme(AppTheme.Nord);
+        }
+
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            try
+            {
+                var sv = sender as ScrollViewer;
+                if (sv == null) return;
+                sv.ScrollToVerticalOffset(sv.VerticalOffset - e.Delta * 0.5);
+                e.Handled = true;
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SettingsPage] OnScrollViewerPreviewMouseWheel: " + ex.Message); }
         }
 
 
