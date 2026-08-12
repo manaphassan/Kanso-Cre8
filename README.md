@@ -6,7 +6,7 @@
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 
-[![Latest Release](https://img.shields.io/badge/release-v3.1.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v3.1.2-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![Design](https://img.shields.io/badge/design-Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -156,6 +156,7 @@ Skills are in `.agents/skills/`. Verification script: `QA/verify-sscam.ps1`.
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| v3.1.2 | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
 | v3.1.1 | 2026-08-12 | Native NAS settings & preferences auto-sync (`NasConfigSyncService`), multi-PC profile sync |
 | v3.1.0 | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |
 | v3.0.1 | 2026-08-12 | Categorized Fluent 2 sidebar navigation, adaptive bottom live bar collapse state |
