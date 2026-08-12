@@ -157,39 +157,29 @@
                 <Grid Height="14"/>
             </ui:NavigationView.PaneHeader>
 
-            <!-- MENU ITEMS (Categorized & Sorted) -->
+            <!-- MENU ITEMS (Grouped by Separators) -->
             <ui:NavigationView.MenuItems>
-                <!-- DASHBOARD -->
-                <ui:NavigationViewItemHeader Text="DASHBOARD" />
                 <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <!-- PROJECT CREATOR & BRAND ASSETS -->
-                <ui:NavigationViewItemHeader Text="PROJECT CREATOR &amp; BRAND ASSETS" />
                 <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
                 <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
                 <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <!-- TASK MANAGER & QUICK NOTES -->
-                <ui:NavigationViewItemHeader Text="TASK MANAGER &amp; QUICK NOTES" />
                 <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
                 <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <!-- CREATIVE WELLBEING & WAKTU SOLAT -->
-                <ui:NavigationViewItemHeader Text="CREATIVE WELLBEING &amp; WAKTU SOLAT" />
                 <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
                 <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
                 <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <!-- WORKSTATION HEALTH & SETTINGS -->
-                <ui:NavigationViewItemHeader Text="WORKSTATION HEALTH &amp; SETTINGS" />
                 <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
                 <ui:NavigationViewItemSeparator />
                 <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
