@@ -18,6 +18,8 @@
 | **v2.5.0** | 2026-08-10 | Quick Notes module, Task Manager Kanban, Team Board, Frontmatter injection in Project Creator |
 | **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, hardcoded D:\Testing paths eliminated, Team Board offline guard, dynamic rescan count, static HttpClient, H3 preview, Debug logging |
 | **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: Modernized Dashboard & Project Creator cards, Adobe/Affinity app bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray popover, Visual Asset Lightbox modal, Revision Timeline view, SS Default theme contrast fix |
+| **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Phase 1-4 audit fixes, dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization, 100% clean Source Guardian |
+| **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, Designer Profile & Settings 2-column revamp, 5 switchable theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord), Workstation Payload installer |
 
 ---
 
