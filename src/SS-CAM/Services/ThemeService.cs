@@ -117,27 +117,27 @@ namespace SS_CAM.Services
                 IsLight = true,
                 FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
-                TitleBarForeground = "#242424",
+                TitleBarForeground = "#FFFFFF",
 
-                // Header & Canvas
-                HeaderBg        = "#FFFFFF",
-                HeaderBorder    = "#D1D1D1",
+                // Header & Canvas (SS Blue header)
+                HeaderBg        = "#043388",
+                HeaderBorder    = "#062E7A",
                 MainFrameBg     = "#FAFAFA",
 
-                // Sidebar: neutral background 2 (#F5F5F5) with stroke (#E0E0E0)
-                SidebarBg       = "#F5F5F5",
-                SidebarBorder   = "#E0E0E0",
+                // Sidebar
+                SidebarBg       = "#043388",
+                SidebarBorder   = "#062E7A",
 
                 // Global search in sidebar
-                SearchBg          = "#EBEBEB",
-                SearchBorder      = "#D1D1D1",
-                SearchText        = "#242424",
-                SearchPlaceholder = "#616161",
+                SearchBg          = "#0644B2",
+                SearchBorder      = "#1B55C4",
+                SearchText        = "#FFFFFF",
+                SearchPlaceholder = "#8AAACF",
 
-                // Active nav item: text = SAME color as active icon (#0F6CBD)
-                ActiveNavBg     = "#EBF3FC",              // subtle blue tint
-                ActiveNavText   = "#0F6CBD",              // same color as icon active!
-                ActiveNavSubtext= "#115EA3",
+                // Active nav item: text = SAME color as active icon (#21A1F7 Azure)
+                ActiveNavBg     = "#EBF4FE",              // subtle azure tint
+                ActiveNavText   = "#21A1F7",              // Azure Blue!
+                ActiveNavSubtext= "#0E84D3",
 
                 // Inactive nav: dark grey text (#424242), grey icon (#616161)
                 InactiveNavText    = "#424242",           // turns grey when inactive
@@ -151,19 +151,54 @@ namespace SS_CAM.Services
                 FooterCardBorder= "#E0E0E0",
 
                 // Designer Profile card in sidebar
-                UserCardBg      = "#FFFFFF",
-                UserCardBorder  = "#D1D1D1",
-                UserCardTitle   = "#242424",
-                UserCardSub     = "#616161",
+                UserCardBg      = "#0644B2",
+                UserCardBorder  = "#1B55C4",
+                UserCardTitle   = "#FFFFFF",
+                UserCardSub     = "#21A1F7",
 
-                // Nav indicator pill + icon tint
-                NavIndicatorColor = "#0F6CBD",
-                NavIconActive     = "#0F6CBD",            // brand blue active icon
+                // Nav indicator pill + icon tint (Azure #21A1F7)
+                NavIndicatorColor = "#21A1F7",
+                NavIconActive     = "#21A1F7",            // Azure blue active icon
                 NavIconInactive   = "#616161",            // grey inactive icon
 
                 // Visualizer bar color for light mode
-                SpectrumBarColor  = "#0F6CBD"
+                SpectrumBarColor  = "#21A1F7"
             };
+        }
+
+        public static void ApplyTheme(AppTheme theme)
+        {
+            _currentTheme = theme;
+            SaveTheme(theme);
+
+            try
+            {
+                var appTheme = (theme == AppTheme.Metamorphosis || theme == AppTheme.Catppuccin || theme == AppTheme.RosePine)
+                    ? Wpf.Ui.Appearance.ApplicationTheme.Dark
+                    : Wpf.Ui.Appearance.ApplicationTheme.Light;
+
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
+
+                Color accentColor;
+                if (theme == AppTheme.Metamorphosis)
+                    accentColor = (Color)ColorConverter.ConvertFromString("#00CFFF");
+                else if (theme == AppTheme.Catppuccin)
+                    accentColor = (Color)ColorConverter.ConvertFromString("#CBA6F7");
+                else if (theme == AppTheme.RosePine)
+                    accentColor = (Color)ColorConverter.ConvertFromString("#EBBCBA");
+                else if (theme == AppTheme.Nord)
+                    accentColor = (Color)ColorConverter.ConvertFromString("#5E81AC");
+                else
+                    accentColor = (Color)ColorConverter.ConvertFromString("#FCE53D");
+
+                Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accentColor, appTheme);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] ApplyTheme WpfUI: " + ex.Message); }
+
+            SwapResourceDictionary(theme);
+
+            if (ThemeChanged != null)
+                ThemeChanged(theme);
         }
 
         private static ThemeColors GetMetamorphosisColors()
@@ -350,43 +385,7 @@ namespace SS_CAM.Services
                 NavIconActive     = "#5E81AC",
                 NavIconInactive   = "#4C566A",
 
-                SpectrumBarColor  = "#5E81AC"
             };
-        }
-
-        public static void ApplyTheme(AppTheme theme)
-        {
-            _currentTheme = theme;
-            SaveTheme(theme);
-
-            try
-            {
-                var appTheme = (theme == AppTheme.Metamorphosis || theme == AppTheme.Catppuccin || theme == AppTheme.RosePine)
-                    ? Wpf.Ui.Appearance.ApplicationTheme.Dark
-                    : Wpf.Ui.Appearance.ApplicationTheme.Light;
-
-                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
-
-                Color accentColor;
-                if (theme == AppTheme.Metamorphosis)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#00CFFF");
-                else if (theme == AppTheme.Catppuccin)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#CBA6F7");
-                else if (theme == AppTheme.RosePine)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#EBBCBA");
-                else if (theme == AppTheme.Nord)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#5E81AC");
-                else
-                    accentColor = (Color)ColorConverter.ConvertFromString("#0F6CBD");
-
-                Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accentColor, appTheme);
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] ApplyTheme WpfUI: " + ex.Message); }
-
-            SwapResourceDictionary(theme);
-
-            if (ThemeChanged != null)
-                ThemeChanged(theme);
         }
 
         private static void SwapResourceDictionary(AppTheme theme)
