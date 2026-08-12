@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Windows.Input;
 using SS_CAM.Models;
 using SS_CAM.Services;
 
@@ -50,6 +51,172 @@ namespace SS_CAM.Views
             Unloaded += OnPageUnloaded;
         }
 
+        private class MarsParticle
+        {
+            public Viewbox Element;
+            public double BaseX;
+            public double BaseY;
+            public double CurrentX;
+            public double Speed;
+            public double PhaseOffset;
+            public double BaseOpacity;
+            public double RotationSpeed;
+            public RotateTransform Rotation;
+            public TranslateTransform Translation;
+        }
+
+        private class SSLogoParticle
+        {
+            public Viewbox Element;
+            public double BaseX;
+            public double BaseY;
+            public double CurrentX;
+            public double Speed;
+            public double Amplitude;
+            public double PhaseOffset;
+            public TranslateTransform Translation;
+        }
+
+        private readonly List<MarsParticle> _marsParticles = new List<MarsParticle>();
+        private readonly List<SSLogoParticle> _logoParticles = new List<SSLogoParticle>();
+        private bool _symbolsInitialized = false;
+
+        private Point _mousePos = new Point(-1000, -1000);
+        private Point _targetMousePos = new Point(-1000, -1000);
+
+        private void OnHeroMeshMouseMove(object sender, MouseEventArgs e)
+        {
+            if (HeroMeshContainer != null)
+                _targetMousePos = e.GetPosition(HeroMeshContainer);
+        }
+
+        private void OnHeroMeshMouseLeave(object sender, MouseEventArgs e)
+        {
+            _targetMousePos = new Point(-1000, -1000);
+        }
+
+        private void InitializeScatteredMarsSymbols()
+        {
+            if (_symbolsInitialized || ScatteredSymbolsCanvas == null) return;
+            _symbolsInitialized = true;
+
+            _marsParticles.Clear();
+            _logoParticles.Clear();
+            ScatteredSymbolsCanvas.Children.Clear();
+
+            Random rand = new Random(42);
+            string fullMarsPath = "M 42,68 A 24,24 0 1 1 60,50 M 55,45 L 85,15 M 65,15 L 85,15 L 85,35";
+            string shatteredMarsPath = "M 42,68 A 24,24 0 1 1 54,28 M 55,45 L 85,15 M 65,15 L 85,15 L 85,35"; // 1/3 shattered variant
+
+            // 1. Exactly 65 Scattered Mars Symbols matching https://assets.suamisihat.myds.me/
+            for (int i = 0; i < 65; i++)
+            {
+                double size = 6.0 + rand.NextDouble() * 12.0; // Delicate 6px to 18px matching official assets site
+                double rotationAngle = rand.NextDouble() * 360.0;
+                double rotSpeed = (rand.NextDouble() - 0.5) * 0.8;
+                double opacity = 0.08 + rand.NextDouble() * 0.28; // Delicate twinkling translucency
+                double x = rand.NextDouble() * 1150.0;
+                double y = rand.NextDouble() * 240.0;
+
+                bool isShattered = (i % 3 == 0); // 1/3 shattered variant as on official site
+                string pathData = isShattered ? shatteredMarsPath : fullMarsPath;
+
+                Viewbox vb = new Viewbox
+                {
+                    Width = size,
+                    Height = size,
+                    Opacity = opacity
+                };
+
+                Canvas.SetLeft(vb, x);
+                Canvas.SetTop(vb, y);
+
+                TransformGroup group = new TransformGroup();
+                RotateTransform rotate = new RotateTransform(rotationAngle);
+                TranslateTransform translation = new TranslateTransform();
+                group.Children.Add(rotate);
+                group.Children.Add(translation);
+                vb.RenderTransform = group;
+
+                Canvas innerCanvas = new Canvas { Width = 100, Height = 100 };
+                System.Windows.Shapes.Path path = new System.Windows.Shapes.Path
+                {
+                    Data = Geometry.Parse(pathData),
+                    Stroke = (Brush)new BrushConverter().ConvertFromString("#21A1F7"), // Official Azure
+                    StrokeThickness = 6.0, // Crisp thin stroke
+                    StrokeStartLineCap = PenLineCap.Round,
+                    StrokeEndLineCap = PenLineCap.Round,
+                    StrokeLineJoin = PenLineJoin.Round
+                };
+                innerCanvas.Children.Add(path);
+                vb.Child = innerCanvas;
+
+                ScatteredSymbolsCanvas.Children.Add(vb);
+
+                _marsParticles.Add(new MarsParticle
+                {
+                    Element = vb,
+                    BaseX = x,
+                    BaseY = y,
+                    CurrentX = x,
+                    Speed = 0.6 + rand.NextDouble() * 1.4,
+                    PhaseOffset = rand.NextDouble() * Math.PI * 2,
+                    BaseOpacity = opacity,
+                    RotationSpeed = rotSpeed,
+                    Rotation = rotate,
+                    Translation = translation
+                });
+            }
+
+            // 2. Exactly 5 Floating SuamiSihat Logo Marks spaced across hero section
+            string logoPath1 = "M502.876,705.61c11.387,10.993 24.629,18.95 38.659,23.928c23.084,8.125 48.39,8.125 71.501,-0.03l0.027,-0.027c3.572,-1.209 7.031,-2.643 10.488,-4.301l0.03,-0.03c10.121,-4.836 19.652,-11.33 28.144,-19.54c0.505,-0.449 1.012,-0.956 1.491,-1.433c0.477,-0.48 0.982,-0.984 1.434,-1.491c8.21,-8.49 14.704,-18.024 19.539,-28.144c1.661,-3.46 3.122,-6.946 4.331,-10.516l0.028,-0.027c8.154,-23.113 8.154,-48.418 0.027,-71.501c-4.975,-14.032 -12.933,-27.275 -23.925,-38.662c-0.452,-0.504 -0.957,-1.011 -1.434,-1.488l-101.221,-101.221c-13.974,-13.974 -36.636,-13.974 -50.61,-0c-13.468,13.467 -13.945,35.032 -1.434,49.119c0.45,0.507 0.957,1.014 1.434,1.491l101.221,101.219c0.477,0.479 0.984,0.984 1.433,1.491c12.511,14.087 12.034,35.652 -1.433,49.119c-13.975,13.975 -36.636,13.975 -50.611,0l-62.559,-62.559l-50.611,50.61l62.56,62.56c0.479,0.477 0.984,0.984 1.491,1.433";
+            string logoPath2 = "M490.954,375.185c23.111,-8.155 48.418,-8.155 71.501,-0.028c14.03,4.975 27.272,12.933 38.659,23.928c0.507,0.449 1.012,0.954 1.491,1.433l38.659,38.66l50.611,-50.611l-38.659,-38.659c-0.48,-0.479 -0.984,-0.984 -1.491,-1.434c-11.387,-10.994 -24.63,-18.952 -38.662,-23.927c-23.083,-8.125 -48.387,-8.125 -71.498,0.027l-0.03,0.03c-3.57,1.209 -7.056,2.67 -10.516,4.329c-10.12,4.835 -19.651,11.331 -28.143,19.541c-0.507,0.45 -1.012,0.955 -1.491,1.434c-0.478,0.477 -0.985,0.984 -1.434,1.489c-8.21,8.492 -14.704,18.023 -19.54,28.146c3.457,-1.659 6.944,-3.122 10.516,-4.329l0.027,-0.029Z";
+            string logoPath3 = "M868.833,575.634c-0.023,0.218 -0.048,0.435 -0.071,0.653c-18.065,165.563 -158.344,294.405 -328.714,294.405c-91.316,-0 -173.954,-37.047 -233.795,-96.89l-50.679,50.679c72.847,73.012 173.527,118.246 284.62,118.246c222.041,-0 402.718,-180.675 402.718,-402.715c0,-12.271 -0.576,-24.417 -1.642,-36.398l-80.06,0l0,0.122l-155.407,-0l4.769,4.771c-0,0 29.495,27.187 46.373,67.083l111.819,0l0.069,0.044Z";
+            string logoPath4 = "M613.037,729.509c-23.114,8.155 -48.418,8.155 -71.501,0.028c-14.03,-4.976 -27.273,-12.933 -38.659,-23.926c-0.507,-0.449 -1.014,-0.956 -1.492,-1.433l-62.559,-62.56l-50.61,50.608l62.561,62.56c0.478,0.479 0.982,0.984 1.489,1.433c11.387,10.995 24.63,18.95 38.659,23.928c23.086,8.125 48.39,8.125 71.501,-0.028l0.028,-0.029c3.571,-1.209 7.058,-2.67 10.517,-4.329c10.121,-4.838 19.652,-11.33 28.144,-19.542c0.507,-0.449 1.012,-0.954 1.489,-1.433c0.479,-0.478 0.986,-0.984 1.436,-1.491c8.21,-8.49 14.704,-18.021 19.512,-28.117c-3.459,1.661 -6.916,3.095 -10.488,4.304l-0.027,0.027Z";
+
+            for (int k = 0; k < 5; k++)
+            {
+                double size = 28.0 + rand.NextDouble() * 16.0; // 28px to 44px matching assets site
+                double opacity = 0.15 + rand.NextDouble() * 0.20;
+                double x = (1100.0 / 6.0) * (k + 1) + (rand.NextDouble() - 0.5) * 80.0;
+                double y = 40.0 + rand.NextDouble() * 130.0;
+
+                Viewbox vb = new Viewbox
+                {
+                    Width = size,
+                    Height = size,
+                    Opacity = opacity
+                };
+
+                Canvas.SetLeft(vb, x);
+                Canvas.SetTop(vb, y);
+
+                TranslateTransform translation = new TranslateTransform();
+                vb.RenderTransform = translation;
+
+                Canvas logoCanvas = new Canvas { Width = 1081, Height = 1080 };
+                logoCanvas.Children.Add(new System.Windows.Shapes.Path { Data = Geometry.Parse(logoPath1), Fill = (Brush)new BrushConverter().ConvertFromString("#6DC6EC") });
+                logoCanvas.Children.Add(new System.Windows.Shapes.Path { Data = Geometry.Parse(logoPath2), Fill = (Brush)new BrushConverter().ConvertFromString("#6DC6EC") });
+                logoCanvas.Children.Add(new System.Windows.Shapes.Path { Data = Geometry.Parse(logoPath3), Fill = (Brush)new BrushConverter().ConvertFromString("#6DC6EC") });
+                logoCanvas.Children.Add(new System.Windows.Shapes.Path { Data = Geometry.Parse(logoPath4), Fill = (Brush)new BrushConverter().ConvertFromString("#21A1F7") });
+
+                vb.Child = logoCanvas;
+                ScatteredSymbolsCanvas.Children.Add(vb);
+
+                _logoParticles.Add(new SSLogoParticle
+                {
+                    Element = vb,
+                    BaseX = x,
+                    BaseY = y,
+                    CurrentX = x,
+                    Speed = 0.4 + rand.NextDouble() * 0.8,
+                    Amplitude = 15.0 + rand.NextDouble() * 20.0,
+                    PhaseOffset = rand.NextDouble() * Math.PI * 2,
+                    Translation = translation
+                });
+            }
+        }
+
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             _radioService = RadioStreamService.Instance;
@@ -62,6 +229,7 @@ namespace SS_CAM.Views
             _radioService.CoverDownloaded      += OnCoverDownloaded;
 
             InitVisualizerTimer();
+            InitializeScatteredMarsSymbols();
             RefreshHeroUI();
             ApplyFilter(_activeFilter);
         }
@@ -112,19 +280,9 @@ namespace SS_CAM.Views
 
         private void UpdateVisualizerModeUI(VisualizerMode mode)
         {
-            if (HeroVizBadgeText != null)
-            {
-                switch (mode)
-                {
-                    case VisualizerMode.HeroMesh: HeroVizBadgeText.Text = "VIZ: HERO MESH"; break;
-                    case VisualizerMode.SpectrumBars: HeroVizBadgeText.Text = "VIZ: SPECTRUM"; break;
-                    case VisualizerMode.Waveform: HeroVizBadgeText.Text = "VIZ: WAVEFORM"; break;
-                    case VisualizerMode.PulsatingOrb: HeroVizBadgeText.Text = "VIZ: PULSE ORB"; break;
-                }
-            }
-
-            if (VisualizerBars != null)
-                VisualizerBars.Visibility = (mode == VisualizerMode.SpectrumBars) ? Visibility.Visible : Visibility.Collapsed;
+            // Strictly 1 Visualizer Layer Visible at a Time
+            if (HeroMeshBackdropCanvas != null)
+                HeroMeshBackdropCanvas.Visibility = (mode == VisualizerMode.HeroMesh) ? Visibility.Visible : Visibility.Collapsed;
 
             if (HeroWavePath != null)
             {
@@ -132,8 +290,11 @@ namespace SS_CAM.Views
                 if (HeroWavePath2 != null) HeroWavePath2.Visibility = HeroWavePath.Visibility;
             }
 
-            if (HeroRhythmOrb != null)
-                HeroRhythmOrb.Visibility = (mode == VisualizerMode.PulsatingOrb) ? Visibility.Visible : Visibility.Collapsed;
+            if (HeroWaterDropPath != null)
+            {
+                HeroWaterDropPath.Visibility = (mode == VisualizerMode.WaterDrop) ? Visibility.Visible : Visibility.Collapsed;
+                if (HeroWaterDropPath2 != null) HeroWaterDropPath2.Visibility = HeroWaterDropPath.Visibility;
+            }
         }
 
         private void OnRhythmTick(object sender, RhythmFrameEventArgs e)
@@ -144,81 +305,198 @@ namespace SS_CAM.Views
                 {
                     var mode = VisualizerService.Instance.CurrentMode;
 
-                    // 1. SuamiSihat Logo & Mars Symbol Backdrop Pulsing & Bass Shockwave Ripple
-                    if (MenIconScale != null)
+                    // 1. Hero Mesh Mode-Specific Backdrop Animations
+                    if (mode == VisualizerMode.HeroMesh)
                     {
-                        double menScale = 1.0 + e.Bass * 0.35;
-                        MenIconScale.ScaleX = menScale;
-                        MenIconScale.ScaleY = menScale;
-                    }
-                    if (AuraScale1 != null)
-                    {
-                        double scale1 = 1.0 + e.Bass * 0.30;
-                        AuraScale1.ScaleX = scale1;
-                        AuraScale1.ScaleY = scale1;
-                    }
-                    if (AuraScale2 != null)
-                    {
-                        double scale2 = 1.0 + e.Mid * 0.38;
-                        AuraScale2.ScaleX = scale2;
-                        AuraScale2.ScaleY = scale2;
-                    }
-
-                    // Transient Bass Shockwave Ring Ripple
-                    if (BassShockwaveRing != null && ShockwaveScale != null)
-                    {
-                        if (e.IsBassHit)
+                        if (MenIconScale != null)
                         {
-                            BassShockwaveRing.Opacity = 0.85;
-                            ShockwaveScale.ScaleX = 1.0;
-                            ShockwaveScale.ScaleY = 1.0;
+                            double menScale = 1.0 + e.Bass * 0.35;
+                            MenIconScale.ScaleX = menScale;
+                            MenIconScale.ScaleY = menScale;
                         }
-                        else if (BassShockwaveRing.Opacity > 0.02)
+                        if (AuraScale1 != null)
                         {
-                            BassShockwaveRing.Opacity *= 0.86;
-                            ShockwaveScale.ScaleX += 0.06;
-                            ShockwaveScale.ScaleY += 0.06;
+                            double scale1 = 1.0 + e.Bass * 0.30;
+                            AuraScale1.ScaleX = scale1;
+                            AuraScale1.ScaleY = scale1;
                         }
-                    }
+                        if (AuraScale2 != null)
+                        {
+                            double scale2 = 1.0 + e.Mid * 0.38;
+                            AuraScale2.ScaleX = scale2;
+                            AuraScale2.ScaleY = scale2;
+                        }
 
-                    // Floating Spark Particles Shimmering Motion
-                    if (Spark1 != null) Spark1.Opacity = 0.3 + 0.6 * Math.Abs(Math.Sin(e.Phase * 1.5));
-                    if (Spark2 != null) Spark2.Opacity = 0.4 + 0.5 * Math.Abs(Math.Cos(e.Phase * 2.1));
-                    if (Spark3 != null) Spark3.Opacity = 0.2 + 0.7 * Math.Abs(Math.Sin(e.Phase * 3.2));
-                    if (Spark4 != null) Spark4.Opacity = 0.3 + 0.5 * Math.Abs(Math.Cos(e.Phase * 1.8));
-                    if (Spark5 != null) Spark5.Opacity = 0.4 + 0.6 * Math.Abs(Math.Sin(e.Phase * 2.7));
-                    if (Spark6 != null) Spark6.Opacity = 0.5 + 0.5 * Math.Abs(Math.Cos(e.Phase * 3.5));
+                        // Transient Bass Shockwave Ring Ripple
+                        if (BassShockwaveRing != null && ShockwaveScale != null)
+                        {
+                            if (e.IsBassHit)
+                            {
+                                BassShockwaveRing.Opacity = 0.85;
+                                ShockwaveScale.ScaleX = 1.0;
+                                ShockwaveScale.ScaleY = 1.0;
+                            }
+                            else if (BassShockwaveRing.Opacity > 0.02)
+                            {
+                                BassShockwaveRing.Opacity *= 0.86;
+                                ShockwaveScale.ScaleX += 0.06;
+                                ShockwaveScale.ScaleY += 0.06;
+                            }
+                        }
 
-                    if (HeroMeshStop2 != null)
-                    {
-                        byte r = (byte)(30 + e.Energy * 40);
-                        byte g = (byte)(45 + e.Bass * 80);
-                        byte b = (byte)(90 + e.Treble * 120);
-                        HeroMeshStop2.Color = Color.FromRgb(r, g, b);
+                        // Floating Spark Particles Shimmering Motion
+                        if (Spark1 != null) Spark1.Opacity = 0.3 + 0.6 * Math.Abs(Math.Sin(e.Phase * 1.5));
+                        if (Spark2 != null) Spark2.Opacity = 0.4 + 0.5 * Math.Abs(Math.Cos(e.Phase * 2.1));
+                        if (Spark3 != null) Spark3.Opacity = 0.2 + 0.7 * Math.Abs(Math.Sin(e.Phase * 3.2));
+                        if (Spark4 != null) Spark4.Opacity = 0.3 + 0.5 * Math.Abs(Math.Cos(e.Phase * 1.8));
+                        if (Spark5 != null) Spark5.Opacity = 0.4 + 0.6 * Math.Abs(Math.Sin(e.Phase * 2.7));
+                        if (Spark6 != null) Spark6.Opacity = 0.5 + 0.5 * Math.Abs(Math.Cos(e.Phase * 3.5));
+                        // Mouse Repulsion Force Interpolation (ported 1:1 from SuamiSihatHeroWave JS engine)
+                        _mousePos.X += (_targetMousePos.X - _mousePos.X) * 0.1;
+                        _mousePos.Y += (_targetMousePos.Y - _mousePos.Y) * 0.1;
+
+                        // Audio Signal & Playback State Active Check
+                        bool hasAudioSignal = (_radioService != null && _radioService.State == RadioPlaybackState.Playing)
+                                              && (e.Energy > 0.015 || e.Bass > 0.015 || e.Treble > 0.015);
+
+                        // If no audio sound, particles remain STATIC IN PLACE (rhythmSpeed = 0)
+                        double rhythmSpeed = hasAudioSignal
+                            ? 0.4 + (e.Energy * 2.5) + (e.Bass * 3.0) + (e.IsKickHit ? 2.0 : 0.0)
+                            : 0.0;
+
+                        // Dynamic Full-Width Canvas Wrapping Bound
+                        double canvasWidth = (ScatteredSymbolsCanvas != null && ScatteredSymbolsCanvas.ActualWidth > 100)
+                            ? ScatteredSymbolsCanvas.ActualWidth + 40.0
+                            : 1600.0;
+
+                        // 65 Scattered Mars Symbols (Static when silent, Left-to-Right rhythm flow when playing)
+                        if (_marsParticles != null && _marsParticles.Count > 0)
+                        {
+                            for (int i = 0; i < _marsParticles.Count; i++)
+                            {
+                                var p = _marsParticles[i];
+
+                                // Move continuous Left to Right only when audio is active
+                                p.CurrentX += p.Speed * rhythmSpeed;
+                                if (p.CurrentX > canvasWidth) p.CurrentX = -40.0;
+
+                                // Mouse Push Repulsion (JS engine dist < 140)
+                                double dxMouse = p.CurrentX - _mousePos.X;
+                                double dyMouse = p.BaseY - _mousePos.Y;
+                                double dist = Math.Sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                                double pushX = 0, pushY = 0;
+                                if (dist < 140.0 && dist > 0.0)
+                                {
+                                    double force = (140.0 - dist) / 140.0;
+                                    pushX = (dxMouse / dist) * force * 20.0;
+                                    pushY = (dyMouse / dist) * force * 20.0;
+                                }
+
+                                Canvas.SetLeft(p.Element, p.CurrentX + pushX);
+
+                                // Rhythm-driven vertical wave & rotation (freeze when no audio)
+                                double dy = hasAudioSignal ? Math.Sin(e.Phase * p.Speed * 0.5 + p.PhaseOffset) * (6.0 + e.Bass * 8.0) : 0.0;
+                                p.Translation.Y = dy + pushY;
+                                if (hasAudioSignal)
+                                {
+                                    p.Rotation.Angle += p.RotationSpeed * (1.0 + e.Mid * 2.5);
+                                }
+
+                                // Rhythm-driven twinkling translucency (subtle ambient translucency when silent)
+                                double twinkleOpacity = hasAudioSignal
+                                    ? Math.Max(0.05, Math.Min(0.70, p.BaseOpacity + Math.Sin(e.Phase * 2.5 + p.PhaseOffset) * 0.15 + (e.Bass * 0.25)))
+                                    : p.BaseOpacity;
+                                p.Element.Opacity = twinkleOpacity;
+                            }
+                        }
+
+                        // 5 Floating SuamiSihat Logo Marks (Static when silent, Left-to-Right flow when playing)
+                        if (_logoParticles != null && _logoParticles.Count > 0)
+                        {
+                            for (int k = 0; k < _logoParticles.Count; k++)
+                            {
+                                var lp = _logoParticles[k];
+
+                                lp.CurrentX += lp.Speed * rhythmSpeed * 1.1;
+                                if (lp.CurrentX > canvasWidth) lp.CurrentX = -50.0;
+
+                                // Mouse Push Repulsion (JS engine dist < 160)
+                                double dxLogo = lp.CurrentX - _mousePos.X;
+                                double dyLogoMouse = lp.BaseY - _mousePos.Y;
+                                double distLogo = Math.Sqrt(dxLogo * dxLogo + dyLogoMouse * dyLogoMouse);
+                                double pushXLogo = 0, pushYLogo = 0;
+                                if (distLogo < 160.0 && distLogo > 0.0)
+                                {
+                                    double forceLogo = (160.0 - distLogo) / 160.0;
+                                    pushXLogo = (dxLogo / distLogo) * forceLogo * 25.0;
+                                    pushYLogo = (dyLogoMouse / distLogo) * forceLogo * 25.0;
+                                }
+
+                                Canvas.SetLeft(lp.Element, lp.CurrentX + pushXLogo);
+
+                                double dyLogo = hasAudioSignal ? Math.Sin(e.Phase * lp.Speed + lp.PhaseOffset) * (lp.Amplitude + e.Bass * 12.0) : 0.0;
+                                lp.Translation.Y = dyLogo + pushYLogo;
+                            }
+                        }
+
+                        if (HeroMeshStop2 != null)
+                        {
+                            byte r = (byte)(30 + e.Energy * 40);
+                            byte g = (byte)(45 + e.Bass * 80);
+                            byte b = (byte)(90 + e.Treble * 120);
+                            HeroMeshStop2.Color = Color.FromRgb(r, g, b);
+                        }
                     }
 
                     // 2. Studio Mode-Specific Visualizer Animations
-                    if (mode == VisualizerMode.SpectrumBars && VisualizerBars != null && e.Spectrum != null && e.Spectrum.Length >= 12)
+                    if (mode == VisualizerMode.WaterDrop && HeroWaterDropPath != null)
                     {
-                        // Studio VU Ballistics Mapping across 12 Equalizer Channels
-                        if (Bar1 != null) Bar1.Height = Math.Max(4, e.Spectrum[0] * 24);
-                        if (Bar2 != null) Bar2.Height = Math.Max(4, e.Spectrum[1] * 24);
-                        if (Bar3 != null) Bar3.Height = Math.Max(4, e.Spectrum[2] * 24);
-                        if (Bar4 != null) Bar4.Height = Math.Max(4, e.Spectrum[3] * 24);
-                        if (Bar5 != null) Bar5.Height = Math.Max(4, e.Spectrum[4] * 24);
-                        if (Bar6 != null) Bar6.Height = Math.Max(4, e.Spectrum[5] * 24);
-                        if (Bar7 != null) Bar7.Height = Math.Max(4, e.Spectrum[6] * 24);
-                        if (Bar8 != null) Bar8.Height = Math.Max(4, e.Spectrum[7] * 24);
-                        if (Bar9 != null) Bar9.Height = Math.Max(4, e.Spectrum[8] * 24);
-                        if (Bar10 != null) Bar10.Height = Math.Max(4, e.Spectrum[9] * 24);
-                        if (Bar11 != null) Bar11.Height = Math.Max(4, e.Spectrum[10] * 24);
-                        if (Bar12 != null) Bar12.Height = Math.Max(4, e.Spectrum[11] * 24);
-                    }
-                    else if (mode == VisualizerMode.PulsatingOrb && OrbScale != null)
-                    {
-                        double orbScale = 0.88 + e.Energy * 0.75;
-                        OrbScale.ScaleX = orbScale;
-                        OrbScale.ScaleY = orbScale;
+                        // Render dynamic Concentric Liquid Water Drop Ripple Line Paths
+                        double centerX = 260.0;
+                        double centerY = 125.0;
+                        double baseRadius = 25.0 + e.Energy * 45.0;
+                        int pts = 36;
+                        double angleStep = Math.PI * 2.0 / pts;
+
+                        StreamGeometry geomDrop1 = new StreamGeometry();
+                        using (StreamGeometryContext ctx = geomDrop1.Open())
+                        {
+                            double r0 = baseRadius + Math.Sin(e.Phase * 2.0) * (8.0 * e.Bass);
+                            Point startPt = new Point(centerX + r0, centerY);
+                            ctx.BeginFigure(startPt, true, true);
+                            for (int i = 1; i <= pts; i++)
+                            {
+                                double angle = i * angleStep;
+                                double r = baseRadius + Math.Sin(angle * 4.0 + e.Phase * 3.0) * (10.0 * e.Bass);
+                                double x = centerX + r * Math.Cos(angle);
+                                double y = centerY + r * Math.Sin(angle) * 0.70;
+                                ctx.LineTo(new Point(x, y), true, false);
+                            }
+                        }
+                        geomDrop1.Freeze();
+                        HeroWaterDropPath.Data = geomDrop1;
+
+                        if (HeroWaterDropPath2 != null)
+                        {
+                            double baseRadius2 = baseRadius * 1.55;
+                            StreamGeometry geomDrop2 = new StreamGeometry();
+                            using (StreamGeometryContext ctx = geomDrop2.Open())
+                            {
+                                double r0 = baseRadius2 + Math.Cos(e.Phase * 1.5) * (6.0 * e.Mid);
+                                Point startPt = new Point(centerX + r0, centerY);
+                                ctx.BeginFigure(startPt, true, true);
+                                for (int i = 1; i <= pts; i++)
+                                {
+                                    double angle = i * angleStep;
+                                    double r = baseRadius2 + Math.Cos(angle * 3.0 + e.Phase * 2.5) * (8.0 * e.Mid);
+                                    double x = centerX + r * Math.Cos(angle);
+                                    double y = centerY + r * Math.Sin(angle) * 0.65;
+                                    ctx.LineTo(new Point(x, y), true, false);
+                                }
+                            }
+                            geomDrop2.Freeze();
+                            HeroWaterDropPath2.Data = geomDrop2;
+                        }
                     }
                     else if (mode == VisualizerMode.Waveform && HeroWavePath != null)
                     {

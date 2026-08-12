@@ -2,7 +2,23 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.0.1] - 2026-08-12 (Latest)
+## [3.1.0] - 2026-08-12 (Latest)
+
+### Added & Refined — Minor Release
+- **QR Code Studio & Generator Module (`QrCodePage`)**: Native vector/raster QR Code Generator supporting URL, Plain Text, Wi-Fi network, and VCard payload formats with custom brand palette styling, PNG file export, and instant Clipboard copy integration.
+- **Sound Engineer Studio Visualizer & Mars Crest FX**: Upgraded `VisualizerService` with scattered floating Mars symbols (♂) and SuamiSihat brand crest, custom canvas particle physics, audio peak reactive motion, and clean canvas removal of text watermarks.
+- **Radio & Audio Studio Polish**: Enhanced `RadioPage` layout and control feedback, audio spectrum visualization, and streamlined broadcast controls.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.1.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.1.0.0 |
+| `AssemblyFileVersion` | 3.1.0.0 |
+
+---
+
+## [3.0.1] - 2026-08-12
 
 ### Added & Refined
 - **Fluent 2 Categorized Sidebar Navigation**: Grouped all 11 application modules into 5 distinct, logically sorted categories separated by headers (`ui:NavigationViewItemHeader`) and visual dividers (`ui:NavigationViewItemSeparator`): `OVERVIEW`, `CREATION & ASSETS`, `PRODUCTIVITY`, `WELLBEING & FAITH`, and `SYSTEM`.

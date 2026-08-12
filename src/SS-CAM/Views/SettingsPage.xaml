@@ -492,16 +492,16 @@
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Mode 4: Pulsating Rhythm Orb -->
-                                <Border x:Name="CardVizPulsatingOrb" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                <!-- Mode 4: Water Drop Line Ripple -->
+                                <Border x:Name="CardVizWaterDrop" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         Margin="4" Padding="12" Background="{DynamicResource TextControlBackground}" Cursor="Hand"
-                                        MouseLeftButtonDown="OnSelectVizPulsatingOrb">
+                                        MouseLeftButtonDown="OnSelectVizWaterDrop">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                            <ui:TextBlock Text="&#xEA89;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="Pulsating Rhythm Orb" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Water Drop Line Ripple" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                         </StackPanel>
-                                        <ui:TextBlock Text="Fluid glowing rhythm orb that swells to bass" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <ui:TextBlock Text="Concentric liquid water drop ripple contour path" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
                                 </Border>
                             </UniformGrid>

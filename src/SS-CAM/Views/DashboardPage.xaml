@@ -16,7 +16,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <ui:TextBlock Text="Designer Intelligence Dashboard"  FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextPrimary}"/>
                         <Border Background="{DynamicResource FluentBrand80}" CornerRadius="12" Padding="8,2" VerticalAlignment="Center" Margin="12,0,0,0" Cursor="Hand" MouseLeftButtonDown="OnVersionBadgeClicked" ToolTip="About SuamiSihat CAM">
-                            <ui:TextBlock x:Name="TxtVersionBadge" Text="v3.0.1"  FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            <ui:TextBlock x:Name="TxtVersionBadge" Text="v3.1.0"  FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                         </Border>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">

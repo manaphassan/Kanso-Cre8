@@ -9,7 +9,7 @@ namespace SS_CAM.Services
         HeroMesh,        // SuamiSihat Hero Mesh animated glowing aura (https://assets.suamisihat.myds.me/)
         SpectrumBars,    // Equalizer multi-bar frequency spectrum
         Waveform,        // Oscilloscope dynamic sine waveform
-        PulsatingOrb     // Fluid glowing rhythm orb
+        WaterDrop        // Concentric liquid water drop ripple path
     }
 
     public class RhythmFrameEventArgs : EventArgs
@@ -22,6 +22,9 @@ namespace SS_CAM.Services
         public float[] Spectrum { get; set; }     // 16-channel array (0.0 to 1.0)
         public float[] PeakLevels { get; set; }   // Floating peak hold caps (0.0 to 1.0)
         public bool IsBassHit { get; set; }       // Transient kick/bass drop trigger
+        public bool IsKickHit { get; set; }       // Sub-bass kick impulse
+        public bool IsSnareHit { get; set; }      // Mid-range snare impulse
+        public bool IsTrebleHit { get; set; }     // Air & hi-hat sparkle impulse
     }
 
     public class VisualizerService
@@ -42,6 +45,9 @@ namespace SS_CAM.Services
         private float[] _peakLevels = new float[16];
         private int[] _peakHoldCounters = new int[16];
         private double _lastBass = 0;
+        private double _lastMid = 0;
+        private double _lastTreble = 0;
+        private double _agcGain = 1.0;
 
         public VisualizerMode CurrentMode { get; private set; }
         public event EventHandler<VisualizerMode> VisualizerModeChanged;
@@ -106,8 +112,8 @@ namespace SS_CAM.Services
             {
                 case VisualizerMode.HeroMesh: next = VisualizerMode.SpectrumBars; break;
                 case VisualizerMode.SpectrumBars: next = VisualizerMode.Waveform; break;
-                case VisualizerMode.Waveform: next = VisualizerMode.PulsatingOrb; break;
-                case VisualizerMode.PulsatingOrb: default: next = VisualizerMode.HeroMesh; break;
+                case VisualizerMode.Waveform: next = VisualizerMode.WaterDrop; break;
+                case VisualizerMode.WaterDrop: default: next = VisualizerMode.HeroMesh; break;
             }
             SetMode(next);
             return next;
@@ -158,7 +164,13 @@ namespace SS_CAM.Services
             double energy = (bass + mid + treble) / 3.0;
 
             bool isBassHit = (bass - _lastBass) > 0.38;
+            bool isKickHit = (bass - _lastBass) > 0.30;
+            bool isSnareHit = (mid - _lastMid) > 0.28;
+            bool isTrebleHit = (treble - _lastTreble) > 0.32;
+
             _lastBass = bass;
+            _lastMid = mid;
+            _lastTreble = treble;
 
             for (int i = 0; i < 16; i++)
             {
@@ -167,7 +179,9 @@ namespace SS_CAM.Services
                 {
                     if (realProxySpec != null && realProxySpec.Length > i)
                     {
-                        targetVal = (float)Math.Min(1.0, Math.Max(0.06, realProxySpec[i]));
+                        // Logarithmic Mel-scale frequency mapping
+                        int srcIdx = (int)Math.Min(realProxySpec.Length - 1, Math.Pow((double)i / 15.0, 1.8) * (realProxySpec.Length - 1));
+                        targetVal = (float)Math.Min(1.0, Math.Max(0.06, realProxySpec[srcIdx] * _agcGain));
                     }
                     else
                     {
@@ -214,7 +228,10 @@ namespace SS_CAM.Services
                 Phase = _phase,
                 Spectrum = _spectrum,
                 PeakLevels = _peakLevels,
-                IsBassHit = isBassHit
+                IsBassHit = isBassHit,
+                IsKickHit = isKickHit,
+                IsSnareHit = isSnareHit,
+                IsTrebleHit = isTrebleHit
             };
 
             if (RhythmTick != null)

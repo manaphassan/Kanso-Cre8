@@ -6,7 +6,7 @@
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 
-[![Latest Release](https://img.shields.io/badge/release-v3.0.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v3.1.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![Design](https://img.shields.io/badge/design-Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -18,28 +18,26 @@ Standardized project generation · Brand asset deployment · Designer intelligen
 
 ## Overview
 
-SS-CAM is a native Windows desktop application built with **C# WPF (.NET Framework 4.8)**. It provides SuamiSihat designers with a unified workstation suite — from generating standardized project folders and deploying brand assets, to tracking workspace health, managing tasks, listening to live radio, and supporting Islamic creative work habits.
+SS-CAM is a native Windows desktop application built with **C# WPF (.NET Framework 4.8)**. It provides SuamiSihat designers with a unified workstation suite — from generating standardized project folders and deploying brand assets, to tracking workspace health, generating custom QR codes, managing tasks, listening to live radio, and supporting Islamic creative work habits.
 
 The application ships as a **true single-file executable (~5 MB)** with all dependencies embedded via Fody/Costura. No installer, no runtime prerequisites. The UI follows the **Microsoft Fluent 2 Design System** using WPF-UI, Segoe Fluent Icons, and switchable themes (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord).
 
 ---
 
-## What's New in v3.0.1
+## What's New in v3.1.0
+
+| # | Change | Details |
+|---|--------|---------|
+| 1 | **QR Code Studio & Generator Module** | Native vector/raster QR Code Generator supporting URL, Plain Text, Wi-Fi network, and VCard payload formats with custom brand styling, high-res PNG file export, and instant Clipboard copy. |
+| 2 | **Sound Engineer Visualizer & Mars Emblem FX** | Upgraded `VisualizerService` with scattered floating Mars symbols (♂) and SuamiSihat brand crest, custom canvas particle physics, audio peak reactive motion, and clean canvas watermark removal. |
+| 3 | **Radio & Audio Studio Polish** | Enhanced `RadioPage` layout and control feedback, audio spectrum visualization, and streamlined broadcast controls. |
+
+### Previous: v3.0.1 Highlights
 
 | # | Change | Details |
 |---|--------|---------|
 | 1 | **Categorized Fluent 2 Sidebar Navigation** | All 11 modules grouped into 5 logical categories (`OVERVIEW`, `CREATION & ASSETS`, `PRODUCTIVITY`, `WELLBEING & FAITH`, `SYSTEM`) with `NavigationViewItemHeader` labels and visual separators. |
 | 2 | **Adaptive Bottom Live Bar Collapse** | Status text hides and bottom player transitions to compact mode when the sidebar pane is collapsed — maximizing canvas space. |
-
-### Previous: v3.0.0 Highlights
-
-| # | Change | Details |
-|---|--------|---------|
-| 1 | **Major Fluent 2 Revamp** | 100% Microsoft Fluent 2 alignment across all 12 core application modules. |
-| 2 | **Settings & Profile Page Revamp** | Complete 2-column layout redesign with icon badges, action rows, and interactive swatches. |
-| 3 | **5 Switchable Theme Profiles** | Native support for Falconia, Metamorphosis, Catppuccin, Rosé Pine, and Nord themes. |
-| 4 | **Workstation Payload Installer** | One-click font installation and asset library deployment built into Settings. |
-| 5 | **Synology NAS Resilience** | Exponential backoff retry loops and MAX_PATH guardrails for high-reliability file operations. |
 
 ---
 
@@ -53,6 +51,7 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 | **Project Creator** | Standardized folder generation (`YYYYMM_NNNNX_BRAND_Name`), auto-calculated Job IDs, preset-specific subfolder templates, live directory tree preview |
 | **Search & Copy** | Full-text project search, designer filtering, rendered README preview, project file browser, controlled asset copying into active work orders |
 | **Brand Assets** | In-app launcher for installed colour palettes, asset libraries, logo files, and official brand links |
+| **QR Code Studio** | Vector & raster QR Code generator supporting URL, Plain Text, Wi-Fi credentials, and VCard payloads with brand palette customization, high-res PNG export, and Clipboard copying |
 | **Radio Player** | Live stream player with preloaded Malaysian stations (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga), lo-fi beats, custom streams, album art, persistent status-bar mini-player |
 | **Quick Notes** | Rich-text note editor with Markdown preview, local storage, keyboard shortcuts |
 | **Task Manager** | YAML frontmatter project board — reads `README.md` task headers from workspace, status columns, due-date tracking |
@@ -157,6 +156,7 @@ Skills are in `.agents/skills/`. Verification script: `QA/verify-sscam.ps1`.
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| v3.1.0 | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |
 | v3.0.1 | 2026-08-12 | Categorized Fluent 2 sidebar navigation, adaptive bottom live bar collapse state |
 | v3.0.0 | 2026-08-12 | Major Release: Full 12-module Fluent 2 overhaul, 5 switchable theme profiles, Settings revamp, Workstation Payload installer |
 | v2.6.3 | 2026-08-11 | Art Director & Architecture audit remediation, 100% clean Source Guardian |

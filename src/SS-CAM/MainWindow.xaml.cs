@@ -1097,42 +1097,12 @@ namespace SS_CAM
 
         private void UpdateBottomVisualizerUI(VisualizerMode mode)
         {
-            if (TxtBottomVisualizerBadge != null)
-            {
-                switch (mode)
-                {
-                    case VisualizerMode.HeroMesh: TxtBottomVisualizerBadge.Text = "VIZ: HERO MESH"; break;
-                    case VisualizerMode.SpectrumBars: TxtBottomVisualizerBadge.Text = "VIZ: SPECTRUM"; break;
-                    case VisualizerMode.Waveform: TxtBottomVisualizerBadge.Text = "VIZ: WAVEFORM"; break;
-                    case VisualizerMode.PulsatingOrb: TxtBottomVisualizerBadge.Text = "VIZ: PULSE ORB"; break;
-                }
-            }
-            if (TxtBottomVisualizerIcon != null)
-            {
-                switch (mode)
-                {
-                    case VisualizerMode.HeroMesh: TxtBottomVisualizerIcon.Text = "\uE734"; break;
-                    case VisualizerMode.SpectrumBars: TxtBottomVisualizerIcon.Text = "\uE9E9"; break;
-                    case VisualizerMode.Waveform: TxtBottomVisualizerIcon.Text = "\uEE6E"; break;
-                    case VisualizerMode.PulsatingOrb: TxtBottomVisualizerIcon.Text = "\uEA89"; break;
-                }
-            }
-            if (BtnBottomVisualizer != null)
-            {
-                BtnBottomVisualizer.ToolTip = "Visualizer Mode: " + mode.ToString() + " (Klik untuk tukar)";
-            }
-        }
-
-        private void OnCycleVisualizerClicked(object sender, RoutedEventArgs e)
-        {
-            var newMode = VisualizerService.Instance.CycleNextMode();
-            UpdateBottomVisualizerUI(newMode);
+            // Lock to Hero Mesh
         }
 
         private void OnBottomRadioBarClicked(object sender, MouseButtonEventArgs e)
         {
-            var newMode = VisualizerService.Instance.CycleNextMode();
-            UpdateBottomVisualizerUI(newMode);
+            // Navigates or stays in Radio view
         }
     }
 }

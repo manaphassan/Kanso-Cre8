@@ -1,5 +1,5 @@
 # 09 — Performance Profiling
-Last updated: 2026-08-12 | Version: v3.0.0
+Last updated: 2026-08-12 | Version: v3.1.0
 
 ---
 

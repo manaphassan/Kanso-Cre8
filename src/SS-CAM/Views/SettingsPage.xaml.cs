@@ -284,7 +284,7 @@ namespace SS_CAM.Views
                 if (CardVizHeroMesh != null) { CardVizHeroMesh.BorderThickness = new Thickness(mode == VisualizerMode.HeroMesh ? 2 : 1); CardVizHeroMesh.BorderBrush = mode == VisualizerMode.HeroMesh ? activeBorderBrush : defaultBorderBrush; }
                 if (CardVizSpectrum != null) { CardVizSpectrum.BorderThickness = new Thickness(mode == VisualizerMode.SpectrumBars ? 2 : 1); CardVizSpectrum.BorderBrush = mode == VisualizerMode.SpectrumBars ? activeBorderBrush : defaultBorderBrush; }
                 if (CardVizWaveform != null) { CardVizWaveform.BorderThickness = new Thickness(mode == VisualizerMode.Waveform ? 2 : 1); CardVizWaveform.BorderBrush = mode == VisualizerMode.Waveform ? activeBorderBrush : defaultBorderBrush; }
-                if (CardVizPulsatingOrb != null) { CardVizPulsatingOrb.BorderThickness = new Thickness(mode == VisualizerMode.PulsatingOrb ? 2 : 1); CardVizPulsatingOrb.BorderBrush = mode == VisualizerMode.PulsatingOrb ? activeBorderBrush : defaultBorderBrush; }
+                if (CardVizWaterDrop != null) { CardVizWaterDrop.BorderThickness = new Thickness(mode == VisualizerMode.WaterDrop ? 2 : 1); CardVizWaterDrop.BorderBrush = mode == VisualizerMode.WaterDrop ? activeBorderBrush : defaultBorderBrush; }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SettingsPage] UpdateVisualizerCardSelection: " + ex.Message); }
         }
@@ -307,10 +307,10 @@ namespace SS_CAM.Views
             UpdateVisualizerCardSelection(VisualizerMode.Waveform);
         }
 
-        private void OnSelectVizPulsatingOrb(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnSelectVizWaterDrop(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            VisualizerService.Instance.SetMode(VisualizerMode.PulsatingOrb);
-            UpdateVisualizerCardSelection(VisualizerMode.PulsatingOrb);
+            VisualizerService.Instance.SetMode(VisualizerMode.WaterDrop);
+            UpdateVisualizerCardSelection(VisualizerMode.WaterDrop);
         }
     }
 }
