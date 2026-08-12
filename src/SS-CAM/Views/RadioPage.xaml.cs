@@ -181,6 +181,14 @@ namespace SS_CAM.Views
                         }
                     }
 
+                    // Floating Spark Particles Shimmering Motion
+                    if (Spark1 != null) Spark1.Opacity = 0.3 + 0.6 * Math.Abs(Math.Sin(e.Phase * 1.5));
+                    if (Spark2 != null) Spark2.Opacity = 0.4 + 0.5 * Math.Abs(Math.Cos(e.Phase * 2.1));
+                    if (Spark3 != null) Spark3.Opacity = 0.2 + 0.7 * Math.Abs(Math.Sin(e.Phase * 3.2));
+                    if (Spark4 != null) Spark4.Opacity = 0.3 + 0.5 * Math.Abs(Math.Cos(e.Phase * 1.8));
+                    if (Spark5 != null) Spark5.Opacity = 0.4 + 0.6 * Math.Abs(Math.Sin(e.Phase * 2.7));
+                    if (Spark6 != null) Spark6.Opacity = 0.5 + 0.5 * Math.Abs(Math.Cos(e.Phase * 3.5));
+
                     if (HeroMeshStop2 != null)
                     {
                         byte r = (byte)(30 + e.Energy * 40);
