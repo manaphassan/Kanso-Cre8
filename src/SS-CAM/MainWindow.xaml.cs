@@ -158,7 +158,6 @@ namespace SS_CAM
                 string emoji = radio.CurrentStation != null ? radio.CurrentStation.IconEmoji : "📻";
                 string streamTitle = radio.LocalProxy != null ? radio.LocalProxy.CurrentStreamTitle : null;
                 
-                if (TxtBottomRadioEmoji != null) TxtBottomRadioEmoji.Text = string.IsNullOrWhiteSpace(emoji) ? "📻" : emoji;
                 if (TxtBottomRadioTitle != null) TxtBottomRadioTitle.Text = stationName;
 
                 // Load station cover image if available
