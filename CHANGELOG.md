@@ -2,7 +2,24 @@
 
 All notable SS-CAM changes are documented here.
 
-## [2.6.3] - 2026-08-11 (Latest)
+## [3.0.0] - 2026-08-12 (Latest)
+
+### Added & Refined — Major Release
+- **Complete Fluent 2 UI/UX Modernization**: Revamped all 12 core application modules to adhere 100% to Microsoft Fluent 2 design principles.
+- **Designer Profile & Settings Revamp**: Rebuilt `SettingsPage` with 2-column layout, section icon badges, interactive theme swatches (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord), workstation payload installer, category preset management, and reset/maintenance action rows.
+- **Multi-Theme Engine Expansion**: Native support for 5 distinct visual theme profiles with instant switching capabilities.
+- **Enhanced Reliability & Data Safety**: Reinforced Synology NAS network backoff retry logic, path validation, and BOM encoding protection across all views.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.0.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.0.0.0 |
+| `AssemblyFileVersion` | 3.0.0.0 |
+
+---
+
+## [2.6.3] - 2026-08-11
 
 ### Added & Refined
 - **Art Director & Architectural Audit Remediation**: Comprehensive 4-phase audit remediation across all 12 modules.

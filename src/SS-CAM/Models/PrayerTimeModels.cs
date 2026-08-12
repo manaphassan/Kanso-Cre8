@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SS_CAM.Models
 {
@@ -37,5 +37,37 @@ namespace SS_CAM.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public override string ToString() { return Name; }
+    }
+
+    /// <summary>Islamic calendar event with date & countdown.</summary>
+    public class IslamicEvent
+    {
+        public string Name          { get; set; }
+        public string HijriDateStr  { get; set; }
+        public string GregorianDate { get; set; }
+        public int    DaysRemaining { get; set; }
+        public string Category      { get; set; }  // Perayaan, Ibadah, Sejarah
+        public bool   IsHoliday     { get; set; }
+    }
+
+    /// <summary>Daily Hadith entry with translation and source citation.</summary>
+    public class HadithEntry
+    {
+        public int    Id               { get; set; }
+        public string Title            { get; set; }
+        public string ArabicText       { get; set; }
+        public string MalayTranslation { get; set; }
+        public string Source           { get; set; }  // e.g., Sahih al-Bukhari #1
+        public string Theme            { get; set; }  // e.g., Niat, Masa, Work Ethics
+    }
+
+    /// <summary>Sun path solar progress and atmospheric theme parameters.</summary>
+    public class SunPhaseInfo
+    {
+        public string PhaseName          { get; set; }  // Dawn, Sunrise, Morning, Noon, Afternoon, Sunset, Night
+        public double SunProgressRatio   { get; set; }  // 0.0 to 1.0 along arc
+        public string GradientStartColor { get; set; }  // Hex color
+        public string GradientEndColor   { get; set; }  // Hex color
+        public string IconGlyph          { get; set; }  // Segoe Fluent Icon glyph
     }
 }

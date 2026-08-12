@@ -4,64 +4,62 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Quick Note">
 
-    <Grid>
+    <Grid Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Page Header -->
-        <StackPanel Grid.Row="0" Margin="24,20,24,14">
-            <StackPanel Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Margin="24,20,24,16">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="24"
-                           Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ui:TextBlock Text="Quick Notes" FontSize="24" FontWeight="Bold"
-                           Foreground="{DynamicResource FluentBrand80}"/>
+                           Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ui:TextBlock Text="Quick Notes" FontSize="24" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
             </StackPanel>
             <ui:TextBlock Text="Personal Markdown scratchpad. Auto-saves as you type."
-                       Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
-                       Margin="0,3,0,0" />
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
+                       Margin="0,4,0,0" />
         </StackPanel>
 
         <!-- Main Two-Panel Body -->
-        <Grid Grid.Row="1" Margin="24,0,24,20">
+        <Grid Grid.Row="1" Margin="24,0,24,24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- ── Left: Notes List Sidebar ── -->
-            <Border Grid.Column="0" Background="{DynamicResource FluentLightCardBg}"
-                    BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
+            <Border Grid.Column="0" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
-                    <!-- New Note Button -->
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource FluentBrand80}"
-                            CornerRadius="8,8,0,0">
-                        <ui:Button Click="OnNewNoteClicked" Background="Transparent" Foreground="White"
-                                Height="40" BorderThickness="0" Cursor="Hand"
-                                >
-                            <StackPanel Orientation="Horizontal">
+                    <!-- New Note Button Bar -->
+                    <Border DockPanel.Dock="Top" Padding="12,12,12,8">
+                        <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="36"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="14"
                                            Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="New Note" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="New Note" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
                             </StackPanel>
                         </ui:Button>
                     </Border>
 
                     <!-- Note count label -->
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1" Padding="10,6">
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource SubtitleBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,1" Padding="12,6">
                         <ui:TextBlock x:Name="TxtNoteCount" Text="0 notes"
-                                    FontSize="10"
-                                   Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                    FontSize="11" FontWeight="Medium"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                     </Border>
 
                     <!-- Note list -->
                     <ListBox x:Name="NotesList" SelectionChanged="OnNoteSelected"
                              BorderThickness="0" Background="Transparent"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             Padding="6">
+                             Padding="8">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -69,36 +67,67 @@
                                 <Setter Property="Margin" Value="0,0,0,4"/>
                                 <Setter Property="Background" Value="Transparent"/>
                                 <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <ContentPresenter/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="8,6" CornerRadius="6" Cursor="Hand"
-                                        Background="{DynamicResource FluentLightCardSubBg}"
-                                        BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource FluentBrandLight}"/>
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource FluentBrandTint}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <StackPanel>
-                                        <ui:TextBlock Text="{Binding Title}"
-                                                   
-                                                   FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource FluentLightTextPrimary}"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <ui:TextBlock Text="{Binding ModifiedDisplay}"
-                                                   
-                                                   FontSize="10"
-                                                   Foreground="{DynamicResource FluentLightTextSecondary}"
-                                                   Margin="0,2,0,0"/>
-                                    </StackPanel>
+                                <Border x:Name="ItemBorder" Padding="10,8" CornerRadius="6" Cursor="Hand"
+                                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!-- Selection Indicator Bar -->
+                                        <Border x:Name="SelectionPill" Grid.Column="0" Width="3" CornerRadius="1.5"
+                                                Background="{DynamicResource FluentBrand80}" Margin="0,0,8,0"
+                                                Visibility="Collapsed"/>
+                                        
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="11"
+                                                           Foreground="{DynamicResource FluentBrand80}"
+                                                           Visibility="{Binding PinBadgeVisibility}"
+                                                           Margin="0,0,4,0" VerticalAlignment="Center" ToolTip="Pinned Note"/>
+                                                <ui:TextBlock Text="{Binding Title}"
+                                                           FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           ToolTip="{Binding Title}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <ui:TextBlock Text="{Binding ModifiedDisplay}"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       Margin="0,3,0,0"/>
+                                        </StackPanel>
+
+                                        <!-- Priority Badge Tag -->
+                                        <Border Grid.Column="2" CornerRadius="3" Padding="4,1" VerticalAlignment="Center" Margin="4,0,0,0"
+                                                Visibility="{Binding PriorityBadgeVisibility}"
+                                                Background="{DynamicResource SystemFillColorCautionBrush}">
+                                            <ui:TextBlock Text="{Binding PriorityLabel}" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                        </Border>
+                                    </Grid>
                                 </Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
+                                        <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource FluentBrandTint}"/>
+                                        <Setter TargetName="SelectionPill" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -106,112 +135,161 @@
             </Border>
 
             <!-- ── Right: Editor Pane ── -->
-            <Border Grid.Column="2" Background="{DynamicResource FluentLightCardBg}"
-                    BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8">
+            <Border Grid.Column="2" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
                     <!-- Toolbar Row -->
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1"
-                            CornerRadius="8,8,0,0" Padding="10,6">
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource SubtitleBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1"
+                            CornerRadius="8,8,0,0" Padding="12,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <!-- Markdown Toolbar -->
-                            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="26" Width="28"
-                                        Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
-                                         FontWeight="Bold"
-                                        FontSize="12" BorderThickness="0" Cursor="Hand" ToolTip="Bold"/>
-                                <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="26" Width="28"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="Georgia, serif" FontStyle="Italic" FontSize="12"
-                                        BorderThickness="0" Cursor="Hand" ToolTip="Italic"/>
-                                <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="26" Width="28"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                        FontFamily="Consolas" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Inline code">
-                                    <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"/>
-                                </ui:Button>
-                                <Border Width="1" Background="{DynamicResource FluentLightStroke}" Margin="4,3"/>
-                                <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="26" Width="32"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                         FontWeight="SemiBold"
-                                        FontSize="10" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2"/>
-                                <ui:Button x:Name="NMdList" Content="&#x2022; List" Click="OnNMdList" Height="26" Padding="4,0"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                         FontSize="10"
-                                        BorderThickness="0" Cursor="Hand" ToolTip="List item"/>
-                                <ui:Button x:Name="NMdHR" Content="&#x2500; HR" Click="OnNMdHR" Height="26" Padding="4,0"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                         FontSize="10"
-                                        BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule"/>
-                                <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="26" Padding="4,0"
-                                        Background="Transparent" Foreground="{DynamicResource FluentLightTextPrimary}"
-                                         FontSize="10"
-                                        BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
-                                    <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="12"/>
-                                </ui:Button>
-                            </StackPanel>
+                            
+                            <!-- Markdown Toolbar Scrollable / Flexible Container -->
+                            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                          Focusable="False">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:Button x:Name="NMdBold" Content="B" Click="OnNMdBold" Height="32" MinWidth="32" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource FluentBrand80}"
+                                            FontWeight="Bold" FontSize="13" BorderThickness="0" Cursor="Hand" ToolTip="Bold (**text**)"/>
+                                    <ui:Button x:Name="NMdItalic" Content="I" Click="OnNMdItalic" Height="32" MinWidth="32" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontFamily="Georgia, serif" FontStyle="Italic" FontSize="13"
+                                            BorderThickness="0" Cursor="Hand" ToolTip="Italic (*text*)"/>
+                                    <ui:Button x:Name="NMdCode" Click="OnNMdCode" Height="32" MinWidth="32" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            BorderThickness="0" Cursor="Hand" ToolTip="Inline code (`code`)">
+                                        <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
+                                    </ui:Button>
+                                    
+                                    <Border Width="1" Height="16" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="6,0"/>
+                                    
+                                    <ui:Button x:Name="NMdH2" Content="H2" Click="OnNMdH2" Height="32" MinWidth="36" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontWeight="SemiBold" FontSize="11" BorderThickness="0" Cursor="Hand" ToolTip="Heading 2 (## text)"/>
+                                    <ui:Button x:Name="NMdList" Click="OnNMdList" Height="32" MinWidth="48" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            BorderThickness="0" Cursor="Hand" ToolTip="List item (- text)">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="&#x2022;" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="List" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </ui:Button>
+                                    <ui:Button x:Name="NMdHR" Click="OnNMdHR" Height="32" MinWidth="44" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            BorderThickness="0" Cursor="Hand" ToolTip="Horizontal rule (---)">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="&#x2500;" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="HR" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </ui:Button>
+                                    <ui:Button x:Name="NMdLink" Click="OnNMdLink" Height="32" MinWidth="32" Padding="6,0"
+                                            Background="Transparent" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            BorderThickness="0" Cursor="Hand" ToolTip="Link [text](url)">
+                                        <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="13" VerticalAlignment="Center"/>
+                                    </ui:Button>
+                                </StackPanel>
+                            </ScrollViewer>
 
-                            <!-- Mode + Status -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Mode + Pin + Priority + Delete Actions -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
                                 <ui:TextBlock x:Name="TxtSavedStatus" Text=""
-                                            FontSize="10"
-                                           Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center"
-                                           Margin="0,0,12,0"/>
-                                <Border CornerRadius="4" Margin="0,0,4,0" Background="{DynamicResource FluentBrand80}">
-                                    <ui:Button x:Name="BtnModeEdit" Content="Edit" Click="OnModeEdit"
-                                            Height="26" Padding="8,0" Background="Transparent" Foreground="White"
-                                            FontSize="10" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
-                                            />
-                                </Border>
-                                <Border CornerRadius="4" Background="{DynamicResource FluentLightCardSubBg}"
-                                        BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" Margin="0,0,8,0">
-                                    <ui:Button x:Name="BtnModePreview" Content="Preview" Click="OnModePreview"
-                                            Height="26" Padding="8,0" Background="Transparent"
-                                            Foreground="{DynamicResource FluentLightTextPrimary}"
-                                            FontSize="10" BorderThickness="0" Cursor="Hand"
-                                            />
-                                </Border>
-                                <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
-                                           Height="26" Padding="8,0" FontSize="10" Cursor="Hand">
+                                            FontSize="11" FontWeight="Medium"
+                                            Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center"
+                                            Margin="0,0,12,0"/>
+
+                                <!-- Pin Toggle Button (Icon-only 32x32) -->
+                                <ui:Button x:Name="BtnTogglePin" Click="OnTogglePinClicked"
+                                           Height="32" Width="32" Padding="0" Cursor="Hand" Margin="0,0,6,0"
+                                           ToolTip="Pin note to top">
+                                    <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </ui:Button>
+
+                                <!-- Priority Dropdown -->
+                                <ComboBox x:Name="CmbPriority" SelectionChanged="OnPriorityChanged"
+                                          Height="32" Width="92" FontSize="11" Margin="0,0,6,0"
+                                          Padding="8,0" VerticalContentAlignment="Center" ToolTip="Set note priority">
+                                    <ComboBoxItem Content="Normal"/>
+                                    <ComboBoxItem Content="Medium"/>
+                                    <ComboBoxItem Content="High"/>
+                                </ComboBox>
+                                
+                                <!-- Mode Toggle Segmented Control (Icon-only 32x32) -->
+                                <Border CornerRadius="4" Margin="0,0,6,0" Background="{DynamicResource ControlFillColorSecondaryBrush}">
                                     <StackPanel Orientation="Horizontal">
-                                        <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="11"
-                                                   Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="Delete" VerticalAlignment="Center"/>
+                                        <ui:Button x:Name="BtnModeEdit" Click="OnModeEdit"
+                                                Height="32" Width="32" Padding="0" Background="{DynamicResource FluentBrand80}"
+                                                Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Edit Note">
+                                            <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </ui:Button>
+                                        <ui:Button x:Name="BtnModePreview" Click="OnModePreview"
+                                                Height="32" Width="32" Padding="0" Background="Transparent"
+                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                BorderThickness="0" Cursor="Hand" ToolTip="Preview Markdown">
+                                            <ui:TextBlock Text="&#xE890;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </ui:Button>
                                     </StackPanel>
+                                </Border>
+
+                                <!-- Delete Note Button (Icon-only 32x32) -->
+                                <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
+                                           Height="32" Width="32" Padding="0" Cursor="Hand" ToolTip="Delete Note">
+                                    <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </ui:Button>
                             </StackPanel>
                         </Grid>
                     </Border>
 
-                    <!-- Empty state (no note selected) -->
-                    <StackPanel x:Name="PanelEmptyState" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="48"
-                                   Foreground="{DynamicResource FluentLightTextSecondary}"
-                                   HorizontalAlignment="Center" Margin="0,0,0,12"/>
-                        <ui:TextBlock Text="Select a note or create a new one"
-                                    FontSize="14"
-                                   Foreground="{DynamicResource FluentLightTextSecondary}" HorizontalAlignment="Center"/>
-                    </StackPanel>
+                    <!-- Main Editor Body Container -->
+                    <Grid>
+                        <!-- Empty state (no note selected) -->
+                        <Grid x:Name="PanelEmptyState" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="32">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ui:SymbolIcon Symbol="Notebook24" FontSize="56"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                <ui:TextBlock Text="No Note Selected"
+                                            FontSize="16" FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center"/>
+                                <ui:TextBlock Text="Select a note from the left sidebar or create a new note to start writing."
+                                            FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            HorizontalAlignment="Center" Margin="0,6,0,20" TextWrapping="Wrap" TextAlignment="Center"/>
+                                <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="36" Padding="16,0"
+                                           HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ui:TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Create New Note" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                            </StackPanel>
+                        </Grid>
 
-                    <!-- Edit Mode TextBox -->
-                    <TextBox x:Name="NoteEditor"
-                             AcceptsReturn="True" AcceptsTab="True"
-                             TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             FontFamily="Consolas" FontSize="12"
-                             Padding="16" BorderThickness="0"
-                             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
-                             Visibility="Collapsed"
-                             TextChanged="OnNoteEditorChanged"/>
+                        <!-- Edit Mode TextBox -->
+                        <TextBox x:Name="NoteEditor"
+                                 AcceptsReturn="True" AcceptsTab="True"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas" FontSize="13"
+                                 Padding="16" BorderThickness="0"
+                                 Background="{DynamicResource TextControlBackground}"
+                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                 CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                 Visibility="Collapsed"
+                                 TextChanged="OnNoteEditorChanged"/>
 
-                    <!-- Preview Mode -->
-                    <FlowDocumentScrollViewer x:Name="NotePreviewViewer"
-                                             VerticalScrollBarVisibility="Auto"
-                                             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" BorderThickness="0"
-                                             Padding="16" Visibility="Collapsed"/>
+                        <!-- Preview Mode -->
+                        <FlowDocumentScrollViewer x:Name="NotePreviewViewer"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  Background="{DynamicResource TextControlBackground}" BorderThickness="0"
+                                                  Padding="20" Visibility="Collapsed"/>
+                    </Grid>
                 </DockPanel>
             </Border>
         </Grid>

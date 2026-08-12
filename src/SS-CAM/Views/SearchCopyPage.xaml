@@ -13,18 +13,17 @@
         </Grid.RowDefinitions>
 
         <!-- ── Page Header + Search Bar ── -->
-        <StackPanel Grid.Row="0" Margin="24,20,24,0">
-            <StackPanel Margin="0,0,0,14">
+        <StackPanel Grid.Row="0" Margin="24,16,24,0">
+            <StackPanel Margin="0,0,0,10">
                 <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold"
-                           Foreground="{DynamicResource FluentBrand80}"
-                           />
+                           Foreground="{DynamicResource FluentBrand80}"/>
                 <ui:TextBlock Text="Browse your workspace like a catalog - select a project to inspect its brief, assets, and images."
-                           Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"
-                           Margin="0,3,0,0" />
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
+                           Margin="0,2,0,0" />
             </StackPanel>
 
             <!-- Search Controls Bar -->
-            <ui:Card Padding="14,10" Margin="0,0,0,14">
+            <ui:Card Padding="12,8" Margin="0,0,0,12">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -34,11 +33,10 @@
 
                     <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="36"
                                 PlaceholderText="Search project title, Project ID..." 
-                                TextChanged="OnSearchInputChanged"
-                                />
+                                TextChanged="OnSearchInputChanged"/>
 
                     <ui:Button Grid.Column="2" Appearance="Primary" Click="OnSearchClicked"
-                            Height="36" Padding="16,0" FontWeight="Bold" Cursor="Hand" >
+                            Height="36" Padding="16,0" FontWeight="Bold" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
                             <ui:TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" FontSize="13"
                                        Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -49,24 +47,24 @@
             </ui:Card>
         </StackPanel>
 
-        <!-- ── Catalog Body: Narrow Sidebar + Wide README Pane ── -->
-        <Grid Grid.Row="1" Margin="24,0,24,20">
+        <!-- ── Catalog Body: Responsive Sidebar + GridSplitter + Wide README Pane ── -->
+        <Grid Grid.Row="1" Margin="24,0,24,16">
             <Grid.ColumnDefinitions>
-                <!-- Fixed narrow project list sidebar -->
-                <ColumnDefinition Width="270"/>
-                <!-- Gutter -->
-                <ColumnDefinition Width="14"/>
+                <!-- Project list sidebar (Default 320px, Min 280px, Max 400px) -->
+                <ColumnDefinition Width="320" MinWidth="280" MaxWidth="400"/>
+                <!-- Resizable Splitter Gutter -->
+                <ColumnDefinition Width="Auto"/>
                 <!-- README / Preview pane takes all remaining space -->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- ————————————————— Left Sidebar: Project Cards List ————————————————— -->
-            <ui:Card Grid.Column="0" Padding="0" VerticalAlignment="Stretch">
+            <ui:Card Grid.Column="0" Padding="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <DockPanel>
                     <!-- Sidebar Header -->
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1"
-                            CornerRadius="8,8,0,0" Padding="10,8">
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1"
+                            CornerRadius="8,8,0,0" Padding="12,10">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                 <ui:TextBlock Text="&#xED25;" FontFamily="Segoe Fluent Icons" FontSize="14"
@@ -75,15 +73,14 @@
                                 <StackPanel>
                                     <ui:TextBlock Text="PROJECT FOLDERS" 
                                                FontSize="10" FontWeight="Bold"
-                                               Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                     <ui:TextBlock x:Name="TxtProjectCount" Text="Loading..."
                                                 FontSize="11"
                                                Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </StackPanel>
                             <!-- Designer Filter -->
-                            <ComboBox x:Name="DesignerFilterCmb" Height="28" FontSize="11"
-                                      
+                            <ComboBox x:Name="DesignerFilterCmb" Height="34" Padding="8,4" Margin="0,4,0,0" FontSize="11.5"
                                       SelectionChanged="OnFilterChanged"/>
                         </StackPanel>
                     </Border>
@@ -112,8 +109,8 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border x:Name="CardBorder"
-                                        Background="{DynamicResource FluentLightCardSubBg}"
-                                        BorderBrush="{DynamicResource FluentLightStroke}"
+                                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         BorderThickness="1" CornerRadius="6" Padding="10,8"
                                         Cursor="Hand">
                                     <Grid>
@@ -126,27 +123,26 @@
                                                    VerticalAlignment="Top" Margin="0,2,0,0"/>
                                         <StackPanel Grid.Column="1">
                                             <ui:TextBlock Text="{Binding Project}"
-                                                       
                                                        FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource FluentLightTextPrimary}"
+                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                        TextTrimming="CharacterEllipsis"
                                                        TextWrapping="NoWrap"/>
                                             <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                                                 <ui:TextBlock Text="{Binding FileCount}"
                                                            FontSize="10"
-                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                 <ui:TextBlock Text=" files &#x00B7; "
                                                            FontSize="10"
-                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                 <ui:TextBlock Text="{Binding FormattedSize}"
                                                            FontSize="10"
-                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                 <ui:TextBlock Text=" &#x00B7; "
                                                            FontSize="10"
-                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                 <ui:TextBlock Text="{Binding Modified}"
                                                            FontSize="10"
-                                                           Foreground="{DynamicResource FluentLightTextSecondary}"/>
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Grid>
@@ -154,8 +150,8 @@
                                         <Style TargetType="Border">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource FluentBrandLight}"/>
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource FluentBrandTint}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource FluentBrand80}"/>
                                                     <Setter Property="BorderThickness" Value="1.5"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -168,14 +164,18 @@
                 </DockPanel>
             </ui:Card>
 
+            <!-- ————————————————— Column Splitter ————————————————— -->
+            <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Focusable="False" Margin="2,0"/>
+
             <!-- ————————————————— Right Pane: Catalog README Preview ————————————————— -->
-            <ui:Card Grid.Column="2" Padding="0" VerticalAlignment="Stretch">
+            <ui:Card Grid.Column="2" Padding="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <DockPanel>
 
                     <!-- Selected Project Header Badge -->
                     <Border DockPanel.Dock="Top" x:Name="SelectedHighlightBadge"
-                            Background="{DynamicResource FluentBrandLight}"
-                            BorderBrush="{DynamicResource FluentBrandTint}"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="0,0,0,1" CornerRadius="8,8,0,0" Padding="16,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -184,17 +184,15 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
                                 <ui:TextBlock Text="SELECTED PROJECT" 
-                                           Foreground="{DynamicResource FluentLightTextSecondary}"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                            FontSize="10" FontWeight="Bold"/>
                                 <ui:TextBlock x:Name="SelectedProjectTitle" Text="None selected"
                                            Foreground="{DynamicResource FluentBrand80}"
-                                           
                                            FontSize="16" FontWeight="Bold" Margin="0,2,0,0"/>
                                 <ui:TextBlock x:Name="SelectedProjectPath"
                                            Text="Select a project from the sidebar to inspect its brief."
-                                           Foreground="{DynamicResource FluentLightTextSecondary}"
-                                           FontSize="11" TextTrimming="CharacterEllipsis"
-                                           />
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           FontSize="11" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
 
                             <!-- Mode Toggle Tab Strip -->
@@ -220,8 +218,8 @@
 
                     <!-- Action Footer: Copy buttons + Edit Brief -->
                     <Border DockPanel.Dock="Bottom"
-                            Background="{DynamicResource FluentLightCardSubBg}"
-                            BorderBrush="{DynamicResource FluentLightStroke}"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="14,10">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <ui:Button Appearance="Secondary" Click="OnCopyPathClicked"
@@ -254,8 +252,8 @@
                     <!-- Edit Mode Panel (Collapsed by default) -->
                     <DockPanel x:Name="EditBriefPanel" Visibility="Collapsed">
                         <!-- Edit Toolbar -->
-                        <Border DockPanel.Dock="Top" Background="{DynamicResource FluentLightCardSubBg}"
-                                BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1" Padding="8,4">
+                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8,4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -266,18 +264,18 @@
                                             Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
                                             BorderThickness="0" Cursor="Hand" />
                                     <ui:Button Content="I" Click="OnEditMdItalic" Height="24" Width="28" Background="Transparent"
-                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontStyle="Italic"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontStyle="Italic"
                                             FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
                                     <ui:Button Click="OnEditMdCode" Height="24" Width="28" Background="Transparent"
                                             BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
                                         <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"
-                                                   Foreground="{DynamicResource FluentLightTextPrimary}"/>
+                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                     </ui:Button>
                                     <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
-                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
                                             FontWeight="SemiBold"  BorderThickness="0" Cursor="Hand"/>
                                     <ui:Button Content="* List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
-                                            Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
                                              BorderThickness="0" Cursor="Hand"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -322,6 +320,7 @@
                     <!-- Image Gallery Grid (Collapsed by default) -->
                     <ScrollViewer x:Name="ImageGalleryViewer"
                                   VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.CanContentScroll="False"
                                   Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                   BorderThickness="0"
                                   Padding="12"
@@ -337,20 +336,20 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1" CornerRadius="6"
-                                            Width="140" Margin="5" Padding="6" Cursor="Hand">
+                                            BorderThickness="1" CornerRadius="8"
+                                            Width="240" Margin="6" Padding="8" Cursor="Hand">
                                         <StackPanel>
-                                            <Border Height="100" Background="{DynamicResource TextControlBackground}"
-                                                    CornerRadius="4" Margin="0,0,0,6">
+                                            <Border Height="160" Background="{DynamicResource TextControlBackground}"
+                                                    CornerRadius="6" Margin="0,0,0,8">
                                                 <Image Source="{Binding ImagePath}" Stretch="Uniform"/>
                                             </Border>
                                             <ui:TextBlock Text="{Binding FileName}"
-                                                       FontSize="11" FontWeight="Bold"
+                                                       FontSize="12" FontWeight="SemiBold"
                                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                        TextTrimming="CharacterEllipsis"/>
                                             <ui:TextBlock Text="{Binding SubFolder}"
-                                                       FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                       TextTrimming="CharacterEllipsis"/>
+                                                       FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

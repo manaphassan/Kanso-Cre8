@@ -76,6 +76,9 @@ namespace SS_CAM.Views
             _currentNote = selected;
             _isLoading = true;
             NoteEditor.Text = selected.Content;
+            BtnTogglePin.ToolTip = selected.IsPinned ? "Unpin note from top" : "Pin note to top";
+            BtnTogglePin.Appearance = selected.IsPinned ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            CmbPriority.SelectedIndex = (int)selected.Priority;
             _isLoading = false;
 
             PanelEmptyState.Visibility = Visibility.Collapsed;
@@ -84,8 +87,77 @@ namespace SS_CAM.Views
             TxtSavedStatus.Text = "";
 
             // Reset to Edit mode
-            BtnModeEdit.Background = FindResource("FluentBrand80") as System.Windows.Media.Brush;
-            BtnModeEdit.Foreground = System.Windows.Media.Brushes.White;
+            UpdateModeVisuals(isEdit: true);
+        }
+
+        private void OnTogglePinClicked(object sender, RoutedEventArgs e)
+        {
+            if (_currentNote == null) return;
+            _currentNote.IsPinned = !_currentNote.IsPinned;
+            SaveCurrentNote();
+            RefreshNoteListAndKeepSelection(_currentNote.FilePath);
+        }
+
+        private void OnPriorityChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading || _currentNote == null) return;
+            int idx = CmbPriority.SelectedIndex;
+            if (idx < 0) return;
+            NotePriority newPriority = (NotePriority)idx;
+            if (_currentNote.Priority == newPriority) return;
+            _currentNote.Priority = newPriority;
+            SaveCurrentNote();
+            RefreshNoteListAndKeepSelection(_currentNote.FilePath);
+        }
+
+        private void RefreshNoteListAndKeepSelection(string targetFilePath)
+        {
+            _isLoading = true;
+            _notes = QuickNoteService.ListNotes();
+            NotesList.ItemsSource = null;
+            NotesList.ItemsSource = _notes;
+            TxtNoteCount.Text = string.Format("{0} note{1}", _notes.Count, _notes.Count == 1 ? "" : "s");
+
+            if (!string.IsNullOrEmpty(targetFilePath))
+            {
+                QuickNoteItem found = _notes.Find(delegate(QuickNoteItem n) { return n.FilePath == targetFilePath; });
+                if (found != null)
+                {
+                    NotesList.SelectedItem = found;
+                    _currentNote = found;
+                    BtnTogglePin.ToolTip = found.IsPinned ? "Unpin note from top" : "Pin note to top";
+                    BtnTogglePin.Appearance = found.IsPinned ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+                    CmbPriority.SelectedIndex = (int)found.Priority;
+                }
+            }
+            _isLoading = false;
+        }
+
+        private void UpdateModeVisuals(bool isEdit)
+        {
+            System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
+            System.Windows.Media.Brush textBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
+
+            if (isEdit)
+            {
+                if (brandBrush != null) BtnModeEdit.Background = brandBrush;
+                BtnModeEdit.Foreground = System.Windows.Media.Brushes.White;
+                BtnModeEdit.FontWeight = FontWeights.SemiBold;
+
+                BtnModePreview.Background = System.Windows.Media.Brushes.Transparent;
+                if (textBrush != null) BtnModePreview.Foreground = textBrush;
+                BtnModePreview.FontWeight = FontWeights.Normal;
+            }
+            else
+            {
+                if (brandBrush != null) BtnModePreview.Background = brandBrush;
+                BtnModePreview.Foreground = System.Windows.Media.Brushes.White;
+                BtnModePreview.FontWeight = FontWeights.SemiBold;
+
+                BtnModeEdit.Background = System.Windows.Media.Brushes.Transparent;
+                if (textBrush != null) BtnModeEdit.Foreground = textBrush;
+                BtnModeEdit.FontWeight = FontWeights.Normal;
+            }
         }
 
         private void OnNoteEditorChanged(object sender, TextChangedEventArgs e)
@@ -118,7 +190,7 @@ namespace SS_CAM.Views
         private void SaveCurrentNote()
         {
             if (_currentNote == null) return;
-            QuickNoteService.SaveNote(_currentNote.FilePath, NoteEditor.Text);
+            QuickNoteService.SaveNote(_currentNote.FilePath, NoteEditor.Text, _currentNote.IsPinned, _currentNote.Priority);
             _currentNote.Content = NoteEditor.Text;
         }
 
@@ -146,6 +218,7 @@ namespace SS_CAM.Views
             if (_currentNote == null) return;
             NoteEditor.Visibility = Visibility.Visible;
             NotePreviewViewer.Visibility = Visibility.Collapsed;
+            UpdateModeVisuals(isEdit: true);
         }
 
         private void OnModePreview(object sender, RoutedEventArgs e)
@@ -154,6 +227,7 @@ namespace SS_CAM.Views
             RenderPreview(NoteEditor.Text);
             NoteEditor.Visibility = Visibility.Collapsed;
             NotePreviewViewer.Visibility = Visibility.Visible;
+            UpdateModeVisuals(isEdit: false);
         }
 
         private void RenderPreview(string markdown)
@@ -163,15 +237,16 @@ namespace SS_CAM.Views
             doc.FontSize = 13;
             doc.PagePadding = new Thickness(0);
 
+            System.Windows.Media.Brush mainTextBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
+            if (mainTextBrush != null)
+            {
+                doc.Foreground = mainTextBrush;
+            }
+
             if (string.IsNullOrWhiteSpace(markdown)) { NotePreviewViewer.Document = doc; return; }
 
-            // Strip frontmatter if present
-            string content = markdown.Trim();
-            if (content.StartsWith("---"))
-            {
-                int end = content.IndexOf("---", 3);
-                if (end > 0) content = content.Substring(end + 3).TrimStart('\r', '\n');
-            }
+            // Hide frontmatter in preview (only show when in edit mode)
+            string content = QuickNoteService.StripFrontmatter(markdown);
 
             foreach (string line in content.Split(new char[] { '\n' }))
             {
@@ -187,11 +262,15 @@ namespace SS_CAM.Views
                 else if (l.StartsWith("## "))
                 {
                     para.FontSize = 16; para.FontWeight = FontWeights.Bold;
+                    System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
+                    if (brandBrush != null) para.Foreground = brandBrush;
                     para.Inlines.Add(l.Substring(3));
                 }
                 else if (l.StartsWith("# "))
                 {
                     para.FontSize = 20; para.FontWeight = FontWeights.Bold;
+                    System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
+                    if (brandBrush != null) para.Foreground = brandBrush;
                     para.Inlines.Add(l.Substring(2));
                 }
                 else if (l == "---")

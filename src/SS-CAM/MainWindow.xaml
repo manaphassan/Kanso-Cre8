@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v2.6.3" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v3.0.0" Height="820" Width="1280"
         MinHeight="680" MinWidth="1024"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
@@ -150,6 +150,11 @@
                            HeaderVisibility="Collapsed"
                            OpenPaneLength="200">
 
+            <!-- PANE HEADER: Top Padding Spacer to align top sidebar item with right-hand Page Title -->
+            <ui:NavigationView.PaneHeader>
+                <Grid Height="14"/>
+            </ui:NavigationView.PaneHeader>
+
             <!-- MENU ITEMS -->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
@@ -162,12 +167,9 @@
                 <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
                 <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
                 <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
-            </ui:NavigationView.MenuItems>
-
-            <!-- FOOTER MENU ITEMS -->
-            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItemSeparator />
                 <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
-            </ui:NavigationView.FooterMenuItems>
+            </ui:NavigationView.MenuItems>
 
             <!-- PANE FOOTER: Status rows -->
             <ui:NavigationView.PaneFooter>
@@ -195,11 +197,11 @@
                     <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
                                 Focusable="False"
                                 MouseLeftButtonDown="OnStatusThemeToggle"
-                                ToolTip="Click to toggle theme (Falconia / Metamorphosis)">
+                                ToolTip="Click to toggle application theme">
                         <ui:TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
                                    FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
                                    Focusable="False"/>
-                        <ui:TextBlock x:Name="StatusThemeText" Text="Theme: Falconia" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                        <ui:TextBlock x:Name="StatusThemeText" Text="Theme: SuamiSihat Light" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
                                    FontSize="11" VerticalAlignment="Center"
                                    Focusable="False"/>
                     </StackPanel>

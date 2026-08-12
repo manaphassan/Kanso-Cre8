@@ -24,6 +24,32 @@ namespace SS_CAM.Views
         private double _breathingPhase = 0.0;
         private bool _isBreathingMode = false;
 
+        // Hydration Tracker State (Goal: 2,000 mL / 8 Cups)
+        private int _waterIntakeMl = 0;
+        private readonly int _waterGoalMl = 2000;
+        private double _waterWavePhase = 0.0;
+
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var scroller = sender as ScrollViewer;
+            if (scroller != null)
+            {
+                int steps = Math.Abs(e.Delta) / 30;
+                if (steps < 1) steps = 1;
+                if (steps > 8) steps = 8;
+
+                if (e.Delta < 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineDown();
+                }
+                else if (e.Delta > 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineUp();
+                }
+                e.Handled = true;
+            }
+        }
+
         public WellbeingPage()
         {
             InitializeComponent();
@@ -45,6 +71,7 @@ namespace SS_CAM.Views
             {
                 RefreshMetrics();
                 UpdateTimerUI();
+                UpdateWaterIntakeUI();
                 UpdateRadarChart();
             };
 
@@ -56,6 +83,7 @@ namespace SS_CAM.Views
 
             RefreshMetrics();
             UpdateTimerUI();
+            UpdateWaterIntakeUI();
             UpdateRadarChart();
         }
 
@@ -80,6 +108,7 @@ namespace SS_CAM.Views
         private void OnAnimTick(object sender, EventArgs e)
         {
             DrawBreathingAnimation();
+            DrawWaterWaveAnimation();
         }
 
         private void UpdateTimerUI()
@@ -347,9 +376,133 @@ namespace SS_CAM.Views
         private void RefreshMetrics()
         {
             WellbeingDayMetrics metrics = _dataService.GetMetricsForDay(DateTime.Today);
-            TxtMetricFocus.Text = string.Format("{0}h {1}m", metrics.TotalFocusMinutes / 60, metrics.TotalFocusMinutes % 60);
-            TxtMetricSessions.Text = string.Format("{0} completed", metrics.CompletedSessions);
-            TxtMetricDrops.Text = string.Format("{0} captured", metrics.MindDropCount);
+            if (TxtMetricFocus != null)
+                TxtMetricFocus.Text = string.Format("{0}h {1}m", metrics.TotalFocusMinutes / 60, metrics.TotalFocusMinutes % 60);
+            
+            if (TxtMetricDrops != null)
+                TxtMetricDrops.Text = string.Format("{0} captured", metrics.MindDropCount);
+
+            if (TxtMetricWater != null)
+                TxtMetricWater.Text = string.Format("{0:N0} / 2,000 mL", _waterIntakeMl);
+
+            // Compute Burnout Risk Index based on Energy (1-5), Hydration %, and Focus Time
+            if (TxtMetricBurnout != null)
+            {
+                double hydrationRatio = Math.Min(1.0, _waterIntakeMl / (double)_waterGoalMl);
+                double energyRatio = _selectedEnergy / 5.0;
+                double score = (energyRatio * 50.0) + (hydrationRatio * 50.0);
+
+                if (score >= 75.0)
+                {
+                    TxtMetricBurnout.Text = "Optimal Flow 🟢";
+                    TxtMetricBurnout.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+                }
+                else if (score >= 45.0)
+                {
+                    TxtMetricBurnout.Text = "Balanced 🟡";
+                    TxtMetricBurnout.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EAB308"));
+                }
+                else
+                {
+                    TxtMetricBurnout.Text = "Fatigued 🔴";
+                    TxtMetricBurnout.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
+                }
+            }
+        }
+
+        // ── 💧 Water Intake Animation & Interactions ───────────────────────────
+        private void DrawWaterWaveAnimation()
+        {
+            if (WaterCanvas == null || WaterWavePath == null) return;
+
+            _waterWavePhase += 0.08;
+            if (_waterWavePhase > Math.PI * 2) _waterWavePhase -= Math.PI * 2;
+
+            double width = WaterCanvas.ActualWidth > 50 ? WaterCanvas.ActualWidth : 380;
+            double height = 80;
+            double pct = Math.Min(1.0, Math.Max(0.0, _waterIntakeMl / (double)_waterGoalMl));
+            double targetY = height - (pct * height);
+
+            var figure = new PathFigure { StartPoint = new Point(0, height) };
+            figure.Segments.Add(new LineSegment(new Point(0, targetY), false));
+
+            for (double x = 0; x <= width; x += 15)
+            {
+                double y = targetY + Math.Sin((x * 0.05) + _waterWavePhase) * 3.5;
+                figure.Segments.Add(new LineSegment(new Point(x, y), true));
+            }
+
+            figure.Segments.Add(new LineSegment(new Point(width, height), true));
+
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
+            WaterWavePath.Data = geometry;
+        }
+
+        private void UpdateWaterIntakeUI()
+        {
+            double pct = (_waterIntakeMl / (double)_waterGoalMl) * 100.0;
+            int cups = _waterIntakeMl / 250;
+
+            if (TxtWaterPct != null)
+                TxtWaterPct.Text = string.Format("{0:N0} mL ({1:F0}%)", _waterIntakeMl, pct);
+
+            if (TxtWaterStatusLabel != null)
+            {
+                if (_waterIntakeMl >= _waterGoalMl)
+                    TxtWaterStatusLabel.Text = "🎉 2,000 mL Hydration Goal Achieved!";
+                else
+                    TxtWaterStatusLabel.Text = string.Format("Target: 8 Cups Daily ({0} Cups Logged)", cups);
+            }
+
+            // Update 8-Cup Tiles Visual State
+            Border[] cupsTiles = new[] { Cup1, Cup2, Cup3, Cup4, Cup5, Cup6, Cup7, Cup8 };
+            for (int i = 0; i < cupsTiles.Length; i++)
+            {
+                if (cupsTiles[i] == null) continue;
+                if (i < cups)
+                {
+                    cupsTiles[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#38BDF8"));
+                }
+                else
+                {
+                    cupsTiles[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+                }
+            }
+
+            RefreshMetrics();
+        }
+
+        private void OnAddWater250_Click(object sender, RoutedEventArgs e)
+        {
+            _waterIntakeMl = Math.Min(3000, _waterIntakeMl + 250);
+            UpdateWaterIntakeUI();
+        }
+
+        private void OnAddWater500_Click(object sender, RoutedEventArgs e)
+        {
+            _waterIntakeMl = Math.Min(3000, _waterIntakeMl + 500);
+            UpdateWaterIntakeUI();
+        }
+
+        private void OnResetWater_Click(object sender, RoutedEventArgs e)
+        {
+            _waterIntakeMl = 0;
+            UpdateWaterIntakeUI();
+        }
+
+        private void OnCupClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Border tile = sender as Border;
+            if (tile != null && tile.Tag != null)
+            {
+                int cupNum;
+                if (int.TryParse(tile.Tag.ToString(), out cupNum))
+                {
+                    _waterIntakeMl = cupNum * 250;
+                    UpdateWaterIntakeUI();
+                }
+            }
         }
 
         // ── Dynamic Interactive Spider / Radar Chart Renderer ───────────

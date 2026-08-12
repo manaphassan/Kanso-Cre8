@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -283,6 +284,195 @@ namespace SS_CAM.Services
             _lastAdhanDate = DateTime.Today;
             _lastAdhanFired = prayerName;
             if (AdhanDue != null) AdhanDue(prayerName);
+        }
+
+        // ── Islamic Events Engine ──────────────────────────────────────────────
+        public static List<IslamicEvent> GetIslamicEvents()
+        {
+            var list = new List<IslamicEvent>();
+            DateTime today = DateTime.Today;
+
+            var events = new[]
+            {
+                new { Name = "Awal Muharram (Maal Hijrah)", Month = 6, Day = 16, Cat = "Awal Tahun Hijrah", IsHol = true },
+                new { Name = "Maulidur Rasul SAW", Month = 8, Day = 25, Cat = "Hari Keputeraan Nabi", IsHol = true },
+                new { Name = "Israk & Mikraj", Month = 1, Day = 16, Cat = "Peristiwa Sejarah", IsHol = false },
+                new { Name = "Nisfu Syaaban", Month = 2, Day = 2, Cat = "Malam Berkat", IsHol = false },
+                new { Name = "Awal Ramadan 1448H", Month = 2, Day = 17, Cat = "Ibadah Puasa", IsHol = true },
+                new { Name = "Nuzul Al-Quran", Month = 3, Day = 5, Cat = "Penurunan Al-Quran", IsHol = true },
+                new { Name = "Hari Raya Aidilfitri", Month = 3, Day = 20, Cat = "Perayaan Utama", IsHol = true },
+                new { Name = "Hari Arafah", Month = 5, Day = 26, Cat = "Hari Kemuncak Haji", IsHol = false },
+                new { Name = "Hari Raya Aidiladha", Month = 5, Day = 27, Cat = "Ibadah Korban", IsHol = true }
+            };
+
+            foreach (var ev in events)
+            {
+                DateTime evDate = new DateTime(today.Year, ev.Month, ev.Day);
+                if (evDate < today) evDate = evDate.AddYears(1);
+
+                int diff = (evDate - today).Days;
+                list.Add(new IslamicEvent
+                {
+                    Name = ev.Name,
+                    GregorianDate = evDate.ToString("d MMMM yyyy", new System.Globalization.CultureInfo("ms-MY")),
+                    DaysRemaining = diff,
+                    Category = ev.Cat,
+                    IsHoliday = ev.IsHol
+                });
+            }
+
+            list.Sort((a, b) => a.DaysRemaining.CompareTo(b.DaysRemaining));
+            return list;
+        }
+
+        // ── Daily Hadith Collection ───────────────────────────────────────────
+        public static List<HadithEntry> GetCuratedHadiths()
+        {
+            return new List<HadithEntry>
+            {
+                new HadithEntry
+                {
+                    Id = 1,
+                    Title = "Niat & Keikhlasan Dalam Pekerjaan",
+                    ArabicText = "\u0625\u0650\u0646\u0651\u064E\u0645\u064E\u0627 \u0627\u0644\u0623\u064E\u0639\u0651\u0645\u064E\u0627\u0644\u064F \u0628\u0650\u0627\u0644\u0646\u0651\u0650\u064A\u0651\u064E\u0627\u062A\u0650\u060C \u0648\u064E\u0625\u0650\u0646\u0651\u064E\u0645\u064E\u0627 \u0644\u0650\u064B\u0643\u064F\u0644\u0651\u0650 \u0627\u0645\u0651\u0631\u0650\u0626\u064D \u0645\u064E\u0627 \u0646\u064E\u0648\u064E\u0649",
+                    MalayTranslation = "Sesungguhnya setiap amalan itu bergantung kepada niat, dan sesungguhnya setiap orang hanya akan mendapat apa yang diniatkannya.",
+                    Source = "Sahih al-Bukhari #1 \u00B7 Hadis Arba'in #1",
+                    Theme = "Niat & Keikhlasan"
+                },
+                new HadithEntry
+                {
+                    Id = 2,
+                    Title = "Kecemerlangan & Ihsan Dalam Kerja",
+                    ArabicText = "\u0625\u0650\u0646\u0651\u064E \u0627\u0644\u0644\u0651\u064E\u0647\u064E \u0643\u064E\u062A\u064E\u0628\u064E \u0627\u0644\u0625\u0650\u062D\u0651\u0633\u064E\u0627\u0646\u064E \u0639\u064E\u0644\u064E\u0649 \u0643\u064F\u0644\u0651\u0650 \u0634\u064E\u064A\u0651\u0621\u064D",
+                    MalayTranslation = "Sesungguhnya Allah telah mewajibkan Ihsan (kebaikan & kecemerlangan) dalam setiap perkara.",
+                    Source = "Sahih Muslim #1955",
+                    Theme = "Work Ethics & Ihsan"
+                },
+                new HadithEntry
+                {
+                    Id = 3,
+                    Title = "Menjaga Masa & Kesempatan",
+                    ArabicText = "\u0646\u0650\u0639\u0651\u0645\u064E\u062A\u064E\u0627\u0646\u0650 \u0645\u064E\u063A\u0651\u0628\u064F\u0648\u0646\u064C \u0641\u0650\u064A\u0647\u0650\u0645\u064E\u0627 \u0643\u064E\u062B\u0650\u064A\u0631\u064C \u0645\u0650\u0646\u064E \u0627\u0644\u0646\u0651\u064E\u0627\u0633\u0650: \u0627\u0644\u0635\u0651\u0650\u062D\u0651\u064E\u0629\u064F \u0648\u064E\u0627\u0644\u0651\u0641\u064E\u0631\u064E\u0627\u063A\u064F",
+                    MalayTranslation = "Dua nikmat yang ramai manusia terpedaya dengannya: Kesihatan dan masa lapang.",
+                    Source = "Sahih al-Bukhari #6412",
+                    Theme = "Pengurusan Masa"
+                },
+                new HadithEntry
+                {
+                    Id = 4,
+                    Title = "Memberi Manfaat Kepada Manusia",
+                    ArabicText = "\u062E\u064E\u064A\u0651\u0631\u064F \u0627\u0644\u0646\u0651\u064E\u0627\u0633\u0650 \u0625\u064E\u0646\u0651\u0641\u064E\u0639\u064F\u0647\u064F\u0645\u0651 \u0644\u0650\u0644\u0646\u0651\u064E\u0627\u0633\u0650",
+                    MalayTranslation = "Sebaik-baik manusia adalah orang yang paling bermanfaat kepada manusia yang lain.",
+                    Source = "Al-Mu'jam al-Awsat Al-Tabarani #5787",
+                    Theme = "Manfaat Bersama"
+                },
+                new HadithEntry
+                {
+                    Id = 5,
+                    Title = "Ketekunan Dalam Beramal",
+                    ArabicText = "\u0623\u064E\u062D\u064E\u0628\u0651\u064F \u0627\u0644\u0623\u064E\u0639\u0651\u0645\u064E\u0627\u0644\u0650 \u0625\u0650\u0644\u064E\u0649 \u0627\u0644\u0644\u0651\u064E\u0647\u0650 \u0623\u064E\u062F\u0651\u0648\u064E\u0645\u064F\u0647\u064E\u0627 \u0648\u064E\u0625\u0650\u0646\u0651 \u0642\u064E\u0644\u0651\u064E",
+                    MalayTranslation = "Amalan yang paling dicintai oleh Allah adalah amalan yang berterusan (istiqamah) walaupun sedikit.",
+                    Source = "Sahih al-Bukhari #6465",
+                    Theme = "Istiqamah"
+                }
+            };
+        }
+
+        // ── Sun Path Solar Trajectory ──────────────────────────────────────────
+        public static SunPhaseInfo ComputeSunPhase(PrayerTimeEntry entry)
+        {
+            if (entry == null)
+            {
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Memuatkan...",
+                    SunProgressRatio = 0.5,
+                    GradientStartColor = "#0284C7",
+                    GradientEndColor = "#38BDF8",
+                    IconGlyph = "\uE706"
+                };
+            }
+
+            DateTime now = DateTime.Now;
+
+            DateTime subuh   = entry.Subuh;
+            DateTime syuruk  = entry.Syuruk;
+            DateTime zohor   = entry.Zohor;
+            DateTime asar    = entry.Asar;
+            DateTime maghrib = entry.Maghrib;
+            DateTime isyak   = entry.Isyak;
+
+            if (now >= subuh && now < syuruk)
+            {
+                double ratio = Math.Min(1.0, Math.Max(0.0, (now - subuh).TotalMinutes / Math.Max(1, (syuruk - subuh).TotalMinutes)));
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Fajr / Subuh & Terbit Matahari",
+                    SunProgressRatio = 0.05 + (ratio * 0.15),
+                    GradientStartColor = "#0F172A",
+                    GradientEndColor = "#D97706",
+                    IconGlyph = "\uE706"
+                };
+            }
+            else if (now >= syuruk && now < zohor)
+            {
+                double ratio = Math.Min(1.0, Math.Max(0.0, (now - syuruk).TotalMinutes / Math.Max(1, (zohor - syuruk).TotalMinutes)));
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Pagi / Dhuha",
+                    SunProgressRatio = 0.20 + (ratio * 0.30),
+                    GradientStartColor = "#0284C7",
+                    GradientEndColor = "#38BDF8",
+                    IconGlyph = "\uE706"
+                };
+            }
+            else if (now >= zohor && now < asar)
+            {
+                double ratio = Math.Min(1.0, Math.Max(0.0, (now - zohor).TotalMinutes / Math.Max(1, (asar - zohor).TotalMinutes)));
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Tengah Hari / Zohor",
+                    SunProgressRatio = 0.50 + (ratio * 0.20),
+                    GradientStartColor = "#0369A1",
+                    GradientEndColor = "#0EA5E9",
+                    IconGlyph = "\uE706"
+                };
+            }
+            else if (now >= asar && now < maghrib)
+            {
+                double ratio = Math.Min(1.0, Math.Max(0.0, (now - asar).TotalMinutes / Math.Max(1, (maghrib - asar).TotalMinutes)));
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Petang / Asar",
+                    SunProgressRatio = 0.70 + (ratio * 0.18),
+                    GradientStartColor = "#D97706",
+                    GradientEndColor = "#F59E0B",
+                    IconGlyph = "\uE706"
+                };
+            }
+            else if (now >= maghrib && now < isyak)
+            {
+                double ratio = Math.Min(1.0, Math.Max(0.0, (now - maghrib).TotalMinutes / Math.Max(1, (isyak - maghrib).TotalMinutes)));
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Senja / Maghrib",
+                    SunProgressRatio = 0.88 + (ratio * 0.07),
+                    GradientStartColor = "#7C3AED",
+                    GradientEndColor = "#E11D48",
+                    IconGlyph = "\uE708"
+                };
+            }
+            else
+            {
+                return new SunPhaseInfo
+                {
+                    PhaseName = "Malam / Isyak",
+                    SunProgressRatio = 0.98,
+                    GradientStartColor = "#090D16",
+                    GradientEndColor = "#1E1B4B",
+                    IconGlyph = "\uE708"
+                };
+            }
         }
     }
 }

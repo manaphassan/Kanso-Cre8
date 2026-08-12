@@ -75,6 +75,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Styles\CatppuccinTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\RosePineTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\NordTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\MetamorphosisTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -146,6 +158,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AppPaths.cs" />
     <Compile Include="Utilities\JsonPersistenceHelper.cs" />
+    <Compile Include="Utilities\MarkdownHelper.cs" />
     <Compile Include="Models\WellbeingModels.cs" />
     <Compile Include="Models\DashboardModels.cs" />
     <Compile Include="Models\UserProfileModels.cs" />

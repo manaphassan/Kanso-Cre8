@@ -37,18 +37,26 @@ namespace SS_CAM.Models
     {
         public string OSVersion { get; set; }
         public string ProcessorName { get; set; }
+        public string MotherboardModel { get; set; }
         public string TotalRAM { get; set; }
         public string GraphicsGPU { get; set; }
         public string AvailableStorage { get; set; }
+        public string StorageFreeText { get; set; }
+        public string StorageUsedText { get; set; }
+        public double StorageUsedPercent { get; set; }
         public string DisplayResolution { get; set; }
 
         public SystemSpecs()
         {
             OSVersion = "Windows 11 (64-bit)";
             ProcessorName = "64-bit Multi-Core Processor";
+            MotherboardModel = "BaseBoard System Board";
             TotalRAM = "16 GB RAM";
             GraphicsGPU = "DirectX 12 Compatible GPU";
-            AvailableStorage = "Drive D: 100+ GB Free";
+            AvailableStorage = "Drive C: 84.9 GB free / 512.0 GB total";
+            StorageFreeText = "84.9 GB Free";
+            StorageUsedText = "427.1 GB Used (83%)";
+            StorageUsedPercent = 83.0;
             DisplayResolution = "1920 x 1080";
         }
     }
@@ -57,6 +65,7 @@ namespace SS_CAM.Models
     {
         public string Icon { get; set; }
         public string SoftwareName { get; set; }
+        public string FileExtension { get; set; }
         public string ScannedVersion { get; set; }
         public string LatestVersion { get; set; }
         public string StatusText { get; set; }
@@ -69,10 +78,11 @@ namespace SS_CAM.Models
         {
             Icon = "📦";
             SoftwareName = "";
+            FileExtension = "";
             ScannedVersion = "Not Installed";
             LatestVersion = "";
-            StatusText = "⚪ Not Installed";
-            StatusColor = "#94A3B8";
+            StatusText = "Not Installed";
+            StatusColor = "#64748B";
             IsInstalled = false;
             DownloadUrl = "";
             ShowActionButton = false;

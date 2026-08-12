@@ -5,235 +5,397 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Brand Assets">
 
-    
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel>
             <!-- Header -->
-            <StackPanel Margin="0,0,0,24">
-                <ui:TextBlock Text="SuamiSihat Official Brand System &amp; Color Palettes" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                <ui:TextBlock Text="Official brand color codes (HEX, RGB, CMYK, Pantone), installed color swatches, Adobe/Affinity design asset libraries, and internal brand portals." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0"/>
+            <StackPanel Margin="0,0,0,20">
+                <ui:TextBlock Text="SuamiSihat Official Brand System &amp; Assets" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:TextBlock Text="Official brand color palettes (HEX, RGB, CMYK, Pantone), design packages, vector assets, and workstation payload installer." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
             </StackPanel>
 
+            <!-- Copy Notification Alert Banner -->
+            <Border x:Name="CopyNotificationBorder" Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrand80}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:TextBlock Text="&#xE73E;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ui:TextBlock x:Name="CopyStatusText" Grid.Column="1" Text="Click any color swatch below to copy its HEX color code to clipboard." Foreground="{DynamicResource FluentBrand80}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
             <!-- Quick Portals & Links -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Brand Portals &amp; Shortcuts" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <UniformGrid Columns="3" Margin="8">
-                    <ui:CardAction Padding="16" Margin="6" Click="OnOpenServiceDashboard"><StackPanel>
-                            <ui:TextBlock Text="&#x1F310; Service Dashboard" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="14"/>
-                            <ui:TextBlock Text="https://suamisihat.myds.me" Foreground="{DynamicResource FluentBrandTint}" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,4"/>
-                            <ui:TextBlock Text="SuamiSihat internal design work orders and service portal." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                        </StackPanel></ui:CardAction>
+            <StackPanel Margin="0,0,0,24">
+                <ui:TextBlock Text="Brand Portals &amp; Resources" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <UniformGrid Columns="3">
+                    <ui:CardAction Padding="16" Margin="0,0,12,0" Click="OnOpenServiceDashboard">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <ui:TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ui:TextBlock Text="Service Dashboard" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="14"/>
+                            </StackPanel>
+                            <ui:TextBlock Text="https://suamisihat.myds.me" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ui:TextBlock Text="Internal design work orders and service portal." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </ui:CardAction>
 
-                    <ui:CardAction Padding="16" Margin="6" Click="OnOpenInternalAssets"><StackPanel>
-                            <ui:TextBlock Text="&#x1F4C1; SS Design System" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="14"/>
-                            <ui:TextBlock Text="https://assets.suamisihat.myds.me/" Foreground="{DynamicResource FluentBrandTint}" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,4"/>
-                            <ui:TextBlock Text="Internal brand guideline for the design team." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:CardAction Padding="16" Margin="6,0,6,0" Click="OnOpenInternalAssets">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <ui:TextBlock Text="&#xE8F4;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ui:TextBlock Text="SS Design System" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="14"/>
+                            </StackPanel>
+                            <ui:TextBlock Text="https://assets.suamisihat.myds.me/" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ui:TextBlock Text="Internal brand guidelines for design team." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </ui:CardAction>
 
-                    <ui:CardAction Padding="16" Margin="6" Click="OnOpenPublicAssets"><StackPanel>
-                            <ui:TextBlock Text="&#x1F4E6; Public Brand Kits" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="14"/>
-                            <ui:TextBlock Text="https://suamisihat.com.my/brand-assets" Foreground="{DynamicResource FluentBrandTint}" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,4"/>
-                            <ui:TextBlock Text="External brand guidelines, press kit, and logo packages." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:CardAction Padding="16" Margin="12,0,0,0" Click="OnOpenPublicAssets">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <ui:TextBlock Text="&#xF133;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ui:TextBlock Text="Public Brand Kits" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="14"/>
+                            </StackPanel>
+                            <ui:TextBlock Text="https://suamisihat.com.my/brand-assets" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <ui:TextBlock Text="External brand guidelines, press kit, and logo packages." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </ui:CardAction>
                 </UniformGrid>
             </StackPanel>
 
-            <!-- Status Banner -->
-            <Border Background="{DynamicResource FluentBrandLight}" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
-                <StackPanel Orientation="Horizontal">
-                    <ui:TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <ui:TextBlock x:Name="CopyStatusText" Text="Click any color swatch below to copy its HEX color code to your clipboard." Foreground="{DynamicResource FluentBrand80}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Border>
-
             <!-- Primary Colour Palette -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Primary Colour Palette" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <WrapPanel Margin="4">
+            <StackPanel Margin="0,0,0,24">
+                <ui:TextBlock Text="Primary Colour Palette" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <UniformGrid Columns="4">
                     <!-- SS Prussian Blue -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|281 C|SS Prussian Blue"><StackPanel>
-                            <Border Height="65" Background="#022057" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="SS Prussian Blue" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #022057" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 2, 32, 87" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 98, 63, 0, 66" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 281 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|281 C|SS Prussian Blue">
+                        <StackPanel>
+                            <Border Height="60" Background="#022057" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="SS Prussian Blue" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #022057" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 2, 32, 87" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 98, 63, 0, 66" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 281 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- SS Blue -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|287 C|SS Blue"><StackPanel>
-                            <Border Height="65" Background="#043388" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="SS Blue" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #043388" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 4, 51, 136" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 97, 63, 0, 47" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 287 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|287 C|SS Blue">
+                        <StackPanel>
+                            <Border Height="60" Background="#043388" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="SS Blue" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #043388" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 4, 51, 136" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 97, 63, 0, 47" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 287 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- Azure -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|299 C|Azure"><StackPanel>
-                            <Border Height="65" Background="#21A1F7" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Azure" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #21A1F7" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 33, 161, 247" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 87, 35, 0, 3" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 299 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|299 C|Azure">
+                        <StackPanel>
+                            <Border Height="60" Background="#21A1F7" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Azure" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #21A1F7" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 33, 161, 247" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 87, 35, 0, 3" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 299 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- Malibu -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|297 C|Malibu"><StackPanel>
-                            <Border Height="65" Background="#6DC6EC" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Malibu" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #6DC6EC" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 109, 198, 236" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 54, 16, 0, 7" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 297 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
-                </WrapPanel>
+                    <ui:Card Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|297 C|Malibu">
+                        <StackPanel>
+                            <Border Height="60" Background="#6DC6EC" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Malibu" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #6DC6EC" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 109, 198, 236" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 54, 16, 0, 7" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 297 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
+                </UniformGrid>
             </StackPanel>
 
             <!-- Secondary Colour Palette -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Secondary Colour Palette" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <WrapPanel Margin="4">
+            <StackPanel Margin="0,0,0,24">
+                <ui:TextBlock Text="Secondary Colour Palette" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <UniformGrid Columns="4">
                     <!-- Lion -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|4655 C|Lion"><StackPanel>
-                            <Border Height="65" Background="#BD9A73" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Lion" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #BD9A73" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 189, 154, 115" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 0, 19, 39, 26" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 4655 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|4655 C|Lion">
+                        <StackPanel>
+                            <Border Height="60" Background="#BD9A73" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Lion" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #BD9A73" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 189, 154, 115" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 0, 19, 39, 26" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 4655 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- Fawn -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|4665 C|Fawn"><StackPanel>
-                            <Border Height="65" Background="#CCAC8D" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Fawn" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #CCAC8D" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 204, 172, 141" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 0, 16, 31, 20" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 4665 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|4665 C|Fawn">
+                        <StackPanel>
+                            <Border Height="60" Background="#CCAC8D" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Fawn" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #CCAC8D" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 204, 172, 141" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 0, 16, 31, 20" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 4665 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- Arylide Yellow -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|108 C|Arylide Yellow"><StackPanel>
-                            <Border Height="65" Background="#E5D15C" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Arylide Yellow" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #E5D15C" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 229, 209, 92" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 0, 9, 60, 10" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 108 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
+                    <ui:Card Padding="12" Margin="4,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|108 C|Arylide Yellow">
+                        <StackPanel>
+                            <Border Height="60" Background="#E5D15C" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Arylide Yellow" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #E5D15C" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 229, 209, 92" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 0, 9, 60, 10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 108 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
 
                     <!-- Banana Yellow -->
-                    <ui:CardAction Width="200" Padding="12" Margin="6" Click="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|102 C|Banana Yellow"><StackPanel>
-                            <Border Height="65" Background="#FCE53D" CornerRadius="4" Margin="0,0,0,10"/>
-                            <ui:TextBlock Text="Banana Yellow" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="HEX: #FCE53D" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                            <ui:TextBlock Text="RGB: 252, 229, 61" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="CMYK: 0, 9, 76, 1" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11"/>
-                            <ui:TextBlock Text="Pantone: 102 C" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel></ui:CardAction>
-                </WrapPanel>
-            </StackPanel>
-
-            <!-- Neutrals Colour Palette -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Neutrals Colour Palette" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <WrapPanel Margin="4">
-                    <!-- Black -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#000000|0, 0, 0|0, 0, 0, 100|Black C|Black"><StackPanel>
-                            <Border Height="45" Background="#000000" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Black" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#000000" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- Grey 20 -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#CCCCCC|204, 204, 204|0, 0, 0, 20|Cool Gray 2 C|Grey 20"><StackPanel>
-                            <Border Height="45" Background="#CCCCCC" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Grey 20" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#CCCCCC" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- Grey 40 -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#999999|153, 153, 153|0, 0, 0, 40|Cool Gray 4 C|Grey 40"><StackPanel>
-                            <Border Height="45" Background="#999999" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Grey 40" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#999999" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- Grey 60 -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#666666|102, 102, 102|0, 0, 0, 60|430 C|Grey 60"><StackPanel>
-                            <Border Height="45" Background="#666666" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Grey 60" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#666666" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- Grey 80 -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#575756|87, 87, 86|0, 0, 1, 66|431 C|Grey 80"><StackPanel>
-                            <Border Height="45" Background="#575756" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Grey 80" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#575756" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- Grey 90 -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#333333|51, 51, 51|0, 0, 0, 80|Dark Gray|Grey 90"><StackPanel>
-                            <Border Height="45" Background="#333333" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="Grey 90" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#333333" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-
-                    <!-- White -->
-                    <ui:CardAction Width="145" Padding="10" Margin="4" Click="OnSwatchClicked" Tag="#FFFFFF|255, 255, 255|0, 0, 0, 0|White|White"><StackPanel>
-                            <Border Height="45" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="4" Margin="0,0,0,8"/>
-                            <ui:TextBlock Text="White" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}"/>
-                            <ui:TextBlock Text="#FFFFFF" FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"/>
-                        </StackPanel></ui:CardAction>
-                </WrapPanel>
-            </StackPanel>
-
-            <!-- 3 Brand Asset Packages Cards (v1.9.10) -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Official Brand Assets Packages" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <UniformGrid Columns="3" Margin="4">
-                    <!-- Card 1: Colour Palettes -->
-                    <ui:Card Padding="16" Margin="6"><DockPanel LastChildFill="True">
-                            <ui:Button DockPanel.Dock="Bottom" Content="&#x1F3A8; Open Palettes Folder" Click="OnOpenPalettesFolder" Background="#EFF6FF" Foreground="{DynamicResource FluentBrand80}" BorderBrush="#21A1F7" BorderThickness="1" Height="36" Padding="10,0" FontWeight="Bold"/>
-                            <StackPanel Margin="0,0,0,12">
-                                <ui:TextBlock Text="&#x1F3A8; Colour Palettes" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                                <ui:TextBlock Text="Installed .afpalette, ASE swatches, and hex guidelines for Affinity Designer &amp; Adobe CC." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DockPanel></ui:Card>
-
-                    <!-- Card 2: Logos & Vector Package -->
-                    <ui:Card Padding="16" Margin="6"><DockPanel LastChildFill="True">
-                            <ui:Button DockPanel.Dock="Bottom" Content="&#x1F3F7;&#xFE0F; Open Logos Package" Click="OnOpenLogosFolder" Background="#EFF6FF" Foreground="{DynamicResource FluentBrand80}" BorderBrush="#21A1F7" BorderThickness="1" Height="36" Padding="10,0" FontWeight="Bold"/>
-                            <StackPanel Margin="0,0,0,12">
-                                <ui:TextBlock Text="&#x1F3F7;&#xFE0F; Logos &amp; Vectors" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                                <ui:TextBlock Text="Master SuamiSihat &amp; sub-brand logos in SVG, PNG, EPS, and AI formats (Light/Dark variants)." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DockPanel></ui:Card>
-
-                    <!-- Card 3: Asset Libraries -->
-                    <ui:Card Padding="16" Margin="6"><DockPanel LastChildFill="True">
-                            <ui:Button DockPanel.Dock="Bottom" Content="&#x1F4E6; Open Libraries Folder" Click="OnOpenLibrariesFolder" Background="#EFF6FF" Foreground="{DynamicResource FluentBrand80}" BorderBrush="#21A1F7" BorderThickness="1" Height="36" Padding="10,0" FontWeight="Bold"/>
-                            <StackPanel Margin="0,0,0,12">
-                                <ui:TextBlock Text="&#x1F4E6; Asset Libraries" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                                <ui:TextBlock Text="Pre-packaged .afassets and .cclibs drag-and-drop design component libraries." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DockPanel></ui:Card>
+                    <ui:Card Padding="12" Margin="8,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|102 C|Banana Yellow">
+                        <StackPanel>
+                            <Border Height="60" Background="#FCE53D" CornerRadius="4" Margin="0,0,0,10"/>
+                            <ui:TextBlock Text="Banana Yellow" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="HEX: #FCE53D" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,3,0,0"/>
+                            <ui:TextBlock Text="RGB: 252, 229, 61" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                            <ui:TextBlock Text="CMYK: 0, 9, 76, 1" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11"/>
+                            <ui:TextBlock Text="Pantone: 102 C" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </ui:Card>
                 </UniformGrid>
             </StackPanel>
 
-            <!-- Design Asset Libraries, Fonts & Workstation Payload Installer -->
-            <StackPanel Margin="0,0,0,20">                <ui:TextBlock Text="Workstation Payload &amp; Brand Assets Installer" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                <StackPanel Margin="8">
-                    <ui:TextBlock Text="Install bundled brand fonts into Windows, deploy Affinity/Adobe asset libraries, or create desktop shortcuts." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12" Margin="0,0,0,12"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <ui:Button Content="&#x1F524; Install Brand Fonts" Click="OnInstallFontsClicked" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,10,0" FontWeight="Bold"/>
-                        <ui:Button Content="&#x1F4E6; Deploy Asset Libraries" Click="OnDeployAssetsClicked" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,10,0" FontWeight="Bold"/>
-                        <ui:Button Content="&#x1F310; Create Desktop Shortcuts" Click="OnCreateShortcutsClicked" Appearance="Secondary" Height="36" Padding="14,0" Margin="0,0,10,0" FontWeight="SemiBold"/>
-                        <ui:Button Content="&#x1F4C1; Open Assets Folder" Click="OnOpenAssetsFolder" Appearance="Secondary" Height="36" Padding="14,0" FontWeight="SemiBold"/>
+            <!-- Neutrals Colour Swathe Palette (Overlapping/Stacked Gradient Swathe) -->
+            <StackPanel Margin="0,0,0,24">
+                <ui:TextBlock Text="Neutrals Swathe Palette" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <ui:Card Padding="0" ClipToBounds="True">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Black -->
+                        <Border Grid.Column="0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#000000|0, 0, 0|0, 0, 0, 100|Black C|Black" ToolTip="Click to copy HEX #000000">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#000000"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Black" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#000000" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Grey 90 -->
+                        <Border Grid.Column="1" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#333333|51, 51, 51|0, 0, 0, 80|Dark Gray|Grey 90" ToolTip="Click to copy HEX #333333">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#333333"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Grey 90" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#333333" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Grey 80 -->
+                        <Border Grid.Column="2" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#575756|87, 87, 86|0, 0, 1, 66|431 C|Grey 80" ToolTip="Click to copy HEX #575756">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#575756"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Grey 80" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#575756" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Grey 60 -->
+                        <Border Grid.Column="3" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#666666|102, 102, 102|0, 0, 0, 60|430 C|Grey 60" ToolTip="Click to copy HEX #666666">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#666666"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Grey 60" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#666666" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Grey 40 -->
+                        <Border Grid.Column="4" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#999999|153, 153, 153|0, 0, 0, 40|Cool Gray 4 C|Grey 40" ToolTip="Click to copy HEX #999999">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#999999"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Grey 40" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#999999" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Grey 20 -->
+                        <Border Grid.Column="5" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCCCCC|204, 204, 204|0, 0, 0, 20|Cool Gray 2 C|Grey 20" ToolTip="Click to copy HEX #CCCCCC">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#CCCCCC"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="Grey 20" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#CCCCCC" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- White -->
+                        <Border Grid.Column="6" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FFFFFF|255, 255, 255|0, 0, 0, 0|White|White" ToolTip="Click to copy HEX #FFFFFF">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1"/>
+                                <StackPanel Grid.Row="1" Margin="8,10" HorizontalAlignment="Center">
+                                    <ui:TextBlock Text="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="#FFFFFF" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ui:Card>
+            </StackPanel>
+
+            <!-- 3 Brand Asset Packages Cards -->
+            <StackPanel Margin="0,0,0,24">
+                <ui:TextBlock Text="Official Brand Assets Packages" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <UniformGrid Columns="3">
+                    <!-- Card 1: Colour Palettes -->
+                    <ui:Card Padding="16" Margin="0,0,8,0">
+                        <DockPanel LastChildFill="True">
+                            <ui:Button DockPanel.Dock="Bottom" Click="OnOpenPalettesFolder" Appearance="Secondary" HorizontalAlignment="Stretch" Height="36" Margin="0,12,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Open Palettes Folder" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <ui:TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ui:TextBlock Text="Colour Palettes" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+                                <ui:TextBlock Text="Installed .afpalette, ASE swatches, and hex guidelines for Affinity Designer &amp; Adobe CC." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </ui:Card>
+
+                    <!-- Card 2: Logos & Vector Package -->
+                    <ui:Card Padding="16" Margin="4,0,4,0">
+                        <DockPanel LastChildFill="True">
+                            <ui:Button DockPanel.Dock="Bottom" Click="OnOpenLogosFolder" Appearance="Secondary" HorizontalAlignment="Stretch" Height="36" Margin="0,12,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE8B9;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Open Logos Package" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <ui:TextBlock Text="&#xE8B9;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ui:TextBlock Text="Logos &amp; Vectors" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+                                <ui:TextBlock Text="Master SuamiSihat &amp; sub-brand logos in SVG, PNG, EPS, and AI formats (Light/Dark variants)." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </ui:Card>
+
+                    <!-- Card 3: Asset Libraries -->
+                    <ui:Card Padding="16" Margin="8,0,0,0">
+                        <DockPanel LastChildFill="True">
+                            <ui:Button DockPanel.Dock="Bottom" Click="OnOpenLibrariesFolder" Appearance="Secondary" HorizontalAlignment="Stretch" Height="36" Margin="0,12,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xF133;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Open Libraries Folder" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <ui:TextBlock Text="&#xF133;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ui:TextBlock Text="Asset Libraries" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+                                <ui:TextBlock Text="Pre-packaged .afassets and .cclibs drag-and-drop design component libraries." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </ui:Card>
+                </UniformGrid>
+            </StackPanel>
+
+            <!-- Workstation Payload & Brand Assets Installer -->
+            <StackPanel Margin="0,0,0,20">
+                <ui:TextBlock Text="Workstation Payload &amp; Assets Installer" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                <ui:Card Padding="16">
+                    <StackPanel>
+                        <ui:TextBlock Text="Install bundled brand fonts into Windows, deploy Affinity/Adobe asset libraries, or create desktop shortcuts." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16"/>
+                        <WrapPanel Margin="0,0,0,8">
+                            <ui:Button Click="OnInstallFontsClicked" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,10,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE8D2;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Install Brand Fonts" FontWeight="Bold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+
+                            <ui:Button Click="OnDeployAssetsClicked" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,10,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xF133;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Deploy Asset Libraries" FontWeight="Bold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+
+                            <ui:Button Click="OnCreateShortcutsClicked" Appearance="Secondary" Height="36" Padding="14,0" Margin="0,0,10,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE71B;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Create Desktop Shortcuts" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+
+                            <ui:Button Click="OnOpenAssetsFolder" Appearance="Secondary" Height="36" Padding="14,0" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Open Assets Folder" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+                        </WrapPanel>
+                        <ui:TextBlock x:Name="PayloadStatusText" Text="" Foreground="{DynamicResource SystemFillColorSuccessBrush}" FontSize="12" FontWeight="Bold"/>
                     </StackPanel>
-                    <ui:TextBlock x:Name="PayloadStatusText" Text="" Foreground="{DynamicResource FluentSuccess}" FontSize="12" FontWeight="Bold"/>
-                </StackPanel>
+                </ui:Card>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

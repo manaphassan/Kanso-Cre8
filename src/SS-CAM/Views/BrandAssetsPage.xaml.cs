@@ -10,6 +10,27 @@ namespace SS_CAM.Views
 {
     public partial class BrandAssetsPage : Page
     {
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var scroller = sender as ScrollViewer;
+            if (scroller != null)
+            {
+                int steps = Math.Abs(e.Delta) / 30;
+                if (steps < 1) steps = 1;
+                if (steps > 8) steps = 8;
+
+                if (e.Delta < 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineDown();
+                }
+                else if (e.Delta > 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineUp();
+                }
+                e.Handled = true;
+            }
+        }
+
         public BrandAssetsPage()
         {
             InitializeComponent();
@@ -46,7 +67,7 @@ namespace SS_CAM.Views
                     string name = parts[4];
 
                     Clipboard.SetText(hex);
-                    CopyStatusText.Text = string.Format("Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
+                    CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
                 }
             }
         }

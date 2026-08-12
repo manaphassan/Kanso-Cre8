@@ -1,4 +1,4 @@
-﻿<Page x:Class="SS_CAM.Views.WorkstationHealthPage"
+<Page x:Class="SS_CAM.Views.WorkstationHealthPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -8,140 +8,291 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel HorizontalAlignment="Stretch">
-            <!-- Fluent 2 Page Header -->
-            <StackPanel Margin="0,0,0,24">
-                <ui:TextBlock Text="Workstation &amp; Software Health"  Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="24" FontWeight="Bold"/>
-                <ui:TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status."  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0"/>
-            </StackPanel>
+            <!-- Fluent 2 Page Header with Action Button -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <ui:TextBlock Text="Workstation &amp; Software Health" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="24" FontWeight="Bold"/>
+                    <ui:TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
+                </StackPanel>
+                <ui:Button Grid.Column="1" Content="Rescan Workstation" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" Click="OnRescanSoftwareClicked" VerticalAlignment="Center"/>
+            </Grid>
 
+            <!-- Hero KPI Summary Grid (4 Metric Cards) -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Metric 1: System Readiness -->
+                <ui:Card Grid.Column="0" Padding="16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ui:SymbolIcon Symbol="CheckmarkCircle24" FontSize="18" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,0,8,0"/>
+                            <ui:TextBlock Text="SYSTEM STATUS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ui:TextBlock Text="Workstation Ready" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        <ui:TextBlock Text="All core subsystems active" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Metric 2: GPU Acceleration -->
+                <ui:Card Grid.Column="2" Padding="16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ui:SymbolIcon Symbol="Desktop24" FontSize="18" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,8,0"/>
+                            <ui:TextBlock Text="GPU ACCELERATION" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ui:TextBlock x:Name="MetricGpuName" Text="DirectX 12 Ready" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                        <ui:TextBlock Text="Hardware rendering active" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Metric 3: Scratch Storage Health -->
+                <ui:Card Grid.Column="4" Padding="16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ui:SymbolIcon Symbol="HardDrive24" FontSize="18" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,8,0"/>
+                            <ui:TextBlock Text="SCRATCH STORAGE" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ui:TextBlock x:Name="MetricStorageText" Text="Drive C: Free Space" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                        <ui:TextBlock x:Name="MetricStorageSubtext" Text="Used Storage Breakdown" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                        <ProgressBar x:Name="StorageProgressBar" Value="75" IsIndeterminate="False" Margin="0,6,0,0" Height="4"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Metric 4: Software Coverage -->
+                <ui:Card Grid.Column="6" Padding="16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <ui:SymbolIcon Symbol="Apps24" FontSize="18" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,8,0"/>
+                            <ui:TextBlock Text="SUITE COVERAGE" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ui:TextBlock x:Name="MetricSoftwareCoverage" Text="Scanning..." FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        <ui:TextBlock Text="Creative tools detected" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+            </Grid>
+
+            <!-- Main Content Area: 2 Columns -->
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="290"/>
+                    <ColumnDefinition Width="320"/>
                     <ColumnDefinition Width="20"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left Column: Workstation Hardware Specs (Fluent 2 Card) -->
-                <StackPanel Grid.Column="0">
-                    <StackPanel Margin="0,0,0,16">                        <ui:TextBlock Text="Workstation Hardware Specs" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                        <StackPanel Margin="12">
-                            <ui:TextBlock Text="Hardware capabilities for GPU rendering, OpenCL acceleration &amp; exports."  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,0,0,14" TextWrapping="Wrap"/>
+                <!-- Left Column: Workstation Hardware Specs -->
+                <ui:Card Grid.Column="0" Padding="16" VerticalAlignment="Top">
+                    <StackPanel>
+                        <ui:TextBlock Text="Hardware Specifications" FontTypography="BodyStrong" Margin="0,0,4,4"/>
+                        <ui:TextBlock Text="Hardware capabilities for GPU rendering, OpenCL acceleration &amp; exports." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,0,0,16" TextWrapping="Wrap"/>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <ui:TextBlock Text="OPERATING SYSTEM"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecOS" Text="Windows 11 (64-bit)"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                        <!-- OS -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Laptop24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="OPERATING SYSTEM" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecOS" Text="Windows 11 (64-bit)" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
+                        </ui:Card>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <ui:TextBlock Text="PROCESSOR (CPU)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecCPU" Text="AMD Ryzen / Intel Core"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                        <!-- CPU -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="DeveloperBoard24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="PROCESSOR (CPU)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecCPU" Text="AMD Ryzen / Intel Core" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
+                        </ui:Card>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <ui:TextBlock Text="SYSTEM MEMORY (RAM)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecRAM" Text="16 GB RAM"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
+                        <!-- MOTHERBOARD MODEL -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="DeveloperBoard24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="MOTHERBOARD MODEL" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecMotherboard" Text="BaseBoard System Board" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
+                        </ui:Card>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <ui:TextBlock Text="GRAPHICS ADAPTER (GPU)"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecGPU" Text="NVIDIA / AMD Graphics"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                        <!-- RAM -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Database24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="SYSTEM MEMORY (RAM)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecRAM" Text="16 GB RAM" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0"/>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
+                        </ui:Card>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
-                                <StackPanel>
-                                    <ui:TextBlock Text="PRIMARY DISPLAY"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecDisplay" Text="1920 x 1080"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0"/>
+                        <!-- GPU -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Desktop24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="GRAPHICS ADAPTER (GPU MODEL)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecGPU" Text="NVIDIA / AMD Graphics" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
+                        </ui:Card>
 
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="8" Padding="12">
-                                <StackPanel>
-                                    <ui:TextBlock Text="AVAILABLE SCRATCH STORAGE"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="9.5" FontWeight="Bold"/>
-                                    <ui:TextBlock x:Name="SpecStorage" Text="Drive C: 84.9 GB free"  Foreground="{DynamicResource FluentLightTextPrimary}" FontWeight="Bold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                        <!-- DISPLAY -->
+                        <ui:Card Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="Desktop24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="PRIMARY DISPLAY" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecDisplay" Text="1920 x 1080" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0"/>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
+                            </Grid>
+                        </ui:Card>
+
+                        <!-- STORAGE -->
+                        <ui:Card Padding="12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:SymbolIcon Symbol="HardDrive24" FontSize="20" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="SCRATCH STORAGE (FREE / USED)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="9.5" FontWeight="Bold"/>
+                                    <ui:TextBlock x:Name="SpecStorage" Text="Drive C: 84.9 GB free" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+                        </ui:Card>
                     </StackPanel>
-                </StackPanel>
+                </ui:Card>
 
                 <!-- Right Column: Standardized Software Suite Health Table -->
-                <StackPanel Grid.Column="2" HorizontalAlignment="Stretch">
-                    <StackPanel Margin="0,0,0,16">                        <ui:TextBlock Text="Design Suite Software Scanner" HorizontalAlignment="Stretch" FontTypography="BodyStrong" Margin="0,0,0,8"/>
-                        <StackPanel Margin="16" HorizontalAlignment="Stretch">
-                            <ui:TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Checks"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12" Margin="0,0,0,14"/>
+                <ui:Card Grid.Column="2" Padding="16" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <ui:TextBlock Text="Design Suite Software Scanner" FontTypography="BodyStrong"/>
+                                <ui:TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Diagnostics" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <ui:TextBox x:Name="SoftwareSearchBox" Grid.Column="1" PlaceholderText="Search software..." Icon="{ui:SymbolIcon Search24}" Width="200" TextChanged="OnSoftwareSearchTextChanged" VerticalAlignment="Center"/>
+                        </Grid>
 
-                            <!-- Minimalist Table Header -->
-                            <Border Background="{DynamicResource FluentLightCardSubBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="220"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="130"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <ui:TextBlock Text="SOFTWARE"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <ui:TextBlock Grid.Column="1" Text="VERSION"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <ui:TextBlock Grid.Column="2" Text="STATUS"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                    <ui:TextBlock Grid.Column="3" Text="ACTION"  FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextSecondary}"/>
-                                </Grid>
-                            </Border>
+                        <!-- Table Header Card -->
+                        <ui:Card Padding="14,10" Margin="0,0,0,8" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:TextBlock Text="SOFTWARE" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock Grid.Column="1" Text="FILE EXTENSION" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock Grid.Column="2" Text="APP VERSION" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock Grid.Column="3" Text="INSTALL STATUS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock Grid.Column="4" Text="ACTION" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </Grid>
+                        </ui:Card>
 
-                            <!-- Items List -->
-                            <ItemsControl x:Name="SoftwareHealthList" HorizontalAlignment="Stretch">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{DynamicResource FluentLightCardBg}" BorderBrush="{DynamicResource FluentLightStroke}" BorderThickness="0,0,0,1" Padding="12,10" HorizontalAlignment="Stretch">
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="220"/>
-                                                    <ColumnDefinition Width="100"/>
-                                                    <ColumnDefinition Width="130"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
+                        <!-- Items List -->
+                        <ItemsControl x:Name="SoftwareHealthList" HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ui:Card Padding="14,10" Margin="0,0,0,6" HorizontalAlignment="Stretch">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="110"/>
+                                                <ColumnDefinition Width="110"/>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
 
-                                                <!-- App Name & Icon -->
-                                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Border Width="30" Height="30" CornerRadius="15" Background="{DynamicResource FluentLightCardSubBg}" Margin="0,0,10,0" VerticalAlignment="Center">
-                                                        <ui:TextBlock Text="{Binding Icon}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <StackPanel VerticalAlignment="Center">
-                                                        <ui:TextBlock Text="{Binding SoftwareName}"  FontWeight="SemiBold" Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="12"/>
-                                                        <ui:TextBlock Text="{Binding Category}"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10"/>
-                                                    </StackPanel>
+                                            <!-- App Name & Icon -->
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,0,12,0" VerticalAlignment="Center">
+                                                    <ui:TextBlock Text="{Binding Icon}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <ui:TextBlock Text="{Binding SoftwareName}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                    <ui:TextBlock Text="Design Application" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10"/>
                                                 </StackPanel>
+                                            </StackPanel>
 
-                                                <!-- Version -->
-                                                <ui:TextBlock Grid.Column="1" Text="{Binding ScannedVersion}"  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" VerticalAlignment="Center"/>
+                                            <!-- File Extension Badge -->
+                                            <Border Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" CornerRadius="4" Padding="6,2">
+                                                <ui:TextBlock Text="{Binding FileExtension}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Border>
 
-                                                <!-- Status -->
-                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ui:TextBlock Text="{Binding StatusText}"  Foreground="{Binding StatusColor}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                                </StackPanel>
+                                            <!-- App Version -->
+                                            <ui:TextBlock Grid.Column="2" Text="{Binding ScannedVersion}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
-                                                <!-- Action Button (Visible if missing) -->
-                                                <ui:Button Grid.Column="3" Content="&#x2B07;&#xFE0F; Get Software" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Primary" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
+                                            <!-- Install Status Badge (Color-Contrasted) -->
+                                            <Border Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" CornerRadius="10" Padding="8,3" Background="{Binding StatusColor}">
+                                                <ui:TextBlock Text="{Binding StatusText}" Foreground="White" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            </Border>
+
+                                            <!-- Action Buttons Column -->
+                                            <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <!-- Get App (Visible if NOT installed) -->
+                                                <ui:Button Content="Get App" Icon="{ui:SymbolIcon ArrowDownload24}" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Secondary" FontSize="11" Padding="8,4" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,6,0"/>
+
+                                                <!-- Uninstall (Visible if INSTALLED) -->
+                                                <ui:Button Content="Uninstall" Icon="{ui:SymbolIcon Delete24}" Click="OnUninstallSoftwareClicked" Tag="{Binding SoftwareName}" Appearance="Secondary" FontSize="11" Padding="8,4" Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ui:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
-                </StackPanel>
+                </ui:Card>
             </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>
-
-
-

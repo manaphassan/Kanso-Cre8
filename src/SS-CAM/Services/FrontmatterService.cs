@@ -56,16 +56,45 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
+        /// Reads and returns the body content (notes below frontmatter) of the project's README.md.
+        /// </summary>
+        public static string ReadBody(string projectFolderPath)
+        {
+            if (string.IsNullOrWhiteSpace(projectFolderPath)) return "";
+            string readmePath = Path.Combine(projectFolderPath, "README.md");
+            if (!File.Exists(readmePath)) return "";
+
+            try
+            {
+                string[] lines = File.ReadAllLines(readmePath, Encoding.UTF8);
+                return ExtractBody(lines);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[FrontmatterService] ReadBody failed for '{0}': {1}", projectFolderPath, ex.Message));
+                return "";
+            }
+        }
+
+        /// <summary>
         /// Writes updated frontmatter fields back to the project's README.md.
         /// The body content below the frontmatter is preserved verbatim.
         /// </summary>
         public static void WriteStatus(ProjectStatusItem item)
         {
+            WriteStatusAndBody(item, null);
+        }
+
+        /// <summary>
+        /// Writes updated frontmatter fields and body content back to the project's README.md.
+        /// </summary>
+        public static void WriteStatusAndBody(ProjectStatusItem item, string newBody)
+        {
             if (item == null || string.IsNullOrWhiteSpace(item.FullPath)) return;
             string readmePath = Path.Combine(item.FullPath, "README.md");
 
-            string body = "";
-            if (File.Exists(readmePath))
+            string body = newBody;
+            if (body == null && File.Exists(readmePath))
             {
                 string[] lines = File.ReadAllLines(readmePath, Encoding.UTF8);
                 body = ExtractBody(lines);
@@ -84,16 +113,17 @@ namespace SS_CAM.Services
                 sb.AppendLine("tags: []");
             sb.AppendLine(string.Format("revision: {0}", item.Revision));
             sb.AppendLine(Delimiter);
+
             if (!string.IsNullOrWhiteSpace(body))
             {
                 sb.AppendLine();
-                sb.Append(body);
+                sb.Append(body.TrimStart('\r', '\n'));
             }
 
             try { File.WriteAllText(readmePath, sb.ToString(), Encoding.UTF8); }
             catch (Exception ex)
             {
-                Debug.WriteLine(string.Format("[FrontmatterService] WriteStatus failed for '{0}': {1}", item.FullPath, ex.Message));
+                Debug.WriteLine(string.Format("[FrontmatterService] WriteStatusAndBody failed for '{0}': {1}", item.FullPath, ex.Message));
             }
         }
 

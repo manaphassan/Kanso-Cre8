@@ -1,133 +1,240 @@
-<Page x:Class="SS_CAM.Views.WellbeingPage"
+﻿<Page x:Class="SS_CAM.Views.WellbeingPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Creative Wellbeing">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel>
-            <!-- Header with Casual Healthy Mind Tips -->
+            <!-- ── HEADER BANNER ─────────────────────────────────────────── -->
             <StackPanel Margin="0,0,0,20">
-                <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" />
-                <ui:TextBlock Text="Your personal space to stay focused, rest your eyes &amp; spine, and keep a calm, healthy mind while designing." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="13" Margin="0,4,0,0" />
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBlock Text="&#xE9F5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="24"
+                               Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="24" FontWeight="Bold"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <ui:TextBlock Text="Protect designer mental health, track hydration, prevent burnout, and maintain peak creative flow."
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12.5" Margin="0,4,0,0"/>
             </StackPanel>
 
+            <!-- ── TOP WELLBEING METRICS BAR (4-UP UNIFORM GRID) ────────────── -->
+            <ui:Card Padding="16" Margin="0,0,0,20">
+                <UniformGrid Columns="4">
+                    <!-- Metric 1: Focus Time -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <ui:TextBlock Text="TOTAL FOCUS TIME" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                        <ui:TextBlock x:Name="TxtMetricFocus" Text="0h 0m" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Metric 2: Hydration Intake -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <ui:TextBlock Text="DAILY HYDRATION" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                        <ui:TextBlock x:Name="TxtMetricWater" Text="0 / 2,000 mL" FontSize="20" FontWeight="Bold" Foreground="#0284C7" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Metric 3: Burnout Risk Index -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <ui:TextBlock Text="BURNOUT RISK INDEX" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                        <ui:TextBlock x:Name="TxtMetricBurnout" Text="Optimal Flow" FontSize="20" FontWeight="Bold" Foreground="#22C55E" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Metric 4: Mind Drops Captured -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <ui:TextBlock Text="MIND DROPS VAULTED" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                        <ui:TextBlock x:Name="TxtMetricDrops" Text="0 captured" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </UniformGrid>
+            </ui:Card>
+
+            <!-- ── MAIN 2-COLUMN DASHBOARD WORKSPACE ───────────────────────── -->
             <Grid Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.2*"/>
                     <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.0*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left Column: Focus Timer & Breathing Animation -->
+                <!-- ————————————————— LEFT COLUMN ————————————————— -->
                 <StackPanel Grid.Column="0">
-                    <!-- Animated Focus & Breathing Timer Card -->
+
+                    <!-- 🌀 Card 1: Vector-Animated Creative Focus & 4-4-4 Box Breathing Engine -->
                     <ui:Card Padding="20" Margin="0,0,0,16">
                         <StackPanel HorizontalAlignment="Center">
-                            <ui:TextBlock Text="CREATIVE TIMER &amp; BREATHING RHYTHM" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12" />
+                            <ui:TextBlock Text="CREATIVE FOCUS &amp; 4-4-4 BOX BREATHING ENGINE" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10.5" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
 
                             <!-- Animated Pulsing Canvas Ring -->
-                            <Grid Width="160" Height="160" Margin="0,0,0,14">
-                                <Canvas x:Name="BreathingCanvas" Width="160" Height="160"/>
+                            <Grid Width="170" Height="170" Margin="0,0,0,14">
+                                <Canvas x:Name="BreathingCanvas" Width="170" Height="170"/>
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <ui:TextBlock x:Name="TxtTimerDisplay" Text="25:00" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" HorizontalAlignment="Center" />
-                                    <ui:TextBlock x:Name="TxtBreathingInstruction" Text="Ready" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrandTint}" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                                    <ui:TextBlock x:Name="TxtTimerDisplay" Text="25:00" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" HorizontalAlignment="Center"/>
+                                    <ui:TextBlock x:Name="TxtBreathingInstruction" Text="Ready" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrandTint}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
 
-                            <ui:TextBlock x:Name="TxtTimerStatus" Text="Select a mode below to begin your session." FontSize="12" Foreground="{DynamicResource FluentLightTextSecondary}" HorizontalAlignment="Center" Margin="0,0,0,14" />
+                            <ui:TextBlock x:Name="TxtTimerStatus" Text="Select a mode below to begin your focus session." FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,14"/>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <ui:Button x:Name="BtnStartFocus" Click="BtnStartFocus_Click" Appearance="Primary" Height="38" Padding="14,0" Margin="0,0,6,0" FontWeight="Bold" Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal"><ui:TextBlock Text="&#xE7C3;" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/><ui:TextBlock Text="Focus Mode (25m)" VerticalAlignment="Center"/></StackPanel>
+                                <ui:Button x:Name="BtnStartFocus" Click="BtnStartFocus_Click" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,6,0" FontWeight="Bold" Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#xE7C3;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Focus (25m)" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </ui:Button>
-                                <ui:Button Click="BtnBreak5_Click" Appearance="Secondary" Height="38" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold" Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal"><ui:TextBlock Text="&#xEA86;" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/><ui:TextBlock Text="5-Min Break" VerticalAlignment="Center"/></StackPanel>
+                                <ui:Button Click="BtnBreak5_Click" Appearance="Secondary" Height="36" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold" Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#xEA86;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="5m Break" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </ui:Button>
-                                <ui:Button Click="BtnBreathing_Click" Appearance="Secondary" Height="38" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold" Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal"><ui:TextBlock Text="&#xE9F5;" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/><ui:TextBlock Text="Breathing (2m)" VerticalAlignment="Center"/></StackPanel>
+                                <ui:Button Click="BtnBreathing_Click" Appearance="Secondary" Height="36" Padding="12,0" Margin="0,0,6,0" FontWeight="SemiBold" Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:TextBlock Text="&#xE9F5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Breathing (2m)" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </ui:Button>
-                                <ui:Button x:Name="BtnPauseFocus" Content="Pause" Click="BtnPauseFocus_Click" Appearance="Secondary" Height="38" Padding="12,0" Margin="0,0,6,0" Visibility="Collapsed" Cursor="Hand"/>
-                                <ui:Button x:Name="BtnStopFocus" Content="Stop" Click="BtnStopFocus_Click" Appearance="Danger" Height="38" Padding="12,0" Visibility="Collapsed" Cursor="Hand"/>
+                                <ui:Button x:Name="BtnPauseFocus" Content="Pause" Click="BtnPauseFocus_Click" Appearance="Secondary" Height="36" Padding="12,0" Margin="0,0,6,0" Visibility="Collapsed" Cursor="Hand"/>
+                                <ui:Button x:Name="BtnStopFocus" Content="Stop" Click="BtnStopFocus_Click" Appearance="Danger" Height="36" Padding="12,0" Visibility="Collapsed" Cursor="Hand"/>
                             </StackPanel>
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Casual Healthy Mind Guide -->
-                    <ui:Card Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrand80}" Padding="16" Margin="0,0,0,16">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8"><ui:TextBlock Text="&#xE82F;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/><ui:TextBlock Text="Quick Guide to Maintaining a Healthy Mind" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="13"  VerticalAlignment="Center"/></StackPanel>
-                            <ui:TextBlock Text="&#x2022; Focus Mode (25m): 25 minutes of uninterrupted design work gets you into a flow state without mental fatigue." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
-                            <ui:TextBlock Text="&#x2022; 5-Min Break: Step away, stretch your shoulders, look out a window (20-20-20 rule to prevent eye strain)." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" Margin="0,0,0,4" TextWrapping="Wrap" />
-                            <ui:TextBlock Text="&#x2022; 2-Min Breathing: Follow the pulsing circle &#x2014; 4s Inhale, 4s Hold, 4s Exhale to reset your nervous system." Foreground="{DynamicResource FluentLightTextPrimary}" FontSize="11" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </ui:Card>
+                            <!-- 💧 Card 2: Interactive Vector Hydration Tracker (2,000 mL Goal / 8 Cups) -->
+                            <ui:Card Padding="20">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="&#x1F4A7;" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <ui:TextBlock Text="Water Hydration Tracker (Goal: 2,000 mL / 8 Cups)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock x:Name="TxtWaterPct" Grid.Column="1" Text="0 mL (0%)" FontSize="13" FontWeight="Bold" Foreground="#0284C7" VerticalAlignment="Center"/>
+                                    </Grid>
 
-                    <!-- Energy Check-in -->
-                    <ui:Card Padding="18">
-                        <StackPanel>
-                            <ui:TextBlock Text="ENERGY CHECK-IN (1 = Low Battery &#x00B7; 5 = Full Power)" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="Bold" Margin="0,0,0,12" />
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                <ui:Button x:Name="BtnE1" Content="1" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="1" Appearance="Secondary" Cursor="Hand" />
-                                <ui:Button x:Name="BtnE2" Content="2" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="2" Appearance="Secondary" Cursor="Hand" />
-                                <ui:Button x:Name="BtnE3" Content="3" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="3" Appearance="Primary" FontWeight="Bold" Cursor="Hand" />
-                                <ui:Button x:Name="BtnE4" Content="4" Width="40" Height="36" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="4" Appearance="Secondary" Cursor="Hand" />
-                                <ui:Button x:Name="BtnE5" Content="5" Width="40" Height="36" Click="BtnEnergy_Click" Tag="5" Appearance="Secondary" Cursor="Hand" />
-                            </StackPanel>
-                            <ui:TextBlock x:Name="TxtFatigueRec" Text="" FontSize="12" Foreground="{DynamicResource FluentDanger}" Visibility="Collapsed" />
+                                    <!-- Vector Water Container with Animated Wave -->
+                                    <Border Height="80" CornerRadius="8" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" ClipToBounds="True" Margin="0,0,0,14">
+                                        <Grid>
+                                            <Canvas x:Name="WaterCanvas" Height="80" VerticalAlignment="Bottom">
+                                                <Path x:Name="WaterWavePath" Fill="#38BDF8" Opacity="0.85"/>
+                                            </Canvas>
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <ui:TextBlock x:Name="TxtWaterStatusLabel" Text="Target: 8 Cups of Water Daily" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center"/>
+                                                <ui:TextBlock Text="Each cup adds 250 mL to maintain physical health &amp; cognitive focus." FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- 8-Cup Tiles Grid -->
+                                    <UniformGrid x:Name="CupGrid" Columns="8" Height="40" Margin="0,0,0,14">
+                                        <Border x:Name="Cup1" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="1" ToolTip="Cup 1 (250 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup2" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="2" ToolTip="Cup 2 (500 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup3" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="3" ToolTip="Cup 3 (750 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup4" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="4" ToolTip="Cup 4 (1,000 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup5" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="5" ToolTip="Cup 5 (1,250 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup6" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="6" ToolTip="Cup 6 (1,500 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup7" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="7" ToolTip="Cup 7 (1,750 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <Border x:Name="Cup8" Background="#E2E8F0" CornerRadius="6" Margin="2" Cursor="Hand" MouseLeftButtonDown="OnCupClicked" Tag="8" ToolTip="Cup 8 (2,000 mL)">
+                                            <ui:TextBlock Text="&#x1F95B;" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </UniformGrid>
+
+                                    <!-- Quick Water Buttons -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ui:Button Grid.Column="0" Appearance="Primary" Click="OnAddWater250_Click" Height="34" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:TextBlock Text="&#x1F4A7;" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <ui:TextBlock Text="+250 mL (1 Cup)" FontSize="11.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </ui:Button>
+                                        <ui:Button Grid.Column="2" Appearance="Secondary" Click="OnAddWater500_Click" Height="34" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:TextBlock Text="&#x1F4A7;" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <ui:TextBlock Text="+500 mL (2 Cups)" FontSize="11.5" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </ui:Button>
+                                        <ui:Button Grid.Column="4" Appearance="Secondary" Click="OnResetWater_Click" Height="34" Padding="12,0" Cursor="Hand" ToolTip="Reset Hydration Count">
+                                            <ui:TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
+                                        </ui:Button>
+                                    </Grid>
+                                </StackPanel>
+                            </ui:Card>
                         </StackPanel>
-                    </ui:Card>
+
+                        <!-- ————————————————— RIGHT COLUMN ————————————————— -->
+                        <StackPanel Grid.Column="2">
+
+                            <!-- 🎯 Card 3: Interactive Wellbeing Radar Chart & Energy Check-in -->
+                            <ui:Card Padding="18" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <StackPanel Margin="0,0,0,10">
+                                        <ui:TextBlock Text="INTERACTIVE WELLBEING RADAR" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Multi-axis visualizer: Energy, Focus, Rest, Pressure &amp; Flow." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Canvas for Spider Chart -->
+                                    <Grid HorizontalAlignment="Center" Margin="0,0,0,12">
+                                        <Canvas x:Name="RadarCanvas" Width="260" Height="240"/>
+                                    </Grid>
+
+                                    <!-- Energy Check-in Bar -->
+                                    <ui:TextBlock Text="TODAY'S ENERGY LEVEL (1 = Low Battery · 5 = Full Power)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <ui:Button x:Name="BtnE1" Content="1" Width="38" Height="34" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="1" Appearance="Secondary" Cursor="Hand"/>
+                                        <ui:Button x:Name="BtnE2" Content="2" Width="38" Height="34" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="2" Appearance="Secondary" Cursor="Hand"/>
+                                        <ui:Button x:Name="BtnE3" Content="3" Width="38" Height="34" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="3" Appearance="Primary" FontWeight="Bold" Cursor="Hand"/>
+                                        <ui:Button x:Name="BtnE4" Content="4" Width="38" Height="34" Margin="0,0,6,0" Click="BtnEnergy_Click" Tag="4" Appearance="Secondary" Cursor="Hand"/>
+                                        <ui:Button x:Name="BtnE5" Content="5" Width="38" Height="34" Click="BtnEnergy_Click" Tag="5" Appearance="Secondary" Cursor="Hand"/>
+                                    </StackPanel>
+                                    <ui:TextBlock x:Name="TxtFatigueRec" Text="" FontSize="11.5" Foreground="{DynamicResource FluentDanger}" Visibility="Collapsed" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </ui:Card>
+
+                            <!-- 🔐 Card 4: Mind Drops (Private Local Thought Vault) -->
+                            <ui:Card Padding="18">
+                                <StackPanel>
+                                    <ui:TextBlock Text="MIND DROPS (Local Private Thought Vault)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10.5" FontWeight="Bold" Margin="0,0,0,4"/>
+                                    <ui:TextBlock Text="Vault distracting thoughts privately while designing so you can maintain flow state." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,0,0,10"/>
+                                    <ui:TextBox x:Name="TxtMindDrop" PlaceholderText="Write down any distracting thought..." AcceptsReturn="True" MinHeight="54" Margin="0,0,0,10"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ui:Button Grid.Column="0" Content="Save (End-of-Day Purge)" Click="BtnSaveDrop_EndOfDay" Appearance="Primary" Height="34" FontWeight="SemiBold" Cursor="Hand"/>
+                                        <ui:Button Grid.Column="2" Content="Save (Session Only)" Click="BtnSaveDrop_Session" Appearance="Secondary" Height="34" FontWeight="SemiBold" Cursor="Hand"/>
+                                    </Grid>
+                                </StackPanel>
+                            </ui:Card>
+
+                        </StackPanel>
+                    </Grid>
+
                 </StackPanel>
-
-                <!-- Right Column: Interactive Dynamic Radar / Spider Chart -->
-                <ui:Card Grid.Column="2" Padding="18">
-                    <DockPanel LastChildFill="True">
-                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                            <ui:TextBlock Text="INTERACTIVE WELLBEING RADAR" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" />
-                            <ui:TextBlock Text="Real-time multi-axis overview: Energy, Focus, Rest, Pressure, and Flow state." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,2,0,0" />
-                        </StackPanel>
-
-                        <!-- Canvas for Spider Chart -->
-                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Canvas x:Name="RadarCanvas" Width="280" Height="280"/>
-                        </Grid>
-                    </DockPanel>
-                </ui:Card>
-            </Grid>
-
-            <!-- Mind Drops Card (DPAPI Encrypted) -->
-            <ui:Card Padding="18" Margin="0,0,0,20">
-                <StackPanel>
-                    <ui:TextBlock Text="MIND DROPS (Local Private Thought Vault)" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" FontWeight="Bold" Margin="0,0,0,4" />
-                    <ui:TextBlock Text="Got a distracting thought or urgent reminder while designing? Drop it here privately so you can focus." Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,0,0,10" />
-                    <ui:TextBox x:Name="TxtMindDrop" PlaceholderText="Write down any distracting thought..." AcceptsReturn="True" MinHeight="60" Margin="0,0,0,12"/>
-                    <StackPanel Orientation="Horizontal">
-                        <ui:Button Content="Save (End-of-Day Purge)" Click="BtnSaveDrop_EndOfDay" Appearance="Primary" Height="36" Padding="14,0" Margin="0,0,8,0" FontWeight="SemiBold" Cursor="Hand" />
-                        <ui:Button Content="Save (Session Only)" Click="BtnSaveDrop_Session" Appearance="Secondary" Height="36" Padding="14,0" FontWeight="SemiBold" Cursor="Hand" />
-                    </StackPanel>
-                </StackPanel>
-            </ui:Card>
-
-            <!-- Today's Session Metrics -->
-            <ui:Card Padding="16">
-                <UniformGrid Columns="3">
-                    <StackPanel HorizontalAlignment="Center">
-                        <ui:TextBlock Text="TOTAL FOCUS TIME" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10" FontWeight="Bold" />
-                        <ui:TextBlock x:Name="TxtMetricFocus" Text="0h 0m" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" />
-                    </StackPanel>
-
-                    <StackPanel HorizontalAlignment="Center">
-                        <ui:TextBlock Text="COMPLETED SESSIONS" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10" FontWeight="Bold" />
-                        <ui:TextBlock x:Name="TxtMetricSessions" Text="0 completed" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" />
-                    </StackPanel>
-
-                    <StackPanel HorizontalAlignment="Center">
-                        <ui:TextBlock Text="MIND DROPS" Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="10" FontWeight="Bold" />
-                        <ui:TextBlock x:Name="TxtMetricDrops" Text="0 captured" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" />
-                    </StackPanel>
-                </UniformGrid>
-            </ui:Card>
-        </StackPanel>
-    </ScrollViewer>
-</Page>
+            </ScrollViewer>
+        </Page>
 

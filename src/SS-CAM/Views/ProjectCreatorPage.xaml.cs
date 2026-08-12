@@ -19,6 +19,27 @@ namespace SS_CAM.Views
         private List<CategoryPreset> _categoryPresets;
         private CategoryPreset _selectedEditingPreset;
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var scroller = sender as ScrollViewer;
+            if (scroller != null)
+            {
+                int steps = Math.Abs(e.Delta) / 30;
+                if (steps < 1) steps = 1;
+                if (steps > 8) steps = 8;
+
+                if (e.Delta < 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineDown();
+                }
+                else if (e.Delta > 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineUp();
+                }
+                e.Handled = true;
+            }
+        }
+
         public ProjectCreatorPage()
         {
             InitializeComponent();
@@ -239,6 +260,17 @@ namespace SS_CAM.Views
             return string.Format("{0}_{1}_{2}_{3}", datePrefix, jobId, brandCode, name);
         }
 
+        private void UpdatePlatformCardHighlighting()
+        {
+            if (PlatformComboBox == null || CardPlatform1x1 == null) return;
+            int idx = PlatformComboBox.SelectedIndex;
+
+            CardPlatform1x1.BorderThickness = new Thickness(idx == 0 ? 2 : 1);
+            CardPlatform9x16.BorderThickness = new Thickness(idx == 1 ? 2 : 1);
+            CardPlatform16x9.BorderThickness = new Thickness(idx == 2 ? 2 : 1);
+            CardPlatformPrint.BorderThickness = new Thickness(idx == 3 ? 2 : 1);
+        }
+
         private void UpdateLivePreview()
         {
             string folderName = GenerateFolderName();
@@ -247,22 +279,34 @@ namespace SS_CAM.Views
 
             PreviewPathText.Text = targetPath;
 
+            if (FolderStatusBadge != null)
+            {
+                bool exists = Directory.Exists(targetPath);
+                FolderStatusBadge.Visibility = exists ? Visibility.Visible : Visibility.Collapsed;
+                if (exists && FolderStatusBadgeText != null)
+                {
+                    FolderStatusBadgeText.Text = "Target folder already exists in workspace";
+                }
+            }
+
+            UpdatePlatformCardHighlighting();
+
             CategoryPreset selectedPreset = GetSelectedCategoryPreset();
             List<string> presetFolders = GetPresetFolders(selectedPreset);
 
             List<string> lines = new List<string>();
-            lines.Add("ðŸ“ " + folderName);
+            lines.Add("📁 " + folderName);
             
             foreach (var folder in presetFolders)
             {
                 if (folder.Contains(Path.DirectorySeparatorChar.ToString()) || folder.Contains("/"))
                 {
                     string[] parts = folder.Split(new[] { Path.DirectorySeparatorChar, '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    lines.Add(" │   └── ðŸ“ " + string.Join("/", parts.Skip(1)));
+                    lines.Add(" │   └── 📁 " + string.Join("/", parts.Skip(1)));
                 }
                 else
                 {
-                    lines.Add(" ├── ðŸ“ " + folder);
+                    lines.Add(" ├── 📁 " + folder);
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         lines.Add(" │   └── 📄 " + folderName + GetSelectedExtension());
@@ -272,15 +316,24 @@ namespace SS_CAM.Views
 
             if (IncludeRevisionsCheck != null && IncludeRevisionsCheck.IsChecked == true)
             {
-                lines.Add(" ├── ðŸ“ Client_Revisions");
+                lines.Add(" ├── 📁 Client_Revisions");
             }
             if (IncludeRawMediaCheck != null && IncludeRawMediaCheck.IsChecked == true)
             {
-                lines.Add(" ├── ðŸ“ RAW_Media");
+                lines.Add(" ├── 📁 RAW_Media");
             }
             lines.Add(" └── 📄 README.md");
 
             FolderStructureBox.Text = string.Join(Environment.NewLine, lines.ToArray());
+        }
+
+        private void OnCopyFolderPathClicked(object sender, RoutedEventArgs e)
+        {
+            string folderName = GenerateFolderName();
+            string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
+            string targetPath = Path.Combine(workspaceRoot, designerFolder, folderName);
+            Clipboard.SetText(targetPath);
+            CreateStatusText.Text = "Copied target folder path to clipboard!";
         }
 
         private void OnCopyFolderNameClicked(object sender, RoutedEventArgs e)
@@ -427,7 +480,7 @@ namespace SS_CAM.Views
             if (selected != null)
             {
                 _selectedEditingPreset = selected;
-                PresetFormTitle.Text = "âœï¸ Edit Category Preset — " + selected.Name;
+                PresetFormTitle.Text = "✏️ Edit Category Preset — " + selected.Name;
                 TxtPresetName.Text = selected.Name;
                 TxtPresetSuffix.Text = selected.Suffix;
                 TxtPresetFolders.Text = string.Join(Environment.NewLine, selected.Folders != null ? selected.Folders.ToArray() : new string[0]);

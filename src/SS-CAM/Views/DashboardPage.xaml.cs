@@ -111,6 +111,27 @@ namespace SS_CAM.Views
             InitTeamBoard();
         }
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var scroller = sender as ScrollViewer;
+            if (scroller != null)
+            {
+                int steps = Math.Abs(e.Delta) / 30;
+                if (steps < 1) steps = 1;
+                if (steps > 8) steps = 8;
+
+                if (e.Delta < 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineDown();
+                }
+                else if (e.Delta > 0)
+                {
+                    for (int i = 0; i < steps; i++) scroller.LineUp();
+                }
+                e.Handled = true;
+            }
+        }
+
         private void OnPageUnloaded(object sender, RoutedEventArgs e)
         {
             if (_tipTimer != null)

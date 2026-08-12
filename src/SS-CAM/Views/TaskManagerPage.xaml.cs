@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using SS_CAM.Models;
 using SS_CAM.Services;
+using SS_CAM.Utilities;
+using Wpf.Ui.Controls;
 
 namespace SS_CAM.Views
 {
@@ -15,6 +17,8 @@ namespace SS_CAM.Views
         private ProjectStatusItem _editingProject = null;
 
         private bool _isPopulatingFilter = false;
+        private Point _dragStartPoint;
+        private bool _isDragging = false;
 
         public TaskManagerPage()
         {
@@ -98,12 +102,52 @@ namespace SS_CAM.Views
                     }
                 }
 
+                UpdateMetricSummaryCards();
                 ApplyFiltersAndUpdateBoard();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("LoadProjects error: " + ex);
                 UpdateBoard();
+            }
+        }
+
+        private void UpdateMetricSummaryCards()
+        {
+            try
+            {
+                int total = _allProjects.Count;
+                int inProgressCount = 0;
+                int reviewCount = 0;
+                int urgentCount = 0;
+                int doneCount = 0;
+
+                foreach (ProjectStatusItem p in _allProjects)
+                {
+                    if (p == null) continue;
+                    string status = (p.Status ?? "").ToLowerInvariant();
+                    string priority = (p.Priority ?? "").ToLowerInvariant();
+                    string deadlineDisp = p.DeadlineDisplay ?? "";
+
+                    if (status == "in-progress") inProgressCount++;
+                    else if (status == "review") reviewCount++;
+                    else if (status == "done") doneCount++;
+
+                    if (priority == "urgent" || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
+                    {
+                        urgentCount++;
+                    }
+                }
+
+                if (MetricTotalProjects != null) MetricTotalProjects.Text = total.ToString();
+                if (MetricInProgress != null) MetricInProgress.Text = inProgressCount.ToString();
+                if (MetricReview != null) MetricReview.Text = reviewCount.ToString();
+                if (MetricUrgent != null) MetricUrgent.Text = urgentCount.ToString();
+                if (MetricDone != null) MetricDone.Text = doneCount.ToString();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("UpdateMetricSummaryCards error: " + ex);
             }
         }
 
@@ -119,6 +163,7 @@ namespace SS_CAM.Views
                     string sel = ((ComboBoxItem)PriorityFilter.SelectedItem).Content.ToString();
                     if (sel != "All Priorities") priorityFilter = sel;
                 }
+                string searchQuery = TxtSearchQuery != null ? TxtSearchQuery.Text.Trim().ToLowerInvariant() : "";
 
                 List<ProjectStatusItem> filtered = new List<ProjectStatusItem>();
                 foreach (ProjectStatusItem p in _allProjects)
@@ -128,6 +173,12 @@ namespace SS_CAM.Views
                         !string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase)) continue;
                     if (!string.IsNullOrEmpty(priorityFilter) &&
                         !string.Equals(p.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!string.IsNullOrEmpty(searchQuery))
+                    {
+                        string projName = (p.Project ?? "").ToLowerInvariant();
+                        string clientName = (p.Client ?? "").ToLowerInvariant();
+                        if (!projName.Contains(searchQuery) && !clientName.Contains(searchQuery)) continue;
+                    }
                     filtered.Add(p);
                 }
 
@@ -182,6 +233,20 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnTMSearchQueryChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!IsLoaded || _isPopulatingFilter) return;
+            ApplyFiltersAndUpdateBoard();
+        }
+
+        private void OnTMResetFiltersClicked(object sender, RoutedEventArgs e)
+        {
+            if (TxtSearchQuery != null) TxtSearchQuery.Text = "";
+            if (DesignerFilterTM != null && DesignerFilterTM.Items.Count > 0) DesignerFilterTM.SelectedIndex = 0;
+            if (PriorityFilter != null && PriorityFilter.Items.Count > 0) PriorityFilter.SelectedIndex = 0;
+            ApplyFiltersAndUpdateBoard();
+        }
+
         private void OnTMRefreshClicked(object sender, RoutedEventArgs e)
         {
             LoadProjects();
@@ -193,10 +258,96 @@ namespace SS_CAM.Views
             ApplyFiltersAndUpdateBoard();
         }
 
+        // ─── Drag and Drop Implementation ──────────────────────────────────────
+
+        private void OnCardPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(null);
+            _isDragging = false;
+        }
+
+        private void OnCardMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed || _isDragging) return;
+
+            Point mousePos = e.GetPosition(null);
+            Vector diff = _dragStartPoint - mousePos;
+
+            if (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+            {
+                FrameworkElement card = sender as FrameworkElement;
+                if (card == null) return;
+
+                ProjectStatusItem item = card.DataContext as ProjectStatusItem;
+                if (item == null) return;
+
+                _isDragging = true;
+                try
+                {
+                    DataObject dragData = new DataObject("ProjectStatusItem", item);
+                    DragDrop.DoDragDrop(card, dragData, DragDropEffects.Move);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("DragDrop error: " + ex.Message);
+                }
+                finally
+                {
+                    _isDragging = false;
+                }
+            }
+        }
+
+        private void OnColumnDragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("ProjectStatusItem"))
+            {
+                e.Effects = DragDropEffects.Move;
+                e.Handled = true;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void OnColumnDragLeave(object sender, DragEventArgs e)
+        {
+        }
+
+        private void OnColumnDrop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                if (e.Data.GetDataPresent("ProjectStatusItem"))
+                {
+                    ProjectStatusItem item = e.Data.GetData("ProjectStatusItem") as ProjectStatusItem;
+                    FrameworkElement targetEl = sender as FrameworkElement;
+                    string targetStatus = targetEl != null ? targetEl.Tag as string : null;
+
+                    if (item != null && !string.IsNullOrEmpty(targetStatus) && !string.Equals(item.Status, targetStatus, StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.Status = targetStatus;
+                        FrontmatterService.WriteStatus(item);
+
+                        UpdateMetricSummaryCards();
+                        ApplyFiltersAndUpdateBoard();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("ColumnDrop error: " + ex.Message);
+            }
+        }
+
         // ─── Project Card Click → Open Detail Drawer ───────────────────────────
 
         private void OnProjectCardClicked(object sender, RoutedEventArgs e)
         {
+            if (_isDragging) return;
+
             FrameworkElement el = sender as FrameworkElement;
             if (el == null) return;
             ProjectStatusItem item = el.DataContext as ProjectStatusItem;
@@ -210,14 +361,108 @@ namespace SS_CAM.Views
             SelectComboItemByContent(DetailPriority, item.Priority ?? "medium");
             DetailDeadline.Text = item.Deadline ?? "";
             DetailRevision.Text = item.Revision.ToString();
+
+            // Load README body content notes
+            string body = FrontmatterService.ReadBody(item.FullPath);
+            DetailReadmePreview.Text = body ?? "";
+            DetailReadmeRendered.Document = MarkdownHelper.ToFlowDocument(body);
+
+            // Default to Preview Mode
+            SwitchToReadmePreviewMode();
+
             DetailSaveStatus.Text = "";
             DetailPanel.Visibility = Visibility.Visible;
+        }
+
+        private void OnReadmeModePreviewClicked(object sender, RoutedEventArgs e)
+        {
+            SwitchToReadmePreviewMode();
+        }
+
+        private void OnReadmeModeEditClicked(object sender, RoutedEventArgs e)
+        {
+            SwitchToReadmeEditMode();
+        }
+
+        private void SwitchToReadmePreviewMode()
+        {
+            if (DetailReadmePreview != null && DetailReadmeRendered != null)
+            {
+                DetailReadmeRendered.Document = MarkdownHelper.ToFlowDocument(DetailReadmePreview.Text);
+                DetailReadmeRendered.Visibility = Visibility.Visible;
+                DetailReadmePreview.Visibility = Visibility.Collapsed;
+            }
+            if (BtnModePreview != null) BtnModePreview.Appearance = ControlAppearance.Primary;
+            if (BtnModeEdit != null) BtnModeEdit.Appearance = ControlAppearance.Secondary;
+        }
+
+        private void SwitchToReadmeEditMode()
+        {
+            if (DetailReadmePreview != null && DetailReadmeRendered != null)
+            {
+                DetailReadmeRendered.Visibility = Visibility.Collapsed;
+                DetailReadmePreview.Visibility = Visibility.Visible;
+            }
+            if (BtnModePreview != null) BtnModePreview.Appearance = ControlAppearance.Secondary;
+            if (BtnModeEdit != null) BtnModeEdit.Appearance = ControlAppearance.Primary;
+        }
+
+        private void OnOpenRawReadmeClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject == null || string.IsNullOrWhiteSpace(_editingProject.FullPath)) return;
+            string readmePath = System.IO.Path.Combine(_editingProject.FullPath, "README.md");
+
+            try
+            {
+                if (!System.IO.File.Exists(readmePath))
+                {
+                    FrontmatterService.WriteStatus(_editingProject);
+                }
+
+                if (System.IO.File.Exists(readmePath))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = readmePath,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                DetailSaveStatus.Text = "Cannot open README: " + ex.Message;
+            }
         }
 
         private void OnDetailClose(object sender, RoutedEventArgs e)
         {
             DetailPanel.Visibility = Visibility.Collapsed;
             _editingProject = null;
+        }
+
+        private void OnRevisionDecrementClicked(object sender, RoutedEventArgs e)
+        {
+            int val;
+            if (int.TryParse(DetailRevision.Text, out val))
+            {
+                val = Math.Max(0, val - 1);
+                DetailRevision.Text = val.ToString();
+            }
+            else
+            {
+                DetailRevision.Text = "0";
+            }
+        }
+
+        private void OnRevisionIncrementClicked(object sender, RoutedEventArgs e)
+        {
+            int val;
+            if (!int.TryParse(DetailRevision.Text, out val))
+            {
+                val = 0;
+            }
+            val++;
+            DetailRevision.Text = val.ToString();
         }
 
         private void OnDetailSave(object sender, RoutedEventArgs e)
@@ -230,15 +475,24 @@ namespace SS_CAM.Views
                 _editingProject.Priority = ((ComboBoxItem)DetailPriority.SelectedItem).Content.ToString();
             _editingProject.Deadline = DetailDeadline.Text.Trim();
 
-            int rev;
-            _editingProject.Revision = int.TryParse(DetailRevision.Text.Trim(), out rev) ? rev : 0;
+            int revVal;
+            if (int.TryParse(DetailRevision.Text, out revVal))
+            {
+                _editingProject.Revision = revVal;
+            }
+
+            string newBody = DetailReadmePreview.Text;
 
             try
             {
-                FrontmatterService.WriteStatus(_editingProject);
+                FrontmatterService.WriteStatusAndBody(_editingProject, newBody);
                 DetailSaveStatus.Text = "Saved to README.md \u2713";
 
-                // Re-sort board
+                // Update rendered markdown preview document
+                DetailReadmeRendered.Document = MarkdownHelper.ToFlowDocument(newBody);
+
+                // Refresh metrics & board
+                UpdateMetricSummaryCards();
                 ApplyFiltersAndUpdateBoard();
             }
             catch (Exception ex)
@@ -261,4 +515,3 @@ namespace SS_CAM.Views
         }
     }
 }
-

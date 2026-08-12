@@ -70,6 +70,52 @@ namespace SS_CAM
             RootNavigation.Navigate(typeof(DashboardPage));
         }
 
+        protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnPreviewKeyDown(e);
+
+            if (e.Key == System.Windows.Input.Key.PageDown || e.Key == System.Windows.Input.Key.PageUp ||
+                e.Key == System.Windows.Input.Key.Down || e.Key == System.Windows.Input.Key.Up)
+            {
+                var focused = System.Windows.Input.Keyboard.FocusedElement as DependencyObject;
+                if (!(focused is System.Windows.Controls.TextBox) && !(focused is Wpf.Ui.Controls.TextBox) &&
+                    !(focused is System.Windows.Controls.ComboBox) && !(focused is System.Windows.Controls.ListBoxItem))
+                {
+                    var scroller = FindVisualChild<ScrollViewer>(RootNavigation);
+                    if (scroller != null)
+                    {
+                        if (e.Key == System.Windows.Input.Key.PageDown)
+                            scroller.PageDown();
+                        else if (e.Key == System.Windows.Input.Key.PageUp)
+                            scroller.PageUp();
+                        else if (e.Key == System.Windows.Input.Key.Down)
+                            scroller.LineDown();
+                        else if (e.Key == System.Windows.Input.Key.Up)
+                            scroller.LineUp();
+
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T)
+                    return (T)child;
+
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null)
+                    return childOfChild;
+            }
+            return null;
+        }
+
         private void InitRadioStatusListeners()
         {
             var radio = RadioStreamService.Instance;
@@ -467,10 +513,18 @@ namespace SS_CAM
 
         private void OnStatusThemeToggle(object sender, MouseButtonEventArgs e)
         {
-            // Toggle between Falconia (Light) and Metamorphosis (Dark)
-            AppTheme nextTheme = (ThemeService.CurrentTheme == AppTheme.Falconia)
-                ? AppTheme.Metamorphosis
-                : AppTheme.Falconia;
+            // Cycle through themes: Falconia -> Metamorphosis -> Catppuccin -> RosePine -> Nord -> Falconia
+            AppTheme nextTheme;
+            if (ThemeService.CurrentTheme == AppTheme.Falconia)
+                nextTheme = AppTheme.Metamorphosis;
+            else if (ThemeService.CurrentTheme == AppTheme.Metamorphosis)
+                nextTheme = AppTheme.Catppuccin;
+            else if (ThemeService.CurrentTheme == AppTheme.Catppuccin)
+                nextTheme = AppTheme.RosePine;
+            else if (ThemeService.CurrentTheme == AppTheme.RosePine)
+                nextTheme = AppTheme.Nord;
+            else
+                nextTheme = AppTheme.Falconia;
 
             ThemeService.ApplyTheme(nextTheme);
         }
@@ -524,21 +578,23 @@ namespace SS_CAM
 
             // -- PaneFooter: persona name + department text colors --
             if (SidebarPersonaName != null)
-                SidebarPersonaName.Foreground = Brushes.White;
+                SidebarPersonaName.Foreground = (theme == AppTheme.Falconia || theme == AppTheme.Nord)
+                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.SearchText))
+                    : Brushes.White;
             if (SidebarPersonaDept != null)
                 SidebarPersonaDept.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(c.UserCardSub));
 
             // -- Update theme name label in sidebar footer --
             if (StatusThemeText != null)
             {
-                string themeName = (theme == AppTheme.Metamorphosis) ? "Metamorphosis" : "Falconia";
+                string themeName = (theme == AppTheme.Metamorphosis) ? "Metamorphosis" : (theme == AppTheme.Catppuccin ? "Catppuccin" : (theme == AppTheme.RosePine ? "Rosé Pine" : (theme == AppTheme.Nord ? "Nord Light" : "SuamiSihat Light")));
                 StatusThemeText.Text = "Theme: " + themeName;
             }
 
             // -- Nav item foreground --
-            // Metamorphosis: dark sidebar in Dark WPF-UI mode — force nav text white.
-            // Falconia: white sidebar in Light WPF-UI mode — clear override (WPF-UI default = dark).
-            bool forceWhiteNavText = (theme == AppTheme.Metamorphosis);
+            // Metamorphosis, Catppuccin & RosePine: dark sidebar in Dark WPF-UI mode — force nav text white.
+            // Falconia & Nord: light sidebar in Light WPF-UI mode — clear override (WPF-UI default = dark).
+            bool forceWhiteNavText = (theme == AppTheme.Metamorphosis || theme == AppTheme.Catppuccin || theme == AppTheme.RosePine);
             var navFg = forceWhiteNavText
                 ? new SolidColorBrush(Colors.White)
                 : null;
@@ -682,7 +738,7 @@ namespace SS_CAM
         //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "2.6.1";
+        private const string CurrentVersion = "3.0.0";
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 
@@ -834,10 +890,21 @@ namespace SS_CAM
             }
         }
 
-        // ─── Profile Card ───────────────────────────────────────────────────────
+        // ─── Profile Card & Settings Navigation ───────────────────────────────
+        private void OnSettingsNavItemClicked(object sender, RoutedEventArgs e)
+        {
+            if (RootNavigation != null)
+            {
+                RootNavigation.Navigate(typeof(SettingsPage));
+            }
+        }
+
         private void OnProfileCardClicked(object sender, MouseButtonEventArgs e)
         {
-            RootNavigation.Navigate(typeof(SettingsPage));
+            if (RootNavigation != null)
+            {
+                RootNavigation.Navigate(typeof(SettingsPage));
+            }
         }
 
         // ─── Persistent Bottom Radio Controls & Dynamic 60 FPS Background Spectrum Visualizer ───

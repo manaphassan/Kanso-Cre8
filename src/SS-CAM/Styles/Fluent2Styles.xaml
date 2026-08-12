@@ -11,6 +11,30 @@
     <SolidColorBrush x:Key="FluentBrandLight" Color="#E0F2FE"/>
     <SolidColorBrush x:Key="FluentBrandTint" Color="#2899F5"/>
 
+    <!-- WPF-UI Core Base System Brush Overrides (Falconia Light) -->
+    <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#FAFAFA"/>
+    <SolidColorBrush x:Key="WindowBackground"                     Color="#FAFAFA"/>
+    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush"  Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#F8FAFC"/>
+    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush"         Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="TextFillColorPrimaryBrush"           Color="#242424"/>
+    <SolidColorBrush x:Key="TextFillColorSecondaryBrush"         Color="#616161"/>
+    <SolidColorBrush x:Key="TextFillColorTertiaryBrush"          Color="#8A8A8A"/>
+    <SolidColorBrush x:Key="TextControlForeground"               Color="#242424"/>
+    <SolidColorBrush x:Key="TextControlBackground"               Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ControlFillColorDefaultBrush"        Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ControlFillColorSecondaryBrush"      Color="#F5F5F5"/>
+    <SolidColorBrush x:Key="ControlFillColorTertiaryBrush"       Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush"       Color="#D1D1D1"/>
+    <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush"       Color="#0F6CBD"/>
+    <SolidColorBrush x:Key="AccentFillColorDefaultBrush"         Color="#0F6CBD"/>
+    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush"       Color="#106EBE"/>
+    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush"        Color="#005A9E"/>
+    <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush"     Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="#107C41"/>
+    <SolidColorBrush x:Key="SystemFillColorCautionBrush" Color="#797700"/>
+    <SolidColorBrush x:Key="SystemFillColorCriticalBrush" Color="#C50F1F"/>
+
     <!-- Neutral Dark Tokens -->
     <SolidColorBrush x:Key="FluentDarkCanvasBg" Color="#141414"/>
     <SolidColorBrush x:Key="FluentDarkCardBg" Color="#1F1F1F"/>
