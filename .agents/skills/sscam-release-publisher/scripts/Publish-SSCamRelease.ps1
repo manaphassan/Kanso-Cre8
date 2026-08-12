@@ -1,9 +1,7 @@
 ﻿# Publish-SSCamRelease.ps1
 # Automates the SS-CAM GitHub Release publication pipeline.
 # Usage:
-#   .\Publish-SSCamRelease.ps1 -Version "3.0.0"
-#   .\Publish-SSCamRelease.ps1 -Version "3.1.0" -SkipWiki
-#   .\Publish-SSCamRelease.ps1 -Version "3.1.0" -DryRun
+#   .\Publish-SSCamRelease.ps1 -Version "3.0.1"
 
 [CmdletBinding()]
 param(
@@ -110,8 +108,13 @@ if (-not $headline) { $headline = "SS-CAM $tag Release" }
 $releaseTitle = "SS-CAM $tag - $headline"
 
 if (-not $DryRun) {
-    $existingRelease = gh release view $tag --repo SuamiSihat/ss_cam 2>$null
-    if ($LASTEXITCODE -eq 0) {
+    $releaseExists = $false
+    try {
+        $null = gh release view $tag --repo SuamiSihat/ss_cam 2>&1
+        if ($LASTEXITCODE -eq 0) { $releaseExists = $true }
+    } catch {}
+
+    if ($releaseExists) {
         # Release exists — edit it
         gh release edit $tag --repo SuamiSihat/ss_cam `
             --title $releaseTitle `
@@ -162,9 +165,8 @@ if ($SkipWiki) {
             "# SS-CAM Release History`n" | Set-Content -Encoding UTF8 $historyPath
         }
         $historyContent = Get-Content $historyPath -Raw -Encoding UTF8
-        $newEntry = "## [$tag] — $today`n`nSee [full release notes](https://github.com/SuamiSihat/ss_cam/releases/tag/$tag)`n`n---`n`n"
+        $newEntry = "## [$tag] - $today`n`nSee [full release notes](https://github.com/SuamiSihat/ss_cam/releases/tag/$tag)`n`n---`n`n"
         if ($historyContent -notmatch [regex]::Escape("## [$tag]")) {
-            # Prepend after the first heading
             $historyContent = $historyContent -replace '(# SS-CAM Release History\n+)', "`$1$newEntry"
             $historyContent | Set-Content -Encoding UTF8 $historyPath
         }
