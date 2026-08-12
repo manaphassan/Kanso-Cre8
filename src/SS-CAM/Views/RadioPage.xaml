@@ -65,84 +65,134 @@
             </StackPanel>
         </Grid>
 
-        <!-- Row 1: ── TOP HERO FEATURED PLAYER BANNER ── -->
-        <ui:Card Grid.Row="1" Padding="18,14" Margin="0,0,0,20"
+        <!-- Row 1: ── TOP HERO FEATURED PLAYER BANNER (With SuamiSihat Hero Mesh Animation) ── -->
+        <ui:Card Grid.Row="1" Padding="0" Margin="0,0,0,20"
                  Effect="{StaticResource FluentDepth4}"
-                 Background="{DynamicResource FluentBrandLight}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>   <!-- Cover Art / Logo -->
-                    <ColumnDefinition Width="*"/>      <!-- Track / Station Metadata -->
-                    <ColumnDefinition Width="Auto"/>   <!-- Hero Controls & Visualizer -->
-                </Grid.ColumnDefinitions>
+                 ClipToBounds="True">
+            <Border CornerRadius="12" ClipToBounds="True">
+                <Grid x:Name="HeroMeshContainer">
+                <!-- SuamiSihat Hero Mesh Backdrop Animation Layer (assets.suamisihat.myds.me visualizer hero) -->
+                <Rectangle x:Name="HeroMeshAtmosphere">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush x:Name="HeroMeshGrad" StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop x:Name="HeroMeshStop1" Color="#043388" Offset="0.0"/>
+                            <GradientStop x:Name="HeroMeshStop2" Color="#1E2D5A" Offset="0.5"/>
+                            <GradientStop x:Name="HeroMeshStop3" Color="#0C1535" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
 
-                <!-- Station Cover Art / Channel Logo -->
-                <Border Grid.Column="0" Width="56" Height="56" CornerRadius="12"
-                        Background="{DynamicResource FluentBrand80}" Margin="0,0,16,0" VerticalAlignment="Center">
-                    <Grid>
-                        <ui:TextBlock x:Name="HeroIconText" Text="&#xE768;" FontFamily="Segoe Fluent Icons"
-                                   FontSize="26" Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.9"/>
-                        <Image x:Name="HeroCoverImage" Stretch="UniformToFill" Visibility="Collapsed"
-                               RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Grid>
-                </Border>
+                <!-- Dynamic Pulsating Aura Glow Rings -->
+                <Canvas IsHitTestVisible="False">
+                    <!-- Glowing Azure Aura Ring -->
+                    <Ellipse x:Name="AuraRing1" Width="260" Height="260" Canvas.Right="-60" Canvas.Top="-80" Opacity="0.45">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#21A1F7" Offset="0.0"/>
+                                <GradientStop Color="#0021A1F7" Offset="1.0"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform x:Name="AuraScale1" CenterX="130" CenterY="130" ScaleX="1.0" ScaleY="1.0"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
 
-                <!-- Station Metadata + Status -->
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <ui:TextBlock x:Name="HeroStationName" Text="No station selected"
-                                   FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                        <Border x:Name="HeroGenreBadge" Background="{DynamicResource FluentBrand80}"
-                                CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                            <ui:TextBlock x:Name="HeroGenreText" Text="Select Stream" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                        </Border>
+                    <!-- Glowing Brand Yellow Aura Ring -->
+                    <Ellipse x:Name="AuraRing2" Width="220" Height="220" Canvas.Left="-50" Canvas.Bottom="-70" Opacity="0.35">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Color="#FCE53D" Offset="0.0"/>
+                                <GradientStop Color="#00FCE53D" Offset="1.0"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform x:Name="AuraScale2" CenterX="110" CenterY="110" ScaleX="1.0" ScaleY="1.0"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                </Canvas>
+
+                <!-- Foreground Content Overlay -->
+                <Grid Panel.ZIndex="1" Margin="18,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>   <!-- Cover Art / Logo -->
+                        <ColumnDefinition Width="*"/>      <!-- Track / Station Metadata -->
+                        <ColumnDefinition Width="Auto"/>   <!-- Hero Controls & Visualizer -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Station Cover Art / Channel Logo -->
+                    <Border Grid.Column="0" Width="56" Height="56" CornerRadius="12"
+                            Background="#043388" Margin="0,0,16,0" VerticalAlignment="Center">
+                        <Grid>
+                            <ui:TextBlock x:Name="HeroIconText" Text="&#xE768;" FontFamily="Segoe Fluent Icons"
+                                       FontSize="26" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.9"/>
+                            <Image x:Name="HeroCoverImage" Stretch="UniformToFill" Visibility="Collapsed"
+                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Station Metadata + Status -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:TextBlock x:Name="HeroStationName" Text="No station selected"
+                                       FontSize="16" FontWeight="Bold" Foreground="White"/>
+                            <Border x:Name="HeroGenreBadge" Background="#21A1F7"
+                                    CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                <ui:TextBlock x:Name="HeroGenreText" Text="Select Stream" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                            </Border>
+                            <!-- Visualizer Mode Badge -->
+                            <Border x:Name="HeroVizBadge" Background="#00000000" BorderBrush="#21A1F7" BorderThickness="1"
+                                    CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <ui:TextBlock x:Name="HeroVizBadgeText" Text="VIZ: HERO MESH" Foreground="#21A1F7" FontSize="9" FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+                        
+                        <ui:TextBlock x:Name="HeroStreamTitleText" Text="Click any radio card below to tune in live..."
+                                   FontSize="12" Foreground="#E2E8F0"
+                                   Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <ui:TextBlock x:Name="HeroStatusDot" Text="&#xE73E;" FontFamily="Segoe Fluent Icons" FontSize="10"
+                                       Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <ui:TextBlock x:Name="HeroStatusText" Text="Ready" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                        </StackPanel>
                     </StackPanel>
-                    
-                    <ui:TextBlock x:Name="HeroStreamTitleText" Text="Click any radio card below to tune in live..."
-                               FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                               Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                        <ui:TextBlock x:Name="HeroStatusDot" Text="&#xE73E;" FontFamily="Segoe Fluent Icons" FontSize="10"
-                                   Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <ui:TextBlock x:Name="HeroStatusText" Text="Ready" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                    <!-- Hero Transport Controls + Volume -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Equalizer bars -->
+                        <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="0,0,16,0" Height="24" VerticalAlignment="Center" Visibility="Collapsed">
+                            <Rectangle x:Name="Bar1" Width="3" Height="14" Fill="#21A1F7" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
+                            <Rectangle x:Name="Bar2" Width="3" Height="8"  Fill="#21A1F7" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
+                            <Rectangle x:Name="Bar3" Width="3" Height="22" Fill="#FCE53D" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
+                            <Rectangle x:Name="Bar4" Width="3" Height="12" Fill="#21A1F7" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
+                            <Rectangle x:Name="Bar5" Width="3" Height="18" Fill="#21A1F7" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
+                        </StackPanel>
+
+                        <!-- Play / Pause CTA -->
+                        <ui:Button x:Name="HeroPlayBtn" Click="OnHeroPlayClicked" Appearance="Primary"
+                                   Width="42" Height="42" CornerRadius="21" Padding="0" Margin="0,0,8,0" Cursor="Hand" ToolTip="Play / Pause">
+                            <ui:TextBlock x:Name="HeroPlayBtnText" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="18"/>
+                        </ui:Button>
+
+                        <!-- Stop Button -->
+                        <ui:Button x:Name="HeroStopBtn" Click="OnHeroStopClicked" Appearance="Secondary"
+                                   Width="36" Height="36" Padding="0" Margin="0,0,12,0" Cursor="Hand" ToolTip="Stop Stream">
+                            <ui:TextBlock Text="&#xE71A;" FontFamily="Segoe Fluent Icons" FontSize="14"/>
+                        </ui:Button>
+
+                        <!-- Volume -->
+                        <ui:Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked" Appearance="Secondary"
+                                   Width="30" Height="30" Padding="0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mute / Unmute">
+                            <ui:TextBlock x:Name="HeroMuteIcon" Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
+                        </ui:Button>
+                        <Slider x:Name="HeroVolumeSlider" Width="90" Minimum="0" Maximum="100" Value="80"
+                                ValueChanged="OnHeroVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
                     </StackPanel>
-                </StackPanel>
-
-                <!-- Hero Transport Controls + Volume -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <!-- Equalizer bars -->
-                    <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="0,0,16,0" Height="24" VerticalAlignment="Center" Visibility="Collapsed">
-                        <Rectangle x:Name="Bar1" Width="3" Height="14" Fill="{DynamicResource FluentBrand80}" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
-                        <Rectangle x:Name="Bar2" Width="3" Height="8"  Fill="{DynamicResource FluentBrand80}" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
-                        <Rectangle x:Name="Bar3" Width="3" Height="22" Fill="{DynamicResource FluentBrand80}" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
-                        <Rectangle x:Name="Bar4" Width="3" Height="12" Fill="{DynamicResource FluentBrand80}" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
-                        <Rectangle x:Name="Bar5" Width="3" Height="18" Fill="{DynamicResource FluentBrand80}" Margin="1.5,0" VerticalAlignment="Bottom" RadiusX="1.5" RadiusY="1.5"/>
-                    </StackPanel>
-
-                    <!-- Play / Pause CTA -->
-                    <ui:Button x:Name="HeroPlayBtn" Click="OnHeroPlayClicked" Appearance="Primary"
-                               Width="42" Height="42" CornerRadius="21" Padding="0" Margin="0,0,8,0" Cursor="Hand" ToolTip="Play / Pause">
-                        <ui:TextBlock x:Name="HeroPlayBtnText" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="18"/>
-                    </ui:Button>
-
-                    <!-- Stop Button -->
-                    <ui:Button x:Name="HeroStopBtn" Click="OnHeroStopClicked" Appearance="Secondary"
-                               Width="36" Height="36" Padding="0" Margin="0,0,12,0" Cursor="Hand" ToolTip="Stop Stream">
-                        <ui:TextBlock Text="&#xE71A;" FontFamily="Segoe Fluent Icons" FontSize="14"/>
-                    </ui:Button>
-
-                    <!-- Volume -->
-                    <ui:Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked" Appearance="Secondary"
-                               Width="30" Height="30" Padding="0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mute / Unmute">
-                        <ui:TextBlock x:Name="HeroMuteIcon" Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
-                    </ui:Button>
-                    <Slider x:Name="HeroVolumeSlider" Width="90" Minimum="0" Maximum="100" Value="80"
-                            ValueChanged="OnHeroVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
-                </StackPanel>
+                </Grid>
             </Grid>
-        </ui:Card>
+        </Border>
+    </ui:Card>
 
         <!-- Row 2: Genre Filter Tabs -->
         <ui:Card Grid.Row="2" Padding="6" Margin="0,0,0,16">

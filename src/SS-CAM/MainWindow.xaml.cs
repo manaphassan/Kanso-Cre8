@@ -57,10 +57,9 @@ namespace SS_CAM
             InitNasHealthCheck();
             InitUpdateCheck();
             InitRadioStatusListeners();
+            InitVisualizerListeners();
 
-            // 4. Initialize Faded Animated Audio Spectrum Visualizer in Sidebar Background
-
-            // 5. Apply Theme on Launch (loads saved theme from ThemeService)
+            // 4. Apply Theme on Launch (loads saved theme from ThemeService)
             ThemeService.ApplyTheme(ThemeService.CurrentTheme);
 
             // Global Fluent 2 Accent Color (Brand Cyan)
@@ -1078,6 +1077,53 @@ namespace SS_CAM
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] DrawSpectrumWave: " + ex.Message); }
+        }
+
+        private void InitVisualizerListeners()
+        {
+            try
+            {
+                var viz = VisualizerService.Instance;
+                if (viz != null)
+                {
+                    viz.VisualizerModeChanged += (s, mode) =>
+                    {
+                        Dispatcher.BeginInvoke(new Action(() => UpdateBottomVisualizerUI(mode)));
+                    };
+                    UpdateBottomVisualizerUI(viz.CurrentMode);
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] InitVisualizerListeners: " + ex.Message); }
+        }
+
+        private void UpdateBottomVisualizerUI(VisualizerMode mode)
+        {
+            if (TxtBottomVisualizerBadge != null)
+            {
+                switch (mode)
+                {
+                    case VisualizerMode.HeroMesh: TxtBottomVisualizerBadge.Text = "VIZ: HERO MESH"; break;
+                    case VisualizerMode.SpectrumBars: TxtBottomVisualizerBadge.Text = "VIZ: SPECTRUM"; break;
+                    case VisualizerMode.Waveform: TxtBottomVisualizerBadge.Text = "VIZ: WAVEFORM"; break;
+                    case VisualizerMode.PulsatingOrb: TxtBottomVisualizerBadge.Text = "VIZ: PULSE ORB"; break;
+                }
+            }
+            if (BtnBottomVisualizer != null)
+            {
+                BtnBottomVisualizer.ToolTip = "Visualizer Mode: " + mode.ToString() + " (Klik untuk tukar)";
+            }
+        }
+
+        private void OnCycleVisualizerClicked(object sender, RoutedEventArgs e)
+        {
+            var newMode = VisualizerService.Instance.CycleNextMode();
+            UpdateBottomVisualizerUI(newMode);
+        }
+
+        private void OnBottomRadioBarClicked(object sender, MouseButtonEventArgs e)
+        {
+            var newMode = VisualizerService.Instance.CycleNextMode();
+            UpdateBottomVisualizerUI(newMode);
         }
     }
 }

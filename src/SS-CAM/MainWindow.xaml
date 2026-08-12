@@ -273,26 +273,35 @@
                         </Grid>
                     </Border>
 
-                    <!-- Station Name, Live Badge & Now Playing Track Info -->
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <!-- Station Name, Live Badge, Visualizer Badge & Now Playing Track Info -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="OnBottomRadioBarClicked">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <ui:TextBlock x:Name="TxtBottomRadioTitle" Text="Radio Stream" FontWeight="Bold" FontSize="13"
-                                          Foreground="White" VerticalAlignment="Center"/>
+                                           Foreground="White" VerticalAlignment="Center"/>
                             <Border Background="#10B981" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
                                 <ui:TextBlock Text="LIVE" Foreground="White" FontSize="9" FontWeight="Bold"/>
+                            </Border>
+                            <!-- Visualizer Mode Badge (Clickable to switch visualizer mode) -->
+                            <Border x:Name="BottomVisualizerBadge" Background="#21A1F7" CornerRadius="4" Padding="6,1" Margin="6,0,0,0" VerticalAlignment="Center" Cursor="Hand" ToolTip="Klik untuk tukar Visualizer Mode">
+                                <ui:TextBlock x:Name="TxtBottomVisualizerBadge" Text="VIZ: HERO MESH" Foreground="White" FontSize="9" FontWeight="Bold"/>
                             </Border>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,2,0,0" VerticalAlignment="Center">
                             <ui:TextBlock x:Name="BottomRadioNowPlayingLabel" Text="NOW PLAYING:" FontSize="10" FontWeight="SemiBold"
-                                          Foreground="#60A5FA" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                           Foreground="#60A5FA" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <ui:TextBlock x:Name="TxtBottomRadioTrack" Text="Now Playing..." FontSize="11"
-                                          Foreground="#93C5FD" VerticalAlignment="Center"
-                                          TextTrimming="CharacterEllipsis" MaxWidth="420"/>
+                                           Foreground="#93C5FD" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" MaxWidth="420"/>
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Controls: Play/Pause, Volume -->
+                    <!-- Controls: Play/Pause, Visualizer Mode Toggle, Volume -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <ui:Button x:Name="BtnBottomVisualizer" Click="OnCycleVisualizerClicked" Appearance="Secondary"
+                                   Width="34" Height="34" Padding="0" Margin="0,0,8,0" Cursor="Hand" ToolTip="Visualizer Mode: Hero Mesh (Klik untuk tukar)">
+                            <ui:TextBlock x:Name="TxtBottomVisualizerIcon" Text="&#xE734;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="White"/>
+                        </ui:Button>
+
                         <ui:Button x:Name="BtnBottomRadioPlay" Click="OnStatusRadioPlayToggle" Appearance="Primary"
                                    Width="34" Height="34" Padding="0" Margin="0,0,12,0" Cursor="Hand" ToolTip="Play / Pause">
                             <ui:TextBlock x:Name="TxtBottomRadioPlayIcon" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="White"/>
@@ -300,9 +309,9 @@
 
                         <StackPanel x:Name="BottomRadioVolumePanel" Orientation="Horizontal" VerticalAlignment="Center">
                             <ui:TextBlock Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                          Foreground="#8AAACF" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                           Foreground="#8AAACF" VerticalAlignment="Center" Margin="0,0,6,0"/>
                             <Slider x:Name="BottomRadioVolumeSlider" Width="100" Minimum="0" Maximum="100" Value="80"
-                                    ValueChanged="OnBottomRadioVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
+                                     ValueChanged="OnBottomRadioVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

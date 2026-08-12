@@ -17,6 +17,8 @@ namespace SS_CAM.Models
         public string PrayerZone { get; set; }
         /// <summary>Whether adhan reminders are enabled.</summary>
         public bool PrayerRemindersEnabled { get; set; }
+        /// <summary>Audio visualizer mode: "HeroMesh", "SpectrumBars", "Waveform", "PulsatingOrb".</summary>
+        public string VisualizerMode { get; set; }
 
         public UserProfile()
         {
@@ -30,6 +32,7 @@ namespace SS_CAM.Models
             Theme = "Falconia";
             PrayerZone = "WLY01";
             PrayerRemindersEnabled = true;
+            VisualizerMode = "HeroMesh";
         }
     }
 

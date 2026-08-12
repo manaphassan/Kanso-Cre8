@@ -430,6 +430,84 @@
                         </StackPanel>
                     </ui:Card>
 
+                    <!-- Audio Visualizer & Hero Background Card -->
+                    <ui:Card Padding="20" Margin="0,16,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                <Border Width="32" Height="32" CornerRadius="8"
+                                        Background="{DynamicResource FluentBrandTint}"
+                                        Margin="0,0,10,0" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="&#xEA89;" FontFamily="Segoe Fluent Icons" FontSize="16"
+                                               Foreground="{DynamicResource FluentBrand80}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <ui:TextBlock Text="Audio Visualizer &amp; Hero Mesh"
+                                                  FontSize="14" FontWeight="Bold"
+                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock Text="Choose how audio playback rhythm is visualized across SS-CAM"
+                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                  FontSize="11"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Visualizer Swatch Selector Grid -->
+                            <UniformGrid Columns="2">
+                                <!-- Mode 1: Hero Mesh Aura (suamisihat hero animation) -->
+                                <Border x:Name="CardVizHeroMesh" CornerRadius="8" BorderThickness="2" BorderBrush="{DynamicResource FluentBrand80}"
+                                        Margin="4" Padding="12" Background="{DynamicResource TextControlBackground}" Cursor="Hand"
+                                        MouseLeftButtonDown="OnSelectVizHeroMesh">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <ui:TextBlock Text="&#xE734;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Hero Mesh Aura" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Animated glowing aura &amp; particle mesh (suamisihat.myds.me)" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Mode 2: Spectrum Equalizer Bars -->
+                                <Border x:Name="CardVizSpectrum" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Margin="4" Padding="12" Background="{DynamicResource TextControlBackground}" Cursor="Hand"
+                                        MouseLeftButtonDown="OnSelectVizSpectrum">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <ui:TextBlock Text="&#xE9E9;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Spectrum Equalizer" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Classic multi-bar audio frequency spectrum" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Mode 3: Waveform Oscilloscope -->
+                                <Border x:Name="CardVizWaveform" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Margin="4" Padding="12" Background="{DynamicResource TextControlBackground}" Cursor="Hand"
+                                        MouseLeftButtonDown="OnSelectVizWaveform">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <ui:TextBlock Text="&#xEE6E;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Waveform Oscilloscope" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Smooth dynamic audio sine waveform curve" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Mode 4: Pulsating Rhythm Orb -->
+                                <Border x:Name="CardVizPulsatingOrb" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        Margin="4" Padding="12" Background="{DynamicResource TextControlBackground}" Cursor="Hand"
+                                        MouseLeftButtonDown="OnSelectVizPulsatingOrb">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <ui:TextBlock Text="&#xEA89;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Pulsating Rhythm Orb" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Fluid glowing rhythm orb that swells to bass" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+                        </StackPanel>
+                    </ui:Card>
+
                 </StackPanel>
 
                 <!-- RIGHT COLUMN -->

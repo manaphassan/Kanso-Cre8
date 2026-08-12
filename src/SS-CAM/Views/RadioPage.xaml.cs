@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -18,7 +18,6 @@ namespace SS_CAM.Views
     public partial class RadioPage : Page
     {
         private RadioStreamService _radioService;
-        private DispatcherTimer _visualizerTimer;
         private Random _random = new Random();
         private string _activeFilter = "ALL";
         private RadioStation _editingStation = null;
@@ -79,25 +78,92 @@ namespace SS_CAM.Views
                 _radioService.CoverDownloaded      -= OnCoverDownloaded;
             }
 
-            if (_visualizerTimer != null)
-                _visualizerTimer.Stop();
+            try
+            {
+                var viz = VisualizerService.Instance;
+                if (viz != null)
+                {
+                    viz.RhythmTick -= OnRhythmTick;
+                    viz.VisualizerModeChanged -= OnVisualizerModeChanged;
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[RadioPage] OnPageUnloaded viz unhook: " + ex.Message); }
         }
 
         private void InitVisualizerTimer()
         {
-            _visualizerTimer = new DispatcherTimer();
-            _visualizerTimer.Interval = TimeSpan.FromMilliseconds(120);
-            _visualizerTimer.Tick += (s, e) =>
+            try
             {
-                if (_radioService.State == RadioPlaybackState.Playing)
+                var viz = VisualizerService.Instance;
+                if (viz != null)
                 {
-                    Bar1.Height = _random.Next(6, 22);
-                    Bar2.Height = _random.Next(6, 22);
-                    Bar3.Height = _random.Next(6, 22);
-                    Bar4.Height = _random.Next(6, 22);
-                    Bar5.Height = _random.Next(6, 22);
+                    viz.RhythmTick += OnRhythmTick;
+                    viz.VisualizerModeChanged += OnVisualizerModeChanged;
+                    UpdateVisualizerModeUI(viz.CurrentMode);
                 }
-            };
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[RadioPage] InitVisualizerTimer: " + ex.Message); }
+        }
+
+        private void OnVisualizerModeChanged(object sender, VisualizerMode mode)
+        {
+            Dispatcher.BeginInvoke(new Action(() => UpdateVisualizerModeUI(mode)));
+        }
+
+        private void UpdateVisualizerModeUI(VisualizerMode mode)
+        {
+            if (HeroVizBadgeText != null)
+            {
+                switch (mode)
+                {
+                    case VisualizerMode.HeroMesh: HeroVizBadgeText.Text = "VIZ: HERO MESH"; break;
+                    case VisualizerMode.SpectrumBars: HeroVizBadgeText.Text = "VIZ: SPECTRUM"; break;
+                    case VisualizerMode.Waveform: HeroVizBadgeText.Text = "VIZ: WAVEFORM"; break;
+                    case VisualizerMode.PulsatingOrb: HeroVizBadgeText.Text = "VIZ: PULSE ORB"; break;
+                }
+            }
+        }
+
+        private void OnRhythmTick(object sender, RhythmFrameEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    // 1. SuamiSihat Hero Mesh Aura Pulsing & Gradient Atmosphere
+                    if (AuraScale1 != null)
+                    {
+                        double scale1 = 1.0 + e.Bass * 0.35;
+                        AuraScale1.ScaleX = scale1;
+                        AuraScale1.ScaleY = scale1;
+                    }
+                    if (AuraScale2 != null)
+                    {
+                        double scale2 = 1.0 + e.Mid * 0.42;
+                        AuraScale2.ScaleX = scale2;
+                        AuraScale2.ScaleY = scale2;
+                    }
+
+                    if (HeroMeshStop2 != null)
+                    {
+                        byte r = (byte)(30 + e.Energy * 40);
+                        byte g = (byte)(45 + e.Bass * 80);
+                        byte b = (byte)(90 + e.Treble * 120);
+                        HeroMeshStop2.Color = Color.FromRgb(r, g, b);
+                    }
+
+                    // 2. Bar Spectrum Equalizer
+                    if (_radioService != null && _radioService.State == RadioPlaybackState.Playing && e.Spectrum != null && e.Spectrum.Length >= 13)
+                    {
+                        if (Bar1 != null) Bar1.Height = Math.Max(4, e.Spectrum[0] * 24);
+                        if (Bar2 != null) Bar2.Height = Math.Max(4, e.Spectrum[2] * 24);
+                        if (Bar3 != null) Bar3.Height = Math.Max(4, e.Spectrum[5] * 24);
+                        if (Bar4 != null) Bar4.Height = Math.Max(4, e.Spectrum[8] * 24);
+                        if (Bar5 != null) Bar5.Height = Math.Max(4, e.Spectrum[12] * 24);
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[RadioPage] OnRhythmTick: " + ex.Message); }
+            }));
         }
 
         private void RefreshHeroUI()

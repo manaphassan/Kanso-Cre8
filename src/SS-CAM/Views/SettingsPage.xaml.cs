@@ -46,6 +46,7 @@ namespace SS_CAM.Views
             ProfileHeaderStaffId.Text = string.Format("Staff ID: {0}", string.IsNullOrWhiteSpace(currentProfile.StaffId) ? "0001D" : currentProfile.StaffId);
 
             UpdateAvatarPreview(currentProfile.AvatarPath);
+            UpdateVisualizerCardSelection(VisualizerService.Instance.CurrentMode);
         }
 
         private void UpdateAvatarPreview(string path)
@@ -271,6 +272,45 @@ namespace SS_CAM.Views
                 ProfileSaveStatus.Text = "All local data cleared and profile reset!";
                 MessageBox.Show("All local data & cache have been cleared, and profile has been reset to default SS Branding credentials.", "Data Cleared", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void UpdateVisualizerCardSelection(VisualizerMode mode)
+        {
+            try
+            {
+                var activeBorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("FluentBrand80");
+                var defaultBorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush");
+
+                if (CardVizHeroMesh != null) { CardVizHeroMesh.BorderThickness = new Thickness(mode == VisualizerMode.HeroMesh ? 2 : 1); CardVizHeroMesh.BorderBrush = mode == VisualizerMode.HeroMesh ? activeBorderBrush : defaultBorderBrush; }
+                if (CardVizSpectrum != null) { CardVizSpectrum.BorderThickness = new Thickness(mode == VisualizerMode.SpectrumBars ? 2 : 1); CardVizSpectrum.BorderBrush = mode == VisualizerMode.SpectrumBars ? activeBorderBrush : defaultBorderBrush; }
+                if (CardVizWaveform != null) { CardVizWaveform.BorderThickness = new Thickness(mode == VisualizerMode.Waveform ? 2 : 1); CardVizWaveform.BorderBrush = mode == VisualizerMode.Waveform ? activeBorderBrush : defaultBorderBrush; }
+                if (CardVizPulsatingOrb != null) { CardVizPulsatingOrb.BorderThickness = new Thickness(mode == VisualizerMode.PulsatingOrb ? 2 : 1); CardVizPulsatingOrb.BorderBrush = mode == VisualizerMode.PulsatingOrb ? activeBorderBrush : defaultBorderBrush; }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SettingsPage] UpdateVisualizerCardSelection: " + ex.Message); }
+        }
+
+        private void OnSelectVizHeroMesh(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            VisualizerService.Instance.SetMode(VisualizerMode.HeroMesh);
+            UpdateVisualizerCardSelection(VisualizerMode.HeroMesh);
+        }
+
+        private void OnSelectVizSpectrum(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            VisualizerService.Instance.SetMode(VisualizerMode.SpectrumBars);
+            UpdateVisualizerCardSelection(VisualizerMode.SpectrumBars);
+        }
+
+        private void OnSelectVizWaveform(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            VisualizerService.Instance.SetMode(VisualizerMode.Waveform);
+            UpdateVisualizerCardSelection(VisualizerMode.Waveform);
+        }
+
+        private void OnSelectVizPulsatingOrb(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            VisualizerService.Instance.SetMode(VisualizerMode.PulsatingOrb);
+            UpdateVisualizerCardSelection(VisualizerMode.PulsatingOrb);
         }
     }
 }

@@ -181,6 +181,7 @@
     <Compile Include="Services\QuickNoteService.cs" />
     <Compile Include="Services\FrontmatterService.cs" />
     <Compile Include="Services\TeamBoardService.cs" />
+    <Compile Include="Services\VisualizerService.cs" />
     <Compile Include="Views\DashboardPage.xaml.cs">
       <DependentUpon>DashboardPage.xaml</DependentUpon>
       <SubType>Code</SubType>
