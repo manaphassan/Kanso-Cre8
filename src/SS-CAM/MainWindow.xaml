@@ -190,30 +190,30 @@
                 <StackPanel Margin="0,6,0,12">
                     <Border x:Name="SidebarDivider" Height="1" Background="{DynamicResource SidebarDividerBrush}" Margin="12,0,12,6"/>
                     <!-- NAS status -->
-                    <StackPanel Orientation="Horizontal" Margin="16,3">
+                    <StackPanel x:Name="FooterNasPanel" Orientation="Horizontal" Margin="16,4"
+                                MouseLeftButtonDown="OnCheckNasStatusClicked" Cursor="Hand"
+                                ToolTip="Click to re-check Synology NAS connection">
                         <Ellipse x:Name="NasStatusDot" Width="8" Height="8" Fill="#94A3B8"
-                                 VerticalAlignment="Center" Margin="0,0,7,0"/>
+                                 VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <ui:TextBlock x:Name="StatusNasText" Text="SSNAS Offline" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
-                                   FontSize="11" VerticalAlignment="Center"
-                                   MouseLeftButtonDown="OnCheckNasStatusClicked" Cursor="Hand"
-                                   ToolTip="Click to re-check Synology NAS connection"/>
+                                   FontSize="11" VerticalAlignment="Center"/>
                     </StackPanel>
                     <!-- Focus timer -->
-                    <StackPanel Orientation="Horizontal" Margin="16,3">
-                        <ui:TextBlock Text="&#xE916;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
-                                   FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                    <StackPanel x:Name="FooterTimerPanel" Orientation="Horizontal" Margin="16,4"
+                                MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
+                                ToolTip="Open Wellbeing &amp; Focus Timer">
+                        <ui:TextBlock x:Name="StatusTimerIcon" Text="&#xE916;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"/>
                         <ui:TextBlock x:Name="StatusTimerText" Text="Focus Timer: Ready" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
-                                   FontSize="11" VerticalAlignment="Center"
-                                   MouseLeftButtonDown="OnFooterTimerClicked" Cursor="Hand"
-                                   ToolTip="Open Wellbeing &amp; Focus Timer"/>
+                                   FontSize="11" VerticalAlignment="Center"/>
                     </StackPanel>
                     <!-- Active theme - click to cycle -->
-                    <StackPanel Orientation="Horizontal" Margin="16,3" Cursor="Hand"
+                    <StackPanel x:Name="FooterThemePanel" Orientation="Horizontal" Margin="16,4" Cursor="Hand"
                                 Focusable="False"
                                 MouseLeftButtonDown="OnStatusThemeToggle"
                                 ToolTip="Click to toggle application theme">
-                        <ui:TextBlock Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
-                                   FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
+                        <ui:TextBlock x:Name="StatusThemeIcon" Text="&#xE790;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"
                                    Focusable="False"/>
                         <ui:TextBlock x:Name="StatusThemeText" Text="Theme: SuamiSihat Light" Foreground="{DynamicResource SidebarTextSecondaryBrush}"
                                    FontSize="11" VerticalAlignment="Center"

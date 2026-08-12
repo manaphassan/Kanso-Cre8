@@ -263,6 +263,36 @@ namespace SS_CAM
                 if (StatusTimerText != null) StatusTimerText.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
                 if (StatusThemeText != null) StatusThemeText.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
 
+                if (FooterNasPanel != null)
+                {
+                    FooterNasPanel.Margin = isPaneOpen ? new Thickness(16, 4, 16, 4) : new Thickness(0, 6, 0, 6);
+                    FooterNasPanel.HorizontalAlignment = isPaneOpen ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                }
+                if (NasStatusDot != null)
+                {
+                    NasStatusDot.Margin = isPaneOpen ? new Thickness(0, 0, 8, 0) : new Thickness(0);
+                }
+
+                if (FooterTimerPanel != null)
+                {
+                    FooterTimerPanel.Margin = isPaneOpen ? new Thickness(16, 4, 16, 4) : new Thickness(0, 6, 0, 6);
+                    FooterTimerPanel.HorizontalAlignment = isPaneOpen ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                }
+                if (StatusTimerIcon != null)
+                {
+                    StatusTimerIcon.Margin = isPaneOpen ? new Thickness(0, 0, 7, 0) : new Thickness(0);
+                }
+
+                if (FooterThemePanel != null)
+                {
+                    FooterThemePanel.Margin = isPaneOpen ? new Thickness(16, 4, 16, 4) : new Thickness(0, 6, 0, 6);
+                    FooterThemePanel.HorizontalAlignment = isPaneOpen ? HorizontalAlignment.Left : HorizontalAlignment.Center;
+                }
+                if (StatusThemeIcon != null)
+                {
+                    StatusThemeIcon.Margin = isPaneOpen ? new Thickness(0, 0, 7, 0) : new Thickness(0);
+                }
+
                 if (BottomRadioVolumePanel != null)
                 {
                     BottomRadioVolumePanel.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
