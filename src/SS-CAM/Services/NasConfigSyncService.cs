@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
@@ -8,6 +9,7 @@ namespace SS_CAM.Services
     /// <summary>
     /// Synchronizes local application settings and preferences (user profile, theme config, category presets, quick notes)
     /// with the NAS/Synology Drive workspace root (_Team\_Config).
+    /// Supports multi-user isolation on shared NAS drives via Windows username scoping.
     /// </summary>
     public static class NasConfigSyncService
     {
@@ -34,6 +36,32 @@ namespace SS_CAM.Services
             }
         }
 
+        private static string GetUserScopedFileName(string fileName)
+        {
+            if (string.Equals(fileName, "category_presets.json", StringComparison.OrdinalIgnoreCase))
+            {
+                // Presets are shared team-wide
+                return fileName;
+            }
+
+            string user = Environment.UserName.ToLowerInvariant();
+            user = Regex.Replace(user, @"[^a-z0-9_]", "");
+            if (string.IsNullOrEmpty(user)) user = "user";
+
+            string ext = Path.GetExtension(fileName);
+            string baseName = Path.GetFileNameWithoutExtension(fileName);
+            return string.Format("{0}_{1}{2}", baseName, user, ext);
+        }
+
+        private static string GetUserScopedFolderName(string subFolder)
+        {
+            string user = Environment.UserName.ToLowerInvariant();
+            user = Regex.Replace(user, @"[^a-z0-9_]", "");
+            if (string.IsNullOrEmpty(user)) user = "user";
+
+            return string.Format("{0}_{1}", subFolder, user);
+        }
+
         /// <summary>
         /// Syncs a config file from local to NAS or from NAS to local depending on timestamp.
         /// Returns true if local file was updated from NAS.
@@ -46,14 +74,15 @@ namespace SS_CAM.Services
 
                 string localPath = Path.Combine(AppPaths.AppDataFolder, fileName);
                 string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder);
-                string nasPath = Path.Combine(nasDir, fileName);
+                string nasFileName = GetUserScopedFileName(fileName);
+                string nasPath = Path.Combine(nasDir, nasFileName);
 
                 if (!File.Exists(nasPath)) return false;
 
                 if (!File.Exists(localPath))
                 {
                     File.Copy(nasPath, localPath, true);
-                    Debug.WriteLine("[NasConfigSyncService] Copied " + fileName + " from NAS to local (local missing).");
+                    Debug.WriteLine("[NasConfigSyncService] Copied " + nasFileName + " from NAS to local (local missing).");
                     return true;
                 }
 
@@ -63,7 +92,7 @@ namespace SS_CAM.Services
                 if (nasTime > localTime.AddSeconds(2))
                 {
                     File.Copy(nasPath, localPath, true);
-                    Debug.WriteLine("[NasConfigSyncService] Copied " + fileName + " from NAS to local (NAS newer).");
+                    Debug.WriteLine("[NasConfigSyncService] Copied " + nasFileName + " from NAS to local (NAS newer).");
                     return true;
                 }
             }
@@ -87,9 +116,10 @@ namespace SS_CAM.Services
                 string localPath = Path.Combine(AppPaths.AppDataFolder, fileName);
                 if (!File.Exists(localPath)) return;
 
-                string nasPath = Path.Combine(nasDir, fileName);
+                string nasFileName = GetUserScopedFileName(fileName);
+                string nasPath = Path.Combine(nasDir, nasFileName);
                 File.Copy(localPath, nasPath, true);
-                Debug.WriteLine("[NasConfigSyncService] Mirrored " + fileName + " to NAS: " + nasPath);
+                Debug.WriteLine("[NasConfigSyncService] Mirrored " + fileName + " to NAS as " + nasFileName);
             }
             catch (Exception ex)
             {
@@ -107,7 +137,8 @@ namespace SS_CAM.Services
                 if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot)) return;
 
                 string localDir = Path.Combine(AppPaths.AppDataFolder, subFolder);
-                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder, subFolder);
+                string nasSubDirName = GetUserScopedFolderName(subFolder);
+                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder, nasSubDirName);
 
                 if (!Directory.Exists(nasDir)) return;
                 if (!Directory.Exists(localDir)) Directory.CreateDirectory(localDir);
@@ -145,7 +176,8 @@ namespace SS_CAM.Services
                 string localDir = Path.Combine(AppPaths.AppDataFolder, subFolder);
                 if (!Directory.Exists(localDir)) return;
 
-                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder, subFolder);
+                string nasSubDirName = GetUserScopedFolderName(subFolder);
+                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder, nasSubDirName);
                 if (!Directory.Exists(nasDir)) Directory.CreateDirectory(nasDir);
 
                 foreach (string localFile in Directory.GetFiles(localDir))

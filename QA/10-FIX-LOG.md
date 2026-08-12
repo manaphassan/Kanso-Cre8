@@ -1,5 +1,18 @@
 # SS-CAM FIX LOG
 
+## v3.1.2 — 2026-08-12 (Multi-User NAS Isolation Release)
+
+### Multi-User NAS Scoping & Isolation
+- **User Scoped Config Files**: Personal configs (`user_profile_{username}.json`, `theme_config_{username}.json`, `Notes_{username}/`) are automatically isolated per designer on shared NAS folders.
+- **Shared Team Resources**: Category presets (`category_presets.json`) and Team Board announcements (`_Team\team-notes.json`) remain team-wide shared.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+- GitHub Release: PUBLISHED (v3.1.2 set as Latest on SuamiSihat/ss_cam).
+
+---
+
 ## v3.1.1 — 2026-08-12 (NAS Settings & Preferences Auto-Sync Release)
 
 ### Native NAS Settings Auto-Sync
