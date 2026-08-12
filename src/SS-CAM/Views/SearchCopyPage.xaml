@@ -195,24 +195,28 @@
                                            FontSize="11" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
 
-                            <!-- Mode Toggle Tab Strip -->
+                            <!-- Mode Toggle Tab Strip - icon only -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:Button x:Name="BtnModeRendered" Appearance="Primary" Content="PREVIEW" Click="OnModeRenderedClicked"
-                                        Height="28" Padding="10,0" Margin="0,0,4,0"
-                                        FontSize="11" FontWeight="Bold" Cursor="Hand" />
-                                <ui:Button x:Name="BtnModeRaw" Appearance="Secondary" Content="Raw" Click="OnModeRawClicked"
-                                        Height="28" Padding="10,0" Margin="0,0,4,0"
-                                        FontSize="11" Cursor="Hand" />
+                                <ui:Button x:Name="BtnModeRendered" Appearance="Primary" Click="OnModeRenderedClicked"
+                                        Height="28" Width="32" Padding="0"
+                                        Cursor="Hand" ToolTip="Preview - rendered README">
+                                    <ui:TextBlock Text="&#xE8A4;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="BtnModeRaw" Appearance="Secondary" Click="OnModeRawClicked"
+                                        Height="28" Width="32" Padding="0" Margin="4,0,0,0"
+                                        Cursor="Hand" ToolTip="Raw - plain Markdown source">
+                                    <ui:TextBlock Text="&#xE943;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </ui:Button>
                                 <ui:Button x:Name="BtnModeImages" Appearance="Secondary" Click="OnModeImagesClicked"
-                                        Height="28" Padding="10,0"
-                                        FontSize="11" Cursor="Hand" >
-                                    <StackPanel Orientation="Horizontal">
-                                        <ui:TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="12"
-                                                   Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="Gallery" VerticalAlignment="Center"/>
-                                    </StackPanel>
+                                        Height="28" Width="32" Padding="0" Margin="4,0,0,0"
+                                        Cursor="Hand" ToolTip="Gallery - project image assets">
+                                    <ui:TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </ui:Button>
                             </StackPanel>
+
                         </Grid>
                     </Border>
 
