@@ -110,13 +110,16 @@
                         </Ellipse.RenderTransform>
                     </Ellipse>
 
-                    <!-- SuamiSihat Men Icon Backdrop Emblem (Pulsing with rhythm) -->
-                    <Grid Canvas.Right="120" Canvas.Top="-15" Opacity="0.25" Width="120" Height="120">
+                    <!-- SuamiSihat Male Symbol ♂ Backdrop Emblem (Pulsing with rhythm) -->
+                    <Grid Canvas.Right="120" Canvas.Top="-15" Opacity="0.30" Width="120" Height="120">
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="MenIconScale" CenterX="60" CenterY="60" ScaleX="1.0" ScaleY="1.0"/>
                         </Grid.RenderTransform>
-                        <ui:TextBlock x:Name="HeroMenIcon" Text="&#xEC25;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                   FontSize="84" Foreground="#21A1F7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <!-- Mars Male Symbol ♂ Vector Path -->
+                        <Path Data="M 42,68 A 24,24 0 1 1 60,50 M 55,45 L 85,15 M 65,15 L 85,15 L 85,35"
+                              Stroke="#21A1F7" StrokeThickness="7.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
 
                     <!-- SuamiSihat Logomark Watermark Typography -->
@@ -188,7 +191,7 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Hero Transport Controls + Volume -->
+                    <!-- Hero Transport Controls -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Equalizer bars (12 channels) -->
                         <StackPanel x:Name="VisualizerBars" Orientation="Horizontal" Margin="0,0,16,0" Height="28" VerticalAlignment="Center">
@@ -214,17 +217,9 @@
 
                         <!-- Stop Button -->
                         <ui:Button x:Name="HeroStopBtn" Click="OnHeroStopClicked" Appearance="Secondary"
-                                   Width="36" Height="36" Padding="0" Margin="0,0,12,0" Cursor="Hand" ToolTip="Stop Stream">
+                                   Width="36" Height="36" Padding="0" Margin="0,0,4,0" Cursor="Hand" ToolTip="Stop Stream">
                             <ui:TextBlock Text="&#xE71A;" FontFamily="Segoe Fluent Icons" FontSize="14"/>
                         </ui:Button>
-
-                        <!-- Volume -->
-                        <ui:Button x:Name="HeroMuteBtn" Click="OnHeroMuteClicked" Appearance="Secondary"
-                                   Width="30" Height="30" Padding="0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mute / Unmute">
-                            <ui:TextBlock x:Name="HeroMuteIcon" Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"/>
-                        </ui:Button>
-                        <Slider x:Name="HeroVolumeSlider" Width="90" Minimum="0" Maximum="100" Value="80"
-                                ValueChanged="OnHeroVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
                     </StackPanel>
                 </Grid>
             </Grid>

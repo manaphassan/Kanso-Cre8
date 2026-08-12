@@ -235,9 +235,6 @@ namespace SS_CAM.Views
                 HeroGenreText.Text = "";
             }
 
-            HeroVolumeSlider.Value = _radioService.Volume * 100;
-            HeroMuteIcon.Text = _radioService.IsMuted ? "\uE74F" : "\uE767"; // Mute / Volume
-
             UpdatePlaybackStateUI(_radioService.State);
 
             // Restore cached cover art immediately (if available from a previous session)
@@ -304,8 +301,6 @@ namespace SS_CAM.Views
 
         private void OnVolumeChanged(double volume, bool isMuted)
         {
-            HeroVolumeSlider.Value = volume * 100;
-            HeroMuteIcon.Text = isMuted ? "\uE74F" : "\uE767"; // Mute / Volume glyphs
         }
 
         private void OnErrorOccurred(string errorMsg)
@@ -383,22 +378,6 @@ namespace SS_CAM.Views
         private void OnHeroStopClicked(object sender, RoutedEventArgs e)
         {
             _radioService.Stop();
-        }
-
-        private void OnHeroMuteClicked(object sender, RoutedEventArgs e)
-        {
-            var r = RadioStreamService.Instance;
-            r.IsMuted = !r.IsMuted;
-            HeroMuteIcon.Text = r.IsMuted ? "\uE74F" : "\uE767"; // VolumeMute vs Volume
-            HeroVolumeSlider.IsEnabled = !r.IsMuted;
-        }
-
-        private void OnHeroVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (_radioService != null)
-            {
-                _radioService.Volume = e.NewValue / 100.0;
-            }
         }
 
         private void OnFilterClicked(object sender, RoutedEventArgs e)
