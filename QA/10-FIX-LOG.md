@@ -1,5 +1,18 @@
 # SS-CAM FIX LOG
 
+## v3.1.1 — 2026-08-12 (NAS Settings & Preferences Auto-Sync Release)
+
+### Native NAS Settings Auto-Sync
+- **`NasConfigSyncService`**: Implemented timestamp-aware auto-sync for `user_profile.json`, `theme_config.json`, `category_presets.json`, and `Notes/` directory to `<WorkspaceRoot>\_Team\_Config\`.
+- **Multi-PC Seamless Sync**: Setting changes on PC 1 automatically update NAS config files; PC 2 auto-detects and loads newer NAS config on launch.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+- GitHub Release: PUBLISHED (v3.1.1 set as Latest on SuamiSihat/ss_cam).
+
+---
+
 ## v3.1.0 — 2026-08-12 (QR Code Studio & Audio Visualizer Release)
 
 ### QR Code Generator & Studio Visualizer Upgrades
