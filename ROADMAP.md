@@ -20,6 +20,7 @@
 | **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: Modernized Dashboard & Project Creator cards, Adobe/Affinity app bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray popover, Visual Asset Lightbox modal, Revision Timeline view, SS Default theme contrast fix |
 | **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Phase 1-4 audit fixes, dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization, 100% clean Source Guardian |
 | **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, Designer Profile & Settings 2-column revamp, 5 switchable theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord), Workstation Payload installer |
+| **v3.0.1** | 2026-08-12 | Categorized Fluent 2 sidebar navigation (5 visual categories + headers/separators), adaptive bottom live bar collapse state |
 
 ---
 
