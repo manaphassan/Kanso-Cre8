@@ -190,6 +190,7 @@
     <Compile Include="Services\TeamBoardService.cs" />
     <Compile Include="Services\VisualizerService.cs" />
     <Compile Include="Services\QrCodeEncoderService.cs" />
+    <Compile Include="Services\NasConfigSyncService.cs" />
     <Compile Include="Views\QrCodePage.xaml.cs">
       <DependentUpon>QrCodePage.xaml</DependentUpon>
       <SubType>Code</SubType>

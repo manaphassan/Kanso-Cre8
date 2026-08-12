@@ -73,6 +73,16 @@ namespace SS_CAM.Services
             {
                 _configPath = Path.Combine(AppPaths.AppDataFolder, "theme_config.json");
 
+                try
+                {
+                    var profile = UserProfileService.LoadProfile();
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                    {
+                        NasConfigSyncService.SyncFromNasIfNewer(profile.WorkspaceRoot, "theme_config.json");
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] Static ctor NAS sync error: " + ex.Message); }
+
                 if (File.Exists(_configPath))
                 {
                     var cfg = JsonPersistenceHelper.Load<ThemeConfig>(_configPath);
@@ -428,6 +438,15 @@ namespace SS_CAM.Services
             if (!string.IsNullOrEmpty(_configPath))
             {
                 JsonPersistenceHelper.Save(_configPath, new ThemeConfig { SelectedTheme = theme });
+                try
+                {
+                    var profile = UserProfileService.LoadProfile();
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                    {
+                        NasConfigSyncService.SaveToNas(profile.WorkspaceRoot, "theme_config.json");
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ThemeService] SaveTheme NAS sync error: " + ex.Message); }
             }
         }
     }

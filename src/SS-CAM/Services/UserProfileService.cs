@@ -19,6 +19,18 @@ namespace SS_CAM.Services
         public static UserProfile LoadProfile()
         {
             var profile = JsonPersistenceHelper.Load<UserProfile>(ConfigFilePath);
+
+            // Auto-sync setting from NAS if newer
+            if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+            {
+                bool updated = NasConfigSyncService.SyncFromNasIfNewer(profile.WorkspaceRoot, "user_profile.json");
+                if (updated)
+                {
+                    var syncedProfile = JsonPersistenceHelper.Load<UserProfile>(ConfigFilePath);
+                    if (syncedProfile != null) profile = syncedProfile;
+                }
+            }
+
             if (profile == null || string.IsNullOrWhiteSpace(profile.DesignerName))
             {
                 profile = GetDefaultProfile();
@@ -30,6 +42,10 @@ namespace SS_CAM.Services
         public static void SaveProfile(UserProfile profile)
         {
             JsonPersistenceHelper.Save(ConfigFilePath, profile);
+            if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+            {
+                NasConfigSyncService.SaveToNas(profile.WorkspaceRoot, "user_profile.json");
+            }
         }
 
         public static UserProfile ResetToDefaults()

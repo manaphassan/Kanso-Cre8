@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -104,6 +104,16 @@ namespace SS_CAM.Services
         {
             try
             {
+                try
+                {
+                    var profile = UserProfileService.LoadProfile();
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                    {
+                        NasConfigSyncService.SyncFromNasIfNewer(profile.WorkspaceRoot, "category_presets.json");
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[CategoryPresetService] LoadPresets NAS sync error: " + ex.Message); }
+
                 if (File.Exists(ConfigFilePath))
                 {
                     string json = File.ReadAllText(ConfigFilePath);
@@ -133,6 +143,16 @@ namespace SS_CAM.Services
 
                 string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
                 File.WriteAllText(ConfigFilePath, json);
+
+                try
+                {
+                    var profile = UserProfileService.LoadProfile();
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                    {
+                        NasConfigSyncService.SaveToNas(profile.WorkspaceRoot, "category_presets.json");
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[CategoryPresetService] SavePresets NAS sync error: " + ex.Message); }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }

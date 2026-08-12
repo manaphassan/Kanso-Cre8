@@ -34,6 +34,16 @@ namespace SS_CAM.Services
         /// </summary>
         public static List<QuickNoteItem> ListNotes()
         {
+            try
+            {
+                var profile = UserProfileService.LoadProfile();
+                if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                {
+                    NasConfigSyncService.SyncFolderFromNasIfNewer(profile.WorkspaceRoot, "Notes");
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] NAS sync error: " + ex.Message); }
+
             List<QuickNoteItem> notes = new List<QuickNoteItem>();
             string dir = NotesDirectory;
 
@@ -104,6 +114,16 @@ namespace SS_CAM.Services
             {
                 string fullContent = BuildContentWithFrontmatter(rawContent, isPinned, priority);
                 File.WriteAllText(filePath, fullContent, Encoding.UTF8);
+
+                try
+                {
+                    var profile = UserProfileService.LoadProfile();
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                    {
+                        NasConfigSyncService.SaveFolderToNas(profile.WorkspaceRoot, "Notes");
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] SaveNote NAS sync error: " + ex.Message); }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
