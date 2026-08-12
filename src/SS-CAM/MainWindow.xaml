@@ -148,24 +148,48 @@
                            IsPaneToggleVisible="False"
                            IsBackButtonVisible="Collapsed"
                            HeaderVisibility="Collapsed"
-                           OpenPaneLength="200">
+                           OpenPaneLength="200"
+                           PaneOpened="OnNavigationPaneOpened"
+                           PaneClosed="OnNavigationPaneClosed">
 
             <!-- PANE HEADER: Top Padding Spacer to align top sidebar item with right-hand Page Title -->
             <ui:NavigationView.PaneHeader>
                 <Grid Height="14"/>
             </ui:NavigationView.PaneHeader>
 
-            <!-- MENU ITEMS -->
+            <!-- MENU ITEMS (Categorized & Sorted) -->
             <ui:NavigationView.MenuItems>
+                <!-- OVERVIEW -->
+                <ui:NavigationViewItemHeader Content="OVERVIEW" />
                 <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
-                <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
-                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
+
+                <ui:NavigationViewItemSeparator />
+
+                <!-- CREATION & ASSETS -->
+                <ui:NavigationViewItemHeader Content="CREATION &amp; ASSETS" />
                 <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
                 <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
                 <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
-                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
-                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
+
+                <ui:NavigationViewItemSeparator />
+
+                <!-- PRODUCTIVITY -->
+                <ui:NavigationViewItemHeader Content="PRODUCTIVITY" />
                 <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
+                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
+
+                <ui:NavigationViewItemSeparator />
+
+                <!-- WELLBEING & FAITH -->
+                <ui:NavigationViewItemHeader Content="WELLBEING &amp; FAITH" />
+                <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
+                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
+                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
+
+                <ui:NavigationViewItemSeparator />
+
+                <!-- SYSTEM -->
+                <ui:NavigationViewItemHeader Content="SYSTEM" />
                 <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
                 <ui:NavigationViewItemSeparator />
                 <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
@@ -268,7 +292,7 @@
                             </Border>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,2,0,0" VerticalAlignment="Center">
-                            <ui:TextBlock Text="NOW PLAYING:" FontSize="10" FontWeight="SemiBold"
+                            <ui:TextBlock x:Name="BottomRadioNowPlayingLabel" Text="NOW PLAYING:" FontSize="10" FontWeight="SemiBold"
                                           Foreground="#60A5FA" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <ui:TextBlock x:Name="TxtBottomRadioTrack" Text="Now Playing..." FontSize="11"
                                           Foreground="#93C5FD" VerticalAlignment="Center"
@@ -283,10 +307,12 @@
                             <ui:TextBlock x:Name="TxtBottomRadioPlayIcon" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="White"/>
                         </ui:Button>
 
-                        <ui:TextBlock Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                      Foreground="#8AAACF" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <Slider x:Name="BottomRadioVolumeSlider" Width="100" Minimum="0" Maximum="100" Value="80"
-                                ValueChanged="OnBottomRadioVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
+                        <StackPanel x:Name="BottomRadioVolumePanel" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:TextBlock Text="&#xE767;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                          Foreground="#8AAACF" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <Slider x:Name="BottomRadioVolumeSlider" Width="100" Minimum="0" Maximum="100" Value="80"
+                                    ValueChanged="OnBottomRadioVolumeChanged" VerticalAlignment="Center" ToolTip="Volume"/>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </Grid>

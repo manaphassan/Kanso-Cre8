@@ -239,9 +239,49 @@ namespace SS_CAM
                 if (RootNavigation != null)
                 {
                     RootNavigation.IsPaneOpen = !RootNavigation.IsPaneOpen;
+                    ApplyPaneCollapseState(RootNavigation.IsPaneOpen);
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnTitleBarNavToggleClicked: " + ex.Message); }
+        }
+
+        private void OnNavigationPaneOpened(NavigationView sender, RoutedEventArgs args)
+        {
+            ApplyPaneCollapseState(true);
+        }
+
+        private void OnNavigationPaneClosed(NavigationView sender, RoutedEventArgs args)
+        {
+            ApplyPaneCollapseState(false);
+        }
+
+        private void ApplyPaneCollapseState(bool isPaneOpen)
+        {
+            try
+            {
+                if (StatusNasText != null) StatusNasText.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
+                if (StatusTimerText != null) StatusTimerText.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
+                if (StatusThemeText != null) StatusThemeText.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
+
+                if (BottomRadioVolumePanel != null)
+                {
+                    BottomRadioVolumePanel.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
+                }
+
+                if (BottomRadioNowPlayingLabel != null)
+                {
+                    BottomRadioNowPlayingLabel.Visibility = isPaneOpen ? Visibility.Visible : Visibility.Collapsed;
+                }
+
+                if (BottomRadioPlayerBar != null)
+                {
+                    BottomRadioPlayerBar.Padding = isPaneOpen ? new Thickness(16, 10, 16, 10) : new Thickness(12, 6, 12, 6);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainWindow] ApplyPaneCollapseState: " + ex.Message);
+            }
         }
 
         private void OnTitleBarDragWindow(object sender, MouseButtonEventArgs e)
