@@ -1,5 +1,20 @@
 # SS-CAM FIX LOG
 
+## v3.1.0 — 2026-08-12 (QR Code Studio & Audio Visualizer Release)
+
+### QR Code Generator & Studio Visualizer Upgrades
+- **QR Code Studio Module**: Added `QrCodePage.xaml` / `QrCodeEncoderService.cs` supporting URL, Plain Text, Wi-Fi, and VCard payload types with brand palette customization, high-res PNG file export, and Clipboard copying.
+- **Sound Engineer Studio Visualizer**: Upgraded `VisualizerService` with floating Mars symbols (♂), SuamiSihat crest particle physics, peak-reactive motion, and watermark removal.
+- **Radio & Audio Studio**: Enhanced `RadioPage` layout, spectrum feedback, and station controls.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+- GitHub Release: PUBLISHED (v3.1.0 set as Latest on SuamiSihat/ss_cam).
+- Documentation: Updated (README, ROADMAP, CHANGELOG, QA Suite aligned to v3.1.0).
+
+---
+
 ## v3.0.1 — 2026-08-12 (Art Director Full QA Run)
 
 ### Sidebar Navigation & Footer Collapse
