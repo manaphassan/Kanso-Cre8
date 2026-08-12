@@ -1,5 +1,5 @@
 # 01 — Architecture Review
-**SS-CAM v2.6.0** | Last updated: 2026-08-10
+**SS-CAM v3.0.0** | Last updated: 2026-08-12
 
 ---
 
