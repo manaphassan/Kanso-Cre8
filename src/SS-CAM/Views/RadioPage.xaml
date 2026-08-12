@@ -110,6 +110,19 @@
                         </Ellipse.RenderTransform>
                     </Ellipse>
 
+                    <!-- Concentric Bass Shockwave Ripple Ring (Expanding on bass drops) -->
+                    <Ellipse x:Name="BassShockwaveRing" Width="100" Height="100" Canvas.Right="90" Canvas.Top="0" Opacity="0" IsHitTestVisible="False">
+                        <Ellipse.Stroke>
+                            <SolidColorBrush x:Name="ShockwaveBrush" Color="#21A1F7"/>
+                        </Ellipse.Stroke>
+                        <Ellipse.StrokeThickness>
+                            <System:Double xmlns:System="clr-namespace:System;assembly=mscorlib">3.0</System:Double>
+                        </Ellipse.StrokeThickness>
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform x:Name="ShockwaveScale" CenterX="50" CenterY="50" ScaleX="1.0" ScaleY="1.0"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+
                     <!-- SuamiSihat Official Logo Icon + Mars Male Symbol ♂ Backdrop Pair (Pulsing with rhythm) -->
                     <Canvas Canvas.Right="40" Canvas.Top="-10" IsHitTestVisible="False">
                         <Grid Width="220" Height="120">
@@ -144,11 +157,23 @@
                     <ui:TextBlock Text="SUAMISIHAT" FontSize="32" FontWeight="Black" FontFamily="Segoe UI, Montserrat, sans-serif"
                                Foreground="#FFFFFF" Opacity="0.07" Canvas.Right="30" Canvas.Bottom="4"/>
 
-                    <!-- Waveform Visualizer Path (for Waveform mode) -->
-                    <Path x:Name="HeroWavePath" Stroke="#21A1F7" StrokeThickness="2.5" Opacity="0.8" Visibility="Collapsed"/>
+                    <!-- Dual-Ribbon 3D Waveform Paths (for Waveform mode) -->
+                    <Path x:Name="HeroWavePath" Stroke="#21A1F7" StrokeThickness="3.0" Opacity="0.85" Visibility="Collapsed">
+                        <Path.Effect>
+                            <DropShadowEffect Color="#21A1F7" BlurRadius="12" ShadowDepth="0" Opacity="0.8"/>
+                        </Path.Effect>
+                    </Path>
+                    <Path x:Name="HeroWavePath2" Stroke="#FCE53D" StrokeThickness="2.0" Opacity="0.75" Visibility="Collapsed">
+                        <Path.Effect>
+                            <DropShadowEffect Color="#FCE53D" BlurRadius="10" ShadowDepth="0" Opacity="0.7"/>
+                        </Path.Effect>
+                    </Path>
 
                     <!-- Pulsating Energy Orb Container (for PulsatingOrb mode) -->
-                    <Ellipse x:Name="HeroRhythmOrb" Width="90" Height="90" Canvas.Right="140" Canvas.Top="2" Visibility="Collapsed" Opacity="0.6">
+                    <Ellipse x:Name="HeroRhythmOrb" Width="95" Height="95" Canvas.Right="140" Canvas.Top="2" Visibility="Collapsed" Opacity="0.7">
+                        <Ellipse.Effect>
+                            <DropShadowEffect Color="#FCE53D" BlurRadius="20" ShadowDepth="0" Opacity="0.85"/>
+                        </Ellipse.Effect>
                         <Ellipse.Fill>
                             <RadialGradientBrush>
                                 <GradientStop Color="#FCE53D" Offset="0.0"/>
@@ -157,7 +182,7 @@
                             </RadialGradientBrush>
                         </Ellipse.Fill>
                         <Ellipse.RenderTransform>
-                            <ScaleTransform x:Name="OrbScale" CenterX="45" CenterY="45" ScaleX="1.0" ScaleY="1.0"/>
+                            <ScaleTransform x:Name="OrbScale" CenterX="47.5" CenterY="47.5" ScaleX="1.0" ScaleY="1.0"/>
                         </Ellipse.RenderTransform>
                     </Ellipse>
                 </Canvas>

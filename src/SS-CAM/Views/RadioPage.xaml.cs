@@ -127,7 +127,10 @@ namespace SS_CAM.Views
                 VisualizerBars.Visibility = (mode == VisualizerMode.SpectrumBars) ? Visibility.Visible : Visibility.Collapsed;
 
             if (HeroWavePath != null)
+            {
                 HeroWavePath.Visibility = (mode == VisualizerMode.Waveform) ? Visibility.Visible : Visibility.Collapsed;
+                if (HeroWavePath2 != null) HeroWavePath2.Visibility = HeroWavePath.Visibility;
+            }
 
             if (HeroRhythmOrb != null)
                 HeroRhythmOrb.Visibility = (mode == VisualizerMode.PulsatingOrb) ? Visibility.Visible : Visibility.Collapsed;
@@ -141,7 +144,7 @@ namespace SS_CAM.Views
                 {
                     var mode = VisualizerService.Instance.CurrentMode;
 
-                    // 1. SuamiSihat Men Icon & Hero Mesh Backdrop Pulsing (Active across all modes, extra punch on bass)
+                    // 1. SuamiSihat Logo & Mars Symbol Backdrop Pulsing & Bass Shockwave Ripple
                     if (MenIconScale != null)
                     {
                         double menScale = 1.0 + e.Bass * 0.35;
@@ -161,6 +164,23 @@ namespace SS_CAM.Views
                         AuraScale2.ScaleY = scale2;
                     }
 
+                    // Transient Bass Shockwave Ring Ripple
+                    if (BassShockwaveRing != null && ShockwaveScale != null)
+                    {
+                        if (e.IsBassHit)
+                        {
+                            BassShockwaveRing.Opacity = 0.85;
+                            ShockwaveScale.ScaleX = 1.0;
+                            ShockwaveScale.ScaleY = 1.0;
+                        }
+                        else if (BassShockwaveRing.Opacity > 0.02)
+                        {
+                            BassShockwaveRing.Opacity *= 0.86;
+                            ShockwaveScale.ScaleX += 0.06;
+                            ShockwaveScale.ScaleY += 0.06;
+                        }
+                    }
+
                     if (HeroMeshStop2 != null)
                     {
                         byte r = (byte)(30 + e.Energy * 40);
@@ -169,9 +189,10 @@ namespace SS_CAM.Views
                         HeroMeshStop2.Color = Color.FromRgb(r, g, b);
                     }
 
-                    // 2. Mode-Specific Visualizer Animations
+                    // 2. Studio Mode-Specific Visualizer Animations
                     if (mode == VisualizerMode.SpectrumBars && VisualizerBars != null && e.Spectrum != null && e.Spectrum.Length >= 12)
                     {
+                        // Studio VU Ballistics Mapping across 12 Equalizer Channels
                         if (Bar1 != null) Bar1.Height = Math.Max(4, e.Spectrum[0] * 24);
                         if (Bar2 != null) Bar2.Height = Math.Max(4, e.Spectrum[1] * 24);
                         if (Bar3 != null) Bar3.Height = Math.Max(4, e.Spectrum[2] * 24);
@@ -187,32 +208,50 @@ namespace SS_CAM.Views
                     }
                     else if (mode == VisualizerMode.PulsatingOrb && OrbScale != null)
                     {
-                        double orbScale = 0.9 + e.Energy * 0.70;
+                        double orbScale = 0.88 + e.Energy * 0.75;
                         OrbScale.ScaleX = orbScale;
                         OrbScale.ScaleY = orbScale;
                     }
                     else if (mode == VisualizerMode.Waveform && HeroWavePath != null)
                     {
-                        // Render dynamic oscilloscope wave path across hero banner
+                        // Render Dual Intersecting 3D Ribbon Curves across hero banner
                         double w = 360.0;
                         double h = 40.0;
-                        int pts = 24;
+                        int pts = 28;
                         double step = w / (pts - 1);
 
-                        StreamGeometry geom = new StreamGeometry();
-                        using (StreamGeometryContext ctx = geom.Open())
+                        StreamGeometry geom1 = new StreamGeometry();
+                        using (StreamGeometryContext ctx = geom1.Open())
                         {
                             Point startPt = new Point(0, h / 2.0 + Math.Sin(e.Phase) * 12.0 * e.Bass);
                             ctx.BeginFigure(startPt, false, false);
                             for (int i = 1; i < pts; i++)
                             {
                                 double x = i * step;
-                                double y = h / 2.0 + Math.Sin(e.Phase + i * 0.4) * (14.0 * e.Bass);
+                                double y = h / 2.0 + Math.Sin(e.Phase + i * 0.38) * (14.0 * e.Bass);
                                 ctx.LineTo(new Point(x, y), true, false);
                             }
                         }
-                        geom.Freeze();
-                        HeroWavePath.Data = geom;
+                        geom1.Freeze();
+                        HeroWavePath.Data = geom1;
+
+                        if (HeroWavePath2 != null)
+                        {
+                            StreamGeometry geom2 = new StreamGeometry();
+                            using (StreamGeometryContext ctx = geom2.Open())
+                            {
+                                Point startPt = new Point(0, h / 2.0 + Math.Cos(e.Phase * 1.3) * 10.0 * e.Mid);
+                                ctx.BeginFigure(startPt, false, false);
+                                for (int i = 1; i < pts; i++)
+                                {
+                                    double x = i * step;
+                                    double y = h / 2.0 + Math.Cos(e.Phase * 1.3 + i * 0.42) * (12.0 * e.Mid);
+                                    ctx.LineTo(new Point(x, y), true, false);
+                                }
+                            }
+                            geom2.Freeze();
+                            HeroWavePath2.Data = geom2;
+                        }
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[RadioPage] OnRhythmTick: " + ex.Message); }
