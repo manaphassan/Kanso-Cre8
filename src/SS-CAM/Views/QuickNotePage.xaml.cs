@@ -562,5 +562,22 @@ namespace SS_CAM.Views
             NoteEditor.SelectionStart = start + replacement.Length;
             NoteEditor.Focus();
         }
+
+        // ─── Markdown Guide Drawer ───────────────────────────────────────────
+
+        private void OnToggleMarkdownHelp(object sender, RoutedEventArgs e)
+        {
+            if (PanelMarkdownHelp == null) return;
+            PanelMarkdownHelp.Visibility = PanelMarkdownHelp.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        private void OnCloseMarkdownHelp(object sender, RoutedEventArgs e)
+        {
+            if (PanelMarkdownHelp != null)
+                PanelMarkdownHelp.Visibility = Visibility.Collapsed;
+        }
     }
 }
+
