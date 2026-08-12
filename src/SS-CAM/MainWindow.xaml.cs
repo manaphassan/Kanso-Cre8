@@ -1108,6 +1108,16 @@ namespace SS_CAM
                     case VisualizerMode.PulsatingOrb: TxtBottomVisualizerBadge.Text = "VIZ: PULSE ORB"; break;
                 }
             }
+            if (TxtBottomVisualizerIcon != null)
+            {
+                switch (mode)
+                {
+                    case VisualizerMode.HeroMesh: TxtBottomVisualizerIcon.Text = "\uE734"; break;
+                    case VisualizerMode.SpectrumBars: TxtBottomVisualizerIcon.Text = "\uE9E9"; break;
+                    case VisualizerMode.Waveform: TxtBottomVisualizerIcon.Text = "\uEE6E"; break;
+                    case VisualizerMode.PulsatingOrb: TxtBottomVisualizerIcon.Text = "\uEA89"; break;
+                }
+            }
             if (BtnBottomVisualizer != null)
             {
                 BtnBottomVisualizer.ToolTip = "Visualizer Mode: " + mode.ToString() + " (Klik untuk tukar)";

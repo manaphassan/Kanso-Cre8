@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -122,6 +122,15 @@ namespace SS_CAM.Views
                     case VisualizerMode.PulsatingOrb: HeroVizBadgeText.Text = "VIZ: PULSE ORB"; break;
                 }
             }
+
+            if (VisualizerBars != null)
+                VisualizerBars.Visibility = (mode == VisualizerMode.SpectrumBars) ? Visibility.Visible : Visibility.Collapsed;
+
+            if (HeroWavePath != null)
+                HeroWavePath.Visibility = (mode == VisualizerMode.Waveform) ? Visibility.Visible : Visibility.Collapsed;
+
+            if (HeroRhythmOrb != null)
+                HeroRhythmOrb.Visibility = (mode == VisualizerMode.PulsatingOrb) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OnRhythmTick(object sender, RhythmFrameEventArgs e)
@@ -130,16 +139,24 @@ namespace SS_CAM.Views
             {
                 try
                 {
-                    // 1. SuamiSihat Hero Mesh Aura Pulsing & Gradient Atmosphere
+                    var mode = VisualizerService.Instance.CurrentMode;
+
+                    // 1. SuamiSihat Men Icon & Hero Mesh Backdrop Pulsing (Active across all modes, extra punch on bass)
+                    if (MenIconScale != null)
+                    {
+                        double menScale = 1.0 + e.Bass * 0.35;
+                        MenIconScale.ScaleX = menScale;
+                        MenIconScale.ScaleY = menScale;
+                    }
                     if (AuraScale1 != null)
                     {
-                        double scale1 = 1.0 + e.Bass * 0.35;
+                        double scale1 = 1.0 + e.Bass * 0.30;
                         AuraScale1.ScaleX = scale1;
                         AuraScale1.ScaleY = scale1;
                     }
                     if (AuraScale2 != null)
                     {
-                        double scale2 = 1.0 + e.Mid * 0.42;
+                        double scale2 = 1.0 + e.Mid * 0.38;
                         AuraScale2.ScaleX = scale2;
                         AuraScale2.ScaleY = scale2;
                     }
@@ -152,14 +169,50 @@ namespace SS_CAM.Views
                         HeroMeshStop2.Color = Color.FromRgb(r, g, b);
                     }
 
-                    // 2. Bar Spectrum Equalizer
-                    if (_radioService != null && _radioService.State == RadioPlaybackState.Playing && e.Spectrum != null && e.Spectrum.Length >= 13)
+                    // 2. Mode-Specific Visualizer Animations
+                    if (mode == VisualizerMode.SpectrumBars && VisualizerBars != null && e.Spectrum != null && e.Spectrum.Length >= 12)
                     {
                         if (Bar1 != null) Bar1.Height = Math.Max(4, e.Spectrum[0] * 24);
-                        if (Bar2 != null) Bar2.Height = Math.Max(4, e.Spectrum[2] * 24);
-                        if (Bar3 != null) Bar3.Height = Math.Max(4, e.Spectrum[5] * 24);
-                        if (Bar4 != null) Bar4.Height = Math.Max(4, e.Spectrum[8] * 24);
-                        if (Bar5 != null) Bar5.Height = Math.Max(4, e.Spectrum[12] * 24);
+                        if (Bar2 != null) Bar2.Height = Math.Max(4, e.Spectrum[1] * 24);
+                        if (Bar3 != null) Bar3.Height = Math.Max(4, e.Spectrum[2] * 24);
+                        if (Bar4 != null) Bar4.Height = Math.Max(4, e.Spectrum[3] * 24);
+                        if (Bar5 != null) Bar5.Height = Math.Max(4, e.Spectrum[4] * 24);
+                        if (Bar6 != null) Bar6.Height = Math.Max(4, e.Spectrum[5] * 24);
+                        if (Bar7 != null) Bar7.Height = Math.Max(4, e.Spectrum[6] * 24);
+                        if (Bar8 != null) Bar8.Height = Math.Max(4, e.Spectrum[7] * 24);
+                        if (Bar9 != null) Bar9.Height = Math.Max(4, e.Spectrum[8] * 24);
+                        if (Bar10 != null) Bar10.Height = Math.Max(4, e.Spectrum[9] * 24);
+                        if (Bar11 != null) Bar11.Height = Math.Max(4, e.Spectrum[10] * 24);
+                        if (Bar12 != null) Bar12.Height = Math.Max(4, e.Spectrum[11] * 24);
+                    }
+                    else if (mode == VisualizerMode.PulsatingOrb && OrbScale != null)
+                    {
+                        double orbScale = 0.9 + e.Energy * 0.70;
+                        OrbScale.ScaleX = orbScale;
+                        OrbScale.ScaleY = orbScale;
+                    }
+                    else if (mode == VisualizerMode.Waveform && HeroWavePath != null)
+                    {
+                        // Render dynamic oscilloscope wave path across hero banner
+                        double w = 360.0;
+                        double h = 40.0;
+                        int pts = 24;
+                        double step = w / (pts - 1);
+
+                        StreamGeometry geom = new StreamGeometry();
+                        using (StreamGeometryContext ctx = geom.Open())
+                        {
+                            Point startPt = new Point(0, h / 2.0 + Math.Sin(e.Phase) * 12.0 * e.Bass);
+                            ctx.BeginFigure(startPt, false, false);
+                            for (int i = 1; i < pts; i++)
+                            {
+                                double x = i * step;
+                                double y = h / 2.0 + Math.Sin(e.Phase + i * 0.4) * (14.0 * e.Bass);
+                                ctx.LineTo(new Point(x, y), true, false);
+                            }
+                        }
+                        geom.Freeze();
+                        HeroWavePath.Data = geom;
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[RadioPage] OnRhythmTick: " + ex.Message); }
@@ -200,8 +253,7 @@ namespace SS_CAM.Views
                     HeroStatusDot.Text = "\uE73E"; // Check
                     HeroStatusText.Text = "Live Stream Playing";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
-                    VisualizerBars.Visibility = Visibility.Visible;
-                    if (_visualizerTimer != null && !_visualizerTimer.IsEnabled) _visualizerTimer.Start();
+                    UpdateVisualizerModeUI(VisualizerService.Instance.CurrentMode);
                     break;
 
                 case RadioPlaybackState.Buffering:
@@ -209,8 +261,6 @@ namespace SS_CAM.Views
                     HeroStatusDot.Text = "\uE823";
                     HeroStatusText.Text = "Connecting & Buffering Stream...";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-                    VisualizerBars.Visibility = Visibility.Collapsed;
-                    if (_visualizerTimer != null) _visualizerTimer.Stop();
                     break;
 
                 case RadioPlaybackState.Paused:
@@ -218,8 +268,6 @@ namespace SS_CAM.Views
                     HeroStatusDot.Text = "\uE769"; // Pause
                     HeroStatusText.Text = "Paused";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-                    VisualizerBars.Visibility = Visibility.Collapsed;
-                    if (_visualizerTimer != null) _visualizerTimer.Stop();
                     break;
 
                 case RadioPlaybackState.Error:
@@ -227,8 +275,6 @@ namespace SS_CAM.Views
                     HeroStatusDot.Text = "\uEA39"; // Error/Cancel
                     HeroStatusText.Text = "Stream Connection Error (Try Editing / Testing Stream URL)";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
-                    VisualizerBars.Visibility = Visibility.Collapsed;
-                    if (_visualizerTimer != null) _visualizerTimer.Stop();
                     break;
 
                 case RadioPlaybackState.Stopped:
@@ -237,8 +283,6 @@ namespace SS_CAM.Views
                     HeroStatusDot.Text = "\uE71A"; // Stop
                     HeroStatusText.Text = "Ready to Play";
                     HeroStatusText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
-                    VisualizerBars.Visibility = Visibility.Collapsed;
-                    if (_visualizerTimer != null) _visualizerTimer.Stop();
                     if (HeroStreamTitleText != null) HeroStreamTitleText.Visibility = Visibility.Collapsed;
                     break;
             }
