@@ -20,8 +20,8 @@ namespace SS_CAM.Services
         {
             var profile = JsonPersistenceHelper.Load<UserProfile>(ConfigFilePath);
 
-            // Auto-sync setting from NAS if newer
-            if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+            // Auto-sync setting from NAS if profile exists and has workspace root
+            if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot) && Directory.Exists(profile.WorkspaceRoot))
             {
                 bool updated = NasConfigSyncService.SyncFromNasIfNewer(profile.WorkspaceRoot, "user_profile.json");
                 if (updated)
@@ -31,11 +31,42 @@ namespace SS_CAM.Services
                 }
             }
 
-            if (profile == null || string.IsNullOrWhiteSpace(profile.DesignerName))
+            // If profile is missing or not fully configured, attempt auto-discovery & auto-restore from NAS
+            if (profile == null || !profile.IsConfigured || string.IsNullOrWhiteSpace(profile.DesignerName))
             {
-                profile = GetDefaultProfile();
-                SaveProfile(profile);
+                string discoveredRoot = NasConfigSyncService.DiscoverWorkspaceRoot();
+                if (!string.IsNullOrWhiteSpace(discoveredRoot))
+                {
+                    bool restored = NasConfigSyncService.TryAutoRestoreUserConfig(discoveredRoot);
+                    if (restored)
+                    {
+                        var restoredProfile = JsonPersistenceHelper.Load<UserProfile>(ConfigFilePath);
+                        if (restoredProfile != null)
+                        {
+                            profile = restoredProfile;
+                            profile.WorkspaceRoot = discoveredRoot;
+                            profile.IsConfigured = true;
+                            SaveProfile(profile);
+                            return profile;
+                        }
+                    }
+
+                    if (profile == null) profile = GetDefaultProfile();
+                    profile.WorkspaceRoot = discoveredRoot;
+                }
+                else
+                {
+                    if (profile == null) profile = GetDefaultProfile();
+                }
+
+                // If designer name and workspace root are present, mark configured
+                if (!string.IsNullOrWhiteSpace(profile.DesignerName) && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot) && Directory.Exists(profile.WorkspaceRoot))
+                {
+                    profile.IsConfigured = true;
+                    SaveProfile(profile);
+                }
             }
+
             return profile;
         }
 

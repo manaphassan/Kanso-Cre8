@@ -83,6 +83,19 @@
 
             <!-- 3. Profile Pill Card & Window Controls -->
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Notification Center Bell Icon Button -->
+                <ui:Button x:Name="BtnNotificationBell" Click="OnNotificationBellClicked" Appearance="Secondary"
+                           Width="32" Height="32" Padding="0" Margin="0,0,8,0" Cursor="Hand" ToolTip="Notifications">
+                    <Grid>
+                        <ui:SymbolIcon Symbol="Alert24" FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        <Border x:Name="NotificationBadgeBorder" Background="{DynamicResource SystemFillColorCriticalBrush}"
+                                CornerRadius="7" Padding="4,1" Margin="10,-6,-6,10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Visibility="Collapsed">
+                            <ui:TextBlock x:Name="TxtNotificationBadgeCount" Text="0" Foreground="White" FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                </ui:Button>
+
                 <!-- User profile card (Transparent background, clean circle avatar) -->
                 <Border x:Name="SidebarUserCard" Margin="0,0,6,0" CornerRadius="14" Padding="6,2"
                         Background="Transparent" Cursor="Hand"
@@ -321,6 +334,49 @@
         <!-- Toast Notification Floating Container Overlay -->
         <StackPanel x:Name="ToastContainer" Grid.RowSpan="4" VerticalAlignment="Top" HorizontalAlignment="Right"
                     Margin="0,52,24,0" Panel.ZIndex="9999" Width="360"/>
+
+        <!-- In-App Notification Center Drawer Overlay -->
+        <Border x:Name="NotificationDrawer" Grid.RowSpan="4" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,50,24,0" Width="380" MaxHeight="520" Panel.ZIndex="10000"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8"
+                Visibility="Collapsed">
+            <Grid Margin="16,14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Drawer Header -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <ui:SymbolIcon Symbol="Alert24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="Notifications" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ui:Button Click="OnMarkAllNotificationsReadClicked" Appearance="Secondary" Height="26" Padding="8,0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mark All as Read">
+                            <ui:TextBlock Text="Mark Read" FontSize="10" VerticalAlignment="Center"/>
+                        </ui:Button>
+                        <ui:Button Click="OnClearAllNotificationsClicked" Appearance="Secondary" Height="26" Padding="8,0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Clear All">
+                            <ui:TextBlock Text="Clear All" FontSize="10" VerticalAlignment="Center"/>
+                        </ui:Button>
+                        <ui:Button Click="OnCloseNotificationDrawerClicked" Appearance="Secondary" Width="26" Height="26" Padding="0" Cursor="Hand" ToolTip="Close Drawer">
+                            <ui:SymbolIcon Symbol="Dismiss24" FontSize="12"/>
+                        </ui:Button>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Grid.Row="1" Margin="0,0,0,10"/>
+
+                <!-- Notification List Container -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="NotificationListStack">
+                        <!-- Populated programmatically -->
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
         <!-- Hidden elements (kept for backward compatibility) -->
         <Canvas x:Name="HeaderCanvas" Grid.Row="0" IsHitTestVisible="False" Visibility="Collapsed"/>

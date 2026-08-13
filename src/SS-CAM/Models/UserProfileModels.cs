@@ -19,20 +19,23 @@ namespace SS_CAM.Models
         public bool PrayerRemindersEnabled { get; set; }
         /// <summary>Audio visualizer mode: "HeroMesh", "SpectrumBars", "Waveform", "PulsatingOrb".</summary>
         public string VisualizerMode { get; set; }
+        /// <summary>Whether profile has been configured by user or auto-discovered.</summary>
+        public bool IsConfigured { get; set; }
 
         public UserProfile()
         {
-            DesignerName = "Brand";
-            StaffId = "0001D";
+            DesignerName = "";
+            StaffId = "";
             Department = "Creative & Brand";
-            Email = "brand@suamisihat.com";
+            Email = "";
             AvatarPath = "";
-            WorkspaceRoot = @"D:\Testing";
+            WorkspaceRoot = "";
             NextProjectNumber = 1;
             Theme = "Falconia";
             PrayerZone = "WLY01";
             PrayerRemindersEnabled = true;
             VisualizerMode = "HeroMesh";
+            IsConfigured = false;
         }
     }
 

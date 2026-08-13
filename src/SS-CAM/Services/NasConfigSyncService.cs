@@ -196,5 +196,94 @@ namespace SS_CAM.Services
                 Debug.WriteLine("[NasConfigSyncService] SaveFolderToNas error for " + subFolder + ": " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Automatically discovers potential Creative-Team workspace root directories on local mapped drives or Synology Drive sync paths.
+        /// </summary>
+        public static string DiscoverWorkspaceRoot()
+        {
+            try
+            {
+                string[] primaryCandidates = new[]
+                {
+                    @"E:\SynologyDrive\Creative-Team",
+                    @"D:\SynologyDrive\Creative-Team",
+                    @"C:\SynologyDrive\Creative-Team",
+                    @"E:\Creative-Team",
+                    @"D:\Creative-Team",
+                    @"C:\Creative-Team",
+                    @"Z:\Creative-Team"
+                };
+
+                foreach (string candidate in primaryCandidates)
+                {
+                    if (Directory.Exists(candidate))
+                    {
+                        Debug.WriteLine("[NasConfigSyncService] Auto-discovered workspace root: " + candidate);
+                        return candidate;
+                    }
+                }
+
+                // Dynamic drive scan fallback
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                foreach (DriveInfo drive in drives)
+                {
+                    if (drive.IsReady && (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Network))
+                    {
+                        string candidate1 = Path.Combine(drive.RootDirectory.FullName, "SynologyDrive", "Creative-Team");
+                        if (Directory.Exists(candidate1)) return candidate1;
+
+                        string candidate2 = Path.Combine(drive.RootDirectory.FullName, "Creative-Team");
+                        if (Directory.Exists(candidate2)) return candidate2;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[NasConfigSyncService] DiscoverWorkspaceRoot error: " + ex.Message);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Attempts to auto-restore existing user profile and theme config from NAS workspace _Team\_Config directory.
+        /// Returns true if an existing user profile was restored.
+        /// </summary>
+        public static bool TryAutoRestoreUserConfig(string workspaceRoot)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot)) return false;
+
+                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder);
+                if (!Directory.Exists(nasDir)) return false;
+
+                string userProfileNasName = GetUserScopedFileName("user_profile.json");
+                string userProfileNasPath = Path.Combine(nasDir, userProfileNasName);
+
+                if (File.Exists(userProfileNasPath))
+                {
+                    string localProfilePath = Path.Combine(AppPaths.AppDataFolder, "user_profile.json");
+                    File.Copy(userProfileNasPath, localProfilePath, true);
+                    Debug.WriteLine("[NasConfigSyncService] Auto-restored user_profile.json from NAS for " + Environment.UserName);
+
+                    // Also restore theme_config if present
+                    string themeNasName = GetUserScopedFileName("theme_config.json");
+                    string themeNasPath = Path.Combine(nasDir, themeNasName);
+                    if (File.Exists(themeNasPath))
+                    {
+                        string localThemePath = Path.Combine(AppPaths.AppDataFolder, "theme_config.json");
+                        File.Copy(themeNasPath, localThemePath, true);
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[NasConfigSyncService] TryAutoRestoreUserConfig error: " + ex.Message);
+            }
+            return false;
+        }
     }
 }

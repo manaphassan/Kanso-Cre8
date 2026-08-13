@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -33,6 +33,7 @@ namespace SS_CAM.Views
         private int _currentMonth = DateTime.Today.Month;
         private List<ProjectStatusItem> _allProjects = new List<ProjectStatusItem>();
         private bool _isPopulatingFilter = false;
+        private bool _isGanttView = false;
 
         public CalendarPage()
         {
@@ -577,7 +578,7 @@ namespace SS_CAM.Views
                 _currentYear--;
             }
             UpdateMetrics();
-            RenderCalendarGrid();
+            if (_isGanttView) RenderGanttTimeline(); else RenderCalendarGrid();
         }
 
         private void OnNextMonthClicked(object sender, RoutedEventArgs e)
@@ -589,7 +590,7 @@ namespace SS_CAM.Views
                 _currentYear++;
             }
             UpdateMetrics();
-            RenderCalendarGrid();
+            if (_isGanttView) RenderGanttTimeline(); else RenderCalendarGrid();
         }
 
         private void OnTodayClicked(object sender, RoutedEventArgs e)
@@ -597,21 +598,21 @@ namespace SS_CAM.Views
             _currentYear = DateTime.Today.Year;
             _currentMonth = DateTime.Today.Month;
             UpdateMetrics();
-            RenderCalendarGrid();
+            if (_isGanttView) RenderGanttTimeline(); else RenderCalendarGrid();
         }
 
         private void OnSearchQueryChanged(object sender, TextChangedEventArgs e)
         {
             if (!IsLoaded || _isPopulatingFilter) return;
             UpdateMetrics();
-            RenderCalendarGrid();
+            if (_isGanttView) RenderGanttTimeline(); else RenderCalendarGrid();
         }
 
         private void OnFilterChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsLoaded || _isPopulatingFilter) return;
             UpdateMetrics();
-            RenderCalendarGrid();
+            if (_isGanttView) RenderGanttTimeline(); else RenderCalendarGrid();
         }
 
         private void OnRefreshClicked(object sender, RoutedEventArgs e)
@@ -675,6 +676,220 @@ namespace SS_CAM.Views
             catch (Exception ex)
             {
                 Debug.WriteLine("[CalendarPage] Quick status menu error: " + ex.Message);
+            }
+        }
+
+        private void OnViewGridClicked(object sender, RoutedEventArgs e)
+        {
+            _isGanttView = false;
+            if (BtnViewGrid != null) BtnViewGrid.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            if (BtnViewGantt != null) BtnViewGantt.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            if (CalendarGridContainer != null) CalendarGridContainer.Visibility = Visibility.Visible;
+            if (GanttContainer != null) GanttContainer.Visibility = Visibility.Collapsed;
+            RenderCalendarGrid();
+        }
+
+        private void OnViewGanttClicked(object sender, RoutedEventArgs e)
+        {
+            _isGanttView = true;
+            if (BtnViewGrid != null) BtnViewGrid.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            if (BtnViewGantt != null) BtnViewGantt.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            if (CalendarGridContainer != null) CalendarGridContainer.Visibility = Visibility.Collapsed;
+            if (GanttContainer != null) GanttContainer.Visibility = Visibility.Visible;
+            RenderGanttTimeline();
+        }
+
+        private void RenderGanttTimeline()
+        {
+            try
+            {
+                if (GanttHeaderGrid == null || GanttRowsStack == null) return;
+
+                GanttHeaderGrid.Children.Clear();
+                GanttHeaderGrid.ColumnDefinitions.Clear();
+                GanttRowsStack.Children.Clear();
+
+                int daysInMonth = DateTime.DaysInMonth(_currentYear, _currentMonth);
+
+                // Column 0 for Project Title label (width 160)
+                GanttHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
+                TextBlock titleHeader = new TextBlock
+                {
+                    Text = "PROJECT NAME",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 10,
+                    Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(4, 0, 0, 0)
+                };
+                Grid.SetColumn(titleHeader, 0);
+                GanttHeaderGrid.Children.Add(titleHeader);
+
+                // Columns 1 to daysInMonth for days
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    GanttHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                    DateTime dt = new DateTime(_currentYear, _currentMonth, day);
+                    bool isToday = (dt.Date == DateTime.Today);
+
+                    TextBlock dayText = new TextBlock
+                    {
+                        Text = day.ToString(),
+                        FontWeight = isToday ? FontWeights.Bold : FontWeights.Normal,
+                        FontSize = 10,
+                        Foreground = isToday 
+                            ? (Brush)Application.Current.FindResource("FluentBrand80")
+                            : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    Grid.SetColumn(dayText, day);
+                    GanttHeaderGrid.Children.Add(dayText);
+                }
+
+                // Filter projects matching search, designer, and status
+                List<ProjectStatusItem> filtered = GetFilteredProjects();
+
+                if (filtered.Count == 0)
+                {
+                    TextBlock emptyMsg = new TextBlock
+                    {
+                        Text = "No projects active for this period.",
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        FontSize = 12,
+                        Margin = new Thickness(0, 16, 0, 16),
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+                    GanttRowsStack.Children.Add(emptyMsg);
+                    return;
+                }
+
+                foreach (ProjectStatusItem p in filtered)
+                {
+                    if (p == null) continue;
+
+                    Border rowBorder = new Border
+                    {
+                        BorderBrush = (Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush"),
+                        BorderThickness = new Thickness(0, 0, 0, 1),
+                        Padding = new Thickness(0, 6, 0, 6)
+                    };
+
+                    Grid rowGrid = new Grid();
+                    rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
+                    for (int day = 1; day <= daysInMonth; day++)
+                    {
+                        rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    }
+
+                    // Project Title Label Column
+                    StackPanel nameStack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+                    TextBlock pName = new TextBlock
+                    {
+                        Text = p.Project ?? "Untitled",
+                        FontSize = 11,
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush"),
+                        TextTrimming = TextTrimming.CharacterEllipsis
+                    };
+                    TextBlock pSub = new TextBlock
+                    {
+                        Text = string.Format("{0} • {1}", p.Designer ?? "Unknown", p.Status ?? "backlog"),
+                        FontSize = 9,
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        TextTrimming = TextTrimming.CharacterEllipsis
+                    };
+                    nameStack.Children.Add(pName);
+                    nameStack.Children.Add(pSub);
+                    Grid.SetColumn(nameStack, 0);
+                    rowGrid.Children.Add(nameStack);
+
+                    // Determine start and end day for timeline bar
+                    DateTime monthStart = new DateTime(_currentYear, _currentMonth, 1);
+                    DateTime monthEnd = new DateTime(_currentYear, _currentMonth, daysInMonth);
+
+                    DateTime startDt = monthStart;
+                    DateTime endDt = monthEnd;
+
+                    DateTime parsedCreated;
+                    if (DateTime.TryParse(p.CreatedDate, out parsedCreated))
+                    {
+                        startDt = parsedCreated;
+                    }
+
+                    DateTime parsedDeadline;
+                    if (DateTime.TryParse(p.Deadline, out parsedDeadline))
+                    {
+                        endDt = parsedDeadline;
+                    }
+
+                    // Clamp to current month view range
+                    if (startDt < monthStart) startDt = monthStart;
+                    if (endDt > monthEnd) endDt = monthEnd;
+
+                    int startDay = (startDt.Month == _currentMonth && startDt.Year == _currentYear) ? startDt.Day : 1;
+                    int endDay = (endDt.Month == _currentMonth && endDt.Year == _currentYear) ? endDt.Day : daysInMonth;
+
+                    if (startDay > endDay) startDay = endDay;
+
+                    int colSpan = Math.Max(1, (endDay - startDay) + 1);
+
+                    // Timeline bar element
+                    Brush barBrush = GetStatusBrush(p.Status);
+                    Border bar = new Border
+                    {
+                        Background = barBrush,
+                        CornerRadius = new CornerRadius(4),
+                        Height = 18,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(1, 0, 1, 0),
+                        ToolTip = string.Format("Project: {0}\nDesigner: {1}\nStatus: {2}\nStart: {3}\nDeadline: {4}",
+                            p.Project, p.Designer, p.Status, p.CreatedDateDisplay, p.DeadlineDisplay)
+                    };
+
+                    TextBlock barText = new TextBlock
+                    {
+                        Text = p.Project,
+                        FontSize = 9,
+                        FontWeight = FontWeights.Bold,
+                        Foreground = Brushes.White,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        Margin = new Thickness(4, 0, 4, 0)
+                    };
+                    bar.Child = barText;
+
+                    Grid.SetColumn(bar, startDay);
+                    Grid.SetColumnSpan(bar, colSpan);
+                    rowGrid.Children.Add(bar);
+
+                    rowBorder.Child = rowGrid;
+                    GanttRowsStack.Children.Add(rowBorder);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CalendarPage] RenderGanttTimeline error: " + ex.Message);
+            }
+        }
+
+        private Brush GetStatusBrush(string status)
+        {
+            string st = (status ?? "").ToLowerInvariant();
+            switch (st)
+            {
+                case "in-progress":
+                    return (Brush)Application.Current.FindResource("FluentBrand80");
+                case "review":
+                    return (Brush)Application.Current.FindResource("SystemFillColorCautionBrush");
+                case "done":
+                    return (Brush)Application.Current.FindResource("SystemFillColorSuccessBrush");
+                case "on-hold":
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
+                default: // backlog
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
             }
         }
     }

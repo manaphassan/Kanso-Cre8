@@ -35,6 +35,7 @@ namespace SS_CAM
             InitializeComponent();
             ThemeService.ThemeChanged += OnThemeModeChanged;
             NotificationService.OnNotificationReceived += OnNotificationReceived;
+            NotificationService.OnHistoryUpdated += OnNotificationHistoryUpdated;
             Loaded += OnLoaded;
             Closed += OnClosed;
         }
@@ -52,8 +53,9 @@ namespace SS_CAM
             // 2. Play Intro Sound Effect on App Launch
             AudioFeedbackService.PlayIntroSound();
 
-            // 2. Load Designer Profile
+            // 2. Load Designer Profile & Check First-Run Setup
             RefreshProfileUI();
+            CheckFirstRunProfileSetup();
 
             // 3. Initialize Real-Time Footer Status Bar Timer & NAS Online Check
             InitNasHealthCheck();
@@ -296,6 +298,7 @@ namespace SS_CAM
         {
             ThemeService.ThemeChanged -= OnThemeModeChanged;
             NotificationService.OnNotificationReceived -= OnNotificationReceived;
+            NotificationService.OnHistoryUpdated -= OnNotificationHistoryUpdated;
 
             if (headerAnimTimer != null)
             {
@@ -356,6 +359,27 @@ namespace SS_CAM
                     SidebarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
                 if (SidebarAvatarInitials != null)
                     SidebarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
+            }
+        }
+
+        private void CheckFirstRunProfileSetup()
+        {
+            try
+            {
+                var profile = UserProfileService.LoadProfile();
+                if (profile == null || !profile.IsConfigured || string.IsNullOrWhiteSpace(profile.DesignerName) || string.IsNullOrWhiteSpace(profile.WorkspaceRoot) || !Directory.Exists(profile.WorkspaceRoot))
+                {
+                    Dialogs.FirstRunSetupDialog setup = new Dialogs.FirstRunSetupDialog(profile);
+                    if (setup.ShowDialog() == true)
+                    {
+                        RefreshProfileUI();
+                        NotificationService.ShowSuccess("Profile Configured", "Workstation setup complete. Welcome to SS-CAM!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainWindow] CheckFirstRunProfileSetup error: " + ex.Message);
             }
         }
 
@@ -1070,6 +1094,193 @@ namespace SS_CAM
             }
 
             CreateToastCard(e.Title, e.Message, e.Type, e.DurationMs);
+            UpdateNotificationBadge();
+        }
+
+        private void OnNotificationHistoryUpdated(object sender, EventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(() => OnNotificationHistoryUpdated(sender, e)));
+                return;
+            }
+
+            UpdateNotificationBadge();
+            if (NotificationDrawer != null && NotificationDrawer.Visibility == Visibility.Visible)
+            {
+                RenderNotificationList();
+            }
+        }
+
+        private void UpdateNotificationBadge()
+        {
+            try
+            {
+                int count = NotificationService.UnreadCount;
+                if (NotificationBadgeBorder != null && TxtNotificationBadgeCount != null)
+                {
+                    if (count > 0)
+                    {
+                        TxtNotificationBadgeCount.Text = count > 99 ? "99+" : count.ToString();
+                        NotificationBadgeBorder.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        NotificationBadgeBorder.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("UpdateNotificationBadge error: " + ex.Message);
+            }
+        }
+
+        private void OnNotificationBellClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (NotificationDrawer == null) return;
+                if (NotificationDrawer.Visibility == Visibility.Visible)
+                {
+                    NotificationDrawer.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    NotificationDrawer.Visibility = Visibility.Visible;
+                    RenderNotificationList();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("OnNotificationBellClicked error: " + ex.Message);
+            }
+        }
+
+        private void OnCloseNotificationDrawerClicked(object sender, RoutedEventArgs e)
+        {
+            if (NotificationDrawer != null)
+                NotificationDrawer.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnMarkAllNotificationsReadClicked(object sender, RoutedEventArgs e)
+        {
+            NotificationService.MarkAllAsRead();
+        }
+
+        private void OnClearAllNotificationsClicked(object sender, RoutedEventArgs e)
+        {
+            NotificationService.ClearAll();
+        }
+
+        private void RenderNotificationList()
+        {
+            try
+            {
+                if (NotificationListStack == null) return;
+                NotificationListStack.Children.Clear();
+
+                var history = NotificationService.History;
+                if (history == null || history.Count == 0)
+                {
+                    Wpf.Ui.Controls.TextBlock emptyText = new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = "No notifications in history.",
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        FontSize = 12,
+                        Margin = new Thickness(0, 16, 0, 16),
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+                    NotificationListStack.Children.Add(emptyText);
+                    return;
+                }
+
+                foreach (var item in history)
+                {
+                    if (item == null) continue;
+
+                    Border card = new Border
+                    {
+                        Background = item.IsRead 
+                            ? (Brush)Application.Current.FindResource("CardBackgroundFillColorSecondaryBrush")
+                            : (Brush)Application.Current.FindResource("CardBackgroundFillColorDefaultBrush"),
+                        BorderBrush = (Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush"),
+                        BorderThickness = new Thickness(item.IsRead ? 1 : 2, 1, 1, 1),
+                        CornerRadius = new CornerRadius(6),
+                        Margin = new Thickness(0, 0, 0, 8),
+                        Padding = new Thickness(10, 8, 10, 8)
+                    };
+
+                    Grid grid = new Grid();
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                    Wpf.Ui.Controls.SymbolIcon symbol = new Wpf.Ui.Controls.SymbolIcon
+                    {
+                        Symbol = (Wpf.Ui.Controls.SymbolRegular)Enum.Parse(typeof(Wpf.Ui.Controls.SymbolRegular), item.IconSymbol),
+                        FontSize = 16,
+                        Foreground = (Brush)Application.Current.FindResource(item.TypeColorResource),
+                        Margin = new Thickness(0, 2, 8, 0),
+                        VerticalAlignment = VerticalAlignment.Top
+                    };
+                    Grid.SetColumn(symbol, 0);
+                    grid.Children.Add(symbol);
+
+                    StackPanel contentStack = new StackPanel();
+
+                    Grid headerGrid = new Grid();
+                    headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                    Wpf.Ui.Controls.TextBlock titleText = new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = item.Title ?? "",
+                        FontWeight = item.IsRead ? FontWeights.Normal : FontWeights.Bold,
+                        FontSize = 12,
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush")
+                    };
+                    Grid.SetColumn(titleText, 0);
+                    headerGrid.Children.Add(titleText);
+
+                    Wpf.Ui.Controls.TextBlock timeText = new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = item.TimeAgo,
+                        FontSize = 10,
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush")
+                    };
+                    Grid.SetColumn(timeText, 1);
+                    headerGrid.Children.Add(timeText);
+
+                    contentStack.Children.Add(headerGrid);
+
+                    Wpf.Ui.Controls.TextBlock msgText = new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = item.Message ?? "",
+                        FontSize = 11,
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        Margin = new Thickness(0, 2, 0, 0),
+                        TextWrapping = TextWrapping.Wrap
+                    };
+                    contentStack.Children.Add(msgText);
+
+                    Grid.SetColumn(contentStack, 1);
+                    grid.Children.Add(contentStack);
+
+                    card.Child = grid;
+                    string itemId = item.Id;
+                    card.Cursor = Cursors.Hand;
+                    card.MouseLeftButtonDown += (s, ev) =>
+                    {
+                        NotificationService.MarkAsRead(itemId);
+                    };
+
+                    NotificationListStack.Children.Add(card);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("RenderNotificationList error: " + ex.Message);
+            }
         }
 
         private void CreateToastCard(string title, string message, NotificationType type, int durationMs)

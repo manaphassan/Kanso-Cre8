@@ -493,7 +493,8 @@ namespace SS_CAM.Views
 
                     NotificationService.ShowSuccess(
                         "Project Status Updated",
-                        string.Format("'{0}' moved to {1}", item.Project, targetStatus));
+                        string.Format("'{0}' moved to {1}", item.Project, targetStatus),
+                        item.FullPath);
 
                     UpdateMetricSummaryCards();
                     ApplyFiltersAndUpdateBoard();

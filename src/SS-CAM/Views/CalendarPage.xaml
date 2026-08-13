@@ -119,8 +119,26 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <!-- Actions -->
+                        <!-- Actions & View Switcher -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Segmented View Switcher Buttons -->
+                            <Border Background="{DynamicResource TextControlBackground}" CornerRadius="6" Padding="2" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button x:Name="BtnViewGrid" Click="OnViewGridClicked" Appearance="Primary" Height="28" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Monthly Calendar Grid">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Grid View" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </ui:Button>
+                                    <ui:Button x:Name="BtnViewGantt" Click="OnViewGanttClicked" Appearance="Secondary" Height="28" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Project Timeline &amp; Gantt Chart">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="Timeline24" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="Gantt Timeline" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </ui:Button>
+                                </StackPanel>
+                            </Border>
+
                             <ui:Button Appearance="Secondary" Click="OnRefreshClicked" Height="32" Padding="12,0" Cursor="Hand" FontSize="11">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="ArrowSync24" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -132,7 +150,7 @@
                 </ui:Card>
 
                 <!-- Main Monthly Grid Canvas Container -->
-                <StackPanel Margin="0,0,0,14">
+                <StackPanel x:Name="CalendarGridContainer" Margin="0,0,0,14" Visibility="Visible">
                     <!-- Day Name Headers Bar -->
                     <UniformGrid Columns="7" Margin="0,0,0,6">
                         <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="8,6" CornerRadius="4,0,0,4" Margin="0,0,4,0">
@@ -161,6 +179,24 @@
                     <!-- Dynamic 7x6 Day Cells Grid Container -->
                     <UniformGrid x:Name="CalendarGrid" Columns="7" VerticalAlignment="Top"/>
                 </StackPanel>
+
+                <!-- Visual Project Timeline / Gantt Chart Canvas Container -->
+                <ui:Card x:Name="GanttContainer" Margin="0,0,0,14" Padding="14,12" Visibility="Collapsed">
+                    <Grid x:Name="GanttGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <!-- Timeline Header Row (Days of current month) -->
+                        <Border Grid.Row="0" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="8,6" CornerRadius="6" Margin="0,0,0,8">
+                            <Grid x:Name="GanttHeaderGrid"/>
+                        </Border>
+                        <!-- Timeline Rows Stack -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="520">
+                            <StackPanel x:Name="GanttRowsStack"/>
+                        </ScrollViewer>
+                    </Grid>
+                </ui:Card>
             </StackPanel>
         </ScrollViewer>
 
