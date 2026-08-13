@@ -47,8 +47,9 @@ namespace SS_CAM.Views
             try
             {
                 _isPopulatingFilter = true;
-                DesignerFilterTM.Items.Clear();
-                DesignerFilterTM.Items.Add("All Designers");
+                string currentSelection = DesignerFilterTM.SelectedItem != null ? DesignerFilterTM.SelectedItem.ToString() : "All Designers";
+
+                HashSet<string> designerSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 if (!string.IsNullOrWhiteSpace(_workspaceRoot))
                 {
@@ -57,13 +58,37 @@ namespace SS_CAM.Views
                     {
                         foreach (DesignerFolderChoice d in designers)
                         {
-                            if (d != null && !string.IsNullOrEmpty(d.StaffId))
-                                DesignerFilterTM.Items.Add(d.StaffId);
+                            if (d != null && !string.IsNullOrWhiteSpace(d.StaffId))
+                                designerSet.Add(d.StaffId);
                         }
                     }
                 }
 
-                DesignerFilterTM.SelectedIndex = 0;
+                foreach (ProjectStatusItem p in _allProjects)
+                {
+                    if (p != null && !string.IsNullOrWhiteSpace(p.Designer))
+                    {
+                        designerSet.Add(p.Designer);
+                    }
+                }
+
+                DesignerFilterTM.Items.Clear();
+                DesignerFilterTM.Items.Add("All Designers");
+                foreach (string d in designerSet)
+                {
+                    DesignerFilterTM.Items.Add(d);
+                }
+
+                int selectedIdx = 0;
+                for (int i = 0; i < DesignerFilterTM.Items.Count; i++)
+                {
+                    if (string.Equals(DesignerFilterTM.Items[i].ToString(), currentSelection, StringComparison.OrdinalIgnoreCase))
+                    {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+                DesignerFilterTM.SelectedIndex = selectedIdx;
             }
             catch (Exception ex)
             {
@@ -84,6 +109,7 @@ namespace SS_CAM.Views
                 if (string.IsNullOrWhiteSpace(_workspaceRoot) ||
                     !System.IO.Directory.Exists(_workspaceRoot))
                 {
+                    PopulateDesignerFilter();
                     UpdateBoard();
                     return;
                 }
@@ -98,11 +124,18 @@ namespace SS_CAM.Views
                         {
                             ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
                             if (item != null)
+                            {
+                                if (string.IsNullOrWhiteSpace(item.Designer) && !string.IsNullOrWhiteSpace(folder.Designer))
+                                {
+                                    item.Designer = folder.Designer;
+                                }
                                 _allProjects.Add(item);
+                            }
                         }
                     }
                 }
 
+                PopulateDesignerFilter();
                 UpdateMetricSummaryCards();
                 ApplyFiltersAndUpdateBoard();
             }
@@ -134,7 +167,7 @@ namespace SS_CAM.Views
                     else if (status == "review") reviewCount++;
                     else if (status == "done") doneCount++;
 
-                    if (priority == "urgent" || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
+                    if (priority == "urgent" || p.IsOverdue || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
                     {
                         urgentCount++;
                     }
@@ -176,8 +209,27 @@ namespace SS_CAM.Views
                 foreach (ProjectStatusItem p in _allProjects)
                 {
                     if (p == null) continue;
-                    if (designerFilter != "All Designers" &&
-                        !string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (designerFilter != "All Designers" && !string.IsNullOrWhiteSpace(designerFilter))
+                    {
+                        bool match = false;
+                        if (!string.IsNullOrWhiteSpace(p.Designer))
+                        {
+                            if (string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase) ||
+                                p.Designer.IndexOf(designerFilter, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                designerFilter.IndexOf(p.Designer, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                match = true;
+                            }
+                        }
+                        if (!match && !string.IsNullOrWhiteSpace(p.FullPath))
+                        {
+                            if (p.FullPath.IndexOf(designerFilter, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                match = true;
+                            }
+                        }
+                        if (!match) continue;
+                    }
                     if (!string.IsNullOrEmpty(priorityFilter) &&
                         !string.Equals(p.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase)) continue;
                     if (!string.IsNullOrEmpty(statusFilter) &&
@@ -186,7 +238,8 @@ namespace SS_CAM.Views
                     {
                         string projName = (p.Project ?? "").ToLowerInvariant();
                         string clientName = (p.Client ?? "").ToLowerInvariant();
-                        if (!projName.Contains(searchQuery) && !clientName.Contains(searchQuery)) continue;
+                        string designerName = (p.Designer ?? "").ToLowerInvariant();
+                        if (!projName.Contains(searchQuery) && !clientName.Contains(searchQuery) && !designerName.Contains(searchQuery)) continue;
                     }
                     filtered.Add(p);
                 }
