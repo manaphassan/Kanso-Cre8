@@ -17,6 +17,16 @@ namespace SS_CAM.Models
         public List<string> Tags { get; set; }
         public bool HasFrontmatter { get; set; }
 
+        public string Duration { get; set; }
+
+        public System.Windows.Visibility DurationVisibility
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(Duration) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            }
+        }
+
         public ProjectStatusItem()
         {
             Status = "backlog";
@@ -25,6 +35,7 @@ namespace SS_CAM.Models
             Tags = new List<string>();
             HasFrontmatter = false;
             CreatedDate = "";
+            Duration = "";
         }
 
         public DateTime ParsedCreatedDate
@@ -121,6 +132,39 @@ namespace SS_CAM.Models
                     return string.Format("Due in {0}d", days);
                 }
                 return Deadline;
+            }
+        }
+
+        public bool IsOverdue
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Deadline)) return false;
+                DateTime dt;
+                if (DateTime.TryParse(Deadline, out dt))
+                {
+                    return (dt - DateTime.Today).TotalDays < 0;
+                }
+                return false;
+            }
+        }
+
+        public string DeadlineBadgeBackground
+        {
+            get
+            {
+                if (IsOverdue) return "#EF4444"; // Solid Red
+                if (string.IsNullOrWhiteSpace(Deadline)) return "Transparent";
+                return "Transparent";
+            }
+        }
+
+        public string DeadlineBadgeForeground
+        {
+            get
+            {
+                if (IsOverdue) return "#FFFFFF"; // White text on Red
+                return DeadlineColor;
             }
         }
 

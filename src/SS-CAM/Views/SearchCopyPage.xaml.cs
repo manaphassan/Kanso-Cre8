@@ -449,7 +449,7 @@ namespace SS_CAM.Views
         {
             if (selectedItem != null)
             {
-                Clipboard.SetText(selectedItem.FullPath);
+                ClipboardService.SetText(selectedItem.FullPath);
                 MessageBox.Show("Project folder path copied to clipboard.", "Path Copied", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

@@ -17,6 +17,7 @@ namespace SS_CAM.Views
         private ProjectStatusItem _editingProject = null;
 
         private bool _isPopulatingFilter = false;
+        private bool _isPopulatingDetail = false;
         private Point _dragStartPoint;
         private bool _isDragging = false;
 
@@ -403,14 +404,29 @@ namespace SS_CAM.Views
             ProjectStatusItem item = el.DataContext as ProjectStatusItem;
             if (item == null) return;
 
+            DetailPanel.Visibility = Visibility.Visible;
             _editingProject = item;
+            _isPopulatingDetail = true;
+
             DetailProjectName.Text = item.Project;
 
             // Set Status combobox
             SelectComboItemByContent(DetailStatus, item.Status ?? "backlog");
             SelectComboItemByContent(DetailPriority, item.Priority ?? "medium");
-            DetailDeadline.Text = item.Deadline ?? "";
-            if (DetailCreatedDate != null) DetailCreatedDate.Text = item.CreatedDateDisplay;
+            
+            DateTime dtDeadline;
+            if (DateTime.TryParse(item.Deadline, out dtDeadline))
+                DetailDeadline.SelectedDate = dtDeadline;
+            else
+                DetailDeadline.SelectedDate = null;
+
+            DateTime dtCreated;
+            if (DateTime.TryParse(item.CreatedDate, out dtCreated))
+                DetailCreatedDate.SelectedDate = dtCreated;
+            else
+                DetailCreatedDate.SelectedDate = null;
+
+            if (DetailDuration != null) DetailDuration.Text = item.Duration ?? "";
             DetailRevision.Text = item.Revision.ToString();
 
             // Load README body content notes
@@ -422,7 +438,25 @@ namespace SS_CAM.Views
             SwitchToReadmePreviewMode();
 
             DetailSaveStatus.Text = "";
-            DetailPanel.Visibility = Visibility.Visible;
+            _isPopulatingDetail = false;
+        }
+
+        private void OnDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isPopulatingDetail) return;
+            
+            if (DetailCreatedDate != null && DetailDeadline != null && DetailDuration != null)
+            {
+                if (DetailCreatedDate.SelectedDate.HasValue && DetailDeadline.SelectedDate.HasValue)
+                {
+                    TimeSpan diff = DetailDeadline.SelectedDate.Value - DetailCreatedDate.SelectedDate.Value;
+                    if (diff.TotalDays >= 0)
+                    {
+                        int days = (int)diff.TotalDays;
+                        DetailDuration.Text = days == 1 ? "1 Day" : string.Format("{0} Days", days);
+                    }
+                }
+            }
         }
 
         private void OnReadmeModePreviewClicked(object sender, RoutedEventArgs e)
@@ -524,8 +558,20 @@ namespace SS_CAM.Views
                 _editingProject.Status = ((ComboBoxItem)DetailStatus.SelectedItem).Content.ToString();
             if (DetailPriority.SelectedItem is ComboBoxItem)
                 _editingProject.Priority = ((ComboBoxItem)DetailPriority.SelectedItem).Content.ToString();
-            _editingProject.Deadline = DetailDeadline.Text.Trim();
-            if (DetailCreatedDate != null) _editingProject.CreatedDate = DetailCreatedDate.Text.Trim();
+            
+            _editingProject.Deadline = DetailDeadline.SelectedDate.HasValue 
+                ? DetailDeadline.SelectedDate.Value.ToString("yyyy-MM-dd") 
+                : "";
+            
+            if (DetailCreatedDate != null) 
+            {
+                _editingProject.CreatedDate = DetailCreatedDate.SelectedDate.HasValue 
+                    ? DetailCreatedDate.SelectedDate.Value.ToString("yyyy-MM-dd") 
+                    : "";
+            }
+
+            if (DetailDuration != null)
+                _editingProject.Duration = DetailDuration.Text.Trim();
 
             int revVal;
             if (int.TryParse(DetailRevision.Text, out revVal))

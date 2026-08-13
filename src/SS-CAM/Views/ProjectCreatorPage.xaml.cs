@@ -352,14 +352,14 @@ namespace SS_CAM.Views
             string folderName = GenerateFolderName();
             string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
             string targetPath = Path.Combine(workspaceRoot, designerFolder, folderName);
-            Clipboard.SetText(targetPath);
+            ClipboardService.SetText(targetPath);
             CreateStatusText.Text = "Copied target folder path to clipboard!";
         }
 
         private void OnCopyFolderNameClicked(object sender, RoutedEventArgs e)
         {
             string folderName = GenerateFolderName();
-            Clipboard.SetText(folderName);
+            ClipboardService.SetText(folderName);
             CreateStatusText.Text = "Copied folder name to clipboard!";
         }
 

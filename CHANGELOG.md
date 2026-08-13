@@ -2,7 +2,27 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.2.0] - 2026-08-12 (Latest)
+## [3.3.0] - 2026-08-13 (Latest)
+
+### Added & Refined — Feature Release
+- **Fluent 2 Startup Splash Window (`SplashWindow`)**: Branded Fluent 2 startup splash screen with smooth progress initialization, animated branding visual, and background service loading.
+- **Centralized Notification & Clipboard Services (`NotificationService`, `ClipboardService`)**:
+  - Native toast notification dispatching for background tasks, copy events, and file system warnings.
+  - Safe, non-blocking clipboard interaction wrapper with error handling and fallback support.
+- **Task Manager Queue Enhancements**:
+  - Expanded queue drawer sorting and date sorting options (`TaskManagerPage.xaml`).
+  - Improved frontmatter date parsing and markdown rendering enhancements (`MarkdownHelper.cs`, `ProjectStatus.cs`, `ProjectGeneratorService.cs`).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.3.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.3.0.0 |
+| `AssemblyFileVersion` | 3.3.0.0 |
+
+---
+
+## [3.2.0] - 2026-08-12
 
 ### Added & Refined — Feature Release
 - **Big Calendar Module (`CalendarPage`)**: Native 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, month switcher navigation (`◀ Prev`, `Today`, `Next ▶`), and real-time search & designer filters.

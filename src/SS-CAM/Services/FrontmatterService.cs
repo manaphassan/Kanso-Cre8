@@ -43,6 +43,7 @@ namespace SS_CAM.Services
                 item.Deadline = GetValue(fm, "deadline", "");
                 item.CreatedDate = GetValue(fm, "created", "");
                 item.Priority = GetValue(fm, "priority", "medium");
+                item.Duration = GetValue(fm, "duration", "");
                 item.Revision = ParseInt(GetValue(fm, "revision", "0"));
 
                 if (string.IsNullOrWhiteSpace(item.CreatedDate))
@@ -119,6 +120,8 @@ namespace SS_CAM.Services
             sb.AppendLine(string.Format("deadline: {0}", item.Deadline ?? ""));
             sb.AppendLine(string.Format("created: {0}", item.CreatedDate ?? ""));
             sb.AppendLine(string.Format("priority: {0}", item.Priority ?? "medium"));
+            if (!string.IsNullOrWhiteSpace(item.Duration))
+                sb.AppendLine(string.Format("duration: {0}", item.Duration));
             if (item.Tags != null && item.Tags.Count > 0)
                 sb.AppendLine(string.Format("tags: [{0}]", string.Join(", ", item.Tags.ToArray())));
             else
@@ -152,6 +155,7 @@ namespace SS_CAM.Services
             sb.AppendLine("deadline: ");
             sb.AppendLine(string.Format("created: {0}", DateTime.Today.ToString("yyyy-MM-dd")));
             sb.AppendLine("priority: medium");
+            sb.AppendLine("duration: ");
             sb.AppendLine("tags: []");
             sb.AppendLine("revision: 0");
             sb.AppendLine(Delimiter);

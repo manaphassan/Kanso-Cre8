@@ -355,7 +355,7 @@ namespace SS_CAM.Views
                 h.Title, h.ArabicText, h.MalayTranslation, h.Source);
             try
             {
-                Clipboard.SetText(textToCopy);
+                ClipboardService.SetText(textToCopy);
                 MessageBox.Show("Hadis berjaya disalin ke papan keratan!", "Salin Hadis",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }

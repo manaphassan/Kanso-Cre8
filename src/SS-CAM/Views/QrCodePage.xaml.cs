@@ -679,7 +679,7 @@ namespace SS_CAM.Views
             try
             {
                 string svgXml = QrCodeEncoderService.Instance.GenerateSvgXml(_currentOptions);
-                Clipboard.SetText(svgXml);
+                ClipboardService.SetText(svgXml);
                 MessageBox.Show("Vector SVG XML code copied to clipboard!", "Vector SVG Code Copied", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)

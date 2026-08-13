@@ -14,9 +14,46 @@ namespace SS_CAM
             DispatcherUnhandledException += (s, args) => { LogException(args.Exception); args.Handled = true; };
 
             base.OnStartup(e);
-            
-            // Run placement/installation tasks in the background so it doesn't block the UI thread
-            System.Threading.Tasks.Task.Run(() => RegisterUserAppPlacement());
+
+            Views.SplashWindow splash = new Views.SplashWindow();
+            splash.Show();
+
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    splash.UpdateStatus("Initializing SuamiSihat CAM...");
+                    System.Threading.Thread.Sleep(300);
+
+                    splash.UpdateStatus("Deploying brand assets & fonts...");
+                    RegisterUserAppPlacement();
+
+                    splash.UpdateStatus("Synchronizing NAS preferences...");
+                    UserProfileService.LoadProfile();
+
+                    splash.UpdateStatus("Preparing workstation shell...");
+                    System.Threading.Thread.Sleep(200);
+
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        MainWindow main = new MainWindow();
+                        this.MainWindow = main;
+                        main.Show();
+                        splash.FadeOutAndClose();
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[App] Startup error: " + ex.Message);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        MainWindow main = new MainWindow();
+                        this.MainWindow = main;
+                        main.Show();
+                        splash.Close();
+                    }));
+                }
+            });
         }
 
         private static void LogException(Exception ex)

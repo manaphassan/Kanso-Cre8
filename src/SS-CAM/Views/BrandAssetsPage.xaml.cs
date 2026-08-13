@@ -66,7 +66,7 @@ namespace SS_CAM.Views
                     string pantone = parts[3];
                     string name = parts[4];
 
-                    Clipboard.SetText(hex);
+                    ClipboardService.SetText(hex);
                     CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
                 }
             }

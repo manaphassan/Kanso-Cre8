@@ -1,5 +1,18 @@
 # SS-CAM FIX LOG
 
+## v3.3.0 — 2026-08-13 (Fluent 2 Splash, Notification & Clipboard Services Release)
+
+### Added & Refined Modules
+- **Fluent 2 Startup Splash Window (`SplashWindow`)**: Branded Fluent 2 startup splash screen with smooth progress initialization, animated branding visual, and background service loading.
+- **Centralized Notification & Clipboard Services (`NotificationService`, `ClipboardService`)**: Toast notification dispatcher for background tasks, copy events, and file system warnings alongside safe non-blocking clipboard helpers.
+- **Task Manager Queue & Parser Upgrades**: Expanded drawer sorting options, date sorting refinements, and frontmatter parser enhancements for Markdown rendering.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+
+---
+
 ## v3.2.0 — 2026-08-12 (Big Calendar & Task Manager Upgrade Release)
 
 ### Added & Refined Modules

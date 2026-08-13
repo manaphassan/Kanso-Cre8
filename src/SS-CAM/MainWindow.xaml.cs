@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -33,6 +34,7 @@ namespace SS_CAM
         {
             InitializeComponent();
             ThemeService.ThemeChanged += OnThemeModeChanged;
+            NotificationService.OnNotificationReceived += OnNotificationReceived;
             Loaded += OnLoaded;
             Closed += OnClosed;
         }
@@ -67,6 +69,9 @@ namespace SS_CAM
 
             // 6. Navigate to Dashboard on startup
             RootNavigation.Navigate(typeof(DashboardPage));
+
+            // 7. Trigger Welcome Toast Notification
+            NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, designer!");
         }
 
         protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -335,6 +340,9 @@ namespace SS_CAM
 
         private void OnClosed(object sender, EventArgs e)
         {
+            ThemeService.ThemeChanged -= OnThemeModeChanged;
+            NotificationService.OnNotificationReceived -= OnNotificationReceived;
+
             if (headerAnimTimer != null)
             {
                 headerAnimTimer.Stop();
@@ -344,7 +352,6 @@ namespace SS_CAM
             {
                 nasCheckTimer.Stop();
             }
-            
         }
 
         public void NavigateTo(Type pageType, object dummy = null)
@@ -1100,9 +1107,171 @@ namespace SS_CAM
             // Lock to Hero Mesh
         }
 
+        private void OnNotificationReceived(object sender, NotificationEventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(() => OnNotificationReceived(sender, e)));
+                return;
+            }
+
+            CreateToastCard(e.Title, e.Message, e.Type, e.DurationMs);
+        }
+
+        private void CreateToastCard(string title, string message, NotificationType type, int durationMs)
+        {
+            try
+            {
+                string iconText = "\uE946";
+                string accentHex = "#3B82F6"; // Info Blue
+                string bgHex = "#1E293B";
+
+                switch (type)
+                {
+                    case NotificationType.Success:
+                        iconText = "\uE73E"; // CheckMark
+                        accentHex = "#10B981"; // Emerald Green
+                        break;
+                    case NotificationType.Warning:
+                        iconText = "\uE7BA"; // Warning
+                        accentHex = "#F59E0B"; // Amber Warning
+                        break;
+                    case NotificationType.Error:
+                        iconText = "\uEA39"; // Error Badge
+                        accentHex = "#EF4444"; // Crimson Red
+                        break;
+                    case NotificationType.Info:
+                    default:
+                        iconText = "\uE946"; // Info Icon
+                        accentHex = "#3B82F6";
+                        break;
+                }
+
+                Color accentColor = (Color)ColorConverter.ConvertFromString(accentHex);
+                Color bgColor = (Color)ColorConverter.ConvertFromString(bgHex);
+
+                Border toastCard = new Border
+                {
+                    Background = new SolidColorBrush(bgColor),
+                    BorderBrush = new SolidColorBrush(accentColor),
+                    BorderThickness = new Thickness(1.5, 0, 0, 0),
+                    CornerRadius = new CornerRadius(8),
+                    Margin = new Thickness(0, 0, 0, 8),
+                    Padding = new Thickness(12, 10, 12, 10),
+                    Effect = new System.Windows.Media.Effects.DropShadowEffect
+                    {
+                        BlurRadius = 16,
+                        ShadowDepth = 4,
+                        Direction = 270,
+                        Color = Colors.Black,
+                        Opacity = 0.4
+                    }
+                };
+
+                Grid toastGrid = new Grid();
+                toastGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                toastGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                toastGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                // Icon
+                Wpf.Ui.Controls.TextBlock iconBlock = new Wpf.Ui.Controls.TextBlock
+                {
+                    Text = iconText,
+                    FontFamily = new FontFamily("Segoe Fluent Icons"),
+                    FontSize = 16,
+                    Foreground = new SolidColorBrush(accentColor),
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(0, 2, 10, 0)
+                };
+                Grid.SetColumn(iconBlock, 0);
+
+                // Text Stack
+                StackPanel textStack = new StackPanel();
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    textStack.Children.Add(new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = title,
+                        FontWeight = FontWeights.Bold,
+                        FontSize = 12,
+                        Foreground = Brushes.White,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+                textStack.Children.Add(new Wpf.Ui.Controls.TextBlock
+                {
+                    Text = message ?? string.Empty,
+                    FontSize = 11.5,
+                    Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
+                    TextWrapping = TextWrapping.Wrap
+                });
+                Grid.SetColumn(textStack, 1);
+
+                // Close Button
+                Wpf.Ui.Controls.Button closeBtn = new Wpf.Ui.Controls.Button
+                {
+                    Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary,
+                    Width = 22,
+                    Height = 22,
+                    Padding = new Thickness(0),
+                    Margin = new Thickness(8, 0, 0, 0),
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Content = new Wpf.Ui.Controls.TextBlock
+                    {
+                        Text = "\uE711",
+                        FontFamily = new FontFamily("Segoe Fluent Icons"),
+                        FontSize = 10,
+                        Foreground = Brushes.White
+                    }
+                };
+                Grid.SetColumn(closeBtn, 2);
+
+                toastGrid.Children.Add(iconBlock);
+                toastGrid.Children.Add(textStack);
+                toastGrid.Children.Add(closeBtn);
+                toastCard.Child = toastGrid;
+
+                // Auto Dismiss Timer
+                System.Windows.Threading.DispatcherTimer dismissTimer = new System.Windows.Threading.DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(durationMs)
+                };
+
+                Action dismissAction = () =>
+                {
+                    dismissTimer.Stop();
+                    DoubleAnimation fadeOut = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromMilliseconds(250)));
+                    fadeOut.Completed += (s, e) =>
+                    {
+                        ToastContainer.Children.Remove(toastCard);
+                    };
+                    toastCard.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+                };
+
+                dismissTimer.Tick += (s, e) => dismissAction();
+                closeBtn.Click += (s, e) => dismissAction();
+
+                // Entry Fade Animation
+                DoubleAnimation fadeIn = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(250)));
+                toastCard.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+
+                ToastContainer.Children.Add(toastCard);
+                dismissTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainWindow] Toast error: " + ex.Message);
+            }
+        }
+
         private void OnBottomRadioBarClicked(object sender, MouseButtonEventArgs e)
         {
-            // Navigates or stays in Radio view
+            try
+            {
+                RootNavigation.Navigate(typeof(RadioPage));
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnBottomRadioBarClicked: " + ex.Message); }
         }
     }
 }

@@ -7,6 +7,32 @@ namespace SS_CAM.Services
 {
     public class ProjectGeneratorService
     {
+        public static bool ValidateRootDirectory(string rootDirectory, out string errorMessage)
+        {
+            errorMessage = null;
+            if (string.IsNullOrWhiteSpace(rootDirectory))
+            {
+                errorMessage = "Workspace root directory path is not specified. Please configure your workspace location in Settings.";
+                return false;
+            }
+
+            try
+            {
+                if (!Directory.Exists(rootDirectory))
+                {
+                    errorMessage = string.Format("Target root directory or NAS drive is unreachable or does not exist:\n{0}", rootDirectory);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = string.Format("Failed to access workspace path '{0}': {1}", rootDirectory, ex.Message);
+                return false;
+            }
+
+            return true;
+        }
+
         public string GenerateProjectFolder(
             string rootDirectory, 
             string projectName, 
@@ -16,6 +42,12 @@ namespace SS_CAM.Services
             string presetType, 
             List<string> extraSubFolders)
         {
+            string valError;
+            if (!ValidateRootDirectory(rootDirectory, out valError))
+            {
+                throw new InvalidOperationException(valError);
+            }
+
             var cleanProjectName = string.IsNullOrWhiteSpace(projectName) 
                 ? "Untitled_Project" 
                 : Regex.Replace(projectName.Trim(), @"[^a-zA-Z0-9\-_]", "_");
@@ -107,5 +139,3 @@ namespace SS_CAM.Services
         }
     }
 }
-
-

@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using SS_CAM.Services;
 
 namespace SS_CAM.Views
 {
@@ -285,7 +286,7 @@ namespace SS_CAM.Views
             if (btn != null && btn.Tag is string)
             {
                 string text = (string)btn.Tag;
-                Clipboard.SetText(text);
+                ClipboardService.SetText(text);
                 CopiedNotice.Text = "✓ Copied!";
                 _copiedTimer.Stop();
                 _copiedTimer.Start();
