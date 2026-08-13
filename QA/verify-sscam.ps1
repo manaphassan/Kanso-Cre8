@@ -108,7 +108,7 @@ if (Test-Path $mwXaml) {
 }
 
 # ── CHECK 5: Pages not Windows (AboutWindow is an approved dialog Window) ─────
-$allowedWindows = @('AboutWindow.xaml')
+$allowedWindows = @('AboutWindow.xaml', 'SplashWindow.xaml')
 $windowViews = @()
 foreach ($xf in $viewXamls) {
     if ($allowedWindows -contains $xf.Name) { continue }
