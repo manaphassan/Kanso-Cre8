@@ -1,5 +1,15 @@
 # SS-CAM FIX LOG
 
+## v3.5.0 — 2026-08-14 (Minimal Brand Assets, Search & Copy Stability & Release Publication)
+- **GitHub Release**: PUBLISHED (`v3.5.0` set as Latest on `SuamiSihat/ss_cam`)
+- **Documentation**: Updated (14 project docs aligned to `v3.5.0`)
+- **Minimal Brand Assets & Swatch Inspector**: Minimal 2-column layout with tabbed Primary/Secondary/Neutrals swatches and live HEX/RGB/CMYK/Pantone inspector.
+- **Search & Copy Revert**: Reverted to v3.4.0 stable scanner architecture for fast full-text workspace indexing and README preview rendering.
+- **Source Guardian**: PASS (9/9 automated checks passed)
+- **Wiki**: PUBLISHED / UPDATED (`SuamiSihat/ss_cam.wiki`)
+
+---
+
 ## v3.3.0 — 2026-08-13 (Fluent 2 Splash, Notification & Clipboard Services Release)
 
 ### Added & Refined Modules
