@@ -6,7 +6,7 @@
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 
-[![Latest Release](https://img.shields.io/badge/release-v3.2.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v3.3.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![Design](https://img.shields.io/badge/design-Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -24,20 +24,20 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 
 ---
 
-## What's New in v3.2.0
+## What's New in v3.3.0
 
 | # | Change | Details |
 |---|--------|---------|
-| 1 | **Big Calendar Module** | Visual 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, month switcher navigation (`◀ Prev`, `Today`, `Next ▶`), and real-time search & designer filters. |
+| 1 | **Fluent 2 Startup Splash Window** | Branded Fluent 2 startup splash screen with smooth progress initialization, animated branding visual, and background service loading. |
+| 2 | **Centralized Notification & Clipboard Services** | Dispatch native toast notifications for background tasks, copy events, and file system warnings alongside safe non-blocking clipboard helpers. |
+| 3 | **Task Manager Queue & Parser Upgrades** | Expanded drawer sorting options, date sorting refinements, and frontmatter parser enhancements for Markdown rendering. |
+
+### Previous: v3.2.0 Highlights
+
+| # | Change | Details |
+|---|--------|---------|
+| 1 | **Big Calendar Module** | Visual 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, month switcher navigation, and real-time search & designer filters. |
 | 2 | **Task Manager Calendar Date & Queue Management** | Added `created:` frontmatter tag support, auto-inferring legacy project creation dates (`InferCreatedDate`), queue age display (`📅 14d in queue`), FIFO Queue Order sorting (`Oldest First`), and `Created Date` drawer editor. |
-| 3 | **SSNAS Synology Drive Setup Guide** | Comprehensive workstation guide ([SSNAS Setup Guide](./docs/SSNAS-SETUP.md)) for Synology Drive Client folder sync task mapping SSNAS `/Creative-Team` share to `E:\SynologyDrive\Creative-Team` local directory. |
-
-### Previous: v3.1.0 Highlights
-
-| # | Change | Details |
-|---|--------|---------|
-| 1 | **Categorized Fluent 2 Sidebar Navigation** | All 11 modules grouped into 5 logical categories (`OVERVIEW`, `CREATION & ASSETS`, `PRODUCTIVITY`, `WELLBEING & FAITH`, `SYSTEM`) with `NavigationViewItemHeader` labels and visual separators. |
-| 2 | **Adaptive Bottom Live Bar Collapse** | Status text hides and bottom player transitions to compact mode when the sidebar pane is collapsed — maximizing canvas space. |
 
 ---
 
