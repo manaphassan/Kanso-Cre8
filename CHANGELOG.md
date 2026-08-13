@@ -2,7 +2,36 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.3.0] - 2026-08-13 (Latest)
+## [3.5.0] - 2026-08-13 (Latest)
+
+### Added & Refined — Major Productivity Release
+- **In-App Notification Center (`NotificationService`, `MainWindow`)**:
+  - Persistent in-memory notification history (`ObservableCollection<NotificationItem>`).
+  - Top header Notification Bell button with dynamic unread badge counter (`🔔`).
+  - Slide-out Notification Center Drawer flyout with *Mark Read*, *Clear All*, and item navigation.
+- **Visual Project Timeline & Gantt Chart View (`CalendarPage`)**:
+  - Segmented View Switcher in control bar (`[ Grid View ]` vs. `[ Gantt Timeline ]`).
+  - Dynamic monthly date scale header and timeline bars spanning project start dates to deadlines.
+  - Status-based color coding (Slate for Backlog, Brand Blue for In Progress, Caution Amber for Review, Success Green for Done).
+  - Rich tooltips displaying project name, designer, status, start date, and deadline.
+- **Enhanced Kanban Drag-and-Drop (`TaskManagerPage`)**:
+  - Card drag-and-drop between Kanban columns updates `status:` in `README.md` YAML frontmatter instantly.
+  - Automatic notification logging, KPI metric updates, and board refresh.
+- **Fresh Install Auto-Discovery & Workstation Setup Wizard (`NasConfigSyncService`, `UserProfileService`, `FirstRunSetupDialog`)**:
+  - Automatic Synology Drive / NAS workspace root scanning (`E:\SynologyDrive\Creative-Team`, etc.).
+  - Automatic restoration of existing `user_profile_{username}.json` and `theme_config_{username}.json` configs on fresh downloads.
+  - First-run setup modal (`FirstRunSetupDialog`) for new workstations to configure Designer Name, Staff ID, Department, and Workspace Root.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.5.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.5.0.0 |
+| `AssemblyFileVersion` | 3.5.0.0 |
+
+---
+
+## [3.3.0] - 2026-08-13
 
 ### Added & Refined — Feature Release
 - **Fluent 2 Startup Splash Window (`SplashWindow`)**: Branded Fluent 2 startup splash screen with smooth progress initialization, animated branding visual, and background service loading.

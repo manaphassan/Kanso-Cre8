@@ -25,6 +25,7 @@
 | **v3.1.2** | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
 | **v3.2.0** | 2026-08-12 | Big Calendar module (`CalendarPage`), Task Manager Calendar Date & FIFO Queue Order sorting, SSNAS Synology Drive Setup guide |
 | **v3.3.0** | 2026-08-13 | Fluent 2 Startup Splash Window, Centralized Notification & Clipboard Services, Task Manager queue & parser upgrades |
+| **v3.5.0** | 2026-08-13 | In-App Notification Center, Visual Project Timeline / Gantt Chart view, Kanban drag-and-drop enhancements, NAS auto-discovery & fresh install profile setup wizard |
 
 ---
 
