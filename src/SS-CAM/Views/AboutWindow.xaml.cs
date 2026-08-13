@@ -17,8 +17,7 @@ namespace SS_CAM.Views
         {
             InitializeComponent();
             
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            string verString = version.ToString(3);
+            string verString = AppVersion.VersionString;
             
             if (TxtVersionBadge != null)
                 TxtVersionBadge.Text = string.Format("Version {0} (C# Native WPF)", verString);

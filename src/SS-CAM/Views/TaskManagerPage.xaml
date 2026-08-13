@@ -39,7 +39,7 @@
                         </Border>
                         <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center" Margin="0,0,6,0">
                             <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                <ui:SymbolIcon Symbol="CalendarMonth24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
                                 <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
@@ -71,9 +71,9 @@
             <!-- Header Title -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                 <ui:SymbolIcon Symbol="TaskListSquareLtr24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <ui:TextBlock Text="Task Manager" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                <ui:TextBlock Text="Creative Task Manager" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
             </StackPanel>
-            <ui:TextBlock Text="Monitor, filter, and drag-and-drop update project workflows driven by README.md YAML frontmatter." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,4,0,12" />
+            <ui:TextBlock Text="Kanban board, deadline tracking, drag-and-drop status workflow, and project queue management." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,12" />
 
             <!-- Metric Quick Glance Cards (5 KPI Summary Bar) -->
             <UniformGrid Columns="5" Margin="0,0,0,0">
@@ -182,22 +182,16 @@
                         <ComboBoxItem Content="Priority" VerticalContentAlignment="Center"/>
                     </ComboBox>
 
-                    <ui:Button Appearance="Secondary" Click="OnTMResetFiltersClicked" Height="32" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Clear search and filters">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Dismiss24" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                            <ui:TextBlock Text="Reset" VerticalAlignment="Center"/>
-                        </StackPanel>
+                    <ui:Button Appearance="Secondary" Click="OnTMResetFiltersClicked" Width="32" Height="32" Padding="0" Cursor="Hand" ToolTip="Clear Search &amp; Filters">
+                        <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" VerticalAlignment="Center"/>
                     </ui:Button>
                 </StackPanel>
 
                 <!-- Actions & Count -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <ui:TextBlock x:Name="TxtTaskCount" Text="0 projects" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,14,0"/>
-                    <ui:Button Appearance="Primary" Click="OnTMRefreshClicked" Height="32" Padding="14,0" Cursor="Hand" FontSize="11" FontWeight="Bold">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="ArrowSync24" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <ui:TextBlock Text="Scan Workspace" VerticalAlignment="Center"/>
-                        </StackPanel>
+                    <ui:Button Appearance="Primary" Click="OnTMRefreshClicked" Width="32" Height="32" Padding="0" Cursor="Hand" ToolTip="Scan Workspace Projects">
+                        <ui:SymbolIcon Symbol="ArrowSync24" FontSize="14" VerticalAlignment="Center"/>
                     </ui:Button>
                 </StackPanel>
             </Grid>
@@ -453,11 +447,8 @@
 
                 <!-- Save Button & Status Feedback (Centered at Bottom) -->
                 <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,12,0,0">
-                    <ui:Button Appearance="Primary" Click="OnDetailSave" Height="36" Padding="20,0" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Save24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <ui:TextBlock Text="Save to README.md" VerticalAlignment="Center"/>
-                        </StackPanel>
+                    <ui:Button Appearance="Primary" Click="OnDetailSave" Width="36" Height="36" Padding="0" Cursor="Hand" HorizontalAlignment="Center" ToolTip="Save Metadata to README.md">
+                        <ui:SymbolIcon Symbol="Save24" FontSize="16" VerticalAlignment="Center"/>
                     </ui:Button>
                     <ui:TextBlock x:Name="DetailSaveStatus" Text="" FontSize="11" Foreground="{DynamicResource SystemFillColorSuccessBrush}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
                 </StackPanel>

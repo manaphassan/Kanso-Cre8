@@ -206,6 +206,7 @@
     <Compile Include="Services\ClipboardService.cs" />
     <Compile Include="Services\NasConfigSyncService.cs" />
     <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\AppVersion.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

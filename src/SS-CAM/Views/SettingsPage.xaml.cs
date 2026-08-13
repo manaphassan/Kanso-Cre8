@@ -17,6 +17,8 @@ namespace SS_CAM.Views
         public SettingsPage()
         {
             InitializeComponent();
+            if (TxtVersionBadge != null)
+                TxtVersionBadge.Text = string.Format("SS-CAM {0}", AppVersion.DisplayVersion);
             Loaded += OnPageLoaded;
             Unloaded += OnPageUnloaded;
         }
@@ -160,7 +162,7 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You are running SS-CAM v3.0.0. Software is up to date.", "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(string.Format("You are running SS-CAM {0}. Software is up to date.", AppVersion.DisplayVersion), "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)

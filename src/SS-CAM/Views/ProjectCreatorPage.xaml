@@ -18,14 +18,11 @@
                             <ui:SymbolIcon Symbol="Folder24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             <ui:TextBlock Text="Standardized Project Creator" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <ui:TextBlock Text="Generate structured SuamiSihat project folders, starter canvas templates, briefs, and Project IDs." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
+                        <ui:TextBlock Text="Generate standardized Post Haste folder structures, canvas presets, creative briefs, and project metadata." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                     </StackPanel>
 
-                    <ui:Button Grid.Column="1" Appearance="Secondary" Click="OnManagePresetsClicked" Padding="14,8" Cursor="Hand" ToolTip="Add, edit, or customize category presets &amp; folder tree structures" VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:TextBlock Text="&#xE713; " FontFamily="Segoe Fluent Icons" FontSize="12" VerticalAlignment="Center"/>
-                            <ui:TextBlock Text="Manage Category Presets &amp; Folders" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
-                        </StackPanel>
+                    <ui:Button Grid.Column="1" Appearance="Secondary" Click="OnManagePresetsClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Manage Category Presets &amp; Folder Trees" VerticalAlignment="Center">
+                        <ui:SymbolIcon Symbol="Settings24" FontSize="16" VerticalAlignment="Center"/>
                     </ui:Button>
                 </Grid>
 
@@ -263,7 +260,7 @@
                             <ui:Card DockPanel.Dock="Top" Padding="12" Margin="0,0,0,12">
                                 <StackPanel>
                                     <ui:TextBlock Text="GENERATED TARGET FOLDER PATH:" FontSize="9.5" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                    <ui:TextBlock x:Name="PreviewPathText" Text="D:\Testing\Brand\2026_SS_BRAND_0001D_brand_campaign" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                    <ui:TextBlock x:Name="PreviewPathText" Text="" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                         <ui:Button Appearance="Secondary" Content="Copy Path" Click="OnCopyFolderPathClicked" Padding="10,4" FontSize="11" Margin="0,0,8,0" Cursor="Hand"/>
                                         <ui:Button Appearance="Secondary" Content="Copy Name" Click="OnCopyFolderNameClicked" Padding="10,4" FontSize="11" Cursor="Hand"/>

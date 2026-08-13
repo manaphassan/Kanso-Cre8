@@ -27,10 +27,10 @@
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                     <ui:SymbolIcon Symbol="MusicNote224" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ui:TextBlock Text="Radio &amp; Focus Streams" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" />
+                    <ui:TextBlock Text="Radio &amp; Focus Audio Streams" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" />
                 </StackPanel>
-                <ui:TextBlock Text="Click any station card to tune in live. Dedicated bottom player bar stays active across all pages."
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
+                <ui:TextBlock Text="Curated Malaysian radio broadcasts, ambient focus music, and custom stream URLs for uninterrupted creative flow."
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13"
                            Margin="0,2,0,0" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -211,13 +211,13 @@
                         </StackPanel>
                         
                         <ui:TextBlock x:Name="HeroStreamTitleText" Text="Click any radio card below to tune in live..."
-                                   FontSize="12" Foreground="#E2E8F0"
+                                   FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                    Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                             <ui:TextBlock x:Name="HeroStatusDot" Text="&#xE73E;" FontFamily="Segoe Fluent Icons" FontSize="10"
                                        Foreground="{DynamicResource SystemFillColorCautionBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <ui:TextBlock x:Name="HeroStatusText" Text="Ready" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                            <ui:TextBlock x:Name="HeroStatusText" Text="Ready" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
 

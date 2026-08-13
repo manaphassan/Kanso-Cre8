@@ -13,8 +13,8 @@
                     <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="24" FontWeight="Bold"
                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <ui:TextBlock Text="Protect designer mental health, track hydration, prevent burnout, and maintain peak creative flow."
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12.5" Margin="0,4,0,0"/>
+                <ui:TextBlock Text="Designer focus timer, hydration tracker, ergonomics reminders, and flow state optimization."
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
             </StackPanel>
 
             <!-- ── TOP WELLBEING METRICS BAR (4-UP UNIFORM GRID) ────────────── -->
@@ -29,13 +29,13 @@
                     <!-- Metric 2: Hydration Intake -->
                     <StackPanel HorizontalAlignment="Center">
                         <ui:TextBlock Text="DAILY HYDRATION" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
-                        <ui:TextBlock x:Name="TxtMetricWater" Text="0 / 2,000 mL" FontSize="20" FontWeight="Bold" Foreground="#0284C7" Margin="0,4,0,0"/>
+                        <ui:TextBlock x:Name="TxtMetricWater" Text="0 / 2,000 mL" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Metric 3: Burnout Risk Index -->
                     <StackPanel HorizontalAlignment="Center">
                         <ui:TextBlock Text="BURNOUT RISK INDEX" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
-                        <ui:TextBlock x:Name="TxtMetricBurnout" Text="Optimal Flow" FontSize="20" FontWeight="Bold" Foreground="#22C55E" Margin="0,4,0,0"/>
+                        <ui:TextBlock x:Name="TxtMetricBurnout" Text="Optimal Flow" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Metric 4: Mind Drops Captured -->
@@ -110,7 +110,7 @@
                                             <ui:TextBlock Text="&#x1F4A7;" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
                                             <ui:TextBlock Text="Water Hydration Tracker (Goal: 2,000 mL / 8 Cups)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                         </StackPanel>
-                                        <ui:TextBlock x:Name="TxtWaterPct" Grid.Column="1" Text="0 mL (0%)" FontSize="13" FontWeight="Bold" Foreground="#0284C7" VerticalAlignment="Center"/>
+                                        <ui:TextBlock x:Name="TxtWaterPct" Grid.Column="1" Text="0 mL (0%)" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center"/>
                                     </Grid>
 
                                     <!-- Vector Water Container with Animated Wave -->

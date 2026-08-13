@@ -12,10 +12,10 @@
                 <StackPanel Margin="0,0,0,10">
                     <!-- Header Title -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                        <ui:SymbolIcon Symbol="Calendar24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <ui:TextBlock Text="Big Calendar" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        <ui:SymbolIcon Symbol="CalendarMonth24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Visual Project Timeline &amp; Calendar" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <ui:TextBlock Text="Visual monthly project timetable, campaign deadlines, and creative schedule overview." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,4,0,12" />
+                    <ui:TextBlock Text="Monthly project schedule, visual Gantt timeline charts, and deliverable deadlines." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,12" />
 
                     <!-- KPI Quick Summary Cards (4 Cards) -->
                     <UniformGrid Columns="4" Margin="0,0,0,0">
@@ -124,26 +124,17 @@
                             <!-- Segmented View Switcher Buttons -->
                             <Border Background="{DynamicResource TextControlBackground}" CornerRadius="6" Padding="2" Margin="0,0,10,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:Button x:Name="BtnViewGrid" Click="OnViewGridClicked" Appearance="Primary" Height="28" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Monthly Calendar Grid">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="Grid View" VerticalAlignment="Center"/>
-                                        </StackPanel>
+                                    <ui:Button x:Name="BtnViewGrid" Click="OnViewGridClicked" Appearance="Primary" Width="32" Height="28" Padding="0" Cursor="Hand" ToolTip="Grid View (Monthly Calendar)">
+                                        <ui:SymbolIcon Symbol="CalendarMonth24" FontSize="14" VerticalAlignment="Center"/>
                                     </ui:Button>
-                                    <ui:Button x:Name="BtnViewGantt" Click="OnViewGanttClicked" Appearance="Secondary" Height="28" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Project Timeline &amp; Gantt Chart">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:SymbolIcon Symbol="Timeline24" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="Gantt Timeline" VerticalAlignment="Center"/>
-                                        </StackPanel>
+                                    <ui:Button x:Name="BtnViewGantt" Click="OnViewGanttClicked" Appearance="Secondary" Width="32" Height="28" Padding="0" Cursor="Hand" ToolTip="Gantt Timeline (Visual Project Chart)">
+                                        <ui:SymbolIcon Symbol="Timeline24" FontSize="14" VerticalAlignment="Center"/>
                                     </ui:Button>
                                 </StackPanel>
                             </Border>
 
-                            <ui:Button Appearance="Secondary" Click="OnRefreshClicked" Height="32" Padding="12,0" Cursor="Hand" FontSize="11">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="ArrowSync24" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock Text="Refresh" VerticalAlignment="Center"/>
-                                </StackPanel>
+                            <ui:Button Appearance="Secondary" Click="OnRefreshClicked" Width="32" Height="32" Padding="0" Cursor="Hand" ToolTip="Refresh Calendar &amp; Timeline Data">
+                                <ui:SymbolIcon Symbol="ArrowSync24" FontSize="14" VerticalAlignment="Center"/>
                             </ui:Button>
                         </StackPanel>
                     </Grid>
@@ -240,11 +231,8 @@
                                         <ui:TextBlock Text="{Binding DesignerDisplay}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,8"/>
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <ui:Button Click="OnOpenProjectFolderClicked" Tag="{Binding FullPath}" Appearance="Secondary" Height="28" Padding="10,0" Cursor="Hand" FontSize="10">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <ui:SymbolIcon Symbol="Folder24" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="Open Folder" VerticalAlignment="Center"/>
-                                                </StackPanel>
+                                            <ui:Button Click="OnOpenProjectFolderClicked" Tag="{Binding FullPath}" Appearance="Secondary" Width="28" Height="28" Padding="0" Cursor="Hand" ToolTip="Open Folder">
+                                                <ui:SymbolIcon Symbol="Folder24" FontSize="13" VerticalAlignment="Center"/>
                                             </ui:Button>
                                         </StackPanel>
                                     </StackPanel>

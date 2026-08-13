@@ -16,22 +16,20 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <ui:SymbolIcon Symbol="Home24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <ui:TextBlock Text="Designer Intelligence Dashboard" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                        <Border Background="{DynamicResource FluentBrand80}" CornerRadius="12" Padding="8,2" VerticalAlignment="Center" Margin="12,0,0,0" Cursor="Hand" MouseLeftButtonDown="OnVersionBadgeClicked" ToolTip="About SuamiSihat CAM">
-                            <ui:TextBlock x:Name="TxtVersionBadge" Text="v3.5.0" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                        <Border Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center" Margin="0,0,12,0">
+                            <ui:TextBlock x:Name="TxtVersionBadge" Text="" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                         </Border>
                     </StackPanel>
+                    <ui:TextBlock Text="Real-time workspace overview, creative KPI metrics, and project telemetry" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
                     <StackPanel Orientation="Horizontal">
-                        <ui:TextBlock Text="Workspace Path: " Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"/>
-                        <ui:TextBlock x:Name="TxtWorkspacePath" Text="D:\Testing" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" FontSize="12"/>
+                        <ui:SymbolIcon Symbol="Folder24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <ui:TextBlock x:Name="TxtWorkspacePath" Text="" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" FontSize="12"/>
                     </StackPanel>
                     <ui:TextBlock x:Name="TxtStatus" Text="Ready." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <ui:Button Grid.Column="1" Appearance="Secondary" Click="OnRefreshClicked" Height="34" Padding="16,0" FontWeight="SemiBold" Cursor="Hand" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <ui:TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <ui:TextBlock Text="Refresh Analytics" VerticalAlignment="Center"/>
-                    </StackPanel>
+                <ui:Button Grid.Column="1" Appearance="Secondary" Click="OnRefreshClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Refresh Workspace Analytics" VerticalAlignment="Top">
+                    <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" VerticalAlignment="Center"/>
                 </ui:Button>
             </Grid>
 
@@ -290,11 +288,8 @@
                                 </ui:TextBlock>
                             </Grid>
                         </Border>
-                        <ui:Button Grid.Column="1" Appearance="Primary" Click="OnPostTeamNoteClicked" Height="36" Padding="16,0" Cursor="Hand" FontWeight="Bold" FontSize="12">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:TextBlock Text="&#xE724;" FontFamily="Segoe Fluent Icons" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <ui:TextBlock Text="Post" VerticalAlignment="Center"/>
-                            </StackPanel>
+                        <ui:Button Grid.Column="1" Appearance="Primary" Click="OnPostTeamNoteClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Post Team Announcement">
+                            <ui:SymbolIcon Symbol="Send24" FontSize="16" VerticalAlignment="Center"/>
                         </ui:Button>
                     </Grid>
                 </StackPanel>

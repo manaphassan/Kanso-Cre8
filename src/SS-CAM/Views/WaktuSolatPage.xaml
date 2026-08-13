@@ -23,7 +23,8 @@
                                 <ui:SymbolIcon Symbol="Clock24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                 <ui:TextBlock Text="Waktu Solat &amp; Islamic Dashboard" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <ui:TextBlock Text="Accurate prayer schedules, Qibla direction, daily Hadith inspiration, and Islamic calendar telemetry." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,4"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                 <ui:TextBlock x:Name="TxtGregorianDate" Text="..."
                                            FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                 <ui:TextBlock Text="  ·  " FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
@@ -102,7 +103,7 @@
                                 <Border x:Name="SunOrb" Width="24" Height="24" CornerRadius="12" Background="#FDE047"
                                         Effect="{DynamicResource FluentDepth8}">
                                     <ui:TextBlock x:Name="SunOrbGlyph" Text="&#xE706;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13"
-                                               Foreground="#854D0E" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                               Foreground="{DynamicResource SystemFillColorCautionBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Canvas>
                         </Border>

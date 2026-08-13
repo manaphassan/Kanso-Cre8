@@ -237,12 +237,27 @@ namespace SS_CAM.Services
                         if (Directory.Exists(candidate2)) return candidate2;
                     }
                 }
+
+                // App base directory fallback
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                if (Directory.Exists(appDir)) return appDir;
+
+                string currentDir = Directory.GetCurrentDirectory();
+                if (Directory.Exists(currentDir)) return currentDir;
+
+                // Documents workspace fallback
+                string docWorkspace = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SS-CAM Workspace");
+                if (!Directory.Exists(docWorkspace))
+                {
+                    Directory.CreateDirectory(docWorkspace);
+                }
+                return docWorkspace;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("[NasConfigSyncService] DiscoverWorkspaceRoot error: " + ex.Message);
             }
-            return null;
+            return AppDomain.CurrentDomain.BaseDirectory;
         }
 
         /// <summary>

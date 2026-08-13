@@ -19,9 +19,9 @@
                 <StackPanel Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <ui:SymbolIcon Symbol="Settings24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <ui:TextBlock Text="Settings &amp; Profile" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="Settings &amp; Designer Profile" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <ui:TextBlock Text="Manage your designer identity, workspace paths, themes, and maintenance tools." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
+                    <ui:TextBlock Text="Customize visual themes, workstation preferences, Synology NAS sync paths, and designer identity." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                 </StackPanel>
                 <Border Grid.Column="1"
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
@@ -32,7 +32,7 @@
                         <ui:SymbolIcon Symbol="Tag24" FontSize="13"
                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                        Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <ui:TextBlock Text="SS-CAM v3.0.0"
+                        <ui:TextBlock x:Name="TxtVersionBadge" Text=""
                                       FontSize="12" FontWeight="SemiBold"
                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                       VerticalAlignment="Center"/>
@@ -98,75 +98,70 @@
                                                    Visibility="Collapsed"/>
                                         </Grid>
                                     </Border>
-                                    <ui:Button Content="Change Photo"
-                                               Click="OnChangeAvatarClicked"
-                                               Height="26" Margin="0,8,0,0"
-                                               Padding="8,0" FontSize="11"
-                                               Appearance="Secondary" Cursor="Hand"
-                                               HorizontalAlignment="Center"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <ui:TextBlock x:Name="ProfileHeaderName"
-                                                  Text="Brand"
-                                                  FontSize="18" FontWeight="Bold"
-                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    <ui:TextBlock x:Name="ProfileHeaderDept"
-                                                  Text="Creative and Brand"
-                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                  FontSize="12"/>
-                                    <ui:TextBlock x:Name="ProfileHeaderStaffId"
-                                                  Text="Staff ID: 0001D"
-                                                  Foreground="{DynamicResource FluentBrand80}"
-                                                  FontSize="11" FontWeight="SemiBold"
-                                                  Margin="0,4,0,0"/>
-                                </StackPanel>
-                            </Grid>
+                                     <ui:Button Icon="{ui:SymbolIcon Camera24}"
+                                                Click="OnChangeAvatarClicked"
+                                                Width="30" Height="30" Margin="0,8,0,0"
+                                                Padding="0" ToolTip="Change Avatar Photo"
+                                                Appearance="Secondary" Cursor="Hand"
+                                                HorizontalAlignment="Center"/>
+                                 </StackPanel>
+                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                     <ui:TextBlock x:Name="ProfileHeaderName"
+                                                   Text="Brand"
+                                                   FontSize="18" FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                     <ui:TextBlock x:Name="ProfileHeaderDept"
+                                                   Text="Creative"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                   FontSize="12"/>
+                                     <ui:TextBlock x:Name="ProfileHeaderStaffId"
+                                                   Text="Staff ID: 0001D"
+                                                   Foreground="{DynamicResource FluentBrand80}"
+                                                   FontSize="11" FontWeight="SemiBold"
+                                                   Margin="0,4,0,0"/>
+                                 </StackPanel>
+                             </Grid>
 
-                            <!-- Divider -->
-                            <Separator Margin="0,0,0,14"
-                                       Background="{DynamicResource CardStrokeColorDefaultBrush}"/>
+                             <!-- Form Fields Grid -->
+                             <Grid Margin="0,16,0,16">
+                                 <Grid.ColumnDefinitions>
+                                     <ColumnDefinition Width="*"/>
+                                     <ColumnDefinition Width="16"/>
+                                     <ColumnDefinition Width="*"/>
+                                 </Grid.ColumnDefinitions>
+                                 <Grid.RowDefinitions>
+                                     <RowDefinition Height="Auto"/>
+                                     <RowDefinition Height="Auto"/>
+                                 </Grid.RowDefinitions>
 
-                            <!-- Form row 1: Name and Staff ID -->
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="12"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <ui:TextBlock Text="Designer Name" FontSize="11" FontWeight="SemiBold"
-                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                    <ui:TextBox x:Name="DesignerNameInput" Text="Brand" Height="34"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <ui:TextBlock Text="Staff ID" FontSize="11" FontWeight="SemiBold"
-                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                    <ui:TextBox x:Name="StaffIdInput" Text="0001D" Height="34"/>
-                                </StackPanel>
-                            </Grid>
+                                 <!-- Full Name Input -->
+                                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,14">
+                                     <ui:TextBlock Text="Full Name" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                     <ui:TextBox x:Name="DesignerNameInput" Height="34"/>
+                                 </StackPanel>
 
-                            <!-- Form row 2: Department and Email -->
-                            <Grid Margin="0,0,0,16">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="12"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <ui:TextBlock Text="Department / Role" FontSize="11" FontWeight="SemiBold"
-                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                    <ui:TextBox x:Name="DepartmentInput" Text="Creative &amp; Brand" Height="34"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <ui:TextBlock Text="Email" FontSize="11" FontWeight="SemiBold"
-                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                  Margin="0,0,0,4"/>
-                                    <ui:TextBox x:Name="EmailInput" Text="brand@suamisihat.com" Height="34"/>
-                                </StackPanel>
-                            </Grid>
+                                 <!-- Staff ID Input -->
+                                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
+                                     <ui:TextBlock Text="Staff ID" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                     <ui:TextBox x:Name="StaffIdInput" Height="34"/>
+                                 </StackPanel>
+
+                                 <!-- Department Input -->
+                                 <StackPanel Grid.Row="1" Grid.Column="0">
+                                     <ui:TextBlock Text="Department / Role" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                     <ui:TextBox x:Name="DepartmentInput" Height="34"/>
+                                 </StackPanel>
+
+                                 <!-- Email Address Input -->
+                                 <StackPanel Grid.Row="1" Grid.Column="2">
+                                     <ui:TextBlock Text="Email Address" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                     <ui:TextBox x:Name="EmailInput" Height="34"/>
+                                 </StackPanel>
+                             </Grid>
 
                             <!-- Save action row -->
                             <Grid>
@@ -176,10 +171,10 @@
                                 </Grid.ColumnDefinitions>
                                 <ui:Button Grid.Column="0"
                                            Appearance="Primary"
-                                           Content="Save Profile"
+                                           Icon="{ui:SymbolIcon Save24}"
                                            Click="OnSaveProfileClicked"
-                                           Height="34" Padding="18,0"
-                                           FontWeight="Bold" Cursor="Hand"/>
+                                           Width="34" Height="34" Padding="0"
+                                           ToolTip="Save Designer Profile" Cursor="Hand"/>
                                 <ui:TextBlock x:Name="ProfileSaveStatus"
                                              Grid.Column="1"
                                              Text=""
@@ -222,9 +217,9 @@
                                 <ui:TextBox x:Name="WorkspaceRootInput" Height="34"/>
                                 <ui:Button Grid.Column="2"
                                            Appearance="Secondary"
-                                           Content="Browse..."
+                                           Icon="{ui:SymbolIcon Folder24}"
                                            Click="OnBrowseWorkspace"
-                                           Height="34" Width="90" Cursor="Hand"/>
+                                           Height="34" Width="34" Padding="0" Cursor="Hand" ToolTip="Browse Workspace Directory"/>
                             </Grid>
                         </StackPanel>
                     </ui:Card>
@@ -473,10 +468,10 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Primary"
-                                                   Content="Install"
+                                                   Icon="{ui:SymbolIcon TextFont24}"
                                                    Click="OnRepairFonts"
-                                                   Height="30" Padding="14,0"
-                                                   FontWeight="SemiBold" Cursor="Hand"/>
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Install Brand Fonts into Windows" Cursor="Hand"/>
                                     </Grid>
                                     <!-- Deploy assets row -->
                                     <Grid Margin="0,0,0,10">
@@ -493,10 +488,10 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Primary"
-                                                   Content="Deploy"
+                                                   Icon="{ui:SymbolIcon Library24}"
                                                    Click="OnDeployAssets"
-                                                   Height="30" Padding="14,0"
-                                                   FontWeight="SemiBold" Cursor="Hand"/>
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Deploy Brand Asset Libraries" Cursor="Hand"/>
                                     </Grid>
                                     <!-- Check updates row -->
                                     <Grid>
@@ -513,10 +508,10 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Secondary"
-                                                   Content="Check"
+                                                   Icon="{ui:SymbolIcon ArrowSync24}"
                                                    Click="OnCheckUpdates"
-                                                   Height="30" Padding="14,0"
-                                                   Cursor="Hand"/>
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Check for Updates" Cursor="Hand"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -560,10 +555,10 @@
                                     </StackPanel>
                                     <ui:Button Grid.Column="1"
                                                Appearance="Primary"
-                                               Content="Manage"
+                                               Icon="{ui:SymbolIcon Settings24}"
                                                Click="OnManageCategoryPresetsClicked"
-                                               Height="30" Padding="14,0"
-                                               FontWeight="SemiBold" Cursor="Hand"/>
+                                               Width="32" Height="32" Padding="0"
+                                               ToolTip="Manage Category Presets &amp; Folder Structures" Cursor="Hand"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -607,10 +602,10 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Secondary"
-                                                   Content="Reset"
+                                                   Icon="{ui:SymbolIcon ArrowCounterclockwise24}"
                                                    Click="OnResetProfileDefaults"
-                                                   Height="30" Padding="14,0"
-                                                   Cursor="Hand"/>
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Reset Profile Defaults" Cursor="Hand"/>
                                     </Grid>
                                     <!-- Clear all row -->
                                     <Grid>
@@ -627,10 +622,10 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Danger"
-                                                   Content="Clear All"
+                                                   Icon="{ui:SymbolIcon Delete24}"
                                                    Click="OnClearAllData"
-                                                   Height="30" Padding="14,0"
-                                                   FontWeight="SemiBold" Cursor="Hand"/>
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Clear Cache &amp; Reset All Local Data" Cursor="Hand"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>

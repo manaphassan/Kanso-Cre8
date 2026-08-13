@@ -61,6 +61,18 @@ namespace SS_CAM.Views
 
                     Clipboard.SetText(hex);
                     CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
+
+                    try
+                    {
+                        if (InspectorColorTile != null)
+                            InspectorColorTile.Background = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
+                        if (InspectorColorName != null) InspectorColorName.Text = name;
+                        if (InspectorHexText != null) InspectorHexText.Text = hex;
+                        if (InspectorRgbText != null) InspectorRgbText.Text = rgb;
+                        if (InspectorCmykText != null) InspectorCmykText.Text = cmyk;
+                        if (InspectorPantoneText != null) InspectorPantoneText.Text = pantone;
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[BrandAssetsPage] OnSwatchClicked UI update error: " + ex.Message); }
                 }
             }
         }

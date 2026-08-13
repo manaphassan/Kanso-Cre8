@@ -42,6 +42,7 @@ namespace SS_CAM
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            Title = "SuamiSihat Creative Assets Management " + Services.AppVersion.DisplayVersion;
             WindowState = WindowState.Normal;
             Width = 1280;
             Height = 820;
@@ -73,7 +74,8 @@ namespace SS_CAM
             RootNavigation.Navigate(typeof(DashboardPage));
 
             // 7. Trigger Welcome Toast Notification
-            NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, designer!");
+            string displayName = (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.DesignerName)) ? currentProfile.DesignerName : "designer";
+            NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, " + displayName + "!");
         }
 
         private void InitRadioStatusListeners()
@@ -802,7 +804,10 @@ namespace SS_CAM
         //   "downloadUrl": "https://suamisihat.myds.me/ss-cam/SS-CAM-v2.1.0.exe"
         // }
 
-        private const string CurrentVersion = "3.0.0";
+        private string CurrentVersion
+        {
+            get { return SS_CAM.Services.AppVersion.VersionString; }
+        }
         private const string VersionCheckUrl = "https://suamisihat.myds.me/ss-cam/version.json";
         private string _updateDownloadUrl = "";
 

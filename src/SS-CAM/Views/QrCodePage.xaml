@@ -16,10 +16,10 @@
                 <StackPanel Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <ui:SymbolIcon Symbol="QrCode24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <ui:TextBlock Text="QR Code Studio" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="QR Code Studio &amp; Generator" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <ui:TextBlock Text="Generate custom high-res QR codes with gradients, body dot shapes, logo watermarks &amp; vector SVG export."
-                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
+                    <ui:TextBlock Text="Create high-resolution vector and raster QR codes for print collaterals, digital campaigns, and client links."
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                 </StackPanel>
 
                 <!-- Header Actions: Reset Options Only -->

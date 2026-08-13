@@ -57,9 +57,9 @@ namespace SS_CAM.Views
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             currentProfile = UserProfileService.LoadProfile();
-            string root = !string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot)
+            string root = (!string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot) && Directory.Exists(currentProfile.WorkspaceRoot))
                 ? currentProfile.WorkspaceRoot
-                : @"D:\Testing";
+                : NasConfigSyncService.DiscoverWorkspaceRoot();
 
             workspaceRoot = root;
             if (TargetDirectoryInput != null)

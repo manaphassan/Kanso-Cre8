@@ -9,6 +9,8 @@ namespace SS_CAM.Views
         public SplashWindow()
         {
             InitializeComponent();
+            if (TxtVersionBadge != null)
+                TxtVersionBadge.Text = SS_CAM.Services.AppVersion.DisplayVersion;
         }
 
         public void UpdateStatus(string status)

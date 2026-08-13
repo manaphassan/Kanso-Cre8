@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v3.3.0" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management" Height="820" Width="1280"
         MinHeight="680" MinWidth="1024"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
@@ -184,7 +184,7 @@
                 <ui:NavigationViewItemSeparator />
 
                 <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
-                <ui:NavigationViewItem Content="Big Calendar"       Icon="{ui:SymbolIcon Calendar24}"    TargetPageType="{x:Type views:CalendarPage}" />
+                <ui:NavigationViewItem Content="Big Calendar"       Icon="{ui:SymbolIcon CalendarMonth24}"   TargetPageType="{x:Type views:CalendarPage}" />
                 <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
 
                 <ui:NavigationViewItemSeparator />
@@ -355,11 +355,11 @@
                         <ui:TextBlock Text="Notifications" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <ui:Button Click="OnMarkAllNotificationsReadClicked" Appearance="Secondary" Height="26" Padding="8,0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mark All as Read">
-                            <ui:TextBlock Text="Mark Read" FontSize="10" VerticalAlignment="Center"/>
+                        <ui:Button Click="OnMarkAllNotificationsReadClicked" Appearance="Secondary" Width="26" Height="26" Padding="0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Mark All Notifications as Read">
+                            <ui:SymbolIcon Symbol="Checkmark24" FontSize="12" VerticalAlignment="Center"/>
                         </ui:Button>
-                        <ui:Button Click="OnClearAllNotificationsClicked" Appearance="Secondary" Height="26" Padding="8,0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Clear All">
-                            <ui:TextBlock Text="Clear All" FontSize="10" VerticalAlignment="Center"/>
+                        <ui:Button Click="OnClearAllNotificationsClicked" Appearance="Secondary" Width="26" Height="26" Padding="0" Margin="0,0,6,0" Cursor="Hand" ToolTip="Clear All Notifications">
+                            <ui:SymbolIcon Symbol="Delete24" FontSize="12" VerticalAlignment="Center"/>
                         </ui:Button>
                         <ui:Button Click="OnCloseNotificationDrawerClicked" Appearance="Secondary" Width="26" Height="26" Padding="0" Cursor="Hand" ToolTip="Close Drawer">
                             <ui:SymbolIcon Symbol="Dismiss24" FontSize="12"/>

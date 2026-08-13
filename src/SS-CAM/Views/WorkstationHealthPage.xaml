@@ -18,12 +18,12 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                        <ui:SymbolIcon Symbol="Important24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <ui:TextBlock Text="Workstation &amp; Software Health" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <ui:SymbolIcon Symbol="DeveloperBoard24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Workstation &amp; Software Health Diagnostics" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <ui:TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
+                    <ui:TextBlock Text="Hardware telemetry, GPU OpenCL rendering status, storage performance, and Creative Suite installation integrity." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                 </StackPanel>
-                <ui:Button Grid.Column="1" Content="Rescan Workstation" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" Click="OnRescanSoftwareClicked" VerticalAlignment="Center"/>
+                <ui:Button Grid.Column="1" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" Click="OnRescanSoftwareClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Rescan Workstation &amp; Creative Suite Software" VerticalAlignment="Center"/>
             </Grid>
 
             <!-- Hero KPI Summary Grid (4 Metric Cards) -->
@@ -283,10 +283,10 @@
                                             <!-- Action Buttons Column -->
                                             <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
                                                 <!-- Get App (Visible if NOT installed) -->
-                                                <ui:Button Content="Get App" Icon="{ui:SymbolIcon ArrowDownload24}" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Secondary" FontSize="11" Padding="8,4" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                <ui:Button Icon="{ui:SymbolIcon ArrowDownload24}" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Download Software Package" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,6,0"/>
 
                                                 <!-- Uninstall (Visible if INSTALLED) -->
-                                                <ui:Button Content="Uninstall" Icon="{ui:SymbolIcon Delete24}" Click="OnUninstallSoftwareClicked" Tag="{Binding SoftwareName}" Appearance="Secondary" FontSize="11" Padding="8,4" Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Click="OnUninstallSoftwareClicked" Tag="{Binding SoftwareName}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Uninstall Software" Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Grid>
                                     </ui:Card>

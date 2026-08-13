@@ -37,7 +37,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <ui:TextBlock Text="SUAMISIHAT" FontSize="11" FontWeight="Bold" Foreground="#60A5FA" Margin="0,0,8,0"/>
                                 <Border Background="#1D4ED8" CornerRadius="10" Padding="8,1" VerticalAlignment="Center">
-                                    <ui:TextBlock Text="v3.3.0" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                    <ui:TextBlock x:Name="TxtVersionBadge" Text="" FontSize="10" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </StackPanel>
                             <ui:TextBlock Text="Creative Assets Management" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,2,0,0"/>
