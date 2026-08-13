@@ -323,13 +323,12 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
-.window-dots { display: flex; gap: 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot.red { background: #ff5f56; }
-.dot.yellow { background: #ffbd2e; }
-.dot.green { background: #27c93f; }
+.window-title { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
 
-.window-title { margin: 0 auto; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+.window-controls { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.win-btn { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; transition: var(--speed); }
+.win-btn:hover { color: var(--text-main); }
+.win-btn.close:hover { color: #ff5f56; }
 .viewport-canvas img { width: 100%; }
 
 /* --------------------------------------------------------------------------

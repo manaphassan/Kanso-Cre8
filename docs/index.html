@@ -29,7 +29,6 @@
 
       <nav class="nav-links" id="nav-menu">
         <a href="#features" class="nav-item">Pillars</a>
-        <a href="#interactive" class="nav-item">Live Sandbox</a>
         <a href="#showcase" class="nav-item">App Tour</a>
         <a href="#specs" class="nav-item">Specs</a>
       </nav>
@@ -74,9 +73,6 @@
           Download SS-CAM v3.5.0
           <span class="btn-subtext">(~5 MB • Single-File Exe)</span>
         </a>
-        <a href="#interactive" class="btn-outline btn-lg">
-          Try Interactive Widgets ↓
-        </a>
       </div>
 
       <div class="hero-specs-meta">
@@ -90,10 +86,12 @@
       <!-- Main App Showcase Viewport -->
       <div class="hero-viewport">
         <div class="viewport-header">
-          <div class="window-dots">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-          </div>
           <div class="window-title">SuamiSihat Creative Assets Management v3.5.0</div>
+          <div class="window-controls">
+            <span class="win-btn min">─</span>
+            <span class="win-btn max">▢</span>
+            <span class="win-btn close">✕</span>
+          </div>
         </div>
         <div class="viewport-canvas">
           <img src="app-dashboard.png" alt="SS-CAM Dashboard Screenshot" id="main-viewport-img">
@@ -127,141 +125,7 @@
     </div>
   </section>
 
-  <!-- Interactive Sandbox Widgets Section -->
-  <section class="interactive-section" id="interactive">
-    <div class="section-container">
-      
-      <div class="section-heading">
-        <span class="section-tag">DYNAMIC SANDBOX</span>
-        <h2 class="section-title">Test App Functions Live.</h2>
-        <p class="section-sub">Experience core SS-CAM features directly inside your browser before downloading.</p>
-      </div>
 
-      <div class="sandbox-grid">
-
-        <!-- Widget 1: Live Job ID Generator -->
-        <div class="sandbox-card">
-          <div class="card-header">
-            <div class="card-icon blue">🏷️</div>
-            <div>
-              <h3 class="card-title">Project Naming Engine</h3>
-              <p class="card-sub">Generate standardized SuamiSihat work order paths</p>
-            </div>
-          </div>
-          
-          <div class="sandbox-body">
-            <div class="form-row">
-              <label>Brand Code:</label>
-              <select id="demo-brand-select" class="demo-input">
-                <option value="SS">SS — SuamiSihat Main</option>
-                <option value="HD">HD — HanaCare</option>
-                <option value="MY">MY — Malaysia Campaign</option>
-              </select>
-            </div>
-
-            <div class="form-row">
-              <label>Project Descriptor:</label>
-              <input type="text" id="demo-name-input" value="brand_campaign" class="demo-input" placeholder="e.g. brand_campaign">
-            </div>
-
-            <div class="result-box">
-              <span class="result-label">Generated Path:</span>
-              <code id="demo-job-output">202608_0001A_SS_brand_campaign</code>
-              <button class="btn-copy-sm" id="btn-copy-job">Copy</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Widget 2: Live Swatch & Color Inspector -->
-        <div class="sandbox-card">
-          <div class="card-header">
-            <div class="card-icon gold">🎨</div>
-            <div>
-              <h3 class="card-title">Brand Color Inspector</h3>
-              <p class="card-sub">Click swatches to inspect exact brand color codes</p>
-            </div>
-          </div>
-          
-          <div class="sandbox-body">
-            <div class="swatch-ribbon">
-              <button class="swatch-tile active" style="background:#022057" data-hex="#022057" data-rgb="2, 32, 87" data-cmyk="98, 63, 0, 66" data-pantone="281 C" data-name="Prussian Navy"></button>
-              <button class="swatch-tile" style="background:#043388" data-hex="#043388" data-rgb="4, 51, 136" data-cmyk="97, 62, 0, 47" data-pantone="286 C" data-name="Royal Blue"></button>
-              <button class="swatch-tile" style="background:#21A1F7" data-hex="#21A1F7" data-rgb="33, 161, 247" data-cmyk="87, 35, 0, 0" data-pantone="2925 C" data-name="Azure Accent"></button>
-              <button class="swatch-tile" style="background:#6DC6EC" data-hex="#6DC6EC" data-rgb="109, 198, 236" data-cmyk="54, 16, 0, 0" data-pantone="298 C" data-name="Malibu Tint"></button>
-              <button class="swatch-tile" style="background:#BD9A73" data-hex="#BD9A73" data-rgb="189, 154, 115" data-cmyk="0, 18, 39, 26" data-pantone="7530 C" data-name="Lion Gold"></button>
-              <button class="swatch-tile" style="background:#FCE53D" data-hex="#FCE53D" data-rgb="252, 229, 61" data-cmyk="0, 9, 76, 1" data-pantone="107 C" data-name="Banana Yellow"></button>
-            </div>
-
-            <div class="inspector-panel">
-              <div class="inspector-color-preview" id="demo-swatch-tile" style="background:#022057"></div>
-              <div class="inspector-details">
-                <div class="inspector-title" id="demo-swatch-name">Prussian Navy</div>
-                <div class="code-grid">
-                  <span>HEX: <strong id="demo-hex">#022057</strong></span>
-                  <span>RGB: <strong id="demo-rgb">2, 32, 87</strong></span>
-                  <span>CMYK: <strong id="demo-cmyk">98, 63, 0, 66</strong></span>
-                  <span>Pantone: <strong id="demo-pantone">281 C</strong></span>
-                </div>
-              </div>
-            </div>
-            <div class="copy-status-bar" id="demo-swatch-status">Click any swatch to copy HEX code</div>
-          </div>
-        </div>
-
-        <!-- Widget 3: Live JAKIM Waktu Solat -->
-        <div class="sandbox-card">
-          <div class="card-header">
-            <div class="card-icon green">🕌</div>
-            <div>
-              <h3 class="card-title">JAKIM Waktu Solat</h3>
-              <p class="card-sub">Real-time Malaysian prayer timetable for designers</p>
-            </div>
-          </div>
-          
-          <div class="sandbox-body">
-            <div class="form-row">
-              <label>Select Zone:</label>
-              <select id="solat-zone-select" class="demo-input">
-                <option value="SGR01">SGR01 — Shah Alam, Petaling, Subang</option>
-                <option value="WKP01">WKP01 — Kuala Lumpur, Putrajaya</option>
-                <option value="JHR02">JHR02 — Johor Bahru, Kota Tinggi</option>
-                <option value="PNG01">PNG01 — Pulau Pinang</option>
-              </select>
-            </div>
-
-            <div class="solat-grid">
-              <div class="solat-item"><span class="s-name">Subuh</span><span class="s-time" id="time-fajr">05:58 AM</span></div>
-              <div class="solat-item active"><span class="s-name">Zohor</span><span class="s-time" id="time-dhuhr">01:21 PM</span></div>
-              <div class="solat-item"><span class="s-name">Asar</span><span class="s-time" id="time-asr">04:36 PM</span></div>
-              <div class="solat-item"><span class="s-name">Maghrib</span><span class="s-time" id="time-maghrib">07:28 PM</span></div>
-              <div class="solat-item"><span class="s-name">Isyak</span><span class="s-time" id="time-isha">08:40 PM</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Widget 4: Box Breathing Coach -->
-        <div class="sandbox-card">
-          <div class="card-header">
-            <div class="card-icon purple">🫁</div>
-            <div>
-              <h3 class="card-title">16s Box Breathing Coach</h3>
-              <p class="card-sub">Reset stress during intense creative sprints</p>
-            </div>
-          </div>
-          
-          <div class="sandbox-body center-align">
-            <div class="breathing-circle-wrapper">
-              <div class="breathing-circle" id="breath-circle">
-                <span id="breath-phase-text">Ready</span>
-              </div>
-            </div>
-            <button class="btn-primary btn-sm" id="btn-start-breath">Start 16s Reset</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
 
   <!-- Core Pillars Section -->
   <section class="pillars-section" id="features">
