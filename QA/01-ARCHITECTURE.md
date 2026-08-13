@@ -1,5 +1,5 @@
 # 01 — Architecture Review
-**SS-CAM v3.1.0** | Last updated: 2026-08-12
+**SS-CAM v3.2.0** | Last updated: 2026-08-12
 
 ---
 
@@ -32,6 +32,7 @@ SS-Brand-Assets/
 │   │   ├── ProjectCreatorPage.xaml/.cs
 │   │   ├── QuickNotePage.xaml/.cs
 │   │   ├── TaskManagerPage.xaml/.cs
+│   │   ├── CalendarPage.xaml/.cs       # NEW v3.2.0 — Big Calendar timetable
 │   │   ├── BrandAssetsPage.xaml/.cs
 │   │   ├── WorkstationHealthPage.xaml/.cs
 │   │   └── SettingsPage.xaml/.cs
@@ -113,6 +114,8 @@ ThemeService.ApplyTheme(theme)
 | Radio cover art | `%APPDATA%\SS-CAM\covers\{stationId}.jpg` |
 | Prayer time cache | `%APPDATA%\SS-CAM\prayertimes\{zone}-{date}.json` |
 | Station list | `%APPDATA%\SS-CAM\stations.json` |
+| **SSNAS Sync Root** | `E:\SynologyDrive\Creative-Team` (Synology Drive Client ↔ `/Creative-Team`) |
+| **NAS Team Config Sync** | `E:\SynologyDrive\Creative-Team\_Team\_Config\` (`NasConfigSyncService`) |
 
 ---
 
