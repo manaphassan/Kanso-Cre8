@@ -27,9 +27,9 @@
             <!-- Header Title -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                 <ui:SymbolIcon Symbol="TaskListSquareLtr24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <ui:TextBlock Text="Task Manager" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center"/>
+                <ui:TextBlock Text="Task Manager" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
             </StackPanel>
-            <ui:TextBlock Text="Monitor, filter, and drag-and-drop update project workflows driven by README.md YAML frontmatter." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,12" />
+            <ui:TextBlock Text="Monitor, filter, and drag-and-drop update project workflows driven by README.md YAML frontmatter." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,4,0,12" />
 
             <!-- Metric Quick Glance Cards (5 KPI Summary Bar) -->
             <UniformGrid Columns="5" Margin="0,0,0,0">

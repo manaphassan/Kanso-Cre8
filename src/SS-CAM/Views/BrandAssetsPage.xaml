@@ -56,11 +56,14 @@
         </Style>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
-        <StackPanel>
+    <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+        <StackPanel PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
             <!-- Header -->
             <StackPanel Margin="0,0,0,20">
-                <ui:TextBlock Text="SuamiSihat Official Brand System &amp; Assets" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:SymbolIcon Symbol="Library24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ui:TextBlock Text="SuamiSihat Official Brand System &amp; Assets" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
                 <ui:TextBlock Text="Official brand color palettes (HEX, RGB, CMYK, Pantone), design packages, vector assets, and workstation payload installer." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
             </StackPanel>
 

@@ -12,11 +12,9 @@
 
         <!-- Page Header -->
         <StackPanel Grid.Row="0" Margin="24,20,24,16">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <ui:TextBlock Text="&#xE70B;" FontFamily="Segoe Fluent Icons" FontSize="24"
-                           Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <ui:TextBlock Text="Quick Notes" FontSize="24" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                <ui:SymbolIcon Symbol="Document24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ui:TextBlock Text="Quick Notes" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
             </StackPanel>
             <ui:TextBlock Text="Personal Markdown scratchpad. Auto-saves as you type."
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"

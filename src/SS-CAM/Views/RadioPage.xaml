@@ -25,13 +25,9 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
-                <StackPanel Orientation="Horizontal">
-                    <ui:TextBlock Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="24"
-                               Foreground="{DynamicResource FluentBrand80}"
-                               VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <ui:TextBlock Text="Radio &amp; Focus Streams" FontSize="24" FontWeight="Bold"
-                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                               VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:SymbolIcon Symbol="MusicNote224" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ui:TextBlock Text="Radio &amp; Focus Streams" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" />
                 </StackPanel>
                 <ui:TextBlock Text="Click any station card to tune in live. Dedicated bottom player bar stays active across all pages."
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
@@ -335,7 +331,7 @@
             </ui:Card>
 
             <!-- Station Cards (3-column, scrollable) -->
-            <ScrollViewer Grid.Row="3" Margin="0" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+            <ScrollViewer Grid.Row="3" Margin="0" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent">
                 <ItemsControl x:Name="StationItemsControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

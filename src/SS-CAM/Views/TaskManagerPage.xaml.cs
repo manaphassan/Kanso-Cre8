@@ -336,7 +336,8 @@ namespace SS_CAM.Views
                 _isDragging = true;
                 try
                 {
-                    DataObject dragData = new DataObject("ProjectStatusItem", item);
+                    DataObject dragData = new DataObject(typeof(ProjectStatusItem), item);
+                    dragData.SetData("ProjectStatusItem", item);
                     DragDrop.DoDragDrop(card, dragData, DragDropEffects.Move);
                 }
                 catch (Exception ex)
@@ -352,10 +353,17 @@ namespace SS_CAM.Views
 
         private void OnColumnDragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent("ProjectStatusItem"))
+            if (e.Data.GetDataPresent(typeof(ProjectStatusItem)) || e.Data.GetDataPresent("ProjectStatusItem"))
             {
                 e.Effects = DragDropEffects.Move;
                 e.Handled = true;
+
+                Wpf.Ui.Controls.Card columnCard = sender as Wpf.Ui.Controls.Card;
+                if (columnCard != null)
+                {
+                    columnCard.BorderThickness = new Thickness(2);
+                    columnCard.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("FluentBrand80");
+                }
             }
             else
             {
@@ -365,31 +373,53 @@ namespace SS_CAM.Views
 
         private void OnColumnDragLeave(object sender, DragEventArgs e)
         {
+            Wpf.Ui.Controls.Card columnCard = sender as Wpf.Ui.Controls.Card;
+            if (columnCard != null)
+            {
+                columnCard.BorderThickness = new Thickness(1);
+                columnCard.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush");
+            }
         }
 
         private void OnColumnDrop(object sender, DragEventArgs e)
         {
+            Wpf.Ui.Controls.Card columnCard = sender as Wpf.Ui.Controls.Card;
+            if (columnCard != null)
+            {
+                columnCard.BorderThickness = new Thickness(1);
+                columnCard.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush");
+            }
+
             try
             {
-                if (e.Data.GetDataPresent("ProjectStatusItem"))
+                ProjectStatusItem item = null;
+                if (e.Data.GetDataPresent(typeof(ProjectStatusItem)))
+                    item = e.Data.GetData(typeof(ProjectStatusItem)) as ProjectStatusItem;
+                else if (e.Data.GetDataPresent("ProjectStatusItem"))
+                    item = e.Data.GetData("ProjectStatusItem") as ProjectStatusItem;
+
+                FrameworkElement targetEl = sender as FrameworkElement;
+                string targetStatus = targetEl != null ? targetEl.Tag as string : null;
+
+                if (item != null && !string.IsNullOrEmpty(targetStatus) && !string.Equals(item.Status, targetStatus, StringComparison.OrdinalIgnoreCase))
                 {
-                    ProjectStatusItem item = e.Data.GetData("ProjectStatusItem") as ProjectStatusItem;
-                    FrameworkElement targetEl = sender as FrameworkElement;
-                    string targetStatus = targetEl != null ? targetEl.Tag as string : null;
+                    item.Status = targetStatus;
+                    FrontmatterService.WriteStatus(item);
 
-                    if (item != null && !string.IsNullOrEmpty(targetStatus) && !string.Equals(item.Status, targetStatus, StringComparison.OrdinalIgnoreCase))
-                    {
-                        item.Status = targetStatus;
-                        FrontmatterService.WriteStatus(item);
+                    NotificationService.ShowSuccess(
+                        "Project Status Updated",
+                        string.Format("'{0}' moved to {1}", item.Project, targetStatus));
 
-                        UpdateMetricSummaryCards();
-                        ApplyFiltersAndUpdateBoard();
-                    }
+                    UpdateMetricSummaryCards();
+                    ApplyFiltersAndUpdateBoard();
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("ColumnDrop error: " + ex.Message);
+                NotificationService.ShowError(
+                    "Update Failed",
+                    "Could not update status: " + ex.Message);
             }
         }
 

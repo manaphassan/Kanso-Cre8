@@ -7,8 +7,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   ScrollViewer.CanContentScroll="False"
                   Padding="28,24,28,28"
-                  Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
-                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+                  Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel>
 
             <!-- PAGE HEADER -->
@@ -18,12 +17,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
-                    <ui:TextBlock Text="Settings and Profile"
-                                  FontSize="24" FontWeight="Bold"
-                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                    <ui:TextBlock Text="Manage your designer identity, workspace paths, themes, and maintenance tools."
-                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                  FontSize="13" Margin="0,4,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Settings24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Settings &amp; Profile" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ui:TextBlock Text="Manage your designer identity, workspace paths, themes, and maintenance tools." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
                 </StackPanel>
                 <Border Grid.Column="1"
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"

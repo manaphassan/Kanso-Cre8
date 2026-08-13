@@ -4,7 +4,7 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="QR Code Studio">
 
-    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
         <StackPanel>
             
             <!-- Standard App Page Header (Consistent with BrandAssets & Radio pages) -->
@@ -14,7 +14,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
-                    <ui:TextBlock Text="QR Code Studio" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="QrCode24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="QR Code Studio" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
                     <ui:TextBlock Text="Generate custom high-res QR codes with gradients, body dot shapes, logo watermarks &amp; vector SVG export."
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
                 </StackPanel>

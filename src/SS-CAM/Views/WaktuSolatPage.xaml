@@ -5,7 +5,7 @@
       Title="Waktu Solat &amp; Islamic Dashboard">
 
     <Grid>
-        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
             <StackPanel>
 
                 <!-- ── HEADER BAR ─────────────────────────────────────────────── -->
@@ -19,13 +19,9 @@
 
                         <!-- Title & Dates -->
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:TextBlock Text="&#xE815;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol" FontSize="22"
-                                           Foreground="{DynamicResource FluentBrand80}"
-                                           VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                <ui:TextBlock Text="Waktu Solat &amp; Islamic Dashboard" FontSize="22" FontWeight="Bold"
-                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                           VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <ui:SymbolIcon Symbol="Clock24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <ui:TextBlock Text="Waktu Solat &amp; Islamic Dashboard" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                                 <ui:TextBlock x:Name="TxtGregorianDate" Text="..."

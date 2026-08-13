@@ -4,7 +4,7 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Dashboard">
 
-    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
         <StackPanel>
             <!-- Fluent 2 Page Header Bar -->
             <Grid Margin="0,0,0,40">
@@ -14,16 +14,17 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                        <ui:TextBlock Text="Designer Intelligence Dashboard"  FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentLightTextPrimary}"/>
+                        <ui:SymbolIcon Symbol="Home24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Designer Intelligence Dashboard" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                         <Border Background="{DynamicResource FluentBrand80}" CornerRadius="12" Padding="8,2" VerticalAlignment="Center" Margin="12,0,0,0" Cursor="Hand" MouseLeftButtonDown="OnVersionBadgeClicked" ToolTip="About SuamiSihat CAM">
-                            <ui:TextBlock x:Name="TxtVersionBadge" Text="v3.3.0"  FontSize="10.5" FontWeight="Bold" Foreground="White"/>
+                            <ui:TextBlock x:Name="TxtVersionBadge" Text="v3.3.0" FontSize="10.5" FontWeight="Bold" Foreground="White"/>
                         </Border>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <ui:TextBlock Text="Workspace Path: "  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="12"/>
-                        <ui:TextBlock x:Name="TxtWorkspacePath" Text="D:\Testing"  Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" FontSize="12"/>
+                        <ui:TextBlock Text="Workspace Path: " Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"/>
+                        <ui:TextBlock x:Name="TxtWorkspacePath" Text="D:\Testing" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" FontSize="12"/>
                     </StackPanel>
-                    <ui:TextBlock x:Name="TxtStatus" Text="Ready."  Foreground="{DynamicResource FluentLightTextSecondary}" FontSize="11" Margin="0,2,0,0"/>
+                    <ui:TextBlock x:Name="TxtStatus" Text="Ready." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" Margin="0,2,0,0"/>
                 </StackPanel>
 
                 <ui:Button Grid.Column="1" Appearance="Secondary" Click="OnRefreshClicked" Height="34" Padding="16,0" FontWeight="SemiBold" Cursor="Hand" VerticalAlignment="Top">

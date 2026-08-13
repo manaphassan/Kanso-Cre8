@@ -74,52 +74,6 @@ namespace SS_CAM
             NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, designer!");
         }
 
-        protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
-        {
-            base.OnPreviewKeyDown(e);
-
-            if (e.Key == System.Windows.Input.Key.PageDown || e.Key == System.Windows.Input.Key.PageUp ||
-                e.Key == System.Windows.Input.Key.Down || e.Key == System.Windows.Input.Key.Up)
-            {
-                var focused = System.Windows.Input.Keyboard.FocusedElement as DependencyObject;
-                if (!(focused is System.Windows.Controls.TextBox) && !(focused is Wpf.Ui.Controls.TextBox) &&
-                    !(focused is System.Windows.Controls.ComboBox) && !(focused is System.Windows.Controls.ListBoxItem))
-                {
-                    var scroller = FindVisualChild<ScrollViewer>(RootNavigation);
-                    if (scroller != null)
-                    {
-                        if (e.Key == System.Windows.Input.Key.PageDown)
-                            scroller.PageDown();
-                        else if (e.Key == System.Windows.Input.Key.PageUp)
-                            scroller.PageUp();
-                        else if (e.Key == System.Windows.Input.Key.Down)
-                            scroller.LineDown();
-                        else if (e.Key == System.Windows.Input.Key.Up)
-                            scroller.LineUp();
-
-                        e.Handled = true;
-                    }
-                }
-            }
-        }
-
-        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
-        {
-            if (parent == null) return null;
-            int count = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < count; i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T)
-                    return (T)child;
-
-                var childOfChild = FindVisualChild<T>(child);
-                if (childOfChild != null)
-                    return childOfChild;
-            }
-            return null;
-        }
-
         private void InitRadioStatusListeners()
         {
             var radio = RadioStreamService.Instance;

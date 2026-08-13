@@ -4,13 +4,12 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Creative Wellbeing">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
         <StackPanel>
             <!-- ── HEADER BANNER ─────────────────────────────────────────── -->
             <StackPanel Margin="0,0,0,20">
-                <StackPanel Orientation="Horizontal">
-                    <ui:TextBlock Text="&#xE9F5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="24"
-                               Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:SymbolIcon Symbol="Heart24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <ui:TextBlock Text="Creative Wellbeing &amp; Energy Suite" FontSize="24" FontWeight="Bold"
                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                 </StackPanel>

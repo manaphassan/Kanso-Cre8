@@ -62,6 +62,16 @@ namespace SS_CAM.Views
             await PerformSearch();
         }
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scroller = (sender as ScrollViewer) ?? PageScrollViewer;
+            if (scroller != null)
+            {
+                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - (e.Delta / 2.0));
+                e.Handled = true;
+            }
+        }
+
         private async void OnFilterChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded) await PerformSearch();

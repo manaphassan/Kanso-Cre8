@@ -12,23 +12,16 @@ namespace SS_CAM.Views
     {
         private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            var scroller = sender as ScrollViewer;
-            if (scroller != null)
+            try
             {
-                int steps = Math.Abs(e.Delta) / 30;
-                if (steps < 1) steps = 1;
-                if (steps > 8) steps = 8;
-
-                if (e.Delta < 0)
+                var scroller = sender as ScrollViewer ?? PageScrollViewer;
+                if (scroller != null)
                 {
-                    for (int i = 0; i < steps; i++) scroller.LineDown();
+                    scroller.ScrollToVerticalOffset(scroller.VerticalOffset - e.Delta * 0.5);
+                    e.Handled = true;
                 }
-                else if (e.Delta > 0)
-                {
-                    for (int i = 0; i < steps; i++) scroller.LineUp();
-                }
-                e.Handled = true;
             }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[BrandAssetsPage] OnScrollViewerPreviewMouseWheel: " + ex.Message); }
         }
 
         public BrandAssetsPage()
@@ -66,7 +59,7 @@ namespace SS_CAM.Views
                     string pantone = parts[3];
                     string name = parts[4];
 
-                    ClipboardService.SetText(hex);
+                    Clipboard.SetText(hex);
                     CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
                 }
             }

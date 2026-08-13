@@ -4,22 +4,25 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Search &amp; Copy">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <!-- Search bar (fixed height) -->
-            <RowDefinition Height="Auto"/>
-            <!-- Main content (fills remaining) -->
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+        <Grid PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+            <Grid.RowDefinitions>
+                <!-- Search bar (fixed height) -->
+                <RowDefinition Height="Auto"/>
+                <!-- Main content -->
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
         <!-- ── Page Header + Search Bar ── -->
         <StackPanel Grid.Row="0" Margin="24,16,24,0">
             <StackPanel Margin="0,0,0,10">
-                <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold"
-                           Foreground="{DynamicResource FluentBrand80}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:SymbolIcon Symbol="Search24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
                 <ui:TextBlock Text="Browse your workspace like a catalog - select a project to inspect its brief, assets, and images."
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
-                           Margin="0,2,0,0" />
+                           Margin="0,4,0,0" />
             </StackPanel>
 
             <!-- Search Controls Bar -->
@@ -48,7 +51,7 @@
         </StackPanel>
 
         <!-- ── Catalog Body: Responsive Sidebar + GridSplitter + Wide README Pane ── -->
-        <Grid Grid.Row="1" Margin="24,0,24,16">
+        <Grid Grid.Row="1" Height="620" Margin="24,0,24,16">
             <Grid.ColumnDefinitions>
                 <!-- Project list sidebar (Default 320px, Min 280px, Max 400px) -->
                 <ColumnDefinition Width="320" MinWidth="280" MaxWidth="400"/>
@@ -88,6 +91,8 @@
                     <!-- Scrollable project list -->
                     <ListBox x:Name="ResultsListBox"
                              SelectionChanged="OnListSelectionChanged"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.CanContentScroll="False"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              BorderThickness="0"
                              Background="Transparent"
@@ -365,7 +370,8 @@
             </ui:Card>
         </Grid>
 
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>
 
 

@@ -54,6 +54,16 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scroller = (sender as ScrollViewer) ?? PageScrollViewer;
+            if (scroller != null)
+            {
+                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - (e.Delta / 2.0));
+                e.Handled = true;
+            }
+        }
+
         private void PopulateDesignerFilter()
         {
             try
@@ -290,7 +300,7 @@ namespace SS_CAM.Views
         {
             CardAction card = new CardAction
             {
-                MinHeight = 90,
+                MinHeight = 135,
                 Margin = new Thickness(0, 0, 4, 4),
                 Padding = new Thickness(6),
                 Cursor = Cursors.Hand,
@@ -299,6 +309,7 @@ namespace SS_CAM.Views
             };
 
             card.Click += OnDayCardClicked;
+            card.PreviewMouseWheel += OnScrollViewerPreviewMouseWheel;
 
             Grid cellGrid = new Grid();
             cellGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });

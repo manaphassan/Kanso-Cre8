@@ -8,7 +8,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
         <StackPanel HorizontalAlignment="Stretch">
             <!-- Fluent 2 Page Header with Action Button -->
             <Grid Margin="0,0,0,24">
@@ -17,7 +17,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel VerticalAlignment="Center">
-                    <ui:TextBlock Text="Workstation &amp; Software Health" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="24" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Important24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Workstation &amp; Software Health" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
                     <ui:TextBlock Text="Monitor hardware specs, GPU rendering capabilities, and design software health status." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,4,0,0"/>
                 </StackPanel>
                 <ui:Button Grid.Column="1" Content="Rescan Workstation" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" Click="OnRescanSoftwareClicked" VerticalAlignment="Center"/>
