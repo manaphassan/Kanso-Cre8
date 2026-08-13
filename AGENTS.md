@@ -395,3 +395,14 @@ A feature is not done merely because:
 A feature is done when:
 
 **The intended user action produces the intended real-world result and the resulting state is verified.**
+
+---
+
+# WORKSPACE AGENT SKILLS
+
+- `sscam-code-guardian`: Validates SS-CAM source before any edit or commit. Enforces UTF-8 BOM, checks Fluent 2 compliance, hardcoded paths, silent catches, and UI thread blocking.
+- `sscam-git-cleaner`: Automates post git pull/push cleanup, archiving unused/temporary files, organizing repository folder hierarchy, enforcing UTF-8 BOM encoding, and auditing project security.
+- `sscam-page-scaffold`: Generates a new SS-CAM page with correct Fluent 2 structure, ScrollViewer root, lifecycle error guards, and automatic MainWindow navigation.
+- `sscam-qa`: Automates safe QA for SS-CAM WPF desktop app including smoke testing, regression testing, build verification, and accessibility checks.
+- `sscam-release-manager`: Automates SS-CAM version bump, packaging, tagging, and release preparation.
+- `sscam-release-publisher`: Automates GitHub release publication, documentation updates, and health report publishing.
