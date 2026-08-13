@@ -1,30 +1,11 @@
 /**
- * SS-CAM Product Landing Page — Art Director Interactive Polish
+ * SS-CAM Product Landing Page — Light Mode App Logic
  * SuamiSihat Official Workstation Suite
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 1. Theme Toggle (SuamiSihat Dark Navy vs Light)
-  const themeToggle = document.getElementById('theme-toggle');
-  const body = document.body;
-  const themeIcon = themeToggle ? themeToggle.querySelector('.theme-icon') : null;
-
-  if (themeToggle && themeIcon) {
-    themeToggle.addEventListener('click', () => {
-      if (body.classList.contains('theme-ss-navy')) {
-        body.classList.remove('theme-ss-navy');
-        body.classList.add('theme-ss-light');
-        themeIcon.textContent = '☀️';
-      } else {
-        body.classList.remove('theme-ss-light');
-        body.classList.add('theme-ss-navy');
-        themeIcon.textContent = '🌙';
-      }
-    });
-  }
-
-  // 2. Mobile Menu Navigation
+  // 1. Mobile Menu Navigation
   const mobileToggle = document.getElementById('mobile-toggle');
   const navMenu = document.getElementById('nav-menu');
 
@@ -40,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Interactive 3D Perspective Tilt on Hero Viewport
+  // 2. Interactive 3D Perspective Tilt on Hero Viewport
   const heroViewport = document.getElementById('hero-viewport-frame');
   if (heroViewport) {
     heroViewport.addEventListener('mousemove', (e) => {
@@ -62,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Scroll-Triggered Reveal Animations (IntersectionObserver)
+  // 3. Scroll-Triggered Reveal Animations (IntersectionObserver)
   const revealElements = document.querySelectorAll('.reveal');
   const observerOptions = {
     root: null,
@@ -81,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   revealElements.forEach(el => revealObserver.observe(el));
 
-  // 5. App Tour Showcase Tabs
+  // 4. App Tour Showcase Tabs
   const tabBtns = document.querySelectorAll('.tab-btn');
   const showcasePanels = document.querySelectorAll('.showcase-panel');
 
