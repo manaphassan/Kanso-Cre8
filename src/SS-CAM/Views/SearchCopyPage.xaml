@@ -82,9 +82,16 @@
                                                Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </StackPanel>
-                            <!-- Designer Filter -->
-                            <ComboBox x:Name="DesignerFilterCmb" Height="34" Padding="8,4" Margin="0,4,0,0" FontSize="11.5"
-                                      SelectionChanged="OnFilterChanged"/>
+                            <!-- Designer & Category Filters -->
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="DesignerFilterCmb" Grid.Column="0" Height="32" Padding="6,2" FontSize="11" SelectionChanged="OnFilterChanged"/>
+                                <ComboBox x:Name="CategoryFilterCmb" Grid.Column="2" Height="32" Padding="6,2" FontSize="11" SelectionChanged="OnFilterChanged"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
 

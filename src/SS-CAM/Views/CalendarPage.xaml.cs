@@ -22,6 +22,7 @@ namespace SS_CAM.Views
         public string Priority { get; set; }
         public string PriorityColor { get; set; }
         public string EventType { get; set; }  // "Deadline" or "Started"
+        public string Status { get; set; }
         public string DesignerDisplay { get; set; }
     }
 
@@ -305,6 +306,7 @@ namespace SS_CAM.Views
                             Priority = p.Priority ?? "medium",
                             PriorityColor = p.PriorityColor,
                             EventType = "Deadline",
+                            Status = p.Status ?? "in-progress",
                             DesignerDisplay = string.Format("Designer: {0} | Client: {1}", p.Designer ?? "N/A", p.Client ?? "SS")
                         });
                     }
@@ -321,6 +323,7 @@ namespace SS_CAM.Views
                             Priority = p.Priority ?? "medium",
                             PriorityColor = p.PriorityColor,
                             EventType = "Started",
+                            Status = p.Status ?? "in-progress",
                             DesignerDisplay = string.Format("Designer: {0} | Client: {1}", p.Designer ?? "N/A", p.Client ?? "SS")
                         });
                     }
@@ -417,7 +420,12 @@ namespace SS_CAM.Views
                     CornerRadius = new CornerRadius(3),
                     Padding = new Thickness(4, 2, 4, 2),
                     Margin = new Thickness(0, 0, 0, 3),
-                    Background = (Brush)Application.Current.Resources["CardBackgroundFillColorSecondaryBrush"]
+                    Background = (item.EventType == "Deadline" && date.Date < DateTime.Today && (item.Status ?? "").ToLower() != "done")
+                        ? (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"]
+                        : (item.EventType == "Deadline" && date.Date == DateTime.Today)
+                            ? (Brush)Application.Current.Resources["SystemFillColorCautionBrush"]
+                            : (Brush)Application.Current.Resources["CardBackgroundFillColorSecondaryBrush"],
+                    ContextMenu = CreateQuickStatusContextMenu(item.FullPath, item.Status)
                 };
 
                 StackPanel chipPanel = new StackPanel { Orientation = Orientation.Horizontal };
@@ -438,7 +446,9 @@ namespace SS_CAM.Views
                     Text = string.Format("{0}: {1}", item.EventType == "Deadline" ? "Due" : "Start", item.Project),
                     FontSize = 9.5,
                     TextTrimming = TextTrimming.CharacterEllipsis,
-                    Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"],
+                    Foreground = (item.EventType == "Deadline" && date.Date < DateTime.Today && (item.Status ?? "").ToLower() != "done")
+                        ? Brushes.White
+                        : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"],
                     VerticalAlignment = VerticalAlignment.Center
                 };
                 chipPanel.Children.Add(txtEvent);
@@ -607,6 +617,65 @@ namespace SS_CAM.Views
         private void OnRefreshClicked(object sender, RoutedEventArgs e)
         {
             LoadProjects();
+        }
+
+        private System.Windows.Controls.ContextMenu CreateQuickStatusContextMenu(string projectPath, string currentStatus)
+        {
+            System.Windows.Controls.ContextMenu menu = new System.Windows.Controls.ContextMenu();
+            string[] statuses = new[] { "backlog", "in-progress", "review", "done", "on-hold" };
+
+            System.Windows.Controls.MenuItem header = new System.Windows.Controls.MenuItem
+            {
+                Header = "Change Status to:",
+                IsEnabled = false,
+                FontWeight = FontWeights.Bold
+            };
+            menu.Items.Add(header);
+            menu.Items.Add(new System.Windows.Controls.Separator());
+
+            foreach (string st in statuses)
+            {
+                System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem
+                {
+                    Header = st,
+                    IsChecked = string.Equals(st, currentStatus, StringComparison.OrdinalIgnoreCase),
+                    Tag = new Tuple<string, string>(projectPath, st)
+                };
+                item.Click += OnQuickStatusMenuClicked;
+                menu.Items.Add(item);
+            }
+
+            return menu;
+        }
+
+        private void OnQuickStatusMenuClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                System.Windows.Controls.MenuItem item = sender as System.Windows.Controls.MenuItem;
+                if (item == null || item.Tag == null) return;
+
+                Tuple<string, string> data = item.Tag as Tuple<string, string>;
+                if (data == null) return;
+
+                string projectPath = data.Item1;
+                string newStatus = data.Item2;
+
+                if (!string.IsNullOrWhiteSpace(projectPath) && Directory.Exists(projectPath))
+                {
+                    ProjectStatusItem statusItem = FrontmatterService.ReadStatus(projectPath);
+                    if (statusItem != null)
+                    {
+                        statusItem.Status = newStatus;
+                        FrontmatterService.WriteStatus(statusItem);
+                        LoadProjects();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CalendarPage] Quick status menu error: " + ex.Message);
+            }
         }
     }
 }

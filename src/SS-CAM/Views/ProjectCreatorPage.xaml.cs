@@ -492,10 +492,7 @@ namespace SS_CAM.Views
                     if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         string ext = GetSelectedExtension();
-                        string canvasFilePath = Path.Combine(fPath, string.Format("{0}{1}", folderName, ext));
-                        
-                        string sampleHeader = string.Format("// SuamiSihat Master Canvas Template\n// Created: {0:yyyy-MM-dd HH:mm}\n// Project: {1}\n", DateTime.Now, folderName);
-                        File.WriteAllText(canvasFilePath, sampleHeader);
+                        InjectCanvasFile(fPath, folderName, ext);
                     }
                 }
 
@@ -546,6 +543,51 @@ namespace SS_CAM.Views
             {
                 MessageBox.Show(string.Format("Could not create project: {0}", ex.Message), "Creation Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateStatusText.Text = "Project creation failed.";
+            }
+        }
+
+        private void InjectCanvasFile(string fPath, string folderName, string ext)
+        {
+            try
+            {
+                string projectId = ProjectIdInput != null ? ProjectIdInput.Text.Trim() : "";
+                string rawTitle = ProjectNameInput != null ? ProjectNameInput.Text.Trim() : "project";
+                string cleanTitle = Regex.Replace(rawTitle, @"[\\/:*?""<>|]", "_");
+                string fileName = !string.IsNullOrWhiteSpace(projectId)
+                    ? string.Format("{0}_{1}_master{2}", projectId, cleanTitle, ext)
+                    : string.Format("{0}_master{2}", folderName, ext);
+
+                string canvasFilePath = Path.Combine(fPath, fileName);
+
+                string appDataTemplates = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "SuamiSihat", "Templates", "starter_template" + ext
+                );
+                string workspaceTemplates = !string.IsNullOrWhiteSpace(workspaceRoot)
+                    ? Path.Combine(workspaceRoot, "Templates", "starter_template" + ext)
+                    : "";
+
+                if (File.Exists(appDataTemplates))
+                {
+                    File.Copy(appDataTemplates, canvasFilePath, true);
+                }
+                else if (!string.IsNullOrEmpty(workspaceTemplates) && File.Exists(workspaceTemplates))
+                {
+                    File.Copy(workspaceTemplates, canvasFilePath, true);
+                }
+                else
+                {
+                    string platformSpecs = PlatformSpecsText != null ? PlatformSpecsText.Text : "Custom Dimensions";
+                    string sampleHeader = string.Format(
+                        "// SuamiSihat Creative Asset Starter Canvas\n// Project ID: {0}\n// Title: {1}\n// Platform Specs: {2}\n// Created: {3:yyyy-MM-dd HH:mm:ss}\n",
+                        projectId, cleanTitle, platformSpecs, DateTime.Now
+                    );
+                    File.WriteAllText(canvasFilePath, sampleHeader);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] InjectCanvasFile error: " + ex.Message);
             }
         }
 

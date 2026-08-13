@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,6 +44,20 @@ namespace SS_CAM.Views
             {
                 if (d != null && !string.IsNullOrWhiteSpace(d.Name))
                     DesignerFilterCmb.Items.Add(d.Name);
+            }
+
+            // Populate Category filter
+            if (CategoryFilterCmb != null)
+            {
+                CategoryFilterCmb.Items.Clear();
+                CategoryFilterCmb.Items.Add("All Categories");
+                CategoryFilterCmb.Items.Add("Web Design");
+                CategoryFilterCmb.Items.Add("Social Media");
+                CategoryFilterCmb.Items.Add("Graphic & Print");
+                CategoryFilterCmb.Items.Add("Video Production");
+                CategoryFilterCmb.Items.Add("Brand Identity");
+                CategoryFilterCmb.Items.Add("E-Commerce");
+                CategoryFilterCmb.SelectedIndex = 0;
             }
 
             // Default to current user's Name or Staff ID if it appears in the list
@@ -182,6 +197,20 @@ namespace SS_CAM.Views
             string query = SearchInput != null ? SearchInput.Text.Trim() : "";
 
             allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, selectedDesigner, query, 50);
+
+            string selectedCat = CategoryFilterCmb != null && CategoryFilterCmb.SelectedItem != null ? CategoryFilterCmb.SelectedItem.ToString() : "All Categories";
+            if (selectedCat != "All Categories")
+            {
+                allItems = allItems.Where(item =>
+                {
+                    if (item == null) return false;
+                    string name = item.Project ?? "";
+                    string path = item.FullPath ?? "";
+                    return name.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           path.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0;
+                }).ToList();
+            }
+
             ResultsListBox.ItemsSource = allItems;
 
             // Update sidebar project count label
