@@ -172,20 +172,26 @@ namespace SS_CAM.Views
             SubBrandComboBox.ItemsSource = subBrands;
             SubBrandComboBox.SelectedIndex = 0;
 
-            // Target Platforms
+            // Target Platforms matching 2026 designer industry specs
             List<string> platforms = new List<string>
             {
+                "WordPress / Web Desktop (1920x1080 - RGB 72/144 DPI)",
+                "WordPress / Mobile Web (390x844 - RGB 72 DPI)",
                 "Meta / IG Square (1:1 - 1080x1080 RGB)",
-                "Meta / IG Story (9:16 - 1080x1920 RGB)",
-                "YouTube / Video (16:9 - 1920x1080 RGB)",
-                "Print Production (CMYK 300 DPI)",
+                "Meta / IG Portrait (4:5 - 1080x1350 RGB)",
+                "Meta / IG / TikTok Story (9:16 - 1080x1920 RGB)",
+                "YouTube / Video Banner (16:9 - 1920x1080 RGB)",
+                "Print Poster A4 (210x297mm CMYK 300 DPI)",
+                "Print Poster A3 (297x420mm CMYK 300 DPI)",
+                "Event Bunting 2x5 ft (60x150cm CMYK 150 DPI)",
+                "Large Outdoor Billboard (10x4 ft CMYK 100 DPI)",
                 "Flexible / Custom Canvas"
             };
             PlatformComboBox.ItemsSource = platforms;
             PlatformComboBox.SelectedIndex = 0;
 
-            // Canvas extensions
-            List<string> extensions = new List<string> { ".afdesign", ".psd", ".ai", ".prproj", ".catcomp" };
+            // Canvas extensions (.af Affinity format default)
+            List<string> extensions = new List<string> { ".af", ".afdesign", ".psd", ".ai", ".prproj", ".catcomp" };
             TemplateExtensionComboBox.ItemsSource = extensions;
             TemplateExtensionComboBox.SelectedIndex = 0;
         }
@@ -230,10 +236,16 @@ namespace SS_CAM.Views
             if (PlatformComboBox.SelectedItem != null)
             {
                 string platform = PlatformComboBox.SelectedItem.ToString();
-                if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px • 72 DPI • sRGB Color Mode";
-                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px • 72 DPI • sRGB Color Mode";
-                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px • 72 DPI • sRGB Color Mode";
-                else if (platform.Contains("Print")) PlatformSpecsText.Text = "A4 / Custom • 300 DPI • CMYK Color Mode";
+                if (platform.Contains("WordPress / Web Desktop") || platform.Contains("WordPress")) PlatformSpecsText.Text = "1920 x 1080 px • 72/144 DPI • sRGB Color Mode • WordPress Hero";
+                else if (platform.Contains("Mobile Web")) PlatformSpecsText.Text = "390 x 844 px • 72 DPI • sRGB Color Mode • Mobile Viewport";
+                else if (platform.Contains("1:1")) PlatformSpecsText.Text = "1080 x 1080 px • 72 DPI • sRGB Color Mode • 1:1 Feed Post";
+                else if (platform.Contains("4:5")) PlatformSpecsText.Text = "1080 x 1350 px • 72 DPI • sRGB Color Mode • 4:5 Feed Post";
+                else if (platform.Contains("9:16")) PlatformSpecsText.Text = "1080 x 1920 px • 72 DPI • sRGB Color Mode • 9:16 Story/Reels";
+                else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px • 72 DPI • sRGB Color Mode • 16:9 HD Display";
+                else if (platform.Contains("Print Poster A4")) PlatformSpecsText.Text = "2480 x 3508 px (A4 210x297 mm) • 300 DPI • CMYK Color Mode";
+                else if (platform.Contains("Print Poster A3")) PlatformSpecsText.Text = "3508 x 4960 px (A3 297x420 mm) • 300 DPI • CMYK Color Mode";
+                else if (platform.Contains("Bunting")) PlatformSpecsText.Text = "3600 x 9000 px (2x5 ft / 60x150 cm) • 150 DPI • CMYK Color Mode";
+                else if (platform.Contains("Billboard")) PlatformSpecsText.Text = "12000 x 4800 px (10x4 ft) • 100 DPI • CMYK Color Mode";
                 else PlatformSpecsText.Text = "Custom Dimensions • Flexible DPI & Color Mode";
             }
 

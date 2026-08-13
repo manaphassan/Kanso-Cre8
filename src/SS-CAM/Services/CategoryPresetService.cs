@@ -59,6 +59,14 @@ namespace SS_CAM.Services
                     Suffix = "E",
                     IsDefault = true,
                     Folders = new List<string> { "01_Product_Shots", "02_Banners", "03_Listing_Assets", "04_Exports" }
+                },
+                new CategoryPreset
+                {
+                    Id = "preset_web",
+                    Name = "Web Design",
+                    Suffix = "W",
+                    IsDefault = true,
+                    Folders = new List<string> { "01_UI_UX_Design", "02_Assets_Media", "03_WordPress_Theme", "04_Exports_Mockups" }
                 }
             };
         }
@@ -120,15 +128,27 @@ namespace SS_CAM.Services
                     List<CategoryPreset> list = JsonConvert.DeserializeObject<List<CategoryPreset>>(json);
                     if (list != null && list.Count > 0)
                     {
+                        // Ensure built-in defaults (e.g. preset_web) are merged if missing
+                        List<CategoryPreset> defaults = GetDefaultPresets();
+                        bool updated = false;
+                        foreach (CategoryPreset def in defaults)
+                        {
+                            if (!list.Any(p => string.Equals(p.Id, def.Id, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                list.Add(def);
+                                updated = true;
+                            }
+                        }
+                        if (updated) SavePresets(list);
                         return list;
                     }
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
-            List<CategoryPreset> defaults = GetDefaultPresets();
-            SavePresets(defaults);
-            return defaults;
+            List<CategoryPreset> defaultList = GetDefaultPresets();
+            SavePresets(defaultList);
+            return defaultList;
         }
 
         public static void SavePresets(List<CategoryPreset> presets)
