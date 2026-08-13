@@ -173,30 +173,98 @@ namespace SS_CAM.Views
             SubBrandComboBox.SelectedIndex = 0;
 
             // Target Platforms matching 2026 designer industry specs
-            List<string> platforms = new List<string>
-            {
-                "WordPress / Web Desktop (1920x1080 - RGB 72/144 DPI)",
-                "WordPress / Mobile Web (390x844 - RGB 72 DPI)",
-                "Meta / IG Square (1:1 - 1080x1080 RGB)",
-                "Meta / IG Portrait (4:5 - 1080x1350 RGB)",
-                "Meta / IG / TikTok Story (9:16 - 1080x1920 RGB)",
-                "YouTube / Video Banner (16:9 - 1920x1080 RGB)",
-                "Print Poster A4 (210x297mm CMYK 300 DPI)",
-                "Print Poster A3 (297x420mm CMYK 300 DPI)",
-                "Trifold A4 Brochure (297x210mm CMYK 300 DPI)",
-                "A5 Leaflet / Flyer (148x210mm CMYK 300 DPI)",
-                "Rollup Bunting (80x200cm CMYK 150 DPI)",
-                "Event Bunting 2x5 ft (60x150cm CMYK 150 DPI)",
-                "Large Outdoor Billboard (10x4 ft CMYK 100 DPI)",
-                "Flexible / Custom Canvas"
-            };
-            PlatformComboBox.ItemsSource = platforms;
-            PlatformComboBox.SelectedIndex = 0;
+            FilterTargetPlatformsByCategory(GetSelectedCategoryPreset());
 
             // Canvas extensions (.af Affinity format default)
             List<string> extensions = new List<string> { ".af", ".afdesign", ".psd", ".ai", ".prproj", ".catcomp" };
             TemplateExtensionComboBox.ItemsSource = extensions;
             TemplateExtensionComboBox.SelectedIndex = 0;
+        }
+
+        private static readonly List<string> AllMasterPlatforms = new List<string>
+        {
+            "WordPress / Web Desktop (1920x1080 - RGB 72/144 DPI)",
+            "WordPress / Mobile Web (390x844 - RGB 72 DPI)",
+            "Meta / IG Square (1:1 - 1080x1080 RGB)",
+            "Meta / IG Portrait (4:5 - 1080x1350 RGB)",
+            "Meta / IG / TikTok Story (9:16 - 1080x1920 RGB)",
+            "YouTube / Video Banner (16:9 - 1920x1080 RGB)",
+            "Print Poster A4 (210x297mm CMYK 300 DPI)",
+            "Print Poster A3 (297x420mm CMYK 300 DPI)",
+            "Trifold A4 Brochure (297x210mm CMYK 300 DPI)",
+            "A5 Leaflet / Flyer (148x210mm CMYK 300 DPI)",
+            "Rollup Bunting (80x200cm CMYK 150 DPI)",
+            "Event Bunting 2x5 ft (60x150cm CMYK 150 DPI)",
+            "Large Outdoor Billboard (10x4 ft CMYK 100 DPI)",
+            "Flexible / Custom Canvas"
+        };
+
+        private void FilterTargetPlatformsByCategory(CategoryPreset preset)
+        {
+            if (PlatformComboBox == null) return;
+
+            string catName = preset != null ? preset.Name : "";
+            List<string> filtered;
+
+            if (catName.IndexOf("Web", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("WordPress") || p.Contains("Mobile Web") || p.Contains("16:9") || p.Contains("Flexible")).ToList();
+            }
+            else if (catName.IndexOf("Social", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("1:1") || p.Contains("4:5") || p.Contains("9:16") || p.Contains("16:9") || p.Contains("Flexible")).ToList();
+            }
+            else if (catName.IndexOf("Graphic", StringComparison.OrdinalIgnoreCase) >= 0 || catName.IndexOf("Print", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("Print") || p.Contains("Trifold") || p.Contains("A5 Leaflet") || p.Contains("Rollup") || p.Contains("Bunting") || p.Contains("Billboard") || p.Contains("Flexible")).ToList();
+            }
+            else if (catName.IndexOf("Video", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("16:9") || p.Contains("9:16") || p.Contains("WordPress") || p.Contains("Flexible")).ToList();
+            }
+            else if (catName.IndexOf("Brand", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("Print Poster A4") || p.Contains("Trifold") || p.Contains("1:1") || p.Contains("WordPress") || p.Contains("Flexible")).ToList();
+            }
+            else if (catName.IndexOf("Commerce", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                filtered = AllMasterPlatforms.Where(p => p.Contains("1:1") || p.Contains("4:5") || p.Contains("WordPress") || p.Contains("Flexible")).ToList();
+            }
+            else
+            {
+                filtered = new List<string>(AllMasterPlatforms);
+            }
+
+            string currentSel = PlatformComboBox.SelectedItem != null ? PlatformComboBox.SelectedItem.ToString() : "";
+            PlatformComboBox.ItemsSource = filtered;
+
+            if (!string.IsNullOrEmpty(currentSel) && filtered.Contains(currentSel))
+            {
+                PlatformComboBox.SelectedItem = currentSel;
+            }
+            else if (filtered.Count > 0)
+            {
+                PlatformComboBox.SelectedIndex = 0;
+            }
+
+            UpdateVisualCardOpacities(filtered);
+        }
+
+        private void UpdateVisualCardOpacities(List<string> activePlatforms)
+        {
+            SetCardOpacity(CardPlatformWordPress, activePlatforms.Any(p => p.Contains("WordPress")));
+            SetCardOpacity(CardPlatform1x1, activePlatforms.Any(p => p.Contains("1:1")));
+            SetCardOpacity(CardPlatform9x16, activePlatforms.Any(p => p.Contains("9:16")));
+            SetCardOpacity(CardPlatform16x9, activePlatforms.Any(p => p.Contains("16:9")));
+            SetCardOpacity(CardPlatformPrint, activePlatforms.Any(p => p.Contains("Print")));
+            SetCardOpacity(CardPlatformTrifold, activePlatforms.Any(p => p.Contains("Trifold")));
+            SetCardOpacity(CardPlatformA5Leaflet, activePlatforms.Any(p => p.Contains("A5 Leaflet")));
+            SetCardOpacity(CardPlatformRollup, activePlatforms.Any(p => p.Contains("Rollup")));
+        }
+
+        private void SetCardOpacity(FrameworkElement card, bool isRelevant)
+        {
+            if (card != null) card.Opacity = isRelevant ? 1.0 : 0.45;
         }
 
         private string GetSubBrandCode(string fullName)
@@ -234,6 +302,8 @@ namespace SS_CAM.Views
                     if (m.Success) currentNum = m.Groups[1].Value;
                 }
                 ProjectIdInput.Text = string.Format("{0}{1}", currentNum, suffix);
+
+                FilterTargetPlatformsByCategory(preset);
             }
 
             if (PlatformComboBox.SelectedItem != null)
@@ -264,13 +334,32 @@ namespace SS_CAM.Views
             if (btn != null && btn.Tag != null)
             {
                 string tag = btn.Tag.ToString();
+                
+                bool found = false;
                 for (int i = 0; i < PlatformComboBox.Items.Count; i++)
                 {
                     string itemStr = PlatformComboBox.Items[i].ToString();
                     if (itemStr.Contains(tag))
                     {
                         PlatformComboBox.SelectedIndex = i;
+                        found = true;
                         break;
+                    }
+                }
+
+                if (!found)
+                {
+                    string masterMatch = AllMasterPlatforms.FirstOrDefault(p => p.Contains(tag));
+                    if (!string.IsNullOrEmpty(masterMatch))
+                    {
+                        List<string> currentItems = PlatformComboBox.ItemsSource as List<string> ?? new List<string>();
+                        if (!currentItems.Contains(masterMatch))
+                        {
+                            currentItems.Add(masterMatch);
+                            PlatformComboBox.ItemsSource = null;
+                            PlatformComboBox.ItemsSource = currentItems;
+                        }
+                        PlatformComboBox.SelectedItem = masterMatch;
                     }
                 }
             }
