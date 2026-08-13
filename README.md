@@ -6,7 +6,7 @@
 
 Standardized project generation · Brand asset deployment · Designer intelligence · Creative wellbeing · Prayer times · Task tracking
 
-[![Latest Release](https://img.shields.io/badge/release-v3.1.2-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v3.2.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8-purple?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 [![Design](https://img.shields.io/badge/design-Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -24,15 +24,15 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 
 ---
 
-## What's New in v3.1.0
+## What's New in v3.2.0
 
 | # | Change | Details |
 |---|--------|---------|
-| 1 | **QR Code Studio & Generator Module** | Native vector/raster QR Code Generator supporting URL, Plain Text, Wi-Fi network, and VCard payload formats with custom brand styling, high-res PNG file export, and instant Clipboard copy. |
-| 2 | **Sound Engineer Visualizer & Mars Emblem FX** | Upgraded `VisualizerService` with scattered floating Mars symbols (♂) and SuamiSihat brand crest, custom canvas particle physics, audio peak reactive motion, and clean canvas watermark removal. |
-| 3 | **Radio & Audio Studio Polish** | Enhanced `RadioPage` layout and control feedback, audio spectrum visualization, and streamlined broadcast controls. |
+| 1 | **Big Calendar Module** | Visual 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, month switcher navigation (`◀ Prev`, `Today`, `Next ▶`), and real-time search & designer filters. |
+| 2 | **Task Manager Calendar Date & Queue Management** | Added `created:` frontmatter tag support, auto-inferring legacy project creation dates (`InferCreatedDate`), queue age display (`📅 14d in queue`), FIFO Queue Order sorting (`Oldest First`), and `Created Date` drawer editor. |
+| 3 | **SSNAS Synology Drive Setup Guide** | Comprehensive workstation guide ([SSNAS Setup Guide](./docs/SSNAS-SETUP.md)) for Synology Drive Client folder sync task mapping SSNAS `/Creative-Team` share to `E:\SynologyDrive\Creative-Team` local directory. |
 
-### Previous: v3.0.1 Highlights
+### Previous: v3.1.0 Highlights
 
 | # | Change | Details |
 |---|--------|---------|
@@ -54,7 +54,8 @@ The application ships as a **true single-file executable (~5 MB)** with all depe
 | **QR Code Studio** | Vector & raster QR Code generator supporting URL, Plain Text, Wi-Fi credentials, and VCard payloads with brand palette customization, high-res PNG export, and Clipboard copying |
 | **Radio Player** | Live stream player with preloaded Malaysian stations (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga), lo-fi beats, custom streams, album art, persistent status-bar mini-player |
 | **Quick Notes** | Rich-text note editor with Markdown preview, local storage, keyboard shortcuts |
-| **Task Manager** | YAML frontmatter project board — reads `README.md` task headers from workspace, status columns, due-date tracking |
+| **Task Manager** | YAML frontmatter project board — reads `README.md` task headers from workspace, status columns, due-date tracking, queue age calculation |
+| **Big Calendar** | Visual monthly project timetable, campaign deadlines, creation schedule overview, and interactive day detail inspector |
 | **Workstation Health** | Real-time CPU, RAM, disk monitoring with threshold alerts and historical trend |
 | **Settings & Profile** | Designer name, department, avatar photo, workspace root, NAS path, theme preference |
 
@@ -111,12 +112,17 @@ Switch themes by clicking the theme indicator in the sidebar status bar.
 
 ## First-Time Configuration
 
-1. Open **Settings & Profile**
-2. Set your **Designer Name** and **Department**
-3. Set your **Workspace Root** (local folder or mapped NAS drive, e.g. `D:\Projects`)
-4. Set your **Synology NAS Path** if applicable
-5. Choose your preferred **Theme**
-6. Select your **Waktu Solat Zone** (41 Malaysian zones supported)
+1. **Configure Synology Drive Client for SSNAS**:
+   - Map SSNAS `/Creative-Team` share to local computer path `E:\SynologyDrive\Creative-Team` (see [SSNAS Setup Guide](./docs/SSNAS-SETUP.md)).
+2. Open **Settings & Profile** in SS-CAM.
+3. Set your **Designer Name** and **Department**.
+4. Set your **Workspace Root** to your synchronized Synology Drive folder:
+   ```text
+   E:\SynologyDrive\Creative-Team
+   ```
+5. Set your **Synology NAS Path** if applicable (`\\SSNAS\Creative-Team`).
+6. Choose your preferred **Theme** (SS Default, Falconia, Metamorphosis).
+7. Select your **Waktu Solat Zone** (41 Malaysian zones supported).
 
 ---
 
@@ -156,6 +162,7 @@ Skills are in `.agents/skills/`. Verification script: `QA/verify-sscam.ps1`.
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| v3.2.0 | 2026-08-12 | Big Calendar module (`CalendarPage`), Task Manager Calendar Date & FIFO Queue Order sorting, SSNAS Synology Drive Setup guide |
 | v3.1.2 | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
 | v3.1.1 | 2026-08-12 | Native NAS settings & preferences auto-sync (`NasConfigSyncService`), multi-PC profile sync |
 | v3.1.0 | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |

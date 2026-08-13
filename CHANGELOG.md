@@ -2,7 +2,28 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.1.2] - 2026-08-12 (Latest)
+## [3.2.0] - 2026-08-12 (Latest)
+
+### Added & Refined — Feature Release
+- **Big Calendar Module (`CalendarPage`)**: Native 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, month switcher navigation (`◀ Prev`, `Today`, `Next ▶`), and real-time search & designer filters.
+- **Task Manager Queue Management & Calendar Dates**:
+  - `created:` frontmatter tag support in `README.md` and `FrontmatterService`.
+  - `InferCreatedDate()`: Auto-detects creation dates for legacy projects using `YYYYMM` folder date codes or filesystem creation dates.
+  - `AgeDisplay` & `AgeBadgeColor`: Visual queue age indicators on project cards (e.g. `📅 14d in queue`, color-coded amber for `>30d` and red for `>60d`).
+  - **Queue Order Sorting**: Added `Oldest First (Queue)` sorting option to prioritize long-standing projects (FIFO queue order).
+  - **Created Date Drawer Binding**: Added `Created Date (YYYY-MM-DD)` input field to the detail drawer.
+- **SSNAS Synology Drive Setup Documentation**: Created official setup guide (`docs/SSNAS-SETUP.md`) for Synology Drive Client folder sync task mapping SSNAS `/Creative-Team` share to `E:\SynologyDrive\Creative-Team` local workstation directory.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.2.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.2.0.0 |
+| `AssemblyFileVersion` | 3.2.0.0 |
+
+---
+
+## [3.1.2] - 2026-08-12
 
 ### Added & Refined — Patch Release
 - **Multi-User Isolation on Shared NAS (`NasConfigSyncService`)**: Implemented Windows username scoping (`_{username}`) for personal profile settings, visual themes, and Quick Notes files stored on NAS.

@@ -4,6 +4,13 @@ Official folder structure and naming convention standard for SuamiSihat creative
 
 This standard establishes a searchable, chronologically indexed directory hierarchy across local workstations and network storage (`SSNAS`).
 
+### Synology Drive Client Sync Specification
+Local workstations connect to SSNAS via **Synology Drive Client** using continuous two-way synchronization:
+- **Synology NAS Server Share**: `/Creative-Team`
+- **Local Workstation Sync Drive**: `E:\SynologyDrive\Creative-Team` (configured as `WorkspaceRoot` in SS-CAM)
+
+For detailed step-by-step setup, see [SSNAS Setup Guide](./docs/SSNAS-SETUP.md).
+
 ---
 
 ## Directory Hierarchy Specification

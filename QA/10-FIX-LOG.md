@@ -1,5 +1,18 @@
 # SS-CAM FIX LOG
 
+## v3.2.0 — 2026-08-12 (Big Calendar & Task Manager Upgrade Release)
+
+### Added & Refined Modules
+- **Big Calendar Module (`CalendarPage`)**: Native 7×6 monthly calendar timetable displaying project creation start dates and campaign deadlines as color-coded chips, Friday Solat indicators, interactive Day Detail Overlay inspector, and month navigation.
+- **Task Manager Queue Management**: `created:` frontmatter tag support, auto-inferring legacy project creation dates (`InferCreatedDate`), queue age display (`📅 14d in queue`), FIFO Queue Order sorting (`Oldest First`), and `Created Date` drawer editor.
+- **SSNAS Synology Drive Setup Guide**: Created official setup guide (`docs/SSNAS-SETUP.md`).
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+
+---
+
 ## v3.1.2 — 2026-08-12 (Multi-User NAS Isolation Release)
 
 ### Multi-User NAS Scoping & Isolation
