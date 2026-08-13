@@ -101,12 +101,20 @@
                     <ComboBox x:Name="DesignerFilterTM" Width="140" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0"/>
 
                     <ui:TextBlock Text="Priority:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <ComboBox x:Name="PriorityFilter" Width="130" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
+                    <ComboBox x:Name="PriorityFilter" Width="120" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
                         <ComboBoxItem Content="All Priorities" IsSelected="True" VerticalContentAlignment="Center"/>
                         <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
                         <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
                         <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
                         <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
+                    </ComboBox>
+
+                    <ui:TextBlock Text="Sort:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="SortFilter" Width="160" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
+                        <ComboBoxItem Content="Oldest First (Queue)" IsSelected="True" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="Newest First" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="Deadline (Urgent)" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="Priority" VerticalContentAlignment="Center"/>
                     </ComboBox>
 
                     <ui:Button Appearance="Secondary" Click="OnTMResetFiltersClicked" Height="32" Padding="10,0" Cursor="Hand" FontSize="11" ToolTip="Clear search and filters">
@@ -167,14 +175,24 @@
                                                        PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
                                                        MouseMove="OnCardMouseMove">
                                             <StackPanel>
-                                                <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
+                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
                                                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
+                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
                                                         <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
                                                     </Border>
-                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Border>
                                                 </StackPanel>
-                                                <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -218,12 +236,22 @@
                                             <StackPanel>
                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
                                                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
+                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
                                                         <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
                                                     </Border>
-                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Border>
                                                 </StackPanel>
-                                                <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -267,15 +295,25 @@
                                             <StackPanel>
                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
                                                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
+                                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <ui:TextBlock Text="Rev " FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                             <ui:TextBlock Text="{Binding Revision}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                                         </StackPanel>
                                                     </Border>
-                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineColor}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Border>
                                                 </StackPanel>
-                                                <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -318,7 +356,11 @@
                                                        MouseMove="OnCardMouseMove">
                                             <StackPanel>
                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18" TextDecorations="Strikethrough" Opacity="0.75"/>
-                                                <ui:TextBlock Text="{Binding Client}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding Client}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -361,7 +403,11 @@
                                                        MouseMove="OnCardMouseMove">
                                             <StackPanel>
                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18" Opacity="0.75"/>
-                                                <ui:TextBlock Text="{Binding StatusDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding StatusDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -391,7 +437,7 @@
                              FontSize="16" FontWeight="Bold"
                              Foreground="{DynamicResource FluentBrand80}" TextWrapping="Wrap" Margin="0,0,0,16"/>
 
-                <!-- Compact 2x2 Form Metadata Row -->
+                <!-- Compact 3x2 Form Metadata Row -->
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -399,6 +445,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="12"/>
                         <RowDefinition Height="Auto"/>
@@ -433,8 +481,14 @@
                         <ui:TextBox x:Name="DetailDeadline" Height="36" FontSize="12" Padding="8,4" VerticalContentAlignment="Center" PlaceholderText="e.g. 2026-09-30"/>
                     </StackPanel>
 
-                    <!-- Revision with Stepper Controls (+ / -) -->
+                    <!-- Created Date -->
                     <StackPanel Grid.Row="2" Grid.Column="2">
+                        <ui:TextBlock Text="Created Date (YYYY-MM-DD)" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
+                        <ui:TextBox x:Name="DetailCreatedDate" Height="36" FontSize="12" Padding="8,4" VerticalContentAlignment="Center" PlaceholderText="e.g. 2026-08-01"/>
+                    </StackPanel>
+
+                    <!-- Revision with Stepper Controls (+ / -) -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
                         <ui:TextBlock Text="Revision Round" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,4"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -442,11 +496,11 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <ui:Button Grid.Column="0" Click="OnRevisionDecrementClicked" Appearance="Secondary" Height="36" Width="32" Padding="0" Cursor="Hand" ToolTip="Decrease revision count">
+                            <ui:Button Grid.Column="0" Click="OnRevisionDecrementClicked" Appearance="Secondary" Height="36" Width="36" Padding="0" Cursor="Hand" ToolTip="Decrease revision count">
                                 <ui:SymbolIcon Symbol="Subtract24" FontSize="12" VerticalAlignment="Center"/>
                             </ui:Button>
                             <ui:TextBox Grid.Column="1" x:Name="DetailRevision" Height="36" FontSize="12" Padding="4,4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="4,0" Text="0"/>
-                            <ui:Button Grid.Column="2" Click="OnRevisionIncrementClicked" Appearance="Secondary" Height="36" Width="32" Padding="0" Cursor="Hand" ToolTip="Increase revision count">
+                            <ui:Button Grid.Column="2" Click="OnRevisionIncrementClicked" Appearance="Secondary" Height="36" Width="36" Padding="0" Cursor="Hand" ToolTip="Increase revision count">
                                 <ui:SymbolIcon Symbol="Add24" FontSize="12" VerticalAlignment="Center"/>
                             </ui:Button>
                         </Grid>

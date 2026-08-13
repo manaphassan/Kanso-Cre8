@@ -41,8 +41,14 @@ namespace SS_CAM.Services
                 item.Designer = GetValue(fm, "designer", "");
                 item.Client = GetValue(fm, "client", "");
                 item.Deadline = GetValue(fm, "deadline", "");
+                item.CreatedDate = GetValue(fm, "created", "");
                 item.Priority = GetValue(fm, "priority", "medium");
                 item.Revision = ParseInt(GetValue(fm, "revision", "0"));
+
+                if (string.IsNullOrWhiteSpace(item.CreatedDate))
+                {
+                    item.CreatedDate = InferCreatedDate(projectFolderPath, item.Project);
+                }
 
                 string tagsRaw = GetValue(fm, "tags", "");
                 item.Tags = ParseTags(tagsRaw);
@@ -50,6 +56,11 @@ namespace SS_CAM.Services
             catch (Exception ex)
             {
                 Debug.WriteLine(string.Format("[FrontmatterService] ReadStatus failed for '{0}': {1}", projectFolderPath, ex.Message));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.CreatedDate))
+            {
+                item.CreatedDate = InferCreatedDate(projectFolderPath, item.Project);
             }
 
             return item;
@@ -106,6 +117,7 @@ namespace SS_CAM.Services
             sb.AppendLine(string.Format("designer: {0}", item.Designer ?? ""));
             sb.AppendLine(string.Format("client: {0}", item.Client ?? ""));
             sb.AppendLine(string.Format("deadline: {0}", item.Deadline ?? ""));
+            sb.AppendLine(string.Format("created: {0}", item.CreatedDate ?? ""));
             sb.AppendLine(string.Format("priority: {0}", item.Priority ?? "medium"));
             if (item.Tags != null && item.Tags.Count > 0)
                 sb.AppendLine(string.Format("tags: [{0}]", string.Join(", ", item.Tags.ToArray())));
@@ -138,11 +150,38 @@ namespace SS_CAM.Services
             sb.AppendLine(string.Format("designer: {0}", designerStaffId ?? ""));
             sb.AppendLine(string.Format("client: {0}", client ?? ""));
             sb.AppendLine("deadline: ");
+            sb.AppendLine(string.Format("created: {0}", DateTime.Today.ToString("yyyy-MM-dd")));
             sb.AppendLine("priority: medium");
             sb.AppendLine("tags: []");
             sb.AppendLine("revision: 0");
             sb.AppendLine(Delimiter);
             return sb.ToString();
+        }
+
+        private static string InferCreatedDate(string projectFolderPath, string folderName)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(folderName) && folderName.Length >= 6)
+                {
+                    string yearStr = folderName.Substring(0, 4);
+                    string monthStr = folderName.Substring(4, 2);
+                    int y, m;
+                    if (int.TryParse(yearStr, out y) && int.TryParse(monthStr, out m) && y >= 2000 && y <= 2100 && m >= 1 && m <= 12)
+                    {
+                        return new DateTime(y, m, 1).ToString("yyyy-MM-dd");
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(projectFolderPath) && Directory.Exists(projectFolderPath))
+                {
+                    return Directory.GetCreationTime(projectFolderPath).ToString("yyyy-MM-dd");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[FrontmatterService] InferCreatedDate error: " + ex.Message);
+            }
+            return DateTime.Today.ToString("yyyy-MM-dd");
         }
 
         // ─── Private helpers ──────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 # 02 — Functional Test Suite
-**SS-CAM v3.1.0** | Last updated: 2026-08-12
+**SS-CAM v3.2.0** | Last updated: 2026-08-12
 
 ---
 
@@ -32,6 +32,10 @@
 | **B01** | Brand Assets | Open asset folder | Explorer opens at NAS path | Relies on `Process.Start`, works if path valid | PASS | - |
 | **T01** | Task Manager | Load projects into Kanban | `README.md` statuses map to columns | Tested `WorkspaceScanner` frontmatter reading | PASS | - |
 | **T02** | Task Manager | Update project status | Saves new status to `README.md` YAML | `FrontmatterService.WriteStatus` verified | PASS | - |
+| **T03** | Task Manager | Queue Order & Created Date | Sorts projects by `CreatedDate` / age in queue | `Oldest First` queue sorting and `AgeDisplay` verified | PASS | - |
+| **CAL01**| Big Calendar | Monthly Grid Timetable | Renders 7×6 grid with project start/deadline chips | Month switcher and day event chips verified | PASS | - |
+| **CAL02**| Big Calendar | Day Detail Overlay | Clicking day cell opens day schedule panel | Day detail panel lists all date tasks with Open Folder actions | PASS | - |
+| **NAS01**| SSNAS Setup | Synology Drive sync guide | Maps `/Creative-Team` ↔ `E:\SynologyDrive\Creative-Team` | Comprehensive setup guide in `docs/SSNAS-SETUP.md` | PASS | - |
 | **C01** | Settings | Save Profile | Persists to `%APPDATA%\profile.json` | Profile serialization works | PASS | - |
 | **C02** | Settings | Change Theme | Instantly swaps `ResourceDictionary` | Verified `ThemeService` overrides | PASS | - |
 | **H01** | Health | Scan installed software | Checks common paths for Adobe/Figma | Verified `RegistryKey` checks | PASS | - |
@@ -40,8 +44,8 @@
 
 ## Test Execution Summary
 
-- **Total tests**: 21
-- **Passed**: 17
+- **Total tests**: 25
+- **Passed**: 21
 - **Failed**: 0
 - **Partial**: 3
 - **Blocked**: 1

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v3.1.2" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v3.2.0" Height="820" Width="1280"
         MinHeight="680" MinWidth="1024"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
@@ -171,6 +171,7 @@
                 <ui:NavigationViewItemSeparator />
 
                 <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
+                <ui:NavigationViewItem Content="Big Calendar"       Icon="{ui:SymbolIcon Calendar24}"    TargetPageType="{x:Type views:CalendarPage}" />
                 <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
 
                 <ui:NavigationViewItemSeparator />

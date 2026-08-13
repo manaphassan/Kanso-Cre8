@@ -182,12 +182,61 @@ namespace SS_CAM.Views
                     filtered.Add(p);
                 }
 
+                SortProjects(filtered);
                 UpdateBoard(filtered);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("ApplyFilters error: " + ex);
             }
+        }
+
+        private void SortProjects(List<ProjectStatusItem> list)
+        {
+            if (list == null || list.Count <= 1) return;
+
+            string sortSel = "Oldest First";
+            if (SortFilter != null && SortFilter.SelectedItem is ComboBoxItem)
+            {
+                sortSel = ((ComboBoxItem)SortFilter.SelectedItem).Content.ToString();
+            }
+
+            if (sortSel.Contains("Oldest First"))
+            {
+                list.Sort((a, b) => a.ParsedCreatedDate.CompareTo(b.ParsedCreatedDate));
+            }
+            else if (sortSel.Contains("Newest First"))
+            {
+                list.Sort((a, b) => b.ParsedCreatedDate.CompareTo(a.ParsedCreatedDate));
+            }
+            else if (sortSel.Contains("Deadline"))
+            {
+                list.Sort((a, b) =>
+                {
+                    DateTime dtA, dtB;
+                    bool hasA = DateTime.TryParse(a.Deadline, out dtA);
+                    bool hasB = DateTime.TryParse(b.Deadline, out dtB);
+                    if (hasA && hasB) return dtA.CompareTo(dtB);
+                    if (hasA) return -1;
+                    if (hasB) return 1;
+                    return 0;
+                });
+            }
+            else if (sortSel.Contains("Priority"))
+            {
+                list.Sort((a, b) => PriorityRank(b.Priority).CompareTo(PriorityRank(a.Priority)));
+            }
+        }
+
+        private static int PriorityRank(string priority)
+        {
+            if (string.IsNullOrWhiteSpace(priority)) return 0;
+            string p = priority.ToLowerInvariant();
+            if (p == "urgent") return 4;
+            if (p == "high") return 3;
+            if (p == "medium") return 2;
+            if (p == "low") return 1;
+            return 0;
         }
 
         private void UpdateBoard(List<ProjectStatusItem> projects = null)
@@ -244,6 +293,7 @@ namespace SS_CAM.Views
             if (TxtSearchQuery != null) TxtSearchQuery.Text = "";
             if (DesignerFilterTM != null && DesignerFilterTM.Items.Count > 0) DesignerFilterTM.SelectedIndex = 0;
             if (PriorityFilter != null && PriorityFilter.Items.Count > 0) PriorityFilter.SelectedIndex = 0;
+            if (SortFilter != null && SortFilter.Items.Count > 0) SortFilter.SelectedIndex = 0;
             ApplyFiltersAndUpdateBoard();
         }
 
@@ -360,6 +410,7 @@ namespace SS_CAM.Views
             SelectComboItemByContent(DetailStatus, item.Status ?? "backlog");
             SelectComboItemByContent(DetailPriority, item.Priority ?? "medium");
             DetailDeadline.Text = item.Deadline ?? "";
+            if (DetailCreatedDate != null) DetailCreatedDate.Text = item.CreatedDateDisplay;
             DetailRevision.Text = item.Revision.ToString();
 
             // Load README body content notes
@@ -474,6 +525,7 @@ namespace SS_CAM.Views
             if (DetailPriority.SelectedItem is ComboBoxItem)
                 _editingProject.Priority = ((ComboBoxItem)DetailPriority.SelectedItem).Content.ToString();
             _editingProject.Deadline = DetailDeadline.Text.Trim();
+            if (DetailCreatedDate != null) _editingProject.CreatedDate = DetailCreatedDate.Text.Trim();
 
             int revVal;
             if (int.TryParse(DetailRevision.Text, out revVal))

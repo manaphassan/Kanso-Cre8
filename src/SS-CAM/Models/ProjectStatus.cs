@@ -11,6 +11,7 @@ namespace SS_CAM.Models
         public string Designer { get; set; }
         public string Client { get; set; }
         public string Deadline { get; set; }
+        public string CreatedDate { get; set; }   // YYYY-MM-DD
         public string Priority { get; set; }      // low|medium|high|urgent
         public int Revision { get; set; }
         public List<string> Tags { get; set; }
@@ -23,6 +24,64 @@ namespace SS_CAM.Models
             Revision = 0;
             Tags = new List<string>();
             HasFrontmatter = false;
+            CreatedDate = "";
+        }
+
+        public DateTime ParsedCreatedDate
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(CreatedDate))
+                {
+                    DateTime dt;
+                    if (DateTime.TryParse(CreatedDate, out dt)) return dt;
+                }
+                return DateTime.Today;
+            }
+        }
+
+        public int AgeInDays
+        {
+            get
+            {
+                DateTime start = ParsedCreatedDate;
+                int days = (int)(DateTime.Today - start.Date).TotalDays;
+                return days >= 0 ? days : 0;
+            }
+        }
+
+        public string AgeDisplay
+        {
+            get
+            {
+                int age = AgeInDays;
+                if (age == 0) return "Started today";
+                if (age == 1) return "1d in queue";
+                return string.Format("{0}d in queue", age);
+            }
+        }
+
+        public string AgeBadgeColor
+        {
+            get
+            {
+                int age = AgeInDays;
+                if (age > 60) return "#EF4444";
+                if (age > 30) return "#F59E0B";
+                return "#64748B";
+            }
+        }
+
+        public string CreatedDateDisplay
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(CreatedDate)) return "N/A";
+                DateTime dt;
+                if (DateTime.TryParse(CreatedDate, out dt))
+                    return dt.ToString("yyyy-MM-dd");
+                return CreatedDate;
+            }
         }
 
         public string StatusDisplay
