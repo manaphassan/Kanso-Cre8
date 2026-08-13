@@ -164,6 +164,12 @@ namespace SS_CAM.Views
                     string sel = ((ComboBoxItem)PriorityFilter.SelectedItem).Content.ToString();
                     if (sel != "All Priorities") priorityFilter = sel;
                 }
+                string statusFilter = "";
+                if (StatusFilter != null && StatusFilter.SelectedItem is ComboBoxItem)
+                {
+                    string sel = ((ComboBoxItem)StatusFilter.SelectedItem).Content.ToString();
+                    if (sel != "All Statuses") statusFilter = sel;
+                }
                 string searchQuery = TxtSearchQuery != null ? TxtSearchQuery.Text.Trim().ToLowerInvariant() : "";
 
                 List<ProjectStatusItem> filtered = new List<ProjectStatusItem>();
@@ -174,6 +180,8 @@ namespace SS_CAM.Views
                         !string.Equals(p.Designer, designerFilter, StringComparison.OrdinalIgnoreCase)) continue;
                     if (!string.IsNullOrEmpty(priorityFilter) &&
                         !string.Equals(p.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!string.IsNullOrEmpty(statusFilter) &&
+                        !string.Equals(p.Status, statusFilter, StringComparison.OrdinalIgnoreCase)) continue;
                     if (!string.IsNullOrEmpty(searchQuery))
                     {
                         string projName = (p.Project ?? "").ToLowerInvariant();
@@ -293,9 +301,33 @@ namespace SS_CAM.Views
         {
             if (TxtSearchQuery != null) TxtSearchQuery.Text = "";
             if (DesignerFilterTM != null && DesignerFilterTM.Items.Count > 0) DesignerFilterTM.SelectedIndex = 0;
+            if (StatusFilter != null && StatusFilter.Items.Count > 0) StatusFilter.SelectedIndex = 0;
             if (PriorityFilter != null && PriorityFilter.Items.Count > 0) PriorityFilter.SelectedIndex = 0;
             if (SortFilter != null && SortFilter.Items.Count > 0) SortFilter.SelectedIndex = 0;
             ApplyFiltersAndUpdateBoard();
+        }
+
+        private void OnQuickStatusMenuClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                System.Windows.Controls.MenuItem menu = sender as System.Windows.Controls.MenuItem;
+                if (menu != null && menu.Tag != null)
+                {
+                    string newStatus = menu.Tag.ToString();
+                    ProjectStatusItem item = menu.DataContext as ProjectStatusItem;
+                    if (item != null && !string.IsNullOrEmpty(item.FullPath))
+                    {
+                        item.Status = newStatus;
+                        FrontmatterService.WriteStatus(item);
+                        LoadProjects();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("OnQuickStatusMenuClicked error: " + ex);
+            }
         }
 
         private void OnTMRefreshClicked(object sender, RoutedEventArgs e)

@@ -13,6 +13,50 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <DataTemplate x:Key="KanbanCardTemplate">
+            <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
+                           Click="OnProjectCardClicked"
+                           PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
+                           MouseMove="OnCardMouseMove">
+                <ui:CardAction.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Move to Backlog" Tag="backlog" Click="OnQuickStatusMenuClicked"/>
+                        <MenuItem Header="Move to In Progress" Tag="in-progress" Click="OnQuickStatusMenuClicked"/>
+                        <MenuItem Header="Move to Review" Tag="review" Click="OnQuickStatusMenuClicked"/>
+                        <MenuItem Header="Move to Done" Tag="done" Click="OnQuickStatusMenuClicked"/>
+                        <MenuItem Header="Set On Hold" Tag="on-hold" Click="OnQuickStatusMenuClicked"/>
+                    </ContextMenu>
+                </ui:CardAction.ContextMenu>
+                <StackPanel>
+                    <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
+                            <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
+                        </Border>
+                        <Border Background="{Binding DeadlineBadgeBackground}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
+                            <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineBadgeForeground}" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center" Margin="0,0,6,0">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding DurationVisibility}">
+                            <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            <ui:SymbolIcon Symbol="Clock24" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="{Binding Duration}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ui:CardAction>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid>
@@ -109,7 +153,17 @@
                     <ui:TextBox x:Name="TxtSearchQuery" Width="220" Height="32" Padding="8,4" VerticalContentAlignment="Center" PlaceholderText="Search project or client..." Icon="Search24" TextChanged="OnTMSearchQueryChanged" FontSize="11" Margin="0,0,12,0"/>
 
                     <ui:TextBlock Text="Designer:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <ComboBox x:Name="DesignerFilterTM" Width="140" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0"/>
+                    <ComboBox x:Name="DesignerFilterTM" Width="130" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0"/>
+
+                    <ui:TextBlock Text="Status:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="StatusFilter" Width="120" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
+                        <ComboBoxItem Content="All Statuses" IsSelected="True" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="review" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="done" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="on-hold" VerticalContentAlignment="Center"/>
+                    </ComboBox>
 
                     <ui:TextBlock Text="Priority:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <ComboBox x:Name="PriorityFilter" Width="120" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
@@ -178,44 +232,7 @@
 
                         <!-- Scrollable Cards Stack -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Background="Transparent" VerticalAlignment="Stretch">
-                            <ItemsControl x:Name="ListBacklog" Margin="8" VerticalAlignment="Top">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
-                                                       Click="OnProjectCardClicked"
-                                                       PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
-                                                       MouseMove="OnCardMouseMove">
-                                            <StackPanel>
-                                                 <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
-                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
-                                                    </Border>
-                                                    <Border Background="{Binding DeadlineBadgeBackground}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineBadgeForeground}" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center" Margin="0,0,6,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding DurationVisibility}">
-                                                        <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                        <ui:SymbolIcon Symbol="Clock24" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                        <ui:TextBlock Text="{Binding Duration}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl x:Name="ListBacklog" Margin="8" VerticalAlignment="Top" ItemTemplate="{StaticResource KanbanCardTemplate}"/>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
@@ -244,44 +261,7 @@
 
                         <!-- Scrollable Cards Stack -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Background="Transparent" VerticalAlignment="Stretch">
-                            <ItemsControl x:Name="ListInProgress" Margin="8" VerticalAlignment="Top">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
-                                                       Click="OnProjectCardClicked"
-                                                       PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
-                                                       MouseMove="OnCardMouseMove">
-                                            <StackPanel>
-                                                <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
-                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
-                                                    </Border>
-                                                    <Border Background="{Binding DeadlineBadgeBackground}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineBadgeForeground}" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center" Margin="0,0,6,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding DurationVisibility}">
-                                                        <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                        <ui:SymbolIcon Symbol="Clock24" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                        <ui:TextBlock Text="{Binding Duration}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl x:Name="ListInProgress" Margin="8" VerticalAlignment="Top" ItemTemplate="{StaticResource KanbanCardTemplate}"/>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
@@ -310,47 +290,7 @@
 
                         <!-- Scrollable Cards Stack -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Background="Transparent" VerticalAlignment="Stretch">
-                            <ItemsControl x:Name="ListReview" Margin="8" VerticalAlignment="Top">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
-                                                       Click="OnProjectCardClicked"
-                                                       PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
-                                                       MouseMove="OnCardMouseMove">
-                                            <StackPanel>
-                                                <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
-                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <ui:TextBlock Text="Rev " FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                            <ui:TextBlock Text="{Binding Revision}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                    <Border Background="{Binding DeadlineBadgeBackground}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                                                        <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineBadgeForeground}" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                    <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="4,1" VerticalAlignment="Center" Margin="0,0,6,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <ui:SymbolIcon Symbol="Calendar24" FontSize="10" Foreground="{Binding AgeBadgeColor}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                            <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="9" FontWeight="SemiBold" Foreground="{Binding AgeBadgeColor}" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                    <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding DurationVisibility}">
-                                                        <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                        <ui:SymbolIcon Symbol="Clock24" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                                        <ui:TextBlock Text="{Binding Duration}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl x:Name="ListReview" Margin="8" VerticalAlignment="Top" ItemTemplate="{StaticResource KanbanCardTemplate}"/>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
@@ -379,25 +319,7 @@
 
                         <!-- Scrollable Cards Stack -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Background="Transparent" VerticalAlignment="Stretch">
-                            <ItemsControl x:Name="ListDone" Margin="8" VerticalAlignment="Top">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
-                                                       Click="OnProjectCardClicked"
-                                                       PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
-                                                       MouseMove="OnCardMouseMove">
-                                            <StackPanel>
-                                                <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18" TextDecorations="Strikethrough" Opacity="0.75"/>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                    <ui:TextBlock Text="{Binding Client}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl x:Name="ListDone" Margin="8" VerticalAlignment="Top" ItemTemplate="{StaticResource KanbanCardTemplate}"/>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
@@ -426,25 +348,7 @@
 
                         <!-- Scrollable Cards Stack -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Background="Transparent" VerticalAlignment="Stretch">
-                            <ItemsControl x:Name="ListOther" Margin="8" VerticalAlignment="Top">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Margin="0,0,0,8" Padding="12,10" Cursor="Hand"
-                                                       Click="OnProjectCardClicked"
-                                                       PreviewMouseLeftButtonDown="OnCardPreviewMouseLeftButtonDown"
-                                                       MouseMove="OnCardMouseMove">
-                                            <StackPanel>
-                                                <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18" Opacity="0.75"/>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                    <ui:TextBlock Text="{Binding StatusDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text=" &#x2022; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                    <ui:TextBlock Text="{Binding AgeDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl x:Name="ListOther" Margin="8" VerticalAlignment="Top" ItemTemplate="{StaticResource KanbanCardTemplate}"/>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
