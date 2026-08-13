@@ -3,33 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SS-CAM — The Ultimate Designer Companion & Second Brain</title>
-  <meta name="description" content="Official workstation management suite for SuamiSihat creative designers. Standardized project generator, brand asset inspector, task manager, and creative wellbeing companion.">
+  <title>SS-CAM — SuamiSihat™ Creative Workstation Companion</title>
+  <meta name="description" content="Official workstation suite for SuamiSihat creative designers. Standardized project generator, brand asset inspector, task manager, and creative wellbeing companion.">
   <meta name="theme-color" content="#022057">
   
-  <!-- Fonts -->
+  <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Styles -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-fluent-dark">
+<body class="theme-ss-navy">
 
-  <!-- Top Navigation Bar -->
+  <!-- Minimal Translucent Header -->
   <header class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#" class="brand-logo" id="brand-logo">
+      <a href="#" class="brand-logo">
         <div class="logo-badge">SS</div>
-        <span class="brand-name">SS-CAM <span class="version-tag">v3.5.0</span></span>
+        <div class="brand-text-group">
+          <span class="brand-name">SS-CAM</span>
+          <span class="brand-tagline">SuamiSihat Workstation</span>
+        </div>
       </a>
 
       <nav class="nav-links" id="nav-menu">
-        <a href="#features" class="nav-item">Features</a>
-        <a href="#pillars" class="nav-item">Core Pillars</a>
+        <a href="#features" class="nav-item">Pillars</a>
+        <a href="#interactive" class="nav-item">Live Sandbox</a>
         <a href="#showcase" class="nav-item">App Tour</a>
-        <a href="#wellbeing" class="nav-item">Wellbeing</a>
         <a href="#specs" class="nav-item">Specs</a>
       </nav>
 
@@ -37,9 +38,9 @@
         <button class="theme-toggle" id="theme-toggle" title="Switch Theme">
           <span class="theme-icon">🌙</span>
         </button>
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-sm btn-download" id="nav-cta">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-sm" id="nav-cta">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download
+          Download v3.5.0
         </a>
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
           <span></span><span></span><span></span>
@@ -50,55 +51,52 @@
 
   <!-- Hero Section -->
   <section class="hero-section">
-    <div class="hero-bg-glow"></div>
-    <div class="hero-container">
+    <div class="hero-glow"></div>
+    <div class="section-container">
       
-      <div class="hero-badge-pill">
-        <span class="pill-dot"></span>
-        <span>Microsoft Fluent 2 Desktop Architecture</span>
-        <span class="pill-arrow">→</span>
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>SuamiSihat™ Designer Companion & Second Brain</span>
       </div>
 
       <h1 class="hero-title">
-        Your Workstation’s <br>
-        <span class="gradient-text">Second Brain.</span>
+        Creative Workflows,<br>
+        <span class="gold-gradient">Effortlessly Mastered.</span>
       </h1>
 
       <p class="hero-subtitle">
-        The official Windows companion built for SuamiSihat designers. Standardize project creation, inspect brand assets in real-time, master campaign queues, and protect your mental health.
+        The official Windows desktop workstation suite for SuamiSihat designers. Standardize folder creation, inspect live brand colors, master campaign tasks, and nurture creative mental health.
       </p>
 
-      <div class="hero-cta-group">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-lg btn-download" id="hero-download-btn">
+      <div class="hero-actions">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-lg" id="hero-download">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download Now <span class="btn-subtext">(v3.5.0 • ~5 MB)</span>
+          Download SS-CAM v3.5.0
+          <span class="btn-subtext">(~5 MB • Single-File Exe)</span>
         </a>
-        <a href="#showcase" class="btn-secondary btn-lg" id="hero-explore-btn">
-          <span>Take the Tour</span>
-          <span class="btn-arrow">→</span>
+        <a href="#interactive" class="btn-outline btn-lg">
+          Try Interactive Widgets ↓
         </a>
       </div>
 
-      <div class="hero-meta">
-        <span class="meta-item">✓ Windows 10 & 11 Ready</span>
-        <span class="meta-dot">•</span>
-        <span class="meta-item">✓ Single-File Exe (Zero Install)</span>
-        <span class="meta-dot">•</span>
-        <span class="meta-item">✓ 100% Offline Data Safety</span>
+      <div class="hero-specs-meta">
+        <span>✓ Windows 10 & 11 Ready</span>
+        <span class="sep">•</span>
+        <span>✓ Zero Installation Setup</span>
+        <span class="sep">•</span>
+        <span>✓ 100% DPAPI Encrypted</span>
       </div>
 
-      <!-- Hero App Preview Frame -->
-      <div class="hero-mockup-wrapper" id="hero-mockup">
-        <div class="mockup-header-bar">
-          <div class="window-controls">
-            <span class="ctrl-dot red"></span>
-            <span class="ctrl-dot yellow"></span>
-            <span class="ctrl-dot green"></span>
+      <!-- Main App Showcase Viewport -->
+      <div class="hero-viewport">
+        <div class="viewport-header">
+          <div class="window-dots">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
           </div>
-          <div class="window-title">SS-CAM Workstation Suite — Dashboard</div>
+          <div class="window-title">SuamiSihat Creative Assets Management v3.5.0</div>
         </div>
-        <div class="mockup-img-container">
-          <img src="app-dashboard.png" alt="SS-CAM Dashboard Screenshot" class="mockup-img" id="hero-img">
+        <div class="viewport-canvas">
+          <img src="app-dashboard.png" alt="SS-CAM Dashboard Screenshot" id="main-viewport-img">
         </div>
       </div>
 
@@ -106,263 +104,332 @@
   </section>
 
   <!-- Metrics Bar -->
-  <section class="metrics-section">
+  <section class="metrics-bar">
     <div class="section-container">
       <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-value">0 MB</div>
-          <div class="metric-label">Runtime Prerequisites</div>
+        <div class="metric-item">
+          <div class="metric-num">0 MB</div>
+          <div class="metric-desc">Runtime Prerequisites</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-value">&lt;3 sec</div>
-          <div class="metric-label">Standard Folder Generation</div>
+        <div class="metric-item">
+          <div class="metric-num">&lt;3 sec</div>
+          <div class="metric-desc">Standard Folder Setup</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-value">14</div>
-          <div class="metric-label">Integrated Workstation Modules</div>
+        <div class="metric-item">
+          <div class="metric-num">14</div>
+          <div class="metric-desc">Integrated Workstation Modules</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-value">100%</div>
-          <div class="metric-label">DPAPI Encrypted Safety</div>
+        <div class="metric-item">
+          <div class="metric-num">100%</div>
+          <div class="metric-desc">Offline & Local Data Safety</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Sandbox Widgets Section -->
+  <section class="interactive-section" id="interactive">
+    <div class="section-container">
+      
+      <div class="section-heading">
+        <span class="section-tag">DYNAMIC SANDBOX</span>
+        <h2 class="section-title">Test App Functions Live.</h2>
+        <p class="section-sub">Experience core SS-CAM features directly inside your browser before downloading.</p>
+      </div>
+
+      <div class="sandbox-grid">
+
+        <!-- Widget 1: Live Job ID Generator -->
+        <div class="sandbox-card">
+          <div class="card-header">
+            <div class="card-icon blue">🏷️</div>
+            <div>
+              <h3 class="card-title">Project Naming Engine</h3>
+              <p class="card-sub">Generate standardized SuamiSihat work order paths</p>
+            </div>
+          </div>
+          
+          <div class="sandbox-body">
+            <div class="form-row">
+              <label>Brand Code:</label>
+              <select id="demo-brand-select" class="demo-input">
+                <option value="SS">SS — SuamiSihat Main</option>
+                <option value="HD">HD — HanaCare</option>
+                <option value="MY">MY — Malaysia Campaign</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Project Descriptor:</label>
+              <input type="text" id="demo-name-input" value="brand_campaign" class="demo-input" placeholder="e.g. brand_campaign">
+            </div>
+
+            <div class="result-box">
+              <span class="result-label">Generated Path:</span>
+              <code id="demo-job-output">202608_0001A_SS_brand_campaign</code>
+              <button class="btn-copy-sm" id="btn-copy-job">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget 2: Live Swatch & Color Inspector -->
+        <div class="sandbox-card">
+          <div class="card-header">
+            <div class="card-icon gold">🎨</div>
+            <div>
+              <h3 class="card-title">Brand Color Inspector</h3>
+              <p class="card-sub">Click swatches to inspect exact brand color codes</p>
+            </div>
+          </div>
+          
+          <div class="sandbox-body">
+            <div class="swatch-ribbon">
+              <button class="swatch-tile active" style="background:#022057" data-hex="#022057" data-rgb="2, 32, 87" data-cmyk="98, 63, 0, 66" data-pantone="281 C" data-name="Prussian Navy"></button>
+              <button class="swatch-tile" style="background:#043388" data-hex="#043388" data-rgb="4, 51, 136" data-cmyk="97, 62, 0, 47" data-pantone="286 C" data-name="Royal Blue"></button>
+              <button class="swatch-tile" style="background:#21A1F7" data-hex="#21A1F7" data-rgb="33, 161, 247" data-cmyk="87, 35, 0, 0" data-pantone="2925 C" data-name="Azure Accent"></button>
+              <button class="swatch-tile" style="background:#6DC6EC" data-hex="#6DC6EC" data-rgb="109, 198, 236" data-cmyk="54, 16, 0, 0" data-pantone="298 C" data-name="Malibu Tint"></button>
+              <button class="swatch-tile" style="background:#BD9A73" data-hex="#BD9A73" data-rgb="189, 154, 115" data-cmyk="0, 18, 39, 26" data-pantone="7530 C" data-name="Lion Gold"></button>
+              <button class="swatch-tile" style="background:#FCE53D" data-hex="#FCE53D" data-rgb="252, 229, 61" data-cmyk="0, 9, 76, 1" data-pantone="107 C" data-name="Banana Yellow"></button>
+            </div>
+
+            <div class="inspector-panel">
+              <div class="inspector-color-preview" id="demo-swatch-tile" style="background:#022057"></div>
+              <div class="inspector-details">
+                <div class="inspector-title" id="demo-swatch-name">Prussian Navy</div>
+                <div class="code-grid">
+                  <span>HEX: <strong id="demo-hex">#022057</strong></span>
+                  <span>RGB: <strong id="demo-rgb">2, 32, 87</strong></span>
+                  <span>CMYK: <strong id="demo-cmyk">98, 63, 0, 66</strong></span>
+                  <span>Pantone: <strong id="demo-pantone">281 C</strong></span>
+                </div>
+              </div>
+            </div>
+            <div class="copy-status-bar" id="demo-swatch-status">Click any swatch to copy HEX code</div>
+          </div>
+        </div>
+
+        <!-- Widget 3: Live JAKIM Waktu Solat -->
+        <div class="sandbox-card">
+          <div class="card-header">
+            <div class="card-icon green">🕌</div>
+            <div>
+              <h3 class="card-title">JAKIM Waktu Solat</h3>
+              <p class="card-sub">Real-time Malaysian prayer timetable for designers</p>
+            </div>
+          </div>
+          
+          <div class="sandbox-body">
+            <div class="form-row">
+              <label>Select Zone:</label>
+              <select id="solat-zone-select" class="demo-input">
+                <option value="SGR01">SGR01 — Shah Alam, Petaling, Subang</option>
+                <option value="WKP01">WKP01 — Kuala Lumpur, Putrajaya</option>
+                <option value="JHR02">JHR02 — Johor Bahru, Kota Tinggi</option>
+                <option value="PNG01">PNG01 — Pulau Pinang</option>
+              </select>
+            </div>
+
+            <div class="solat-grid">
+              <div class="solat-item"><span class="s-name">Subuh</span><span class="s-time" id="time-fajr">05:58 AM</span></div>
+              <div class="solat-item active"><span class="s-name">Zohor</span><span class="s-time" id="time-dhuhr">01:21 PM</span></div>
+              <div class="solat-item"><span class="s-name">Asar</span><span class="s-time" id="time-asr">04:36 PM</span></div>
+              <div class="solat-item"><span class="s-name">Maghrib</span><span class="s-time" id="time-maghrib">07:28 PM</span></div>
+              <div class="solat-item"><span class="s-name">Isyak</span><span class="s-time" id="time-isha">08:40 PM</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget 4: Box Breathing Coach -->
+        <div class="sandbox-card">
+          <div class="card-header">
+            <div class="card-icon purple">🫁</div>
+            <div>
+              <h3 class="card-title">16s Box Breathing Coach</h3>
+              <p class="card-sub">Reset stress during intense creative sprints</p>
+            </div>
+          </div>
+          
+          <div class="sandbox-body center-align">
+            <div class="breathing-circle-wrapper">
+              <div class="breathing-circle" id="breath-circle">
+                <span id="breath-phase-text">Ready</span>
+              </div>
+            </div>
+            <button class="btn-primary btn-sm" id="btn-start-breath">Start 16s Reset</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- Core Pillars Section -->
-  <section class="pillars-section" id="pillars">
+  <section class="pillars-section" id="features">
     <div class="section-container">
-      <div class="section-header">
-        <div class="section-badge">DESIGNED FOR DESIGNERS</div>
-        <h2 class="section-title">Built on 4 Core Pillars.</h2>
-        <p class="section-description">SS-CAM integrates seamlessly into your daily workstation flow, turning chaos into predictable creative energy.</p>
+      <div class="section-heading">
+        <span class="section-tag">CORE ARCHITECTURE</span>
+        <h2 class="section-title">The 4 Pillars of SS-CAM.</h2>
+        <p class="section-sub">Engineered specifically to solve real daily problems faced by SuamiSihat creative designers.</p>
       </div>
 
       <div class="pillars-grid">
         
-        <!-- Pillar 1 -->
         <div class="pillar-card">
-          <div class="pillar-icon-box blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z"/><path d="M12 6v6l4 2"/></svg>
-          </div>
+          <div class="pillar-num">01</div>
           <h3 class="pillar-title">🧠 Second Brain Intelligence</h3>
-          <p class="pillar-body">Auto-generates sequential 4-digit job IDs (<code>YYYYMM_NNNNX_BRAND_Name</code>) and standardized subfolder trees. Scans workspace files with full-text README preview and safe asset copying.</p>
+          <p class="pillar-body">Automates sequential 4-digit job IDs, standardized folder trees, full-text workspace indexer, and markdown README previewer.</p>
         </div>
 
-        <!-- Pillar 2 -->
         <div class="pillar-card">
-          <div class="pillar-icon-box purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
-          </div>
+          <div class="pillar-num">02</div>
           <h3 class="pillar-title">⚡ Task & Queue Management</h3>
-          <p class="pillar-body">Reads YAML frontmatter straight from project README files into a visual Kanban status board. Map campaign delivery deadlines on a 7×6 Big Calendar timetable with FIFO queue age sorting.</p>
+          <p class="pillar-body">YAML frontmatter Kanban status board, 7×6 Big Calendar project timetable, FIFO queue age tracking, and campaign deadline markers.</p>
         </div>
 
-        <!-- Pillar 3 -->
         <div class="pillar-card">
-          <div class="pillar-icon-box gold">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          </div>
-          <h3 class="pillar-title">🎨 Brand Assets & Live Inspector</h3>
-          <p class="pillar-body">Sleek 2-column palette manager with interactive primary, secondary, and neutral swatches. Live inspector panel breaks down HEX, RGB, CMYK, and Pantone values with 1-click clipboard copy.</p>
+          <div class="pillar-num">03</div>
+          <h3 class="pillar-title">🎨 Brand Assets & Swatch Inspector</h3>
+          <p class="pillar-body">Sleek 2-column brand palette explorer with live HEX, RGB, CMYK, Pantone inspector, vector QR Code studio, and font installer.</p>
         </div>
 
-        <!-- Pillar 4 -->
         <div class="pillar-card">
-          <div class="pillar-icon-box green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          </div>
+          <div class="pillar-num">04</div>
           <h3 class="pillar-title">🧘 Creative Wellbeing & Balance</h3>
-          <p class="pillar-body">DPAPI-encrypted Mind Drops daily journal, 16-second animated box breathing timer for intense design sprints, fatigue check-ins, Malaysian radio streams, and JAKIM Waktu Solat prayer timetable.</p>
+          <p class="pillar-body">DPAPI Mind Drops journal, 16s box breathing coach, fatigue check-ins, Malaysian focus radio stations, and JAKIM Waktu Solat timetable.</p>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- Interactive App Showcase / Tour -->
+  <!-- Interactive App Showcase Tour -->
   <section class="showcase-section" id="showcase">
     <div class="section-container">
-      <div class="section-header">
-        <div class="section-badge">INTERACTIVE APP TOUR</div>
-        <h2 class="section-title">Explore the Workstation Suite.</h2>
-        <p class="section-description">Click through the core views to see how SS-CAM streamlines your creative environment.</p>
+      <div class="section-heading">
+        <span class="section-tag">WORKSTATION SUITE</span>
+        <h2 class="section-title">Full Application Tour.</h2>
+        <p class="section-sub">Switch between views to inspect high-resolution v3.5.0 workstation pages.</p>
       </div>
 
       <div class="showcase-tabs">
-        <button class="tab-btn active" data-target="tab-dashboard">Dashboard</button>
-        <button class="tab-btn" data-target="tab-creator">Project Creator</button>
-        <button class="tab-btn" data-target="tab-search">Search & Copy</button>
-        <button class="tab-btn" data-target="tab-assets">Brand Assets</button>
-        <button class="tab-btn" data-target="tab-tasks">Task Manager</button>
-        <button class="tab-btn" data-target="tab-calendar">Big Calendar</button>
-        <button class="tab-btn" data-target="tab-notes">Quick Notes</button>
-        <button class="tab-btn" data-target="tab-solat">Waktu Solat</button>
-        <button class="tab-btn" data-target="tab-settings">Settings</button>
+        <button class="tab-btn active" data-target="panel-dashboard">Dashboard</button>
+        <button class="tab-btn" data-target="panel-creator">Project Creator</button>
+        <button class="tab-btn" data-target="panel-search">Search & Copy</button>
+        <button class="tab-btn" data-target="panel-assets">Brand Assets</button>
+        <button class="tab-btn" data-target="panel-tasks">Task Manager</button>
+        <button class="tab-btn" data-target="panel-calendar">Big Calendar</button>
+        <button class="tab-btn" data-target="panel-notes">Quick Notes</button>
+        <button class="tab-btn" data-target="panel-solat">Waktu Solat</button>
+        <button class="tab-btn" data-target="panel-settings">Settings</button>
       </div>
 
       <div class="showcase-stage">
         
-        <!-- Tab 1: Dashboard -->
-        <div class="showcase-panel active" id="tab-dashboard">
-          <div class="panel-info">
-            <h3 class="panel-title">Centralized Workspace Analytics</h3>
-            <p class="panel-desc">Get an instant bird's-eye view of your local workstation and Synology NAS storage metrics, active project counts, sub-brand workload distribution, and stale project warnings.</p>
+        <div class="showcase-panel active" id="panel-dashboard">
+          <div class="panel-meta">
+            <h3>Centralized Workspace Analytics</h3>
+            <p>Real-time storage analytics, sub-brand project breakdown, activity charts, and stale project detectors.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-dashboard.png" alt="SS-CAM Dashboard Module" class="panel-img">
-          </div>
+          <img src="app-dashboard.png" alt="SS-CAM Dashboard" class="showcase-img">
         </div>
 
-        <!-- Tab 2: Project Creator -->
-        <div class="showcase-panel" id="tab-creator">
-          <div class="panel-info">
-            <h3 class="panel-title">Standardized Folder Generation</h3>
-            <p class="panel-desc">Generate structured project directories following strict naming guidelines in seconds. Preset subfolder templates include starter Affinity Designer canvases and injected markdown README headers.</p>
+        <div class="showcase-panel" id="panel-creator">
+          <div class="panel-meta">
+            <h3>Standardized Folder Generation</h3>
+            <p>Generates structured project directories with preset subfolder templates and Affinity Designer canvases.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-project-creator.png" alt="SS-CAM Project Creator Module" class="panel-img">
-          </div>
+          <img src="app-project-creator.png" alt="SS-CAM Project Creator" class="showcase-img">
         </div>
 
-        <!-- Tab 3: Search & Copy -->
-        <div class="showcase-panel" id="tab-search">
-          <div class="panel-info">
-            <h3 class="panel-title">Instant Workspace Asset Finder</h3>
-            <p class="panel-desc">Search historical projects across local and network drives. Inspect rendered README project briefs and copy design files directly into your active work order without file explorer hassle.</p>
+        <div class="showcase-panel" id="panel-search">
+          <div class="panel-meta">
+            <h3>Workspace Asset Finder & README Previewer</h3>
+            <p>Search historical projects across local & NAS drives with rendered Markdown briefs and controlled asset copying.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-search-copy.png" alt="SS-CAM Search & Copy Module" class="panel-img">
-          </div>
+          <img src="app-search-copy.png" alt="SS-CAM Search & Copy" class="showcase-img">
         </div>
 
-        <!-- Tab 4: Brand Assets -->
-        <div class="showcase-panel" id="tab-assets">
-          <div class="panel-info">
-            <h3 class="panel-title">Live Swatch & Brand Inspector</h3>
-            <p class="panel-desc">Explore official brand colors with tabbed Primary, Secondary, and Neutral swatches. The live inspector breaks down HEX, RGB, CMYK, and Pantone details while auto-copying to clipboard.</p>
+        <div class="showcase-panel" id="panel-assets">
+          <div class="panel-meta">
+            <h3>Minimal Swatch & Brand Inspector</h3>
+            <p>Explore official swatches with live HEX/RGB/CMYK/Pantone breakdowns and 1-click clipboard copying.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-brand-assets.png" alt="SS-CAM Brand Assets Module" class="panel-img">
-          </div>
+          <img src="app-brand-assets.png" alt="SS-CAM Brand Assets" class="showcase-img">
         </div>
 
-        <!-- Tab 5: Task Manager -->
-        <div class="showcase-panel" id="tab-tasks">
-          <div class="panel-info">
-            <h3 class="panel-title">YAML Frontmatter Task Board</h3>
-            <p class="panel-desc">Reads project task headers from workspace README files automatically. Track status columns (Backlog, In Progress, Review, Done), queue age indicators (<code>📅 14d in queue</code>), and FIFO queue order.</p>
+        <div class="showcase-panel" id="panel-tasks">
+          <div class="panel-meta">
+            <h3>YAML Frontmatter Task Board</h3>
+            <p>Kanban status columns (Backlog, In Progress, Review, Done) reading directly from project README task headers.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-task-manager.png" alt="SS-CAM Task Manager Module" class="panel-img">
-          </div>
+          <img src="app-task-manager.png" alt="SS-CAM Task Manager" class="showcase-img">
         </div>
 
-        <!-- Tab 6: Big Calendar -->
-        <div class="showcase-panel" id="tab-calendar">
-          <div class="panel-info">
-            <h3 class="panel-title">7×6 Monthly Campaign Timetable</h3>
-            <p class="panel-desc">Visual monthly calendar mapping project creation start dates, delivery deadlines, Friday Solat markers, and interactive Day Detail Overlay inspector with month switcher navigation.</p>
+        <div class="showcase-panel" id="panel-calendar">
+          <div class="panel-meta">
+            <h3>7×6 Monthly Campaign Timetable</h3>
+            <p>Visual calendar mapping project creation start dates, delivery deadlines, Friday Solat indicators, and day overlays.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-big-calendar.png" alt="SS-CAM Big Calendar Module" class="panel-img">
-          </div>
+          <img src="app-big-calendar.png" alt="SS-CAM Big Calendar" class="showcase-img">
         </div>
 
-        <!-- Tab 7: Quick Notes -->
-        <div class="showcase-panel" id="tab-notes">
-          <div class="panel-info">
-            <h3 class="panel-title">Markdown Scratchpad</h3>
-            <p class="panel-desc">Capture quick design specs, feedback notes, and client briefs with live Markdown rendering, note list sidebar, and auto-saving local storage.</p>
+        <div class="showcase-panel" id="panel-notes">
+          <div class="panel-meta">
+            <h3>Markdown Scratchpad</h3>
+            <p>Capture quick design specs, feedback notes, and copy drafts with live rendering and local storage.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-quick-notes.png" alt="SS-CAM Quick Notes Module" class="panel-img">
-          </div>
+          <img src="app-quick-notes.png" alt="SS-CAM Quick Notes" class="showcase-img">
         </div>
 
-        <!-- Tab 5: Waktu Solat -->
-        <div class="showcase-panel" id="tab-solat">
-          <div class="panel-info">
-            <h3 class="panel-title">JAKIM Waktu Solat Timetable</h3>
-            <p class="panel-desc">Integrates real-time JAKIM prayer schedules for 41 Malaysian zones. Features active prayer countdowns, Hijri dates, and adhan reminders to maintain spiritual rhythm during busy workdays.</p>
+        <div class="showcase-panel" id="panel-solat">
+          <div class="panel-meta">
+            <h3>JAKIM Waktu Solat Timetable</h3>
+            <p>Real-time prayer schedules for 41 Malaysian zones with active countdowns and adhan reminders.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat Module" class="panel-img">
-          </div>
+          <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat" class="showcase-img">
         </div>
 
-        <!-- Tab 6: Settings -->
-        <div class="showcase-panel" id="tab-settings">
-          <div class="panel-info">
-            <h3 class="panel-title">Profile & NAS Auto-Sync</h3>
-            <p class="panel-desc">Configure designer identity, workspace root paths, Waktu Solat zone, and switch between 5 Fluent 2 theme profiles (SS Default, Falconia Light, Metamorphosis Dark, Catppuccin, Rosé Pine).</p>
+        <div class="showcase-panel" id="panel-settings">
+          <div class="panel-meta">
+            <h3>Profile & Theme Settings</h3>
+            <p>Configure designer identity, workspace root paths, Waktu Solat zone, and switch between 5 Fluent 2 themes.</p>
           </div>
-          <div class="panel-image-wrapper">
-            <img src="app-profile-settings.png" alt="SS-CAM Profile & Settings Module" class="panel-img">
-          </div>
+          <img src="app-profile-settings.png" alt="SS-CAM Settings" class="showcase-img">
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- Technical Specifications Table -->
+  <!-- Technical Specs -->
   <section class="specs-section" id="specs">
     <div class="section-container">
-      <div class="section-header">
-        <div class="section-badge">LIGHTWEIGHT & POWERFUL</div>
-        <h2 class="section-title">Technical Specifications.</h2>
-        <p class="section-description">Native Windows architecture built for maximum efficiency and zero system bloat.</p>
+      <div class="section-heading">
+        <span class="section-tag">SPECIFICATIONS</span>
+        <h2 class="section-title">System Requirements.</h2>
       </div>
 
-      <div class="specs-table-wrapper">
-        <table class="specs-table">
-          <tbody>
-            <tr>
-              <td class="spec-label">Platform & OS</td>
-              <td class="spec-value">Windows 10 (1903+) / Windows 11 (x64)</td>
-            </tr>
-            <tr>
-              <td class="spec-label">Architecture & Framework</td>
-              <td class="spec-value">C# WPF (.NET Framework 4.8 native runtime)</td>
-            </tr>
-            <tr>
-              <td class="spec-label">Deployment Format</td>
-              <td class="spec-value">True Single-File Executable (~5 MB, Costura/Fody embedded)</td>
-            </tr>
-            <tr>
-              <td class="spec-label">Design System</td>
-              <td class="spec-value">Microsoft Fluent 2 (WPF-UI, Segoe Fluent Icons)</td>
-            </tr>
-            <tr>
-              <td class="spec-label">Data Storage & Security</td>
-              <td class="spec-value">Windows DPAPI Encrypted Local JSON (Zero Cloud Telemetry)</td>
-            </tr>
-            <tr>
-              <td class="spec-label">Network & NAS Support</td>
-              <td class="spec-value">Synology Drive / SSNAS auto-discovery with 30s probe monitor</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="specs-box">
+        <div class="spec-row"><span class="spec-k">OS</span><span class="spec-v">Windows 10 (1903+) / Windows 11 (x64)</span></div>
+        <div class="spec-row"><span class="spec-k">Framework</span><span class="spec-v">C# WPF (.NET Framework 4.8 native)</span></div>
+        <div class="spec-row"><span class="spec-k">Executable</span><span class="spec-v">True Single-File Executable (~5 MB, Costura/Fody)</span></div>
+        <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 (WPF-UI, Segoe Fluent Icons)</span></div>
+        <div class="spec-row"><span class="spec-k">Data Protection</span><span class="spec-v">Windows DPAPI Encryption (100% Offline Data Safety)</span></div>
+        <div class="spec-row"><span class="spec-k">Network Sync</span><span class="spec-v">Synology Drive / SSNAS auto-discovery & NAS health probe</span></div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Download Banner -->
-  <section class="cta-banner-section">
+  <!-- CTA Banner -->
+  <section class="cta-section">
     <div class="section-container">
-      <div class="cta-banner-card">
-        <div class="cta-content">
-          <h2 class="cta-title">Ready to Elevate Your Workstation?</h2>
-          <p class="cta-description">Download SS-CAM v3.5.0 and experience a faster, organized, and stress-free creative workflow.</p>
-          <div class="cta-actions">
-            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-xl btn-download" id="banner-download-btn">
-              <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Download SS-CAM v3.5.0 (.exe)
-            </a>
-          </div>
-          <div class="cta-meta">Single-file executable • Windows 10 & 11 • Internal Release</div>
-        </div>
+      <div class="cta-card">
+        <h2 class="cta-title">Upgrade Your Creative Environment.</h2>
+        <p class="cta-sub">Download SS-CAM v3.5.0 today — zero installer required.</p>
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-xl">
+          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download SS-CAM v3.5.0 (.exe)
+        </a>
       </div>
     </div>
   </section>
@@ -370,39 +437,20 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="section-container">
-      <div class="footer-grid">
-        <div class="footer-col brand-col">
-          <div class="brand-logo">
-            <div class="logo-badge">SS</div>
-            <span class="brand-name">SS-CAM</span>
-          </div>
-          <p class="footer-tagline">SuamiSihat™ Creative Assets Management workstation suite for creative designers.</p>
+      <div class="footer-content">
+        <div class="f-brand">
+          <span class="brand-name">SS-CAM</span>
+          <span class="f-copy">© 2026 SuamiSihat Sdn Bhd. Internal Workstation Tool.</span>
         </div>
-
-        <div class="footer-col">
-          <h4 class="footer-heading">Product</h4>
-          <a href="#features">Features</a>
-          <a href="#pillars">Core Pillars</a>
-          <a href="#showcase">App Tour</a>
-          <a href="#specs">Specifications</a>
-        </div>
-
-        <div class="footer-col">
-          <h4 class="footer-heading">Resources</h4>
+        <div class="f-links">
           <a href="https://github.com/SuamiSihat/ss_cam/releases">Releases</a>
-          <a href="https://github.com/SuamiSihat/ss_cam/wiki">GitHub Wiki</a>
-          <a href="https://github.com/SuamiSihat/ss_cam">Source Code</a>
+          <a href="https://github.com/SuamiSihat/ss_cam/wiki">Wiki</a>
+          <a href="https://github.com/SuamiSihat/ss_cam">GitHub</a>
         </div>
-      </div>
-
-      <div class="footer-bottom">
-        <span>© 2026 SuamiSihat Sdn Bhd. Internal Workstation Tool.</span>
-        <span>Built with Microsoft Fluent 2</span>
       </div>
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script src="app.js"></script>
 </body>
 </html>
