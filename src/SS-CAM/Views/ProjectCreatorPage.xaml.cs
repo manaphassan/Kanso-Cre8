@@ -409,8 +409,9 @@ namespace SS_CAM.Views
                     else if (sb.Length >= 2) subBrandCode = sb.Substring(0, Math.Min(4, sb.Length)).ToUpper();
                 }
 
+                string designerName = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : (currentProfile.StaffId ?? "");
                 string frontmatter = FrontmatterService.BuildDefaultFrontmatter(
-                    currentProfile.StaffId ?? "",
+                    designerName,
                     subBrandCode);
 
                 string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Project ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",

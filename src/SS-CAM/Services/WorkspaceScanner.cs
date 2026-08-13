@@ -189,8 +189,7 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
-        /// Scans the workspace root for first-level subdirectories that appear to be
-        /// designer Staff ID folders (e.g. 0001D, 0002S, 0003P).
+        /// Scans the workspace root for first-level subdirectories that represent designer folders (e.g. Ahmad, Faizal, Siti).
         /// Returns them as DesignerFolderChoice items for the filter dropdown.
         /// </summary>
         public static List<DesignerFolderChoice> GetDesignerFolders(string root)

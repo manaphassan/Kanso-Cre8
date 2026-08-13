@@ -40,16 +40,20 @@ namespace SS_CAM.Views
             DesignerFilterCmb.Items.Add("All Designers");
             List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(workspaceRoot);
             foreach (DesignerFolderChoice d in designers)
-                DesignerFilterCmb.Items.Add(d.StaffId);
+            {
+                if (d != null && !string.IsNullOrWhiteSpace(d.Name))
+                    DesignerFilterCmb.Items.Add(d.Name);
+            }
 
-            // Default to current user's Staff ID if it appears in the list
+            // Default to current user's Name or Staff ID if it appears in the list
             bool found = false;
-            if (!string.IsNullOrWhiteSpace(profile.StaffId))
+            string targetDesigner = !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : profile.StaffId;
+            if (!string.IsNullOrWhiteSpace(targetDesigner))
             {
                 for (int i = 0; i < DesignerFilterCmb.Items.Count; i++)
                 {
-                    if (string.Equals(DesignerFilterCmb.Items[i].ToString(), profile.StaffId,
-                        StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(DesignerFilterCmb.Items[i].ToString(), targetDesigner, StringComparison.OrdinalIgnoreCase) ||
+                        DesignerFilterCmb.Items[i].ToString().IndexOf(targetDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         DesignerFilterCmb.SelectedIndex = i;
                         found = true;
