@@ -142,7 +142,7 @@
 
                                 <!-- Visual Platform Cards Row -->
                                 <ui:TextBlock Text="Select Target Platform Preset" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,8"/>
-                                <UniformGrid Columns="6" Margin="0,0,0,14">
+                                <UniformGrid Columns="4" Margin="0,0,0,14">
                                     <ui:CardAction x:Name="CardPlatformWordPress" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="WordPress">
                                         <StackPanel HorizontalAlignment="Center">
                                             <ui:TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,4"/>
@@ -171,18 +171,32 @@
                                             <ui:TextBlock Text="1920x1080 px" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </ui:CardAction>
-                                    <ui:CardAction x:Name="CardPlatformPrint" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="Print">
+                                    <ui:CardAction x:Name="CardPlatformPrint" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="Print Poster A4">
                                         <StackPanel HorizontalAlignment="Center">
                                             <ui:TextBlock Text="&#xE749;" FontFamily="Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,4"/>
                                             <ui:TextBlock Text="Print Poster" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                             <ui:TextBlock Text="A4 / 300 DPI" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </ui:CardAction>
-                                    <ui:CardAction x:Name="CardPlatformBunting" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="Bunting">
+                                    <ui:CardAction x:Name="CardPlatformTrifold" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="Trifold">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <ui:TextBlock Text="&#xE7C3;" FontFamily="Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                            <ui:TextBlock Text="Trifold A4" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="3-Panel Brochure" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </ui:CardAction>
+                                    <ui:CardAction x:Name="CardPlatformA5Leaflet" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="A5 Leaflet">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <ui:TextBlock Text="&#xE8A5;" FontFamily="Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                            <ui:TextBlock Text="A5 Leaflet" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="148x210mm 300DPI" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </ui:CardAction>
+                                    <ui:CardAction x:Name="CardPlatformRollup" Padding="8,10" Margin="2" Click="OnVisualPlatformCardClicked" Tag="Rollup">
                                         <StackPanel HorizontalAlignment="Center">
                                             <ui:TextBlock Text="&#xE914;" FontFamily="Segoe Fluent Icons" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                                            <ui:TextBlock Text="Bunting 2x5ft" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                            <ui:TextBlock Text="CMYK 150 DPI" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                            <ui:TextBlock Text="Rollup 80x200" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="80x200cm 150DPI" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </ui:CardAction>
                                 </UniformGrid>

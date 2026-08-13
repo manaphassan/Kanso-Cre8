@@ -183,6 +183,9 @@ namespace SS_CAM.Views
                 "YouTube / Video Banner (16:9 - 1920x1080 RGB)",
                 "Print Poster A4 (210x297mm CMYK 300 DPI)",
                 "Print Poster A3 (297x420mm CMYK 300 DPI)",
+                "Trifold A4 Brochure (297x210mm CMYK 300 DPI)",
+                "A5 Leaflet / Flyer (148x210mm CMYK 300 DPI)",
+                "Rollup Bunting (80x200cm CMYK 150 DPI)",
                 "Event Bunting 2x5 ft (60x150cm CMYK 150 DPI)",
                 "Large Outdoor Billboard (10x4 ft CMYK 100 DPI)",
                 "Flexible / Custom Canvas"
@@ -244,6 +247,9 @@ namespace SS_CAM.Views
                 else if (platform.Contains("16:9")) PlatformSpecsText.Text = "1920 x 1080 px • 72 DPI • sRGB Color Mode • 16:9 HD Display";
                 else if (platform.Contains("Print Poster A4")) PlatformSpecsText.Text = "2480 x 3508 px (A4 210x297 mm) • 300 DPI • CMYK Color Mode";
                 else if (platform.Contains("Print Poster A3")) PlatformSpecsText.Text = "3508 x 4960 px (A3 297x420 mm) • 300 DPI • CMYK Color Mode";
+                else if (platform.Contains("Trifold")) PlatformSpecsText.Text = "3508 x 2480 px (A4 297x210 mm Landscape) • 300 DPI • CMYK • 3-Panel Brochure";
+                else if (platform.Contains("A5 Leaflet")) PlatformSpecsText.Text = "1748 x 2480 px (A5 148x210 mm) • 300 DPI • CMYK Color Mode • Flyer";
+                else if (platform.Contains("Rollup")) PlatformSpecsText.Text = "4724 x 11811 px (80x200 cm) • 150 DPI • CMYK Color Mode • Rollup Banner";
                 else if (platform.Contains("Bunting")) PlatformSpecsText.Text = "3600 x 9000 px (2x5 ft / 60x150 cm) • 150 DPI • CMYK Color Mode";
                 else if (platform.Contains("Billboard")) PlatformSpecsText.Text = "12000 x 4800 px (10x4 ft) • 100 DPI • CMYK Color Mode";
                 else PlatformSpecsText.Text = "Custom Dimensions • Flexible DPI & Color Mode";
