@@ -2,30 +2,25 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.5.0] - 2026-08-13 (Latest)
+## [3.5.0] - 2026-08-14 (Latest)
 
-### Added & Refined — Major Productivity Release
-- **In-App Notification Center (`NotificationService`, `MainWindow`)**:
-  - Persistent in-memory notification history (`ObservableCollection<NotificationItem>`).
-  - Top header Notification Bell button with dynamic unread badge counter (`🔔`).
-  - Slide-out Notification Center Drawer flyout with *Mark Read*, *Clear All*, and item navigation.
-- **Visual Project Timeline & Gantt Chart View (`CalendarPage`)**:
-  - Segmented View Switcher in control bar (`[ Grid View ]` vs. `[ Gantt Timeline ]`).
-  - Dynamic monthly date scale header and timeline bars spanning project start dates to deadlines.
-  - Status-based color coding (Slate for Backlog, Brand Blue for In Progress, Caution Amber for Review, Success Green for Done).
-  - Rich tooltips displaying project name, designer, status, start date, and deadline.
-- **Enhanced Kanban Drag-and-Drop (`TaskManagerPage`)**:
-  - Card drag-and-drop between Kanban columns updates `status:` in `README.md` YAML frontmatter instantly.
-  - Automatic notification logging, KPI metric updates, and board refresh.
-- **Fresh Install Auto-Discovery & Workstation Setup Wizard (`NasConfigSyncService`, `UserProfileService`, `FirstRunSetupDialog`)**:
-  - Automatic Synology Drive / NAS workspace root scanning (`E:\SynologyDrive\Creative-Team`, etc.).
-  - Automatic restoration of existing `user_profile_{username}.json` and `theme_config_{username}.json` configs on fresh downloads.
-  - First-run setup modal (`FirstRunSetupDialog`) for new workstations to configure Designer Name, Staff ID, Department, and Workspace Root.
+### Added & Refined — Designer Companion & Second Brain Release
+- **Minimal 2-Column Brand Assets & Live Swatch Inspector (`BrandAssetsPage`)**:
+  - Replaced legacy multi-card layout with a sleek 2-column responsive design.
+  - Interactive **Primary**, **Secondary**, and **Neutrals** swatch ribbons.
+  - Live Inspector Card displaying color preview tile, Swatch Title, **HEX**, **RGB**, **CMYK**, and **Pantone** breakdowns with auto-copy to clipboard.
+- **Search & Copy Engine Stability Revert (`SearchCopyPage`, `WorkspaceScanner`)**:
+  - Reverted Search & Copy module to git tag `v3.4.0` state, restoring fast full-text workspace indexing and README markdown preview rendering.
+- **Dynamic Theme Contrast & Fluent 2 Standardization**:
+  - Standardized all 14 page views to use native WPF-UI dynamic resource tokens (`ApplicationPageBackgroundThemeBrush`, `CardBackgroundFillColorDefaultBrush`, `TextFillColorPrimaryBrush`, `TextFillColorSecondaryBrush`).
+  - Standardized all page titles to `FontSize="24"` and section headers to `FontSize="16"`.
+- **Task Manager FIFO Queue & Date Filter Upgrades (`TaskManagerPage`)**:
+  - Added `created:` frontmatter tag support, queue age display (`📅 14d in queue`), FIFO Queue Order sorting (`Oldest First`), and `Created Date` drawer editor.
 
 ### Integrity
 | File | Details |
 |---|---|
-| `SS-CAM-v3.5.0.exe` | Compiled Native C# WPF Executable |
+| `SS-CAM-v3.5.0.exe` | Compiled Native C# WPF Executable (~5 MB single-file) |
 | `AssemblyVersion` | 3.5.0.0 |
 | `AssemblyFileVersion` | 3.5.0.0 |
 

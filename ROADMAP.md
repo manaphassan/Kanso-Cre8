@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-12.
+> **Living document.** Updated with every release. Last updated: 2026-08-14.
 
 ---
 
@@ -25,11 +25,11 @@
 | **v3.1.2** | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
 | **v3.2.0** | 2026-08-12 | Big Calendar module (`CalendarPage`), Task Manager Calendar Date & FIFO Queue Order sorting, SSNAS Synology Drive Setup guide |
 | **v3.3.0** | 2026-08-13 | Fluent 2 Startup Splash Window, Centralized Notification & Clipboard Services, Task Manager queue & parser upgrades |
-| **v3.5.0** | 2026-08-13 | In-App Notification Center, Visual Project Timeline / Gantt Chart view, Kanban drag-and-drop enhancements, NAS auto-discovery & fresh install profile setup wizard |
+| **v3.5.0** | 2026-08-14 | Minimal 2-column Brand Assets & Live Swatch Inspector (HEX/RGB/CMYK/Pantone), Search & Copy v3.4 stability revert, dynamic token contrast standardization across all 14 views |
 
 ---
 
-## 🔄 In Progress — v3.3.0 (Target: Q4 2026 / Q1 2027)
+## 🔄 In Progress — v3.6.0 (Target: Q4 2026 / Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
 
