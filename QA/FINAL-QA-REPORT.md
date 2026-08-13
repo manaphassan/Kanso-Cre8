@@ -1,8 +1,8 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v3.1.0 QR Code Studio & Audio Visualizer
+## Status: PASS — v3.5.0 Minimal Brand Assets & Designer Companion Release
 
-**QA Date**: 2026-08-12 (post v3.1.0 release)  
+**QA Date**: 2026-08-14 (post v3.5.0 release)  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**
 
