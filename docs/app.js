@@ -1,11 +1,61 @@
 /**
- * SS-CAM Product Landing Page — Light Mode App Logic
- * SuamiSihat Official Workstation Suite
+ * SS-CAM Product Landing Page — Official SuamiSihat™ Design System App Logic
+ * Reference: https://assets.suamisihat.myds.me/
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 1. Mobile Menu Navigation
+  // 1. Interactive Sine Wave Canvas Animation for SuamiSihat Hero
+  const canvas = document.getElementById('heroWaveCanvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let step = 0;
+
+    function resizeCanvas() {
+      width = canvas.width = canvas.parentElement.offsetWidth;
+      height = canvas.height = canvas.parentElement.offsetHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawWave() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      
+      step += 0.015;
+
+      const lines = [
+        { color: 'rgba(33, 161, 247, 0.25)', speed: 0.8, amp: 40, freq: 0.008 },
+        { color: 'rgba(109, 198, 236, 0.20)', speed: 1.2, amp: 30, freq: 0.01 },
+        { color: 'rgba(189, 154, 115, 0.15)', speed: 0.5, amp: 50, freq: 0.006 }
+      ];
+
+      lines.forEach((line) => {
+        ctx.beginPath();
+        ctx.strokeStyle = line.color;
+        ctx.lineWidth = 1.5;
+
+        for (let x = 0; x <= width; x += 10) {
+          const y = Math.sin(x * line.freq + step * line.speed) * line.amp + height / 2;
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      });
+
+      ctx.restore();
+      requestAnimationFrame(drawWave);
+    }
+
+    drawWave();
+  }
+
+  // 2. Mobile Menu Navigation
   const mobileToggle = document.getElementById('mobile-toggle');
   const navMenu = document.getElementById('nav-menu');
 
@@ -21,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Interactive 3D Perspective Tilt on Hero Viewport
+  // 3. Interactive 3D Perspective Tilt on Hero Viewport
   const heroViewport = document.getElementById('hero-viewport-frame');
   if (heroViewport) {
     heroViewport.addEventListener('mousemove', (e) => {
@@ -32,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      const rotateX = ((y - centerY) / centerY) * -5; // Tilt X axis
-      const rotateY = ((x - centerX) / centerX) * 5;  // Tilt Y axis
+      const rotateX = ((y - centerY) / centerY) * -5;
+      const rotateY = ((x - centerX) / centerX) * 5;
 
       heroViewport.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
     });
@@ -43,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Scroll-Triggered Reveal Animations (IntersectionObserver)
+  // 4. Scroll-Triggered Reveal Animations (IntersectionObserver)
   const revealElements = document.querySelectorAll('.reveal');
   const observerOptions = {
     root: null,
@@ -62,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   revealElements.forEach(el => revealObserver.observe(el));
 
-  // 4. App Tour Showcase Tabs
+  // 5. App Tour Showcase Tabs
   const tabBtns = document.querySelectorAll('.tab-btn');
   const showcasePanels = document.querySelectorAll('.showcase-panel');
 
