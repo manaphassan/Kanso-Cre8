@@ -12,6 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Iconify for Segoe Fluent Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@3/dist/iconify.min.js" defer></script>
+  
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -36,7 +39,7 @@
 
       <div class="nav-actions">
         <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary-white btn-sm" id="nav-cta">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
           Download v3.5.0
         </a>
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
@@ -46,7 +49,7 @@
     </div>
   </header>
 
-  <!-- Official SuamiSihat Hero Section with Wave Canvas & Ambient Glow -->
+  <!-- Official SuamiSihat Hero Section with Animated SS Logo & Men Symbol Particles -->
   <section class="hero-section">
     <canvas id="heroWaveCanvas" class="hero-wave-canvas"></canvas>
     <div class="hero-ambient-glow"></div>
@@ -69,17 +72,17 @@
 
       <div class="hero-actions reveal">
         <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-hero-primary" id="hero-download">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.25rem;"></iconify-icon>
           Download SS-CAM v3.5.0
           <span class="btn-subtext">(~5 MB • Single-File Exe)</span>
         </a>
       </div>
 
-      <!-- Glassmorphic Trust Badges -->
+      <!-- Fluent Trust Badges -->
       <div class="hero-badges reveal">
-        <span class="hero-badge-item">✓ Windows 10 &amp; 11 Native</span>
-        <span class="hero-badge-item">✓ Zero Installation Setup</span>
-        <span class="hero-badge-item">✓ 100% DPAPI Encrypted</span>
+        <span class="hero-badge-item"><iconify-icon icon="fluent:checkmark-circle-24-regular"></iconify-icon> Windows 10 &amp; 11 Native</span>
+        <span class="hero-badge-item"><iconify-icon icon="fluent:flash-24-regular"></iconify-icon> Zero Installation Setup</span>
+        <span class="hero-badge-item"><iconify-icon icon="fluent:shield-checkmark-24-regular"></iconify-icon> 100% DPAPI Encrypted</span>
       </div>
 
       <!-- Main App Showcase 3D Viewport -->
@@ -136,26 +139,30 @@
       <div class="pillars-grid">
         
         <div class="pillar-card reveal">
+          <div class="pillar-icon-box"><iconify-icon icon="fluent:brain-circuit-24-regular"></iconify-icon></div>
           <div class="pillar-num">01</div>
-          <h3 class="pillar-title">🧠 Second Brain Intelligence</h3>
+          <h3 class="pillar-title">Second Brain Intelligence</h3>
           <p class="pillar-body">Automates sequential 4-digit job IDs, standardized folder trees, full-text workspace indexer, and markdown README previewer.</p>
         </div>
 
         <div class="pillar-card reveal">
+          <div class="pillar-icon-box"><iconify-icon icon="fluent:task-list-square-24-regular"></iconify-icon></div>
           <div class="pillar-num">02</div>
-          <h3 class="pillar-title">⚡ Task & Queue Management</h3>
+          <h3 class="pillar-title">Task &amp; Queue Management</h3>
           <p class="pillar-body">YAML frontmatter Kanban status board, 7×6 Big Calendar project timetable, FIFO queue age tracking, and campaign deadline markers.</p>
         </div>
 
         <div class="pillar-card reveal">
+          <div class="pillar-icon-box"><iconify-icon icon="fluent:color-24-regular"></iconify-icon></div>
           <div class="pillar-num">03</div>
-          <h3 class="pillar-title">🎨 Brand Assets & Swatch Inspector</h3>
+          <h3 class="pillar-title">Brand Assets &amp; Swatch Inspector</h3>
           <p class="pillar-body">Sleek 2-column brand palette explorer with live HEX, RGB, CMYK, Pantone inspector, vector QR Code studio, and font installer.</p>
         </div>
 
         <div class="pillar-card reveal">
+          <div class="pillar-icon-box"><iconify-icon icon="fluent:heart-pulse-24-regular"></iconify-icon></div>
           <div class="pillar-num">04</div>
-          <h3 class="pillar-title">🧘 Creative Wellbeing & Balance</h3>
+          <h3 class="pillar-title">Creative Wellbeing &amp; Balance</h3>
           <p class="pillar-body">DPAPI Mind Drops journal, 16s box breathing coach, fatigue check-ins, Malaysian focus radio stations, and JAKIM Waktu Solat timetable.</p>
         </div>
 
@@ -194,8 +201,8 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-dashboard.png" alt="SS-CAM Dashboard" class="showcase-img">
-            <div class="hotspot-pin" style="top:22%; left:25%;" data-tooltip="📊 Active Storage Analytics: Live local & NAS disk probe"></div>
-            <div class="hotspot-pin" style="top:45%; left:65%;" data-tooltip="📈 Project Workload Ratio: Sub-brand project volume chart"></div>
+            <div class="hotspot-pin" style="top:22%; left:25%;" data-tooltip="Active Storage Analytics: Live local & NAS disk probe"></div>
+            <div class="hotspot-pin" style="top:45%; left:65%;" data-tooltip="Project Workload Ratio: Sub-brand project volume chart"></div>
           </div>
         </div>
 
@@ -207,7 +214,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-project-creator.png" alt="SS-CAM Project Creator" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:35%;" data-tooltip="🏷️ Sequential Job ID Engine: Auto-formats YYYYMM_NNNNX_BRAND_Name"></div>
+            <div class="hotspot-pin" style="top:30%; left:35%;" data-tooltip="Sequential Job ID Engine: Auto-formats YYYYMM_NNNNX_BRAND_Name"></div>
           </div>
         </div>
 
@@ -219,7 +226,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-search-copy.png" alt="SS-CAM Search & Copy" class="showcase-img">
-            <div class="hotspot-pin" style="top:35%; left:70%;" data-tooltip="📄 Markdown README Renderer: In-app project brief preview"></div>
+            <div class="hotspot-pin" style="top:35%; left:70%;" data-tooltip="Markdown README Renderer: In-app project brief preview"></div>
           </div>
         </div>
 
@@ -231,7 +238,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-brand-assets.png" alt="SS-CAM Brand Assets" class="showcase-img">
-            <div class="hotspot-pin" style="top:40%; left:75%;" data-tooltip="🎨 Live Swatch Inspector: Breaks down HEX, RGB, CMYK & Pantone"></div>
+            <div class="hotspot-pin" style="top:40%; left:75%;" data-tooltip="Live Swatch Inspector: Breaks down HEX, RGB, CMYK & Pantone"></div>
           </div>
         </div>
 
@@ -243,7 +250,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-task-manager.png" alt="SS-CAM Task Manager" class="showcase-img">
-            <div class="hotspot-pin" style="top:35%; left:45%;" data-tooltip="📋 Frontmatter Kanban: Parses markdown README headers into board columns"></div>
+            <div class="hotspot-pin" style="top:35%; left:45%;" data-tooltip="Frontmatter Kanban: Parses markdown README headers into board columns"></div>
           </div>
         </div>
 
@@ -255,7 +262,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-big-calendar.png" alt="SS-CAM Big Calendar" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:50%;" data-tooltip="📅 7×6 Timetable: Maps deadlines & Friday Solat markers"></div>
+            <div class="hotspot-pin" style="top:30%; left:50%;" data-tooltip="7×6 Timetable: Maps deadlines & Friday Solat markers"></div>
           </div>
         </div>
 
@@ -267,7 +274,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-quick-notes.png" alt="SS-CAM Quick Notes" class="showcase-img">
-            <div class="hotspot-pin" style="top:40%; left:60%;" data-tooltip="📝 Local Scratchpad: Auto-saves design briefs & copy notes"></div>
+            <div class="hotspot-pin" style="top:40%; left:60%;" data-tooltip="Local Scratchpad: Auto-saves design briefs & copy notes"></div>
           </div>
         </div>
 
@@ -279,7 +286,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:40%;" data-tooltip="🕌 JAKIM Live API: Real-time prayer timetable for 41 Malaysian zones"></div>
+            <div class="hotspot-pin" style="top:30%; left:40%;" data-tooltip="JAKIM Live API: Real-time prayer timetable for 41 Malaysian zones"></div>
           </div>
         </div>
 
@@ -291,7 +298,7 @@
           </div>
           <div class="hotspot-stage-wrapper">
             <img src="app-profile-settings.png" alt="SS-CAM Settings" class="showcase-img">
-            <div class="hotspot-pin" style="top:45%; left:30%;" data-tooltip="⚙️ Designer Identity: Personalize local paths & theme presets"></div>
+            <div class="hotspot-pin" style="top:45%; left:30%;" data-tooltip="Designer Identity: Personalize local paths & theme presets"></div>
           </div>
         </div>
 
@@ -311,16 +318,16 @@
               High-intensity design sprints require balance. SS-CAM integrates mental health tools right into your desktop environment so you stay inspired, calm, and grounded throughout the workday.
             </p>
             <div class="wellbeing-features-list">
-              <div class="w-item">🫁 <strong>16s Box Breathing Coach</strong> — Reset stress with guided 4-step rhythm</div>
-              <div class="w-item">📻 <strong>Focus Radio Streams</strong> — Stream 8 local Malaysian radio stations</div>
-              <div class="w-item">🕌 <strong>JAKIM Solat Sync</strong> — Live countdowns &amp; adhan notifications</div>
-              <div class="w-item">🔒 <strong>DPAPI Mind Drops</strong> — Private encrypted reflection journal</div>
+              <div class="w-item"><iconify-icon icon="fluent:breath-24-regular"></iconify-icon> <strong>16s Box Breathing Coach</strong> — Reset stress with guided 4-step rhythm</div>
+              <div class="w-item"><iconify-icon icon="fluent:radio-24-regular"></iconify-icon> <strong>Focus Radio Streams</strong> — Stream 8 local Malaysian radio stations</div>
+              <div class="w-item"><iconify-icon icon="fluent:clock-24-regular"></iconify-icon> <strong>JAKIM Solat Sync</strong> — Live countdowns &amp; adhan notifications</div>
+              <div class="w-item"><iconify-icon icon="fluent:lock-closed-24-regular"></iconify-icon> <strong>DPAPI Mind Drops</strong> — Private encrypted reflection journal</div>
             </div>
           </div>
           <div class="wellbeing-visual">
             <div class="breathing-pulse-ring"></div>
             <div class="visual-center-badge">
-              <span>🧘</span>
+              <iconify-icon icon="fluent:heart-pulse-24-regular" style="font-size:2.2rem; color:var(--ss-gold-warm);"></iconify-icon>
               <div class="badge-text">Mindful Flow</div>
             </div>
           </div>
@@ -355,7 +362,7 @@
         <h2 class="cta-title">Upgrade Your Creative Environment.</h2>
         <p class="cta-sub">Download SS-CAM v3.5.0 today — zero installer required.</p>
         <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-hero-primary btn-xl">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
           Download SS-CAM v3.5.0 (.exe)
         </a>
       </div>
