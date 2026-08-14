@@ -31,4 +31,31 @@ public partial class MainViewModel : ViewModelBase
         SelectedNavTab = tabName;
         StatusMessage = $"Navigated to {tabName}";
     }
+
+    [RelayCommand]
+    private void CreateDesktopShortcut()
+    {
+        try
+        {
+            string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string desktopDir = Path.Combine(userHome, "Desktop");
+            
+            if (!Directory.Exists(desktopDir))
+            {
+                Directory.CreateDirectory(desktopDir);
+            }
+
+            string shortcutPath = Path.Combine(desktopDir, "SS-CAM.desktop");
+            string execPath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "SS-CAM.Linux";
+
+            string content = $"[Desktop Entry]\nType=Application\nName=SS-CAM Desktop\nComment=SuamiSihat Creative Assets Management\nExec={execPath}\nIcon=avalonia-logo\nTerminal=false\nCategories=Graphics;Development;\n";
+            File.WriteAllText(shortcutPath, content);
+
+            StatusMessage = $"Desktop shortcut created at {shortcutPath}";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to create desktop shortcut: {ex.Message}";
+        }
+    }
 }
