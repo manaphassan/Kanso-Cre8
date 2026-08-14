@@ -1,4 +1,4 @@
-﻿# Publish-SSCamRelease.ps1
+# Publish-SSCamRelease.ps1
 # Automates the SS-CAM GitHub Release publication pipeline.
 # Usage:
 #   .\Publish-SSCamRelease.ps1 -Version "3.0.1"
@@ -108,11 +108,14 @@ if (-not $headline) { $headline = "SS-CAM $tag Release" }
 $releaseTitle = "SS-CAM $tag - $headline"
 
 if (-not $DryRun) {
-    $releaseExists = $false
-    try {
-        $null = gh release view $tag --repo SuamiSihat/ss_cam 2>&1
-        if ($LASTEXITCODE -eq 0) { $releaseExists = $true }
-    } catch {}
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        Write-Result 'GitHub Release' "$tag publish blocked" 'BLOCKED' "GitHub CLI (gh) not installed on local machine. Git tag $tag pushed to remote."
+    } else {
+        $releaseExists = $false
+        try {
+            $null = gh release view $tag --repo SuamiSihat/ss_cam 2>&1
+            if ($LASTEXITCODE -eq 0) { $releaseExists = $true }
+        } catch {}
 
     if ($releaseExists) {
         # Release exists — edit it
@@ -130,6 +133,7 @@ if (-not $DryRun) {
         Write-Result 'GitHub Release' "$tag published as Latest" 'PASS'
     } else {
         Write-Result 'GitHub Release' "$tag publish failed" 'FAIL' "Check gh auth status and network connectivity."
+    }
     }
 } else {
     Write-Result 'GitHub Release' "$tag published as Latest" 'PASS' '(DryRun: skipped actual publish)'

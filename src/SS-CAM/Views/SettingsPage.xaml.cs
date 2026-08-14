@@ -148,6 +148,12 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnCreateDesktopShortcut(object sender, RoutedEventArgs e)
+        {
+            string result = PayloadInstallerService.CreateAppDesktopShortcut();
+            MessageBox.Show(result, "Desktop Shortcut", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void OnRepairFonts(object sender, RoutedEventArgs e)
         {
             string result = PayloadInstallerService.InstallBrandFonts();

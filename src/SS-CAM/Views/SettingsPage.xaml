@@ -453,6 +453,26 @@
                             <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="0,1,0,0" Padding="0,12,0,0">
                                 <StackPanel>
+                                    <!-- Desktop Shortcut row -->
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <ui:TextBlock Text="Desktop Shortcut" FontSize="13" FontWeight="SemiBold"
+                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="Create shortcut icon on your Windows Desktop"
+                                                          FontSize="11"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:Button Grid.Column="1"
+                                                   Appearance="Primary"
+                                                   Icon="{ui:SymbolIcon Desktop24}"
+                                                   Click="OnCreateDesktopShortcut"
+                                                   Width="32" Height="32" Padding="0"
+                                                   ToolTip="Create Desktop Shortcut" Cursor="Hand"/>
+                                    </Grid>
                                     <!-- Install fonts row -->
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>

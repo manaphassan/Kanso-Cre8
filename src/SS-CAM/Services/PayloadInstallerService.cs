@@ -175,6 +175,50 @@ namespace SS_CAM.Services
             }
         }
 
+        public static string CreateAppDesktopShortcut()
+        {
+            try
+            {
+                string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string shortcutPath = Path.Combine(desktop, "SuamiSihat Creative Assets Management.lnk");
+                string exePath = Process.GetCurrentProcess().MainModule.FileName;
+
+                string psCommand = string.Format(
+                    "$s=(New-Object -COM WScript.Shell).CreateShortcut('{0}');$s.TargetPath='{1}';$s.WorkingDirectory='{2}';$s.Save()",
+                    shortcutPath.Replace("'", "''"),
+                    exePath.Replace("'", "''"),
+                    Path.GetDirectoryName(exePath).Replace("'", "''")
+                );
+
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -Command \"{0}\"", psCommand),
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (Process p = Process.Start(psi))
+                {
+                    p.WaitForExit(3000);
+                }
+
+                if (File.Exists(shortcutPath))
+                {
+                    return "Desktop shortcut for SS-CAM created successfully!";
+                }
+                else
+                {
+                    return "Failed to create desktop shortcut. Please check directory permissions.";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[PayloadInstallerService] CreateAppDesktopShortcut: " + ex.Message);
+                return string.Format("Desktop shortcut creation failed: {0}", ex.Message);
+            }
+        }
+
         private static void CreateUrlShortcut(string filePath, string url)
         {
             string content = string.Format("[InternetShortcut]\nURL={0}\n", url);
