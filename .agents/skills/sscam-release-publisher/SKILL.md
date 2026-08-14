@@ -1,4 +1,4 @@
-﻿---
+---
 name: sscam-release-publisher
 description: >
   Automates the complete SS-CAM GitHub release publication pipeline.
@@ -79,13 +79,22 @@ Do NOT continue to Step 2 if any check is FAIL.
 
 Update ALL of the following files. Replace vX.Y.Z with the exact release tag.
 
-### Root Documentation
+### Root & Web Documentation
 
 | File | What to update |
 |---|---|
 | README.md | Version badge, What's New section, Installation exe reference, Release History table row at top |
 | ROADMAP.md | Last updated date, vX.Y.Z row in Released Milestones, In Progress label bumped to next version |
 | CHANGELOG.md | Verify ## [X.Y.Z] section at top with summary and integrity table |
+| docs/index.html | Landing page badges, CTAs, version strings, multi-platform specs (Windows & Fedora Linux) |
+
+### Git Cleaner & Repository Housekeeping
+
+Run the automated repository cleaner before committing to purge temp artifacts and enforce BOM:
+
+```powershell
+.\.agents\skills\sscam-git-cleaner\scripts\repo-cleaner.ps1 -All
+```
 
 ### QA Suite Headers
 
