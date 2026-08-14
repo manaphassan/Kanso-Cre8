@@ -23,7 +23,9 @@
                     </StackPanel>
                     <ui:TextBlock Text="Hardware telemetry, GPU OpenCL rendering status, storage performance, and Creative Suite installation integrity." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                 </StackPanel>
-                <ui:Button Grid.Column="1" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" Click="OnRescanSoftwareClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Rescan Workstation &amp; Creative Suite Software" VerticalAlignment="Center"/>
+                <ui:Button Grid.Column="1" Appearance="Primary" Click="OnRescanSoftwareClicked" Width="36" Height="36" Padding="0" Cursor="Hand" ToolTip="Rescan Workstation &amp; Creative Suite Software" VerticalAlignment="Center">
+                    <ui:SymbolIcon Symbol="ArrowSync24"/>
+                </ui:Button>
             </Grid>
 
             <!-- Hero KPI Summary Grid (4 Metric Cards) -->
@@ -221,7 +223,7 @@
                                 <ui:TextBlock Text="Design Suite Software Scanner" FontTypography="BodyStrong"/>
                                 <ui:TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Diagnostics" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0"/>
                             </StackPanel>
-                            <ui:TextBox x:Name="SoftwareSearchBox" Grid.Column="1" PlaceholderText="Search software..." Icon="{ui:SymbolIcon Search24}" Width="200" TextChanged="OnSoftwareSearchTextChanged" VerticalAlignment="Center"/>
+                            <ui:TextBox x:Name="SoftwareSearchBox" Grid.Column="1" PlaceholderText="Search software..." Icon="{ui:SymbolIcon Symbol=Search24}" Width="200" TextChanged="OnSoftwareSearchTextChanged" VerticalAlignment="Center"/>
                         </Grid>
 
                         <!-- Table Header Card -->
@@ -283,10 +285,14 @@
                                             <!-- Action Buttons Column -->
                                             <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
                                                 <!-- Get App (Visible if NOT installed) -->
-                                                <ui:Button Icon="{ui:SymbolIcon ArrowDownload24}" Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Download Software Package" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                <ui:Button Click="OnDownloadSoftwareClicked" Tag="{Binding DownloadUrl}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Download Software Package" Visibility="{Binding ShowActionButton, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,6,0">
+                                                    <ui:SymbolIcon Symbol="ArrowDownload24"/>
+                                                </ui:Button>
 
                                                 <!-- Uninstall (Visible if INSTALLED) -->
-                                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Click="OnUninstallSoftwareClicked" Tag="{Binding SoftwareName}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Uninstall Software" Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <ui:Button Click="OnUninstallSoftwareClicked" Tag="{Binding SoftwareName}" Appearance="Secondary" Width="30" Height="30" Padding="0" ToolTip="Uninstall Software" Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <ui:SymbolIcon Symbol="Delete24"/>
+                                                </ui:Button>
                                             </StackPanel>
                                         </Grid>
                                     </ui:Card>

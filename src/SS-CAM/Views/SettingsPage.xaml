@@ -98,12 +98,13 @@
                                                    Visibility="Collapsed"/>
                                         </Grid>
                                     </Border>
-                                     <ui:Button Icon="{ui:SymbolIcon Camera24}"
-                                                Click="OnChangeAvatarClicked"
-                                                Width="30" Height="30" Margin="0,8,0,0"
-                                                Padding="0" ToolTip="Change Avatar Photo"
-                                                Appearance="Secondary" Cursor="Hand"
-                                                HorizontalAlignment="Center"/>
+                                      <ui:Button Click="OnChangeAvatarClicked"
+                                                 Width="30" Height="30" Margin="0,8,0,0"
+                                                 Padding="0" ToolTip="Change Avatar Photo"
+                                                 Appearance="Secondary" Cursor="Hand"
+                                                 HorizontalAlignment="Center">
+                                          <ui:SymbolIcon Symbol="Camera24"/>
+                                      </ui:Button>
                                  </StackPanel>
                                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                      <ui:TextBlock x:Name="ProfileHeaderName"
@@ -171,10 +172,11 @@
                                 </Grid.ColumnDefinitions>
                                 <ui:Button Grid.Column="0"
                                            Appearance="Primary"
-                                           Icon="{ui:SymbolIcon Save24}"
                                            Click="OnSaveProfileClicked"
                                            Width="34" Height="34" Padding="0"
-                                           ToolTip="Save Designer Profile" Cursor="Hand"/>
+                                           ToolTip="Save Designer Profile" Cursor="Hand">
+                                    <ui:SymbolIcon Symbol="Save24"/>
+                                </ui:Button>
                                 <ui:TextBlock x:Name="ProfileSaveStatus"
                                              Grid.Column="1"
                                              Text=""
@@ -217,9 +219,10 @@
                                 <ui:TextBox x:Name="WorkspaceRootInput" Height="34"/>
                                 <ui:Button Grid.Column="2"
                                            Appearance="Secondary"
-                                           Icon="{ui:SymbolIcon Folder24}"
                                            Click="OnBrowseWorkspace"
-                                           Height="34" Width="34" Padding="0" Cursor="Hand" ToolTip="Browse Workspace Directory"/>
+                                           Height="34" Width="34" Padding="0" Cursor="Hand" ToolTip="Browse Workspace Directory">
+                                    <ui:SymbolIcon Symbol="Folder24"/>
+                                </ui:Button>
                             </Grid>
                         </StackPanel>
                     </ui:Card>
@@ -468,10 +471,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Primary"
-                                                   Icon="{ui:SymbolIcon Desktop24}"
                                                    Click="OnCreateDesktopShortcut"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Create Desktop Shortcut" Cursor="Hand"/>
+                                                   ToolTip="Create Desktop Shortcut" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="Desktop24"/>
+                                        </ui:Button>
                                     </Grid>
                                     <!-- Install fonts row -->
                                     <Grid Margin="0,0,0,10">
@@ -488,10 +492,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Primary"
-                                                   Icon="{ui:SymbolIcon TextFont24}"
                                                    Click="OnRepairFonts"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Install Brand Fonts into Windows" Cursor="Hand"/>
+                                                   ToolTip="Install Brand Fonts into Windows" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="TextFont24"/>
+                                        </ui:Button>
                                     </Grid>
                                     <!-- Deploy assets row -->
                                     <Grid Margin="0,0,0,10">
@@ -508,10 +513,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Primary"
-                                                   Icon="{ui:SymbolIcon Library24}"
                                                    Click="OnDeployAssets"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Deploy Brand Asset Libraries" Cursor="Hand"/>
+                                                   ToolTip="Deploy Brand Asset Libraries" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="Library24"/>
+                                        </ui:Button>
                                     </Grid>
                                     <!-- Check updates row -->
                                     <Grid>
@@ -528,10 +534,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Secondary"
-                                                   Icon="{ui:SymbolIcon ArrowSync24}"
                                                    Click="OnCheckUpdates"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Check for Updates" Cursor="Hand"/>
+                                                   ToolTip="Check for Updates" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="ArrowSync24"/>
+                                        </ui:Button>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -575,10 +582,11 @@
                                     </StackPanel>
                                     <ui:Button Grid.Column="1"
                                                Appearance="Primary"
-                                               Icon="{ui:SymbolIcon Settings24}"
                                                Click="OnManageCategoryPresetsClicked"
                                                Width="32" Height="32" Padding="0"
-                                               ToolTip="Manage Category Presets &amp; Folder Structures" Cursor="Hand"/>
+                                               ToolTip="Manage Category Presets &amp; Folder Structures" Cursor="Hand">
+                                        <ui:SymbolIcon Symbol="Settings24"/>
+                                    </ui:Button>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -622,10 +630,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Secondary"
-                                                   Icon="{ui:SymbolIcon ArrowCounterclockwise24}"
                                                    Click="OnResetProfileDefaults"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Reset Profile Defaults" Cursor="Hand"/>
+                                                   ToolTip="Reset Profile Defaults" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="ArrowCounterclockwise24"/>
+                                        </ui:Button>
                                     </Grid>
                                     <!-- Clear all row -->
                                     <Grid>
@@ -642,10 +651,11 @@
                                         </StackPanel>
                                         <ui:Button Grid.Column="1"
                                                    Appearance="Danger"
-                                                   Icon="{ui:SymbolIcon Delete24}"
                                                    Click="OnClearAllData"
                                                    Width="32" Height="32" Padding="0"
-                                                   ToolTip="Clear Cache &amp; Reset All Local Data" Cursor="Hand"/>
+                                                   ToolTip="Clear Cache &amp; Reset All Local Data" Cursor="Hand">
+                                            <ui:SymbolIcon Symbol="Delete24"/>
+                                        </ui:Button>
                                     </Grid>
                                 </StackPanel>
                             </Border>
