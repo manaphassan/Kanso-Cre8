@@ -189,7 +189,7 @@ a {
 .mobile-toggle span { width: 22px; height: 2px; background: #ffffff; border-radius: 2px; }
 
 /* --------------------------------------------------------------------------
-   Official Hero Section with Vertical Brand Gradient & Wave Canvas
+   Official Hero Section with Vertical Brand Gradient & Wave/Particle Canvas
    -------------------------------------------------------------------------- */
 .hero-section {
   position: relative;
@@ -209,7 +209,7 @@ a {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 .hero-ambient-glow {
@@ -319,6 +319,8 @@ a {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.hero-badge-item iconify-icon { color: var(--ss-malibu); font-size: 1.1rem; }
+
 /* 3D Perspective Tilt Viewport */
 .hero-viewport {
   margin-top: 50px;
@@ -409,13 +411,33 @@ a {
   box-shadow: 0 12px 30px rgba(4, 51, 136, 0.08);
 }
 
+.pillar-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  background: rgba(4, 51, 136, 0.08);
+  color: var(--ss-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  transition: transform var(--speed);
+}
+
+.pillar-card:hover .pillar-icon-box {
+  transform: scale(1.1) rotate(-3deg);
+  background: rgba(33, 161, 247, 0.12);
+  color: var(--ss-azure);
+}
+
 .pillar-num {
   font-family: var(--font-title);
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--ss-azure);
   opacity: 0.85;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .pillar-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
@@ -544,8 +566,9 @@ a {
 
 .wellbeing-desc { font-size: 1rem; color: var(--text-sub); margin-bottom: 24px; }
 
-.wellbeing-features-list { display: flex; flex-direction: column; gap: 12px; }
-.w-item { font-size: 0.925rem; color: var(--text-main); }
+.wellbeing-features-list { display: flex; flex-direction: column; gap: 14px; }
+.w-item { display: flex; align-items: center; gap: 10px; font-size: 0.925rem; color: var(--text-main); }
+.w-item iconify-icon { font-size: 1.25rem; color: var(--ss-blue); flex-shrink: 0; }
 
 .wellbeing-visual {
   position: relative;
@@ -575,7 +598,6 @@ a {
   text-align: center;
 }
 
-.visual-center-badge span { font-size: 2.2rem; display: block; }
 .badge-text { font-size: 0.85rem; font-weight: 700; color: var(--ss-gold-warm); }
 
 /* --------------------------------------------------------------------------
