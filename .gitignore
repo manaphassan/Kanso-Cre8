@@ -9,6 +9,7 @@ dist/
 src/SS-CAM/packages/
 packages/
 SS-CAM-v*.exe
+SS-CAM.exe
 nuget.exe
 src/nuget.exe
 *.nupkg
