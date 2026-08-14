@@ -1,5 +1,14 @@
 # SS-CAM FIX LOG
 
+## v3.5.0-linux — 2026-08-14 (Fedora Linux Native Desktop Port)
+- **Linux Platform**: Native Avalonia UI (.NET 8) desktop app scaffolded (`src/SS-CAM.Linux/`).
+- **Target OS & NAS**: Fedora Linux (GNOME / Wayland) & Synology Drive Client (`~/SynologyDrive/`).
+- **Windows Safety**: Existing Windows WPF application (`src/SS-CAM/`) remained 100% untouched.
+- **Source Guardian**: PASS (9/9 automated checks passed).
+- **Git Housekeeper**: Cleaned temporary build artifacts, restored UTF-8 BOM, and pushed to `origin/SS-Master`.
+
+---
+
 ## v3.5.0 — 2026-08-14 (Minimal Brand Assets, Search & Copy Stability & Release Publication)
 - **GitHub Release**: PUBLISHED (`v3.5.0` set as Latest on `SuamiSihat/ss_cam`)
 - **Documentation**: Updated (14 project docs aligned to `v3.5.0`)
