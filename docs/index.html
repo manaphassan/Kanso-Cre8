@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SS-CAM — SuamiSihat™ Creative Workstation Companion</title>
   <meta name="description" content="Official workstation suite for SuamiSihat creative designers. Standardized project generator, brand asset inspector, task manager, and creative wellbeing companion.">
-  <meta name="theme-color" content="#f8fafc">
+  <meta name="theme-color" content="#022057">
   
-  <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
+  <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,17 +16,14 @@
 </head>
 <body>
 
-  <!-- Watermark Brand Crest Graphic -->
-  <div class="brand-watermark-bg"></div>
-
-  <!-- Minimal Translucent Header -->
+  <!-- Minimal Translucent Header matching SuamiSihat Design System -->
   <header class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#" class="brand-logo">
-        <div class="logo-badge">SS</div>
+        <img src="https://assets.suamisihat.myds.me/public/brand/logos/ss-logomark-light.svg" class="logo-img" alt="SuamiSihat™ Logo">
         <div class="brand-text-group">
-          <span class="brand-name">SS-CAM</span>
-          <span class="brand-tagline">SuamiSihat Workstation</span>
+          <span class="brand-name">SuamiSihat™ SS-CAM</span>
+          <span class="brand-tagline">Design System Companion</span>
         </div>
       </a>
 
@@ -38,7 +35,7 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-sm btn-shimmer" id="nav-cta">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary-white btn-sm" id="nav-cta">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download v3.5.0
         </a>
@@ -49,19 +46,21 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Official SuamiSihat Hero Section with Wave Canvas & Ambient Glow -->
   <section class="hero-section">
-    <div class="hero-glow"></div>
+    <canvas id="heroWaveCanvas" class="hero-wave-canvas"></canvas>
+    <div class="hero-ambient-glow"></div>
+
     <div class="section-container">
       
-      <div class="hero-badge gold-border-badge">
+      <div class="hero-eyebrow">
         <span class="badge-dot"></span>
-        <span>SuamiSihat™ Designer Companion & Second Brain</span>
+        <span>SuamiSihat™ Designer Companion &amp; Second Brain</span>
       </div>
 
       <h1 class="hero-title reveal">
-        Creative Workflows,<br>
-        <span class="gold-gradient">Effortlessly Mastered.</span>
+        Ship the SuamiSihat™ brand<br>
+        <span class="gold-gradient">faster and better.</span>
       </h1>
 
       <p class="hero-subtitle reveal">
@@ -69,19 +68,18 @@
       </p>
 
       <div class="hero-actions reveal">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-lg btn-shimmer gold-glow" id="hero-download">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-hero-primary" id="hero-download">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download SS-CAM v3.5.0
           <span class="btn-subtext">(~5 MB • Single-File Exe)</span>
         </a>
       </div>
 
-      <div class="hero-specs-meta reveal">
-        <span>✓ Windows 10 & 11 Native</span>
-        <span class="sep">•</span>
-        <span>✓ Zero Installation Setup</span>
-        <span class="sep">•</span>
-        <span>✓ 100% DPAPI Encrypted</span>
+      <!-- Glassmorphic Trust Badges -->
+      <div class="hero-badges reveal">
+        <span class="hero-badge-item">✓ Windows 10 &amp; 11 Native</span>
+        <span class="hero-badge-item">✓ Zero Installation Setup</span>
+        <span class="hero-badge-item">✓ 100% DPAPI Encrypted</span>
       </div>
 
       <!-- Main App Showcase 3D Viewport -->
@@ -356,7 +354,7 @@
       <div class="cta-card gold-border-card reveal">
         <h2 class="cta-title">Upgrade Your Creative Environment.</h2>
         <p class="cta-sub">Download SS-CAM v3.5.0 today — zero installer required.</p>
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-primary btn-xl btn-shimmer gold-glow">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.5.0/SS-CAM-v3.5.0.exe" class="btn-hero-primary btn-xl">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download SS-CAM v3.5.0 (.exe)
         </a>
@@ -369,13 +367,13 @@
     <div class="section-container">
       <div class="footer-content">
         <div class="f-brand">
-          <span class="brand-name">SS-CAM</span>
-          <span class="f-copy">© 2026 SuamiSihat Sdn Bhd. Internal Workstation Tool.</span>
+          <img src="https://assets.suamisihat.myds.me/public/brand/logos/ss-logomark-light.svg" alt="SuamiSihat™ Logo" class="f-footer-logo">
+          <span class="f-copy">© 2026 SuamiSihat™ Holding Sdn. Bhd. • Built with SuamiSihat™ Design System</span>
         </div>
         <div class="f-links">
           <a href="https://github.com/SuamiSihat/ss_cam/releases">Releases</a>
           <a href="https://github.com/SuamiSihat/ss_cam/wiki">Wiki</a>
-          <a href="https://github.com/SuamiSihat/ss_cam">GitHub</a>
+          <a href="https://assets.suamisihat.myds.me/" target="_blank">Design System ↗</a>
         </div>
       </div>
     </div>
