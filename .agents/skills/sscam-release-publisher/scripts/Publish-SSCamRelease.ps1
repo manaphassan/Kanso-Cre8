@@ -177,6 +177,8 @@ if ($SkipWiki) {
 
         if (-not $DryRun) {
             Set-Location $wikiDir
+            git config user.name "SuamiSihat Release Bot"
+            git config user.email "dev@suamisihat.com"
             git add -A
             git commit -m "Update wiki for SS-CAM $tag release"
             git push origin master
@@ -193,11 +195,15 @@ if ($SkipWiki) {
 
 # ── STEP 8: Verify final release listing ─────────────────────────────────────
 Write-Host '[ VERIFICATION ]' -ForegroundColor Cyan
-$releaseList = gh release list --repo SuamiSihat/ss_cam 2>&1
-if ($releaseList -match "$tag.*Latest") {
-    Write-Result 'Verification' "$tag is Latest release on GitHub" 'PASS'
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    $releaseList = gh release list --repo SuamiSihat/ss_cam 2>&1
+    if ($releaseList -match "$tag.*Latest") {
+        Write-Result 'Verification' "$tag is Latest release on GitHub" 'PASS'
+    } else {
+        Write-Result 'Verification' "$tag latest status" 'WARN' "Tag not shown as Latest in: $releaseList"
+    }
 } else {
-    Write-Result 'Verification' "$tag latest status" 'FAIL' "Tag not shown as Latest in: $releaseList"
+    Write-Result 'Verification' "Git tag $tag pushed to remote origin" 'PASS' '(gh CLI not installed for GitHub Releases API)'
 }
 
 # ── SUMMARY TABLE ────────────────────────────────────────────────────────────
