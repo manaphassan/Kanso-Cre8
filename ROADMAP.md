@@ -26,6 +26,7 @@
 | **v3.2.0** | 2026-08-12 | Big Calendar module (`CalendarPage`), Task Manager Calendar Date & FIFO Queue Order sorting, SSNAS Synology Drive Setup guide |
 | **v3.3.0** | 2026-08-13 | Fluent 2 Startup Splash Window, Centralized Notification & Clipboard Services, Task Manager queue & parser upgrades |
 | **v3.5.0** | 2026-08-14 | Minimal 2-column Brand Assets & Live Swatch Inspector (HEX/RGB/CMYK/Pantone), Search & Copy v3.4 stability revert, dynamic token contrast standardization across all 14 views |
+| **v3.5.0-linux** | 2026-08-14 | Linux Desktop Edition: Initial native Avalonia UI (.NET 8) port for Fedora Linux & Synology Drive Client (`~/SynologyDrive/`) |
 
 ---
 
