@@ -601,8 +601,49 @@ a {
 .badge-text { font-size: 0.85rem; font-weight: 700; color: var(--ss-gold-warm); }
 
 /* --------------------------------------------------------------------------
-   Specs & CTA Banner
+   Fedora Linux Installation Section
    -------------------------------------------------------------------------- */
+.fedora-section { padding: 80px 0; background: rgba(4, 51, 136, 0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.fedora-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-top: 36px; }
+.fedora-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(4, 51, 136, 0.04);
+}
+.fedora-card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.fedora-card-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+.fedora-card-sub { font-size: 0.85rem; color: var(--text-muted); }
+
+.code-terminal-box {
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+}
+.terminal-bar {
+  background: #1e293b;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.t-dot.red { background: #ef4444; }
+.t-dot.yellow { background: #f59e0b; }
+.t-dot.green { background: #10b981; }
+.t-title { font-size: 0.75rem; color: #94a3b8; font-family: monospace; margin-left: 4px; }
+.code-block {
+  padding: 16px;
+  color: #f8fafc;
+  font-family: monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.c-comment { color: #64748b; }
+.c-path { color: #38bdf8; }
 .specs-section { padding: 90px 0; }
 .specs-box {
   max-width: 760px;
