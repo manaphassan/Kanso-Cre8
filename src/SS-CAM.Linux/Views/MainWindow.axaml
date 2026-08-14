@@ -95,15 +95,16 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Card 2: Environment Info -->
+                        <!-- Card 2: Environment Info & Tools -->
                         <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,0,0,8">
                             <StackPanel Spacing="10">
-                                <TextBlock Text="Linux Architecture" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <TextBlock Text="Linux Architecture &amp; Workstation" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
                                 <StackPanel Spacing="4">
                                     <TextBlock Text="OS: Fedora Linux (X11 / Wayland Desktop)" FontSize="12" Foreground="#D4D4D8"/>
                                     <TextBlock Text="Framework: Avalonia UI 12.1 (.NET 8/10)" FontSize="12" Foreground="#D4D4D8"/>
                                     <TextBlock Text="Graphics Engine: Skia Desktop Renderer" FontSize="12" Foreground="#D4D4D8"/>
                                 </StackPanel>
+                                <Button Content="Create Desktop Shortcut" Command="{Binding CreateDesktopShortcutCommand}" Background="#0284C7" Foreground="White" CornerRadius="6" HorizontalAlignment="Left" Margin="0,4,0,0"/>
                             </StackPanel>
                         </Border>
 
