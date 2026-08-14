@@ -33,6 +33,7 @@
       <nav class="nav-links" id="nav-menu">
         <a href="#features" class="nav-item">Pillars</a>
         <a href="#showcase" class="nav-item">App Tour</a>
+        <a href="#fedora-install" class="nav-item">Fedora Linux</a>
         <a href="#wellbeing" class="nav-item">Wellbeing</a>
         <a href="#specs" class="nav-item">Specs</a>
       </nav>
@@ -330,6 +331,60 @@
               <iconify-icon icon="fluent:heart-pulse-24-regular" style="font-size:2.2rem; color:var(--ss-gold-warm);"></iconify-icon>
               <div class="badge-text">Mindful Flow</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- Fedora Linux Installation Setup Section -->
+  <section class="fedora-section" id="fedora-install">
+    <div class="section-container">
+      <div class="section-heading reveal">
+        <span class="section-tag gold-text">MULTI-PLATFORM DESKTOP</span>
+        <h2 class="section-title">Native Fedora Linux Setup.</h2>
+        <p class="section-sub">SS-CAM runs natively on Fedora Linux (Wayland / X11) powered by Avalonia UI &amp; .NET 8.</p>
+      </div>
+
+      <div class="fedora-card-grid reveal">
+        <!-- Terminal Command Quickstart Card -->
+        <div class="fedora-card">
+          <div class="fedora-card-header">
+            <iconify-icon icon="simple-icons:fedora" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
+            <div>
+              <h3 class="fedora-card-title">Option A: Fedora Terminal Launch</h3>
+              <p class="fedora-card-sub">Run directly from repository via .NET 8 CLI</p>
+            </div>
+          </div>
+          <div class="code-terminal-box">
+            <div class="terminal-bar">
+              <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+              <span class="t-title">bash — fedora@workstation</span>
+            </div>
+            <pre class="code-block"><code><span class="c-comment"># 1. Clone SS-CAM repository</span>
+git clone https://github.com/SuamiSihat/ss_cam.git
+<span class="c-comment"># 2. Launch native Linux desktop app</span>
+dotnet run --project src/SS-CAM.Linux/SS-CAM.Linux.csproj</code></pre>
+          </div>
+        </div>
+
+        <!-- RPM / AppImage Package Card -->
+        <div class="fedora-card">
+          <div class="fedora-card-header">
+            <iconify-icon icon="fluent:box-24-regular" style="font-size:1.8rem; color:#21A1F7;"></iconify-icon>
+            <div>
+              <h3 class="fedora-card-title">Option B: Fedora RPM Package</h3>
+              <p class="fedora-card-sub">Install standalone RPM package for GNOME / Wayland</p>
+            </div>
+          </div>
+          <div class="code-terminal-box">
+            <div class="terminal-bar">
+              <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+              <span class="t-title">sudo dnf install</span>
+            </div>
+            <pre class="code-block"><code><span class="c-comment"># Install native RPM package on Fedora Workstation</span>
+sudo dnf install ./SS-CAM.Linux-v3.5.0-x86_64.rpm
+
+<span class="c-comment"># Synology Drive Client target auto-links to:</span>
+<span class="c-path">~/SynologyDrive/</span></code></pre>
           </div>
         </div>
       </div>
