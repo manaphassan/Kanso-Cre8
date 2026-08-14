@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SS_CAM.Linux.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+        x:Class="SS_CAM.Linux.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="SS-CAM - SuamiSihat Creative Assets Management (Linux / Fedora Edition)"
+        Width="1150" Height="750"
+        WindowStartupLocation="CenterScreen"
+        Background="#18181B">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Top Header Bar -->
+        <Border Grid.Row="0" Background="#27272A" Padding="16,12" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <Border Background="#6366F1" CornerRadius="6" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="SS" Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding AppName}" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                        <TextBlock Text="SuamiSihat Creative Assets Management" FontSize="12" Foreground="#A1A1AA"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Border Background="#312E81" CornerRadius="12" Padding="10,4">
+                        <TextBlock Text="Fedora Linux" Foreground="#C7D2FE" FontSize="12" FontWeight="Medium"/>
+                    </Border>
+                    <Border Background="#064E3B" CornerRadius="12" Padding="10,4">
+                        <TextBlock Text="Synology Drive Active" Foreground="#A7F3D0" FontSize="12" FontWeight="Medium"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Body: Sidebar + Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="220, *">
+            <!-- Sidebar Navigation -->
+            <Border Grid.Column="0" Background="#202023" BorderBrush="#3F3F46" BorderThickness="0,0,1,0" Padding="12,16">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="NAVIGATION" FontSize="11" FontWeight="Bold" Foreground="#71717A" Margin="8,0,0,8"/>
+                    
+                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Dashboard"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
+                            Background="#27272A" Foreground="#F4F4F5" CornerRadius="6">
+                        <TextBlock Text="Dashboard"/>
+                    </Button>
+
+                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
+                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
+                        <TextBlock Text="Project Creator"/>
+                    </Button>
+
+                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Asset Inspector"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
+                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
+                        <TextBlock Text="Asset Inspector"/>
+                    </Button>
+
+                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Settings"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
+                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
+                        <TextBlock Text="Settings"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Main Content Area -->
+            <ScrollViewer Grid.Column="1" Padding="24">
+                <StackPanel Spacing="20">
+                    <!-- Title Banner -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="{Binding SelectedNavTab}" FontSize="24" FontWeight="Bold" Foreground="#F4F4F5"/>
+                            <TextBlock Text="Overview of creative assets and Synology Drive workspace on Fedora Linux." FontSize="14" Foreground="#A1A1AA"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Feature Cards Grid -->
+                    <UniformGrid Columns="2" Rows="2">
+                        <!-- Card 1: Synology Drive Status -->
+                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,8,8">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Synology Drive Sync" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <TextBlock Text="Target Directory Path:" FontSize="12" Foreground="#A1A1AA"/>
+                                <Border Background="#18181B" Padding="10,6" CornerRadius="4">
+                                    <TextBlock Text="{Binding SynologyDrivePath}" FontFamily="Monospace" FontSize="12" Foreground="#38BDF8"/>
+                                </Border>
+                                <TextBlock Text="Status: Connected and watching local filesystem changes." FontSize="12" Foreground="#34D399"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 2: Environment Info -->
+                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,0,0,8">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Linux Architecture" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="OS: Fedora Linux (X11 / Wayland Desktop)" FontSize="12" Foreground="#D4D4D8"/>
+                                    <TextBlock Text="Framework: Avalonia UI 12.1 (.NET 8/10)" FontSize="12" Foreground="#D4D4D8"/>
+                                    <TextBlock Text="Graphics Engine: Skia Desktop Renderer" FontSize="12" Foreground="#D4D4D8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 3: Quick Action - Project Creator -->
+                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,8,8,0">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Project Creator" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <TextBlock Text="Scaffold standard SuamiSihat creative folder structures directly inside Synology Drive." FontSize="12" Foreground="#A1A1AA" TextWrapping="Wrap"/>
+                                <Button Content="Open Project Creator" Background="#4F46E5" Foreground="White" CornerRadius="6" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 4: Asset Inspector -->
+                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,8,0,0">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Creative Asset Inspector" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <TextBlock Text="Browse, preview, and audit creative assets, video deliverables, and metadata." FontSize="12" Foreground="#A1A1AA" TextWrapping="Wrap"/>
+                                <Button Content="Launch Inspector" Background="#374151" Foreground="White" CornerRadius="6" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Bottom Status Bar -->
+        <Border Grid.Row="2" Background="#18181B" BorderBrush="#3F3F46" BorderThickness="0,1,0,0" Padding="16,8">
+            <Grid ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" FontSize="12" Foreground="#A1A1AA"/>
+                <TextBlock Grid.Column="1" Text="{Binding AppVersion}" FontSize="12" Foreground="#71717A"/>
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>
