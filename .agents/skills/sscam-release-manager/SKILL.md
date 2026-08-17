@@ -40,10 +40,9 @@ Version format: MAJOR.MINOR.PATCH
 
 STOP if build fails.
 
-### Step 4 - Copy Exe
+### Step 4 - Copy Exe to dist/
 
 ```powershell
-Copy-Item "src\SS-CAM\bin\Release\SS-CAM.exe" "SS-CAM-vX.Y.Z.exe" -Force
 Copy-Item "src\SS-CAM\bin\Release\SS-CAM.exe" "dist\SS-CAM-vX.Y.Z.exe" -Force
 ```
 
