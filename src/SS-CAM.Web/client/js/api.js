@@ -39,15 +39,15 @@ class ApiClient {
 
     try {
       const response = await fetch(url, { ...options, headers });
+      const data = await response.json().catch(() => ({}));
       
-      if (response.status === 401) {
+      if (response.status === 401 && endpoint !== '/auth/login') {
         // Token invalid or missing, redirect to login
         this.removeToken();
         window.dispatchEvent(new CustomEvent('auth:required'));
-        throw new Error('Authentication required');
+        throw new Error(data.error || 'Authentication required');
       }
 
-      const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
