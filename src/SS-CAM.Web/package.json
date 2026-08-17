@@ -1,6 +1,6 @@
 {
   "name": "ss-cam-web-portal",
-  "version": "1.0.0",
+  "version": "3.6.1",
   "description": "SuamiSihat Creative Team Management Web Portal",
   "main": "server/index.js",
   "scripts": {
