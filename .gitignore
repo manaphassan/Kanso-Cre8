@@ -22,6 +22,10 @@ desktop_capture_*.png
 stdout.txt
 stderr.txt
 *.exe.old
+*.log
+scratch/
+QA/TestWorkspace/
+TestWorkspace/
 
 # ── Editor & OS ────────────────────────────────────────────────
 .vs/
@@ -32,3 +36,4 @@ desktop.ini
 # ── Agent Temp / Wiki ─────────────────────────────────────────
 .agents/wiki/
 .agents/skills/sscam-release-publisher/scratch/
+
