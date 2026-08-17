@@ -80,10 +80,10 @@ const LoginView = {
       </style>
 
       <div class="login-hero-bg" id="login-hero-viewport">
-        <!-- Animated Background Canvas matching docs/index.html & docs/app.js -->
-        <canvas id="heroWaveCanvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.85;"></canvas>
+        <!-- Animated Background Canvas matching docs/index.html & docs/app.js (z-index: 0 under glow) -->
+        <canvas id="heroWaveCanvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.75;"></canvas>
 
-        <!-- Ambient Radial Glow matching docs/index.html -->
+        <!-- Ambient Radial Glow matching docs/index.html (z-index: 1 over canvas) -->
         <div class="login-ambient-glow"></div>
 
         <!-- Static Glassmorphism Card -->
@@ -244,20 +244,33 @@ const LoginView = {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw background sine wave layers
+      // Draw background sine wave layers (Filled shapes + stroked lines matching docs/index.html)
       step += 0.012;
       const waves = [
-        { color: 'rgba(33, 161, 247, 0.18)', speed: 0.8, amp: 35, freq: 0.008 },
-        { color: 'rgba(109, 198, 236, 0.12)', speed: 1.2, amp: 25, freq: 0.01 },
-        { color: 'rgba(189, 154, 115, 0.10)', speed: 0.5, amp: 45, freq: 0.006 }
+        { color: 'rgba(33, 161, 247, 0.14)', speed: 0.8, amp: 35, freq: 0.008, yRatio: 0.60 },
+        { color: 'rgba(109, 198, 236, 0.10)', speed: 1.2, amp: 25, freq: 0.010, yRatio: 0.55 },
+        { color: 'rgba(189, 154, 115, 0.08)', speed: 0.5, amp: 45, freq: 0.006, yRatio: 0.65 }
       ];
 
       waves.forEach((w) => {
+        // Filled Wave Silhouette
         ctx.beginPath();
-        ctx.strokeStyle = w.color;
+        ctx.moveTo(0, height);
+        for (let x = 0; x <= width; x += 10) {
+          const y = Math.sin(x * w.freq + step * w.speed) * w.amp + height * w.yRatio;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(width, height);
+        ctx.closePath();
+        ctx.fillStyle = w.color;
+        ctx.fill();
+
+        // Wave Line Stroke
+        ctx.beginPath();
+        ctx.strokeStyle = w.color.replace(/0\.\d+/, '0.30');
         ctx.lineWidth = 1.5;
-        for (let x = 0; x <= width; x += 12) {
-          const y = Math.sin(x * w.freq + step * w.speed) * w.amp + height * 0.55;
+        for (let x = 0; x <= width; x += 10) {
+          const y = Math.sin(x * w.freq + step * w.speed) * w.amp + height * w.yRatio;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
