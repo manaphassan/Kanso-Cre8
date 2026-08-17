@@ -1,8 +1,8 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v3.5.0 Release
+## Status: PASS — v3.6.1 Release
 
-**QA Date**: 2026-08-17 (post v3.5.0 release)  
+**QA Date**: 2026-08-17 (post v3.6.1 release)  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**
 

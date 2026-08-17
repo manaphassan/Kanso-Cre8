@@ -14,21 +14,21 @@
     <SolidColorBrush x:Key="FluentBrandLight" Color="#061D30"/>
     <SolidColorBrush x:Key="FluentBrandTint"  Color="#1AB8E8"/>
 
-    <!-- WPF-UI Core Base System Brush Overrides (Metamorphosis Glass) -->
+    <!-- WPF-UI Core Base System Brush Overrides (Metamorphosis Deep Navy) -->
     <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#080D1F"/>
     <SolidColorBrush x:Key="WindowBackground"                     Color="#080D1F"/>
-    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush"  Color="#26FFFFFF"/>
-    <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#14FFFFFF"/>
-    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush"         Color="#40FFFFFF"/>
+    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush"  Color="#0F1A3A"/>
+    <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#142045"/>
+    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush"         Color="#1E2E5C"/>
     <SolidColorBrush x:Key="TextFillColorPrimaryBrush"           Color="#F1F5F9"/>
     <SolidColorBrush x:Key="TextFillColorSecondaryBrush"         Color="#94A3B8"/>
     <SolidColorBrush x:Key="TextFillColorTertiaryBrush"          Color="#64748B"/>
     <SolidColorBrush x:Key="TextControlForeground"               Color="#F1F5F9"/>
-    <SolidColorBrush x:Key="TextControlBackground"               Color="#14FFFFFF"/>
-    <SolidColorBrush x:Key="ControlFillColorDefaultBrush"        Color="#26FFFFFF"/>
-    <SolidColorBrush x:Key="ControlFillColorSecondaryBrush"      Color="#33FFFFFF"/>
-    <SolidColorBrush x:Key="ControlFillColorTertiaryBrush"       Color="#40FFFFFF"/>
-    <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush"       Color="#40FFFFFF"/>
+    <SolidColorBrush x:Key="TextControlBackground"               Color="#0C1633"/>
+    <SolidColorBrush x:Key="ControlFillColorDefaultBrush"        Color="#14224B"/>
+    <SolidColorBrush x:Key="ControlFillColorSecondaryBrush"      Color="#182857"/>
+    <SolidColorBrush x:Key="ControlFillColorTertiaryBrush"       Color="#1E316A"/>
+    <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush"       Color="#243977"/>
     <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush"       Color="#00CFFF"/>
     <SolidColorBrush x:Key="AccentFillColorDefaultBrush"         Color="#00CFFF"/>
     <SolidColorBrush x:Key="AccentFillColorSecondaryBrush"       Color="#009CC4"/>
@@ -41,13 +41,12 @@
     <!-- Canvas / Page Backgrounds - Deep space navy -->
     <SolidColorBrush x:Key="FluentLightCanvasBg"  Color="#080D1F"/>
 
-    <!-- Glass Card Surfaces - semi-transparent white creates frosted-glass illusion -->
-    <!-- Alpha: #26 = 15%, #14 = 8% -->
-    <SolidColorBrush x:Key="FluentLightCardBg"    Color="#26FFFFFF"/>
-    <SolidColorBrush x:Key="FluentLightCardSubBg" Color="#14FFFFFF"/>
+    <!-- Opaque Card Surfaces - Deep navy surfaces for high readability -->
+    <SolidColorBrush x:Key="FluentLightCardBg"    Color="#0F1A3A"/>
+    <SolidColorBrush x:Key="FluentLightCardSubBg" Color="#142045"/>
 
-    <!-- Glass Borders - refraction highlight lines -->
-    <SolidColorBrush x:Key="FluentLightStroke"    Color="#40FFFFFF"/>
+    <!-- Borders - Crisp navy stroke lines -->
+    <SolidColorBrush x:Key="FluentLightStroke"    Color="#1E2E5C"/>
 
     <!-- Typography - light text on dark glass -->
     <SolidColorBrush x:Key="FluentLightTextPrimary"   Color="#F1F5F9"/>
@@ -87,10 +86,10 @@
         <GradientStop Color="#7C3AED" Offset="1.0"/>
     </LinearGradientBrush>
 
-    <!-- Glass sheen - top-light refraction on tall cards -->
+    <!-- Glass sheen - subtle cyan top highlight for cards -->
     <LinearGradientBrush x:Key="MetaGlassSheenBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#33FFFFFF" Offset="0.0"/>
-        <GradientStop Color="#00FFFFFF" Offset="0.5"/>
+        <GradientStop Color="#1A00CFFF" Offset="0.0"/>
+        <GradientStop Color="#0000CFFF" Offset="0.5"/>
     </LinearGradientBrush>
 
     <!-- Glow colour references -->

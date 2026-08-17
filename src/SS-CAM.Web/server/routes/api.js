@@ -390,7 +390,18 @@ router.get('/audit', authenticateToken, (req, res) => {
   }
 });
 
-// ─── SYSTEM STATUS ──────────────────────────────────────────────────
+// ─── SYSTEM STATUS & DOCKER HEALTHCHECK ───────────────────────────────
+
+router.get('/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    app: config.APP_TITLE,
+    version: config.VERSION,
+    uptimeSeconds: Math.floor(process.uptime()),
+    memoryUsageMB: Math.round(process.memoryUsage().rss / (1024 * 1024)),
+    timestamp: new Date().toISOString()
+  });
+});
 
 router.get('/system/status', authenticateToken, (req, res) => {
   res.json({

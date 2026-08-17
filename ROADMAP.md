@@ -28,10 +28,12 @@
 | **v3.4.0** | 2026-08-13 | Starter Canvas Engine (.af/.psd/.ai), Web Design presets, Search Category Filter, Calendar Quick Actions |
 | **v3.5.0** | 2026-08-17 | In-App Project Brief Markdown Editor in Search & Copy, Workspace Designer Folder Scoping, Repository Hygiene & Architecture Cleanup |
 | **v3.5.0-linux** | 2026-08-14 | Linux Desktop Edition: Initial native Avalonia UI (.NET 8) port for Fedora Linux & Synology Drive Client (`~/SynologyDrive/`) |
+| **v3.6.0** | 2026-08-17 | Microsoft Fluent UI Web (`sscam-fluentui-web`) design tokens, 3-Tier F-Pattern Dashboard analytics, Copywriting AI script presets |
+| **v3.6.1** | 2026-08-17 | Metamorphosis theme solid surface opacity overhaul, legibility fixes for drawer panels & cards |
 
 ---
 
-## 🔄 In Progress — v3.6.0 (Target: Q4 2026 / Q1 2027)
+## 🔄 In Progress — v3.7.0 (Target: Q4 2026 / Q1 2027)
 
 ### 1. Quick Note — Markdown Scratchpad
 

@@ -7,20 +7,16 @@ const LoginView = {
   render(container) {
     const svgs = window.SS_BRAND_SVGS || { logomark: () => '', shatteredFragment: () => '', mensSymbol: () => '' };
 
-    // Generate 69 Flowing Water Stream Particles
+    // Generate 69 Men's Symbols (♂) and Brand Fragments for Fish Physics
     let particlesHtml = '';
     const totalParticles = 69;
-    const sizes = [16, 20, 24, 32, 40, 48, 56, 64, 80, 96, 120, 150, 180];
+    const sizes = [20, 24, 28, 36, 44, 52, 60, 72, 88, 104, 128, 150];
     const colors = ['#21A1F7', '#6DC6EC', '#FFFFFF', '#043388', '#022057'];
 
     for (let i = 0; i < totalParticles; i++) {
-      const type = i % 3; // 0 & 1 = Men's Symbol (♂), 2 = Fragment/Logomark
+      const type = i % 3; // 0 & 1 = Men's Symbol (♂), 2 = Logomark/Fragment
       const size = sizes[i % sizes.length];
-      const opacity = (0.08 + (i % 5) * 0.05).toFixed(2);
-      const top = ((i * 13) % 100);
-      const left = ((i * 17) % 96);
-      const duration = (8 + (i % 7) * 2).toFixed(1);
-      const delay = (i * 0.25).toFixed(1);
+      const opacity = (0.12 + (i % 6) * 0.06).toFixed(2);
       const color = colors[i % colors.length];
 
       let innerContent = '';
@@ -33,8 +29,10 @@ const LoginView = {
       }
 
       particlesHtml += `
-        <div class="water-flow-particle" style="top: ${top}%; left: ${left}%; animation-duration: ${duration}s; animation-delay: ${delay}s;">
-          ${innerContent}
+        <div class="water-flow-particle mens-symbol-particle" id="particle-${i}" data-index="${i}" data-size="${size}" style="width: ${size}px; height: ${size}px; opacity: ${opacity};">
+          <div class="mens-rotate-container">
+            ${innerContent}
+          </div>
         </div>
       `;
     }
@@ -47,13 +45,19 @@ const LoginView = {
           100% { background-position: 0% 50%; }
         }
 
-        /* Fluid Water Flow Liquid Stream Animation */
-        @keyframes liquidWaterFlow {
-          0% { transform: translate(0px, 0px) rotate(0deg); }
-          25% { transform: translate(30px, -50px) rotate(10deg); }
-          50% { transform: translate(-25px, -110px) rotate(-8deg); }
-          75% { transform: translate(35px, -170px) rotate(15deg); }
-          100% { transform: translate(0px, -230px) rotate(0deg); }
+        /* Continuous 360-Degree Rotation for Men's Symbol (♂) */
+        @keyframes mensRotateContinuous {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        .mens-rotate-container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: mensRotateContinuous 12s linear infinite;
         }
 
         .login-hero-bg {
@@ -71,22 +75,27 @@ const LoginView = {
           z-index: 1000;
         }
 
-        /* Flowing Water Particles (69 Items ranging from 16px to 180px) */
+        /* Floating Fish Particle Elements */
         .water-flow-particle {
           position: absolute;
           user-select: none;
           pointer-events: auto;
           cursor: pointer;
-          animation: liquidWaterFlow infinite linear;
-          transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1.0), opacity 0.3s ease, filter 0.3s ease;
-          filter: drop-shadow(0 0 12px rgba(33, 161, 247, 0.35));
+          will-change: transform;
+          filter: drop-shadow(0 0 10px rgba(33, 161, 247, 0.3));
+          transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+
+        .water-flow-particle.magnetized {
+          filter: drop-shadow(0 0 25px #21A1F7) brightness(1.3) !important;
+          opacity: 0.95 !important;
+          z-index: 100;
         }
 
         .water-flow-particle:hover {
-          transform: scale(1.4) rotate(15deg) !important;
-          opacity: 0.95 !important;
-          filter: drop-shadow(0 0 35px #21A1F7) brightness(1.25) !important;
-          z-index: 100;
+          filter: drop-shadow(0 0 35px #21A1F7) brightness(1.4) !important;
+          opacity: 1 !important;
+          z-index: 101;
         }
 
         /* Card Logo Interactive Hover */
@@ -120,8 +129,8 @@ const LoginView = {
         }
       </style>
 
-      <div class="login-hero-bg">
-        <!-- 69 Flowing Water Particles Stream -->
+      <div class="login-hero-bg" id="login-hero-viewport">
+        <!-- 69 Flowing Rotating Men's Symbols & Fragments -->
         ${particlesHtml}
 
         <!-- Static Glassmorphism Card -->
@@ -177,7 +186,7 @@ const LoginView = {
           <!-- Footer Metadata & Brand Assets Link -->
           <div style="margin-top: 26px; text-align: center; font-size: 11.5px; color: #666666; border-top: 1px solid rgba(0, 0, 0, 0.08); padding-top: 16px;">
             SuamiSihat Creative Team System • v1.0.0<br/>
-            Connected to Synology NAS (<code style="font-family: monospace;">\\SSNAS\Creative-Team</code>)<br/>
+            Connected to Synology NAS (<code style="font-family: monospace;">\\\\SSNAS\\Creative-Team</code>)<br/>
             <a href="https://assets.suamisihat.myds.me/" target="_blank" style="color: #043388; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;">
               ${svgs.lightningIcon ? svgs.lightningIcon(14, '#043388') : ''}
               <span>Open SuamiSihat Brand Guidelines Vault ↗</span>
@@ -186,6 +195,148 @@ const LoginView = {
         </div>
       </div>
     `;
+
+    // Initialize Organic Fish Physics & Cursor Magnet Attraction System
+    setTimeout(() => this.initFishMagnetPhysics(), 50);
+  },
+
+  initFishMagnetPhysics() {
+    const viewport = document.getElementById('login-hero-viewport');
+    if (!viewport) return;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const mouse = { x: -2000, y: -2000, active: false };
+
+    // Track mouse cursor movement
+    const onMouseMove = (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    };
+
+    const onMouseLeave = () => {
+      mouse.active = false;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseleave', onMouseLeave);
+
+    // Initialize 69 Fish Particle Physics States
+    const fishList = [];
+    const elements = document.querySelectorAll('.mens-symbol-particle');
+
+    elements.forEach((el, i) => {
+      const size = parseInt(el.getAttribute('data-size') || '36', 10);
+      const posX = Math.random() * (w - size);
+      const posY = Math.random() * (h - size);
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * 1.6;
+
+      fishList.push({
+        el,
+        x: posX,
+        y: posY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        baseSpeed: speed,
+        size,
+        heading: angle,
+        turnRate: (Math.random() - 0.5) * 0.05,
+        wobblePhase: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.03 + Math.random() * 0.05,
+        isMagnetized: false
+      });
+    });
+
+    // Fish Swimming & Magnet Physics Loop
+    let animFrameId = null;
+
+    const updatePhysics = () => {
+      const currentW = window.innerWidth;
+      const currentH = window.innerHeight;
+
+      // Find nearest distance to cursor for magnetic force prioritization
+      let nearestDist = Infinity;
+      if (mouse.active) {
+        fishList.forEach(fish => {
+          const dx = mouse.x - (fish.x + fish.size / 2);
+          const dy = mouse.y - (fish.y + fish.size / 2);
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < nearestDist) nearestDist = d;
+        });
+      }
+
+      fishList.forEach(fish => {
+        const centerX = fish.x + fish.size / 2;
+        const centerY = fish.y + fish.size / 2;
+        const dx = mouse.x - centerX;
+        const dy = mouse.y - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        const magnetRadius = 280;
+
+        // Magnet Attraction Force calculation
+        if (mouse.active && dist < magnetRadius) {
+          const force = (1 - dist / magnetRadius) * 0.08;
+          fish.vx += dx * force;
+          fish.vy += dy * force;
+          fish.vx *= 0.88; // Damping
+          fish.vy *= 0.88;
+
+          if (!fish.isMagnetized) {
+            fish.isMagnetized = true;
+            fish.el.classList.add('magnetized');
+          }
+        } else {
+          if (fish.isMagnetized) {
+            fish.isMagnetized = false;
+            fish.el.classList.remove('magnetized');
+          }
+
+          // Natural Organic Fish Swimming Motion (Steering + Wiggling Sine Waves)
+          fish.wobblePhase += fish.wobbleSpeed;
+          const wobble = Math.sin(fish.wobblePhase) * 0.4;
+          fish.heading += fish.turnRate + wobble * 0.02;
+
+          // Gentle random angle adjustment
+          if (Math.random() < 0.02) {
+            fish.turnRate = (Math.random() - 0.5) * 0.06;
+          }
+
+          // Move along heading vector
+          fish.vx = Math.cos(fish.heading) * fish.baseSpeed;
+          fish.vy = Math.sin(fish.heading) * fish.baseSpeed;
+        }
+
+        // Apply velocities
+        fish.x += fish.vx;
+        fish.y += fish.vy;
+
+        // Screen Edge Bounding (wrap around smoothly like fish in aquarium)
+        if (fish.x < -fish.size * 2) fish.x = currentW + fish.size;
+        if (fish.x > currentW + fish.size) fish.x = -fish.size;
+        if (fish.y < -fish.size * 2) fish.y = currentH + fish.size;
+        if (fish.y > currentH + fish.size) fish.y = -fish.size;
+
+        // Compute rotation angle towards movement heading
+        const moveAngle = Math.atan2(fish.vy, fish.vx) * (180 / Math.PI);
+
+        // Apply Transform Matrix to DOM element
+        fish.el.style.transform = `translate3d(${fish.x.toFixed(1)}px, ${fish.y.toFixed(1)}px, 0) rotate(${moveAngle.toFixed(1)}deg)`;
+      });
+
+      animFrameId = requestAnimationFrame(updatePhysics);
+    };
+
+    animFrameId = requestAnimationFrame(updatePhysics);
+
+    // Clean up animation frame on view unmount
+    this._cleanupPhysics = () => {
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+    };
   },
 
   togglePasswordVisibility() {
@@ -211,6 +362,8 @@ const LoginView = {
       const res = await ApiClient.login(username, password);
       ApiClient.setToken(res.token);
       AppState.set('currentUser', res.user);
+
+      if (this._cleanupPhysics) this._cleanupPhysics();
 
       window.showToast(`Welcome back, ${res.user.name}! (${res.user.role})`, 'success');
 

@@ -155,7 +155,7 @@
   --shadow-lg: 0 10px 24px rgba(0, 207, 255, 0.12);
   --shadow-xl: 0 20px 32px rgba(0, 0, 0, 0.7);
 
-  --glass-bg: rgba(15, 26, 58, 0.75);
+  --glass-bg: #0F1A3A;
   --glass-border: rgba(0, 207, 255, 0.2);
   --glass-blur: blur(16px);
 
