@@ -405,4 +405,5 @@ A feature is done when:
 - `sscam-page-scaffold`: Generates a new SS-CAM page with correct Fluent 2 structure, ScrollViewer root, lifecycle error guards, and automatic MainWindow navigation.
 - `sscam-qa`: Automates safe QA for SS-CAM WPF desktop app including smoke testing, regression testing, build verification, and accessibility checks.
 - `sscam-release-manager`: Automates SS-CAM version bump, packaging, tagging, and release preparation.
-- `sscam-release-publisher`: Automates GitHub release publication, documentation updates, and health report publishing.
+- `sscam-release-publisher`: Automates GitHub release publication, documentation updates, and health report publishing.
+- `sscam-fluentui-web`: Comprehensive guide and design system reference for Microsoft Fluent UI Web (Fluent 2) in SS-CAM Web Portal (SS-CAM.Web). Covers repo breakdown of github.com/microsoft/fluentui, Fluent 2 web design tokens, Web Components, typography scale, elevation/shadows, component standards, and accessibility.

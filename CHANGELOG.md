@@ -2,7 +2,38 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.5.0] - 2026-08-17 (Latest)
+## [3.6.0] - 2026-08-17 (Latest)
+
+### Added & Refined — Fluent UI Web Design System & Data Visualization Analytics Release
+- **Microsoft Fluent UI Web (`sscam-fluentui-web`) Skill & Guidelines**:
+  - Analyzed official [`github.com/microsoft/fluentui`](https://github.com/microsoft/fluentui) repository architecture (React v9 `@fluentui/react-components`, Web Components `@fluentui/web-components`, and Fluent 2 Design Tokens `@fluentui/tokens`).
+  - Authored canonical workspace skill `.agents/skills/sscam-fluentui-web/SKILL.md` and reference guidelines `.agents/skills/sscam-fluentui-web/references/fluentui-web-guideline.md`.
+  - Mapped official Microsoft Fluent UI Web token custom properties (`--colorNeutralBackground1`, `--colorBrandBackground`, `--colorNeutralForeground1`, `--shadow4`, `--shadow16`, `--borderRadiusMedium`) into `SS-CAM.Web` CSS.
+- **Art Director Web Portal UI/UX Overhaul (`src/SS-CAM.Web`)**:
+  - Refined theme engine with glassmorphism backdrop blurs (`--glass-blur`), smooth cubic-bezier motion tokens, and multi-layered elevation shadows across `Falconia`, `Metamorphosis`, and `Catppuccin` profiles.
+  - Built dynamic `.card-hover-lift` spring transitions, `.stat-trend` growth pills, and `.filter-pill` buttons.
+  - Upgraded global toast notification system (`showToast()`) with smooth slide-in/fade-out animations and bound keyboard `Escape` dismissal for modal dialogs.
+- **Data Visualization Specialist Studio Dashboard Re-architecture (`DashboardView.js`)**:
+  - Built 3-Tier F-Pattern Dashboard: 5-KPI Strategic Summary Bar (Total Assets with growth sparklines, On-Time Delivery Rate, First-Pass Approval Index, Review Queue, Operational Risk).
+  - Production Stage Pipeline Velocity Flow diagram tracking stage lead times (`2.4 Days`) and QA gate throughput.
+  - Designer Capacity & Bandwidth Heatmap with color-coded load bars (`Available`, `Optimal`, `Overloaded Alert`).
+  - Sub-brand Portfolio Distribution progress bars and 6-axis Creative Skill Coverage Radar.
+- **Copywriting Studio AI Script Presets (`CopyStudioView.js`)**:
+  - Added AI Copywriting Preset Bar featuring one-click copy presets for **TikTok Viral Hooks**, **Facebook Problem/Solution Ad Angles**, and **Product Packaging Benefit Claims** with instant toast feedback.
+- **Automated QA & Security Attestation**:
+  - 100% PASS on Source Guardian audit (UTF-8 BOM encoding, Fluent 2 compliance, thread and data safety).
+  - Compiled clean MSBuild Release binary (`SS-CAM.exe`).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.6.0.exe` | Compiled Native C# WPF Executable (5.24 MB single-file) |
+| `AssemblyVersion` | 3.6.0.0 |
+| `AssemblyFileVersion` | 3.6.0.0 |
+
+---
+
+## [3.5.0] - 2026-08-17
 
 ### Added & Refined — Designer Companion & In-App Brief Editor Release
 - **In-App Project Brief Markdown Editor (`SearchCopyPage`)**:
