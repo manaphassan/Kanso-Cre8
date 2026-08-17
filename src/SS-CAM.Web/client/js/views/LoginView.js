@@ -7,57 +7,11 @@ const LoginView = {
   render(container) {
     const svgs = window.SS_BRAND_SVGS || { logomark: () => '', shatteredFragment: () => '', mensSymbol: () => '' };
 
-    // Generate 69 Men's Symbols (♂) and Brand Fragments for Fish Physics
-    let particlesHtml = '';
-    const totalParticles = 69;
-    const sizes = [20, 24, 28, 36, 44, 52, 60, 72, 88, 104, 128, 150];
-    const colors = ['#21A1F7', '#6DC6EC', '#FFFFFF', '#043388', '#022057'];
-
-    for (let i = 0; i < totalParticles; i++) {
-      const type = i % 3; // 0 & 1 = Men's Symbol (♂), 2 = Logomark/Fragment
-      const size = sizes[i % sizes.length];
-      const opacity = (0.12 + (i % 6) * 0.06).toFixed(2);
-      const color = colors[i % colors.length];
-
-      let innerContent = '';
-      if (type === 0 || type === 1) {
-        innerContent = svgs.mensSymbol(size, color, opacity);
-      } else if (i % 6 === 0) {
-        innerContent = `<img src="public/brand/ss-logomark-full.png" style="width: ${size}px; height: auto; opacity: ${opacity};" alt="" />`;
-      } else {
-        innerContent = `<img src="public/brand/ss-shattered-fragment.png" style="width: ${size}px; height: auto; opacity: ${opacity};" alt="" />`;
-      }
-
-      particlesHtml += `
-        <div class="water-flow-particle mens-symbol-particle" id="particle-${i}" data-index="${i}" data-size="${size}" style="width: ${size}px; height: ${size}px; opacity: ${opacity};">
-          <div class="mens-rotate-container">
-            ${innerContent}
-          </div>
-        </div>
-      `;
-    }
-
     container.innerHTML = `
       <style>
-        @keyframes ssHeroGradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        /* Continuous 360-Degree Rotation for Men's Symbol (♂) */
-        @keyframes mensRotateContinuous {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        .mens-rotate-container {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          animation: mensRotateContinuous 12s linear infinite;
+        @keyframes fAmbientPulse {
+          0% { opacity: 0.6; transform: translateX(-50%) scale(0.95); }
+          100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
         }
 
         .login-hero-bg {
@@ -68,34 +22,30 @@ const LoginView = {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #022057 0%, #043388 40%, #21a1f7 85%, #022057 100%);
-          background-size: 400% 400%;
-          animation: ssHeroGradient 14s ease infinite;
+          background: linear-gradient(180deg, #022057 0%, #043388 60%, #021233 100%);
           overflow: hidden;
           z-index: 1000;
         }
 
-        /* Floating Fish Particle Elements */
-        .water-flow-particle {
+        .login-ambient-glow {
           position: absolute;
-          user-select: none;
-          pointer-events: auto;
-          cursor: pointer;
-          will-change: transform;
-          filter: drop-shadow(0 0 10px rgba(33, 161, 247, 0.3));
-          transition: filter 0.3s ease, opacity 0.3s ease;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+          z-index: 1;
         }
 
-        .water-flow-particle.magnetized {
-          filter: drop-shadow(0 0 25px #21A1F7) brightness(1.3) !important;
-          opacity: 0.95 !important;
-          z-index: 100;
-        }
-
-        .water-flow-particle:hover {
-          filter: drop-shadow(0 0 35px #21A1F7) brightness(1.4) !important;
-          opacity: 1 !important;
-          z-index: 101;
+        .login-ambient-glow::before {
+          content: '';
+          position: absolute;
+          top: -20%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 800px;
+          height: 500px;
+          background: radial-gradient(ellipse at center, rgba(33, 161, 247, 0.22) 0%, rgba(4, 51, 136, 0.15) 50%, transparent 75%);
+          filter: blur(60px);
+          animation: fAmbientPulse 8s ease-in-out infinite alternate;
         }
 
         /* Card Logo Interactive Hover */
@@ -130,8 +80,11 @@ const LoginView = {
       </style>
 
       <div class="login-hero-bg" id="login-hero-viewport">
-        <!-- 69 Flowing Rotating Men's Symbols & Fragments -->
-        ${particlesHtml}
+        <!-- Animated Background Canvas matching docs/index.html & docs/app.js -->
+        <canvas id="heroWaveCanvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.85;"></canvas>
+
+        <!-- Ambient Radial Glow matching docs/index.html -->
+        <div class="login-ambient-glow"></div>
 
         <!-- Static Glassmorphism Card -->
         <div class="login-card-static">
@@ -196,146 +149,149 @@ const LoginView = {
       </div>
     `;
 
-    // Initialize Organic Fish Physics & Cursor Magnet Attraction System
-    setTimeout(() => this.initFishMagnetPhysics(), 50);
+    // Initialize Hero Wave & Particle Engine matching docs/index.html & docs/app.js
+    setTimeout(() => {
+      this.initHeroWaveCanvas();
+    }, 50);
   },
 
-  initFishMagnetPhysics() {
-    const viewport = document.getElementById('login-hero-viewport');
-    if (!viewport) return;
+  initHeroWaveCanvas() {
+    const canvas = document.getElementById('heroWaveCanvas');
+    if (!canvas) return;
 
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const mouse = { x: -2000, y: -2000, active: false };
-
-    // Track mouse cursor movement
-    const onMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      mouse.active = true;
-    };
-
-    const onMouseLeave = () => {
-      mouse.active = false;
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseleave', onMouseLeave);
-
-    // Initialize 69 Fish Particle Physics States
-    const fishList = [];
-    const elements = document.querySelectorAll('.mens-symbol-particle');
-
-    elements.forEach((el, i) => {
-      const size = parseInt(el.getAttribute('data-size') || '36', 10);
-      const posX = Math.random() * (w - size);
-      const posY = Math.random() * (h - size);
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 0.6 + Math.random() * 1.6;
-
-      fishList.push({
-        el,
-        x: posX,
-        y: posY,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        baseSpeed: speed,
-        size,
-        heading: angle,
-        turnRate: (Math.random() - 0.5) * 0.05,
-        wobblePhase: Math.random() * Math.PI * 2,
-        wobbleSpeed: 0.03 + Math.random() * 0.05,
-        isMagnetized: false
-      });
-    });
-
-    // Fish Swimming & Magnet Physics Loop
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    let step = 0;
     let animFrameId = null;
 
-    const updatePhysics = () => {
-      const currentW = window.innerWidth;
-      const currentH = window.innerHeight;
-
-      // Find nearest distance to cursor for magnetic force prioritization
-      let nearestDist = Infinity;
-      if (mouse.active) {
-        fishList.forEach(fish => {
-          const dx = mouse.x - (fish.x + fish.size / 2);
-          const dy = mouse.y - (fish.y + fish.size / 2);
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < nearestDist) nearestDist = d;
-        });
-      }
-
-      fishList.forEach(fish => {
-        const centerX = fish.x + fish.size / 2;
-        const centerY = fish.y + fish.size / 2;
-        const dx = mouse.x - centerX;
-        const dy = mouse.y - centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        const magnetRadius = 280;
-
-        // Magnet Attraction Force calculation
-        if (mouse.active && dist < magnetRadius) {
-          const force = (1 - dist / magnetRadius) * 0.08;
-          fish.vx += dx * force;
-          fish.vy += dy * force;
-          fish.vx *= 0.88; // Damping
-          fish.vy *= 0.88;
-
-          if (!fish.isMagnetized) {
-            fish.isMagnetized = true;
-            fish.el.classList.add('magnetized');
-          }
-        } else {
-          if (fish.isMagnetized) {
-            fish.isMagnetized = false;
-            fish.el.classList.remove('magnetized');
-          }
-
-          // Natural Organic Fish Swimming Motion (Steering + Wiggling Sine Waves)
-          fish.wobblePhase += fish.wobbleSpeed;
-          const wobble = Math.sin(fish.wobblePhase) * 0.4;
-          fish.heading += fish.turnRate + wobble * 0.02;
-
-          // Gentle random angle adjustment
-          if (Math.random() < 0.02) {
-            fish.turnRate = (Math.random() - 0.5) * 0.06;
-          }
-
-          // Move along heading vector
-          fish.vx = Math.cos(fish.heading) * fish.baseSpeed;
-          fish.vy = Math.sin(fish.heading) * fish.baseSpeed;
-        }
-
-        // Apply velocities
-        fish.x += fish.vx;
-        fish.y += fish.vy;
-
-        // Screen Edge Bounding (wrap around smoothly like fish in aquarium)
-        if (fish.x < -fish.size * 2) fish.x = currentW + fish.size;
-        if (fish.x > currentW + fish.size) fish.x = -fish.size;
-        if (fish.y < -fish.size * 2) fish.y = currentH + fish.size;
-        if (fish.y > currentH + fish.size) fish.y = -fish.size;
-
-        // Compute rotation angle towards movement heading
-        const moveAngle = Math.atan2(fish.vy, fish.vx) * (180 / Math.PI);
-
-        // Apply Transform Matrix to DOM element
-        fish.el.style.transform = `translate3d(${fish.x.toFixed(1)}px, ${fish.y.toFixed(1)}px, 0) rotate(${moveAngle.toFixed(1)}deg)`;
-      });
-
-      animFrameId = requestAnimationFrame(updatePhysics);
+    const resizeCanvas = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initParticles();
     };
 
-    animFrameId = requestAnimationFrame(updatePhysics);
+    const initParticles = () => {
+      particles = [];
+      const numParticles = Math.min(45, Math.floor(width / 25));
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: -Math.random() * 0.5 - 0.2, // Drifting upwards
+          size: Math.random() * 12 + 8,
+          alpha: Math.random() * 0.4 + 0.15,
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.02,
+          type: Math.random() > 0.4 ? 'men' : 'shards'
+        });
+      }
+    };
 
-    // Clean up animation frame on view unmount
-    this._cleanupPhysics = () => {
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const drawMenSymbol = (ctx, x, y, size, alpha, rotation) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.strokeStyle = `rgba(33, 161, 247, ${alpha})`;
+      ctx.lineWidth = 1.8;
+
+      const r = size * 0.35;
+      ctx.beginPath();
+      ctx.arc(0, r * 0.4, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const arrowLen = size * 0.6;
+      const startX = r * 0.7;
+      const startY = -r * 0.3;
+      const endX = startX + arrowLen * 0.7;
+      const endY = startY - arrowLen * 0.7;
+
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+
+      const headLen = size * 0.25;
+      ctx.beginPath();
+      ctx.moveTo(endX - headLen, endY);
+      ctx.lineTo(endX, endY);
+      ctx.lineTo(endX, endY + headLen);
+      ctx.stroke();
+
+      ctx.restore();
+    };
+
+    const drawShard = (ctx, x, y, size, alpha, rotation) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillStyle = `rgba(189, 154, 115, ${alpha * 0.7})`;
+
+      ctx.beginPath();
+      ctx.moveTo(0, -size / 2);
+      ctx.lineTo(size / 3, size / 2);
+      ctx.lineTo(-size / 3, size / 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw background sine wave layers
+      step += 0.012;
+      const waves = [
+        { color: 'rgba(33, 161, 247, 0.18)', speed: 0.8, amp: 35, freq: 0.008 },
+        { color: 'rgba(109, 198, 236, 0.12)', speed: 1.2, amp: 25, freq: 0.01 },
+        { color: 'rgba(189, 154, 115, 0.10)', speed: 0.5, amp: 45, freq: 0.006 }
+      ];
+
+      waves.forEach((w) => {
+        ctx.beginPath();
+        ctx.strokeStyle = w.color;
+        ctx.lineWidth = 1.5;
+        for (let x = 0; x <= width; x += 12) {
+          const y = Math.sin(x * w.freq + step * w.speed) * w.amp + height * 0.55;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+
+      // Update & Draw Floating Particles
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.vRot;
+
+        if (p.y < -30) {
+          p.y = height + 30;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -30) p.x = width + 30;
+        if (p.x > width + 30) p.x = -30;
+
+        if (p.type === 'men') {
+          drawMenSymbol(ctx, p.x, p.y, p.size, p.alpha, p.rotation);
+        } else {
+          drawShard(ctx, p.x, p.y, p.size, p.alpha, p.rotation);
+        }
+      });
+
+      animFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    this._cleanupWaveCanvas = () => {
       if (animFrameId) cancelAnimationFrame(animFrameId);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('resize', resizeCanvas);
     };
   },
 
@@ -363,7 +319,7 @@ const LoginView = {
       ApiClient.setToken(res.token);
       AppState.set('currentUser', res.user);
 
-      if (this._cleanupPhysics) this._cleanupPhysics();
+      if (this._cleanupWaveCanvas) this._cleanupWaveCanvas();
 
       window.showToast(`Welcome back, ${res.user.name}! (${res.user.role})`, 'success');
 

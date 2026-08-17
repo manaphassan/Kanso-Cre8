@@ -51,7 +51,8 @@ body {
 .app-sidebar.collapsed .nav-category,
 .app-sidebar.collapsed .nav-item span:not(.nav-icon),
 .app-sidebar.collapsed .nav-badge,
-.app-sidebar.collapsed .user-info {
+.app-sidebar.collapsed .user-info,
+.app-sidebar.collapsed .sidebar-app-banner {
   display: none !important;
 }
 

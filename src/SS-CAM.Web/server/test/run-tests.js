@@ -159,6 +159,33 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 7: Sidebar Navigation & App Banner DOM Structure ─────────
+  test('Client index.html includes SS-CAM Desktop nav item and download banner DOM elements', () => {
+    const indexPath = path.join(__dirname, '../../client/index.html');
+    const htmlContent = fs.readFileSync(indexPath, 'utf8');
+
+    assert.ok(htmlContent.includes('<aside class="app-sidebar">'), 'Sidebar root element must exist');
+    assert.ok(htmlContent.includes('<nav class="sidebar-nav">'), 'Sidebar nav container must exist');
+    assert.ok(htmlContent.includes('<div class="nav-category">Desktop Ecosystem</div>'), 'Desktop Ecosystem category heading must exist');
+    assert.ok(htmlContent.includes('SS-CAM Desktop'), 'SS-CAM Desktop navigation text must exist');
+    assert.ok(htmlContent.includes('https://github.com/SuamiSihat/ss_cam/releases/tag/v3.6.1'), 'SS-CAM release tag link must exist');
+    assert.ok(htmlContent.includes('<div class="sidebar-app-banner"'), 'Sidebar desktop app banner card must exist');
+    assert.ok(htmlContent.includes('Download SS-CAM v3.6.1 (.exe)'), 'SS-CAM executable download button must exist');
+  });
+
+  // ─── TEST 8: Login View Canvas & Glassmorphism Card DOM Structure ──
+  test('LoginView.js renders wave canvas, ambient glow, and static glassmorphism DOM card', () => {
+    const loginViewPath = path.join(__dirname, '../../client/js/views/LoginView.js');
+    const jsContent = fs.readFileSync(loginViewPath, 'utf8');
+
+    assert.ok(jsContent.includes('<div class="login-hero-bg" id="login-hero-viewport">'), 'Login hero viewport container must exist');
+    assert.ok(jsContent.includes('<canvas id="heroWaveCanvas"'), 'heroWaveCanvas canvas element must exist');
+    assert.ok(jsContent.includes('<div class="login-ambient-glow"></div>'), 'login-ambient-glow element must exist');
+    assert.ok(jsContent.includes('<div class="login-card-static">'), 'login-card-static glassmorphism container must exist');
+    assert.ok(jsContent.includes('linear-gradient(180deg, #022057 0%, #043388 60%, #021233 100%)'), 'Prussian blue vertical gradient background must be defined');
+    assert.ok(!jsContent.includes('water-flow-particle'), 'Previous water flow particle DOM elements must be removed');
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
