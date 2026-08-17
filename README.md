@@ -28,7 +28,115 @@ The application ships as a **true single-file executable (~5 MB)** with zero ins
 
 ---
 
-## 🌟 The 4 Pillars of SS-CAM
+## What's New in v3.5.0
+
+| # | Change | Details |
+|---|--------|---------|
+| 1 | **In-App Project Brief Markdown Editor** | Edit and save project `README.md` and frontmatter directly inside the Search & Copy catalog pane with live preview and notification feedback. |
+| 2 | **Workspace Designer Scoping** | Dynamically discovers designer folder structures on local and Synology NAS shares and scopes project catalog queries. |
+| 3 | **Quick Notes Markdown Studio** | Enhanced formatting toolbar with Headings, Checklist, Code blocks, and Markdown Guide drawer. |
+| 4 | **Repository Hygiene & Architecture Cleanup** | Automated Source Guardian validation, eliminated loose duplicate binaries, clean `.gitignore` rules. |
+
+### Previous: v3.4.0 Highlights
+
+| # | Change | Details |
+|---|--------|---------|
+| 1 | **Starter Canvas Engine** | Integrated `.af`, `.psd`, and `.ai` starter canvas format generation with default Affinity Designer format support and 2026 industry platform specs. |
+| 2 | **Project Creator Presets & Dynamic Filter** | Added Rollup Bunting (80x200cm), Trifold A4 Brochure, A5 Leaflet, and Web Design category presets. Dynamic platform filtering and category visual card highlighting. |
+| 3 | **Search & Copy Category Filter** | Added category-based filtering dropdown for quick search and copy across asset catalog items. |
+| 4 | **Creative Calendar Quick Status Actions** | Integrated direct project status actions (`In Progress`, `Review`, `Done`) inside the Day Detail view overlay. |
+
+---
+
+## Application Modules
+
+| Module | Description |
+|--------|-------------|
+| **Dashboard** | Live workspace metrics: storage analytics, project-type breakdown, sub-brand workload share, six-month activity chart, largest project detector, stale project alerts |
+| **Creative Wellbeing** | DPAPI-encrypted Mind Drops, focus session timer with idle detection, energy/pressure check-ins, 16-second box breathing with synchronized animations, fatigue-aware break suggestions |
+| **Waktu Solat** | JAKIM API prayer timetable for 41 Malaysian zones, countdown timer, adhan reminder, Hijri date display |
+| **Project Creator** | Standardized folder generation (`YYYYMM_NNNNX_BRAND_Name`), auto-calculated Job IDs, preset-specific subfolder templates, live directory tree preview |
+| **Search & Copy** | Full-text project search, designer filtering, rendered README preview, project file browser, controlled asset copying into active work orders |
+| **Brand Assets** | In-app launcher for installed colour palettes, asset libraries, logo files, and official brand links |
+| **QR Code Studio** | Vector & raster QR Code generator supporting URL, Plain Text, Wi-Fi credentials, and VCard payloads with brand palette customization, high-res PNG export, and Clipboard copying |
+| **Radio Player** | Live stream player with preloaded Malaysian stations (BFM 89.9, Hitz FM, Era FM, Hot FM, Suria FM, THR Raaga), lo-fi beats, custom streams, album art, persistent status-bar mini-player |
+| **Quick Notes** | Rich-text note editor with Markdown preview, local storage, keyboard shortcuts |
+| **Task Manager** | YAML frontmatter project board — reads `README.md` task headers from workspace, status columns, due-date tracking, queue age calculation |
+| **Big Calendar** | Visual monthly project timetable, campaign deadlines, creation schedule overview, and interactive day detail inspector |
+| **Workstation Health** | Real-time CPU, RAM, disk monitoring with threshold alerts and historical trend |
+| **Settings & Profile** | Designer name, department, avatar photo, workspace root, NAS path, theme preference |
+
+---
+
+## Themes
+
+| Theme | Style | WPF-UI Mode |
+|-------|-------|-------------|
+| **SS Default** | Deep navy sidebar, white content canvas, SuamiSihat brand blue | Light |
+| **Falconia** | Full white Fluent 2 Light — clean, minimal, Fluent-native | Light |
+| **Metamorphosis** | Glassmorphism — deep space navy canvas, electric cyan accent, glass cards | Dark |
+
+Switch themes by clicking the theme indicator in the sidebar status bar.
+
+---
+
+## Core Capabilities
+
+| Capability | Detail |
+|-----------|--------|
+| **Single-file exe** | ~5 MB, no dependencies, runs from USB/Downloads |
+| **NAS Health Monitor** | 30-second background probe of Synology DDNS with click-to-recheck |
+| **Auto-Update Banner** | Version check against NAS endpoint; one-click download when newer build available |
+| **Zero Telemetry** | No analytics, no crash reporting to external services |
+| **Offline Resilient** | All features gracefully degrade when NAS/network unavailable |
+| **DPAPI Encryption** | Mind Drops encrypted with Windows Data Protection API |
+
+---
+
+## Workstation Requirements
+
+| Requirement | Minimum |
+|-------------|---------|
+| OS | Windows 10 (1903+) or Windows 11 |
+| Architecture | x64 |
+| RAM | 4 GB |
+| .NET Framework | 4.8 (pre-installed on Win 10/11) |
+| Affinity Designer | 2.x (for starter canvas templates) |
+| Display | 1280 × 720 minimum, 1920 × 1080 recommended |
+
+---
+
+## Installation
+
+1. Download `SS-CAM-v3.0.1.exe` from the [Releases](https://github.com/SuamiSihat/ss_cam/releases/latest) page
+2. Run the exe — no installation step required
+3. On first launch, SS-CAM will:
+   - Copy itself to `%LocalAppData%\Programs\SuamiSihat\`
+   - Register a Start Menu shortcut
+   - Deploy brand fonts to the system font directory
+
+---
+
+## First-Time Configuration
+
+1. **Configure Synology Drive Client for SSNAS**:
+   - Map SSNAS `/Creative-Team` share to local computer path `E:\SynologyDrive\Creative-Team` (see [SSNAS Setup Guide](./docs/SSNAS-SETUP.md)).
+2. Open **Settings & Profile** in SS-CAM.
+3. Set your **Designer Name** and **Department**.
+4. Set your **Workspace Root** to your synchronized Synology Drive folder:
+   ```text
+   E:\SynologyDrive\Creative-Team
+   ```
+5. Set your **Synology NAS Path** if applicable (`\\SSNAS\Creative-Team`).
+6. Choose your preferred **Theme** (SS Default, Falconia, Metamorphosis).
+7. Select your **Waktu Solat Zone** (41 Malaysian zones supported).
+
+---
+
+## Project Folder Convention
+
+All generated project folders follow:
+>>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐

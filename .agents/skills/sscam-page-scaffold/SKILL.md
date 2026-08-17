@@ -73,14 +73,16 @@ Add two entries inside the `<ItemGroup>` for Page items:
 | Element | Use |
 |---------|-----|
 | Root | `<ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">` |
-| Card background | `{DynamicResource FluentLightCardBg}` |
-| Card border | `{DynamicResource FluentLightStroke}` |
-| Primary text | `{DynamicResource FluentLightTextPrimary}` |
-| Secondary text | `{DynamicResource FluentLightTextSecondary}` |
+| Container | `<ui:Card Padding="20">` (Never use raw `<Border>` for panels) |
+| Page background | `{DynamicResource ApplicationPageBackgroundThemeBrush}` |
+| Card surface | `{DynamicResource CardBackgroundFillColorDefaultBrush}` |
+| Card border | `{DynamicResource CardStrokeColorDefaultBrush}` |
+| Primary text | `{DynamicResource TextFillColorPrimaryBrush}` |
+| Secondary text | `{DynamicResource TextFillColorSecondaryBrush}` |
 | Brand accent | `{DynamicResource FluentBrand80}` |
-| Shadows | `{StaticResource FluentDepth4/8/16}` |
-| Buttons | `<ui:Button Appearance="Primary/Secondary">` |
-| Typography | `<ui:TextBlock>` for branded headings |
+| Buttons | `<ui:Button Appearance="Primary|Secondary">` |
+| Vector Icons | `<ui:SymbolIcon Symbol="<Name>24">` |
+| Typography | Page title `FontSize="24"` `FontWeight="Bold"` |
 | Clickable non-button | `Cursor="Hand"` + `ToolTip` |
 
 ## Templates
