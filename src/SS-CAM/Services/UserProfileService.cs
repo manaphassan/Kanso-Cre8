@@ -343,6 +343,49 @@ namespace SS_CAM.Services
             return result;
         }
 
+        public static List<StaffDirectoryItem> GetStaffDirectory(string workspaceRoot)
+        {
+            var defaults = new List<StaffDirectoryItem>
+            {
+                new StaffDirectoryItem { StaffId = "SS0004", Name = "Harussani", Role = "Art Director", Department = "Creative Production", DefaultBrand = "SS" },
+                new StaffDirectoryItem { StaffId = "SS0035", Name = "Haikal", Role = "Multimedia Designer", Department = "Multimedia & Motion", DefaultBrand = "SS" },
+                new StaffDirectoryItem { StaffId = "SS0037", Name = "Aliff", Role = "Multimedia Designer", Department = "Multimedia & Motion", DefaultBrand = "SSE" },
+                new StaffDirectoryItem { StaffId = "SS0073", Name = "Raihan", Role = "Head of Marketing & Sale", Department = "Marketing & Sales", DefaultBrand = "SS" },
+                new StaffDirectoryItem { StaffId = "SS0001", Name = "Hasan", Role = "Chief Executive Officer", Department = "Executive Management", DefaultBrand = "SS" },
+                new StaffDirectoryItem { StaffId = "SS0071", Name = "Gaddafi", Role = "Co-Chief Executive Officer", Department = "Executive Management", DefaultBrand = "SS" }
+            };
+
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+            {
+                workspaceRoot = NasConfigSyncService.DiscoverWorkspaceRoot();
+            }
+
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+            {
+                return defaults;
+            }
+
+            try
+            {
+                string staffPath = Path.Combine(workspaceRoot, "_Team", "_Config", "staff_directory.json");
+                if (File.Exists(staffPath))
+                {
+                    string json = File.ReadAllText(staffPath, System.Text.Encoding.UTF8);
+                    var list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<StaffDirectoryItem>>(json);
+                    if (list != null && list.Count > 0)
+                    {
+                        return list.FindAll(delegate(StaffDirectoryItem item) { return item.Active; });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[UserProfileService] GetStaffDirectory error: " + ex.Message);
+            }
+
+            return defaults;
+        }
+
         public static void ClearAllDataAndCache()
         {
             try

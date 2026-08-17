@@ -1,0 +1,29 @@
+{
+  "name": "ss-cam-web-portal",
+  "version": "1.0.0",
+  "description": "SuamiSihat Creative Team Management Web Portal",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "test": "node server/test/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "chokidar": "^4.0.3",
+    "multer": "^1.4.5-lts.1",
+    "dotenv": "^16.4.7"
+  },
+  "keywords": [
+    "suamisihat",
+    "creative-team",
+    "ss-cam",
+    "management-portal"
+  ],
+  "author": "SuamiSihat Creative Team",
+  "license": "UNLICENSED"
+}

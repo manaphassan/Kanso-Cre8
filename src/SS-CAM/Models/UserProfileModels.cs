@@ -39,6 +39,34 @@ namespace SS_CAM.Models
         }
     }
 
+    public class StaffDirectoryItem
+    {
+        public string StaffId { get; set; }
+        public string Name { get; set; }
+        public string Role { get; set; }
+        public string Department { get; set; }
+        public string DefaultBrand { get; set; }
+        public bool Active { get; set; }
+
+        public string DisplayText
+        {
+            get
+            {
+                return string.Format("{0} - {1} ({2})", StaffId ?? "", Name ?? "", Role ?? "");
+            }
+        }
+
+        public StaffDirectoryItem()
+        {
+            StaffId = "";
+            Name = "";
+            Role = "";
+            Department = "Creative Production";
+            DefaultBrand = "SS";
+            Active = true;
+        }
+    }
+
     public class SystemSpecs
     {
         public string OSVersion { get; set; }

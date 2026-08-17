@@ -48,6 +48,47 @@ namespace SS_CAM.Views
             ProfileHeaderStaffId.Text = string.Format("Staff ID: {0}", string.IsNullOrWhiteSpace(currentProfile.StaffId) ? "0001D" : currentProfile.StaffId);
 
             UpdateAvatarPreview(currentProfile.AvatarPath);
+            PopulateStaffDirectory();
+        }
+
+        private void PopulateStaffDirectory()
+        {
+            try
+            {
+                var directory = UserProfileService.GetStaffDirectory(currentProfile != null ? currentProfile.WorkspaceRoot : null);
+                StaffDirectoryCombo.ItemsSource = directory;
+
+                if (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.StaffId))
+                {
+                    foreach (var item in directory)
+                    {
+                        if (string.Equals(item.StaffId, currentProfile.StaffId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            StaffDirectoryCombo.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SettingsPage] PopulateStaffDirectory error: " + ex.Message);
+            }
+        }
+
+        private void OnStaffDirectoryComboSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = StaffDirectoryCombo.SelectedItem as StaffDirectoryItem;
+            if (selected != null)
+            {
+                DesignerNameInput.Text = selected.Name;
+                StaffIdInput.Text = selected.StaffId;
+                DepartmentInput.Text = selected.Department;
+
+                ProfileHeaderName.Text = selected.Name;
+                ProfileHeaderDept.Text = selected.Department;
+                ProfileHeaderStaffId.Text = string.Format("Staff ID: {0}", selected.StaffId);
+            }
         }
 
         private void UpdateAvatarPreview(string path)

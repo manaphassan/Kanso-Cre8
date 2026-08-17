@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ss-cam-web-portal:
+    image: node:20-alpine
+    container_name: ss-cam-web-portal
+    restart: always
+    working_dir: /app
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - WORKSPACE_ROOT=/data/Creative-Team
+      - JWT_SECRET=ss-cam-creative-secret-key-2026-mgmt-portal
+    volumes:
+      # Mount application source files from NAS
+      - /volume1/docker/ss-cam-web:/app:ro
+      # Mount shared Creative-Team storage with Read/Write access
+      - /volume1/Creative-Team:/data/Creative-Team:rw
+    command: sh -c "npm install --production && node server/index.js"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/status').then(r=>r.ok?process.exit(0):process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

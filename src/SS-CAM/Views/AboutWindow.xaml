@@ -27,13 +27,8 @@
 
                     <ui:TextBlock Text="SuamiSihat Creative Assets Management" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
-<<<<<<< HEAD
                         <Border Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
-                            <ui:TextBlock x:Name="TxtVersionBadge" Text="" Foreground="White" FontSize="11" FontWeight="Bold"/>
-=======
-                        <Border Background="#043388" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                             <ui:TextBlock x:Name="TxtVersionBadge" Text="Version 3.5.0 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
->>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
                         </Border>
                         <Border Background="{DynamicResource SystemFillColorSuccessBrush}" CornerRadius="4" Padding="8,3">
                             <ui:TextBlock Text="Production Release" Foreground="White" FontSize="11" FontWeight="Bold"/>
