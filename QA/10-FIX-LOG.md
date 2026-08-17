@@ -1,5 +1,26 @@
 # SS-CAM FIX LOG
 
+## v3.6.1 — 2026-08-17 (Metamorphosis Theme Surface Opacity & Legibility Overhaul)
+
+### Added & Refined Modules
+- **Metamorphosis Theme Surface Opacity (`MetamorphosisTheme.xaml`)**: Replaced all semi-transparent white card background brushes (`#26FFFFFF`, `#14FFFFFF`) with solid opaque deep space navy surface colors (`#0F1A3A`, `#142045`), eliminating background text bleed-through on overlay drawers (`DayDetailPanel`) and cards.
+- **Input & Control Surfaces**: Replaced transparent control fills with solid navy control fills (`#0C1633` input background, `#14224B` control fill) and updated border stroke tokens (`#1E2E5C`, `#243977`).
+- **Web Portal Alignment (`fluent2-tokens.css`)**: Set `--glass-bg` to `#0F1A3A` for `[data-theme="metamorphosis"]`.
+- **Automated Quality Attestation**: Source Guardian audit 100% PASS (9/9 checks).
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe` / `dist/SS-CAM-v3.6.1.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+
+---
+
+## v3.6.0 — 2026-08-17 (Fluent UI Web & Data Visualization Release)
+- **Fluent UI Web Integration**: Incorporated official Microsoft Fluent UI Web token custom properties (`--colorNeutralBackground1`, `--colorBrandBackground`) and `sscam-fluentui-web` skill guidelines.
+- **3-Tier F-Pattern Dashboard**: Built 5-KPI Strategic Summary Bar, Production Stage Pipeline Velocity Flow, and Designer Capacity Heatmap in `DashboardView.js`.
+- **Copywriting AI Presets**: Built TikTok Hooks, Facebook Problem/Solution Angles, and Product Packaging Benefit Claims presets in `CopyStudioView.js`.
+
+---
+
 ## v3.5.0 — 2026-08-17 (In-App Project Brief Editor, Workspace Designer Scoping & Repository Hygiene)
 
 ### Added & Refined Modules
