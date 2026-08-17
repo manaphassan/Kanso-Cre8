@@ -7,7 +7,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SuamiSihat")]
 [assembly: AssemblyProduct("SuamiSihat Creative Assets Management")]
-[assembly: AssemblyCopyright("Copyright Â© SuamiSihat 2026")]
+[assembly: AssemblyCopyright("Copyright © SuamiSihat 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -27,8 +27,13 @@
 
                     <ui:TextBlock Text="SuamiSihat Creative Assets Management" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+<<<<<<< HEAD
                         <Border Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                             <ui:TextBlock x:Name="TxtVersionBadge" Text="" Foreground="White" FontSize="11" FontWeight="Bold"/>
+=======
+                        <Border Background="#043388" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
+                            <ui:TextBlock x:Name="TxtVersionBadge" Text="Version 3.5.0 (C# Native WPF)" Foreground="White" FontSize="11" FontWeight="Bold"/>
+>>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
                         </Border>
                         <Border Background="{DynamicResource SystemFillColorSuccessBrush}" CornerRadius="4" Padding="8,3">
                             <ui:TextBlock Text="Production Release" Foreground="White" FontSize="11" FontWeight="Bold"/>
@@ -45,7 +50,9 @@
                 <GroupBox x:Name="GroupChangelog" Header="Release Highlights &amp; Changelog" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontWeight="Bold">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                         <StackPanel Margin="6">
-                            <ui:TextBlock x:Name="TxtWhatsNew" Text="&#x2728; What's New:" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="13" Margin="0,0,0,8"/>
+                            <ui:TextBlock x:Name="TxtWhatsNew" Text="&#x2728; What's New in Version 3.5.0:" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" FontSize="13" Margin="0,0,0,8"/>
+
+                            <ui:TextBlock Text="&#x2022; In-App Project Brief Editor: Edit and save project README.md markdown directly inside the Search &amp; Copy catalog with live NotificationService toasts." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
                             <ui:TextBlock Text="&#x2022; In-App Notification Center: Persistent notification history, top header bell icon with unread badge overlay, and slide-out flyout drawer." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
@@ -53,9 +60,9 @@
 
                             <ui:TextBlock Text="&#x2022; Enhanced Kanban Drag-and-Drop: Live column drop updates README.md YAML frontmatter status instantly with automated KPI metric updates." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="&#x2022; Fresh Download Auto-Discovery &amp; Setup Wizard: Auto-scans Synology Drive / NAS paths and auto-restores user configs, with FirstRunSetupDialog wizard for new workstations." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Fresh Download Auto-Discovery &amp; Setup Wizard: Auto-scans Synology Drive / NAS paths and auto-restores user configs with FirstRunSetupDialog wizard for new workstations." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
 
-                            <ui:TextBlock Text="&#x2022; Art Director &amp; Product Designer Standardization: 100% standardized 2-line Fluent 2 page headers, aligned iconography, and high-contrast dynamic theme token compliance." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                            <ui:TextBlock Text="&#x2022; Workspace Designer Filtering &amp; Repository Hygiene: Dynamic designer dropdown scoped across local and Synology NAS shares, clean single-file build in dist/, and automated Source Guardian checks." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
                         </StackPanel>
                     </ScrollViewer>
                 </GroupBox>

@@ -50,7 +50,7 @@ namespace SS_CAM.Views
             {
                 Path.Combine(payloadDir, "Audio"),
                 Path.Combine(localApp, "Audio"),
-                @"E:\Dev\Projects\SS-Brand-Assets\payload\Audio",
+                Path.Combine(baseDir, "payload", "Audio"),
                 payloadDir,
                 localApp,
                 baseDir

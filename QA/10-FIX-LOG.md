@@ -1,5 +1,21 @@
 # SS-CAM FIX LOG
 
+## v3.5.0 — 2026-08-17 (In-App Project Brief Editor, Workspace Designer Scoping & Repository Hygiene)
+
+### Added & Refined Modules
+- **In-App Project Brief Markdown Editor (`SearchCopyPage`)**: Live editing and saving of project `README.md` and YAML frontmatter directly inside the Search & Copy catalog pane with Markdown formatting toolbar (Headings, Bold, Italic, Code, List) and real-time feedback via `NotificationService`.
+- **Workspace Designer Scoping**: Dynamic discovery and dropdown filtering across designer workspaces (`0001D`, `0002S`, etc.) on local and Synology NAS shares.
+- **Minimal Brand Assets & Swatch Inspector**: Minimal 2-column layout with tabbed Primary/Secondary/Neutrals swatches and live HEX/RGB/CMYK/Pantone inspector.
+- **Repository Hygiene & Architecture Cleanup**: Eliminated redundant root build binaries, old log files, and obsolete scratch files. Updated `.gitignore` to prevent test workspaces and ephemeral files from dirtying the working tree.
+- **Automated Source Guardian Validation**: 100% PASS on UTF-8 BOM, Fluent 2 standards, thread and data safety.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe` / `dist/SS-CAM-v3.5.0.exe`).
+- Smoke Test: PASS (`tests/SmokeTest.ps1` — 100% clean instantiation).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+
+---
+
 ## v3.5.0-linux — 2026-08-14 (Fedora Linux Native Desktop Port)
 - **Linux Platform**: Native Avalonia UI (.NET 8) desktop app scaffolded (`src/SS-CAM.Linux/`).
 - **Target OS & NAS**: Fedora Linux (GNOME / Wayland) & Synology Drive Client (`~/SynologyDrive/`).
@@ -9,13 +25,18 @@
 
 ---
 
-## v3.5.0 — 2026-08-14 (Minimal Brand Assets, Search & Copy Stability & Release Publication)
-- **GitHub Release**: PUBLISHED (`v3.5.0` set as Latest on `SuamiSihat/ss_cam`)
-- **Documentation**: Updated (14 project docs aligned to `v3.5.0`)
-- **Minimal Brand Assets & Swatch Inspector**: Minimal 2-column layout with tabbed Primary/Secondary/Neutrals swatches and live HEX/RGB/CMYK/Pantone inspector.
-- **Search & Copy Revert**: Reverted to v3.4.0 stable scanner architecture for fast full-text workspace indexing and README preview rendering.
-- **Source Guardian**: PASS (9/9 automated checks passed)
-- **Wiki**: PUBLISHED / UPDATED (`SuamiSihat/ss_cam.wiki`)
+## v3.4.0 — 2026-08-13 (Starter Canvas Engine, Category Filtering & Calendar Quick Status Actions)
+
+### Added & Refined Modules
+- **Starter Canvas Engine**: Integrated `.af`, `.psd`, and `.ai` starter canvas format generation with default Affinity Designer format support (`.af`) and 2026 industry platform specs.
+- **Project Creator Presets & Dynamic Category Filtering**: Added Rollup Bunting (80x200cm), Trifold A4 Brochure, A5 Leaflet, and Web Design category presets. Dynamically filters target platform options and highlights visual cards based on category.
+- **Search & Copy Category Filter**: Added category filter dropdown in `SearchCopyPage` for dynamic asset and copy snippet filtering.
+- **Creative Calendar Quick Status Actions**: Integrated direct project status actions (`In Progress`, `Review`, `Done`) inside `CalendarPage.xaml.cs` day detail view overlay with automatic frontmatter synchronization.
+
+### Verification
+- Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
+- Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
+>>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
 
 ---
 

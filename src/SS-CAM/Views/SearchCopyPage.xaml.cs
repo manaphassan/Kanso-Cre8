@@ -118,13 +118,11 @@ namespace SS_CAM.Views
                 File.WriteAllText(readmePath, BriefEditor.Text, System.Text.Encoding.UTF8);
                 rawReadmeText = BriefEditor.Text;
                 cleanedReadmeText = StripFrontmatter(rawReadmeText);
-                MessageBox.Show("README.md saved successfully.", "Saved",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                NotificationService.ShowSuccess("README.md Saved", "Project brief successfully updated.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Save failed: {0}", ex.Message), "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                NotificationService.ShowError("Save Failed", ex.Message);
             }
             OnCancelEditClicked(sender, e);
         }

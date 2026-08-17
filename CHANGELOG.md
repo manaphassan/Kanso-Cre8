@@ -2,30 +2,61 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.5.0] - 2026-08-14 (Latest)
+## [3.5.0] - 2026-08-17 (Latest)
 
-### Added & Refined — Designer Companion & Second Brain Release
+### Added & Refined — Designer Companion & In-App Brief Editor Release
+- **In-App Project Brief Markdown Editor (`SearchCopyPage`)**:
+  - Live editing and saving of project `README.md` and frontmatter directly inside the Search & Copy catalog pane.
+  - Interactive Markdown formatting toolbar (Headings, Bold, Italic, Code, List) with real-time feedback via `NotificationService`.
+- **Workspace Designer Scoping & Discovery**:
+  - Dynamic discovery and dropdown filtering across designer workspaces (`0001D`, `0002S`, etc.) on local and Synology NAS shares.
 - **Minimal 2-Column Brand Assets & Live Swatch Inspector (`BrandAssetsPage`)**:
   - Replaced legacy multi-card layout with a sleek 2-column responsive design.
   - Interactive **Primary**, **Secondary**, and **Neutrals** swatch ribbons.
   - Live Inspector Card displaying color preview tile, Swatch Title, **HEX**, **RGB**, **CMYK**, and **Pantone** breakdowns with auto-copy to clipboard.
-- **Search & Copy Engine Stability Revert (`SearchCopyPage`, `WorkspaceScanner`)**:
-  - Reverted Search & Copy module to git tag `v3.4.0` state, restoring fast full-text workspace indexing and README markdown preview rendering.
 - **Dynamic Theme Contrast & Fluent 2 Standardization**:
   - Standardized all 14 page views to use native WPF-UI dynamic resource tokens (`ApplicationPageBackgroundThemeBrush`, `CardBackgroundFillColorDefaultBrush`, `TextFillColorPrimaryBrush`, `TextFillColorSecondaryBrush`).
   - Standardized all page titles to `FontSize="24"` and section headers to `FontSize="16"`.
 - **Task Manager FIFO Queue & Date Filter Upgrades (`TaskManagerPage`)**:
   - Added `created:` frontmatter tag support, queue age display (`📅 14d in queue`), FIFO Queue Order sorting (`Oldest First`), and `Created Date` drawer editor.
+- **Repository Hygiene & Architecture Cleanup**:
+  - Eliminated redundant root build binaries, old log files, and obsolete scratch files.
+  - Updated `.gitignore` to prevent test workspaces and ephemeral files from dirtying the working tree.
+  - Automated Source Guardian validation (100% PASS on UTF-8 BOM, Fluent 2 standards, thread and data safety).
 
 ### Integrity
 | File | Details |
 |---|---|
-| `SS-CAM-v3.5.0.exe` | Compiled Native C# WPF Executable (~5 MB single-file) |
+| `SS-CAM-v3.5.0.exe` | Compiled Native C# WPF Executable (5.24 MB single-file) |
 | `AssemblyVersion` | 3.5.0.0 |
 | `AssemblyFileVersion` | 3.5.0.0 |
 
 ---
 
+## [3.4.0] - 2026-08-13
+
+### Added & Refined — Feature Release
+- **Starter Canvas Engine & 2026 Industry Platform Specs**:
+  - Integrated `.af`, `.psd`, and `.ai` starter canvas format generation with default Affinity Designer format support (`.af`).
+  - Added Web Design category presets and platform-specific canvas generators.
+- **Project Creator Presets & Dynamic Category Filtering**:
+  - Added new production presets: Rollup Bunting (80x200cm), Trifold A4 Brochure, and A5 Leaflet.
+  - Dynamically filters target platform options and highlights visual cards based on the selected project category.
+- **Search & Copy Category Filter**:
+  - Implemented category filter dropdown in `SearchCopyPage.xaml` / `SearchCopyPage.xaml.cs` to filter copy items and assets seamlessly.
+- **Creative Calendar Quick Status Actions**:
+  - Integrated direct project status actions (`In Progress`, `Review`, `Done`) inside `CalendarPage.xaml.cs` day detail view overlay with automatic frontmatter synchronization.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.4.0.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 3.4.0.0 |
+| `AssemblyFileVersion` | 3.4.0.0 |
+
+---
+
+>>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
 ## [3.3.0] - 2026-08-13
 
 ### Added & Refined — Feature Release

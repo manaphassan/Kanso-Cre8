@@ -1,4 +1,4 @@
-﻿---
+---
 name: sscam-release-manager
 description: >
   Automates the SS-CAM release pipeline. Trigger: release vX.Y.Z,
@@ -21,14 +21,13 @@ description: >
 
 STOP if exit code 1. Fix all issues first.
 
-### Step 2 - Bump Version (4 locations)
+### Step 2 - Bump Version (3 code locations)
 
 | File | What to change |
 |------|----------------|
 | src/SS-CAM/Properties/AssemblyInfo.cs | AssemblyVersion + AssemblyFileVersion |
 | src/SS-CAM/MainWindow.xaml | Window Title attribute |
-| src/SS-CAM/Views/DashboardPage.xaml | TxtVersionBadge Text |
-| CHANGELOG.md | Add ## [vX.Y.Z] section at top |
+| CHANGELOG.md | Add ## [X.Y.Z] section at top |
 
 Version format: MAJOR.MINOR.PATCH
 
@@ -48,10 +47,12 @@ Copy-Item "src\SS-CAM\bin\Release\SS-CAM.exe" "SS-CAM-vX.Y.Z.exe" -Force
 Copy-Item "src\SS-CAM\bin\Release\SS-CAM.exe" "dist\SS-CAM-vX.Y.Z.exe" -Force
 ```
 
-### Step 5 - Update Documentation
+### Step 5 - Update Documentation & QA Suite
 
 - README.md: update version badge + What's New section
-- ROADMAP.md: move version to Released
+- ROADMAP.md: move version to Released Milestones, bump in-progress target
+- QA/FINAL-QA-REPORT.md: update status, date, and remediation items
+- QA/README.md: update version under review and build under test
 - QA/10-FIX-LOG.md: add release entry
 
 ### Step 6 - Git Commit + Tag
