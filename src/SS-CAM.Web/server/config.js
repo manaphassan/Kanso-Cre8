@@ -5,6 +5,7 @@ const envWorkspace = process.env.WORKSPACE_ROOT;
 const uncNasPath = '\\\\SSNAS\\Creative-Team';
 const localSyncPath = 'E:\\SynologyDrive\\Creative-Team';
 const linuxNasPath = '/volume1/Creative-Team';
+const linuxNasVolume2Path = '/volume2/Creative-Team';
 const fallbackLocalWorkspace = path.resolve(__dirname, '../sample-workspace');
 
 function isPathAccessible(dirPath) {
@@ -27,6 +28,8 @@ if (envWorkspace && isPathAccessible(envWorkspace)) {
   resolvedWorkspace = localSyncPath;
 } else if (isPathAccessible(linuxNasPath)) {
   resolvedWorkspace = linuxNasPath;
+} else if (isPathAccessible(linuxNasVolume2Path)) {
+  resolvedWorkspace = linuxNasVolume2Path;
 } else {
   resolvedWorkspace = fallbackLocalWorkspace;
 }

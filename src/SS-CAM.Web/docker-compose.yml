@@ -14,11 +14,13 @@ services:
       - WORKSPACE_ROOT=/data/Creative-Team
       - JWT_SECRET=ss-cam-creative-secret-key-2026-mgmt-portal
     volumes:
-      # Mount application source files from NAS
-      - /volume1/docker/ss-cam-web:/app:ro
-      # Mount shared Creative-Team storage with Read/Write access
-      - /volume1/Creative-Team:/data/Creative-Team:rw
-    command: sh -c "npm install --production && node server/index.js"
+      # Application files from your NAS docker folder (Read-Write enabled)
+      - /volume1/docker/ss-cam-web:/app:rw
+
+      # Shared Creative-Team storage on Volume 2
+      - /volume2/Creative-Team:/data/Creative-Team:rw
+
+    command: sh -c "cd /app && npm install && node server/index.js"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/status').then(r=>r.ok?process.exit(0):process.exit(1))"]
       interval: 30s
