@@ -6,7 +6,7 @@
 
 Standardized Project Generation · Live Brand Inspector · Task Management · Creative Wellbeing · Waktu Solat · Single-File Executable
 
-[![Latest Release](https://img.shields.io/badge/release-v3.5.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v3.6.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B%20%7C%20Linux%20%28Fedora%29-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Design](https://img.shields.io/badge/design-Fluent%202%20%2F%20Avalonia-0078D4?style=flat-square)](https://fluent2.microsoft.design)
@@ -28,16 +28,16 @@ The application ships as a **true single-file executable (~5 MB)** with zero ins
 
 ---
 
-## What's New in v3.5.0
+## What's New in v3.6.1
 
 | # | Change | Details |
 |---|--------|---------|
-| 1 | **In-App Project Brief Markdown Editor** | Edit and save project `README.md` and frontmatter directly inside the Search & Copy catalog pane with live preview and notification feedback. |
-| 2 | **Workspace Designer Scoping** | Dynamically discovers designer folder structures on local and Synology NAS shares and scopes project catalog queries. |
-| 3 | **Quick Notes Markdown Studio** | Enhanced formatting toolbar with Headings, Checklist, Code blocks, and Markdown Guide drawer. |
-| 4 | **Repository Hygiene & Architecture Cleanup** | Automated Source Guardian validation, eliminated loose duplicate binaries, clean `.gitignore` rules. |
+| 1 | **Metamorphosis Theme Legibility & Surface Opacity** | Replaced all semi-transparent white card backgrounds and drawers with solid opaque deep space navy surfaces (`#0F1A3A`, `#142045`), eliminating text bleed-through. |
+| 2 | **Fluent UI Web & Data Visualization** | Integrated official Microsoft Fluent UI Web token custom properties (`--colorNeutralBackground1`, `--colorBrandBackground`) and 3-Tier F-Pattern Dashboard with growth sparklines. |
+| 3 | **Copywriting Studio AI Script Presets** | Added one-click AI Copywriting Presets (TikTok Hooks, Facebook Problem/Solution Angles, Product Claims) with instant toast notifications. |
+| 4 | **In-App Project Brief Markdown Editor** | Edit and save project `README.md` and frontmatter directly inside the Search & Copy catalog pane with live preview. |
 
-### Previous: v3.4.0 Highlights
+### Previous: v3.5.0 Highlights
 
 | # | Change | Details |
 |---|--------|---------|
@@ -235,13 +235,13 @@ SS-CAM features a native Fluent 2 theme engine supporting instant hot-swapping:
 | **RAM** | 4 GB | 16 GB+ |
 | **Runtime** | .NET Framework 4.8 (built-in) | .NET Framework 4.8 |
 | **Display** | 1280 × 720 | 1920 × 1080 (100% / 125% DPI) |
-| **Executable** | Single-file ~5 MB (`SS-CAM-v3.5.0.exe`) | No installation required |
+| **Executable** | Single-file ~5 MB (`SS-CAM-v3.6.1.exe`) | No installation required |
 
 ---
 
 ## 📥 Quick Start
 
-1. Download [`SS-CAM-v3.5.0.exe`](https://github.com/SuamiSihat/ss_cam/releases/latest) from Releases.
+1. Download [`SS-CAM-v3.6.1.exe`](https://github.com/SuamiSihat/ss_cam/releases/latest) from Releases.
 2. Launch the single-file executable — no setup or admin rights required.
 3. On initial startup, SS-CAM will automatically:
    * Register a Start Menu shortcut (`SuamiSihat\SS-CAM`).

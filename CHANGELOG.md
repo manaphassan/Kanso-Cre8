@@ -2,7 +2,30 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.6.0] - 2026-08-17 (Latest)
+## [3.6.1] - 2026-08-17 (Latest)
+
+### Added & Refined — Metamorphosis Theme Legibility & Surface Opacity Overhaul
+- **Metamorphosis Theme Opacity Overhaul (`MetamorphosisTheme.xaml`)**:
+  - Removed all semi-transparent white card background brushes (`#26FFFFFF`, `#14FFFFFF`) and replaced them with solid opaque deep space navy surface colors (`#0F1A3A` default card surface, `#142045` secondary surface).
+  - Fixed transparency bleed-through on side overlay drawers (such as `DayDetailPanel` on `CalendarPage`) and elevated cards, ensuring text and calendar items behind drawers do not bleed through.
+  - Replaced transparent input/control backgrounds with solid navy control fills (`#0C1633` input background, `#14224B` control fill).
+  - Replaced semi-transparent white border strokes with solid navy border tokens (`#1E2E5C`, `#243977`) and replaced white glare with a soft electric cyan accent sheen (`#1A00CFFF`).
+- **Web Portal Token Alignment (`fluent2-tokens.css`)**:
+  - Updated `--glass-bg` token for Metamorphosis theme to `#0F1A3A` (solid opaque dark navy surface).
+- **Automated QA & Security Attestation**:
+  - 100% PASS on Source Guardian audit (UTF-8 BOM encoding, Fluent 2 compliance, thread and data safety).
+  - Compiled clean MSBuild Release binary (`SS-CAM-v3.6.1.exe`).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v3.6.1.exe` | Compiled Native C# WPF Executable (5.24 MB single-file) |
+| `AssemblyVersion` | 3.6.1.0 |
+| `AssemblyFileVersion` | 3.6.1.0 |
+
+---
+
+## [3.6.0] - 2026-08-17
 
 ### Added & Refined — Fluent UI Web Design System & Data Visualization Analytics Release
 - **Microsoft Fluent UI Web (`sscam-fluentui-web`) Skill & Guidelines**:
