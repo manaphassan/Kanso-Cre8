@@ -136,12 +136,20 @@ router.put('/projects/:id', authenticateToken, requirePermission('project:edit')
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const { frontmatter, body, expectedHash } = req.body;
+    const { frontmatter, status, priority, body, expectedHash } = req.body;
+    const { frontmatter: existingFm, body: existingBody } = FrontmatterService.readProjectReadme(project.fullPath);
+
+    const mergedFm = {
+      ...existingFm,
+      ...(frontmatter || {}),
+      ...(status ? { status } : {}),
+      ...(priority ? { priority } : {})
+    };
 
     const result = FrontmatterService.writeProjectReadme(
       project.fullPath,
-      frontmatter || {},
-      body !== undefined ? body : null,
+      mergedFm,
+      body !== undefined && body !== null ? body : existingBody,
       expectedHash || null
     );
 
@@ -151,7 +159,7 @@ router.put('/projects/:id', authenticateToken, requirePermission('project:edit')
       action: 'PROJECT_UPDATED',
       entityType: 'Project',
       entityId: project.jobId || project.id,
-      details: { frontmatter }
+      details: { status: mergedFm.status, priority: mergedFm.priority }
     });
 
     WorkspaceService.scan();

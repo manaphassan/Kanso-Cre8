@@ -186,6 +186,16 @@ This is the project brief content.
     assert.ok(!jsContent.includes('water-flow-particle'), 'Previous water flow particle DOM elements must be removed');
   });
 
+  // ─── TEST 9: ApiClient Interface Integrity ──────────────────────────
+  test('ApiClient contains updateProjectStatus, updateProjectBrief, and recordApproval methods', () => {
+    const apiJsPath = path.join(__dirname, '../../client/js/api.js');
+    const apiJsContent = fs.readFileSync(apiJsPath, 'utf8');
+
+    assert.ok(apiJsContent.includes('static updateProjectStatus('), 'ApiClient.updateProjectStatus method must exist');
+    assert.ok(apiJsContent.includes('static updateProjectBrief('), 'ApiClient.updateProjectBrief method must exist');
+    assert.ok(apiJsContent.includes('static recordApproval('), 'ApiClient.recordApproval method must exist');
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

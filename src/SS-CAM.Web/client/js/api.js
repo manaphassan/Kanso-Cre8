@@ -109,11 +109,19 @@ class ApiClient {
     });
   }
 
+  static updateProjectStatus(id, payload) {
+    return this.updateProject(id, payload);
+  }
+
   static updateBrief(id, briefMarkdown, expectedHash = null) {
     return this.request(`/projects/${encodeURIComponent(id)}/brief`, {
       method: 'PUT',
       body: JSON.stringify({ briefMarkdown, expectedHash })
     });
+  }
+
+  static updateProjectBrief(id, briefMarkdown, expectedHash = null) {
+    return this.updateBrief(id, briefMarkdown, expectedHash);
   }
 
   static updateCreativeDirection(id, payload) {
@@ -134,6 +142,15 @@ class ApiClient {
     return this.request(`/projects/${encodeURIComponent(id)}/decision`, {
       method: 'POST',
       body: JSON.stringify(payload)
+    });
+  }
+
+  static recordApproval(id, payload) {
+    const { decision, notes, comment, deliverableId } = payload || {};
+    return this.submitDecision(id, {
+      decision,
+      comment: notes || comment || '',
+      deliverableId
     });
   }
 
