@@ -6,7 +6,7 @@
 
 Standardized Project Generation · Live Brand Inspector · Task Management · Creative Wellbeing · Waktu Solat · Single-File Executable
 
-[![Latest Release](https://img.shields.io/badge/release-v3.6.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
+[![Latest Release](https://img.shields.io/badge/release-v4.0.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2B%20%7C%20Linux%20%28Fedora%29-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Design](https://img.shields.io/badge/design-Fluent%202%20%2F%20Avalonia-0078D4?style=flat-square)](https://fluent2.microsoft.design)

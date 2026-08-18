@@ -2,7 +2,43 @@
 
 All notable SS-CAM changes are documented here.
 
-## [3.6.1] - 2026-08-17 (Latest)
+## [4.0.0] - 2026-08-18 (Stable Major Release)
+
+### Added & Refined — Centralized Studio Hierarchy, ClickUp Task Workspace & Copywriting Studio
+- **Centralized Year-First Hierarchy Standardization (`FOLDER-STRUCTURE.md`)**:
+  - Unified project folder structure across desktop and web to canonical `Creative-Team/[YYYY]/[YYYYMM_Month]/[ProjectFolder]`.
+  - Standardized the 5-folder anatomy: `01_BRIEF_ASSETS`, `02_SOURCE_FILES`, `03_COPYWRITING`, `04_WORK_IN_PROGRESS`, and `05_DELIVERABLES`.
+  - Maintained 100% backward compatibility for legacy `[Staff_ID]/SS-[YYYY]/...` directory scanning.
+- **ClickUp 3.0-Style 2-Column Task Workspace (`ProjectDetailView.svelte`)**:
+  - Main Canvas (68%): Split markdown editor with live preview, dedicated Copywriting Studio, deliverables gallery, and creative direction matrix.
+  - Right Inspector Panel (32%): Collapsible drawer with properties sheet and live in-context discussion feed.
+  - Top Task Command Bar with breadcrumbs, status dropdown pills, quick sign-off button, and revision request triggers.
+- **Dedicated Copywriting Studio & Live Analytics (`CopywritingService.js` & `COPY.md`)**:
+  - Dedicated storage inside `03_COPYWRITING/COPY.md` on Synology NAS.
+  - Real-time word count, character count, and estimated reading time calculations.
+  - Pre-scaffolded templates for TikTok/Reels video script tables, Meta ad copy angles, and packaging benefit claims.
+- **Contextual In-Project Comments & Notification Feed (`CommentService.js` & `_comments.jsonl`)**:
+  - JSONL-backed discussion threads with `@mention` tagging, resolution toggles, and deliverable attachments.
+  - Slide-out Notification Drawer in portal header with unread count badge and one-click navigation.
+- **Official SuamiSihat Brand Guidelines & Strict Typography Synchronization**:
+  - Integrated official brand system color tokens (`--ss-prussian-blue: #022057`, `--ss-blue: #043388`, `--ss-azure: #21A1F7`, `--ss-lion: #BD9A73`, `--ss-fawn: #CCAC8D`, `--ss-arylide: #E5D15C`, `--ss-banana: #FCE53D`).
+  - Enforced strict typography rule: Neutral Black (`#1C1C1C`) for all digital typography (no pure `#000000` body text).
+  - Aligned 60:30:10 visual color balance across all surfaces and views.
+- **Automated QA & Security Attestation**:
+  - 15/15 PASS on automated test suite.
+  - 9/9 PASS on Source Guardian security and UTF-8 BOM audit.
+  - Compiled clean MSBuild Release binary (`SS-CAM-v4.0.0.exe`).
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.0.0.exe` | Compiled Native C# WPF Executable (5.24 MB single-file) |
+| `AssemblyVersion` | 4.0.0.0 |
+| `AssemblyFileVersion` | 4.0.0.0 |
+
+---
+
+## [3.6.1] - 2026-08-17
 
 ### Added & Refined — Metamorphosis Theme Legibility & Surface Opacity Overhaul
 - **Metamorphosis Theme Opacity Overhaul (`MetamorphosisTheme.xaml`)**:
