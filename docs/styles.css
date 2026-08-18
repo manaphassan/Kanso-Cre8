@@ -444,6 +444,133 @@ a {
 .pillar-body { font-size: 0.875rem; color: var(--text-sub); }
 
 /* --------------------------------------------------------------------------
+   Design Governance & Rules
+   -------------------------------------------------------------------------- */
+.design-rules-section {
+  padding: 80px 0;
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.rule-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--speed);
+}
+
+.rule-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 25px rgba(4, 51, 136, 0.06);
+}
+
+.rule-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rule-title {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.rule-sub {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+}
+
+.palette-ratio-bar {
+  display: flex;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.seg-60 {
+  flex: 6;
+  background: var(--ss-prussian-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seg-30 {
+  flex: 3;
+  background: var(--ss-azure);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seg-10 {
+  flex: 1.5;
+  background: var(--ss-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rule-points {
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-points code {
+  font-family: monospace;
+  background: rgba(4, 51, 136, 0.08);
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--ss-blue);
+  font-weight: 600;
+}
+
+.folder-tree-box {
+  background: #021233;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.tree-line {
+  color: var(--ss-azure);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tree-subline {
+  color: #94a3b8;
+}
+
+.tree-subline code {
+  color: #38bdf8;
+}
+
+/* --------------------------------------------------------------------------
    App Showcase Tour & Hotspot Pins
    -------------------------------------------------------------------------- */
 .showcase-section { padding: 90px 0; }
