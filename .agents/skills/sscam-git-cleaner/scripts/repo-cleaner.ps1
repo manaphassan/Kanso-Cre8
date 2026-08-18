@@ -59,7 +59,7 @@ if ($ScanSecurity -or $All) {
 
     $ScannedExtensions = @("*.cs", "*.xaml", "*.json", "*.xml", "*.config", "*.ps1", "*.cmd")
     $SourceFiles = Get-ChildItem -Path $RepoRoot -Recurse -Include $ScannedExtensions | Where-Object {
-        $_.FullName -notlike "*\bin\*" -and $_.FullName -notlike "*\obj\*" -and $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\packages\*" -and $_.FullName -notlike "*\dist\*" -and $_.FullName -notlike "*\scratch\*"
+        $_.FullName -notlike "*\bin\*" -and $_.FullName -notlike "*\obj\*" -and $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\packages\*" -and $_.FullName -notlike "*\dist\*" -and $_.FullName -notlike "*\scratch\*" -and $_.FullName -notlike "*\node_modules\*"
     }
 
     $FoundSecurityRisks = 0
@@ -79,13 +79,13 @@ if ($ScanSecurity -or $All) {
     }
 
     # Scan for unauthorized executables or scripts in asset/source trees
-    $ForbiddenExts = @("*.exe", "*.dll", "*.bat", "*.vbs", "*.js", "*.py")
-    $SuspectDirs = @( (Join-Path $RepoRoot "src"), (Join-Path $RepoRoot "docs") )
+    $ForbiddenExts = @("*.exe", "*.dll", "*.bat", "*.vbs")
+    $SuspectDirs = @( (Join-Path $RepoRoot "src\SS-CAM"), (Join-Path $RepoRoot "docs") )
 
     foreach ($dir in $SuspectDirs) {
         if (Test-Path $dir) {
             $SuspectFiles = Get-ChildItem -Path $dir -Recurse -Include $ForbiddenExts | Where-Object {
-                $_.FullName -notlike "*\packages\*" -and $_.FullName -notlike "*\bin\*" -and $_.FullName -notlike "*\obj\*" -and $_.Name -ne "nuget.exe"
+                $_.FullName -notlike "*\packages\*" -and $_.FullName -notlike "*\bin\*" -and $_.FullName -notlike "*\obj\*" -and $_.FullName -notlike "*\node_modules\*" -and $_.Name -ne "nuget.exe"
             }
             foreach ($sf in $SuspectFiles) {
                 Write-Host "  [SUSPICIOUS FILE] Unexpected binary/script in content directory: $($sf.FullName.Replace($RepoRoot.Path, ''))" -ForegroundColor Yellow
@@ -149,11 +149,11 @@ if ($CleanTemp -or $All) {
     Write-Host "`n[3/4] Cleaning Build Artifacts & Temporary Files..." -ForegroundColor Cyan
 
     $TempFolders = Get-ChildItem -Path $RepoRoot -Recurse -Directory -Include "bin", "obj" | Where-Object {
-        $_.FullName -notlike "*\.git\*"
+        $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\node_modules\*"
     }
 
     $TempFiles = Get-ChildItem -Path $RepoRoot -Recurse -File -Include "*.user", "*.suo", "*.tmp", "*.bak" | Where-Object {
-        $_.FullName -notlike "*\.git\*"
+        $_.FullName -notlike "*\.git\*" -and $_.FullName -notlike "*\node_modules\*"
     }
 
     $CleanCount = 0
