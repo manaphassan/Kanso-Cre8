@@ -1,9 +1,9 @@
 # ── Build outputs ──────────────────────────────────────────────
 src/SS-CAM/bin/
 src/SS-CAM/obj/
-bin/
-obj/
-dist/
+/bin/
+/obj/
+/dist/
 *.pdb
 *.user
 src/SS-CAM/packages/
@@ -41,8 +41,5 @@ desktop.ini
 node_modules/
 **/node_modules/
 **/.package-lock.json
-client/dist/
-src/SS-CAM.Web/client/dist/
-src/SS-CAM.Web/dist/
 .vite/
 
