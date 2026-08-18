@@ -28,23 +28,28 @@ The application ships as a **true single-file executable (~5 MB)** with zero ins
 
 ---
 
-## What's New in v3.6.1
+## 📥 Multi-Platform Downloads & Installation
 
-| # | Change | Details |
-|---|--------|---------|
-| 1 | **Metamorphosis Theme Legibility & Surface Opacity** | Replaced all semi-transparent white card backgrounds and drawers with solid opaque deep space navy surfaces (`#0F1A3A`, `#142045`), eliminating text bleed-through. |
-| 2 | **Fluent UI Web & Data Visualization** | Integrated official Microsoft Fluent UI Web token custom properties (`--colorNeutralBackground1`, `--colorBrandBackground`) and 3-Tier F-Pattern Dashboard with growth sparklines. |
-| 3 | **Copywriting Studio AI Script Presets** | Added one-click AI Copywriting Presets (TikTok Hooks, Facebook Problem/Solution Angles, Product Claims) with instant toast notifications. |
-| 4 | **In-App Project Brief Markdown Editor** | Edit and save project `README.md` and frontmatter directly inside the Search & Copy catalog pane with live preview. |
+Choose the deployment variant suited for your creative workstation:
 
-### Previous: v3.5.0 Highlights
+| Platform | Variant | Installation / Execution Command | Release Asset |
+|---|---|---|---|
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File** | No install needed. Download and launch directly: <br> `.\dist\SS-CAM.exe` | [Download SS-CAM-v4.0.0.exe](https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe) |
+| 🐧 **Linux (Fedora, Ubuntu, Pop!_OS)** | **One-Line Terminal Installer** | Run in terminal to build, install to `/opt/ss-cam`, and register desktop menu: <br> `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | [install-linux.sh](https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh) |
+| 🐧 **Linux Desktop (.NET)** | **Source Build** | Compile native Avalonia client: <br> `dotnet run --project src/SS-CAM.Linux -c Release` | Source in `src/SS-CAM.Linux` |
+| 🌐 **Web Management Portal** | **Synology Docker Container** | Host on Synology NAS / Linux Server: <br> `cd src/SS-CAM.Web && docker compose up -d` | Live at `https://creative.suamisihat.myds.me` |
 
-| # | Change | Details |
-|---|--------|---------|
-| 1 | **Starter Canvas Engine** | Integrated `.af`, `.psd`, and `.ai` starter canvas format generation with default Affinity Designer format support and 2026 industry platform specs. |
-| 2 | **Project Creator Presets & Dynamic Filter** | Added Rollup Bunting (80x200cm), Trifold A4 Brochure, A5 Leaflet, and Web Design category presets. Dynamic platform filtering and category visual card highlighting. |
-| 3 | **Search & Copy Category Filter** | Added category-based filtering dropdown for quick search and copy across asset catalog items. |
-| 4 | **Creative Calendar Quick Status Actions** | Integrated direct project status actions (`In Progress`, `Review`, `Done`) inside the Day Detail view overlay. |
+---
+
+## 🌟 What's New in v4.0.0 (Stable Major Release)
+
+| # | Feature Area | Details |
+|---|---|---|
+| 1 | **Centralized Studio Hierarchy (`FOLDER-STRUCTURE.md`)** | Unified project storage across desktop and web to canonical `Creative-Team/[YYYY]/[YYYYMM_Month]/[ProjectFolder]` with 5 standard subfolders (`01_BRIEF_ASSETS`, `02_SOURCE_FILES`, `03_COPYWRITING`, `04_WORK_IN_PROGRESS`, `05_DELIVERABLES`). |
+| 2 | **ClickUp 3.0-Style 2-Column Task Workspace** | Split Markdown canvas (68%) with live preview and collapsible Right Inspector Panel (32%) for properties and contextual team discussions. |
+| 3 | **Dedicated Copywriting Studio & Live Analytics** | Dedicated NAS storage in `03_COPYWRITING/COPY.md` with live word, character, and reading time analytics plus pre-scaffolded viral hooks and video script tables. |
+| 4 | **In-Project Discussions & Notification Drawer** | Synology NAS JSONL-backed discussion threads (`_comments.jsonl`) with `@mention` tagging, resolution toggles, and portal notification drawer. |
+| 5 | **Official SuamiSihat Brand System & Strict Typography** | Integrated official brand system color tokens (`--ss-prussian-blue`, `--ss-blue`, `--ss-azure`, `--ss-lion`, `--ss-fawn`, `--ss-arylide`, `--ss-banana`) and strictly enforced Neutral Black (`#1C1C1C`) typography. |
 
 ---
 
