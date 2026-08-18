@@ -171,7 +171,7 @@
           <div class="desktop-banner">
             <div class="banner-row">
               <span class="banner-pill">Desktop Client</span>
-              <span class="banner-ver">v3.6.1</span>
+              <span class="banner-ver">v4.0.0</span>
             </div>
             <div class="banner-title">SS-CAM Desktop</div>
             <p class="banner-desc">Native Windows app for offline production.</p>
