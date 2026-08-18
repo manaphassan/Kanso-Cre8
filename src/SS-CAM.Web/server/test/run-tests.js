@@ -13,6 +13,11 @@ const ApprovalService = require('../services/ApprovalService');
 
 console.log('🧪 Starting SS-CAM Web Management Portal Verification Suite...\n');
 
+// Mock AuditService path to prevent polluting production NAS audit logs
+const origAuditGetPath = AuditService.getAuditLogPath;
+const tempAuditPath = path.join(__dirname, 'temp-test-audit.jsonl');
+AuditService.getAuditLogPath = () => tempAuditPath;
+
 async function runTests() {
   let passed = 0;
   let failed = 0;
@@ -391,6 +396,10 @@ This is the project brief content.
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
+
+  // Cleanup test audit log
+  AuditService.getAuditLogPath = origAuditGetPath;
+  try { if (fs.existsSync(tempAuditPath)) fs.unlinkSync(tempAuditPath); } catch (e) {}
 
   if (failed > 0) {
     process.exit(1);

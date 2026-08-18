@@ -3,6 +3,7 @@ const path = require('path');
 const config = require('../config');
 const AuditService = require('./AuditService');
 const TeamService = require('./TeamService');
+const WorkspaceService = require('./WorkspaceService');
 
 class CommentService {
   /**
@@ -229,6 +230,9 @@ class CommentService {
         let routeId = log.entityId;
 
         if (action.includes('COMMENT')) {
+          if (log.entityId && !WorkspaceService.getProjectById(log.entityId)) {
+            continue;
+          }
           const mentions = (log.details && log.details.mentions) || [];
           const userLower = (username || '').toLowerCase();
           const isMentioned = mentions.some(m => m.toLowerCase() === userLower);
@@ -239,12 +243,18 @@ class CommentService {
           route = 'project-detail';
           isRelevant = true;
         } else if (action.includes('REVISION')) {
+          if (log.entityId && !WorkspaceService.getProjectById(log.entityId)) {
+            continue;
+          }
           type = 'revision';
           title = `Revision Requested on ${log.entityId}`;
           message = log.details?.feedback || log.details?.reason || `${log.actor} requested revisions.`;
           route = 'project-detail';
           isRelevant = true;
         } else if (action.includes('APPROV')) {
+          if (log.entityId && !WorkspaceService.getProjectById(log.entityId)) {
+            continue;
+          }
           type = 'approval';
           title = `Project Approved: ${log.entityId}`;
           message = `${log.actor} signed off and approved deliverables.`;
