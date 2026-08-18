@@ -1,8 +1,8 @@
 # SS-CAM QA Suite
 **Application:** SuamiSihat Creative Assets Management (SS-CAM)
-**Version under review:** v3.6.1
+**Version under review:** v4.0.0
 **QA Lead:** Brand / Creative & Brand Team
-**Date initiated:** 2026-08-17
+**Date initiated:** 2026-08-18
 
 ---
 
