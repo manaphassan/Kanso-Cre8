@@ -28,20 +28,23 @@ class WorkspaceService {
       try {
         fs.mkdirSync(this.workspaceRoot, { recursive: true });
         console.log(`[WorkspaceService] Created workspace root at: ${this.workspaceRoot}`);
-        this.seedSampleProjects();
+        if (process.env.SEED_SAMPLES === 'true') {
+          this.seedSampleProjects();
+        }
       } catch (err) {
         console.error(`[WorkspaceService] Could not create workspace root: ${err.message}`);
       }
     } else {
-      // Check if workspace is empty, if so seed sample projects for management preview
-      try {
-        const items = fs.readdirSync(this.workspaceRoot);
-        const hasProjects = items.some(item => !item.startsWith('.') && !item.startsWith('_'));
-        if (!hasProjects) {
-          this.seedSampleProjects();
+      if (process.env.SEED_SAMPLES === 'true') {
+        try {
+          const items = fs.readdirSync(this.workspaceRoot);
+          const hasProjects = items.some(item => !item.startsWith('.') && !item.startsWith('_'));
+          if (!hasProjects) {
+            this.seedSampleProjects();
+          }
+        } catch (e) {
+          console.warn(`[WorkspaceService] Check workspace items warning:`, e.message);
         }
-      } catch (e) {
-        console.warn(`[WorkspaceService] Check workspace items warning:`, e.message);
       }
     }
   }

@@ -95,6 +95,30 @@ const targetDirs = [
   path.resolve(__dirname, '../sample-workspace')
 ];
 
+function deleteFolderRecursive(itemPath) {
+  if (fs.existsSync(itemPath)) {
+    const entries = fs.readdirSync(itemPath);
+    for (const file of entries) {
+      const curPath = path.join(itemPath, file);
+      try {
+        if (fs.lstatSync(curPath).isDirectory()) {
+          deleteFolderRecursive(curPath);
+        } else {
+          try { fs.chmodSync(curPath, 0o666); } catch (e) {}
+          fs.unlinkSync(curPath);
+        }
+      } catch (err) {
+        // Retry with force
+      }
+    }
+    try {
+      fs.rmdirSync(itemPath);
+    } catch (e) {
+      try { fs.rmSync(itemPath, { recursive: true, force: true }); } catch (e2) {}
+    }
+  }
+}
+
 for (const dir of targetDirs) {
   try {
     if (!fs.existsSync(dir)) continue;
@@ -111,6 +135,19 @@ for (const dir of targetDirs) {
     fs.writeFileSync(path.join(configDir, 'staff_directory.json'), JSON.stringify(DEFAULT_STAFF, null, 2), 'utf8');
     // Write clean audit-log.jsonl
     fs.writeFileSync(path.join(teamDir, 'audit-log.jsonl'), JSON.stringify(INITIAL_AUDIT_LOG) + '\n', 'utf8');
+
+    // Remove all project and sub-directories (except _Team, #recycle, and hidden files)
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name === '_Team' || entry.name === '#recycle' || entry.name.startsWith('.')) continue;
+      const fullEntryPath = path.join(dir, entry.name);
+      try {
+        deleteFolderRecursive(fullEntryPath);
+        console.log(`[RESET] Removed project directory: ${fullEntryPath}`);
+      } catch (rmErr) {
+        console.warn(`[RESET] Could not remove ${fullEntryPath}:`, rmErr.message);
+      }
+    }
 
     console.log(`[RESET] Clean fresh install metadata written to: ${teamDir}`);
   } catch (err) {
