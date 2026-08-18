@@ -46,32 +46,48 @@ class TeamService {
   }
 
   /**
-   * Saves staff directory to NAS atomically.
+   * Saves staff directory to NAS atomically with SMB fallback.
    */
   static saveStaffRoster(roster) {
     const rosterPath = this.getRosterPath();
     const json = JSON.stringify(roster, null, 2);
-    const tempFile = `${rosterPath}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempFile, json, 'utf8');
-    fs.renameSync(tempFile, rosterPath);
+    try {
+      const tempFile = `${rosterPath}.tmp.${Date.now()}`;
+      fs.writeFileSync(tempFile, json, 'utf8');
+      try {
+        fs.renameSync(tempFile, rosterPath);
+      } catch (renameErr) {
+        // SMB UNC share lock fallback
+        fs.writeFileSync(rosterPath, json, 'utf8');
+        try { fs.unlinkSync(tempFile); } catch (e) {}
+      }
+    } catch (err) {
+      fs.writeFileSync(rosterPath, json, 'utf8');
+    }
     return roster;
   }
 
   static addStaffMember(member) {
     const roster = this.getStaffRoster();
-    const existing = roster.find(m => m.staffId.toLowerCase() === member.staffId.toLowerCase());
+    const staffId = (member.staffId || '').trim().toUpperCase();
+    if (!staffId) throw new Error('Staff ID is required (e.g. SS0080).');
+
+    const existing = roster.find(m => m.staffId.toLowerCase() === staffId.toLowerCase());
     if (existing) {
-      throw new Error(`Staff ID '${member.staffId}' already exists in the directory.`);
+      throw new Error(`Staff ID '${staffId}' already exists in the directory.`);
     }
 
+    const username = (member.username || member.name.toLowerCase().replace(/\s+/g, '')).trim();
     const newMember = {
-      staffId: member.staffId.trim().toUpperCase(),
+      staffId,
+      username,
       name: member.name.trim(),
-      role: member.role.trim() || 'Designer',
-      department: member.department.trim() || 'Creative Production',
+      email: member.email ? member.email.trim() : `${username}@suamisihat.com`,
+      role: member.role ? member.role.trim() : 'Designer',
+      department: member.department ? member.department.trim() : 'Creative Production',
       defaultBrand: (member.defaultBrand || 'SS').trim().toUpperCase(),
       avatarColor: member.avatarColor || '#0078D4',
-      active: true
+      active: member.active !== false
     };
 
     roster.push(newMember);
@@ -81,9 +97,9 @@ class TeamService {
 
   static updateStaffMember(staffId, updates) {
     const roster = this.getStaffRoster();
-    const idx = roster.findIndex(m => m.staffId.toLowerCase() === staffId.toLowerCase());
+    const idx = roster.findIndex(m => m.staffId.toLowerCase() === staffId.toLowerCase() || (m.username && m.username.toLowerCase() === staffId.toLowerCase()));
     if (idx === -1) {
-      throw new Error(`Staff ID '${staffId}' not found.`);
+      throw new Error(`Staff member '${staffId}' not found.`);
     }
 
     roster[idx] = {
@@ -94,6 +110,18 @@ class TeamService {
 
     this.saveStaffRoster(roster);
     return roster[idx];
+  }
+
+  static deleteStaffMember(staffId) {
+    const roster = this.getStaffRoster();
+    const targetId = staffId.trim().toUpperCase();
+    const filtered = roster.filter(m => m.staffId.toUpperCase() !== targetId && m.username.toLowerCase() !== staffId.toLowerCase());
+    if (filtered.length === roster.length) {
+      throw new Error(`Staff member '${staffId}' not found.`);
+    }
+
+    this.saveStaffRoster(filtered);
+    return { success: true, deletedStaffId: targetId };
   }
 
   /**

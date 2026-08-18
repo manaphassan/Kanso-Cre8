@@ -456,7 +456,13 @@ class WorkspaceService {
   }
 
   getProjectById(id) {
-    return this.projectsCache.find(p => p.id === id || p.folderName === id) || null;
+    if (!id) return null;
+    const target = id.trim().toLowerCase();
+    return this.projectsCache.find(p => 
+      (p.id && p.id.toLowerCase() === target) ||
+      (p.folderName && p.folderName.toLowerCase() === target) ||
+      (p.jobId && p.jobId.toLowerCase() === target)
+    ) || null;
   }
 
   getDashboardMetrics() {

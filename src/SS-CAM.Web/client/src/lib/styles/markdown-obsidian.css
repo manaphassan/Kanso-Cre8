@@ -1,0 +1,177 @@
+/* ==========================================================================
+   Obsidian-Grade Markdown, Callouts, Tables & Syntax Highlighting
+   ========================================================================== */
+
+.markdown-body {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.markdown-body h1 {
+  font-size: 20px;
+  border-bottom: 1px solid var(--surface-card-border);
+  padding-bottom: 6px;
+}
+
+.markdown-body h2 {
+  font-size: 16.5px;
+  border-bottom: 1px solid var(--surface-card-border);
+  padding-bottom: 4px;
+}
+
+.markdown-body h3 {
+  font-size: 14.5px;
+}
+
+.markdown-body p {
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.markdown-body li {
+  margin-bottom: 4px;
+}
+
+.markdown-body li input[type="checkbox"] {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Code blocks */
+.markdown-body pre {
+  background: var(--surface-card-subtle);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.markdown-body code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--surface-card-subtle);
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--surface-card-border);
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* Tables */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 8px 12px;
+  border: 1px solid var(--surface-card-border);
+  text-align: left;
+}
+
+.markdown-body th {
+  background: var(--surface-card-subtle);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.markdown-body tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="metamorphosis"] .markdown-body tr:nth-child(even),
+[data-theme="catppuccin"] .markdown-body tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Blockquotes & Obsidian Callouts */
+.markdown-body blockquote {
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  border-left: 4px solid var(--brand-accent);
+  background: var(--surface-card-subtle);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--text-secondary);
+}
+
+/* Callout Alerts (Obsidian / GitHub style) */
+.callout {
+  padding: 12px 16px;
+  margin: 14px 0;
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+}
+
+.callout-title {
+  font-weight: 700;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.callout-note {
+  border-color: var(--color-info);
+  background: var(--color-info-bg);
+  color: var(--text-primary);
+}
+.callout-note .callout-title { color: var(--color-info); }
+
+.callout-warning {
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--text-primary);
+}
+.callout-warning .callout-title { color: var(--color-warning); }
+
+.callout-important {
+  border-color: var(--brand-primary);
+  background: var(--brand-tint);
+  color: var(--text-primary);
+}
+.callout-important .callout-title { color: var(--brand-primary); }
+
+.callout-caution,
+.callout-danger {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+  color: var(--text-primary);
+}
+.callout-caution .callout-title { color: var(--color-danger); }
+
+.callout-tip,
+.callout-success {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--text-primary);
+}
+.callout-tip .callout-title { color: var(--color-success); }

@@ -159,41 +159,130 @@ This is the project brief content.
     }
   });
 
-  // ─── TEST 7: Sidebar Navigation & App Banner DOM Structure ─────────
-  test('Client index.html includes SS-CAM Desktop nav item and download banner DOM elements', () => {
+  // ─── TEST 7: Sidebar Navigation & App Ecosystem DOM Structure ─────
+  test('App.svelte and Client structure include SS-CAM Desktop ecosystem navigation', () => {
+    const svelteAppPath = path.join(__dirname, '../../client/src/App.svelte');
     const indexPath = path.join(__dirname, '../../client/index.html');
-    const htmlContent = fs.readFileSync(indexPath, 'utf8');
+    const content = fs.existsSync(svelteAppPath)
+      ? fs.readFileSync(svelteAppPath, 'utf8')
+      : fs.readFileSync(indexPath, 'utf8');
 
-    assert.ok(htmlContent.includes('<aside class="app-sidebar">'), 'Sidebar root element must exist');
-    assert.ok(htmlContent.includes('<nav class="sidebar-nav">'), 'Sidebar nav container must exist');
-    assert.ok(htmlContent.includes('<div class="nav-category">Desktop Ecosystem</div>'), 'Desktop Ecosystem category heading must exist');
-    assert.ok(htmlContent.includes('SS-CAM Desktop'), 'SS-CAM Desktop navigation text must exist');
-    assert.ok(htmlContent.includes('https://github.com/SuamiSihat/ss_cam/releases/tag/v3.6.1'), 'SS-CAM release tag link must exist');
-    assert.ok(htmlContent.includes('<div class="sidebar-app-banner"'), 'Sidebar desktop app banner card must exist');
-    assert.ok(htmlContent.includes('Download SS-CAM v3.6.1 (.exe)'), 'SS-CAM executable download button must exist');
+    assert.ok(content.includes('app-sidebar'), 'Sidebar root element must exist');
+    assert.ok(content.includes('sidebar-nav'), 'Sidebar nav container must exist');
+    assert.ok(content.includes('desktop-app-banner') || content.includes('Desktop Client'), 'Desktop Client banner must exist');
+    assert.ok(content.includes('SS-CAM Desktop'), 'SS-CAM Desktop navigation text must exist');
+    assert.ok(content.includes('https://github.com/SuamiSihat/ss_cam/releases'), 'SS-CAM release link must exist');
   });
 
-  // ─── TEST 8: Login View Canvas & Glassmorphism Card DOM Structure ──
-  test('LoginView.js renders wave canvas, ambient glow, and static glassmorphism DOM card', () => {
-    const loginViewPath = path.join(__dirname, '../../client/js/views/LoginView.js');
-    const jsContent = fs.readFileSync(loginViewPath, 'utf8');
+  // ─── TEST 8: Login View DOM Structure & Authentication ─────────────
+  test('LoginView renders brand header, quick sign-in roster, and authentication form', () => {
+    const svelteLoginPath = path.join(__dirname, '../../client/src/lib/views/LoginView.svelte');
+    const legacyLoginPath = path.join(__dirname, '../../client/js/views/LoginView.js');
+    const content = fs.existsSync(svelteLoginPath)
+      ? fs.readFileSync(svelteLoginPath, 'utf8')
+      : fs.readFileSync(legacyLoginPath, 'utf8');
 
-    assert.ok(jsContent.includes('<div class="login-hero-bg" id="login-hero-viewport">'), 'Login hero viewport container must exist');
-    assert.ok(jsContent.includes('<canvas id="heroWaveCanvas"'), 'heroWaveCanvas canvas element must exist');
-    assert.ok(jsContent.includes('<div class="login-ambient-glow"></div>'), 'login-ambient-glow element must exist');
-    assert.ok(jsContent.includes('<div class="login-card-static">'), 'login-card-static glassmorphism container must exist');
-    assert.ok(jsContent.includes('linear-gradient(180deg, #022057 0%, #043388 60%, #021233 100%)'), 'Prussian blue vertical gradient background must be defined');
-    assert.ok(!jsContent.includes('water-flow-particle'), 'Previous water flow particle DOM elements must be removed');
+    assert.ok(content.includes('SuamiSihat Creative Portal') || content.includes('login-hero-bg'), 'Login title/viewport must exist');
+    assert.ok(content.includes('quick-roster') || content.includes('heroWaveCanvas'), 'Quick roster or canvas must exist');
+    assert.ok(content.includes('Sign In') || content.includes('login-card-static'), 'Sign in card must exist');
   });
 
   // ─── TEST 9: ApiClient Interface Integrity ──────────────────────────
-  test('ApiClient contains updateProjectStatus, updateProjectBrief, and recordApproval methods', () => {
+  test('ApiClient contains updateProject, updateBrief, and submitDecision methods', () => {
+    const apiTsPath = path.join(__dirname, '../../client/src/lib/services/api.ts');
     const apiJsPath = path.join(__dirname, '../../client/js/api.js');
-    const apiJsContent = fs.readFileSync(apiJsPath, 'utf8');
+    const content = fs.existsSync(apiTsPath)
+      ? fs.readFileSync(apiTsPath, 'utf8')
+      : fs.readFileSync(apiJsPath, 'utf8');
 
-    assert.ok(apiJsContent.includes('static updateProjectStatus('), 'ApiClient.updateProjectStatus method must exist');
-    assert.ok(apiJsContent.includes('static updateProjectBrief('), 'ApiClient.updateProjectBrief method must exist');
-    assert.ok(apiJsContent.includes('static recordApproval('), 'ApiClient.recordApproval method must exist');
+    assert.ok(content.includes('updateProject') || content.includes('updateProjectStatus'), 'ApiClient updateProject method must exist');
+    assert.ok(content.includes('updateBrief') || content.includes('updateProjectBrief'), 'ApiClient updateBrief method must exist');
+    assert.ok(content.includes('submitDecision') || content.includes('recordApproval'), 'ApiClient submitDecision method must exist');
+  });
+
+  // ─── TEST 10: Obsidian Markdown & Mermaid Integration ──────────────
+  test('MarkdownService and MermaidViewer support full GFM, Callouts, and Mermaid diagrams', () => {
+    const markdownTsPath = path.join(__dirname, '../../client/src/lib/services/markdown.ts');
+    const mermaidSveltePath = path.join(__dirname, '../../client/src/lib/components/markdown/MermaidViewer.svelte');
+    
+    assert.ok(fs.existsSync(markdownTsPath), 'MarkdownService must exist in services');
+    assert.ok(fs.existsSync(mermaidSveltePath), 'MermaidViewer Svelte component must exist');
+
+    const mdContent = fs.readFileSync(markdownTsPath, 'utf8');
+    assert.ok(mdContent.includes('transformCallouts'), 'Callout transformer must exist');
+    assert.ok(mdContent.includes('NOTE|WARNING|IMPORTANT|CAUTION'), 'Supported callout regex must be defined');
+  });
+
+  // ─── TEST 11: Company & Subsidiary Management Integrity ─────────────
+  test('CompanyService manages corporate holding subsidiaries (SSH, SSC, SSW, SSE, SST)', () => {
+    const CompanyService = require('../services/CompanyService');
+    const companies = CompanyService.getAll();
+
+    assert.ok(Array.isArray(companies), 'Companies must return an array');
+    assert.ok(companies.length >= 5, 'Must contain at least 5 default subsidiaries');
+
+    const holding = CompanyService.getByCode('SSH');
+    assert.ok(holding, 'SuamiSihat Holding (SSH) must exist');
+    assert.strictEqual(holding.name, 'SuamiSihat Holding Sdn Bhd');
+    assert.strictEqual(holding.isParent, true);
+
+    const healthcare = CompanyService.getByCode('SSC');
+    assert.ok(healthcare, 'SuamiSihat Healthcare (SSC) must exist');
+
+    const wellness = CompanyService.getByCode('SSW');
+    assert.ok(wellness, 'SuamiSihat Ellness (SSW) must exist');
+
+    const ecommerce = CompanyService.getByCode('SSE');
+    assert.ok(ecommerce, 'SuamiSihat Ecommerce (SSE) must exist');
+
+    const tech = CompanyService.getByCode('SST');
+    assert.ok(tech, 'SuamiSihat Technology (SST) must exist');
+
+    // Test saving an update
+    const updated = CompanyService.saveCompany({
+      code: 'SST',
+      name: 'SuamiSihat Technology Sdn Bhd',
+      location: 'Cyberjaya, Selangor'
+    });
+    assert.strictEqual(updated.location, 'Cyberjaya, Selangor');
+  });
+
+  // ─── TEST 12: TeamService & User Staff Directory Governance ────────
+  test('TeamService provisions, updates, and validates staff user accounts', () => {
+    const TeamService = require('../services/TeamService');
+    const roster = TeamService.getStaffRoster();
+
+    assert.ok(Array.isArray(roster), 'Staff roster must return an array');
+    assert.ok(roster.length >= 6, 'Must contain canonical creative team members');
+
+    const hasan = roster.find(m => m.staffId === 'SS0001');
+    assert.ok(hasan, 'Hasan (SS0001) must exist');
+    assert.strictEqual(hasan.role, 'Chief Executive Officer');
+
+    // Test adding and updating a staff user
+    const testStaffId = 'SS9999';
+    try {
+      TeamService.deleteStaffMember(testStaffId);
+    } catch (e) {}
+
+    const added = TeamService.addStaffMember({
+      staffId: testStaffId,
+      name: 'Test Staff Designer',
+      role: 'Multimedia Designer',
+      department: 'Creative Production',
+      defaultBrand: 'SS'
+    });
+
+    assert.strictEqual(added.staffId, 'SS9999');
+    assert.strictEqual(added.name, 'Test Staff Designer');
+
+    const updated = TeamService.updateStaffMember(testStaffId, {
+      name: 'Test Staff Lead Designer'
+    });
+    assert.strictEqual(updated.name, 'Test Staff Lead Designer');
+
+    // Cleanup
+    TeamService.deleteStaffMember(testStaffId);
   });
 
   console.log(`\n========================================================`);

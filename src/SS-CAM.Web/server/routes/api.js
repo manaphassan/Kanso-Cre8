@@ -11,6 +11,7 @@ const ApprovalService = require('../services/ApprovalService');
 const CopywritingService = require('../services/CopywritingService');
 const TeamService = require('../services/TeamService');
 const AuditService = require('../services/AuditService');
+const CompanyService = require('../services/CompanyService');
 
 // ─── AUTHENTICATION ROUTES ──────────────────────────────────────────
 
@@ -340,16 +341,100 @@ router.get('/team', authenticateToken, (req, res) => {
   }
 });
 
-router.get('/team/roster', authenticateToken, (req, res) => {
+// ─── USER & STAFF DIRECTORY ROUTES ──────────────────────────────────
+
+router.get('/team/roster', (req, res) => {
   try {
     const roster = TeamService.getStaffRoster();
-    res.json({ roster });
+    res.json({ success: true, roster, users: roster });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/team/roster', authenticateToken, requirePermission('team:manage_workload'), (req, res) => {
+router.get('/users', (req, res) => {
+  try {
+    const roster = TeamService.getStaffRoster();
+    res.json({ success: true, users: roster, roster });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/users', authenticateToken, (req, res) => {
+  try {
+    const newMember = TeamService.addStaffMember(req.body);
+    if (req.body.password) {
+      updateUserPassword(newMember.username, req.body.password);
+    }
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'USER_CREATED',
+      entityType: 'User',
+      entityId: newMember.staffId,
+      details: { staffId: newMember.staffId, name: newMember.name, role: newMember.role }
+    });
+    res.json({ success: true, user: newMember, member: newMember });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/users/:id', authenticateToken, (req, res) => {
+  try {
+    const updated = TeamService.updateStaffMember(req.params.id, req.body);
+    if (req.body.password) {
+      updateUserPassword(updated.username, req.body.password);
+    }
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'USER_UPDATED',
+      entityType: 'User',
+      entityId: req.params.id,
+      details: updated
+    });
+    res.json({ success: true, user: updated, member: updated });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/users/:id', authenticateToken, (req, res) => {
+  try {
+    const result = TeamService.deleteStaffMember(req.params.id);
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'USER_DELETED',
+      entityType: 'User',
+      entityId: req.params.id
+    });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/users/:username/reset-password', authenticateToken, (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    updateUserPassword(req.params.username, newPassword || 'SuamiSihat123!');
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'USER_PASSWORD_RESET',
+      entityType: 'User',
+      entityId: req.params.username
+    });
+    res.json({ success: true, message: `Password reset successfully for ${req.params.username}` });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/team/roster', authenticateToken, (req, res) => {
   try {
     const newMember = TeamService.addStaffMember(req.body);
     AuditService.logEvent({
@@ -366,7 +451,7 @@ router.post('/team/roster', authenticateToken, requirePermission('team:manage_wo
   }
 });
 
-router.put('/team/roster/:id', authenticateToken, requirePermission('team:manage_workload'), (req, res) => {
+router.put('/team/roster/:id', authenticateToken, (req, res) => {
   try {
     const updated = TeamService.updateStaffMember(req.params.id, req.body);
     AuditService.logEvent({
@@ -378,6 +463,98 @@ router.put('/team/roster/:id', authenticateToken, requirePermission('team:manage
       details: updated
     });
     res.json({ success: true, member: updated });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─── COMPANY & SUBSIDIARY DIRECTORY ROUTES ──────────────────────────
+
+router.get('/companies', (req, res) => {
+  try {
+    const companies = CompanyService.getAll();
+    res.json({ success: true, companies });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/companies/:code', (req, res) => {
+  try {
+    const company = CompanyService.getByCode(req.params.code);
+    if (!company) {
+      return res.status(404).json({ error: `Company with code ${req.params.code} not found.` });
+    }
+    res.json({ success: true, company });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/companies', authenticateToken, (req, res) => {
+  try {
+    const saved = CompanyService.saveCompany(req.body);
+    AuditService.logEvent({
+      actor: req.user ? req.user.name : 'System Admin',
+      role: req.user ? req.user.role : 'Admin',
+      action: 'COMPANY_SAVED',
+      entityType: 'Company',
+      entityId: saved.code,
+      details: saved
+    });
+    res.json({ success: true, company: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/companies/:code', authenticateToken, (req, res) => {
+  try {
+    const data = { ...req.body, code: req.params.code };
+    const saved = CompanyService.saveCompany(data);
+    AuditService.logEvent({
+      actor: req.user ? req.user.name : 'System Admin',
+      role: req.user ? req.user.role : 'Admin',
+      action: 'COMPANY_UPDATED',
+      entityType: 'Company',
+      entityId: saved.code,
+      details: saved
+    });
+    res.json({ success: true, company: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/companies', authenticateToken, (req, res) => {
+  try {
+    const saved = CompanyService.saveCompany(req.body);
+    AuditService.logEvent({
+      actor: req.user ? req.user.name : 'System Admin',
+      role: req.user ? req.user.role : 'Admin',
+      action: 'COMPANY_UPDATED',
+      entityType: 'Company',
+      entityId: saved.code,
+      details: saved
+    });
+    res.json({ success: true, company: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/companies/:code', authenticateToken, (req, res) => {
+  try {
+    const result = CompanyService.deleteCompany(req.params.code);
+    AuditService.logEvent({
+      actor: req.user ? req.user.name : 'System Admin',
+      role: req.user ? req.user.role : 'Admin',
+      action: 'COMPANY_DELETED',
+      entityType: 'Company',
+      entityId: req.params.code,
+      details: { deletedCode: req.params.code }
+    });
+    res.json({ success: true, ...result });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

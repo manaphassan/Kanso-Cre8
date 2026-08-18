@@ -3,8 +3,43 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 
-// Granular RBAC Permissions Map
+// Granular RBAC Permissions Map (Canonical Roles: Admin, Manager, User)
 const ROLE_PERMISSIONS = {
+  admin: [
+    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view',
+    'admin:users', 'admin:roles', 'admin:system_audit'
+  ],
+  manager: [
+    'project:view', 'project:create', 'project:edit', 'project:assign',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view'
+  ],
+  user: [
+    'project:view',
+    'brief:view',
+    'direction:view',
+    'copy:view', 'copy:draft',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment',
+    'team:view'
+  ],
+  // Aliases for titles
+  Administrator: [
+    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view',
+    'admin:users', 'admin:roles', 'admin:system_audit'
+  ],
   CEO: [
     'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
     'brief:view', 'brief:edit',
@@ -28,12 +63,6 @@ const ROLE_PERMISSIONS = {
     'deliverable:view', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
     'report:view'
   ],
-  Copywriter: [
-    'project:view',
-    'brief:view',
-    'copy:view', 'copy:draft', 'copy:submit',
-    'deliverable:view', 'deliverable:comment'
-  ],
   Designer: [
     'project:view',
     'brief:view',
@@ -42,14 +71,11 @@ const ROLE_PERMISSIONS = {
     'deliverable:view', 'deliverable:upload',
     'team:view'
   ],
-  Administrator: [
-    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
-    'brief:view', 'brief:edit',
-    'direction:view', 'direction:edit',
-    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
-    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
-    'team:view', 'team:manage_workload', 'report:view',
-    'admin:users', 'admin:roles', 'admin:system_audit'
+  Copywriter: [
+    'project:view',
+    'brief:view',
+    'copy:view', 'copy:draft', 'copy:submit',
+    'deliverable:view', 'deliverable:comment'
   ]
 };
 
