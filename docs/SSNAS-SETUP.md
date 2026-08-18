@@ -65,19 +65,21 @@ Once synchronized, the `E:\SynologyDrive\Creative-Team` directory will mirror th
 ```text
 E:\SynologyDrive\Creative-Team/            ← SSNAS Synchronized Root
 │
-├── _Team/                                 ← Shared Team Collaboration
-│   ├── team-notes.json                    ← Shared Team Board notes
-│   ├── Notes/                             ← Shared Quick Notes
-│   └── _Config/                           ← SS-CAM Auto-Sync Directory
-│       ├── category_presets.json          ← Team-wide shared project presets
-│       ├── profile_{username}.json        ← User-isolated designer profile
-│       ├── theme_config_{username}.json   ← User-isolated theme preferences
-│       └── notes_{username}.json          ← User-isolated quick notes
+├── _Team/                                 ← Shared Studio Governance & Configs
+│   ├── audit-log.jsonl                    ← Immutable security & activity trail
+│   ├── team-notes.json                    ← Shared Team Board announcements
+│   ├── companies.json                     ← Subsidiary master registry
+│   └── staff-roster.json                  ← Team roster & permissions
 │
-└── [Staff_ID]/                            ← Personal Designer Root (e.g. 0001D, 0002S)
-    └── SS-2026/                           ← Year Container
-        └── 202608_August/                 ← Month Container (YYYYMM_Month)
-            └── 202608_0072D_SS_Project/   ← Project Directory
+└── 2026/                                  ← Centralized Year Root
+    └── 202608_August/                     ← Chronological Month Container
+        └── 202608_0085D_SS_Rejal_Packaging/ ← Canonical Project Workspace
+            ├── README.md                  ← Creative brief & YAML frontmatter
+            ├── 01_BRIEF_ASSETS/           ← References, moodboards, logos
+            ├── 02_SOURCE_FILES/           ← .PSD, .AI, .BLEND, .PRPROJ
+            ├── 03_COPYWRITING/            ← COPY.md (scripts & ad copy)
+            ├── 04_WORK_IN_PROGRESS/       ← Draft previews & WIP renders
+            └── 05_DELIVERABLES/           ← Final approved print/web exports
 ```
 
 ---
