@@ -13,10 +13,11 @@ class DeliverableService {
     }
 
     const categories = [
-      { names: ['04_Production', 'Production', '4_Production', '04. Production'], label: 'Final Production Exports', isDeliverable: true },
-      { names: ['02_Artwork_Mockup', 'Artwork Mockup', '2_Artwork_Mockup', '02. Artwork Mockup', 'Mockup', '02_Mockup'], label: 'Presentation & Mockups', isDeliverable: true },
-      { names: ['01_Artwork_Design', 'Artwork Design', '1_Artwork_Design', '01. Artwork Design'], label: 'Source Working Files', isDeliverable: false },
-      { names: ['03_Assets', 'Assets', '3_Assets', '03. Assets'], label: 'Supporting Assets & Vectors', isDeliverable: false },
+      { names: ['05_DELIVERABLES', '05_Deliverables', '04_Production', 'Production', '4_Production', '04. Production', '04_Final_Exports'], label: 'Final Deliverables & Master Exports', isDeliverable: true },
+      { names: ['04_WORK_IN_PROGRESS', '04_WIP', '02_Artwork_Mockup', 'Artwork Mockup', '2_Artwork_Mockup', '02. Artwork Mockup', 'Mockup', '02_Mockup'], label: 'Work In Progress & Mockups', isDeliverable: true },
+      { names: ['03_COPYWRITING', '03_Copywriting', 'Copywriting'], label: 'Copywriting & Script Documents', isDeliverable: true },
+      { names: ['02_SOURCE_FILES', '02_Source_Files', '01_Artwork_Design', 'Artwork Design', '1_Artwork_Design', '01. Artwork Design', '01_Working_Files'], label: 'Source Working Files', isDeliverable: false },
+      { names: ['01_BRIEF_ASSETS', '01_Brief_Assets', '03_Assets', 'Assets', '3_Assets', '03. Assets', '02_Source_Assets'], label: 'Brief & Supporting Assets', isDeliverable: false },
       { names: ['Client_Revisions', 'Revisions', '05_Revisions'], label: 'Revision Files', isDeliverable: true }
     ];
 

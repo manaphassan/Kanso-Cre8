@@ -26,7 +26,7 @@ namespace SS_CAM.Services
                     Name = "Graphic & Print Design",
                     Suffix = "D",
                     IsDefault = true,
-                    Folders = new List<string> { "01_Artwork_Design", "02_Artwork_Mockup", "03_Assets", "04_Production" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
                 {
@@ -34,7 +34,7 @@ namespace SS_CAM.Services
                     Name = "Social Media Content",
                     Suffix = "S",
                     IsDefault = true,
-                    Folders = new List<string> { "01_Working_Files", "02_Source_Assets", "03_Copywriting", "04_Final_Exports" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
                 {
@@ -42,7 +42,7 @@ namespace SS_CAM.Services
                     Name = "Video Production",
                     Suffix = "V",
                     IsDefault = true,
-                    Folders = new List<string> { "01_Project_Files", "02_Footage", "03_Audio", "04_Renders", "05_Final_Exports" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
                 {
@@ -50,7 +50,7 @@ namespace SS_CAM.Services
                     Name = "Brand Identity",
                     Suffix = "P",
                     IsDefault = true,
-                    Folders = new List<string> { "01_Vector_Master", "02_Brand_Guidelines", "03_Colour_Palettes", "04_Export_Packages" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
                 {
@@ -58,7 +58,7 @@ namespace SS_CAM.Services
                     Name = "E-Commerce",
                     Suffix = "E",
                     IsDefault = true,
-                    Folders = new List<string> { "01_Product_Shots", "02_Banners", "03_Listing_Assets", "04_Exports" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
                 {
@@ -66,7 +66,7 @@ namespace SS_CAM.Services
                     Name = "Web Design",
                     Suffix = "W",
                     IsDefault = true,
-                    Folders = new List<string> { "01_UI_UX_Design", "02_Assets_Media", "03_WordPress_Theme", "04_Exports_Mockups" }
+                    Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 }
             };
         }

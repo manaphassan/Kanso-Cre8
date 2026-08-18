@@ -398,11 +398,22 @@ namespace SS_CAM.Views
             CardPlatformPrint.BorderThickness = new Thickness(idx == 3 ? 2 : 1);
         }
 
+        private string GetProjectContainerDirectory()
+        {
+            string year = DateTime.Now.Year.ToString();
+            if (YearComboBox != null && YearComboBox.SelectedItem != null)
+            {
+                year = YearComboBox.SelectedItem.ToString();
+            }
+            string monthFolder = DateTime.Now.ToString("yyyyMM") + "_" + DateTime.Now.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture);
+            return Path.Combine(workspaceRoot, year, monthFolder);
+        }
+
         private void UpdateLivePreview()
         {
             string folderName = GenerateFolderName();
-            string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
-            string targetPath = Path.Combine(workspaceRoot, designerFolder, folderName);
+            string containerDir = GetProjectContainerDirectory();
+            string targetPath = Path.Combine(containerDir, folderName);
 
             PreviewPathText.Text = targetPath;
 
@@ -434,9 +445,13 @@ namespace SS_CAM.Views
                 else
                 {
                     lines.Add(" ├── 📁 " + folder);
-                    if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
+                    if ((folder.Contains("SOURCE") || folder.Contains("Artwork_Design") || folder.Contains("Working")) && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         lines.Add(" │   └── 📄 " + folderName + GetSelectedExtension());
+                    }
+                    else if (folder.Contains("COPYWRITING") || folder.Contains("Copywriting"))
+                    {
+                        lines.Add(" │   └── 📄 COPY.md");
                     }
                 }
             }
@@ -457,8 +472,8 @@ namespace SS_CAM.Views
         private void OnCopyFolderPathClicked(object sender, RoutedEventArgs e)
         {
             string folderName = GenerateFolderName();
-            string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
-            string targetPath = Path.Combine(workspaceRoot, designerFolder, folderName);
+            string containerDir = GetProjectContainerDirectory();
+            string targetPath = Path.Combine(containerDir, folderName);
             ClipboardService.SetText(targetPath);
             CreateStatusText.Text = "Copied target folder path to clipboard!";
         }
@@ -473,12 +488,13 @@ namespace SS_CAM.Views
         private void OnCreateProjectClicked(object sender, RoutedEventArgs e)
         {
             string folderName = GenerateFolderName();
-            string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
-            string targetDir = Path.Combine(workspaceRoot, designerFolder, folderName);
+            string containerDir = GetProjectContainerDirectory();
+            string targetDir = Path.Combine(containerDir, folderName);
 
             try
             {
                 CreateStatusText.Text = "Creating project folders...";
+                if (!Directory.Exists(containerDir)) Directory.CreateDirectory(containerDir);
                 if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
 
                 CategoryPreset selectedPreset = GetSelectedCategoryPreset();
@@ -489,10 +505,19 @@ namespace SS_CAM.Views
                     string fPath = Path.Combine(targetDir, folder);
                     Directory.CreateDirectory(fPath);
 
-                    if (folder.StartsWith("01_") && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
+                    if ((folder.Contains("SOURCE") || folder.Contains("Artwork_Design") || folder.Contains("Working")) && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         string ext = GetSelectedExtension();
                         InjectCanvasFile(fPath, folderName, ext);
+                    }
+                    else if (folder.Contains("COPYWRITING") || folder.Contains("Copywriting"))
+                    {
+                        string copyFilePath = Path.Combine(fPath, "COPY.md");
+                        if (!File.Exists(copyFilePath))
+                        {
+                            string defaultCopy = string.Format("# Copywriting & Script Studio — {0}\n\n## 1. Video Script Hooks\n| Scene / Frame | Visual Action | Voiceover / Audio Hook | On-Screen Caption |\n| :--- | :--- | :--- | :--- |\n| **01 (0-3s)** | Close up product shot | 'Rahsia stamina lelaki aktif...' | STAMINA MAKSIMUM |\n\n## 2. Meta / TikTok Ad Copy Angles\n- **Angle A (Problem / Solution)**: Letih selepas bekerja? Kembalikan tenaga harian.\n- **Angle B (Social Proof)**: Pilihan lebih 50,000 lelaki di seluruh Malaysia.\n", folderName);
+                            File.WriteAllText(copyFilePath, defaultCopy);
+                        }
                     }
                 }
 
@@ -522,7 +547,7 @@ namespace SS_CAM.Views
                     frontmatter,
                     folderName,
                     DateTime.Now,
-                    designerFolder,
+                    designerName,
                     ProjectIdInput.Text,
                     PresetComboBox.SelectedItem,
                     PlatformComboBox.SelectedItem,
