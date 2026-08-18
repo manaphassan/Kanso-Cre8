@@ -2,7 +2,22 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.0.1] - 2026-08-18 (Patch Release)
+
+### Fixed
+- **`OnCheckUpdates` was a hardcoded stub** (`SettingsPage.xaml.cs`): The "Software Updates" button in Settings always showed "Software is up to date" without ever making a network call. Replaced with a real async check against the GitHub Releases API (`api.github.com/repos/SuamiSihat/ss_cam/releases/latest`) with NAS `version.json` fallback. Update dialog now offers a one-click download when a newer version is detected.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.0.1.exe` | Compiled Native C# WPF Executable |
+| `AssemblyVersion` | 4.0.1.0 |
+| `AssemblyFileVersion` | 4.0.1.0 |
+
+---
+
 ## [4.0.0] - 2026-08-18 (Stable Major Release)
+
 
 ### Added & Refined — Centralized Studio Hierarchy, ClickUp Task Workspace & Copywriting Studio
 - **Centralized Year-First Hierarchy Standardization (`FOLDER-STRUCTURE.md`)**:
