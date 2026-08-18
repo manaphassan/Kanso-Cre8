@@ -297,13 +297,14 @@ class WorkspaceService {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        const match = PROJECT_DIR_REGEX.exec(entry.name);
-        if (match) {
+        const isMonthFolder = /^\d{6}_(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/i.test(entry.name);
+        const match = !isMonthFolder ? PROJECT_DIR_REGEX.exec(entry.name) : null;
+        if (match && match[4]) {
           // This is a project directory
           const project = this.buildProjectItem(entry.name, fullPath, match);
           results.push(project);
         } else {
-          // Recurse into subdirectories
+          // Recurse into subdirectories (e.g. year, month, or category folders)
           this.scanDirectory(fullPath, results);
         }
       }
