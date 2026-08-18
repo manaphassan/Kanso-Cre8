@@ -2,7 +2,7 @@
 
 ## Status: PASS — v4.0.0 Release
 
-**QA Date**: 2026-08-18 (post v4.0.0 release)  
+**QA Date**: 2026-08-18 (post v4.0.1 release)  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**
 
