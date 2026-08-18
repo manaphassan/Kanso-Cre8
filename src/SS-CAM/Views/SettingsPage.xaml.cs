@@ -209,7 +209,182 @@ namespace SS_CAM.Views
 
         private void OnCheckUpdates(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(string.Format("You are running SS-CAM {0}. Software is up to date.", AppVersion.DisplayVersion), "Check for Updates", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Disable button while checking to prevent double-clicks
+            var btn = sender as System.Windows.Controls.Button;
+            if (btn != null) btn.IsEnabled = false;
+
+            System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+            {
+                string latestVersion = "";
+                string downloadUrl = "";
+                string releaseNotes = "";
+                bool networkError = false;
+
+                try
+                {
+                    // Primary: GitHub Releases API (always reflects published releases)
+                    const string GithubApiUrl = "https://api.github.com/repos/SuamiSihat/ss_cam/releases/latest";
+                    System.Net.ServicePointManager.SecurityProtocol =
+                        System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls11;
+
+                    System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(GithubApiUrl);
+                    req.Timeout = 8000;
+                    req.Method = "GET";
+                    req.Accept = "application/vnd.github+json";
+                    req.UserAgent = "SS-CAM/" + AppVersion.VersionString;
+
+                    using (System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)req.GetResponse())
+                    using (System.IO.StreamReader reader = new System.IO.StreamReader(resp.GetResponseStream()))
+                    {
+                        string json = reader.ReadToEnd();
+
+                        // Parse "tag_name": "v4.0.0"  → strip leading 'v'
+                        string tag = ExtractJsonValue(json, "tag_name");
+                        if (!string.IsNullOrEmpty(tag))
+                            latestVersion = tag.TrimStart('v', 'V');
+
+                        // "body": "Release notes..."
+                        releaseNotes = ExtractJsonValue(json, "body");
+                        if (!string.IsNullOrEmpty(releaseNotes) && releaseNotes.Length > 120)
+                            releaseNotes = releaseNotes.Substring(0, 120) + "…";
+
+                        // Build the exe download URL from known naming convention
+                        downloadUrl = string.Format(
+                            "https://github.com/SuamiSihat/ss_cam/releases/download/v{0}/SS-CAM-v{0}.exe",
+                            latestVersion);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SettingsPage] OnCheckUpdates (GitHub): " + ex.Message);
+
+                    // Fallback: NAS version.json
+                    try
+                    {
+                        System.Net.ServicePointManager.ServerCertificateValidationCallback = (s, c, ch, er) => true;
+                        System.Net.HttpWebRequest req2 = (System.Net.HttpWebRequest)System.Net.WebRequest.Create("https://suamisihat.myds.me/ss-cam/version.json");
+                        req2.Timeout = 5000;
+                        req2.Method = "GET";
+                        req2.Accept = "application/json";
+                        using (System.Net.HttpWebResponse resp2 = (System.Net.HttpWebResponse)req2.GetResponse())
+                        using (System.IO.StreamReader reader2 = new System.IO.StreamReader(resp2.GetResponseStream()))
+                        {
+                            string json2 = reader2.ReadToEnd();
+                            latestVersion = ExtractJsonValue(json2, "version");
+                            releaseNotes  = ExtractJsonValue(json2, "releaseNotes");
+                            downloadUrl   = ExtractJsonValue(json2, "downloadUrl");
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[SettingsPage] OnCheckUpdates (NAS fallback): " + ex2.Message);
+                        networkError = true;
+                    }
+                }
+
+                // Back on UI thread
+                if (Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (btn != null) btn.IsEnabled = true;
+
+                        if (networkError || string.IsNullOrEmpty(latestVersion))
+                        {
+                            MessageBox.Show(
+                                "Could not reach the update server.\nPlease check your internet or NAS connection and try again.",
+                                "Update Check Failed",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        bool isNewer = false;
+                        try
+                        {
+                            isNewer = new Version(latestVersion).CompareTo(new Version(AppVersion.VersionString)) > 0;
+                        }
+                        catch { }
+
+                        if (isNewer)
+                        {
+                            string notes = string.IsNullOrWhiteSpace(releaseNotes)
+                                ? ""
+                                : "\n\nWhat's new:\n" + releaseNotes;
+                            string msg = string.Format(
+                                "SS-CAM v{0} is available.{1}\n\nYou are running {2}.\n\nWould you like to download the update now?",
+                                latestVersion, notes, AppVersion.DisplayVersion);
+
+                            MessageBoxResult result = MessageBox.Show(
+                                msg,
+                                "Update Available",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Information);
+
+                            if (result == MessageBoxResult.Yes && !string.IsNullOrEmpty(downloadUrl))
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = downloadUrl,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception ex3) { System.Diagnostics.Debug.WriteLine("[SettingsPage] OpenDownloadUrl: " + ex3.Message); }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                string.Format("You are running SS-CAM {0}.\nThis is the latest version.", AppVersion.DisplayVersion),
+                                "Up to Date",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+                        }
+                    });
+                }
+            });
+        }
+
+        /// <summary>
+        /// Lightweight JSON string value extractor — no external dependencies.
+        /// </summary>
+        private static string ExtractJsonValue(string json, string key)
+        {
+            try
+            {
+                string search = string.Format("\"{0}\"", key);
+                int keyIdx = json.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+                if (keyIdx < 0) return "";
+                int colon = json.IndexOf(':', keyIdx + search.Length);
+                if (colon < 0) return "";
+                // Trim whitespace after colon
+                int open = colon + 1;
+                while (open < json.Length && (json[open] == ' ' || json[open] == '\t')) open++;
+                if (open >= json.Length) return "";
+                if (json[open] == '"')
+                {
+                    // String value
+                    open++; // skip opening quote
+                    int close = open;
+                    while (close < json.Length)
+                    {
+                        if (json[close] == '\\') { close += 2; continue; } // skip escaped chars
+                        if (json[close] == '"') break;
+                        close++;
+                    }
+                    return json.Substring(open, close - open);
+                }
+                else
+                {
+                    // Non-string value (number, bool) — read until delimiter
+                    int end = open;
+                    while (end < json.Length && json[end] != ',' && json[end] != '}' && json[end] != '\n') end++;
+                    return json.Substring(open, end - open).Trim();
+                }
+            }
+            catch { return ""; }
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)
