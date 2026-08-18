@@ -37,3 +37,12 @@ desktop.ini
 .agents/wiki/
 .agents/skills/sscam-release-publisher/scratch/
 
+# ── Web Portal dependencies & build ─────────────────────────────
+node_modules/
+**/node_modules/
+**/.package-lock.json
+client/dist/
+src/SS-CAM.Web/client/dist/
+src/SS-CAM.Web/dist/
+.vite/
+
