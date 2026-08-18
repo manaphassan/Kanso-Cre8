@@ -10,8 +10,13 @@ class AppStateStore {
   routeParams = $state<Record<string, any>>({});
   theme = $state<ThemeName>((localStorage.getItem('ss_cam_theme') as ThemeName) || 'falconia');
   sidebarExpanded = $state<boolean>(true);
+  sidebarRail = $state<boolean>(false); // icon-only rail mode
   toasts = $state<ToastMessage[]>([]);
   isRescanning = $state<boolean>(false);
+  globalSearch = $state<string>('');
+  notificationCount = $state<number>(0);
+  userMenuOpen = $state<boolean>(false);
+  contextDrawerOpen = $state<boolean>(false);
 
   constructor() {
     this.applyTheme(this.theme);
@@ -30,7 +35,17 @@ class AppStateStore {
   }
 
   toggleSidebar() {
-    this.sidebarExpanded = !this.sidebarExpanded;
+    if (typeof window !== 'undefined' && window.innerWidth < 900) {
+      this.sidebarExpanded = !this.sidebarExpanded;
+    } else {
+      this.sidebarExpanded = true;
+      this.sidebarRail = !this.sidebarRail;
+    }
+  }
+
+  expandSidebar() {
+    this.sidebarExpanded = true;
+    this.sidebarRail = false;
   }
 
   navigate(route: string, params: Record<string, any> = {}) {

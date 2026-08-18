@@ -14,236 +14,360 @@
   import LoginView from '$lib/views/LoginView.svelte';
 
   onMount(async () => {
-    // Check authentication
     await appState.loadCurrentUser();
 
-    // Setup hash router
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
-      if (!hash) {
-        appState.currentRoute = 'dashboard';
-        return;
-      }
+      if (!hash) { appState.currentRoute = 'dashboard'; return; }
       const parts = hash.split('/');
       const route = parts[0];
       const id = parts[1] ? decodeURIComponent(parts[1]) : undefined;
       appState.currentRoute = route || 'dashboard';
-      if (id) {
-        appState.routeParams = { id };
-      }
+      appState.routeParams = id ? { id } : {};
     }
 
     window.addEventListener('hashchange', handleRouteFromHash);
     handleRouteFromHash();
+    window.addEventListener('auth:required', () => appState.navigate('login'));
 
-    // Listen for auth required events
-    window.addEventListener('auth:required', () => {
-      appState.navigate('login');
+    window.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.user-menu-wrapper')) {
+        appState.userMenuOpen = false;
+      }
     });
+
+    function handleResize() {
+      if (window.innerWidth < 900) {
+        appState.sidebarExpanded = false;
+        appState.sidebarRail = false;
+      } else {
+        if (!appState.sidebarExpanded && !appState.sidebarRail) {
+          appState.sidebarExpanded = true;
+        }
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
   });
 
-  const pageTitles: Record<string, string> = {
-    dashboard: 'Executive Management Dashboard',
-    projects: 'Project Catalog & Vault',
-    'project-detail': 'Project Workspace',
-    deliverables: 'Deliverables & Review Queue',
-    team: 'Team Directory & Workload',
-    'copy-studio': 'Copywriting & Script Matrix',
-    admin: 'System Governance & Telemetry',
-    profile: 'Profile & Themes',
-    login: 'Sign In'
+  const pageConfig: Record<string, { title: string; layout: string; parent?: string }> = {
+    dashboard:        { title: 'Dashboard',          layout: 'layout-full' },
+    projects:         { title: 'Project Catalog',    layout: 'layout-page' },
+    'project-detail': { title: 'Project Workspace',  layout: 'layout-full', parent: 'projects' },
+    deliverables:     { title: 'Review Queue',        layout: 'layout-page' },
+    team:             { title: 'Team & Workload',     layout: 'layout-page' },
+    'copy-studio':    { title: 'Copywriting Studio',  layout: 'layout-page' },
+    admin:            { title: 'Administration',      layout: 'layout-full' },
+    profile:          { title: 'My Profile',          layout: 'layout-narrow' },
   };
 
-  const currentTitle = $derived(pageTitles[appState.currentRoute] || 'SS-CAM Portal');
+  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'SS-CAM', layout: 'layout-page' });
+  const currentTitle  = $derived(
+    appState.currentRoute === 'project-detail' && appState.routeParams.id
+      ? appState.routeParams.id
+      : currentConfig.title
+  );
+
+  const breadcrumbs = $derived.by(() => {
+    const crumbs: { label: string; route?: string }[] = [{ label: 'SS-CAM Portal' }];
+    const cfg = pageConfig[appState.currentRoute];
+    if (!cfg) return crumbs;
+    if (cfg.parent) {
+      const p = pageConfig[cfg.parent];
+      crumbs.push({ label: p?.title ?? cfg.parent, route: cfg.parent });
+    }
+    crumbs.push({ label: currentTitle });
+    return crumbs;
+  });
+
+  const dashIcon   = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
+  const folderIcon = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
+  const reviewIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
+  const teamIcon   = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
+  const pencilIcon = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
+  const adminIcon  = `<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
+
+  const navGroups = [
+    { section: 'Management & Visibility', items: [
+      { route: 'dashboard',    label: 'Dashboard',          icon: dashIcon },
+      { route: 'projects',     label: 'Project Catalog',    icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+      { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
+    ]},
+    { section: 'Coordination & Studio', items: [
+      { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
+      { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
+    ]},
+    { section: 'System & Governance', items: [
+      { route: 'admin',        label: 'Administration',     icon: adminIcon },
+    ]},
+  ];
+
+  function isActive(item: any) {
+    return item.matchRoutes ? item.matchRoutes.includes(appState.currentRoute) : appState.currentRoute === item.route;
+  }
+
+  const userInitial = $derived((appState.currentUser?.name ?? 'U').charAt(0).toUpperCase());
+  const isRail = $derived(appState.sidebarRail && appState.sidebarExpanded);
 </script>
 
-{#if appState.currentRoute === 'login'}
+{#if !appState.currentUser}
   <LoginView />
 {:else}
-  <div class="app-layout" class:sidebar-collapsed={!appState.sidebarExpanded}>
-    <!-- ─── SIDEBAR NAVIGATION (30% SECONDARY LAYER) ─── -->
-    <aside class="app-sidebar">
-      <div class="sidebar-header">
-        <img src="brand/suamisihat-logo-on-dark.svg" alt="SuamiSihat" class="sidebar-dark-logo" />
-        <span class="portal-tag">PORTAL</span>
+  <div
+    class="app-shell"
+    class:sidebar-rail={isRail}
+    class:sidebar-hidden={!appState.sidebarExpanded}
+  >
+    <!-- ═══ SIDEBAR ════════════════════════════════════════════════ -->
+    <aside class="app-sidebar" class:is-rail={isRail}>
+
+      <div class="sidebar-header" class:rail-header={isRail}>
+        {#if !isRail}
+          <img src="brand/suamisihat-logo-on-dark.svg" alt="SuamiSihat" class="sidebar-logo" />
+          <span class="portal-pill">PORTAL</span>
+        {:else}
+          <div class="sidebar-logomark-wrap" title="SuamiSihat Portal">
+            <img src="brand/ss-logomark.svg" alt="SuamiSihat Logomark" class="sidebar-logomark-svg" />
+          </div>
+        {/if}
       </div>
 
-      <nav class="sidebar-nav">
-        <div class="nav-cat">Management & Visibility</div>
-        <a
-          href="#dashboard"
-          class="nav-link"
-          class:active={appState.currentRoute === 'dashboard'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-          <span>Dashboard</span>
-        </a>
-
-        <a
-          href="#projects"
-          class="nav-link"
-          class:active={appState.currentRoute === 'projects' || appState.currentRoute === 'project-detail'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-          <span>Project Catalog</span>
-        </a>
-
-        <a
-          href="#deliverables"
-          class="nav-link"
-          class:active={appState.currentRoute === 'deliverables'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          <span>Review Queue</span>
-          {#if projectStore.pendingReviewCount > 0}
-            <span class="review-badge">{projectStore.pendingReviewCount}</span>
+      <nav class="sidebar-nav" class:rail-nav={isRail} aria-label="Main Navigation">
+        {#each navGroups as group}
+          {#if !isRail}
+            <div class="nav-section-label">{group.section}</div>
+          {:else}
+            <div class="nav-section-divider"></div>
           {/if}
-        </a>
-
-        <div class="nav-cat">Coordination & Studio</div>
-        <a
-          href="#team"
-          class="nav-link"
-          class:active={appState.currentRoute === 'team'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          <span>Team & Workload</span>
-        </a>
-
-        <a
-          href="#copy-studio"
-          class="nav-link"
-          class:active={appState.currentRoute === 'copy-studio'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          <span>Copywriting Studio</span>
-        </a>
+          {#each group.items as item}
+            {@const active = isActive(item)}
+            {@const count  = item.badge ? projectStore.pendingReviewCount : 0}
+            <a
+              href="#{item.route}"
+              class="nav-link"
+              class:active
+              class:rail-link={isRail}
+              title={isRail ? item.label : undefined}
+              aria-current={active ? 'page' : undefined}
+            >
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                {@html item.icon}
+              </svg>
+              {#if !isRail}
+                <span class="nav-label">{item.label}</span>
+              {/if}
+              {#if count > 0}
+                <span class="nav-badge" class:rail-badge={isRail}>{count}</span>
+              {/if}
+            </a>
+          {/each}
+        {/each}
 
         <div class="nav-spacer"></div>
 
-        <!-- ─── DESKTOP CLIENT BANNER (ABOVE SYSTEM & GOVERNANCE) ─── -->
-        <div class="desktop-app-banner">
-          <div class="banner-top">
-            <span class="banner-pill">Desktop Client</span>
-            <span class="banner-tag">v3.6.1</span>
+        {#if !isRail}
+          <div class="desktop-banner">
+            <div class="banner-row">
+              <span class="banner-pill">Desktop Client</span>
+              <span class="banner-ver">v3.6.1</span>
+            </div>
+            <div class="banner-title">SS-CAM Desktop</div>
+            <p class="banner-desc">Native Windows app for offline production.</p>
+            <a href="https://github.com/SuamiSihat/ss_cam/releases" target="_blank" rel="noreferrer" class="banner-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+              </svg>
+              Download Latest Build
+            </a>
           </div>
-          <div class="banner-headline">SS-CAM Desktop</div>
-          <p class="banner-desc">Native Windows desktop application for high-speed offline production.</p>
-          <a
-            href="https://github.com/SuamiSihat/ss_cam/releases"
-            target="_blank"
-            rel="noreferrer"
-            class="banner-cta-btn"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            <span>Download Latest Build</span>
+        {:else}
+          <a href="https://github.com/SuamiSihat/ss_cam/releases" target="_blank" rel="noreferrer" class="nav-link rail-link" title="Download SS-CAM Desktop">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
           </a>
-        </div>
-
-        <!-- ─── SYSTEM & GOVERNANCE (MOVED TO BOTTOM) ─── -->
-        <div class="nav-cat">System & Governance</div>
-        <a
-          href="#admin"
-          class="nav-link"
-          class:active={appState.currentRoute === 'admin'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-          <span>Administration</span>
-        </a>
+        {/if}
       </nav>
-
-      <!-- User Chip in Sidebar Footer -->
-      <div class="sidebar-footer">
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="user-chip" onclick={() => appState.navigate('profile')}>
-          <div class="user-avatar">
-            {appState.currentUser?.name?.charAt(0) || 'U'}
-          </div>
-          <div class="user-details">
-            <div class="user-name">{appState.currentUser?.name || 'Guest User'}</div>
-            <div class="user-role">{appState.currentUser?.role || 'Viewer'}</div>
-          </div>
-        </div>
-      </div>
     </aside>
 
-    <!-- ─── MAIN CONTENT VIEWPORT (60% FOUNDATION CANVAS) ─── -->
-    <main class="app-main">
+    <!-- ═══ MAIN ════════════════════════════════════════════════════ -->
+    <div class="app-main">
+
+      <!-- TOP HEADER -->
       <header class="app-header">
         <div class="header-left">
-          <button class="toggle-btn" onclick={() => appState.toggleSidebar()} title="Toggle Sidebar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+          <button class="icon-btn" onclick={() => appState.toggleSidebar()} title="Toggle Sidebar" aria-label="Toggle sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
           </button>
-          <h1 class="header-title">{currentTitle}</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            {#each breadcrumbs as crumb, i}
+              {#if i > 0}<span class="bc-sep" aria-hidden="true">›</span>{/if}
+              {#if crumb.route && i < breadcrumbs.length - 1}
+                <a href="#{crumb.route}" class="bc-link">{crumb.label}</a>
+              {:else}
+                <span class="bc-current" aria-current="page">{crumb.label}</span>
+              {/if}
+            {/each}
+          </nav>
+        </div>
+
+        <div class="header-center">
+          <div class="header-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="search-ico" aria-hidden="true">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <input
+              class="search-input"
+              type="search"
+              placeholder="Search projects, deliverables, team…"
+              bind:value={appState.globalSearch}
+              aria-label="Global search"
+            />
+            {#if appState.globalSearch}
+              <button class="search-clear" onclick={() => (appState.globalSearch = '')} aria-label="Clear search">×</button>
+            {/if}
+          </div>
         </div>
 
         <div class="header-right">
-          <a
-            href="https://assets.suamisihat.myds.me/"
-            target="_blank"
-            rel="noreferrer"
-            class="brand-vault-link"
-          >
-            <span>Brand Assets Vault</span>
-            <span style="font-size: 11px;">↗</span>
+          <a href="https://assets.suamisihat.myds.me/" target="_blank" rel="noreferrer" class="vault-link" title="Brand Assets Vault">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
+            </svg>
+            <span>Brand Vault</span>
+            <span aria-hidden="true" style="font-size:10px;opacity:0.7">↗</span>
           </a>
 
           <button
-            class="rescan-btn"
-            onclick={() => {
-              appState.addToast('Rescanning Synology workspace...', 'info');
-              projectStore.loadProjects();
-              projectStore.loadDashboard();
-            }}
+            class="icon-btn notif-btn"
+            onclick={() => appState.addToast('Notifications feed active', 'info')}
+            title="Notifications"
+            aria-label="Notifications"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
-            <span>Rescan</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            {#if appState.notificationCount > 0}
+              <span class="notif-count">{appState.notificationCount > 9 ? '9+' : appState.notificationCount}</span>
+            {/if}
           </button>
+
+          <button
+            class="icon-btn"
+            onclick={() => { appState.addToast('Rescanning workspace…', 'info'); projectStore.loadProjects(); projectStore.loadDashboard(); }}
+            title="Rescan Workspace"
+            aria-label="Rescan workspace"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+            </svg>
+          </button>
+
+          <!-- User Dropdown -->
+          <div class="user-menu-wrapper">
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+              class="user-chip"
+              onclick={(e) => { e.stopPropagation(); appState.userMenuOpen = !appState.userMenuOpen; }}
+              onkeydown={(e) => e.key === 'Enter' && (appState.userMenuOpen = !appState.userMenuOpen)}
+              role="button"
+              tabindex="0"
+              aria-haspopup="menu"
+              aria-expanded={appState.userMenuOpen}
+            >
+              <div class="user-avatar">{userInitial}</div>
+              <div class="user-info">
+                <span class="user-name">{appState.currentUser?.name ?? 'User'}</span>
+                <span class="user-role-label">{appState.currentUser?.role}</span>
+              </div>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="chevron" class:open={appState.userMenuOpen} aria-hidden="true">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </div>
+
+            {#if appState.userMenuOpen}
+              <!-- svelte-ignore a11y_no_static_element_interactions -->
+              <div class="user-dropdown" role="menu" onclick={(e) => e.stopPropagation()}>
+                <div class="dd-header">
+                  <div class="dd-avatar">{userInitial}</div>
+                  <div>
+                    <div class="dd-name">{appState.currentUser?.name}</div>
+                    <div class="dd-meta">{appState.currentUser?.staffId} · {appState.currentUser?.role}</div>
+                  </div>
+                </div>
+                <div class="dd-divider"></div>
+                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('profile'); }} role="menuitem">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  My Profile & Themes
+                </button>
+                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('admin'); }} role="menuitem">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
+                  Administration
+                </button>
+                <div class="dd-divider"></div>
+                <button class="dd-item danger" onclick={() => { appState.userMenuOpen = false; appState.logout(); }} role="menuitem">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                  Sign Out
+                </button>
+              </div>
+            {/if}
+          </div>
         </div>
       </header>
 
-      <section class="view-content-pane">
-        {#if appState.currentRoute === 'dashboard'}
-          <DashboardView />
-        {:else if appState.currentRoute === 'projects'}
-          <ProjectsView />
-        {:else if appState.currentRoute === 'project-detail'}
-          <ProjectDetailView />
-        {:else if appState.currentRoute === 'deliverables'}
-          <DeliverablesView />
-        {:else if appState.currentRoute === 'copy-studio'}
-          <CopyStudioView />
-        {:else if appState.currentRoute === 'team'}
-          <TeamView />
-        {:else if appState.currentRoute === 'admin'}
-          <AdminView />
-        {:else if appState.currentRoute === 'profile'}
-          <ProfileView />
-        {:else}
-          <DashboardView />
-        {/if}
-      </section>
-    </main>
+      <!-- PAGE CONTENT -->
+      <div class="page-body">
+        <section class="view-pane {currentConfig.layout}">
+          {#if appState.currentRoute === 'dashboard'}
+            <DashboardView />
+          {:else if appState.currentRoute === 'projects'}
+            <ProjectsView />
+          {:else if appState.currentRoute === 'project-detail'}
+            <ProjectDetailView />
+          {:else if appState.currentRoute === 'deliverables'}
+            <DeliverablesView />
+          {:else if appState.currentRoute === 'copy-studio'}
+            <CopyStudioView />
+          {:else if appState.currentRoute === 'team'}
+            <TeamView />
+          {:else if appState.currentRoute === 'admin'}
+            <AdminView />
+          {:else if appState.currentRoute === 'profile'}
+            <ProfileView />
+          {:else}
+            <DashboardView />
+          {/if}
+        </section>
+      </div>
+    </div>
   </div>
+
+  {#if appState.sidebarExpanded && !isRail}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="mobile-overlay" onclick={() => { appState.sidebarExpanded = false; }}></div>
+  {/if}
 {/if}
 
 <FluentToast />
 
 <style>
-  .app-layout {
+  /* ═══ SHELL ════════════════════════════════════════════════════ */
+  .app-shell {
     display: grid;
     grid-template-columns: 260px 1fr;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    transition: grid-template-columns var(--transition-smooth);
+    transition: grid-template-columns 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .app-shell.sidebar-rail   { grid-template-columns: 68px 1fr; }
+  .app-shell.sidebar-hidden { grid-template-columns: 0px 1fr; }
 
-  .app-layout.sidebar-collapsed {
-    grid-template-columns: 0 1fr;
-  }
-
+  /* ═══ SIDEBAR ══════════════════════════════════════════════════ */
   .app-sidebar {
     background: var(--bg-sidebar);
     color: var(--sidebar-text);
@@ -251,283 +375,532 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .sidebar-header {
-    padding: 16px 18px;
+    height: 56px;
+    padding: 0 16px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     border-bottom: 1px solid var(--sidebar-border);
+    box-sizing: border-box;
   }
-
-  .sidebar-dark-logo {
-    height: 28px;
-    width: auto;
-    max-width: 155px;
+  .sidebar-header.rail-header {
+    padding: 0;
+    justify-content: center;
+  }
+  .sidebar-logo {
+    height: 26px;
+    max-width: 148px;
     object-fit: contain;
-    display: block;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
   }
-
-  .portal-tag {
+  .sidebar-logomark-wrap {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sidebar-logomark-svg {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    transition: transform 0.15s ease;
+  }
+  .sidebar-logomark-svg:hover {
+    transform: scale(1.08);
+  }
+  .portal-pill {
     font-size: 9.5px;
     font-weight: 900;
     letter-spacing: 0.8px;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
-    background: rgba(33, 161, 247, 0.18);
+    background: rgba(33,161,247,.18);
     color: #6DC6EC;
-    border: 1px solid rgba(33, 161, 247, 0.35);
+    border: 1px solid rgba(33,161,247,.35);
+    white-space: nowrap;
   }
 
   .sidebar-nav {
     flex: 1;
-    padding: 14px 10px;
+    padding: 12px 10px;
     display: flex;
     flex-direction: column;
     gap: 3px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-
-  .nav-cat {
-    font-size: 10.5px;
-    font-weight: 700;
+  .sidebar-nav.rail-nav {
+    padding: 12px 0;
+    align-items: center;
+  }
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 800;
     color: var(--sidebar-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 12px 10px 4px 10px;
+    letter-spacing: 0.6px;
+    padding: 14px 10px 4px 10px;
+    white-space: nowrap;
   }
-
+  .nav-section-divider {
+    height: 1px;
+    width: 36px;
+    background: var(--sidebar-border);
+    margin: 8px auto;
+  }
   .nav-link {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border-radius: var(--radius-md);
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 8px;
     color: var(--sidebar-text);
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
-    transition: all var(--transition-fast);
+    transition: background .14s, color .14s;
+    position: relative;
+    white-space: nowrap;
+    box-sizing: border-box;
   }
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #FFFFFF;
+  .nav-link:hover  {
+    background: rgba(255,255,255,.09);
+    color: #fff;
   }
   .nav-link.active {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-active-text);
     font-weight: 700;
     border-left: 3px solid var(--sidebar-active-indicator);
+    padding-left: 9px;
   }
 
-  .review-badge {
+  /* Compact Mode Rail Item: perfectly centered 44x44 icon button with 12px margins */
+  .nav-link.rail-link {
+    width: 44px;
+    height: 44px;
+    margin: 3px auto;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+    border-left: none !important;
+    gap: 0;
+  }
+  .nav-link.rail-link.active {
+    background: var(--sidebar-active-bg);
+    color: #fff;
+    box-shadow: 0 0 0 1px var(--sidebar-active-indicator);
+  }
+
+  .nav-icon  {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .nav-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-badge {
     margin-left: auto;
     background: #EF4444;
-    color: #FFFFFF;
+    color: #fff;
     font-size: 10px;
     font-weight: 800;
     padding: 1px 6px;
-    border-radius: var(--radius-pill);
+    border-radius: 9999px;
+    flex-shrink: 0;
   }
-
+  .nav-badge.rail-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 0 4px;
+    font-size: 9px;
+    margin: 0;
+  }
   .nav-spacer {
     flex: 1;
     min-height: 14px;
   }
 
-  /* Desktop Ecosystem Download Banner */
-  .desktop-app-banner {
-    margin: 4px 6px 8px 6px;
+  .desktop-banner {
+    margin: 6px 4px 10px;
     padding: 12px 14px;
-    background: linear-gradient(145deg, rgba(2, 32, 87, 0.8) 0%, rgba(4, 51, 136, 0.6) 100%);
-    border: 1px solid rgba(33, 161, 247, 0.3);
+    background: linear-gradient(145deg, rgba(2,32,87,.85), rgba(4,51,136,.65));
+    border: 1px solid rgba(33,161,247,.3);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
   }
-
-  .banner-top {
+  .banner-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-
   .banner-pill {
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: rgba(33, 161, 247, 0.25);
+    background: rgba(33,161,247,.22);
     color: #6DC6EC;
     padding: 2px 6px;
     border-radius: 4px;
   }
-
-  .banner-tag {
+  .banner-ver {
     font-size: 10.5px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255,255,255,.65);
     font-family: monospace;
   }
-
-  .banner-headline {
+  .banner-title {
     font-size: 13.5px;
     font-weight: 800;
-    color: #FFFFFF;
-    letter-spacing: -0.2px;
+    color: #fff;
   }
-
-  .banner-desc {
+  .banner-desc  {
     font-size: 11px;
     line-height: 1.35;
-    color: rgba(255, 255, 255, 0.75);
-    margin: 0 0 4px 0;
+    color: rgba(255,255,255,.75);
+    margin: 0 0 2px 0;
   }
-
-  .banner-cta-btn {
+  .banner-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: linear-gradient(90deg, #21A1F7 0%, #0078D4 100%);
-    color: #FFFFFF;
+    background: linear-gradient(90deg, #21A1F7, #0078D4);
+    color: #fff;
     text-decoration: none;
     font-size: 11.5px;
     font-weight: 800;
-    padding: 7px 12px;
+    padding: 7px 10px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(33, 161, 247, 0.35);
-    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(33,161,247,.35);
+    transition: transform .15s, box-shadow .15s;
+    margin-top: 2px;
   }
-
-  .banner-cta-btn:hover {
+  .banner-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(33, 161, 247, 0.55);
-    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(33,161,247,.55);
   }
 
-  .sidebar-footer {
-    padding: 12px 14px;
-    border-top: 1px solid var(--sidebar-border);
-  }
-
-  .user-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 8px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.15);
-  }
-  .user-chip:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--brand-accent);
-    color: #022057;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .user-name { font-size: 12.5px; font-weight: 700; color: #FFFFFF; }
-  .user-role { font-size: 11px; color: var(--sidebar-text-muted); }
-
+  /* ═══ MAIN ══════════════════════════════════════════════════════ */
   .app-main {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
+    min-width: 0;
     background: var(--bg-app);
   }
 
+  /* ═══ HEADER ════════════════════════════════════════════════════ */
   .app-header {
     height: 56px;
+    flex-shrink: 0;
     background: var(--surface-card);
     border-bottom: 1px solid var(--surface-card-border);
     padding: 0 24px;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
     box-shadow: var(--shadow-sm);
   }
+  .header-left  { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .header-center { min-width: 0; display: flex; justify-content: center; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
 
-  .header-left {
+  .breadcrumb {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
+    font-size: 13px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .bc-sep     { color: var(--text-tertiary); font-size: 12px; }
+  .bc-link    { color: var(--text-secondary); text-decoration: none; font-weight: 600; white-space: nowrap; transition: color .14s; }
+  .bc-link:hover { color: var(--brand-accent); }
+  .bc-current {
+    color: var(--text-primary);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
   }
 
-  .toggle-btn {
+  .header-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-app);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 8px;
+    padding: 0 12px;
+    width: 100%;
+    max-width: 460px;
+    height: 36px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .header-search:focus-within {
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 3px rgba(33,161,247,.15);
+  }
+  .search-ico   { color: var(--text-tertiary); flex-shrink: 0; }
+  .search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--text-tertiary); }
+  .search-clear {
+    border: none;
+    background: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .search-clear:hover { color: var(--text-primary); }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     background: transparent;
     color: var(--text-secondary);
+    border-radius: 8px;
     cursor: pointer;
-    padding: 6px;
-    border-radius: var(--radius-sm);
+    transition: background .14s, color .14s;
   }
-  .toggle-btn:hover { background: var(--surface-card-hover); color: var(--text-primary); }
+  .icon-btn:hover { background: var(--surface-card-hover); color: var(--text-primary); }
 
-  .header-title {
-    font-size: 16px;
+  .notif-btn { position: relative; }
+  .notif-count {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: #EF4444;
+    color: #fff;
+    font-size: 9px;
     font-weight: 800;
-    color: var(--text-primary);
+    padding: 0 4px;
+    border-radius: 9999px;
+    min-width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
+    border: 1.5px solid var(--surface-card);
   }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .brand-vault-link {
+  .vault-link {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     text-decoration: none;
     font-size: 12px;
     font-weight: 700;
     color: var(--brand-accent);
     background: var(--brand-tint);
-    border: 1px solid rgba(4, 51, 136, 0.15);
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
+    border: 1px solid rgba(4,51,136,.12);
+    padding: 5px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: background .14s;
   }
+  .vault-link:hover { background: #dbeeff; }
 
-  .rescan-btn {
-    display: inline-flex;
+  /* User Menu */
+  .user-menu-wrapper { position: relative; }
+  .user-chip {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    background: transparent;
-    border: 1px solid var(--surface-card-border);
-    padding: 4px 10px;
-    border-radius: var(--radius-md);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
+    gap: 8px;
+    padding: 4px 10px 4px 4px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background .14s;
+    border: 1px solid transparent;
   }
-  .rescan-btn:hover { background: var(--surface-card-hover); color: var(--text-primary); }
+  .user-chip:hover { background: var(--surface-card-hover); border-color: var(--surface-card-border); }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--brand-gradient);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .user-info  { display: flex; flex-direction: column; }
+  .user-name  { font-size: 12.5px; font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+  .user-role-label { font-size: 10.5px; color: var(--text-tertiary); white-space: nowrap; }
+  .chevron { color: var(--text-tertiary); transition: transform .2s; flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
 
-  .view-content-pane {
+  .user-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-xl);
+    min-width: 220px;
+    z-index: 500;
+    overflow: hidden;
+    animation: dropIn .15s ease;
+  }
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .dd-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-app);
+  }
+  .dd-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--brand-gradient);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .dd-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .dd-meta { font-size: 11px; color: var(--text-secondary); }
+  .dd-divider { height: 1px; background: var(--surface-card-border); }
+  .dd-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    background: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: background .12s;
+    font-family: inherit;
+  }
+  .dd-item:hover { background: var(--surface-card-hover); }
+  .dd-item.danger { color: var(--color-danger); }
+  .dd-item.danger:hover { background: var(--color-danger-bg); }
+
+  /* ═══ PAGE BODY ═════════════════════════════════════════════════ */
+  .page-body {
     flex: 1;
-    padding: 24px;
-    max-width: 1440px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+
+  /* Layout Contracts with Generous Breathing Room */
+  .view-pane {
+    min-height: calc(100vh - 56px);
+    box-sizing: border-box;
+  }
+  .view-pane.layout-page {
+    padding: 28px 32px;
+    max-width: 1480px;
     width: 100%;
     margin: 0 auto;
+  }
+  .view-pane.layout-full {
+    padding: 28px 32px;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .view-pane.layout-narrow {
+    padding: 36px 48px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* Mobile overlay */
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 150;
+    backdrop-filter: blur(2px);
+  }
+
+  /* ═══ RESPONSIVE ════════════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    .app-shell { grid-template-columns: 1fr !important; }
+    .app-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px !important;
+      z-index: 300;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform .25s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: var(--shadow-xl);
+    }
+    .app-shell:not(.sidebar-hidden) .app-sidebar { transform: translateX(0); }
+    .mobile-overlay  { display: block; }
+    .vault-link      { display: none; }
+    .bc-current      { max-width: 140px; }
+    .view-pane.layout-page   { padding: 16px 18px; }
+    .view-pane.layout-full   { padding: 16px 18px; }
+    .view-pane.layout-narrow { padding: 16px 18px; }
+  }
+
+  @media (max-width: 600px) {
+    .header-center { display: none; }
+    .breadcrumb    { display: none; }
+    .user-info     { display: none; }
+    .chevron       { display: none; }
+    .app-header    { padding: 0 16px; }
   }
 </style>
