@@ -3,6 +3,8 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import FluentToast from '$lib/components/ui/FluentToast.svelte';
+  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
+  import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import DashboardView from '$lib/views/DashboardView.svelte';
   import ProjectsView from '$lib/views/ProjectsView.svelte';
   import ProjectDetailView from '$lib/views/ProjectDetailView.svelte';
@@ -13,6 +15,8 @@
   import ProfileView from '$lib/views/ProfileView.svelte';
   import LoginView from '$lib/views/LoginView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
+
+  let showDownloadModal = $state(false);
 
   onMount(async () => {
     await appState.loadCurrentUser();
@@ -170,24 +174,24 @@
         {#if !isRail}
           <div class="desktop-banner">
             <div class="banner-row">
-              <span class="banner-pill">Desktop Client</span>
+              <span class="banner-pill">Multi-Platform</span>
               <span class="banner-ver">v4.0.0</span>
             </div>
-            <div class="banner-title">SS-CAM Desktop</div>
-            <p class="banner-desc">Native Windows app for offline production.</p>
-            <a href="https://github.com/SuamiSihat/ss_cam/releases" target="_blank" rel="noreferrer" class="banner-btn">
+            <div class="banner-title">SS-CAM Clients</div>
+            <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
+            <button type="button" class="banner-btn" onclick={() => { showDownloadModal = true; }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
               </svg>
-              Download Latest Build
-            </a>
+              Download Clients (Win / Linux)
+            </button>
           </div>
         {:else}
-          <a href="https://github.com/SuamiSihat/ss_cam/releases" target="_blank" rel="noreferrer" class="nav-link rail-link" title="Download SS-CAM Desktop">
+          <button type="button" class="nav-link rail-link" onclick={() => { showDownloadModal = true; }} title="Download SS-CAM Clients">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-          </a>
+          </button>
         {/if}
       </nav>
     </aside>
@@ -356,6 +360,81 @@
     bind:open={appState.notificationDrawerOpen}
     onclose={() => (appState.notificationDrawerOpen = false)}
   />
+
+  <FluentDialog
+    bind:open={showDownloadModal}
+    title="Download SS-CAM Clients (v4.0.0)"
+    onClose={() => (showDownloadModal = false)}
+  >
+    <div class="download-modal-content">
+      <div class="download-platform-card">
+        <div class="platform-header">
+          <div class="platform-icon win-icon">🪟</div>
+          <div class="platform-meta">
+            <div class="platform-title">Windows Desktop Application</div>
+            <div class="platform-desc">Single-file portable .exe with Fluent 2 Mica design (~5.2 MB)</div>
+          </div>
+        </div>
+        <div class="platform-actions">
+          <a
+            href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe"
+            class="platform-download-btn win-btn"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Download Windows Exe (v4.0.0)
+          </a>
+        </div>
+      </div>
+
+      <div class="download-platform-card">
+        <div class="platform-header">
+          <div class="platform-icon linux-icon">🐧</div>
+          <div class="platform-meta">
+            <div class="platform-title">Linux Workstation (Fedora, Ubuntu, Pop!_OS, Arch)</div>
+            <div class="platform-desc">One-line terminal installer & native desktop launcher</div>
+          </div>
+        </div>
+        <div class="linux-terminal-box">
+          <code>curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash</code>
+          <button
+            type="button"
+            class="copy-cmd-btn"
+            onclick={() => {
+              navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash');
+              appState.addToast('Linux terminal installer command copied!', 'success');
+            }}
+          >
+            Copy Command
+          </button>
+        </div>
+      </div>
+
+      <div class="download-platform-card">
+        <div class="platform-header">
+          <div class="platform-icon web-icon">🌐</div>
+          <div class="platform-meta">
+            <div class="platform-title">Synology NAS Docker Web Portal</div>
+            <div class="platform-desc">Live production portal hosted on NAS (Docker Compose)</div>
+          </div>
+        </div>
+        <div class="platform-actions">
+          <a href="https://github.com/SuamiSihat/ss_cam/tree/SS-Master/src/SS-CAM.Web" class="platform-link-btn" target="_blank" rel="noreferrer">
+            View Docker Setup Guide ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {#snippet footer()}
+      <FluentButton appearance="subtle" onclick={() => (showDownloadModal = false)}>
+        Close
+      </FluentButton>
+    {/snippet}
+  </FluentDialog>
 {/if}
 
 <FluentToast />
@@ -908,5 +987,123 @@
     .user-info     { display: none; }
     .chevron       { display: none; }
     .app-header    { padding: 0 16px; }
+  }
+
+  /* ═══ DOWNLOAD MODAL ═════════════════════════════════════════════ */
+  .download-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 6px 0;
+  }
+  .download-platform-card {
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .platform-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .platform-icon {
+    font-size: 1.8rem;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--surface-card-border);
+    flex-shrink: 0;
+  }
+  .platform-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .platform-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+  }
+  .platform-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .platform-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .platform-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand-primary);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 9px 16px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .platform-download-btn:hover {
+    background: var(--brand-secondary);
+    transform: translateY(-1px);
+    color: #ffffff;
+  }
+  .platform-link-btn {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-card);
+    color: var(--brand-accent);
+    border: 1px solid var(--surface-card-border);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .platform-link-btn:hover {
+    background: var(--surface-card-hover);
+  }
+  .linux-terminal-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    gap: 12px;
+    overflow-x: auto;
+  }
+  .linux-terminal-box code {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: #38BDF8;
+    white-space: nowrap;
+  }
+  .copy-cmd-btn {
+    background: #1E293B;
+    color: #F8FAFC;
+    border: 1px solid #334155;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .copy-cmd-btn:hover {
+    background: #334155;
   }
 </style>
