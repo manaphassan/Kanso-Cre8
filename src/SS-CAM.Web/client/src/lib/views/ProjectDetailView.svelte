@@ -6,6 +6,7 @@
   import type { DeliverableItem, ProjectFrontmatter, ProjectComment } from '$lib/types';
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
   import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
@@ -26,6 +27,32 @@
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
   let isSubmittingDecision = $state<boolean>(false);
+
+  // Deletion State
+  let showDeleteModal = $state<boolean>(false);
+  let isDeleting = $state<boolean>(false);
+
+  const isAdminUser = $derived.by(() => {
+    const role = (appState.currentUser?.role || '').toLowerCase();
+    return role.includes('admin') || role.includes('director') || role.includes('lead') || role.includes('manager') || role.includes('executive');
+  });
+
+  async function handleDeleteProject() {
+    if (!p) return;
+    isDeleting = true;
+    try {
+      await ApiClient.deleteProject(p.id);
+      appState.addToast(`Project ${p.jobId || p.title} and subfolders deleted successfully.`, 'success');
+      showDeleteModal = false;
+      await projectStore.loadProjects();
+      await projectStore.loadDashboard();
+      appState.navigate('projects');
+    } catch (err: any) {
+      appState.addToast(`Failed to delete project: ${err.message}`, 'error');
+    } finally {
+      isDeleting = false;
+    }
+  }
 
   // Markdown Bodies & Frontmatter
   let currentReadmeBody = $state<string>('');
@@ -215,6 +242,18 @@
           >
             ⚠️ Request Revision
           </FluentButton>
+
+          {#if isAdminUser}
+            <FluentButton
+              appearance="danger"
+              size="sm"
+              loading={isDeleting}
+              onclick={() => (showDeleteModal = true)}
+              title="Delete Project and all Subfolders from NAS"
+            >
+              🗑 Delete Project
+            </FluentButton>
+          {/if}
 
           <!-- Toggle Inspector Button -->
           <button
@@ -517,6 +556,37 @@
         await loadProject(p.id);
       }}
     />
+
+    <!-- Delete Confirmation Dialog -->
+    <FluentDialog
+      bind:open={showDeleteModal}
+      title="Delete Project & Files"
+      confirmText="Permanently Delete"
+      confirmAppearance="danger"
+      loading={isDeleting}
+      onConfirm={handleDeleteProject}
+      onClose={() => (showDeleteModal = false)}
+    >
+      <div class="delete-dialog-body">
+        <div class="delete-warning-banner">
+          <div class="warning-title">⚠️ Irreversible Filesystem Operation</div>
+          <p class="warning-text">
+            This will permanently delete the project folder and <strong>all 5 subdirectories</strong> on Synology NAS storage:
+          </p>
+          <ul class="subfolder-list">
+            <li><code>01_BRIEF_ASSETS/</code></li>
+            <li><code>02_SOURCE_FILES/</code></li>
+            <li><code>03_COPYWRITING/</code> (including COPY.md)</li>
+            <li><code>04_WORK_IN_PROGRESS/</code></li>
+            <li><code>05_DELIVERABLES/</code> (all exported mockups and files)</li>
+          </ul>
+        </div>
+        <div class="delete-target-info">
+          <span class="target-label">Target Project:</span>
+          <span class="target-val"><strong>{p.jobId || p.id}</strong> — {p.title}</span>
+        </div>
+      </div>
+    </FluentDialog>
   {/if}
 </div>
 
@@ -1023,5 +1093,64 @@
       position: static;
       max-height: none;
     }
+  }
+
+  /* ═══ DELETE DIALOG ═════════════════════════════════════════════ */
+  .delete-dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: var(--text-primary);
+  }
+  .delete-warning-banner {
+    background: rgba(196, 43, 28, 0.08);
+    border: 1px solid var(--color-danger, #C42B1C);
+    border-radius: var(--radius-md, 8px);
+    padding: 14px;
+  }
+  .warning-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-danger, #C42B1C);
+    margin-bottom: 6px;
+  }
+  .warning-text {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+  }
+  .subfolder-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .subfolder-list code {
+    font-family: var(--font-mono);
+    color: var(--color-danger, #C42B1C);
+    background: rgba(196, 43, 28, 0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .delete-target-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-md, 8px);
+    font-size: 0.88rem;
+  }
+  .target-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .target-val {
+    color: var(--text-primary);
   }
 </style>

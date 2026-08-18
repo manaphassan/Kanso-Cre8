@@ -174,10 +174,10 @@
         {#if !isRail}
           <div class="desktop-banner">
             <div class="banner-row">
-              <span class="banner-pill">Multi-Platform</span>
+              <span class="banner-pill">Desktop Client</span>
               <span class="banner-ver">v4.0.0</span>
             </div>
-            <div class="banner-title">SS-CAM Clients</div>
+            <div class="banner-title">SS-CAM Desktop</div>
             <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
             <button type="button" class="banner-btn" onclick={() => { showDownloadModal = true; }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">

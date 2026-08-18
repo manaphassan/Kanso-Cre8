@@ -110,6 +110,12 @@ export class ApiClient {
     });
   }
 
+  static deleteProject(id: string): Promise<{ success: boolean; message: string; projectId: string }> {
+    return this.request(`/projects/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
   static updateBrief(id: string, briefMarkdown: string, expectedHash: string | null = null): Promise<{ success: boolean; versionHash: string }> {
     return this.request(`/projects/${encodeURIComponent(id)}/brief`, {
       method: 'PUT',

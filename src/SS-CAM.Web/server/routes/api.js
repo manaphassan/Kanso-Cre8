@@ -133,6 +133,25 @@ router.get('/projects/:id', authenticateToken, (req, res) => {
   }
 });
 
+router.delete('/projects/:id', authenticateToken, (req, res) => {
+  try {
+    const userRole = (req.user ? req.user.role : '').toLowerCase();
+    const isAdmin = userRole.includes('admin') || userRole.includes('director') || userRole.includes('lead') || userRole.includes('manager') || userRole.includes('executive');
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'Administrative permission required to delete project directories.' });
+    }
+
+    const result = WorkspaceService.deleteProject(
+      req.params.id,
+      req.user ? req.user.name : 'Administrator',
+      req.user ? req.user.role : 'Admin'
+    );
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // ─── PROJECT COMMENTS & COLLABORATION ────────────────────────────────
 
 router.get('/projects/:id/comments', authenticateToken, (req, res) => {

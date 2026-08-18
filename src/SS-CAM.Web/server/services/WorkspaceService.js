@@ -3,6 +3,7 @@ const path = require('path');
 const chokidar = require('chokidar');
 const config = require('../config');
 const FrontmatterService = require('./FrontmatterService');
+const AuditService = require('./AuditService');
 
 const PROJECT_DIR_REGEX = /^(\d{6})_([A-Za-z0-9]+)(?:_([A-Za-z0-9]+))?(?:_(.+))?$/;
 
@@ -267,8 +268,8 @@ class WorkspaceService {
     }
   }
 
-  scan() {
-    if (this.isScanning) return;
+  scan(force = false) {
+    if (this.isScanning && !force) return;
     this.isScanning = true;
 
     try {
@@ -543,6 +544,92 @@ class WorkspaceService {
       typeDistribution: typeCounts,
       designerWorkload,
       recentProjects: projects.slice(0, 6)
+    };
+  }
+
+  /**
+   * Deletes a project folder and all subfolders recursively.
+   * Admin-only operation with strict path validation and audit logging.
+   * @param {string} projectId Project folder name or Job ID
+   * @param {string} actorName Performing user name
+   * @param {string} actorRole Performing user role
+   */
+  deleteProject(projectId, actorName = 'Admin', actorRole = 'Administrator') {
+    const project = this.getProjectById(projectId);
+    if (!project) {
+      throw new Error(`Project "${projectId}" not found.`);
+    }
+
+    const fullPath = path.resolve(project.fullPath);
+    const resolvedRoot = path.resolve(this.workspaceRoot);
+
+    // Security check: Must reside within workspace root
+    if (!fullPath.startsWith(resolvedRoot) || fullPath === resolvedRoot) {
+      throw new Error('Unauthorized project deletion: target path is outside workspace boundaries.');
+    }
+
+    // Security check: Never delete system or hidden root folders
+    const baseName = path.basename(fullPath);
+    if (baseName === '_Team' || baseName === '#recycle' || baseName.startsWith('.')) {
+      throw new Error(`Cannot delete protected system directory: ${baseName}`);
+    }
+
+    if (!fs.existsSync(fullPath)) {
+      throw new Error(`Project directory does not exist: ${fullPath}`);
+    }
+
+    // Robust recursive deletion handling readonly and deep subfolders
+    const deleteRecursive = (dir) => {
+      if (!fs.existsSync(dir)) return;
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const itemPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          deleteRecursive(itemPath);
+        } else {
+          try { fs.chmodSync(itemPath, 0o666); } catch (e) {}
+          try { fs.unlinkSync(itemPath); } catch (e) {}
+        }
+      }
+      try {
+        fs.rmdirSync(dir);
+      } catch (e) {
+        try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e2) {}
+      }
+    };
+
+    try {
+      fs.rmSync(fullPath, { recursive: true, force: true });
+    } catch (e) {
+      deleteRecursive(fullPath);
+    }
+
+    if (fs.existsSync(fullPath)) {
+      try { deleteRecursive(fullPath); } catch (e) {}
+    }
+
+    // Audit log
+    AuditService.logEvent({
+      actor: actorName,
+      role: actorRole,
+      action: 'PROJECT_DELETED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id,
+      details: {
+        title: project.title,
+        folderName: project.id,
+        path: project.fullPath,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    // Rescan cache
+    this.scan();
+
+    return {
+      success: true,
+      message: `Project ${project.jobId || project.title} and all subfolders deleted successfully.`,
+      projectId: project.id
     };
   }
 }
