@@ -321,13 +321,32 @@ router.put('/projects/:id/direction', authenticateToken, requirePermission('dire
   }
 });
 
+router.get('/projects/:id/copywriting', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const result = CopywritingService.getCopywriting(
+      project ? project.fullPath : null,
+      req.params.id,
+      project ? project.title : ''
+    );
+    res.json({ success: true, copywriting: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.put('/projects/:id/copywriting', authenticateToken, requirePermission('copy:view'), (req, res) => {
   try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const { body, content } = req.body;
+    const bodyToSave = body !== undefined ? body : content || '';
+
     const result = CopywritingService.updateCopywriting(
+      project ? project.fullPath : null,
       req.params.id,
-      req.body,
-      req.user.name,
-      req.user.role
+      bodyToSave,
+      req.user ? req.user.name : 'Copywriter',
+      req.user ? req.user.role : 'Copywriter'
     );
     res.json(result);
   } catch (err) {

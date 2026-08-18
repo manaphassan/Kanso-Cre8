@@ -329,6 +329,26 @@ This is the project brief content.
     assert.ok(Array.isArray(notifs), 'Notifications must return an array');
   });
 
+  // ─── TEST 15: CopywritingService & 03_COPYWRITING/COPY.md ───────────
+  test('CopywritingService reads, auto-scaffolds templates, and saves COPY.md on NAS', () => {
+    const CopywritingService = require('../services/CopywritingService');
+    const testProjectId = '0085D';
+    const proj = WorkspaceService.getProjectById(testProjectId);
+    const testDir = proj ? proj.fullPath : path.join(require('../config').WORKSPACE_ROOT, '2026', '202608_August', '202608_0085D_SS_Rejal_Premium_Packaging');
+    if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
+
+    const copyData = CopywritingService.getCopywriting(testDir, testProjectId, 'Rejal Premium Packaging');
+    assert.ok(copyData.body, 'Must return non-empty copywriting markdown body');
+    assert.ok(copyData.stats.words > 0, 'Must compute word count');
+    assert.ok(copyData.filePath.includes('03_COPYWRITING') || copyData.filePath.includes('COPY.md'), 'Must resolve copy file path');
+
+    // Test saving custom markdown copy
+    const customCopy = '# Updated Video Script Hook\n\n- Hook 1: Raw Honey vitality test';
+    const saved = CopywritingService.updateCopywriting(testDir, testProjectId, customCopy, 'Test Writer', 'Copywriter');
+    assert.strictEqual(saved.success, true);
+    assert.strictEqual(saved.body, customCopy);
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

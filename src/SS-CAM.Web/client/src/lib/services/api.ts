@@ -124,10 +124,21 @@ export class ApiClient {
     });
   }
 
-  static updateCopywriting(id: string, payload: CopywritingState): Promise<{ success: boolean; copywriting: CopywritingState }> {
+  static getCopywritingMarkdown(id: string): Promise<{ success: boolean; copywriting: { body: string; stats: any; filePath: string; lastUpdated: string } }> {
+    return this.request(`/projects/${encodeURIComponent(id)}/copywriting`);
+  }
+
+  static updateCopywritingMarkdown(id: string, body: string): Promise<{ success: boolean; copywriting: any }> {
     return this.request(`/projects/${encodeURIComponent(id)}/copywriting`, {
       method: 'PUT',
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ body })
+    });
+  }
+
+  static updateCopywriting(id: string, payload: any): Promise<{ success: boolean; copywriting: any }> {
+    return this.request(`/projects/${encodeURIComponent(id)}/copywriting`, {
+      method: 'PUT',
+      body: JSON.stringify(typeof payload === 'string' ? { body: payload } : payload)
     });
   }
 

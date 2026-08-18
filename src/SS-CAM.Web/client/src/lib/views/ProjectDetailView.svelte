@@ -3,15 +3,12 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
-  import type { DeliverableItem, ProjectFrontmatter } from '$lib/types';
+  import type { DeliverableItem, ProjectFrontmatter, ProjectComment } from '$lib/types';
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
-  import FrontmatterPanel from '$lib/components/features/FrontmatterPanel.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
-  import type { ProjectComment } from '$lib/types';
 
   interface Props {
     projectId?: string;
@@ -19,15 +16,27 @@
 
   let { projectId = '' }: Props = $props();
 
-  let activeTab = $state<'brief' | 'metadata' | 'direction' | 'copy' | 'deliverables' | 'approvals' | 'comments'>('brief');
+  // View state
+  type MainCanvasView = 'brief' | 'copywriting' | 'deliverables' | 'direction';
+  let activeCanvasView = $state<MainCanvasView>('brief');
+  let inspectorTab = $state<'properties' | 'discussion'>('properties');
+  let inspectorOpen = $state<boolean>(true);
+
+  // Deliverables & Lightbox
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
-  let isApproving = $state<boolean>(false);
-  let projectComments = $state<ProjectComment[]>([]);
+  let isSubmittingDecision = $state<boolean>(false);
 
-  // Markdown and frontmatter local states
+  // Markdown Bodies & Frontmatter
   let currentReadmeBody = $state<string>('');
+  let currentCopyBody = $state<string>('');
+  let copyFilePath = $state<string>('');
+  let copyStats = $state<{ words: number; chars: number; readingTimeMin: number }>({ words: 0, chars: 0, readingTimeMin: 1 });
   let currentFrontmatter = $state<ProjectFrontmatter>({});
+  let projectComments = $state<ProjectComment[]>([]);
+  let isLoadingCopy = $state<boolean>(false);
+
+  const p = $derived(projectStore.selectedProject);
 
   onMount(async () => {
     const id = projectId || appState.routeParams.id;
@@ -49,48 +58,88 @@
         deadline: projectStore.selectedProject.deadline,
         priority: projectStore.selectedProject.priority,
         tags: projectStore.selectedProject.tags || [],
-        creative_direction: projectStore.selectedProject.creativeDirection,
-        copywriting: projectStore.selectedProject.copywriting
+        creative_direction: projectStore.selectedProject.creativeDirection || {}
       };
       projectComments = (projectStore.selectedProject as any).comments || [];
+    }
+
+    // Preload Copywriting Studio file
+    await loadCopywriting(id);
+  }
+
+  async function loadCopywriting(id: string) {
+    isLoadingCopy = true;
+    try {
+      const res = await ApiClient.getCopywritingMarkdown(id);
+      if (res && res.copywriting) {
+        currentCopyBody = res.copywriting.body || '';
+        copyFilePath = res.copywriting.filePath || '';
+        copyStats = res.copywriting.stats || { words: 0, chars: 0, readingTimeMin: 1 };
+      }
+    } catch (e) {
+      console.warn('[ProjectDetailView] loadCopywriting warning:', e);
+    } finally {
+      isLoadingCopy = false;
     }
   }
 
   async function saveMarkdownBrief(newBody: string) {
-    if (!projectStore.selectedProject) return;
+    if (!p) return;
     try {
-      const hash = projectStore.selectedProject.versionHash || null;
-      await ApiClient.updateBrief(projectStore.selectedProject.id, newBody, hash);
-      appState.addToast('Markdown brief saved to Synology NAS (README.md)', 'success');
+      const hash = p.versionHash || null;
+      await ApiClient.updateBrief(p.id, newBody, hash);
+      appState.addToast('Creative Brief saved to Synology NAS (README.md)', 'success');
       currentReadmeBody = newBody;
-      await loadProject(projectStore.selectedProject.id);
     } catch (err: any) {
       appState.addToast(`Failed to save brief: ${err.message}`, 'error');
     }
   }
 
-  async function saveFrontmatter(updatedFm: ProjectFrontmatter) {
-    if (!projectStore.selectedProject) return;
+  async function saveCopywritingMarkdown(newBody: string) {
+    if (!p) return;
     try {
-      await ApiClient.updateProject(projectStore.selectedProject.id, updatedFm);
-      appState.addToast('Metadata frontmatter saved to Synology NAS', 'success');
-      await loadProject(projectStore.selectedProject.id);
+      const res = await ApiClient.updateCopywritingMarkdown(p.id, newBody);
+      appState.addToast('Copywriting saved to NAS (03_COPYWRITING/COPY.md)', 'success');
+      currentCopyBody = newBody;
+      if (res.copywriting?.stats) {
+        copyStats = res.copywriting.stats;
+      }
     } catch (err: any) {
-      appState.addToast(`Failed to save metadata: ${err.message}`, 'error');
+      appState.addToast(`Failed to save copy: ${err.message}`, 'error');
+    }
+  }
+
+  async function updateStatus(newStatus: string) {
+    if (!p) return;
+    try {
+      await ApiClient.updateProject(p.id, { ...currentFrontmatter, status: newStatus as any });
+      currentFrontmatter.status = newStatus as any;
+      if (projectStore.selectedProject) {
+        projectStore.selectedProject.status = newStatus as any;
+      }
+      appState.addToast(`Project status updated to ${newStatus.toUpperCase()}`, 'info');
+    } catch (err: any) {
+      appState.addToast(`Failed to update status: ${err.message}`, 'error');
     }
   }
 
   async function handleQuickDecision(decision: 'approved' | 'revision_requested') {
-    if (!projectStore.selectedProject) return;
-    isApproving = true;
+    if (!p || isSubmittingDecision) return;
+    isSubmittingDecision = true;
     try {
-      await ApiClient.submitDecision(projectStore.selectedProject.id, { decision });
-      appState.addToast(`Project status updated to ${decision}`, 'success');
-      await loadProject(projectStore.selectedProject.id);
+      await ApiClient.submitDecision(p.id, {
+        decision,
+        comment: decision === 'approved' ? 'Formal manager approval via portal.' : 'Revisions requested on creative deliverables.'
+      });
+      appState.addToast(
+        decision === 'approved' ? '✅ Project Approved & Signed Off!' : '⚠️ Revision Requested recorded in audit log',
+        decision === 'approved' ? 'success' : 'warning'
+      );
+      await loadProject(p.id);
     } catch (err: any) {
-      appState.addToast(`Action failed: ${err.message}`, 'error');
+      appState.addToast(`Decision failed: ${err.message}`, 'error');
     } finally {
-      isApproving = false;
+      isSubmittingDecision = false;
     }
   }
 
@@ -100,229 +149,363 @@
   }
 </script>
 
-<div class="project-detail-container">
-  {#if projectStore.isLoading && !projectStore.selectedProject}
-    <div class="loading-state">Loading project workspace from Synology NAS...</div>
-  {:else if !projectStore.selectedProject}
-    <div class="error-state">
-      <p>Project not found or workspace could not be accessed.</p>
-      <FluentButton appearance="secondary" onclick={() => appState.navigate('projects')}>
-        ← Back to Projects Catalog
+<div class="clickup-task-container">
+  {#if projectStore.loadingDetail}
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading project workspace from Synology NAS…</p>
+    </div>
+  {:else if !p}
+    <div class="empty-state">
+      <h3>Project not found</h3>
+      <p>The requested creative directory does not exist or has been moved.</p>
+      <FluentButton appearance="primary" onclick={() => appState.navigate('projects')}>
+        Return to Catalog
       </FluentButton>
     </div>
   {:else}
-    {@const p = projectStore.selectedProject}
-
-    <!-- Detail Header -->
-    <div class="detail-header">
-      <div class="header-left">
-        <div class="header-chips">
-          <span class="job-id-tag">{p.jobId}</span>
-          <FluentBadge type="brand" value={p.brand} />
-          <FluentBadge type="status" value={p.status} />
-          <FluentBadge type="priority" value={p.priority} />
-        </div>
-        <h1 class="project-title">{p.title}</h1>
+    <!-- ═══════════ CLICKUP-STYLE TOP COMMAND HEADER ═══════════ -->
+    <header class="task-command-header">
+      <div class="task-breadcrumbs">
+        <span class="crumb-link" onclick={() => appState.navigate('projects')}>Projects</span>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-tag">{p.brand || 'SS'}</span>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">{p.jobId || p.id}</span>
       </div>
 
-      <div class="header-actions">
-        {#if appState.canApprove()}
+      <div class="task-headline-row">
+        <div class="headline-left">
+          <div class="job-badge">{p.jobId || p.id}</div>
+          <h1 class="task-title">{p.title}</h1>
+        </div>
+
+        <div class="headline-actions">
+          <!-- Status Dropdown Pill -->
+          <div class="status-selector-wrap">
+            <select
+              class="status-select status-{currentFrontmatter.status || 'review'}"
+              value={currentFrontmatter.status || 'review'}
+              onchange={(e) => updateStatus((e.target as HTMLSelectElement).value)}
+            >
+              <option value="backlog">⚪ Backlog</option>
+              <option value="in-progress">🔵 In Progress</option>
+              <option value="review">🟡 In Review</option>
+              <option value="revision">🔴 Revision Required</option>
+              <option value="approved">🟢 Approved</option>
+              <option value="done">🟣 Completed</option>
+            </select>
+          </div>
+
+          <!-- Quick Actions -->
           <FluentButton
-            appearance="danger"
-            size="md"
-            loading={isApproving}
-            onclick={() => handleQuickDecision('revision_requested')}
-          >
-            Request Revision
-          </FluentButton>
-          <FluentButton
-            appearance="success"
-            size="md"
-            loading={isApproving}
+            appearance="primary"
+            size="sm"
+            loading={isSubmittingDecision}
             onclick={() => handleQuickDecision('approved')}
           >
-            Approve Project
+            ✓ Sign-Off
           </FluentButton>
-        {:else}
-          <span class="badge badge-status-review">In Review Workflow</span>
-        {/if}
-      </div>
-    </div>
 
-    <!-- Navigation Tabs -->
-    <div class="tab-bar">
-      <button class="tab-item" class:active={activeTab === 'brief'} onclick={() => activeTab = 'brief'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-        <span>Markdown Brief & Diagram</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'metadata'} onclick={() => activeTab = 'metadata'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-        <span>Frontmatter Metadata</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'deliverables'} onclick={() => activeTab = 'deliverables'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-        <span>Deliverables ({projectStore.activeDeliverables.length})</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'direction'} onclick={() => activeTab = 'direction'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.36 19.64 10.63 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
-        <span>Creative Direction</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'copy'} onclick={() => activeTab = 'copy'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-        <span>Copywriting Studio</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'approvals'} onclick={() => activeTab = 'approvals'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-        <span>Approvals ({p.approvals?.length || 0})</span>
-      </button>
-      <button class="tab-item" class:active={activeTab === 'comments'} onclick={() => activeTab = 'comments'}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-        <span>Discussion ({projectComments.length})</span>
-      </button>
-    </div>
+          <FluentButton
+            appearance="secondary"
+            size="sm"
+            loading={isSubmittingDecision}
+            onclick={() => handleQuickDecision('revision_requested')}
+          >
+            ⚠️ Request Revision
+          </FluentButton>
 
-    <!-- Tab Content -->
-    <div class="tab-viewport">
-      {#if activeTab === 'brief'}
-        <!-- Obsidian-Style Markdown & Mermaid Live Editor -->
-        <MarkdownEditor
-          bind:value={currentReadmeBody}
-          onSave={saveMarkdownBrief}
-        />
-      {:else if activeTab === 'metadata'}
-        <!-- Frontmatter GUI Panel -->
-        <FrontmatterPanel
-          bind:frontmatter={currentFrontmatter}
-          onSave={saveFrontmatter}
-        />
-      {:else if activeTab === 'deliverables'}
-        <!-- Deliverables Grid -->
-        <div class="deliverables-section">
-          {#if projectStore.activeDeliverables.length === 0}
-            <FluentCard>
-              <div class="empty-deliverables">
-                <p>No output files found in <code>05_DELIVERABLES</code>.</p>
-              </div>
-            </FluentCard>
-          {:else}
-            <div class="deliverables-grid">
-              {#each projectStore.activeDeliverables as d}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div class="deliverable-item" onclick={() => openLightbox(d)}>
-                  <FluentCard hoverLift padding="12px">
-                    <div class="del-preview">
-                      {#if d.isImage}
-                        <img src={d.previewUrl} alt={d.filename} />
-                      {:else}
-                        <div class="doc-placeholder">{d.ext.toUpperCase()}</div>
-                      {/if}
-                    </div>
-                    <div class="del-info">
-                      <div class="del-name">{d.filename}</div>
-                      <div class="del-meta">{(d.sizeBytes / (1024 * 1024)).toFixed(2)} MB • {d.status}</div>
-                    </div>
-                  </FluentCard>
-                </div>
-              {/each}
-            </div>
-          {/if}
+          <!-- Toggle Inspector Button -->
+          <button
+            class="icon-toggle-btn"
+            class:active={inspectorOpen}
+            onclick={() => (inspectorOpen = !inspectorOpen)}
+            title="Toggle Right Inspector Panel"
+            aria-label="Toggle Right Inspector Panel"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM15 7h2v10h-2V7z"/>
+            </svg>
+          </button>
         </div>
-      {:else if activeTab === 'direction'}
-        <FluentCard>
-          <h3>Creative & Visual Direction</h3>
-          <p style="margin-bottom: 16px;">Set visual concepts, tone, and brand positioning.</p>
-          <div class="form-vertical">
-            <div>
-              <label class="form-label">Visual Concept / Style Direction</label>
-              <input
-                type="text"
-                class="form-input"
-                bind:value={currentFrontmatter.creative_direction!.visual_concept}
-                placeholder="e.g. Modern Bold Minimalist, Dark Neon Accent"
-              />
+      </div>
+
+      <!-- Segmented View Switcher -->
+      <div class="canvas-segmented-nav">
+        <button
+          class="canvas-nav-item"
+          class:active={activeCanvasView === 'brief'}
+          onclick={() => (activeCanvasView = 'brief')}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          <span>Creative Brief (README.md)</span>
+        </button>
+
+        <button
+          class="canvas-nav-item"
+          class:active={activeCanvasView === 'copywriting'}
+          onclick={() => (activeCanvasView = 'copywriting')}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          <span>Copywriting Studio (COPY.md)</span>
+          <span class="view-chip">{copyStats.words}w</span>
+        </button>
+
+        <button
+          class="canvas-nav-item"
+          class:active={activeCanvasView === 'deliverables'}
+          onclick={() => (activeCanvasView = 'deliverables')}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <span>Deliverables Gallery ({projectStore.activeDeliverables.length})</span>
+        </button>
+
+        <button
+          class="canvas-nav-item"
+          class:active={activeCanvasView === 'direction'}
+          onclick={() => (activeCanvasView = 'direction')}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.36 19.64 10.63 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+          <span>Creative Direction</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══════════ 2-COLUMN SPLIT WORKSPACE BODY ═══════════ -->
+    <div class="task-workspace-grid" class:inspector-closed={!inspectorOpen}>
+      <!-- ─── LEFT/MAIN CANVAS AREA (68%) ─── -->
+      <main class="main-document-canvas">
+        {#if activeCanvasView === 'brief'}
+          <!-- Creative Brief Markdown Editor with full toolbar -->
+          <MarkdownEditor
+            title="README.md"
+            saveLabel="Save Brief to NAS"
+            bind:value={currentReadmeBody}
+            onSave={saveMarkdownBrief}
+          />
+        {:else if activeCanvasView === 'copywriting'}
+          <!-- Dedicated Copywriting Studio Markdown Editor -->
+          {#if isLoadingCopy}
+            <div class="loading-state">Loading 03_COPYWRITING/COPY.md from NAS…</div>
+          {:else}
+            <MarkdownEditor
+              title="03_COPYWRITING / COPY.md"
+              saveLabel="Save Copy to NAS"
+              bind:value={currentCopyBody}
+              onSave={saveCopywritingMarkdown}
+            />
+          {/if}
+        {:else if activeCanvasView === 'deliverables'}
+          <!-- Deliverables Masonry Gallery -->
+          <div class="deliverables-gallery-container">
+            <div class="gallery-header">
+              <div class="gallery-title-group">
+                <h3>Production Output Assets</h3>
+                <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> on Synology NAS</span>
+              </div>
             </div>
-            <div>
-              <label class="form-label">Primary Color Palette Tokens</label>
-              <input
-                type="text"
-                class="form-input"
-                bind:value={currentFrontmatter.creative_direction!.color_palette}
-                placeholder="e.g. Prussian Blue #022057, SS Blue #043388"
-              />
-            </div>
-            <div>
-              <label class="form-label">Target Audience Notes</label>
-              <textarea
-                class="form-textarea"
-                bind:value={currentFrontmatter.creative_direction!.target_audience}
-              ></textarea>
-            </div>
-            <FluentButton appearance="primary" onclick={() => saveFrontmatter(currentFrontmatter)}>
-              Save Creative Direction
-            </FluentButton>
-          </div>
-        </FluentCard>
-      {:else if activeTab === 'copy'}
-        <FluentCard>
-          <h3>Copywriting & Ad Scripts</h3>
-          <p style="margin-bottom: 16px;">Manage ad headlines, hooks, and script transcripts.</p>
-          <div class="form-vertical">
-            <div>
-              <label class="form-label">Main Campaign Headline / Hook</label>
-              <input
-                type="text"
-                class="form-input"
-                bind:value={currentFrontmatter.copywriting!.headline}
-                placeholder="Enter primary hook"
-              />
-            </div>
-            <div>
-              <label class="form-label">Script Body / Ad Copy</label>
-              <textarea
-                class="form-textarea"
-                style="min-height: 140px;"
-                bind:value={currentFrontmatter.copywriting!.body_copy}
-              ></textarea>
-            </div>
-            <FluentButton appearance="primary" onclick={() => saveFrontmatter(currentFrontmatter)}>
-              Update Copywriting Studio
-            </FluentButton>
-          </div>
-        </FluentCard>
-      {:else if activeTab === 'approvals'}
-        <FluentCard>
-          <h3>Approval Sign-off Audit Trail</h3>
-          <div class="approvals-timeline">
-            {#each (p.approvals || []) as a}
-              <div class="approval-entry">
-                <div class="app-actor"><b>{a.actor}</b> ({a.role})</div>
-                <div class="app-decision status-{a.decision}">{a.decision.toUpperCase()}</div>
-                <div class="app-time">{new Date(a.timestamp).toLocaleString()}</div>
-                {#if a.comment}
-                  <div class="app-comment">"{a.comment}"</div>
-                {/if}
+
+            {#if projectStore.activeDeliverables.length === 0}
+              <div class="empty-gallery">
+                <div class="empty-icon">📂</div>
+                <p>No output files found in <code>05_DELIVERABLES</code>.</p>
+                <p class="empty-sub">Export assets from Photoshop, Illustrator, or Blender into the project folder.</p>
               </div>
             {:else}
-              <p class="empty-approvals">No formal approval decisions recorded yet.</p>
-            {/each}
+              <div class="deliverables-grid">
+                {#each projectStore.activeDeliverables as d}
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <div class="deliverable-card" onclick={() => openLightbox(d)}>
+                    <div class="del-preview-box">
+                      {#if d.isImage}
+                        <img src={d.previewUrl} alt={d.filename} loading="lazy" />
+                      {:else}
+                        <div class="doc-badge">{d.ext.toUpperCase()}</div>
+                      {/if}
+                      <span class="format-pill">{d.format}</span>
+                    </div>
+                    <div class="del-details">
+                      <div class="del-filename" title={d.filename}>{d.filename}</div>
+                      <div class="del-meta-row">
+                        <span>{(d.sizeBytes / (1024 * 1024)).toFixed(2)} MB</span>
+                        <span class="status-tag status-{d.status || 'review'}">{d.status || 'review'}</span>
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
-        </FluentCard>
-      {:else if activeTab === 'comments'}
-        <!-- In-Project Threaded Collaboration -->
-        <ProjectComments
-          projectId={p.id}
-          deliverables={projectStore.activeDeliverables}
-          bind:comments={projectComments}
-        />
+        {:else if activeCanvasView === 'direction'}
+          <!-- Creative Direction Panel -->
+          <FluentCard elevated>
+            <div class="form-section-header">
+              <h3>Creative & Visual Direction Matrix</h3>
+              <p>Core visual tone, typography mood, and brand guidelines for designers.</p>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="form-label">Visual Concept / Style Direction</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  bind:value={currentFrontmatter.creative_direction!.visual_concept}
+                  placeholder="e.g. Modern Bold Minimalist, Dark Neon Accent"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Primary Color Palette Tokens</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  bind:value={currentFrontmatter.creative_direction!.color_palette}
+                  placeholder="e.g. Prussian Blue #022057, SS Blue #043388, Gold #D4AF37"
+                />
+              </div>
+
+              <div class="form-field full-width">
+                <label class="form-label">Target Audience Demographics & Psychology</label>
+                <textarea
+                  class="form-textarea"
+                  rows="3"
+                  bind:value={currentFrontmatter.creative_direction!.target_audience}
+                  placeholder="Demographics, pain points, desired emotional response..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <FluentButton
+                appearance="primary"
+                onclick={async () => {
+                  await ApiClient.updateCreativeDirection(p.id, currentFrontmatter.creative_direction!);
+                  appState.addToast('Creative direction saved to README.md', 'success');
+                }}
+              >
+                Save Creative Direction
+              </FluentButton>
+            </div>
+          </FluentCard>
+        {/if}
+      </main>
+
+      <!-- ─── RIGHT INSPECTOR PANEL (32%) ─── -->
+      {#if inspectorOpen}
+        <aside class="task-inspector-panel">
+          <!-- Inspector Tabs -->
+          <div class="inspector-tabs">
+            <button
+              class="inspector-tab"
+              class:active={inspectorTab === 'properties'}
+              onclick={() => (inspectorTab = 'properties')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
+              <span>Properties</span>
+            </button>
+
+            <button
+              class="inspector-tab"
+              class:active={inspectorTab === 'discussion'}
+              onclick={() => (inspectorTab = 'discussion')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+              <span>Discussion ({projectComments.length})</span>
+            </button>
+          </div>
+
+          <div class="inspector-content">
+            {#if inspectorTab === 'properties'}
+              <!-- Properties Form -->
+              <div class="properties-sheet">
+                <div class="prop-group">
+                  <span class="prop-label">Assignee (Designer)</span>
+                  <div class="prop-value user-val">
+                    <div class="user-avatar">{p.designer?.substring(0, 2) || 'DS'}</div>
+                    <span class="user-name">{p.designerName || p.designer || 'Unassigned'}</span>
+                  </div>
+                </div>
+
+                <div class="prop-group">
+                  <span class="prop-label">Reviewer (Art Director)</span>
+                  <div class="prop-value user-val">
+                    <div class="user-avatar mgr-avatar">{p.manager?.substring(0, 2) || 'AD'}</div>
+                    <span class="user-name">{p.manager || 'Harussani'}</span>
+                  </div>
+                </div>
+
+                <div class="prop-group">
+                  <span class="prop-label">Corporate Brand / Subsidiary</span>
+                  <div class="prop-value">
+                    <span class="brand-chip">{p.brand || 'SS'}</span>
+                    <span class="brand-full">{p.client || 'SuamiSihat Enterprise'}</span>
+                  </div>
+                </div>
+
+                <div class="prop-group">
+                  <span class="prop-label">Priority Level</span>
+                  <div class="prop-value">
+                    <span class="priority-chip priority-{p.priority || 'medium'}">
+                      {p.priority || 'medium'}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="prop-group">
+                  <span class="prop-label">Campaign Deadline</span>
+                  <div class="prop-value">
+                    <span>📅 {p.deadline || '2026-08-30'}</span>
+                  </div>
+                </div>
+
+                <div class="prop-group">
+                  <span class="prop-label">Deliverables Storage</span>
+                  <div class="prop-value">
+                    <span>📁 <code>{projectStore.activeDeliverables.length} files</code></span>
+                  </div>
+                </div>
+
+                <!-- Approval Trail Summary -->
+                <div class="approvals-mini-section">
+                  <span class="prop-label">Recent Approvals & Sign-Offs</span>
+                  {#if p.approvals && p.approvals.length > 0}
+                    <div class="mini-app-list">
+                      {#each p.approvals.slice(0, 3) as a}
+                        <div class="mini-app-card decision-{a.decision}">
+                          <div class="mini-app-header">
+                            <span class="mini-app-decision">{a.decision.replace('_', ' ').toUpperCase()}</span>
+                            <span class="mini-app-time">{new Date(a.timestamp).toLocaleDateString()}</span>
+                          </div>
+                          <div class="mini-app-actor">{a.reviewer} ({a.role})</div>
+                        </div>
+                      {/each}
+                    </div>
+                  {:else}
+                    <p class="no-approvals-text">No approval records yet.</p>
+                  {/if}
+                </div>
+              </div>
+            {:else}
+              <!-- Threaded In-Project Comments inside Inspector -->
+              <ProjectComments
+                projectId={p.id}
+                deliverables={projectStore.activeDeliverables}
+                bind:comments={projectComments}
+              />
+            {/if}
+          </div>
+        </aside>
       {/if}
     </div>
 
-    <!-- Lightbox Modal -->
+    <!-- Deliverable Lightbox Modal -->
     <DeliverableLightbox
       deliverable={selectedDeliverable}
       bind:open={lightboxOpen}
-      onClose={() => lightboxOpen = false}
+      onClose={() => (lightboxOpen = false)}
       onApprove={async (d) => {
         await ApiClient.submitDecision(p.id, { decision: 'approved', deliverableId: d.id });
         appState.addToast(`Deliverable ${d.filename} approved`, 'success');
@@ -338,192 +521,507 @@
 </div>
 
 <style>
-  .project-detail-container {
+  .clickup-task-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
   }
 
-  .detail-header {
+  /* ═══ TASK COMMAND HEADER ══════════════════════════════════════ */
+  .task-command-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--surface-card-border);
+    flex-direction: column;
+    gap: 12px;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-lg, 12px);
+    padding: 16px 20px 0 20px;
+    box-shadow: var(--shadow-sm);
   }
 
-  .header-chips {
+  .task-breadcrumbs {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--text-tertiary);
   }
 
-  .job-id-tag {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--brand-accent);
+  .crumb-link {
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 600;
   }
-
-  .project-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--text-primary);
+  .crumb-link:hover { color: var(--text-brand, #043388); }
+  .crumb-sep { opacity: 0.4; }
+  .crumb-tag {
+    font-weight: 700;
+    color: var(--text-brand, #043388);
+    background: var(--brand-tint, #EBF4FE);
+    padding: 1px 6px;
+    border-radius: 4px;
   }
+  .crumb-current { font-weight: 600; color: var(--text-primary); }
 
-  .header-actions {
+  .task-headline-row {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .headline-left {
+    display: flex;
+    align-items: center;
     gap: 10px;
   }
 
-  .tab-bar {
+  .job-badge {
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-brand, #043388);
+    background: var(--brand-tint, #EBF4FE);
+    border: 1px solid #BFDBFE;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .task-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .headline-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+    border: 1px solid var(--surface-card-border);
+  }
+  .status-backlog { background: #F1F5F9; color: #475569; }
+  .status-in-progress { background: #EBF4FE; color: #043388; border-color: #BFDBFE; }
+  .status-review { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
+  .status-revision { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
+  .status-approved { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+  .status-done { background: #F3E8FF; color: #7E22CE; border-color: #E9D5FF; }
+
+  .icon-toggle-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--surface-card-border);
+    background: var(--bg-app);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .icon-toggle-btn:hover, .icon-toggle-btn.active {
+    background: var(--surface-card);
+    border-color: var(--brand-accent);
+    color: var(--text-primary);
+  }
+
+  /* Segmented Nav */
+  .canvas-segmented-nav {
     display: flex;
     gap: 4px;
-    border-bottom: 1px solid var(--surface-card-border);
+    border-top: 1px solid var(--surface-card-border);
+    padding-top: 6px;
     overflow-x: auto;
   }
 
-  .tab-item {
-    padding: 8px 16px;
+  .canvas-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
     border: none;
     background: transparent;
+    border-bottom: 2px solid transparent;
     font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-fast);
+    transition: all 0.14s;
+    font-family: inherit;
     white-space: nowrap;
   }
-
-  .tab-item:hover {
-    color: var(--text-primary);
-  }
-
-  .tab-item.active {
-    color: var(--brand-primary);
-    border-bottom-color: var(--brand-primary);
+  .canvas-nav-item:hover { color: var(--text-primary); }
+  .canvas-nav-item.active {
+    color: var(--brand-primary, #043388);
+    border-bottom-color: var(--brand-primary, #043388);
     font-weight: 700;
   }
 
-  [data-theme="metamorphosis"] .tab-item.active {
-    color: #00CFFF;
-    border-bottom-color: #00CFFF;
+  .view-chip {
+    font-size: 10px;
+    font-weight: 800;
+    background: var(--bg-app);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--text-tertiary);
   }
 
-  [data-theme="catppuccin"] .tab-item.active {
-    color: #CBA6F7;
-    border-bottom-color: #CBA6F7;
+  /* ═══ 2-COLUMN SPLIT WORKSPACE GRID ════════════════════════════ */
+  .task-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 16px;
+    align-items: start;
+    transition: grid-template-columns 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .task-workspace-grid.inspector-closed {
+    grid-template-columns: 1fr;
+  }
+
+  .main-document-canvas {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* Right Inspector Panel */
+  .task-inspector-panel {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: sticky;
+    top: 72px;
+    max-height: calc(100vh - 100px);
+  }
+
+  .inspector-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--surface-card-border);
+    background: var(--surface-card-subtle, #F8FAFC);
+  }
+
+  .inspector-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-family: inherit;
+  }
+  .inspector-tab:hover { color: var(--text-primary); }
+  .inspector-tab.active {
+    color: var(--brand-primary, #043388);
+    border-bottom-color: var(--brand-primary, #043388);
+    font-weight: 700;
+    background: var(--surface-card);
+  }
+
+  .inspector-content {
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  /* Properties Sheet */
+  .properties-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .prop-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--surface-card-border);
+  }
+
+  .prop-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .prop-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .user-val {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--brand-primary, #043388);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mgr-avatar { background: #0284C7; }
+
+  .brand-chip {
+    font-weight: 800;
+    font-size: 11px;
+    color: var(--text-brand, #043388);
+    background: var(--brand-tint, #EBF4FE);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .brand-full { font-size: 12px; color: var(--text-secondary); }
+
+  .priority-chip {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .priority-high { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+  .priority-medium { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+  .priority-low { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+
+  .approvals-mini-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  .mini-app-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mini-app-card {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--bg-app);
+    border: 1px solid var(--surface-card-border);
+  }
+  .mini-app-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .decision-approved .mini-app-decision { color: #047857; }
+  .decision-revision_requested .mini-app-decision { color: #B91C1C; }
+  .mini-app-time { font-size: 10px; color: var(--text-tertiary); font-weight: normal; }
+  .mini-app-actor { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .no-approvals-text { font-size: 12px; color: var(--text-tertiary); margin: 0; }
+
+  /* Deliverables Gallery */
+  .deliverables-gallery-container {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-lg, 12px);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .gallery-header {
+    margin-bottom: 16px;
+  }
+  .gallery-title-group h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 2px 0;
+  }
+  .gallery-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
   }
 
   .deliverables-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
   }
 
-  .deliverable-item {
+  .deliverable-card {
+    background: var(--surface-card-subtle, #F8FAFC);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 8px;
+    overflow: hidden;
     cursor: pointer;
+    transition: all 0.14s;
+    display: flex;
+    flex-direction: column;
+  }
+  .deliverable-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-accent);
+    box-shadow: var(--shadow-md);
   }
 
-  .del-preview {
+  .del-preview-box {
     height: 140px;
-    background: #000000;
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    background: var(--bg-app);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
   }
-
-  .del-preview img {
-    max-width: 100%;
-    max-height: 100%;
+  .del-preview-box img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 
-  .doc-placeholder {
-    font-size: 24px;
-    font-weight: 800;
-    color: #FFFFFF;
-    background: var(--brand-primary);
-    padding: 10px 18px;
+  .doc-badge {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--text-tertiary);
+    background: var(--surface-card);
+    padding: 8px 14px;
     border-radius: 6px;
+    border: 1px solid var(--surface-card-border);
   }
 
-  .del-name {
-    font-size: 13px;
+  .format-pill {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    font-size: 9.5px;
+    font-weight: 800;
+    background: rgba(0, 0, 0, 0.7);
+    color: #FFFFFF;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .del-details {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .del-filename {
+    font-size: 12.5px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  .del-meta {
-    font-size: 11.5px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
-
-  .form-vertical {
+  .del-meta-row {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 680px;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-tertiary);
   }
+
+  .status-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .empty-gallery {
+    text-align: center;
+    padding: 48px 16px;
+    background: var(--bg-app);
+    border-radius: 8px;
+    border: 1px dashed var(--surface-card-border);
+  }
+  .empty-gallery .empty-icon { font-size: 32px; margin-bottom: 8px; }
+  .empty-gallery p { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+  .empty-gallery .empty-sub { font-size: 12px; color: var(--text-secondary); margin: 0; }
+
+  /* Creative Direction Form */
+  .form-section-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0; }
+  .form-section-header p { font-size: 12px; color: var(--text-secondary); margin: 0 0 16px 0; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .form-field.full-width { grid-column: 1 / -1; }
 
   .form-label {
     display: block;
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
+    color: var(--text-primary);
     margin-bottom: 4px;
   }
 
   .form-input, .form-textarea {
     width: 100%;
-    padding: 8px 12px;
-    font-family: var(--font-family);
-    font-size: 13px;
-    color: var(--text-primary);
-    background: var(--surface-card);
+    padding: 8px 10px;
+    border-radius: 6px;
     border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
+    background: var(--bg-app);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    box-sizing: border-box;
     outline: none;
   }
-
-  .form-textarea {
-    min-height: 90px;
-    resize: vertical;
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--brand-accent);
   }
 
-  .approvals-timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 14px;
-  }
-
-  .approval-entry {
-    padding: 12px 16px;
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 12.5px;
-  }
-
-  .empty-deliverables, .empty-approvals, .loading-state, .error-state {
+  .loading-state, .empty-state {
     text-align: center;
-    padding: 40px 0;
+    padding: 64px 20px;
     color: var(--text-secondary);
+  }
+
+  @media (max-width: 860px) {
+    .task-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+    .task-inspector-panel {
+      position: static;
+      max-height: none;
+    }
   }
 </style>

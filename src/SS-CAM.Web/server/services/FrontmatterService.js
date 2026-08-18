@@ -31,11 +31,42 @@ class FrontmatterService {
       const raw = fs.readFileSync(readmePath, 'utf8');
       const versionHash = crypto.createHash('sha256').update(raw).digest('hex').substring(0, 12);
       const parsed = this.parseRawContent(raw);
+      let body = parsed.body;
+
+      if (!body || !body.trim()) {
+        const folderName = path.basename(projectFolderPath);
+        const titleMatch = folderName.replace(/^\d{6}_([A-Za-z0-9]+)_([A-Za-z0-9]+)_?/, '').replace(/_/g, ' ');
+        const cleanTitle = titleMatch || 'Creative Project Brief';
+
+        body = `# 🎨 ${cleanTitle}
+
+## 🎯 Campaign & Objective Overview
+Deliver high-converting visual assets, compliant packaging, and campaign creatives according to SuamiSihat brand standards.
+
+## 📋 Creative Deliverables & Milestones
+- [ ] 01. Packaging Box Dieline & Label (AI/PDF, CMYK 300 DPI)
+- [ ] 02. Product 3D Render & Mockup (PNG 4K transparent)
+- [ ] 03. Social Media Ad Carousel (1080x1080, 5 slides)
+- [ ] 04. Short-form Video Hook (9:16, 15s)
+
+## 🧭 Visual Direction & Brand Voice
+- **Tone**: Luxury, Trustworthy, Masculine, Premium Medical.
+- **Primary Palette**: Deep Royal Navy \`#043388\`, Gold Accent \`#D4AF37\`, Pure White \`#FFFFFF\`.
+
+## 📊 Production & Review Flow
+\`\`\`mermaid
+flowchart LR
+  Intake[📥 Intake & Brief] --> Concept[🎨 Concept & Dieline]
+  Concept --> Review[🔍 Art Director Review]
+  Review --> Approved[✅ Final Sign-Off]
+\`\`\`
+`;
+      }
 
       return {
         exists: true,
         frontmatter: parsed.frontmatter,
-        body: parsed.body,
+        body,
         versionHash
       };
     } catch (err) {
