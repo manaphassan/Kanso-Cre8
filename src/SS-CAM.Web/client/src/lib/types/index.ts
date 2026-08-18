@@ -181,3 +181,30 @@ export interface StaffAccount {
   password?: string;
 }
 
+export interface ProjectComment {
+  id: string;
+  projectId: string;
+  deliverableId?: string | null;
+  author: string;
+  authorRole: string;
+  authorAvatar?: string;
+  content: string;
+  mentions: string[];
+  timestamp: string;
+  resolved: boolean;
+  resolvedBy?: string | null;
+  resolvedAt?: string | null;
+}
+
+export interface ActivityNotification {
+  id: string;
+  type: 'mention' | 'comment' | 'revision' | 'approval' | 'system' | 'info';
+  title: string;
+  message: string;
+  timestamp: string;
+  actor: string;
+  role: string;
+  route: string;
+  routeId?: string;
+  unread: boolean;
+}

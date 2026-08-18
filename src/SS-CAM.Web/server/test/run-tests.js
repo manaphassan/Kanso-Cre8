@@ -285,6 +285,50 @@ This is the project brief content.
     TeamService.deleteStaffMember(testStaffId);
   });
 
+  // ─── TEST 13: CommentService & Collaboration Threads ────────────────
+  test('CommentService reads, writes, extracts @mentions, and resolves project comments', () => {
+    const CommentService = require('../services/CommentService');
+    const testProjectId = '0085D';
+    const testDir = path.join(__dirname, '..', '..', '..', 'Creative-Team', '2026', '202608_August', '202608_0085D_SS_Rejal_Premium_Packaging');
+
+    const newComment = CommentService.addComment(testDir, testProjectId, {
+      author: 'Haikal',
+      authorRole: 'User',
+      content: 'Updated the packaging dieline specs. @hasan @harussani please sign off!',
+      deliverableId: 'del_001'
+    });
+
+    assert.ok(newComment.id.startsWith('cmt_'), 'Comment ID must start with cmt_');
+    assert.strictEqual(newComment.author, 'Haikal');
+    assert.ok(newComment.mentions.includes('hasan'), 'Must extract @hasan mention');
+    assert.ok(newComment.mentions.includes('harussani'), 'Must extract @harussani mention');
+    assert.strictEqual(newComment.resolved, false);
+
+    // Retrieve comments
+    const allComments = CommentService.getComments(testDir, testProjectId);
+    assert.ok(allComments.length >= 1, 'Must contain at least 1 comment');
+    assert.ok(allComments.some(c => c.id === newComment.id), 'Must find created comment');
+
+    // Resolve comment
+    const resolveResult = CommentService.resolveComment(testDir, testProjectId, newComment.id, true, 'Hasan', 'Admin');
+    assert.strictEqual(resolveResult.resolved, true);
+
+    const updatedComments = CommentService.getComments(testDir, testProjectId);
+    const resolvedItem = updatedComments.find(c => c.id === newComment.id);
+    assert.ok(resolvedItem && resolvedItem.resolved, 'Comment must be marked resolved');
+
+    // Delete comment
+    const deleteResult = CommentService.deleteComment(testDir, testProjectId, newComment.id, 'Haikal', 'User');
+    assert.strictEqual(deleteResult.success, true);
+  });
+
+  // ─── TEST 14: Activity Notifications & Mentions ─────────────────────
+  test('CommentService aggregates workspace activity & notification feed', () => {
+    const CommentService = require('../services/CommentService');
+    const notifs = CommentService.getNotifications('hasan', 10);
+    assert.ok(Array.isArray(notifs), 'Notifications must return an array');
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

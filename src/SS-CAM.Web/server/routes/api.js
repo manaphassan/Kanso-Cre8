@@ -12,6 +12,7 @@ const CopywritingService = require('../services/CopywritingService');
 const TeamService = require('../services/TeamService');
 const AuditService = require('../services/AuditService');
 const CompanyService = require('../services/CompanyService');
+const CommentService = require('../services/CommentService');
 
 // ─── AUTHENTICATION ROUTES ──────────────────────────────────────────
 
@@ -119,12 +120,91 @@ router.get('/projects/:id', authenticateToken, (req, res) => {
 
     const deliverables = DeliverableService.getProjectDeliverables(project.fullPath);
     const auditLogs = AuditService.getLogs({ entityId: project.jobId || project.id, limit: 20 });
+    const comments = CommentService.getComments(project.fullPath, project.jobId || project.id);
 
     res.json({
       project,
       deliverables,
-      auditLogs
+      auditLogs,
+      comments
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── PROJECT COMMENTS & COLLABORATION ────────────────────────────────
+
+router.get('/projects/:id/comments', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const comments = CommentService.getComments(project ? project.fullPath : null, req.params.id);
+    res.json({ comments });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/projects/:id/comments', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const { content, deliverableId, mentions } = req.body;
+    const comment = CommentService.addComment(project ? project.fullPath : null, req.params.id, {
+      author: req.user ? req.user.name : 'Designer',
+      authorRole: req.user ? req.user.role : 'User',
+      authorAvatar: req.user ? req.user.avatarColor || '#043388' : '#043388',
+      content,
+      deliverableId,
+      mentions
+    });
+    res.status(201).json({ success: true, comment });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.patch('/projects/:id/comments/:commentId/resolve', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const { resolved = true } = req.body;
+    const result = CommentService.resolveComment(
+      project ? project.fullPath : null,
+      req.params.id,
+      req.params.commentId,
+      resolved,
+      req.user ? req.user.name : 'System',
+      req.user ? req.user.role : 'User'
+    );
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/projects/:id/comments/:commentId', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const result = CommentService.deleteComment(
+      project ? project.fullPath : null,
+      req.params.id,
+      req.params.commentId,
+      req.user ? req.user.name : 'System',
+      req.user ? req.user.role : 'User'
+    );
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─── LIVE ACTIVITY & NOTIFICATIONS ───────────────────────────────────
+
+router.get('/notifications', authenticateToken, (req, res) => {
+  try {
+    const username = req.user ? req.user.username : '';
+    const limit = parseInt(req.query.limit, 10) || 25;
+    const notifications = CommentService.getNotifications(username, limit);
+    res.json({ notifications, unreadCount: notifications.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

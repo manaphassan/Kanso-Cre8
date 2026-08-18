@@ -2346,16 +2346,18 @@
     text-transform: uppercase;
     display: inline-block;
   }
-  .role-admin { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
-  .role-manager { background: rgba(217, 119, 6, 0.15); color: #D97706; }
-  .role-user { background: rgba(33, 161, 247, 0.15); color: #21A1F7; }
+  .role-admin { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+  .role-manager { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+  .role-user { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; font-weight: 700; }
 
   .dept-text { font-size: 12px; color: var(--text-secondary); }
   .brand-tag {
     font-family: monospace;
     font-size: 11px;
-    background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
+    font-weight: 700;
+    background: #EBF4FE;
+    color: #043388;
+    border: 1px solid #BFDBFE;
     padding: 1px 6px;
     border-radius: 4px;
   }
@@ -2368,8 +2370,8 @@
     border-radius: 4px;
     display: inline-block;
   }
-  .status-active { background: rgba(16, 124, 65, 0.15); color: #107C41; }
-  .status-inactive { background: rgba(100, 116, 139, 0.15); color: #64748B; }
+  .status-active { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+  .status-inactive { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
 
   .table-actions {
     display: inline-flex;
@@ -2424,7 +2426,7 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: var(--brand-accent, #21A1F7);
+    background: var(--brand-primary, #043388);
     color: #FFFFFF;
     font-weight: 800;
     font-size: 11.5px;
@@ -2448,10 +2450,10 @@
     border-radius: 4px;
     display: inline-block;
   }
-  .action-success { background: rgba(16, 124, 65, 0.15); color: #107C41; }
-  .action-warning { background: rgba(217, 119, 6, 0.15); color: #D97706; }
-  .action-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
-  .action-info { background: rgba(33, 161, 247, 0.15); color: #21A1F7; }
+  .action-success { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+  .action-warning { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+  .action-danger { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+  .action-info { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; }
 
   .entity-type-badge {
     font-size: 11px;

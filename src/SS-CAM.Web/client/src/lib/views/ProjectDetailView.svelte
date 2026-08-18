@@ -10,6 +10,8 @@
   import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
   import FrontmatterPanel from '$lib/components/features/FrontmatterPanel.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
+  import ProjectComments from '$lib/components/features/ProjectComments.svelte';
+  import type { ProjectComment } from '$lib/types';
 
   interface Props {
     projectId?: string;
@@ -17,10 +19,11 @@
 
   let { projectId = '' }: Props = $props();
 
-  let activeTab = $state<'brief' | 'metadata' | 'direction' | 'copy' | 'deliverables' | 'approvals'>('brief');
+  let activeTab = $state<'brief' | 'metadata' | 'direction' | 'copy' | 'deliverables' | 'approvals' | 'comments'>('brief');
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
   let isApproving = $state<boolean>(false);
+  let projectComments = $state<ProjectComment[]>([]);
 
   // Markdown and frontmatter local states
   let currentReadmeBody = $state<string>('');
@@ -49,6 +52,7 @@
         creative_direction: projectStore.selectedProject.creativeDirection,
         copywriting: projectStore.selectedProject.copywriting
       };
+      projectComments = (projectStore.selectedProject as any).comments || [];
     }
   }
 
@@ -170,6 +174,10 @@
       <button class="tab-item" class:active={activeTab === 'approvals'} onclick={() => activeTab = 'approvals'}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
         <span>Approvals ({p.approvals?.length || 0})</span>
+      </button>
+      <button class="tab-item" class:active={activeTab === 'comments'} onclick={() => activeTab = 'comments'}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+        <span>Discussion ({projectComments.length})</span>
       </button>
     </div>
 
@@ -300,6 +308,13 @@
             {/each}
           </div>
         </FluentCard>
+      {:else if activeTab === 'comments'}
+        <!-- In-Project Threaded Collaboration -->
+        <ProjectComments
+          projectId={p.id}
+          deliverables={projectStore.activeDeliverables}
+          bind:comments={projectComments}
+        />
       {/if}
     </div>
 

@@ -15,6 +15,7 @@ class AppStateStore {
   isRescanning = $state<boolean>(false);
   globalSearch = $state<string>('');
   notificationCount = $state<number>(0);
+  notificationDrawerOpen = $state<boolean>(false);
   userMenuOpen = $state<boolean>(false);
   contextDrawerOpen = $state<boolean>(false);
 
@@ -89,8 +90,20 @@ class AppStateStore {
     try {
       const res = await ApiClient.getMe();
       this.currentUser = res.user;
+      this.loadNotificationCount();
     } catch {
       this.currentUser = null;
+    }
+  }
+
+  async loadNotificationCount() {
+    try {
+      const res = await ApiClient.getNotifications(20);
+      if (res && typeof res.unreadCount === 'number') {
+        this.notificationCount = res.unreadCount;
+      }
+    } catch (e) {
+      // Non-critical
     }
   }
 

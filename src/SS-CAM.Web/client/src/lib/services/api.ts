@@ -230,6 +230,36 @@ export class ApiClient {
     });
   }
 
+  // ─── Project Comments & Collaboration ───
+  static getComments(projectId: string): Promise<{ comments: any[] }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`);
+  }
+
+  static addComment(projectId: string, content: string, deliverableId?: string | null, mentions: string[] = []): Promise<{ success: boolean; comment: any }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ content, deliverableId, mentions })
+    });
+  }
+
+  static resolveComment(projectId: string, commentId: string, resolved: boolean = true): Promise<{ success: boolean; commentId: string; resolved: boolean }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}/resolve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ resolved })
+    });
+  }
+
+  static deleteComment(projectId: string, commentId: string): Promise<{ success: boolean; commentId: string }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  // ─── Notifications & Live Activity ───
+  static getNotifications(limit: number = 25): Promise<{ notifications: any[]; unreadCount: number }> {
+    return this.request(`/notifications?limit=${limit}`);
+  }
+
   // ─── Audit & System ───
   static getAuditLogs(params: Record<string, string> = {}): Promise<{ logs: any[] }> {
     const searchParams = new URLSearchParams(params);
@@ -240,4 +270,5 @@ export class ApiClient {
     return this.request('/system/status');
   }
 }
+
 

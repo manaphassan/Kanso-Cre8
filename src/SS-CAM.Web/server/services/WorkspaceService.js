@@ -451,7 +451,7 @@ class WorkspaceService {
     }
 
     // Default sort: newest / highest priority first
-    list.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+    list.sort((a, b) => String(b.created || '').localeCompare(String(a.created || '')));
     return list;
   }
 
