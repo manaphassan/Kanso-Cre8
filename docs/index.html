@@ -39,9 +39,9 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.6.1/SS-CAM-v3.6.1.exe" class="btn-primary-white btn-sm" id="nav-cta">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-primary-white btn-sm" id="nav-cta">
           <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
-          Download v3.6.1
+          Download v4.0.0
         </a>
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
           <span></span><span></span><span></span>
@@ -59,7 +59,7 @@
       
       <div class="hero-eyebrow">
         <span class="badge-dot"></span>
-        <span>SuamiSihat™ Designer Companion &amp; Second Brain</span>
+        <span>SuamiSihat™ Designer Companion &amp; Second Brain • v4.0.0 Stable</span>
       </div>
 
       <h1 class="hero-title reveal">
@@ -68,28 +68,32 @@
       </h1>
 
       <p class="hero-subtitle reveal">
-        The official Windows desktop workstation suite for SuamiSihat designers. Standardize folder creation, inspect live brand colors, master campaign tasks, and nurture creative mental health.
+        The official cross-platform workstation suite for SuamiSihat creative designers. Standardize studio folder structures, inspect brand swatches, collaborate in ClickUp 3.0 workspaces, and power video copywriting.
       </p>
 
       <div class="hero-actions reveal">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.6.1/SS-CAM-v3.6.1.exe" class="btn-hero-primary" id="hero-download">
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-hero-primary" id="hero-download">
           <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.25rem;"></iconify-icon>
-          Download SS-CAM v3.6.1
-          <span class="btn-subtext">(~5 MB • Single-File Exe)</span>
+          Download SS-CAM v4.0.0 (Windows)
+          <span class="btn-subtext">(~5.2 MB • Single-File Exe)</span>
+        </a>
+        <a href="#fedora-install" class="btn-hero-secondary">
+          <iconify-icon icon="fluent:desktop-24-regular" style="font-size:1.25rem;"></iconify-icon>
+          Linux &amp; Web Options
         </a>
       </div>
 
       <!-- Fluent Trust Badges -->
       <div class="hero-badges reveal">
-        <span class="hero-badge-item"><iconify-icon icon="fluent:checkmark-circle-24-regular"></iconify-icon> Windows 10/11 &amp; Fedora Linux Native</span>
+        <span class="hero-badge-item"><iconify-icon icon="fluent:checkmark-circle-24-regular"></iconify-icon> Windows 10/11 &amp; Linux Native</span>
         <span class="hero-badge-item"><iconify-icon icon="fluent:flash-24-regular"></iconify-icon> Zero Installation Setup</span>
-        <span class="hero-badge-item"><iconify-icon icon="fluent:shield-checkmark-24-regular"></iconify-icon> 100% DPAPI Encrypted</span>
+        <span class="hero-badge-item"><iconify-icon icon="fluent:folder-sync-24-regular"></iconify-icon> Synology NAS Realtime Sync</span>
       </div>
 
       <!-- Main App Showcase 3D Viewport -->
       <div class="hero-viewport tilt-3d reveal" id="hero-viewport-frame">
         <div class="viewport-header">
-          <div class="window-title">SuamiSihat Creative Assets Management v3.6.1</div>
+          <div class="window-title">SuamiSihat Creative Assets Management v4.0.0</div>
           <div class="window-controls">
             <span class="win-btn min">─</span>
             <span class="win-btn max">▢</span>
@@ -335,56 +339,58 @@
         </div>
       </div>
     </div>
-  <!-- Fedora Linux Installation Setup Section -->
+  <!-- Linux & Multi-Platform Installation Setup Section -->
   <section class="fedora-section" id="fedora-install">
     <div class="section-container">
       <div class="section-heading reveal">
-        <span class="section-tag gold-text">MULTI-PLATFORM DESKTOP</span>
-        <h2 class="section-title">Native Fedora Linux Setup.</h2>
-        <p class="section-sub">SS-CAM runs natively on Fedora Linux (Wayland / X11) powered by Avalonia UI &amp; .NET 8.</p>
+        <span class="section-tag gold-text">MULTI-PLATFORM DESKTOP &amp; SERVER</span>
+        <h2 class="section-title">Linux &amp; Web Platform Setup.</h2>
+        <p class="section-sub">Deploy SS-CAM across Linux workstations (Fedora, Ubuntu, Debian, Pop!_OS) and Synology NAS Docker.</p>
       </div>
 
       <div class="fedora-card-grid reveal">
         <!-- Terminal Command Quickstart Card -->
         <div class="fedora-card">
           <div class="fedora-card-header">
-            <iconify-icon icon="simple-icons:fedora" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
+            <iconify-icon icon="fluent:terminal-24-regular" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
             <div>
-              <h3 class="fedora-card-title">Option A: Fedora Terminal Launch</h3>
-              <p class="fedora-card-sub">Run directly from repository via .NET 8 CLI</p>
+              <h3 class="fedora-card-title">Option A: One-Line Linux Installer</h3>
+              <p class="fedora-card-sub">Installs binary to /opt/ss-cam and adds desktop application menu launcher</p>
             </div>
           </div>
           <div class="code-terminal-box">
             <div class="terminal-bar">
               <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-              <span class="t-title">bash — fedora@workstation</span>
+              <span class="t-title">bash — linux@workstation</span>
             </div>
-            <pre class="code-block"><code><span class="c-comment"># 1. Clone SS-CAM repository</span>
-git clone https://github.com/SuamiSihat/ss_cam.git
-<span class="c-comment"># 2. Launch native Linux desktop app</span>
-dotnet run --project src/SS-CAM.Linux/SS-CAM.Linux.csproj</code></pre>
+            <pre class="code-block"><code><span class="c-comment"># Install in 1-command via automated bash installer</span>
+curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash
+
+<span class="c-comment"># Launch from terminal anywhere:</span>
+ss-cam</code></pre>
           </div>
         </div>
 
-        <!-- RPM / AppImage Package Card -->
+        <!-- Web Portal Docker Card -->
         <div class="fedora-card">
           <div class="fedora-card-header">
-            <iconify-icon icon="fluent:box-24-regular" style="font-size:1.8rem; color:#21A1F7;"></iconify-icon>
+            <iconify-icon icon="fluent:globe-24-regular" style="font-size:1.8rem; color:#21A1F7;"></iconify-icon>
             <div>
-              <h3 class="fedora-card-title">Option B: Fedora RPM Package</h3>
-              <p class="fedora-card-sub">Install standalone RPM package for GNOME / Wayland</p>
+              <h3 class="fedora-card-title">Option B: Synology NAS Docker Web Portal</h3>
+              <p class="fedora-card-sub">Collaborative portal with ClickUp workspace &amp; Copywriting Studio</p>
             </div>
           </div>
           <div class="code-terminal-box">
             <div class="terminal-bar">
               <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-              <span class="t-title">sudo dnf install</span>
+              <span class="t-title">docker compose — Synology NAS</span>
             </div>
-            <pre class="code-block"><code><span class="c-comment"># Install native RPM package on Fedora Workstation</span>
-sudo dnf install ./SS-CAM.Linux-v3.5.0-x86_64.rpm
+            <pre class="code-block"><code><span class="c-comment"># Host directly on Synology NAS / Linux Server</span>
+git clone https://github.com/SuamiSihat/ss_cam.git
+cd ss_cam/src/SS-CAM.Web
+docker compose up -d --build
 
-<span class="c-comment"># Synology Drive Client target auto-links to:</span>
-<span class="c-path">~/SynologyDrive/</span></code></pre>
+<span class="c-comment"># Access portal: https://creative.suamisihat.myds.me</span></code></pre>
           </div>
         </div>
       </div>
@@ -400,12 +406,12 @@ sudo dnf install ./SS-CAM.Linux-v3.5.0-x86_64.rpm
       </div>
 
       <div class="specs-box reveal">
-        <div class="spec-row"><span class="spec-k">OS</span><span class="spec-v">Windows 10/11 (x64) &amp; Fedora Linux (Wayland / X11)</span></div>
-        <div class="spec-row"><span class="spec-k">Framework</span><span class="spec-v">C# WPF (.NET Framework 4.8) &amp; Avalonia UI (.NET 8 Native Linux)</span></div>
-        <div class="spec-row"><span class="spec-k">Executable</span><span class="spec-v">True Single-File Executable (~5 MB, Costura/Fody)</span></div>
-        <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 (WPF-UI, Segoe Fluent Icons)</span></div>
-        <div class="spec-row"><span class="spec-k">Data Protection</span><span class="spec-v">Windows DPAPI Encryption (100% Offline Data Safety)</span></div>
-        <div class="spec-row"><span class="spec-k">Network Sync</span><span class="spec-v">Synology Drive / SSNAS auto-discovery & NAS health probe</span></div>
+        <div class="spec-row"><span class="spec-k">OS Support</span><span class="spec-v">Windows 10/11 (x64), Linux (Fedora, Ubuntu, Debian, Arch), Docker / Synology NAS</span></div>
+        <div class="spec-row"><span class="spec-k">Architecture</span><span class="spec-v">C# WPF (.NET Framework 4.8) Desktop + Node.js/Svelte 5 Web Portal</span></div>
+        <div class="spec-row"><span class="spec-k">Executable</span><span class="spec-v">True Single-File Executable (~5.2 MB, Zero Runtime Install)</span></div>
+        <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 &amp; SuamiSihat Official 60:30:10 Design Tokens</span></div>
+        <div class="spec-row"><span class="spec-k">Database</span><span class="spec-v">Markdown &amp; JSONL as Database (100% Synology NAS Realtime Native)</span></div>
+        <div class="spec-row"><span class="spec-k">Network Sync</span><span class="spec-v">Synology Drive / \\SSNAS\Creative-Team realtime file watching</span></div>
       </div>
     </div>
   </section>
@@ -415,11 +421,17 @@ sudo dnf install ./SS-CAM.Linux-v3.5.0-x86_64.rpm
     <div class="section-container">
       <div class="cta-card gold-border-card reveal">
         <h2 class="cta-title">Upgrade Your Creative Environment.</h2>
-        <p class="cta-sub">Download SS-CAM v3.6.1 today — zero installer required.</p>
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v3.6.1/SS-CAM-v3.6.1.exe" class="btn-hero-primary btn-xl">
-          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
-          Download SS-CAM v3.6.1 (.exe)
-        </a>
+        <p class="cta-sub">Download SS-CAM v4.0.0 today — zero installer required.</p>
+        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+          <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-hero-primary btn-xl">
+            <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
+            Download SS-CAM v4.0.0 (.exe)
+          </a>
+          <a href="https://github.com/SuamiSihat/ss_cam/releases/tag/v4.0.0" class="btn-hero-secondary btn-xl" target="_blank" rel="noreferrer">
+            <iconify-icon icon="fluent:open-24-regular" style="font-size:1.3rem;"></iconify-icon>
+            View All Platform Releases
+          </a>
+        </div>
       </div>
     </div>
   </section>
