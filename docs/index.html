@@ -3,64 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SS-CAM — SuamiSihat™ Creative Assets Management & Operations Suite</title>
+  <title>SS-CAM — SuamiSihat™ Creative Assets Management v4.0.0</title>
   <meta name="description" content="Official enterprise creative operations and assets management suite for SuamiSihat creative designers, copywriters, and directors. Standardized project vaults, ClickUp 2-column workspace, Copywriting Studio, and multi-platform deployment.">
   <meta name="theme-color" content="#022057">
-  
-  <!-- Google Fonts: Inter & Outfit -->
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Iconify for Segoe Fluent Icons -->
-  <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@3/dist/iconify.min.js" defer></script>
-  
+
+  <!-- Iconify CDN -->
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Translucent Header matching SuamiSihat Design System -->
+  <!-- ════════════════════════════════════════════════════════════════
+       STICKY ACRYLIC TOPBAR — matches components.html nav style
+       ════════════════════════════════════════════════════════════════ -->
   <header class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#" class="brand-logo">
+      <a href="#" class="brand-logo" aria-label="SS-CAM Home">
         <img src="https://assets.suamisihat.myds.me/public/brand/logos/ss-logomark-light.svg" class="logo-img" alt="SuamiSihat™ Logo">
         <div class="brand-text-group">
           <span class="brand-name">SuamiSihat™ SS-CAM</span>
           <span class="brand-tagline">Creative Operations Suite</span>
         </div>
+        <span class="nav-version-badge">v4.0.0</span>
       </a>
 
-      <nav class="nav-links" id="nav-menu">
-        <a href="#features" class="nav-item">Pillars</a>
-        <a href="#design-rules" class="nav-item">Design Rules</a>
-        <a href="#showcase" class="nav-item">App Tour</a>
-        <a href="#download-v4" class="nav-item">Download v4</a>
-        <a href="#wellbeing" class="nav-item">Wellbeing</a>
-        <a href="#specs" class="nav-item">Specs</a>
+      <nav class="nav-links" id="nav-menu" aria-label="Main navigation">
+        <a href="#pillars"      class="nav-item"><iconify-icon icon="fluent:home-24-regular"></iconify-icon>Pillars</a>
+        <a href="#design-rules" class="nav-item"><iconify-icon icon="fluent:color-background-24-regular"></iconify-icon>Design Rules</a>
+        <a href="#showcase"     class="nav-item"><iconify-icon icon="fluent:phone-laptop-24-regular"></iconify-icon>App Tour</a>
+        <a href="#download-v4"  class="nav-item"><iconify-icon icon="fluent:arrow-download-24-regular"></iconify-icon>Download</a>
+        <a href="#wellbeing"    class="nav-item"><iconify-icon icon="fluent:heart-pulse-24-regular"></iconify-icon>Wellbeing</a>
+        <a href="#specs"        class="nav-item"><iconify-icon icon="fluent:settings-24-regular"></iconify-icon>Specs</a>
       </nav>
 
       <div class="nav-actions">
-        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-primary-white btn-sm" id="nav-cta">
-          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
-          Download v4.0.0
+        <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe"
+           class="btn-nav-primary" id="nav-cta">
+          <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1rem;"></iconify-icon>
+          Download v4
         </a>
-        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section with Animated Particle Canvas -->
-  <section class="hero-section">
+  <!-- ════════════════════════════════════════════════════════════════
+       HERO — full-bleed dark branded section (above the sidebar layout)
+       ════════════════════════════════════════════════════════════════ -->
+  <section class="hero-section" id="hero">
     <canvas id="heroWaveCanvas" class="hero-wave-canvas"></canvas>
     <div class="hero-ambient-glow"></div>
 
     <div class="section-container">
-      
+
       <div class="hero-eyebrow">
         <span class="badge-dot"></span>
-        <span>SuamiSihat™ Creative Assets Management • v4.0.0 Stable</span>
+        <span>SuamiSihat™ Creative Assets Management&nbsp;•&nbsp;v4.0.0 Stable</span>
       </div>
 
       <h1 class="hero-title reveal">
@@ -79,19 +85,19 @@
           <span class="btn-subtext">(~5.2 MB • Portable Single-File Exe)</span>
         </a>
         <a href="#download-v4" class="btn-hero-secondary">
-          <iconify-icon icon="fluent:desktop-24-regular" style="font-size:1.25rem;"></iconify-icon>
+          <iconify-icon icon="fluent:desktop-24-regular" style="font-size:1.15rem;"></iconify-icon>
           Linux &amp; Web Options
         </a>
       </div>
 
-      <!-- Fluent Trust Badges -->
+      <!-- Trust badges -->
       <div class="hero-badges reveal">
         <span class="hero-badge-item"><iconify-icon icon="fluent:checkmark-circle-24-regular"></iconify-icon> Windows &amp; Linux Workstations</span>
         <span class="hero-badge-item"><iconify-icon icon="fluent:flash-24-regular"></iconify-icon> Zero Installation Required</span>
         <span class="hero-badge-item"><iconify-icon icon="fluent:folder-sync-24-regular"></iconify-icon> Synology NAS Realtime Native</span>
       </div>
 
-      <!-- Main App Showcase 3D Viewport -->
+      <!-- 3D viewport frame -->
       <div class="hero-viewport tilt-3d reveal" id="hero-viewport-frame">
         <div class="viewport-header">
           <div class="window-title">SuamiSihat Creative Assets Management — Production Dashboard v4.0.0</div>
@@ -109,7 +115,9 @@
     </div>
   </section>
 
-  <!-- Metrics Bar -->
+  <!-- ════════════════════════════════════════════════════════════════
+       METRICS BAR
+       ════════════════════════════════════════════════════════════════ -->
   <section class="metrics-bar">
     <div class="section-container">
       <div class="metrics-grid">
@@ -119,7 +127,7 @@
         </div>
         <div class="metric-item reveal">
           <div class="metric-num">&lt;2 sec</div>
-          <div class="metric-desc">Standard Folder Generation</div>
+          <div class="metric-desc">Folder Generation Time</div>
         </div>
         <div class="metric-item reveal">
           <div class="metric-num">5 Folders</div>
@@ -127,416 +135,513 @@
         </div>
         <div class="metric-item reveal">
           <div class="metric-num">100%</div>
-          <div class="metric-desc">On-Premise NAS Data Ownership</div>
+          <div class="metric-desc">On-Premise Data Ownership</div>
+        </div>
+        <div class="metric-item reveal">
+          <div class="metric-num">4 Roles</div>
+          <div class="metric-desc">RBAC Role Tiers</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Core Pillars Section -->
-  <section class="pillars-section" id="features">
-    <div class="section-container">
-      <div class="section-heading reveal">
-        <span class="section-tag">CORE CAPABILITIES</span>
-        <h2 class="section-title">Engineered for High-Velocity Creative Studios.</h2>
-        <p class="section-sub">Eliminating organizational friction, fragmented files, and uncoordinated revision cycles.</p>
+  <!-- ════════════════════════════════════════════════════════════════
+       TWO-COLUMN SIDEBAR LAYOUT — starts below hero
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="f-page-layout" id="page-layout">
+
+    <!-- Sidebar toggle button -->
+    <button class="f-sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+      <iconify-icon icon="fluent:chevron-left-16-regular"></iconify-icon>
+    </button>
+
+    <!-- ── Left Sidebar Navigation ── -->
+    <nav class="f-sidebar" id="f-sidebar" aria-label="Page navigation">
+
+      <div class="cl-sidebar-section">
+        <span class="cl-sidebar-label">Product</span>
+        <a href="#pillars"     class="cl-sidebar-link active" id="slink-pillars">
+          <iconify-icon icon="fluent:grid-24-regular"></iconify-icon> Core Pillars
+        </a>
+        <a href="#design-rules" class="cl-sidebar-link" id="slink-design-rules">
+          <iconify-icon icon="fluent:color-background-24-regular"></iconify-icon> Design Governance
+        </a>
+        <a href="#showcase"    class="cl-sidebar-link" id="slink-showcase">
+          <iconify-icon icon="fluent:phone-laptop-24-regular"></iconify-icon> App Tour
+        </a>
       </div>
 
-      <div class="pillars-grid">
-        
-        <div class="pillar-card reveal">
-          <div class="pillar-icon-box"><iconify-icon icon="fluent:folder-open-24-regular"></iconify-icon></div>
-          <div class="pillar-num">01</div>
-          <h3 class="pillar-title">5-Folder Vault Hierarchy</h3>
-          <p class="pillar-body">Automates sequential job IDs (<code>YYYYMM_NNNNX_BRAND_Title</code>) with strict subfolder structure (Brief, Source, Copy, WIP, Deliverables) across Synology NAS.</p>
-        </div>
+      <div class="cl-divider"></div>
 
-        <div class="pillar-card reveal">
-          <div class="pillar-icon-box"><iconify-icon icon="fluent:board-split-24-regular"></iconify-icon></div>
-          <div class="pillar-num">02</div>
-          <h3 class="pillar-title">ClickUp 3.0-Style Workspace</h3>
-          <p class="pillar-body">Split Markdown brief canvas with live preview and collapsible Right Inspector Panel for campaign metadata, assignee routing, and deliverable sign-offs.</p>
-        </div>
-
-        <div class="pillar-card reveal">
-          <div class="pillar-icon-box"><iconify-icon icon="fluent:document-edit-24-regular"></iconify-icon></div>
-          <div class="pillar-num">03</div>
-          <h3 class="pillar-title">Copywriting Studio &amp; Hooks</h3>
-          <p class="pillar-body">Dedicated copy editor synced directly to <code>03_COPYWRITING/COPY.md</code> with live word/character/reading-time counts and viral hook frameworks.</p>
-        </div>
-
-        <div class="pillar-card reveal">
-          <div class="pillar-icon-box"><iconify-icon icon="fluent:shield-keyhole-24-regular"></iconify-icon></div>
-          <div class="pillar-num">04</div>
-          <h3 class="pillar-title">Enterprise RBAC &amp; Audit Trail</h3>
-          <p class="pillar-body">Role-based access control (Admin, Director, Manager, Designer) with permanent immutable JSONL audit logs and safe recursive project deletion.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Design System & Studio Rules Section -->
-  <section class="design-rules-section" id="design-rules">
-    <div class="section-container">
-      <div class="section-heading reveal">
-        <span class="section-tag gold-text">DESIGN GOVERNANCE</span>
-        <h2 class="section-title">The SuamiSihat™ Design System Rules.</h2>
-        <p class="section-sub">Standardized visual hierarchy and filesystem architecture enforced across all touchpoints.</p>
+      <div class="cl-sidebar-section">
+        <span class="cl-sidebar-label">Deployment</span>
+        <a href="#download-v4" class="cl-sidebar-link" id="slink-download">
+          <iconify-icon icon="fluent:arrow-download-24-regular"></iconify-icon> Download v4.0.0
+        </a>
+        <a href="#wellbeing"   class="cl-sidebar-link" id="slink-wellbeing">
+          <iconify-icon icon="fluent:heart-pulse-24-regular"></iconify-icon> Designer Wellbeing
+        </a>
+        <a href="#specs"       class="cl-sidebar-link" id="slink-specs">
+          <iconify-icon icon="fluent:settings-24-regular"></iconify-icon> System Specs
+        </a>
       </div>
 
-      <div class="rules-grid reveal">
-        
-        <!-- 60:30:10 Rule Card -->
-        <div class="rule-card">
-          <div class="rule-card-header">
-            <iconify-icon icon="fluent:color-background-24-regular" style="font-size:1.8rem; color:var(--ss-azure);"></iconify-icon>
+      <div class="cl-divider"></div>
+
+      <div class="cl-sidebar-section">
+        <span class="cl-sidebar-label">Resources</span>
+        <a href="https://github.com/SuamiSihat/ss_cam" target="_blank" rel="noreferrer" class="cl-sidebar-link">
+          <iconify-icon icon="fluent:branch-24-regular"></iconify-icon> GitHub Repo
+        </a>
+        <a href="https://github.com/SuamiSihat/ss_cam/releases" target="_blank" rel="noreferrer" class="cl-sidebar-link">
+          <iconify-icon icon="fluent:tag-24-regular"></iconify-icon> All Releases
+        </a>
+        <a href="https://creative.suamisihat.myds.me" target="_blank" rel="noreferrer" class="cl-sidebar-link">
+          <iconify-icon icon="fluent:globe-24-regular"></iconify-icon> Web Portal ↗
+        </a>
+        <a href="https://assets.suamisihat.myds.me/" target="_blank" rel="noreferrer" class="cl-sidebar-link">
+          <iconify-icon icon="fluent:design-ideas-24-regular"></iconify-icon> Design System ↗
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── Main Content ── -->
+    <main class="f-main-content" id="main-content">
+
+      <!-- ══════════════════════════════════════════════════════════
+           CORE PILLARS
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="pillars">
+        <div class="cl-section-eyebrow">Core Capabilities</div>
+        <h2 class="cl-section-title">Engineered for High-Velocity Creative Studios.</h2>
+        <p class="cl-section-desc">Eliminating organizational friction, fragmented files, and uncoordinated revision cycles across the entire SuamiSihat creative department.</p>
+
+        <div class="pillars-grid">
+
+          <div class="pillar-card reveal">
+            <div class="pillar-icon-box"><iconify-icon icon="fluent:folder-open-24-regular"></iconify-icon></div>
+            <div class="pillar-num">01</div>
+            <h3 class="pillar-title">5-Folder Vault Hierarchy</h3>
+            <p class="pillar-body">Automates sequential job IDs (<code>YYYYMM_NNNNX_BRAND_Title</code>) with strict subfolder structure (Brief, Source, Copy, WIP, Deliverables) across Synology NAS.</p>
+          </div>
+
+          <div class="pillar-card reveal">
+            <div class="pillar-icon-box"><iconify-icon icon="fluent:board-split-24-regular"></iconify-icon></div>
+            <div class="pillar-num">02</div>
+            <h3 class="pillar-title">ClickUp 3.0-Style Workspace</h3>
+            <p class="pillar-body">Split Markdown brief canvas with live preview and collapsible Right Inspector Panel for campaign metadata, assignee routing, and deliverable sign-offs.</p>
+          </div>
+
+          <div class="pillar-card reveal">
+            <div class="pillar-icon-box"><iconify-icon icon="fluent:document-edit-24-regular"></iconify-icon></div>
+            <div class="pillar-num">03</div>
+            <h3 class="pillar-title">Copywriting Studio &amp; Hooks</h3>
+            <p class="pillar-body">Dedicated copy editor synced directly to <code>03_COPYWRITING/COPY.md</code> with live word/character/reading-time counts and viral hook frameworks.</p>
+          </div>
+
+          <div class="pillar-card reveal">
+            <div class="pillar-icon-box"><iconify-icon icon="fluent:shield-keyhole-24-regular"></iconify-icon></div>
+            <div class="pillar-num">04</div>
+            <h3 class="pillar-title">Enterprise RBAC &amp; Audit Trail</h3>
+            <p class="pillar-body">Role-based access control (Admin, Director, Manager, Designer) with permanent immutable JSONL audit logs and safe recursive project deletion.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
+           DESIGN GOVERNANCE RULES — as cl-card
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="design-rules">
+        <div class="cl-section-eyebrow">Design Governance</div>
+        <h2 class="cl-section-title">The SuamiSihat™ Design System Rules.</h2>
+        <p class="cl-section-desc">Standardized visual hierarchy and filesystem architecture enforced across all creative touchpoints — digital, print, and on-premise NAS.</p>
+
+        <!-- 60:30:10 Card -->
+        <div class="cl-card reveal">
+          <div class="cl-card-header">
             <div>
-              <h3 class="rule-title">The 60:30:10 Visual Hierarchy</h3>
-              <p class="rule-sub">Controlled palette balance preserving medical authority and masculine premium identity</p>
+              <div class="cl-card-title">The 60:30:10 Visual Hierarchy</div>
+              <div class="cl-card-subtitle">Controlled palette balance preserving medical authority and masculine premium identity</div>
+            </div>
+            <span class="ss-badge ss-badge-brand">Brand Standard</span>
+          </div>
+          <div class="cl-preview" style="display:block; padding:24px;">
+            <!-- Proportion bar -->
+            <div style="display:flex; height:28px; border-radius:8px; overflow:hidden; border:1px solid var(--color-neutral-stroke-1); margin-bottom:16px; box-shadow:var(--f-shadow-2);">
+              <div style="flex:60; background:var(--ss-prussian-blue); border-right:2px solid rgba(255,255,255,.12);"></div>
+              <div style="flex:30; background:var(--ss-azure); border-right:2px solid rgba(255,255,255,.12);"></div>
+              <div style="flex:10; background:var(--ss-gold);"></div>
+            </div>
+            <!-- Legend -->
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; font-size:.78rem; font-weight:600;">
+              <div style="display:flex; align-items:center; gap:6px; color:var(--color-neutral-fg-1);">
+                <span style="width:12px;height:12px;border-radius:3px;background:var(--ss-prussian-blue);display:inline-block;"></span>
+                <strong>60%</strong> Foundation Canvas &amp; Whitespace
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; color:var(--color-neutral-fg-1);">
+                <span style="width:12px;height:12px;border-radius:3px;background:var(--ss-azure);display:inline-block;"></span>
+                <strong>30%</strong> Structure, Cards &amp; Navigation
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; color:var(--color-neutral-fg-1);">
+                <span style="width:12px;height:12px;border-radius:3px;background:var(--ss-gold);display:inline-block;"></span>
+                <strong>10%</strong> Accent — Primary CTA Only
+              </div>
+            </div>
+            <!-- 3 tier grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px;">
+              <div style="padding:16px; border-radius:12px; background:var(--color-neutral-bg-2); border:1px solid var(--color-neutral-stroke-1);">
+                <div style="display:inline-block;padding:2px 8px;border-radius:4px;background:var(--color-neutral-bg-4);font-size:.65rem;font-weight:700;color:var(--color-neutral-fg-1);margin-bottom:8px;">60% ± 10% Foundation</div>
+                <h4 style="font-size:.9rem;font-weight:700;color:var(--color-neutral-fg-1);margin-bottom:6px;">Clinical Canvas</h4>
+                <p style="font-size:.8rem;color:var(--color-neutral-fg-2);line-height:1.6;margin:0;">Establishes medical cleanliness and premium breathing room. Body background, empty areas, and spacious section canvases.</p>
+                <div style="margin-top:10px;font-family:monospace;font-size:.68rem;color:var(--color-neutral-fg-4);">Tokens: <code style="color:var(--ss-blue);">#022057</code>, <code style="color:var(--ss-blue);">#F8FAFC</code></div>
+              </div>
+              <div style="padding:16px; border-radius:12px; background:var(--color-neutral-bg-2); border:1px solid var(--color-neutral-stroke-1);">
+                <div style="display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(2,32,87,.1);font-size:.65rem;font-weight:700;color:#022057;margin-bottom:8px;">30% ± 10% Secondary</div>
+                <h4 style="font-size:.9rem;font-weight:700;color:var(--color-neutral-fg-1);margin-bottom:6px;">Structure &amp; Surfaces</h4>
+                <p style="font-size:.8rem;color:var(--color-neutral-fg-2);line-height:1.6;margin:0;">Creates layout grouping and hierarchy. Cards, nav topbars, content containers, and Prussian Blue footer surfaces.</p>
+                <div style="margin-top:10px;font-family:monospace;font-size:.68rem;color:var(--color-neutral-fg-4);">Tokens: <code style="color:var(--ss-blue);">--ss-prussian-blue</code>, <code style="color:var(--ss-blue);">--ss-blue</code></div>
+              </div>
+              <div style="padding:16px; border-radius:12px; background:var(--color-neutral-bg-2); border:1px solid var(--color-neutral-stroke-1);">
+                <div style="display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(33,161,247,.12);font-size:.65rem;font-weight:700;color:var(--color-brand-primary);margin-bottom:8px;">10% ± 5% Accent</div>
+                <h4 style="font-size:.9rem;font-weight:700;color:var(--color-neutral-fg-1);margin-bottom:6px;">Primary Focal Action</h4>
+                <p style="font-size:.8rem;color:var(--color-neutral-fg-2);line-height:1.6;margin:0;">High-potency focal color strictly reserved for Primary CTAs, active navigation states, critical metrics, and focus indicators.</p>
+                <div style="margin-top:10px;font-family:monospace;font-size:.68rem;color:var(--color-neutral-fg-4);">Tokens: <code style="color:var(--ss-azure);">--ss-azure</code>, <code style="color:var(--ss-gold);">--ss-gold</code></div>
+              </div>
+            </div>
+            <!-- Rule callout -->
+            <div style="margin-top:20px; padding:16px; border-radius:8px; background:var(--color-neutral-bg-3); border-left:4px solid var(--color-brand-primary);">
+              <div style="font-size:.82rem;font-weight:700;color:var(--color-neutral-fg-1);margin-bottom:4px;">
+                <iconify-icon icon="fluent:checkmark-circle-24-regular" style="vertical-align:middle;margin-right:4px;color:var(--color-brand-primary);"></iconify-icon>
+                CTA Competition Rule
+              </div>
+              <p style="font-size:.8rem;color:var(--color-neutral-fg-2);line-height:1.6;margin:0;">Service category cards must <strong>never</strong> use solid accent backgrounds or accent-filled buttons. Only the dominant conversion action receives the uncompromised Primary Brand Accent treatment.</p>
             </div>
           </div>
-          <div class="palette-ratio-bar">
-            <div class="ratio-segment seg-60" title="60% Dominant Surface (Midnight Navy / Clean Slate)">60% Surface</div>
-            <div class="ratio-segment seg-30" title="30% Structural Depth (Brand Azure & Medical Blue)">30% Structure</div>
-            <div class="ratio-segment seg-10" title="10% Vivid Accent (Warm Gold / Action Red)">10% Accent</div>
-          </div>
-          <ul class="rule-points">
-            <li><strong>60% Dominant Surfaces</strong>: Deep Prussian Blue (<code>#022057</code>) in dark themes, Clean Slate (<code>#F8FAFC</code>) in light themes.</li>
-            <li><strong>30% Structural Blue</strong>: SuamiSihat Azure (<code>#21A1F7</code>) and Royal Blue (<code>#043388</code>) for navigation, cards, and hierarchy.</li>
-            <li><strong>10% Energy Accent</strong>: Warm Gold (<code>#BD9A73</code>) and Success Green for high-priority CTAs and status markers.</li>
-          </ul>
         </div>
 
         <!-- 5-Folder Architecture Card -->
-        <div class="rule-card">
-          <div class="rule-card-header">
-            <iconify-icon icon="fluent:folder-prohibited-24-regular" style="font-size:1.8rem; color:var(--ss-gold);"></iconify-icon>
+        <div class="cl-card reveal">
+          <div class="cl-card-header">
             <div>
-              <h3 class="rule-title">Standard 5-Folder Vault Hierarchy</h3>
-              <p class="rule-sub">Zero unorganized files allowed outside canonical project subfolders</p>
+              <div class="cl-card-title">Standard 5-Folder Vault Hierarchy</div>
+              <div class="cl-card-subtitle">Zero unorganized files allowed outside canonical project subfolders</div>
+            </div>
+            <span class="ss-badge ss-badge-neutral">Filesystem Standard</span>
+          </div>
+          <div class="cl-preview" style="display:block; padding:24px;">
+            <div class="folder-tree-box">
+              <div class="tree-line">📁 [ProjectFolder] (YYYYMM_NNNNX_BRAND_Title)</div>
+              <div class="tree-subline"><code>├── 📁 01_BRIEF_ASSETS/</code>&nbsp;&nbsp;— Raw briefs, moodboards, client reference files</div>
+              <div class="tree-subline"><code>├── 📁 02_SOURCE_FILES/</code>&nbsp;&nbsp;— .afdesign, .psd, .ai, .prproj working files</div>
+              <div class="tree-subline"><code>├── 📁 03_COPYWRITING/</code>&nbsp;&nbsp;— Dedicated COPY.md hooks &amp; scripts</div>
+              <div class="tree-subline"><code>├── 📁 04_WORK_IN_PROGRESS/</code> — Intermediate renders, drafts, and WIP exports</div>
+              <div class="tree-subline"><code>├── 📁 05_DELIVERABLES/</code>&nbsp;&nbsp;— Final approved client &amp; marketing outputs</div>
+              <div class="tree-subline"><code>└── 📄 README.md</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— YAML frontmatter status + rendered brief</div>
+            </div>
+            <!-- naming anatomy -->
+            <div style="margin-top:16px; padding:16px; border-radius:8px; background:var(--color-neutral-bg-2); border:1px solid var(--color-neutral-stroke-1);">
+              <div style="font-size:.8rem; font-weight:700; color:var(--color-neutral-fg-1); margin-bottom:10px;">Job ID Naming Anatomy</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; font-family:monospace; font-size:.78rem;">
+                <span style="padding:4px 10px; border-radius:4px; background:rgba(2,32,87,.1); color:#022057; font-weight:700;">202608</span>
+                <span style="padding:4px 10px; border-radius:4px; background:rgba(33,161,247,.1); color:var(--color-brand-primary); font-weight:700;">0085D</span>
+                <span style="padding:4px 10px; border-radius:4px; background:rgba(189,154,115,.1); color:var(--ss-gold); font-weight:700;">SS</span>
+                <span style="padding:4px 10px; border-radius:4px; background:var(--color-neutral-bg-4); color:var(--color-neutral-fg-2); font-weight:700;">Rejal_Premium_Packaging</span>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:.68rem; color:var(--color-neutral-fg-4); margin-top:6px; font-family:monospace;">
+                <span style="width:70px; text-align:center;">YYYYMM</span>
+                <span style="width:70px; text-align:center;">JobID</span>
+                <span style="width:70px; text-align:center;">Brand</span>
+                <span>Title</span>
+              </div>
             </div>
           </div>
-          <div class="folder-tree-box">
-            <div class="tree-line"><code>📁 [ProjectFolder] (YYYYMM_NNNNX_BRAND_Title)</code></div>
-            <div class="tree-subline"><code>├── 📁 01_BRIEF_ASSETS/</code> &nbsp;— Raw briefs, references, moodboards</div>
-            <div class="tree-subline"><code>├── 📁 02_SOURCE_FILES/</code> &nbsp;— .afdesign, .psd, .ai, .prproj project files</div>
-            <div class="tree-subline"><code>├── 📁 03_COPYWRITING/</code> &nbsp;— Dedicated COPY.md hooks &amp; scripts</div>
-            <div class="tree-subline"><code>├── 📁 04_WORK_IN_PROGRESS/</code> — Intermediate renders &amp; drafts</div>
-            <div class="tree-subline"><code>├── 📁 05_DELIVERABLES/</code> &nbsp;— Final approved client &amp; marketing exports</div>
-            <div class="tree-subline"><code>└── 📄 README.md</code> &nbsp;— YAML frontmatter status + rendered brief</div>
-          </div>
         </div>
+      </section>
 
-      </div>
-    </div>
-  </section>
+      <!-- ══════════════════════════════════════════════════════════
+           APP SHOWCASE TOUR
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="showcase">
+        <div class="cl-section-eyebrow">Interface Showcase</div>
+        <h2 class="cl-section-title">Full Application Tour.</h2>
+        <p class="cl-section-desc">Inspect key modules powering daily studio operations across the desktop WPF client and Svelte web portal.</p>
 
-  <!-- Interactive App Showcase Tour with Hotspot Pins -->
-  <section class="showcase-section" id="showcase">
-    <div class="section-container">
-      <div class="section-heading reveal">
-        <span class="section-tag">INTERFACE SHOWCASE</span>
-        <h2 class="section-title">Full Application Tour.</h2>
-        <p class="section-sub">Inspect key modules powering daily studio operations across desktop and web.</p>
-      </div>
-
-      <div class="showcase-tabs reveal">
-        <button class="tab-btn active" data-target="panel-dashboard">Dashboard</button>
-        <button class="tab-btn" data-target="panel-workspace">Project Detail Workspace</button>
-        <button class="tab-btn" data-target="panel-copywriting">Copywriting Studio</button>
-        <button class="tab-btn" data-target="panel-catalog">Project Vault</button>
-        <button class="tab-btn" data-target="panel-admin">Admin &amp; RBAC</button>
-        <button class="tab-btn" data-target="panel-assets">Brand Assets</button>
-        <button class="tab-btn" data-target="panel-tasks">Task Manager</button>
-        <button class="tab-btn" data-target="panel-calendar">Big Calendar</button>
-        <button class="tab-btn" data-target="panel-solat">Waktu Solat</button>
-      </div>
-
-      <div class="showcase-stage reveal">
-        
-        <!-- Dashboard Panel -->
-        <div class="showcase-panel active" id="panel-dashboard">
-          <div class="panel-meta">
-            <h3>Centralized Storage &amp; Campaign Analytics</h3>
-            <p>Real-time NAS storage probe, active workload metrics, sub-brand project volume breakdown, and stale work order alerts.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.0.0" class="showcase-img">
-            <div class="hotspot-pin" style="top:22%; left:25%;" data-tooltip="Storage Telemetry: Live probe of local & NAS disk capacity"></div>
-            <div class="hotspot-pin" style="top:45%; left:65%;" data-tooltip="Workload Breakdown: Sub-brand project volume chart"></div>
-          </div>
-        </div>
-
-        <!-- Project Detail Workspace Panel -->
-        <div class="showcase-panel" id="panel-workspace">
-          <div class="panel-meta">
-            <h3>ClickUp 3.0-Style 2-Column Task Workspace</h3>
-            <p>Full-width Markdown brief editor with live GFM rendering, deliverable review cards, and Right Inspector Panel for campaign metadata.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-project-workspace-v4.png" alt="SS-CAM Project Detail Workspace" class="showcase-img">
-            <div class="hotspot-pin" style="top:20%; left:30%;" data-tooltip="Live Brief Editor: Realtime YAML frontmatter & markdown rendering"></div>
-            <div class="hotspot-pin" style="top:35%; left:80%;" data-tooltip="Right Inspector: Metadata, assignees, deadlines, and discussion thread"></div>
-          </div>
-        </div>
-
-        <!-- Copywriting Studio Panel -->
-        <div class="showcase-panel" id="panel-copywriting">
-          <div class="panel-meta">
-            <h3>Dedicated Copywriting Studio &amp; Telemetry</h3>
-            <p>Write video scripts, social media hooks, and product descriptions directly into <code>03_COPYWRITING/COPY.md</code> with live word/reading-time counters.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-copywriting-studio-v4.png" alt="SS-CAM Copywriting Studio" class="showcase-img">
-            <div class="hotspot-pin" style="top:25%; left:40%;" data-tooltip="Live Stats: Real-time word count, characters, and estimated reading time"></div>
-          </div>
-        </div>
-
-        <!-- Project Catalog Panel -->
-        <div class="showcase-panel" id="panel-catalog">
-          <div class="panel-meta">
-            <h3>Project Catalog &amp; Workspace Vault</h3>
-            <p>Filter active campaigns by subsidiary brand (SSH, SSC, SSW, SSE, SST), designer, status, or urgency with 1-click admin project deletion.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-catalog-vault-v4.png" alt="SS-CAM Project Catalog" class="showcase-img">
-            <div class="hotspot-pin" style="top:18%; left:50%;" data-tooltip="Multi-Filter Bar: Filter by brand, status, assignee, and date"></div>
-          </div>
-        </div>
-
-        <!-- Admin & RBAC Panel -->
-        <div class="showcase-panel" id="panel-admin">
-          <div class="panel-meta">
-            <h3>Enterprise Staff Directory &amp; Security Audit</h3>
-            <p>Provision staff user accounts, configure holding subsidiary profiles, manage role permissions, and review tamper-evident audit logs.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-admin-rbac-v4.png" alt="SS-CAM Admin & RBAC" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:60%;" data-tooltip="RBAC Matrix: Role assignments for Admin, Director, Manager & Designer"></div>
-          </div>
-        </div>
-
-        <!-- Brand Assets Panel -->
-        <div class="showcase-panel" id="panel-assets">
-          <div class="panel-meta">
-            <h3>Minimal Swatch &amp; Brand Inspector</h3>
-            <p>Explore official swatches with live HEX/RGB/CMYK/Pantone breakdowns, vector QR Code studio, and 1-click clipboard copying.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-brand-assets.png" alt="SS-CAM Brand Assets" class="showcase-img">
-            <div class="hotspot-pin" style="top:40%; left:75%;" data-tooltip="Live Swatch Inspector: Breaks down HEX, RGB, CMYK & Pantone"></div>
-          </div>
-        </div>
-
-        <!-- Task Manager Panel -->
-        <div class="showcase-panel" id="panel-tasks">
-          <div class="panel-meta">
-            <h3>YAML Frontmatter Kanban Board</h3>
-            <p>Kanban status columns (Backlog, In Progress, Review, Done) reading directly from project README frontmatter headers.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-task-manager.png" alt="SS-CAM Task Manager" class="showcase-img">
-            <div class="hotspot-pin" style="top:35%; left:45%;" data-tooltip="Frontmatter Kanban: Parses markdown README headers into board columns"></div>
-          </div>
-        </div>
-
-        <!-- Big Calendar Panel -->
-        <div class="showcase-panel" id="panel-calendar">
-          <div class="panel-meta">
-            <h3>7×6 Monthly Campaign Timetable</h3>
-            <p>Visual calendar mapping project creation start dates, delivery deadlines, Friday Solat indicators, and day overlays.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-big-calendar.png" alt="SS-CAM Big Calendar" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:50%;" data-tooltip="7×6 Timetable: Maps deadlines & Friday Solat markers"></div>
-          </div>
-        </div>
-
-        <!-- Waktu Solat Panel -->
-        <div class="showcase-panel" id="panel-solat">
-          <div class="panel-meta">
-            <h3>JAKIM Waktu Solat Timetable</h3>
-            <p>Real-time prayer schedules for 41 Malaysian zones with active countdowns and adhan reminders.</p>
-          </div>
-          <div class="hotspot-stage-wrapper">
-            <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat" class="showcase-img">
-            <div class="hotspot-pin" style="top:30%; left:40%;" data-tooltip="JAKIM Live API: Real-time prayer timetable for 41 Malaysian zones"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Multi-Platform Installation Setup Section -->
-  <section class="fedora-section" id="download-v4">
-    <div class="section-container">
-      <div class="section-heading reveal">
-        <span class="section-tag gold-text">DEPLOYMENT OPTIONS</span>
-        <h2 class="section-title">Download SS-CAM v4.0.0.</h2>
-        <p class="section-sub">Select the appropriate client or server deployment for your creative workstation environment.</p>
-      </div>
-
-      <div class="fedora-card-grid reveal">
-        <!-- Windows Single-File Card -->
-        <div class="fedora-card">
-          <div class="fedora-card-header">
-            <iconify-icon icon="fluent:window-apps-24-regular" style="font-size:1.8rem; color:#0078D4;"></iconify-icon>
+        <div class="cl-card reveal">
+          <div class="cl-card-header">
             <div>
-              <h3 class="fedora-card-title">Windows 10 / 11 Native WPF</h3>
-              <p class="fedora-card-sub">Single-file portable executable (~5.2 MB) with zero installation</p>
+              <div class="cl-card-title" id="showcase-card-title">Centralized Storage &amp; Campaign Analytics</div>
+              <div class="cl-card-subtitle" id="showcase-card-sub">Real-time NAS storage probe, active workload metrics, and stale work order alerts.</div>
             </div>
           </div>
-          <p style="font-size:0.88rem; color:var(--text-sub); margin-bottom:14px;">
-            Fully integrated Fluent 2 desktop app with local hardware acceleration, DPAPI Mind Drops encryption, and direct NAS file synchronization.
-          </p>
-          <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-hero-primary" style="width:100%; text-align:center;">
-            <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.15rem;"></iconify-icon>
-            Download SS-CAM-v4.0.0.exe
-          </a>
-        </div>
 
-        <!-- Terminal Command Quickstart Card -->
-        <div class="fedora-card">
-          <div class="fedora-card-header">
-            <iconify-icon icon="fluent:terminal-24-regular" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
-            <div>
-              <h3 class="fedora-card-title">Linux 1-Command Installer</h3>
-              <p class="fedora-card-sub">Automated script for Fedora, Ubuntu, Debian, Pop!_OS, Arch</p>
-            </div>
+          <!-- Tab row styled like reference cl-code-tabs -->
+          <div class="showcase-tabs" id="showcase-tabs">
+            <button class="tab-btn active" data-target="panel-dashboard" data-title="Centralized Storage &amp; Campaign Analytics" data-sub="Real-time NAS storage probe, active workload metrics, and stale work order alerts.">Dashboard</button>
+            <button class="tab-btn" data-target="panel-workspace" data-title="ClickUp 3.0-Style 2-Column Task Workspace" data-sub="Full-width Markdown brief editor, live GFM rendering, and Right Inspector Panel.">Project Workspace</button>
+            <button class="tab-btn" data-target="panel-copywriting" data-title="Dedicated Copywriting Studio &amp; Telemetry" data-sub="Write video scripts and hooks directly into 03_COPYWRITING/COPY.md.">Copywriting Studio</button>
+            <button class="tab-btn" data-target="panel-catalog" data-title="Project Catalog &amp; Workspace Vault" data-sub="Filter active campaigns by subsidiary brand, designer, status, or urgency.">Project Vault</button>
+            <button class="tab-btn" data-target="panel-admin" data-title="Enterprise Staff Directory &amp; Security Audit" data-sub="Provision accounts, configure RBAC, and review tamper-evident audit logs.">Admin &amp; RBAC</button>
+            <button class="tab-btn" data-target="panel-assets" data-title="Minimal Swatch &amp; Brand Inspector" data-sub="Explore official swatches with live HEX/RGB/CMYK/Pantone and QR Code studio.">Brand Assets</button>
+            <button class="tab-btn" data-target="panel-tasks" data-title="YAML Frontmatter Kanban Board" data-sub="Kanban columns reading directly from project README frontmatter headers.">Task Manager</button>
+            <button class="tab-btn" data-target="panel-calendar" data-title="7×6 Monthly Campaign Timetable" data-sub="Visual calendar mapping project deadlines, Friday Solat, and day overlays.">Big Calendar</button>
+            <button class="tab-btn" data-target="panel-solat" data-title="JAKIM Waktu Solat Timetable" data-sub="Real-time prayer schedules for 41 Malaysian zones with active countdowns.">Waktu Solat</button>
           </div>
-          <div class="code-terminal-box">
-            <div class="terminal-bar">
-              <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-              <span class="t-title">bash — linux@workstation</span>
+
+          <div class="showcase-stage" style="padding:var(--f-space-5);">
+
+            <div class="showcase-panel active" id="panel-dashboard">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.0.0" class="showcase-img">
+                <div class="hotspot-pin" style="top:22%;left:25%;" data-tooltip="Storage Telemetry: Live probe of local &amp; NAS disk capacity"></div>
+                <div class="hotspot-pin" style="top:45%;left:65%;" data-tooltip="Workload Breakdown: Sub-brand project volume chart"></div>
+              </div>
             </div>
-            <pre class="code-block"><code><span class="c-comment"># Install in 1-command to /opt/ss-cam</span>
-curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash
+
+            <div class="showcase-panel" id="panel-workspace">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-project-workspace-v4.png" alt="SS-CAM Project Workspace" class="showcase-img">
+                <div class="hotspot-pin" style="top:20%;left:30%;" data-tooltip="Live Brief Editor: Realtime YAML frontmatter &amp; markdown rendering"></div>
+                <div class="hotspot-pin" style="top:35%;left:80%;" data-tooltip="Right Inspector: Metadata, assignees, deadlines, and thread"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-copywriting">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-copywriting-studio-v4.png" alt="SS-CAM Copywriting Studio" class="showcase-img">
+                <div class="hotspot-pin" style="top:25%;left:40%;" data-tooltip="Live Stats: Real-time word count, characters, and reading time"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-catalog">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-catalog-vault-v4.png" alt="SS-CAM Project Catalog" class="showcase-img">
+                <div class="hotspot-pin" style="top:18%;left:50%;" data-tooltip="Multi-Filter Bar: Filter by brand, status, assignee, and date"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-admin">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-admin-rbac-v4.png" alt="SS-CAM Admin &amp; RBAC" class="showcase-img">
+                <div class="hotspot-pin" style="top:30%;left:60%;" data-tooltip="RBAC Matrix: Role assignments for Admin, Director, Manager &amp; Designer"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-assets">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-brand-assets.png" alt="SS-CAM Brand Assets" class="showcase-img">
+                <div class="hotspot-pin" style="top:40%;left:75%;" data-tooltip="Live Swatch Inspector: HEX, RGB, CMYK &amp; Pantone breakdowns"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-tasks">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-task-manager.png" alt="SS-CAM Task Manager" class="showcase-img">
+                <div class="hotspot-pin" style="top:35%;left:45%;" data-tooltip="Frontmatter Kanban: Parses README headers into board columns"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-calendar">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-big-calendar.png" alt="SS-CAM Big Calendar" class="showcase-img">
+                <div class="hotspot-pin" style="top:30%;left:50%;" data-tooltip="7×6 Timetable: Maps deadlines &amp; Friday Solat markers"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-solat">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat" class="showcase-img">
+                <div class="hotspot-pin" style="top:30%;left:40%;" data-tooltip="JAKIM Live API: Real-time prayer timetable for 41 Malaysian zones"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
+           DOWNLOAD / INSTALLATION
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="download-v4">
+        <div class="cl-section-eyebrow">Deployment Options</div>
+        <h2 class="cl-section-title">Download SS-CAM v4.0.0.</h2>
+        <p class="cl-section-desc">Select the appropriate client or server deployment for your creative workstation environment.</p>
+
+        <div class="fedora-card-grid">
+
+          <!-- Windows -->
+          <div class="fedora-card reveal">
+            <div class="fedora-card-header">
+              <iconify-icon icon="fluent:window-apps-24-regular" style="font-size:1.8rem; color:#0078D4;"></iconify-icon>
+              <div>
+                <h3 class="fedora-card-title">Windows 10 / 11 Native WPF</h3>
+                <p class="fedora-card-sub">Portable single-file executable (~5.2 MB)</p>
+              </div>
+            </div>
+            <p style="font-size:.875rem; color:var(--color-neutral-fg-2); margin-bottom:14px; line-height:1.6;">
+              Fully integrated Fluent 2 desktop app with local hardware acceleration, DPAPI Mind Drops encryption, and direct NAS file synchronization.
+            </p>
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-download-card">
+              <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
+              Download SS-CAM-v4.0.0.exe
+            </a>
+          </div>
+
+          <!-- Linux 1-Command -->
+          <div class="fedora-card reveal">
+            <div class="fedora-card-header">
+              <iconify-icon icon="fluent:terminal-24-regular" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
+              <div>
+                <h3 class="fedora-card-title">Linux 1-Command Installer</h3>
+                <p class="fedora-card-sub">Fedora · Ubuntu · Debian · Pop!_OS · Arch</p>
+              </div>
+            </div>
+            <div class="code-terminal-box">
+              <div class="terminal-bar">
+                <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+                <span class="t-title">bash — linux@workstation</span>
+              </div>
+              <button class="cl-copy-btn" data-copy-target="code-linux">Copy</button>
+              <pre class="code-block" id="code-linux"><code><span class="c-comment"># Install to /opt/ss-cam in one command</span>
+curl -fsSL https://raw.githubusercontent.com/SuamiSihat/\
+ss_cam/SS-Master/installer/install-linux.sh | sudo bash
 
 <span class="c-comment"># Launch from terminal or Applications menu:</span>
 ss-cam</code></pre>
+            </div>
           </div>
-        </div>
 
-        <!-- Web Portal Docker Card -->
-        <div class="fedora-card">
-          <div class="fedora-card-header">
-            <iconify-icon icon="fluent:globe-24-regular" style="font-size:1.8rem; color:#21A1F7;"></iconify-icon>
-            <div>
-              <h3 class="fedora-card-title">Synology NAS Docker Web Portal</h3>
-              <p class="fedora-card-sub">Collaborative web suite for cross-functional creative teams</p>
+          <!-- Docker Web Portal -->
+          <div class="fedora-card reveal">
+            <div class="fedora-card-header">
+              <iconify-icon icon="fluent:globe-24-regular" style="font-size:1.8rem; color:#21A1F7;"></iconify-icon>
+              <div>
+                <h3 class="fedora-card-title">Synology NAS Docker Web Portal</h3>
+                <p class="fedora-card-sub">Collaborative web suite for creative teams</p>
+              </div>
             </div>
-          </div>
-          <div class="code-terminal-box">
-            <div class="terminal-bar">
-              <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-              <span class="t-title">docker compose — Synology NAS</span>
-            </div>
-            <pre class="code-block"><code><span class="c-comment"># Deploy on Synology NAS / Linux Server</span>
+            <div class="code-terminal-box">
+              <div class="terminal-bar">
+                <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+                <span class="t-title">docker compose — Synology NAS</span>
+              </div>
+              <button class="cl-copy-btn" data-copy-target="code-docker">Copy</button>
+              <pre class="code-block" id="code-docker"><code><span class="c-comment"># Deploy on Synology NAS / Linux Server</span>
 git clone https://github.com/SuamiSihat/ss_cam.git
 cd ss_cam/src/SS-CAM.Web
 docker compose up -d --build
 
 <span class="c-comment"># Access: https://creative.suamisihat.myds.me</span></code></pre>
+            </div>
           </div>
-        </div>
 
-        <!-- Source Build Card -->
-        <div class="fedora-card">
-          <div class="fedora-card-header">
-            <iconify-icon icon="fluent:code-circle-24-regular" style="font-size:1.8rem; color:#BD9A73;"></iconify-icon>
-            <div>
-              <h3 class="fedora-card-title">.NET Cross-Platform Source</h3>
-              <p class="fedora-card-sub">Compile directly using .NET SDK 8.0 on any workstation</p>
+          <!-- .NET Source Build -->
+          <div class="fedora-card reveal">
+            <div class="fedora-card-header">
+              <iconify-icon icon="fluent:code-circle-24-regular" style="font-size:1.8rem; color:#BD9A73;"></iconify-icon>
+              <div>
+                <h3 class="fedora-card-title">.NET Cross-Platform Source</h3>
+                <p class="fedora-card-sub">Compile with .NET SDK 8.0 on any workstation</p>
+              </div>
             </div>
-          </div>
-          <div class="code-terminal-box">
-            <div class="terminal-bar">
-              <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-              <span class="t-title">dotnet — developer</span>
-            </div>
-            <pre class="code-block"><code><span class="c-comment"># Build &amp; run Avalonia desktop client</span>
+            <div class="code-terminal-box">
+              <div class="terminal-bar">
+                <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+                <span class="t-title">dotnet — developer</span>
+              </div>
+              <button class="cl-copy-btn" data-copy-target="code-dotnet">Copy</button>
+              <pre class="code-block" id="code-dotnet"><code><span class="c-comment"># Build &amp; run Avalonia desktop client</span>
 git clone https://github.com/SuamiSihat/ss_cam.git
 cd ss_cam
 dotnet run --project src/SS-CAM.Linux -c Release</code></pre>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Special Wellbeing Feature Canvas -->
-  <section class="wellbeing-section" id="wellbeing">
-    <div class="section-container">
-      <div class="wellbeing-card reveal">
-        <div class="wellbeing-grid">
-          <div class="wellbeing-info">
-            <span class="section-tag gold-text">DESIGNER WELLBEING</span>
-            <h2 class="wellbeing-title">Built for Creative Flow &amp; Peace of Mind.</h2>
-            <p class="wellbeing-desc">
-              High-intensity design sprints require balance. SS-CAM integrates mindfulness and mental health tools directly into the desktop environment so creative teams stay inspired, calm, and productive throughout the workday.
-            </p>
-            <div class="wellbeing-features-list">
-              <div class="w-item"><iconify-icon icon="fluent:breath-24-regular"></iconify-icon> <strong>16s Box Breathing Coach</strong> — Reset stress with guided 4-step rhythm</div>
-              <div class="w-item"><iconify-icon icon="fluent:radio-24-regular"></iconify-icon> <strong>Focus Radio Streams</strong> — Stream 8 local Malaysian radio stations</div>
-              <div class="w-item"><iconify-icon icon="fluent:clock-24-regular"></iconify-icon> <strong>JAKIM Solat Sync</strong> — Live countdowns &amp; adhan notifications</div>
-              <div class="w-item"><iconify-icon icon="fluent:lock-closed-24-regular"></iconify-icon> <strong>DPAPI Mind Drops</strong> — Private encrypted reflection journal</div>
             </div>
           </div>
-          <div class="wellbeing-visual">
-            <div class="breathing-pulse-ring"></div>
-            <div class="visual-center-badge">
-              <iconify-icon icon="fluent:heart-pulse-24-regular" style="font-size:2.2rem; color:var(--ss-gold-warm);"></iconify-icon>
-              <div class="badge-text">Mindful Flow</div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
+           WELLBEING SECTION
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="wellbeing">
+        <div class="cl-section-eyebrow">Designer Wellbeing</div>
+        <h2 class="cl-section-title">Built for Creative Flow &amp; Peace of Mind.</h2>
+
+        <div class="cl-card reveal">
+          <div class="cl-preview" style="display:block; padding:40px;">
+            <div class="wellbeing-grid">
+              <div class="wellbeing-info">
+                <p class="wellbeing-desc">
+                  High-intensity design sprints require balance. SS-CAM integrates mindfulness and mental health tools directly into the desktop environment so creative teams stay inspired, calm, and productive throughout the workday.
+                </p>
+                <div class="wellbeing-features-list">
+                  <div class="w-item"><iconify-icon icon="fluent:breath-24-regular"></iconify-icon> <strong>16s Box Breathing Coach</strong> — Reset stress with guided 4-step rhythm</div>
+                  <div class="w-item"><iconify-icon icon="fluent:radio-24-regular"></iconify-icon> <strong>Focus Radio Streams</strong> — Stream 8 local Malaysian radio stations</div>
+                  <div class="w-item"><iconify-icon icon="fluent:clock-24-regular"></iconify-icon> <strong>JAKIM Solat Sync</strong> — Live countdowns &amp; adhan notifications</div>
+                  <div class="w-item"><iconify-icon icon="fluent:lock-closed-24-regular"></iconify-icon> <strong>DPAPI Mind Drops</strong> — Private encrypted reflection journal</div>
+                </div>
+              </div>
+              <div class="wellbeing-visual">
+                <div class="breathing-pulse-ring"></div>
+                <div class="visual-center-badge">
+                  <iconify-icon icon="fluent:heart-pulse-24-regular" style="font-size:2.2rem; color:var(--ss-gold-warm);"></iconify-icon>
+                  <div class="badge-text">Mindful Flow</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Technical Specs -->
-  <section class="specs-section" id="specs">
-    <div class="section-container">
-      <div class="section-heading reveal">
-        <span class="section-tag">SPECIFICATIONS</span>
-        <h2 class="section-title">System Requirements &amp; Architecture.</h2>
-      </div>
+      <!-- ══════════════════════════════════════════════════════════
+           SPECS TABLE
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cl-section" id="specs">
+        <div class="cl-section-eyebrow">Specifications</div>
+        <h2 class="cl-section-title">System Requirements &amp; Architecture.</h2>
 
-      <div class="specs-box reveal">
-        <div class="spec-row"><span class="spec-k">Supported Platforms</span><span class="spec-v">Windows 10/11 (x64), Linux (Fedora, Ubuntu, Debian, Arch), Docker / Synology NAS</span></div>
-        <div class="spec-row"><span class="spec-k">Core Stack</span><span class="spec-v">C# WPF (.NET Framework 4.8) Desktop + Node.js / Svelte 5 Web Portal</span></div>
-        <div class="spec-row"><span class="spec-k">Packaging</span><span class="spec-v">Portable Single-File Executable (~5.2 MB, Zero Runtime Installation)</span></div>
-        <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 &amp; SuamiSihat Official 60:30:10 Design Tokens</span></div>
-        <div class="spec-row"><span class="spec-k">Persistence Engine</span><span class="spec-v">Markdown &amp; JSONL as Database (100% Synology NAS Realtime Native)</span></div>
-        <div class="spec-row"><span class="spec-k">Network Integration</span><span class="spec-v">Synology Drive / <code>\\SSNAS\Creative-Team</code> realtime filesystem watching</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Banner -->
-  <section class="cta-section">
-    <div class="section-container">
-      <div class="cta-card gold-border-card reveal">
-        <h2 class="cta-title">Upgrade Your Creative Operations.</h2>
-        <p class="cta-sub">Deploy SS-CAM v4.0.0 today — zero installer overhead, 100% data ownership.</p>
-        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-          <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-hero-primary btn-xl">
-            <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
-            Download SS-CAM v4.0.0 (.exe)
-          </a>
-          <a href="https://github.com/SuamiSihat/ss_cam/releases/tag/v4.0.0" class="btn-hero-secondary btn-xl" target="_blank" rel="noreferrer">
-            <iconify-icon icon="fluent:open-24-regular" style="font-size:1.3rem;"></iconify-icon>
-            View All Platform Releases
-          </a>
+        <div class="cl-card reveal">
+          <div class="cl-card-header">
+            <div class="cl-card-title">Technical Specifications — v4.0.0</div>
+            <span class="ss-badge ss-badge-success">Stable Release</span>
+          </div>
+          <div class="specs-box" style="max-width:100%; margin:0; border:none; border-radius:0; box-shadow:none;">
+            <div class="spec-row"><span class="spec-k">Supported Platforms</span><span class="spec-v">Windows 10/11 (x64), Linux (Fedora, Ubuntu, Debian, Arch), Docker / Synology NAS</span></div>
+            <div class="spec-row"><span class="spec-k">Core Stack</span><span class="spec-v">C# WPF (.NET Framework 4.8) Desktop + Node.js / Svelte 5 Web Portal</span></div>
+            <div class="spec-row"><span class="spec-k">Packaging</span><span class="spec-v">Portable Single-File Executable (~5.2 MB, Zero Runtime Installation)</span></div>
+            <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 &amp; SuamiSihat™ Official 60:30:10 Design Tokens</span></div>
+            <div class="spec-row"><span class="spec-k">Persistence Engine</span><span class="spec-v">Markdown &amp; JSONL as Database (100% Synology NAS Realtime Native)</span></div>
+            <div class="spec-row"><span class="spec-k">Network Integration</span><span class="spec-v">Synology Drive / <code>\\SSNAS\Creative-Team</code> realtime filesystem watching</span></div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Footer -->
+      <!-- ══════════════════════════════════════════════════════════
+           CTA BANNER
+           ══════════════════════════════════════════════════════════ -->
+      <section class="cta-section">
+        <div class="cta-card reveal">
+          <h2 class="cta-title">Upgrade Your Creative Operations.</h2>
+          <p class="cta-sub">Deploy SS-CAM v4.0.0 today — zero installer overhead, 100% data ownership.</p>
+          <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe" class="btn-hero-primary btn-xl">
+              <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
+              Download SS-CAM v4.0.0 (.exe)
+            </a>
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/tag/v4.0.0" class="btn-hero-secondary btn-xl" target="_blank" rel="noreferrer">
+              <iconify-icon icon="fluent:open-24-regular" style="font-size:1.3rem;"></iconify-icon>
+              View All Platform Releases
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </main><!-- /f-main-content -->
+  </div><!-- /f-page-layout -->
+
+  <!-- ════════════════════════════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════════════════════════════ -->
   <footer class="footer">
     <div class="section-container">
       <div class="footer-content">
@@ -548,6 +653,7 @@ dotnet run --project src/SS-CAM.Linux -c Release</code></pre>
           <a href="https://github.com/SuamiSihat/ss_cam/releases">Releases</a>
           <a href="https://github.com/SuamiSihat/ss_cam/wiki">Wiki</a>
           <a href="https://assets.suamisihat.myds.me/" target="_blank">Design System ↗</a>
+          <a href="https://creative.suamisihat.myds.me" target="_blank">Web Portal ↗</a>
         </div>
       </div>
     </div>
