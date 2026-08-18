@@ -8,12 +8,23 @@
    ========================================================================== */
 
 :root, [data-theme="falconia"] {
-  /* ─── 10% BRAND ACCENT LAYER ─── */
+  /* ─── OFFICIAL SUAMISIHAT BRAND SYSTEM (brand-system.html) ─── */
+  --ss-prussian-blue: #022057;       /* Deep Clinical Navy */
+  --ss-blue: #043388;                /* SuamiSihat Primary Blue */
+  --ss-azure: #21A1F7;               /* Azure Conversion Accent (10%) */
+  --ss-malibu: #6DC6EC;              /* Light Sky Accent */
+  --ss-neutral-black: #1C1C1C;        /* Strict Typography Anchor */
+  --ss-lion: #BD9A73;                /* Secondary Warm Gold / Lion */
+  --ss-fawn: #CCAC8D;                /* Secondary Fawn */
+  --ss-arylide: #E5D15C;             /* Arylide Yellow */
+  --ss-banana: #FCE53D;              /* Banana Yellow */
+
+  /* ─── 10% BRAND ACCENT LAYER (60:30:10) ─── */
   --brand-primary: #043388;          /* SuamiSihat Deep Navy */
   --brand-secondary: #0644B2;        /* Vibrant Royal Blue */
   --brand-accent: #21A1F7;           /* Azure Sky Focus */
   --brand-tint: #EBF4FE;             /* Subtle Azure Background Tint */
-  --brand-gradient: linear-gradient(135deg, #043388 0%, #0644B2 50%, #21A1F7 100%);
+  --brand-gradient: linear-gradient(135deg, #022057 0%, #043388 50%, #21A1F7 100%);
   --brand-glow: 0 0 16px rgba(33, 161, 247, 0.35);
 
   /* ─── 60% FOUNDATION CANVAS LAYER ─── */
@@ -21,10 +32,10 @@
   --bg-canvas: #F8FAFC;
   
   /* ─── 30% SECONDARY STRUCTURE LAYER ─── */
-  --bg-header: #043388;
+  --bg-header: #022057;              /* Prussian Blue Header */
   --header-text: #FFFFFF;
-  --bg-sidebar: #043388;
-  --sidebar-border: #062E7A;
+  --bg-sidebar: #022057;             /* Prussian Blue Sidebar */
+  --sidebar-border: #01163D;
   --sidebar-active-bg: rgba(255, 255, 255, 0.14);
   --sidebar-active-text: #FFFFFF;
   --sidebar-active-indicator: #21A1F7;
@@ -35,8 +46,8 @@
   --surface-card-border: #E2E8F0;
   --surface-card-hover: #F1F5F9;
 
-  /* Typography (WCAG 2.1 AAA/AA Compliant) */
-  --text-primary: #0F172A;           /* Contrast 17.85:1 on white (AAA) */
+  /* Typography (Strict Rule: Neutral Black #1C1C1C - No #000000 body text) */
+  --text-primary: #1C1C1C;           /* Neutral Black (AAA Compliant) */
   --text-secondary: #475569;         /* Contrast 7.58:1 on white (AAA) */
   --text-tertiary: #64748B;          /* Contrast 4.76:1 on white (AA Pass) */
   --text-inverted: #FFFFFF;

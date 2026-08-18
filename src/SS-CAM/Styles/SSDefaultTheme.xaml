@@ -15,21 +15,32 @@
     <SolidColorBrush x:Key="FluentBrandLight" Color="#EBF4FE"/>
     <SolidColorBrush x:Key="FluentBrandTint"  Color="#21A1F7"/>
 
-    <!-- Neutral Light Tokens (content area: white cards on light canvas) -->
+    <!-- Official SuamiSihat Brand System Tokens (brand-system.html) -->
+    <SolidColorBrush x:Key="SSPrussianBlue" Color="#022057"/>
+    <SolidColorBrush x:Key="SSBlue"         Color="#043388"/>
+    <SolidColorBrush x:Key="SSAzure"        Color="#21A1F7"/>
+    <SolidColorBrush x:Key="SSMalibu"       Color="#6DC6EC"/>
+    <SolidColorBrush x:Key="SSNeutralBlack" Color="#1C1C1C"/>
+    <SolidColorBrush x:Key="SSLion"         Color="#BD9A73"/>
+    <SolidColorBrush x:Key="SSFawn"         Color="#CCAC8D"/>
+    <SolidColorBrush x:Key="SSArylide"      Color="#E5D15C"/>
+    <SolidColorBrush x:Key="SSBanana"       Color="#FCE53D"/>
+
+    <!-- Neutral Light Tokens (Strict Rule: Neutral Black #1C1C1C for text) -->
     <SolidColorBrush x:Key="FluentLightCanvasBg"      Color="#F5F5F5"/>
     <SolidColorBrush x:Key="FluentLightCardBg"        Color="#FFFFFF"/>
     <SolidColorBrush x:Key="FluentLightCardSubBg"     Color="#F8FAFC"/>
     <SolidColorBrush x:Key="FluentLightStroke"        Color="#E0E0E0"/>
-    <SolidColorBrush x:Key="FluentLightTextPrimary"   Color="#242424"/>
-    <SolidColorBrush x:Key="FluentLightTextSecondary" Color="#616161"/>
+    <SolidColorBrush x:Key="FluentLightTextPrimary"   Color="#1C1C1C"/>
+    <SolidColorBrush x:Key="FluentLightTextSecondary" Color="#575756"/>
 
-    <!-- Sidebar Semantic Tokens -->
-    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#043388"/>
-    <SolidColorBrush x:Key="SidebarSearchBackgroundBrush" Color="#0644B2"/>
+    <!-- Sidebar Semantic Tokens (Prussian Blue #022057) -->
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#022057"/>
+    <SolidColorBrush x:Key="SidebarSearchBackgroundBrush" Color="#043388"/>
     <SolidColorBrush x:Key="SidebarTextPrimaryBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="SidebarTextSecondaryBrush" Color="#8AAACF"/>
     <SolidColorBrush x:Key="SidebarUserCardBackgroundBrush" Color="#00000000"/>
-    <SolidColorBrush x:Key="SidebarDividerBrush" Color="#163B75"/>
+    <SolidColorBrush x:Key="SidebarDividerBrush" Color="#062E7A"/>
 
     <!-- Neutral Dark Tokens: same values as Fluent2Styles.xaml.
          Required so pages using FluentDark* keys do not fall back to
