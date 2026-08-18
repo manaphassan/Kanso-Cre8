@@ -15,9 +15,15 @@ app.use('/api', apiRoutes);
 
 // Static client assets (Prioritize Vite production build dist)
 const fs = require('fs');
-const distPath = path.resolve(__dirname, '../client/dist');
-const rawClientPath = path.resolve(__dirname, '../client');
-const clientPath = fs.existsSync(distPath) ? distPath : rawClientPath;
+const candidates = [
+  path.resolve(__dirname, '../client/dist'),
+  path.resolve(__dirname, '../../src/SS-CAM.Web/client/dist'),
+  path.resolve(__dirname, '../src/SS-CAM.Web/client/dist'),
+  path.resolve(__dirname, './client/dist'),
+  path.resolve(__dirname, '../client')
+];
+const clientPath = candidates.find(p => fs.existsSync(path.join(p, 'index.html'))) || path.resolve(__dirname, '../client');
+console.log(`[Static] Serving client assets from: ${clientPath}`);
 
 app.use(express.static(clientPath));
 
