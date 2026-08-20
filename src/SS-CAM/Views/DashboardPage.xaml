@@ -146,6 +146,117 @@
                 </StackPanel>
             </ui:Card>
 
+            <!-- Designer Workload & Capacity Section -->
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="PeopleTeam24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="Designer Workload &amp; Capacity Radar" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ui:TextBlock Grid.Column="1" Text="Max 4 active tasks recommended" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <ItemsControl x:Name="DesignerWorkloadControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ui:Card Padding="14" Margin="4">
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <ui:TextBlock Text="{Binding DesignerName}" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding StaffId}" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="{DynamicResource FluentBrandLight}" CornerRadius="4" Padding="6,2" VerticalAlignment="Top">
+                                                <ui:TextBlock Text="{Binding CapacityStatus}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Capacity Progress Bar -->
+                                        <ProgressBar Value="{Binding CapacityPercent}" Maximum="100" Height="6" Margin="0,10,0,8" Foreground="{DynamicResource FluentBrand80}"/>
+
+                                        <Grid Margin="0,2,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <ui:TextBlock Text="In-Progress" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding InProgressCount}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <ui:TextBlock Text="Review / Rev" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding ReviewCount}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorCautionBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                                <ui:TextBlock Text="Completed" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding DoneCount}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorSuccessBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </ui:Card>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Creative SLA & Revision Turnaround Analytics -->
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <ui:SymbolIcon Symbol="Timer24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="Operational SLA &amp; Revision Turnaround Velocity" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ui:Card Grid.Column="0" Margin="0,0,8,0" Padding="14">
+                            <StackPanel>
+                                <ui:TextBlock Text="FIRST-TIME RIGHT RATE" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock x:Name="TxtSlaFirstTimeRight" Text="85.0%" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,4,0,2"/>
+                                <ui:TextBlock Text="Projects signed off with 0 revisions" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <ui:Card Grid.Column="1" Margin="4,0,4,0" Padding="14">
+                            <StackPanel>
+                                <ui:TextBlock Text="AVG TURNAROUND VELOCITY" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock x:Name="TxtSlaAvgTurnaround" Text="3.5 Days" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,2"/>
+                                <ui:TextBlock Text="From brief creation to deliverable sign-off" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <ui:Card Grid.Column="2" Margin="8,0,0,0" Padding="14">
+                            <StackPanel>
+                                <ui:TextBlock Text="AVG REVISION ROUNDS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                <ui:TextBlock x:Name="TxtSlaAvgRevs" Text="0.4 Revs" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,2"/>
+                                <ui:TextBlock Text="Average iterations per deliverable" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:Card>
+                    </Grid>
+                </StackPanel>
+            </ui:Card>
+
             <!-- Hidden chart controls for data binding compatibility -->
             <StackPanel Visibility="Collapsed">
                 <ItemsControl x:Name="TypeChartControl"/>

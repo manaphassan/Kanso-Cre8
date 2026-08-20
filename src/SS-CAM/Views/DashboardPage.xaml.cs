@@ -216,6 +216,23 @@ namespace SS_CAM.Views
             FlowDesignerCount.Text = string.Format("{0} Designers, {1} Projects", snapshot.DesignerCount, snapshot.TotalProjects);
             FlowFileCount.Text = string.Format("{0} files indexed", snapshot.TotalFiles);
 
+            // Designer Workload & Capacity Radar
+            if (DesignerWorkloadControl != null)
+            {
+                DesignerWorkloadControl.ItemsSource = snapshot.DesignerWorkloads;
+            }
+
+            // Creative SLA Analytics
+            if (snapshot.SlaMetrics != null)
+            {
+                if (TxtSlaFirstTimeRight != null)
+                    TxtSlaFirstTimeRight.Text = string.Format("{0:0.0}%", snapshot.SlaMetrics.FirstTimeRightPercent);
+                if (TxtSlaAvgTurnaround != null)
+                    TxtSlaAvgTurnaround.Text = string.Format("{0:0.0} Days", snapshot.SlaMetrics.AvgTurnaroundDays);
+                if (TxtSlaAvgRevs != null)
+                    TxtSlaAvgRevs.Text = string.Format("{0:0.0} Revs", snapshot.SlaMetrics.AvgRevisionsPerProject);
+            }
+
             TxtStatus.Text = string.Format("Scan complete at {0:HH:mm:ss}. Connected to Synology Workspace.", DateTime.Now);
         }
 

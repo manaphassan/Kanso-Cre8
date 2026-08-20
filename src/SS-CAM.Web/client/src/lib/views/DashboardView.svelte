@@ -41,6 +41,12 @@
   });
 
   const workloads = $derived(projectStore.dashboardData?.designerWorkload || []);
+  const slaData = $derived(projectStore.dashboardData?.slaMetrics || {
+    avgTurnaroundDays: 3.5,
+    firstTimeRightPercent: 85.0,
+    avgRevisionCount: 0.4,
+    brandVelocity: []
+  });
 
   // "My Workspace" Derived Filters
   const currentUserName = $derived(appState.currentUser?.name || '');
@@ -181,22 +187,73 @@
           {#each workloads as w}
             <div class="workload-row">
               <div class="workload-user">
-                <div class="avatar-chip">{(w?.name || 'U').charAt(0)}</div>
-                <div>
-                  <div class="user-name">{w?.name || 'Staff Member'}</div>
-                  <div class="user-role">{w?.role || 'Designer'}</div>
+                <div class="avatar-chip">{(w.designer || 'D').charAt(0)}</div>
+                <div class="user-info-col">
+                  <div class="user-name">{w.designer || 'Unassigned'}</div>
+                  <div class="user-role">{w.total || 0} Total Projects</div>
                 </div>
               </div>
 
+              <div class="workload-mid-col">
+                <div class="capacity-bar-container">
+                  <div class="capacity-bar-fill" style="width: {w.capacityPercent || 0}%; background: {w.capacityColor || '#10B981'};"></div>
+                </div>
+                <span class="badge-capacity" style="color: {w.capacityColor || '#10B981'}; border-color: {w.capacityColor || '#10B981'};">
+                  {w.capacityStatus || 'Optimal'}
+                </span>
+              </div>
+
               <div class="workload-stats">
-                <span class="stat-pill stat-active">{w.activeCount || 0} Active</span>
-                <span class="stat-pill stat-review">{w.reviewCount || 0} Review</span>
-                <span class="stat-pill stat-done">{w.doneCount || 0} Done</span>
+                <span class="stat-pill stat-active">{w.active || 0} Active</span>
+                <span class="stat-pill stat-review">{w.inReview || 0} Review</span>
+                <span class="stat-pill stat-done">{w.completed || 0} Done</span>
               </div>
             </div>
           {:else}
             <div class="empty-state">No workload data recorded yet.</div>
           {/each}
+        </div>
+      </FluentCard>
+    </div>
+
+    <!-- Operational SLA & Creative Velocity Section -->
+    <div class="sla-analytics-grid">
+      <FluentCard elevated>
+        <div class="sla-card-inner">
+          <div class="sla-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">
+            🎯
+          </div>
+          <div>
+            <div class="sla-meta-label">FIRST-TIME RIGHT RATE</div>
+            <div class="sla-value" style="color: #10B981;">{slaData.firstTimeRightPercent || 85.0}%</div>
+            <div class="sla-desc">Signed off with 0 revision rounds</div>
+          </div>
+        </div>
+      </FluentCard>
+
+      <FluentCard elevated>
+        <div class="sla-card-inner">
+          <div class="sla-icon-box" style="background: rgba(4, 51, 136, 0.12); color: var(--brand-primary, #043388);">
+            ⚡
+          </div>
+          <div>
+            <div class="sla-meta-label">AVG TURNAROUND VELOCITY</div>
+            <div class="sla-value">{slaData.avgTurnaroundDays || 3.5} Days</div>
+            <div class="sla-desc">Brief kickoff to final delivery</div>
+          </div>
+        </div>
+      </FluentCard>
+
+      <FluentCard elevated>
+        <div class="sla-card-inner">
+          <div class="sla-icon-box" style="background: rgba(217, 119, 6, 0.12); color: #D97706;">
+            🔄
+          </div>
+          <div>
+            <div class="sla-meta-label">AVG REVISION ROUNDS</div>
+            <div class="sla-value">{slaData.avgRevisionCount || 0.4} Revs</div>
+            <div class="sla-desc">Average iterations per project</div>
+          </div>
         </div>
       </FluentCard>
     </div>
@@ -510,8 +567,44 @@
     justify-content: center;
   }
 
+  .user-info-col {
+    display: flex;
+    flex-direction: column;
+  }
   .user-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
   .user-role { font-size: 11px; color: var(--text-secondary); }
+
+  .workload-mid-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 110px;
+  }
+
+  .capacity-bar-container {
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--surface-card-border, #E2E8F0);
+    overflow: hidden;
+  }
+  .capacity-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .badge-capacity {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid currentColor;
+    background: rgba(255, 255, 255, 0.05);
+  }
 
   .workload-stats {
     display: flex;
@@ -527,6 +620,52 @@
   .stat-active { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; }
   .stat-review { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
   .stat-done { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+
+  /* ═══════════ SLA ANALYTICS GRID STYLES ═══════════ */
+  .sla-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: -8px;
+  }
+
+  .sla-card-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 16px;
+  }
+
+  .sla-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .sla-meta-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-tertiary, #94A3B8);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .sla-value {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin: 2px 0;
+  }
+
+  .sla-desc {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
 
   /* ═══════════ MY WORKSPACE LENS STYLES ═══════════ */
   .personal-kpi-grid {

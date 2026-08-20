@@ -180,6 +180,16 @@ namespace SS_CAM.Services
             result.ActivityChart = BuildActivityChart(activity);
             result.StorageChart = BuildStorageChart(storageByBrand);
 
+            try
+            {
+                result.DesignerWorkloads = WorkloadSlaService.ComputeDesignerWorkloads(root);
+                result.SlaMetrics = WorkloadSlaService.ComputeSlaMetrics(root);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] Workload/SLA compute warning: " + ex.Message);
+            }
+
             return result;
         }
 

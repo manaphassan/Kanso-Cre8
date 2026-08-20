@@ -505,6 +505,25 @@ This is the project brief content.
     }, 500);
   });
 
+  // ─── TEST 20: Designer Capacity & Creative SLA Metrics Computation ──
+  test('WorkspaceService accurately calculates designer capacity scores and SLA turnaround metrics', () => {
+    const metrics = WorkspaceService.getDashboardMetrics();
+    assert.ok(metrics.designerWorkload, 'Should include designer workload');
+    assert.ok(Array.isArray(metrics.designerWorkload), 'Designer workload should be an array');
+
+    metrics.designerWorkload.forEach(dw => {
+      assert.ok(typeof dw.capacityPercent === 'number', 'Should have numeric capacityPercent');
+      assert.ok(typeof dw.capacityStatus === 'string', 'Should have string capacityStatus');
+      assert.ok(typeof dw.capacityColor === 'string', 'Should have string capacityColor');
+    });
+
+    assert.ok(metrics.slaMetrics, 'Should include slaMetrics');
+    assert.ok(typeof metrics.slaMetrics.avgTurnaroundDays === 'number', 'avgTurnaroundDays should be number');
+    assert.ok(typeof metrics.slaMetrics.firstTimeRightPercent === 'number', 'firstTimeRightPercent should be number');
+    assert.ok(typeof metrics.slaMetrics.avgRevisionCount === 'number', 'avgRevisionCount should be number');
+    assert.ok(Array.isArray(metrics.slaMetrics.brandVelocity), 'brandVelocity should be array');
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

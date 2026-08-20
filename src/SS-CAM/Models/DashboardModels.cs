@@ -40,6 +40,53 @@ namespace SS_CAM.Models
         public string Modified { get; set; }
     }
 
+    public class DesignerWorkloadItem
+    {
+        public string DesignerName { get; set; }
+        public string StaffId { get; set; }
+        public int TotalProjects { get; set; }
+        public int ActiveCount { get; set; }
+        public int InProgressCount { get; set; }
+        public int ReviewCount { get; set; }
+        public int RevisionCount { get; set; }
+        public int DoneCount { get; set; }
+        public int OverdueCount { get; set; }
+        public double CapacityPercent { get; set; }
+        public string CapacityStatus { get; set; }
+        public string CapacityColor { get; set; }
+
+        public DesignerWorkloadItem()
+        {
+            CapacityStatus = "Optimal";
+            CapacityColor = "#10B981"; // Success Green
+        }
+    }
+
+    public class BrandSlaItem
+    {
+        public string Brand { get; set; }
+        public int TotalProjects { get; set; }
+        public int ActiveProjects { get; set; }
+        public int CompletedProjects { get; set; }
+        public double AvgTurnaroundDays { get; set; }
+    }
+
+    public class SlaMetricsSnapshot
+    {
+        public double AvgTurnaroundDays { get; set; }
+        public double FirstTimeRightPercent { get; set; }
+        public double AvgRevisionsPerProject { get; set; }
+        public int TotalCompletedProjects { get; set; }
+        public int OverdueProjectsCount { get; set; }
+        public List<BrandSlaItem> BrandSlaList { get; set; }
+
+        public SlaMetricsSnapshot()
+        {
+            BrandSlaList = new List<BrandSlaItem>();
+            FirstTimeRightPercent = 100.0;
+        }
+    }
+
     public class DashboardSnapshot
     {
         public int TotalProjects { get; set; }
@@ -59,6 +106,8 @@ namespace SS_CAM.Models
         public List<DashboardChartItem> ActivityChart { get; set; }
         public List<DashboardChartItem> StorageChart { get; set; }
         public List<DesignerFolderItem> RecentProjects { get; set; }
+        public List<DesignerWorkloadItem> DesignerWorkloads { get; set; }
+        public SlaMetricsSnapshot SlaMetrics { get; set; }
 
         public string LargestProjectName { get; set; }
         public string LargestProjectSize { get; set; }
@@ -71,6 +120,8 @@ namespace SS_CAM.Models
             ActivityChart = new List<DashboardChartItem>();
             StorageChart = new List<DashboardChartItem>();
             RecentProjects = new List<DesignerFolderItem>();
+            DesignerWorkloads = new List<DesignerWorkloadItem>();
+            SlaMetrics = new SlaMetricsSnapshot();
             LatestProject = "No projects found";
             LargestProjectName = "None";
             LargestProjectSize = "0 MB";
