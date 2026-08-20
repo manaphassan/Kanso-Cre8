@@ -202,7 +202,7 @@
           <div class="desktop-banner">
             <div class="banner-row">
               <span class="banner-pill">Desktop Client</span>
-              <span class="banner-ver">v4.0.0</span>
+              <span class="banner-ver">v4.4.0</span>
             </div>
             <div class="banner-title">SS-CAM Desktop</div>
             <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
@@ -265,13 +265,6 @@
         </div>
 
         <div class="header-right">
-          <a href="https://assets.suamisihat.myds.me/" target="_blank" rel="noreferrer" class="vault-link" title="Brand Assets Vault">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
-            </svg>
-            <span>Brand Vault</span>
-            <span aria-hidden="true" style="font-size:10px;opacity:0.7">↗</span>
-          </a>
 
           <button
             class="icon-btn notif-btn"
@@ -390,7 +383,7 @@
 
   <FluentDialog
     bind:open={showDownloadModal}
-    title="Download SS-CAM Clients (v4.0.0)"
+    title="Download SS-CAM Clients (v4.4.0)"
     onClose={() => (showDownloadModal = false)}
   >
     <div class="download-modal-content">
@@ -399,12 +392,12 @@
           <div class="platform-icon win-icon">🪟</div>
           <div class="platform-meta">
             <div class="platform-title">Windows Desktop Application</div>
-            <div class="platform-desc">Single-file portable .exe with Fluent 2 Mica design (~5.2 MB)</div>
+            <div class="platform-desc">Single-file portable .exe with Fluent 2 Mica design (~5.6 MB)</div>
           </div>
         </div>
         <div class="platform-actions">
           <a
-            href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.0.0/SS-CAM-v4.0.0.exe"
+            href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.4.0/SS-CAM-v4.4.0.exe"
             class="platform-download-btn win-btn"
             target="_blank"
             rel="noreferrer"
@@ -412,7 +405,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-            Download Windows Exe (v4.0.0)
+            Download Windows Exe (v4.4.0)
           </a>
         </div>
       </div>
