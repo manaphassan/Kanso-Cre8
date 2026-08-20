@@ -1,5 +1,5 @@
 # 01 — Architecture Review & Governance
-**SS-CAM v3.5.0** | Last updated: 2026-08-17  
+**SS-CAM v4.4.0** | Last updated: 2026-08-20  
 **Governance Agent**: `wpf-architecture-governance`
 
 ---
