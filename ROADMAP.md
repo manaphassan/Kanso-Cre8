@@ -32,28 +32,21 @@
 | **v3.6.1** | 2026-08-17 | Metamorphosis theme solid surface opacity overhaul, legibility fixes for drawer panels & cards |
 | **v4.0.0** | 2026-08-18 | **Centralized Vault Hierarchy & ClickUp 3.0 Task Workspace**: Year-first NAS hierarchy (`Creative-Team/[YYYY]/[YYYYMM_Month]/[Project]`), 5-folder structure, 68%/32% 2-column task workspace, in-app Copywriting Studio (`03_COPYWRITING/COPY.md`), JSONL contextual comments (`_comments.jsonl`), enterprise RBAC & immutable audit logs |
 | **v4.0.1** | 2026-08-18 | **Patch Release**: Real async GitHub Releases API update checker with NAS `version.json` fallback, landing page synchronization |
+| **v4.1.0** | 2026-08-19 | **Desktop Feature Parity & Studio Overhaul**: Desktop Copywriting Studio (`CopywritingPage`), contextual discussions data layer (`ProjectCommentService`), and ClickUp 3.0-style 2-column task workspace |
+| **v4.2.0** | 2026-08-20 | **Desktop NAS Sync & Batch Operations + Web Real-Time SSE**: Background `WorkspaceWatcherService`, `ThumbnailCacheService`, UI virtualization, batch operations ribbon, and Web SSE event stream + HTTP 206 video range streaming |
+| **v4.3.0** | 2026-08-20 | **Asset Export, Packaging & Naming Engine**: Desktop `ExportPackagingService` (1-click ZIP with `HANDOVER_SUMMARY.html`), `AssetNamingService` canonical sanitizer, and Web `ExportService` ZIP streaming |
+| **v4.4.0** | 2026-08-20 | **Designer Workload Heatmaps & Creative SLA Analytics**: Live designer capacity radars (`WorkloadSlaService`), capacity progress meters, and operational SLA telemetry across Desktop and Web |
 
 ---
 
-## 🔄 In Progress — v4.1.0: Desktop Feature Parity & Studio Overhaul (Target: Q3/Q4 2026)
+## 🔄 In Progress — v4.5.0: Visual Asset Revision Diff & Side-by-Side Comparison (Target: Q3/Q4 2026)
 
-### 1. Dedicated Desktop Copywriting Studio (`CopywritingPage.xaml`)
-* Direct binding and persistence to `03_COPYWRITING/COPY.md` on local/NAS projects.
-* Live telemetry: word count, character count, and estimated reading time.
-* Pre-scaffolded templates: TikTok/Reels video scripts, Meta problem-agitate-solve angles, and packaging benefit claims.
+### 1. Interactive Split-Slider Visual Diff (Desktop & Web)
+* Split-slider comparison between deliverable revisions (`_v1.png` vs `_v2.png`, or artwork mockup vs print dieline).
+* Synchronized zoom and pan for high-resolution print exports and packaging dielines.
 
-### 2. Contextual In-App Comments Engine (`_comments.jsonl`)
-* Slide-out discussion drawer in `SearchCopyPage` and `TaskManagerPage`.
-* Autocomplete and highlighted badge rendering for team members (`@hasan`, `@haikal`, `@harussani`).
-* Resilient offline-first JSONL read/append with monotonic timestamping.
-
-### 3. ClickUp 3.0-Style 2-Column Task Workspace in Desktop
-* Left Canvas (68%): Split Markdown editor + preview, deliverable gallery with quick lightbox.
-* Right Inspector (32%): Frontmatter property sheet, revision stepper, and sign-off action bar.
-
-### 4. Code Quality & Source Guardian Zero-Warning Attestation
-* Zero silent catches across all views.
-* Strict UTF-8 BOM encoding and Fluent 2 token verification.
+### 2. Copywriting & Brief Revision Diff Engine
+* Visual color-coded diff viewer (green additions / red deletions) for `COPY.md` scripts and `README.md` project briefs across revision cycles.
 
 ---
 

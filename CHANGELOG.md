@@ -2,7 +2,91 @@
 
 All notable SS-CAM changes are documented here.
 
-## [4.0.1] - 2026-08-18 (Patch Release)
+## [4.4.0] - 2026-08-20 (Stable Release)
+
+### Added & Refined — Designer Workload Heatmaps & Creative SLA Analytics
+- **Live Designer Workload & Capacity Radar (`DashboardPage.xaml` & `WorkloadSlaService.cs`)**:
+  - Real-time aggregation of active project queues across top-level NAS designer folders (`0001D`, `0002S`, etc.).
+  - Automated bandwidth capacity scoring (`Optimal Bandwidth` 0-2 tasks, `High Load` 3-4 tasks, `At Capacity` 5+ tasks) with color-coded progress meters.
+  - Active task breakdown across In-Progress, Review/Revision, and Completed.
+- **Operational Creative SLA & Turnaround Telemetry**:
+  - First-Time Right Rate % tracking percentage of campaigns signed off without revisions.
+  - Average Turnaround Velocity (days from brief kickoff to deliverable sign-off).
+  - Average Revision Rounds per deliverable.
+  - Brand-level SLA velocity breakdown across holding subsidiaries (`SSH`, `SSC`, `SSW`, `SSE`, `SST`).
+- **Web Portal Capacity & SLA Analytics (`DashboardView.svelte` & `WorkspaceService.js`)**:
+  - Live capacity progress bars and status badges in Executive Deck Designer Production Load panel.
+  - 3-card Creative SLA telemetry section in Executive Board Deck.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.4.0.exe` | Compiled Native C# WPF Executable (5.61 MB) |
+| `AssemblyVersion` | 4.4.0.0 |
+| `AssemblyFileVersion` | 4.4.0.0 |
+
+---
+
+## [4.3.0] - 2026-08-20 (Stable Release)
+
+### Added & Refined — Asset Export, Packaging & Naming Engine
+- **1-Click Creative Handover Packaging (`ExportPackagingService.cs` & `ExportService.js`)**:
+  - Async ZIP generation bundling deliverables from `05_DELIVERABLES/`, `03_COPYWRITING/COPY.md`, and project briefs.
+  - Auto-generated `HANDOVER_SUMMARY.html` with project metadata, sign-off status, and tabular asset inventory.
+  - 1-Click UI export button in desktop footer and web project header (`/api/projects/:id/export`).
+- **Canonical Asset Naming & Sanitizer (`AssetNamingService.cs`)**:
+  - Enforces canonical SuamiSihat standard `{YEARMONTH}_{JOBID}_{BRAND}_{PROJECT}_{TYPE}_{VERSION}.{EXT}`.
+  - Automated 1-click batch renaming tool with instant preview and gallery refresh.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.3.0.exe` | Compiled Native C# WPF Executable (5.60 MB) |
+| `AssemblyVersion` | 4.3.0.0 |
+| `AssemblyFileVersion` | 4.3.0.0 |
+
+---
+
+## [4.2.0] - 2026-08-20 (Stable Release)
+
+### Added & Refined — Desktop NAS Sync & Batch Operations + Web Real-Time SSE
+- **Native Desktop NAS File Watcher (`WorkspaceWatcherService.cs`)**:
+  - Background `FileSystemWatcher` with 600ms debouncing, live auto-reconnect, and multi-view synchronization.
+- **Desktop Deliverable Thumbnail Engine (`ThumbnailCacheService.cs`)**:
+  - Async 320px decode with disk cache in `%LOCALAPPDATA%\SS-CAM\Thumbnails\` and memory LRU cache.
+- **Desktop Batch Operations Ribbon & UI Virtualization (`SearchCopyPage.xaml`)**:
+  - Extended multi-selection with bulk status transitions and UI virtualization for 1,000+ items.
+- **Web Real-Time SSE Feed & Video Range Streaming (`SseService.js` & `DeliverableService.js`)**:
+  - Server-Sent Events at `/api/events` broadcasting task decisions, comments, and project updates.
+  - HTTP 206 Partial Content range requests for seamless in-browser deliverable video playback.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.2.0.exe` | Compiled Native C# WPF Executable (5.56 MB) |
+| `AssemblyVersion` | 4.2.0.0 |
+| `AssemblyFileVersion` | 4.2.0.0 |
+
+---
+
+## [4.1.0] - 2026-08-19 (Stable Release)
+
+### Added & Refined — Desktop Feature Parity & Studio Overhaul
+- **Desktop Copywriting Studio (`CopywritingPage.xaml` & `CopywritingDesktopService.cs`)**:
+  - Dedicated NAS Markdown persistence to `03_COPYWRITING/COPY.md` with live word, char, and reading time telemetry.
+- **Contextual In-App Comments Engine (`ProjectCommentService.cs`)**:
+  - JSONL discussions stored in `_comments.jsonl` with `@mention` support.
+- **ClickUp 3.0-Style 2-Column Task Workspace (`SearchCopyPage.xaml`)**:
+  - 68% Left Canvas (Markdown Brief / Raw / Deliverables Gallery) + 32% Right Inspector.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.1.0.exe` | Compiled Native C# WPF Executable (5.53 MB) |
+| `AssemblyVersion` | 4.1.0.0 |
+| `AssemblyFileVersion` | 4.1.0.0 |
+
+---
 
 ### Fixed
 - **`OnCheckUpdates` was a hardcoded stub** (`SettingsPage.xaml.cs`): The "Software Updates" button in Settings always showed "Software is up to date" without ever making a network call. Replaced with a real async check against the GitHub Releases API (`api.github.com/repos/SuamiSihat/ss_cam/releases/latest`) with NAS `version.json` fallback. Update dialog now offers a one-click download when a newer version is detected.
