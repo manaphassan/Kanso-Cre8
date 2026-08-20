@@ -289,7 +289,7 @@ namespace SS_CAM.Views
 
         private void OnBatchStatusChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isInternalInspectorUpdate || ResultsListBox.SelectedItems.Count <= 1) return;
+            if (!IsLoaded || isInternalInspectorUpdate || ResultsListBox == null || ResultsListBox.SelectedItems == null || ResultsListBox.SelectedItems.Count <= 1) return;
 
             ComboBoxItem item = BatchStatusCmb.SelectedItem as ComboBoxItem;
             if (item == null || item.Content == null) return;
@@ -317,7 +317,7 @@ namespace SS_CAM.Views
 
         private void OnBatchPriorityChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isInternalInspectorUpdate || ResultsListBox.SelectedItems.Count <= 1) return;
+            if (!IsLoaded || isInternalInspectorUpdate || ResultsListBox == null || ResultsListBox.SelectedItems == null || ResultsListBox.SelectedItems.Count <= 1) return;
 
             ComboBoxItem item = BatchPriorityCmb.SelectedItem as ComboBoxItem;
             if (item == null || item.Content == null) return;
@@ -695,7 +695,7 @@ namespace SS_CAM.Views
 
         private void OnInspectorStatusChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isInternalInspectorUpdate || currentStatusItem == null) return;
+            if (!IsLoaded || isInternalInspectorUpdate || currentStatusItem == null) return;
 
             ComboBoxItem item = InspectorStatusCmb.SelectedItem as ComboBoxItem;
             if (item != null && item.Content != null)
@@ -708,7 +708,7 @@ namespace SS_CAM.Views
 
         private void OnInspectorPriorityChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isInternalInspectorUpdate || currentStatusItem == null) return;
+            if (!IsLoaded || isInternalInspectorUpdate || currentStatusItem == null) return;
 
             ComboBoxItem item = InspectorPriorityCmb.SelectedItem as ComboBoxItem;
             if (item != null && item.Content != null)

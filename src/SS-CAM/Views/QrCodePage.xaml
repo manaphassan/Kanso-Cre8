@@ -309,7 +309,7 @@
 
                 <!-- Right Column: Real-Time Live Preview & High-Res Export -->
                 <StackPanel Grid.Column="1">
-                    <ui:Card Padding="20" Effect="{StaticResource FluentDepth8}">
+                    <ui:Card Padding="20" Effect="{DynamicResource FluentDepth8}">
                         <StackPanel>
                             <!-- Live Scannability Badge Header -->
                             <Grid Margin="0,0,0,12">

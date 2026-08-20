@@ -36,7 +36,7 @@
             <!-- Fluent 2 Key Metric Cards Grid (Depth 4 Elevation) - 4-up, 2 rows, exact uniform height -->
             <UniformGrid Rows="2" Columns="4" Height="224" Margin="-6,0,-6,24">
                 <!-- Total Projects -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="TOTAL PROJECTS" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricTotalProjects" Text="0" Foreground="{DynamicResource FluentBrand80}" FontSize="28" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -45,7 +45,7 @@
                 </ui:Card>
 
                 <!-- Active WIP Projects -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="ACTIVE WIP (7 DAYS)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricActiveWIP" Text="0" Foreground="{DynamicResource SystemFillColorCautionBrush}" FontSize="28" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -54,7 +54,7 @@
                 </ui:Card>
 
                 <!-- Latest Project -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="LATEST CREATED" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricLatestProject" Text="-" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
@@ -63,7 +63,7 @@
                 </ui:Card>
 
                 <!-- Storage Size -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="STORAGE SIZE" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricFileSize" Text="0 MB" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -72,7 +72,7 @@
                 </ui:Card>
 
                 <!-- Created This Month -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="THIS MONTH OUTPUT" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricThisMonth" Text="0" Foreground="{DynamicResource SystemFillColorSuccessBrush}" FontSize="28" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -81,7 +81,7 @@
                 </ui:Card>
 
                 <!-- Largest Project -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="LARGEST PROJECT" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="MetricLargestProjectSize" Text="0 MB" Foreground="{DynamicResource SystemFillColorCautionBrush}" FontSize="22" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -90,7 +90,7 @@
                 </ui:Card>
 
                 <!-- Stale Projects -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="STALE PROJECTS (&gt;90 DAYS)" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                         <ui:TextBlock x:Name="MetricStaleProjects" Text="0" Foreground="{DynamicResource SystemFillColorCriticalBrush}" FontSize="28" FontWeight="Bold" Margin="0,2,0,0"/>
@@ -99,7 +99,7 @@
                 </ui:Card>
 
                 <!-- Flow Metrics -->
-                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{StaticResource FluentDepth4}">
+                <ui:Card Padding="16,12" Margin="6" VerticalAlignment="Stretch" Effect="{DynamicResource FluentDepth4}">
                     <StackPanel VerticalAlignment="Center">
                         <ui:TextBlock Text="CREATIVE TEAM FLOW" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                         <ui:TextBlock x:Name="FlowDesignerCount" Text="0 Designers, 0 Projects" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
@@ -109,7 +109,7 @@
             </UniformGrid>
 
             <!-- Inline 6 Last Created Projects List (Fluent 2 Card Container) -->
-            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{DynamicResource FluentDepth4}">
                 <StackPanel>
                     <ui:TextBlock Text="Recent Past Projects (Last 6 Created)" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,16"/>
                     <ItemsControl x:Name="Recent6ProjectsControl" Margin="0">
@@ -147,7 +147,7 @@
             </ui:Card>
 
             <!-- Designer Workload & Capacity Section -->
-            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{DynamicResource FluentDepth4}">
                 <StackPanel>
                     <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
@@ -216,7 +216,7 @@
             </ui:Card>
 
             <!-- Creative SLA & Revision Turnaround Analytics -->
-            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{StaticResource FluentDepth4}">
+            <ui:Card Margin="0,0,0,24" Padding="20" Effect="{DynamicResource FluentDepth4}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                         <ui:SymbolIcon Symbol="Timer24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
@@ -266,7 +266,7 @@
             </StackPanel>
 
             <!-- Designer Inspiration Widget -->
-            <ui:Card Padding="20" Margin="0,0,0,24" Effect="{StaticResource FluentDepth4}">
+            <ui:Card Padding="20" Margin="0,0,0,24" Effect="{DynamicResource FluentDepth4}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

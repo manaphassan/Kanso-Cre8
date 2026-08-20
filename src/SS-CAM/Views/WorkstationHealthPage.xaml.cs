@@ -37,6 +37,11 @@ namespace SS_CAM.Views
         public WorkstationHealthPage()
         {
             InitializeComponent();
+            Loaded += OnPageLoaded;
+        }
+
+        private void OnPageLoaded(object sender, RoutedEventArgs e)
+        {
             LoadHardwareSpecs();
             LoadSoftwareHealthData();
         }

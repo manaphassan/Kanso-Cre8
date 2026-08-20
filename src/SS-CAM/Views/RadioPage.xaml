@@ -64,7 +64,7 @@
         <!-- Row 1: ── TOP HERO FEATURED PLAYER BANNER (Standard Banner Hero Mesh) ── -->
         <ui:Card Grid.Row="1" MinHeight="100" Padding="0" Margin="0,0,0,16"
                  Background="#022057"
-                 Effect="{StaticResource FluentDepth4}"
+                 Effect="{DynamicResource FluentDepth4}"
                  ClipToBounds="True">
             <Border CornerRadius="12" Background="#022057" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True">
                 <Grid x:Name="HeroMeshContainer" MouseMove="OnHeroMeshMouseMove" MouseLeave="OnHeroMeshMouseLeave" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

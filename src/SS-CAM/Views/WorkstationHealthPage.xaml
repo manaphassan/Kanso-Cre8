@@ -223,7 +223,7 @@
                                 <ui:TextBlock Text="Design Suite Software Scanner" FontTypography="BodyStrong"/>
                                 <ui:TextBlock Text="Installed Creative Workstation Suite Apps &amp; Health Diagnostics" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0"/>
                             </StackPanel>
-                            <ui:TextBox x:Name="SoftwareSearchBox" Grid.Column="1" PlaceholderText="Search software..." Icon="{ui:SymbolIcon Symbol=Search24}" Width="200" TextChanged="OnSoftwareSearchTextChanged" VerticalAlignment="Center"/>
+                            <ui:TextBox x:Name="SoftwareSearchBox" Grid.Column="1" PlaceholderText="Search software..." Icon="Search24" Width="200" TextChanged="OnSoftwareSearchTextChanged" VerticalAlignment="Center"/>
                         </Grid>
 
                         <!-- Table Header Card -->

@@ -10,7 +10,7 @@
     <SolidColorBrush x:Key="FluentBrand80"    Color="#5E81AC"/>
     <SolidColorBrush x:Key="FluentBrand70"    Color="#81A1C1"/>
     <SolidColorBrush x:Key="FluentBrandLight" Color="#E5E9F0"/>
-    <SolidColorBrush x:Key="FluentBrandTint"  Color="#88C0D0"/>
+    <SolidColorBrush x:Key="FluentBrandTint"  Color="#E5E9F0"/>
 
     <!-- WPF-UI Core Base System Brush Overrides (Nord Light Snow Storm & Polar Night) -->
     <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#ECEFF4"/>
