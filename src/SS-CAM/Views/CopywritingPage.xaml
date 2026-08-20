@@ -1,0 +1,244 @@
+<Page x:Class="SS_CAM.Views.CopywritingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1100"
+      Title="Copywriting Studio"
+      Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer x:Name="PageScrollViewer"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Padding="24"
+                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+        <StackPanel MaxWidth="1200" HorizontalAlignment="Stretch">
+
+            <!-- 1. PAGE HEADER -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <ui:TextBlock Text="Copywriting Studio" FontSize="24" FontWeight="Bold"
+                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                    <ui:TextBlock Text="Draft, optimize, and persist high-converting copy directly into 03_COPYWRITING/COPY.md."
+                                  FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button x:Name="BtnCopyClipboard" Appearance="Secondary" Margin="0,0,8,0"
+                               Click="OnCopyClipboardClicked" Cursor="Hand" ToolTip="Copy all copy text to clipboard">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Copy24" Margin="0,0,6,0" FontSize="14"/>
+                            <ui:TextBlock Text="Copy Text"/>
+                        </StackPanel>
+                    </ui:Button>
+
+                    <ui:Button x:Name="BtnSaveScript" Appearance="Primary"
+                               Click="OnSaveScriptClicked" Cursor="Hand" ToolTip="Save changes directly to NAS COPY.md">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Save24" Margin="0,0,6,0" FontSize="14"/>
+                            <ui:TextBlock Text="Save to NAS"/>
+                        </StackPanel>
+                    </ui:Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- 2. PROJECT SELECTION & STATUS BANNER -->
+            <ui:Card Margin="0,0,0,16" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top Row: Project Selector -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                            <ui:SymbolIcon Symbol="Folder24" Margin="0,0,8,0" FontSize="16" Foreground="{DynamicResource FluentBrand80}"/>
+                            <ui:TextBlock Text="Select Project:" FontWeight="SemiBold" FontSize="13"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <ComboBox x:Name="ProjectSelectorCmb" Grid.Column="1" Height="32"
+                                  SelectionChanged="OnProjectSelectionChanged" VerticalAlignment="Center"
+                                  Background="{DynamicResource TextControlBackground}"
+                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+                        <ui:Button x:Name="BtnReloadProjects" Grid.Column="2" Appearance="Secondary" Margin="8,0,0,0"
+                                   Click="OnReloadProjectsClicked" Height="32" Cursor="Hand" ToolTip="Rescan workspace projects">
+                            <ui:SymbolIcon Symbol="ArrowSync24" FontSize="14"/>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnOpenFolder" Grid.Column="3" Appearance="Secondary" Margin="8,0,0,0"
+                                   Click="OnOpenFolderClicked" Height="32" Cursor="Hand" ToolTip="Open project folder in Windows Explorer">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="FolderOpen24" Margin="0,0,6,0" FontSize="14"/>
+                                <ui:TextBlock Text="Open Folder"/>
+                            </StackPanel>
+                        </ui:Button>
+                    </Grid>
+
+                    <!-- Bottom Row: Path & Status Feedback -->
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:TextBlock Text="File Location: " FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            <ui:TextBlock x:Name="TxtFilePath" Text="No project selected" FontSize="11.5"
+                                          FontFamily="Consolas" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <ui:TextBlock x:Name="TxtSaveStatus" Grid.Column="1" Text="Ready" FontSize="11.5" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource SystemFillColorSuccessBrush}"/>
+                    </Grid>
+                </Grid>
+            </ui:Card>
+
+            <!-- 3. LIVE COPY TELEMETRY METRICS -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Words -->
+                <ui:Card Grid.Column="0" Margin="0,0,6,0" Padding="14">
+                    <StackPanel>
+                        <ui:TextBlock Text="WORD COUNT" FontSize="10.5" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ui:TextBlock x:Name="TxtMetricWords" Text="0 words" FontSize="20" FontWeight="Bold"
+                                      Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Characters -->
+                <ui:Card Grid.Column="1" Margin="6,0,6,0" Padding="14">
+                    <StackPanel>
+                        <ui:TextBlock Text="CHARACTERS" FontSize="10.5" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ui:TextBlock x:Name="TxtMetricChars" Text="0 chars" FontSize="20" FontWeight="Bold"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Reading Duration -->
+                <ui:Card Grid.Column="2" Margin="6,0,6,0" Padding="14">
+                    <StackPanel>
+                        <ui:TextBlock Text="EST. READING TIME" FontSize="10.5" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ui:TextBlock x:Name="TxtMetricReadingTime" Text="0 sec" FontSize="20" FontWeight="Bold"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Line Count -->
+                <ui:Card Grid.Column="3" Margin="6,0,0,0" Padding="14">
+                    <StackPanel>
+                        <ui:TextBlock Text="LINE COUNT" FontSize="10.5" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ui:TextBlock x:Name="TxtMetricLines" Text="0 lines" FontSize="20" FontWeight="Bold"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+            </Grid>
+
+            <!-- 4. VIRAL HOOK PRESETS & FORMATTING TOOLBAR -->
+            <ui:Card Margin="0,0,0,16" Padding="12">
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:TextBlock Text="Insert Framework:" FontWeight="SemiBold" FontSize="12"
+                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                    <ui:Button x:Name="BtnInsertTikTok" Appearance="Secondary" Margin="0,2,8,2"
+                               Click="OnInsertTikTokClicked" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Video24" Margin="0,0,6,0" FontSize="13"/>
+                            <ui:TextBlock Text="TikTok / Reels Script Table" FontSize="11.5"/>
+                        </StackPanel>
+                    </ui:Button>
+
+                    <ui:Button x:Name="BtnInsertMetaPas" Appearance="Secondary" Margin="0,2,8,2"
+                               Click="OnInsertMetaPasClicked" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Speaker224" Margin="0,0,6,0" FontSize="13"/>
+                            <ui:TextBlock Text="Meta Problem-Agitate-Solve" FontSize="11.5"/>
+                        </StackPanel>
+                    </ui:Button>
+
+                    <ui:Button x:Name="BtnInsertClaims" Appearance="Secondary" Margin="0,2,8,2"
+                               Click="OnInsertClaimsClicked" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Checkmark24" Margin="0,0,6,0" FontSize="13"/>
+                            <ui:TextBlock Text="Product Claims Matrix" FontSize="11.5"/>
+                        </StackPanel>
+                    </ui:Button>
+
+                    <ui:Button x:Name="BtnResetTemplate" Appearance="Secondary" Margin="0,2,0,2"
+                               Click="OnResetTemplateClicked" Cursor="Hand" ToolTip="Reset to standard brand copy template">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="DocumentSync24" Margin="0,0,6,0" FontSize="13"/>
+                            <ui:TextBlock Text="Reset Template" FontSize="11.5"/>
+                        </StackPanel>
+                    </ui:Button>
+                </WrapPanel>
+            </ui:Card>
+
+            <!-- 5. MAIN COPY EDITOR CANVAS -->
+            <ui:Card Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ui:TextBlock Text="Markdown Copy Script (COPY.md)" FontWeight="SemiBold" FontSize="13"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        <ui:TextBlock Text="Ctrl+S to save" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                      Grid.Column="1"/>
+                    </Grid>
+
+                    <TextBox x:Name="CopyScriptEditor" Grid.Row="1"
+                             MinHeight="450" MaxHeight="800"
+                             AcceptsReturn="True" AcceptsTab="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled"
+                             FontFamily="Consolas, Segoe UI Variable Text, Arial"
+                             FontSize="13"
+                             Padding="12"
+                             Background="{DynamicResource TextControlBackground}"
+                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                             BorderThickness="1"
+                             TextChanged="OnCopyScriptTextChanged"
+                             KeyDown="OnEditorKeyDown"/>
+                </Grid>
+            </ui:Card>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

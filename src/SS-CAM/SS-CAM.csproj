@@ -118,6 +118,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\CopywritingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\BrandAssetsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -186,6 +190,7 @@
     <Compile Include="Models\TeamNote.cs" />
     <Compile Include="Models\ProjectStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />
+    <Compile Include="Models\ProjectComment.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
@@ -207,6 +212,10 @@
     <Compile Include="Services\NasConfigSyncService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\AppVersion.cs" />
+    <Compile Include="Services\ProjectCommentService.cs" />
+    <Compile Include="Services\CopywritingDesktopService.cs" />
+    <Compile Include="Services\WorkspaceWatcherService.cs" />
+    <Compile Include="Services\ThumbnailCacheService.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -233,6 +242,10 @@
     </Compile>
     <Compile Include="Views\SearchCopyPage.xaml.cs">
       <DependentUpon>SearchCopyPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\CopywritingPage.xaml.cs">
+      <DependentUpon>CopywritingPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Views\BrandAssetsPage.xaml.cs">

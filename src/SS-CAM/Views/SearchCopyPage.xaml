@@ -95,12 +95,60 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Scrollable project list -->
+                    <!-- Batch Operations Ribbon (Slides in when >1 item selected) -->
+                    <Border DockPanel.Dock="Bottom" x:Name="BatchActionBar"
+                            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{DynamicResource FluentBrand80}"
+                            BorderThickness="0,1,0,0"
+                            Padding="10,8" Visibility="Collapsed">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="CheckmarkSquare24" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock x:Name="TxtBatchCount" Text="0 selected" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <ui:Button Grid.Column="1" Appearance="Secondary" Height="22" Padding="6,0" FontSize="10" Click="OnBatchDeselectClicked" Cursor="Hand">
+                                    Clear
+                                </ui:Button>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="BatchStatusCmb" Grid.Column="0" Height="26" FontSize="10.5" SelectionChanged="OnBatchStatusChanged">
+                                    <ComboBoxItem Content="Set Status..." IsSelected="True"/>
+                                    <ComboBoxItem Content="backlog"/>
+                                    <ComboBoxItem Content="in-progress"/>
+                                    <ComboBoxItem Content="review"/>
+                                    <ComboBoxItem Content="done"/>
+                                    <ComboBoxItem Content="on-hold"/>
+                                </ComboBox>
+                                <ComboBox x:Name="BatchPriorityCmb" Grid.Column="2" Height="26" FontSize="10.5" SelectionChanged="OnBatchPriorityChanged">
+                                    <ComboBoxItem Content="Set Priority..." IsSelected="True"/>
+                                    <ComboBoxItem Content="low"/>
+                                    <ComboBoxItem Content="medium"/>
+                                    <ComboBoxItem Content="high"/>
+                                    <ComboBoxItem Content="urgent"/>
+                                </ComboBox>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Scrollable project list with UI Virtualization -->
                     <ListBox x:Name="ResultsListBox"
+                             SelectionMode="Extended"
                              SelectionChanged="OnListSelectionChanged"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             ScrollViewer.CanContentScroll="False"
+                             ScrollViewer.CanContentScroll="True"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             VirtualizingStackPanel.IsVirtualizing="True"
+                             VirtualizingStackPanel.VirtualizationMode="Recycling"
                              BorderThickness="0"
                              Background="Transparent"
                              Padding="6,6,6,6">
@@ -180,200 +228,377 @@
             <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch"
                           Background="Transparent" Focusable="False" Margin="2,0"/>
 
-            <!-- ————————————————— Right Pane: Catalog README Preview ————————————————— -->
+            <!-- ————————————————— Right Pane: ClickUp 3.0-Style 2-Column Task Workspace ————————————————— -->
             <ui:Card Grid.Column="2" Padding="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
-                <DockPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!-- Top Header Strip -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Center Workspace (Canvas + Inspector) -->
+                        <RowDefinition Height="*"/>
+                        <!-- Bottom Action Footer -->
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <!-- Selected Project Header Badge -->
-                    <Border DockPanel.Dock="Top" x:Name="SelectedHighlightBadge"
+                    <!-- 1. Selected Project Header Strip -->
+                    <Border Grid.Row="0" x:Name="SelectedHighlightBadge"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="0,0,0,1" CornerRadius="8,8,0,0" Padding="16,12">
+                            BorderThickness="0,0,0,1" CornerRadius="8,8,0,0" Padding="14,10">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <ui:TextBlock Text="SELECTED PROJECT" 
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           FontSize="10" FontWeight="Bold"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:TextBlock Text="PROJECT WORKSPACE" 
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               FontSize="9.5" FontWeight="Bold"/>
+                                    <Border x:Name="InspectorStatusBadge" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="5,1" Margin="8,0,0,0">
+                                        <ui:TextBlock x:Name="TxtInspectorStatusBadge" Text="in-progress" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
                                 <ui:TextBlock x:Name="SelectedProjectTitle" Text="None selected"
                                            Foreground="{DynamicResource FluentBrand80}"
-                                           FontSize="16" FontWeight="Bold" Margin="0,2,0,0"/>
+                                           FontSize="15" FontWeight="Bold" Margin="0,2,0,0"/>
                                 <ui:TextBlock x:Name="SelectedProjectPath"
                                            Text="Select a project from the sidebar to inspect its brief."
                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                            FontSize="11" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
 
-                            <!-- Mode Toggle Tab Strip - icon only -->
+                            <!-- Mode Toggle Tab Strip -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                 <ui:Button x:Name="BtnModeRendered" Appearance="Primary" Click="OnModeRenderedClicked"
                                         Height="28" Width="32" Padding="0"
                                         Cursor="Hand" ToolTip="Preview - rendered README">
-                                    <ui:TextBlock Text="&#xE8A4;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Eye24" FontSize="13"/>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnModeRaw" Appearance="Secondary" Click="OnModeRawClicked"
                                         Height="28" Width="32" Padding="0" Margin="4,0,0,0"
                                         Cursor="Hand" ToolTip="Raw - plain Markdown source">
-                                    <ui:TextBlock Text="&#xE943;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Code24" FontSize="13"/>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnModeImages" Appearance="Secondary" Click="OnModeImagesClicked"
                                         Height="28" Width="32" Padding="0" Margin="4,0,0,0"
                                         Cursor="Hand" ToolTip="Gallery - project image assets">
-                                    <ui:TextBlock Text="&#xEB9F;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                                 VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Image24" FontSize="13"/>
                                 </ui:Button>
                             </StackPanel>
-
                         </Grid>
                     </Border>
 
-                    <!-- Action Footer: Copy buttons + Edit Brief -->
-                    <Border DockPanel.Dock="Bottom"
+                    <!-- 2. Center 2-Column Split: Left Canvas + Right Inspector -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <!-- Left Canvas (Brief / Markdown / Images) -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- Splitter -->
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- Right Inspector Sheet -->
+                            <ColumnDefinition Width="310"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left Canvas Area -->
+                        <Grid Grid.Column="0">
+                            <!-- Edit Mode Panel (Collapsed by default) -->
+                            <DockPanel x:Name="EditBriefPanel" Visibility="Collapsed">
+                                <!-- Edit Toolbar -->
+                                <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <ui:Button Content="B" Click="OnEditMdBold" Height="24" Width="28" Background="Transparent"
+                                                    Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
+                                                    BorderThickness="0" Cursor="Hand" />
+                                            <ui:Button Content="I" Click="OnEditMdItalic" Height="24" Width="28" Background="Transparent"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontStyle="Italic"
+                                                    FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
+                                            <ui:Button Click="OnEditMdCode" Height="24" Width="28" Background="Transparent"
+                                                    BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
+                                                <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"
+                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            </ui:Button>
+                                            <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
+                                                    FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+                                            <ui:Button Content="* List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
+                                                    BorderThickness="0" Cursor="Hand"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <ui:Button Appearance="Primary" Click="OnSaveBriefClicked"
+                                                    Height="26" Padding="10,0" FontSize="11" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Save24" FontSize="12" Margin="0,0,4,0"/>
+                                                    <ui:TextBlock Text="Save"/>
+                                                </StackPanel>
+                                            </ui:Button>
+                                            <ui:Button Appearance="Secondary" Click="OnCancelEditClicked"
+                                                    Height="26" Padding="10,0" FontSize="11" Cursor="Hand">
+                                                Cancel
+                                            </ui:Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <!-- Brief Editor TextBox -->
+                                <TextBox x:Name="BriefEditor"
+                                         AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         FontFamily="Consolas" FontSize="12"
+                                         Padding="14" BorderThickness="0" Background="{DynamicResource TextControlBackground}"
+                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            </DockPanel>
+
+                            <!-- Rendered Markdown Viewer -->
+                            <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
+                                                     VerticalScrollBarVisibility="Auto"
+                                                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                     BorderThickness="0"
+                                                     Padding="14"/>
+
+                            <!-- Raw Text Viewer -->
+                            <TextBox x:Name="RawMarkdownBox"
+                                     IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Visibility="Collapsed"
+                                     FontFamily="Consolas" FontSize="11"
+                                     Background="{DynamicResource TextControlBackground}"
+                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                     BorderThickness="0" Padding="14"/>
+
+                            <!-- Image Gallery Grid -->
+                            <ScrollViewer x:Name="ImageGalleryViewer"
+                                          VerticalScrollBarVisibility="Auto"
+                                          ScrollViewer.CanContentScroll="False"
+                                          Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                                          BorderThickness="0"
+                                          Padding="10"
+                                          Visibility="Collapsed">
+                                <ListBox x:Name="ImageGalleryList"
+                                         BorderThickness="0" Background="Transparent"
+                                         MouseDoubleClick="OnImageGalleryDoubleClicked">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                    BorderThickness="1" CornerRadius="8"
+                                                    Width="200" Margin="4" Padding="6" Cursor="Hand">
+                                                <StackPanel>
+                                                    <Border Height="130" Background="{DynamicResource TextControlBackground}"
+                                                            CornerRadius="6" Margin="0,0,0,6">
+                                                        <Image Source="{Binding ThumbnailSource}" Stretch="Uniform"/>
+                                                    </Border>
+                                                    <ui:TextBlock Text="{Binding FileName}"
+                                                               FontSize="11" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <ui:TextBlock Text="{Binding SubFolder}"
+                                                               FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                               TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- Subtle Inner Splitter -->
+                        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                      Background="{DynamicResource CardStrokeColorDefaultBrush}" Focusable="False"/>
+
+                        <!-- Right Inspector Sheet -->
+                        <Border Grid.Column="2" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
+                            <DockPanel Margin="10" LastChildFill="True">
+                                <!-- Top Properties -->
+                                <StackPanel DockPanel.Dock="Top">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="TASK INSPECTOR" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Status & Priority Grid -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <ui:TextBlock Text="Status" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                            <ComboBox x:Name="InspectorStatusCmb" Height="28" FontSize="11" SelectionChanged="OnInspectorStatusChanged">
+                                                <ComboBoxItem Content="backlog"/>
+                                                <ComboBoxItem Content="in-progress"/>
+                                                <ComboBoxItem Content="review"/>
+                                                <ComboBoxItem Content="done"/>
+                                                <ComboBoxItem Content="on-hold"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <ui:TextBlock Text="Priority" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                            <ComboBox x:Name="InspectorPriorityCmb" Height="28" FontSize="11" SelectionChanged="OnInspectorPriorityChanged">
+                                                <ComboBoxItem Content="low"/>
+                                                <ComboBoxItem Content="medium"/>
+                                                <ComboBoxItem Content="high"/>
+                                                <ComboBoxItem Content="urgent"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Revision & Review Actions -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                            <ui:TextBlock Text="Rev" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:Button Appearance="Secondary" Width="24" Height="26" Padding="0" Click="OnInspectorRevDecClicked" Cursor="Hand" ToolTip="Decrement revision">
+                                                    <ui:SymbolIcon Symbol="Subtract24" FontSize="10"/>
+                                                </ui:Button>
+                                                <ui:TextBlock x:Name="TxtInspectorRev" Text="0" FontWeight="Bold" FontSize="11.5" Width="22" TextAlignment="Center" VerticalAlignment="Center"/>
+                                                <ui:Button Appearance="Secondary" Width="24" Height="26" Padding="0" Click="OnInspectorRevIncClicked" Cursor="Hand" ToolTip="Increment revision">
+                                                    <ui:SymbolIcon Symbol="Add24" FontSize="10"/>
+                                                </ui:Button>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ui:Button x:Name="BtnSignOff" Grid.Column="0" Appearance="Primary" Height="26" Padding="0" Click="OnSignOffClicked" Cursor="Hand" ToolTip="Sign-Off as Done">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <ui:SymbolIcon Symbol="Checkmark24" FontSize="10" Margin="0,0,3,0"/>
+                                                        <ui:TextBlock Text="Sign-Off" FontSize="10" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </ui:Button>
+                                                <ui:Button x:Name="BtnRequestRevision" Grid.Column="2" Appearance="Secondary" Height="26" Padding="0" Click="OnRequestRevisionClicked" Cursor="Hand" ToolTip="Request Revision (+1 Rev)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <ui:SymbolIcon Symbol="ArrowCounterclockwise24" FontSize="10" Margin="0,0,3,0"/>
+                                                        <ui:TextBlock Text="Revise" FontSize="10"/>
+                                                    </StackPanel>
+                                                </ui:Button>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,2,0,8"/>
+                                </StackPanel>
+
+                                <!-- Discussions Header -->
+                                <Border DockPanel.Dock="Top" Margin="0,0,0,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="Chat24" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="DISCUSSIONS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <ui:TextBlock x:Name="TxtCommentCount" Grid.Column="1" Text="0 comments" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Add Comment Input at Bottom of Inspector -->
+                                <Border DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="CommentInputBox" Height="28" FontSize="11" Padding="6,2"
+                                                 Background="{DynamicResource TextControlBackground}"
+                                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                 KeyDown="OnCommentInputKeyDown"/>
+                                        <ui:Button x:Name="BtnPostComment" Grid.Column="1" Appearance="Primary" Margin="4,0,0,0" Height="28" Width="30" Padding="0"
+                                                   Click="OnPostCommentClicked" Cursor="Hand" ToolTip="Post Comment">
+                                            <ui:SymbolIcon Symbol="Send24" FontSize="11"/>
+                                        </ui:Button>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Scrollable Comments Thread -->
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl x:Name="CommentsList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1" CornerRadius="6" Padding="6,5" Margin="0,0,0,5">
+                                                    <StackPanel>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Border Width="14" Height="14" CornerRadius="7" Background="{DynamicResource FluentBrand80}" Margin="0,0,4,0">
+                                                                    <ui:TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons" FontSize="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                                <ui:TextBlock Text="{Binding Author}" FontWeight="SemiBold" FontSize="10.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                                            </StackPanel>
+                                                            <ui:TextBlock Grid.Column="1" Text="{Binding DisplayTimestamp}" FontSize="8.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                        </Grid>
+                                                        <ui:TextBlock Text="{Binding Content}" FontSize="10.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- 3. Action Footer -->
+                    <Border Grid.Row="2"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="14,10">
+                            BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="12,8">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <ui:Button Appearance="Secondary" Click="OnCopyPathClicked"
-                                    Height="34" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
+                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock Text="Copy Path" VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Copy24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Copy Path" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button x:Name="BtnEditBrief" Appearance="Secondary" Click="OnEditBriefClicked"
-                                    Height="34" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
+                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock Text="Edit Brief" VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Edit24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Edit Brief" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button Appearance="Primary" Click="OnCopyWholeFolderClicked"
-                                    Height="34" Padding="14,0" FontWeight="Bold" Cursor="Hand">
+                                    Height="30" Padding="12,0" FontWeight="Bold" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:TextBlock Text="&#xE7C5;" FontFamily="Segoe Fluent Icons"
-                                               FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock Text="Copy Whole Project Folder..." VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="FolderZip24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Copy Whole Project..." VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                         </StackPanel>
                     </Border>
-
-                    <!-- Edit Mode Panel (Collapsed by default) -->
-                    <DockPanel x:Name="EditBriefPanel" Visibility="Collapsed">
-                        <!-- Edit Toolbar -->
-                        <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8,4">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                    <ui:Button Content="B" Click="OnEditMdBold" Height="24" Width="28" Background="Transparent"
-                                            Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
-                                            BorderThickness="0" Cursor="Hand" />
-                                    <ui:Button Content="I" Click="OnEditMdItalic" Height="24" Width="28" Background="Transparent"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontStyle="Italic"
-                                            FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
-                                    <ui:Button Click="OnEditMdCode" Height="24" Width="28" Background="Transparent"
-                                            BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
-                                        <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"
-                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    </ui:Button>
-                                    <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
-                                            FontWeight="SemiBold"  BorderThickness="0" Cursor="Hand"/>
-                                    <ui:Button Content="* List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
-                                             BorderThickness="0" Cursor="Hand"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <ui:Button Appearance="Primary" Click="OnSaveBriefClicked"
-                                            Height="26" Padding="10,0" FontSize="11" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ui:TextBlock Text="&#xE74E;" FontFamily="Segoe Fluent Icons" FontSize="12"
-                                                       Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="Save" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </ui:Button>
-                                    <ui:Button Appearance="Secondary" Click="OnCancelEditClicked"
-                                            Height="26" Padding="10,0" FontSize="11" Cursor="Hand" >
-                                        Cancel
-                                    </ui:Button>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <!-- Brief Editor TextBox -->
-                        <TextBox x:Name="BriefEditor"
-                                 AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 FontFamily="Consolas" FontSize="12"
-                                 Padding="14" BorderThickness="0" Background="{DynamicResource TextControlBackground}"/>
-                    </DockPanel>
-
-                    <!-- Rendered Markdown — primary focus, fills all remaining height -->
-                    <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
-                                             VerticalScrollBarVisibility="Auto"
-                                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                             BorderThickness="0"
-                                             Padding="16"/>
-
-                    <!-- Raw Text Fallback (Collapsed by default) -->
-                    <TextBox x:Name="RawMarkdownBox"
-                             IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             Visibility="Collapsed"
-                             FontFamily="Consolas" FontSize="11"
-                             Background="{DynamicResource TextControlBackground}" BorderThickness="0" Padding="16"/>
-
-                    <!-- Image Gallery Grid (Collapsed by default) -->
-                    <ScrollViewer x:Name="ImageGalleryViewer"
-                                  VerticalScrollBarVisibility="Auto"
-                                  ScrollViewer.CanContentScroll="False"
-                                  Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
-                                  BorderThickness="0"
-                                  Padding="12"
-                                  Visibility="Collapsed">
-                        <ListBox x:Name="ImageGalleryList"
-                                 BorderThickness="0" Background="Transparent"
-                                 MouseDoubleClick="OnImageGalleryDoubleClicked">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel IsItemsHost="True"/>
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1" CornerRadius="8"
-                                            Width="240" Margin="6" Padding="8" Cursor="Hand">
-                                        <StackPanel>
-                                            <Border Height="160" Background="{DynamicResource TextControlBackground}"
-                                                    CornerRadius="6" Margin="0,0,0,8">
-                                                <Image Source="{Binding ImagePath}" Stretch="Uniform"/>
-                                            </Border>
-                                            <ui:TextBlock Text="{Binding FileName}"
-                                                       FontSize="12" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                       TextTrimming="CharacterEllipsis"/>
-                                            <ui:TextBlock Text="{Binding SubFolder}"
-                                                       FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                       TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </ScrollViewer>
-
-                </DockPanel>
+                </Grid>
             </ui:Card>
         </Grid>
 

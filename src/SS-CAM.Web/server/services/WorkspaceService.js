@@ -277,7 +277,11 @@ class WorkspaceService {
       this.scanDirectory(this.workspaceRoot, results);
       this.projectsCache = results;
       this.lastScanTime = new Date();
-      // console.log(`[WorkspaceService] Scan complete. Found ${results.length} projects.`);
+      const SseService = require('./SseService');
+      SseService.broadcast('workspace:updated', {
+        count: results.length,
+        timestamp: this.lastScanTime.toISOString()
+      });
     } catch (err) {
       console.error('[WorkspaceService] Scan error:', err.message);
     } finally {

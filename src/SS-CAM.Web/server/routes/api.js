@@ -13,6 +13,13 @@ const TeamService = require('../services/TeamService');
 const AuditService = require('../services/AuditService');
 const CompanyService = require('../services/CompanyService');
 const CommentService = require('../services/CommentService');
+const SseService = require('../services/SseService');
+
+// ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
+
+router.get('/events', (req, res) => {
+  SseService.addClient(req, res);
+});
 
 // ─── AUTHENTICATION ROUTES ──────────────────────────────────────────
 
@@ -176,6 +183,7 @@ router.post('/projects/:id/comments', authenticateToken, (req, res) => {
       deliverableId,
       mentions
     });
+    SseService.broadcast('comment:added', { projectId: req.params.id, comment });
     res.status(201).json({ success: true, comment });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -194,6 +202,7 @@ router.patch('/projects/:id/comments/:commentId/resolve', authenticateToken, (re
       req.user ? req.user.name : 'System',
       req.user ? req.user.role : 'User'
     );
+    SseService.broadcast('comment:resolved', { projectId: req.params.id, commentId: req.params.commentId, resolved });
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -263,6 +272,7 @@ router.put('/projects/:id', authenticateToken, requirePermission('project:edit')
     });
 
     WorkspaceService.scan();
+    SseService.broadcast('project:updated', { projectId: req.params.id, status: mergedFm.status, priority: mergedFm.priority });
 
     res.json({
       success: true,
@@ -298,6 +308,7 @@ router.put('/projects/:id/brief', authenticateToken, requirePermission('brief:ed
     });
 
     WorkspaceService.scan();
+    SseService.broadcast('project:updated', { projectId: req.params.id });
     res.json({ success: true, versionHash: result.versionHash });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -391,6 +402,14 @@ router.post('/projects/:id/decision', authenticateToken, requirePermission('deli
       deliverableId
     });
 
+    SseService.broadcast('project:decision', {
+      projectId: req.params.id,
+      decision,
+      deliverableId,
+      reviewer: req.user.name,
+      comment
+    });
+
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -437,6 +456,15 @@ router.get('/deliverables/preview', (req, res) => {
   }
 
   res.sendFile(safePath);
+});
+
+router.get('/deliverables/stream', (req, res) => {
+  const safePath = DeliverableService.resolveSafePath(req.query.id);
+  if (!safePath) {
+    return res.status(404).send('Asset not found or access denied.');
+  }
+
+  DeliverableService.streamMedia(safePath, req, res);
 });
 
 router.get('/deliverables/download', (req, res) => {

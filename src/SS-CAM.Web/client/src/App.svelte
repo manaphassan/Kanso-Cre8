@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
+  import { ApiClient } from '$lib/services/api';
   import FluentToast from '$lib/components/ui/FluentToast.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
@@ -54,6 +55,32 @@
     }
     window.addEventListener('resize', handleResize);
     handleResize();
+
+    // Initialize real-time SSE listener
+    const closeSse = ApiClient.initEventStream((event, data) => {
+      if (event === 'workspace:updated' || event === 'project:updated') {
+        projectStore.loadProjects();
+        if (appState.currentRoute === 'dashboard') {
+          projectStore.loadDashboard();
+        } else if (appState.currentRoute === 'project-detail' && appState.routeParams.id) {
+          projectStore.loadProjectDetail(appState.routeParams.id);
+        }
+      } else if (event === 'project:decision') {
+        appState.addToast(`${data.reviewer} marked ${data.projectId} as ${(data.decision || '').replace('_', ' ')}`, 'info', 'Decision Updated');
+        projectStore.loadProjects();
+        if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
+          projectStore.loadProjectDetail(data.projectId);
+        }
+      } else if (event === 'comment:added') {
+        if (data.comment?.author !== appState.currentUser?.name) {
+          appState.addToast(`${data.comment?.author}: ${data.comment?.content?.substring(0, 40) || ''}...`, 'info', 'New Project Comment');
+        }
+      }
+    });
+
+    return () => {
+      closeSse();
+    };
   });
 
   const pageConfig: Record<string, { title: string; layout: string; parent?: string }> = {

@@ -25,6 +25,7 @@ namespace SS_CAM.Views
         {
             InitializeComponent();
             Loaded += OnPageLoaded;
+            Unloaded += OnPageUnloaded;
         }
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
@@ -35,11 +36,39 @@ namespace SS_CAM.Views
                 _workspaceRoot = profile != null ? profile.WorkspaceRoot : "";
                 PopulateDesignerFilter();
                 LoadProjects();
+                WorkspaceWatcherService.Instance.WorkspaceChanged += OnWorkspaceChanged;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("TaskManager PageLoad error: " + ex);
             }
+        }
+
+        private void OnPageUnloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                WorkspaceWatcherService.Instance.WorkspaceChanged -= OnWorkspaceChanged;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("TaskManager PageUnload error: " + ex);
+            }
+        }
+
+        private void OnWorkspaceChanged(object sender, WorkspaceChangedEventArgs e)
+        {
+            Dispatcher.Invoke(delegate
+            {
+                try
+                {
+                    LoadProjects();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[TaskManagerPage] WorkspaceChanged refresh error: " + ex.Message);
+                }
+            });
         }
 
         private void PopulateDesignerFilter()

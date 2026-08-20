@@ -67,8 +67,11 @@ namespace SS_CAM
             // 4. Apply Theme on Launch (loads saved theme from ThemeService)
             ThemeService.ApplyTheme(ThemeService.CurrentTheme);
 
-            // Global Fluent 2 Accent Color (Brand Cyan)
-            
+            // 5. Start Background NAS File Watcher
+            if (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot))
+            {
+                WorkspaceWatcherService.Instance.Start(currentProfile.WorkspaceRoot);
+            }
 
             // 6. Navigate to Dashboard on startup
             RootNavigation.Navigate(typeof(DashboardPage));
@@ -311,6 +314,8 @@ namespace SS_CAM
             {
                 nasCheckTimer.Stop();
             }
+
+            WorkspaceWatcherService.Instance.Stop();
         }
 
         public void NavigateTo(Type pageType, object dummy = null)

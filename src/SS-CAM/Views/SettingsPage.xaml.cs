@@ -107,8 +107,9 @@ namespace SS_CAM.Views
                     AvatarPreviewImg.Visibility = Visibility.Visible;
                     AvatarEmojiText.Visibility = Visibility.Collapsed;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine("[SettingsPage] LoadAvatar: " + ex.Message);
                     AvatarPreviewImg.Visibility = Visibility.Collapsed;
                     AvatarEmojiText.Visibility = Visibility.Visible;
                 }
@@ -304,7 +305,7 @@ namespace SS_CAM.Views
                         {
                             isNewer = new Version(latestVersion).CompareTo(new Version(AppVersion.VersionString)) > 0;
                         }
-                        catch { }
+                        catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SettingsPage] VersionCompare: " + ex.Message); }
 
                         if (isNewer)
                         {
@@ -384,7 +385,7 @@ namespace SS_CAM.Views
                     return json.Substring(open, end - open).Trim();
                 }
             }
-            catch { return ""; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SettingsPage] ExtractJsonValue: " + ex.Message); return ""; }
         }
 
         private void OnManageCategoryPresetsClicked(object sender, RoutedEventArgs e)

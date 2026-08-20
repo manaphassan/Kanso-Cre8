@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-14.
+> **Living document.** Updated with every release. Last updated: 2026-08-20.
 
 ---
 
@@ -16,10 +16,10 @@
 | **v2.3.6** | 2026-08-06 | Version badge fix, AV metadata patch, stability improvements |
 | **v2.4.0** | 2026-08-10 | Dashboard Inspiration Widget (40 tips + RSS), Project Brief Markdown Editor, Search & Copy Catalog layout |
 | **v2.5.0** | 2026-08-10 | Quick Notes module, Task Manager Kanban, Team Board, Frontmatter injection in Project Creator |
-| **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, hardcoded D:\Testing paths eliminated, Team Board offline guard, dynamic rescan count, static HttpClient, H3 preview, Debug logging |
-| **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: Modernized Dashboard & Project Creator cards, Adobe/Affinity app bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray popover, Visual Asset Lightbox modal, Revision Timeline view, SS Default theme contrast fix |
-| **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Phase 1-4 audit fixes, dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization, 100% clean Source Guardian |
-| **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, Designer Profile & Settings 2-column revamp, 5 switchable theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord), Workstation Payload installer |
+| **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, dynamic rescan count, static HttpClient |
+| **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: App bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray, Visual Asset Lightbox |
+| **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization |
+| **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, 5 theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord) |
 | **v3.0.1** | 2026-08-12 | Categorized Fluent 2 sidebar navigation (5 visual categories + headers/separators), adaptive bottom live bar collapse state |
 | **v3.1.0** | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |
 | **v3.1.2** | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
@@ -30,72 +30,63 @@
 | **v3.5.0-linux** | 2026-08-14 | Linux Desktop Edition: Initial native Avalonia UI (.NET 8) port for Fedora Linux & Synology Drive Client (`~/SynologyDrive/`) |
 | **v3.6.0** | 2026-08-17 | Microsoft Fluent UI Web (`sscam-fluentui-web`) design tokens, 3-Tier F-Pattern Dashboard analytics, Copywriting AI script presets |
 | **v3.6.1** | 2026-08-17 | Metamorphosis theme solid surface opacity overhaul, legibility fixes for drawer panels & cards |
+| **v4.0.0** | 2026-08-18 | **Centralized Vault Hierarchy & ClickUp 3.0 Task Workspace**: Year-first NAS hierarchy (`Creative-Team/[YYYY]/[YYYYMM_Month]/[Project]`), 5-folder structure, 68%/32% 2-column task workspace, in-app Copywriting Studio (`03_COPYWRITING/COPY.md`), JSONL contextual comments (`_comments.jsonl`), enterprise RBAC & immutable audit logs |
+| **v4.0.1** | 2026-08-18 | **Patch Release**: Real async GitHub Releases API update checker with NAS `version.json` fallback, landing page synchronization |
 
 ---
 
-## 🔄 In Progress — v3.7.0 (Target: Q4 2026 / Q1 2027)
+## 🔄 In Progress — v4.1.0: Desktop Feature Parity & Studio Overhaul (Target: Q3/Q4 2026)
 
-### 1. Quick Note — Markdown Scratchpad
+### 1. Dedicated Desktop Copywriting Studio (`CopywritingPage.xaml`)
+* Direct binding and persistence to `03_COPYWRITING/COPY.md` on local/NAS projects.
+* Live telemetry: word count, character count, and estimated reading time.
+* Pre-scaffolded templates: TikTok/Reels video scripts, Meta problem-agitate-solve angles, and packaging benefit claims.
 
-A dedicated scratchpad module for capturing ideas, client call notes, and creative briefs in Markdown format. Two-panel layout: note list sidebar + full editor with Markdown toolbar and live preview toggle. Auto-saves on idle.
+### 2. Contextual In-App Comments Engine (`_comments.jsonl`)
+* Slide-out discussion drawer in `SearchCopyPage` and `TaskManagerPage`.
+* Autocomplete and highlighted badge rendering for team members (`@hasan`, `@haikal`, `@harussani`).
+* Resilient offline-first JSONL read/append with monotonic timestamping.
 
-### 2. Task Manager — Project Status Board
+### 3. ClickUp 3.0-Style 2-Column Task Workspace in Desktop
+* Left Canvas (68%): Split Markdown editor + preview, deliverable gallery with quick lightbox.
+* Right Inspector (32%): Frontmatter property sheet, revision stepper, and sign-off action bar.
 
-Reads `status`, `deadline`, `priority`, and `revision` from YAML frontmatter embedded in each project's `README.md`. Presents all projects as a filterable status board (Backlog / In Progress / Review / Done). Designers can update status inline; SS-CAM writes changes back to the frontmatter without touching the rest of the document.
-
-**Frontmatter spec (v2.5.0):**
-
-```yaml
----
-status: in-progress          # backlog | in-progress | review | done | on-hold
-designer: 0001D
-client: SS
-deadline: 2026-09-30
-priority: high               # low | medium | high | urgent
-tags: [branding, print]
-revision: 2
----
-```
-
-### 3. NAS File Structure — Designer Filter in Search & Copy
-
-Makes the designer folder filter in the Search & Copy catalog functional. SS-CAM enumerates first-level subdirectories of the workspace root to discover all designer folders, populates a dropdown, and scopes search results accordingly.
-
-### 4. Search & Copy — Edit README In-App
-
-Adds an "Edit Brief" button to the project detail pane. One click switches to edit mode with a Markdown-capable textarea (same toolbar as Project Creator). Saves changes directly back to the project `README.md` on disk.
-
-### 5. Radio Player — UI Overhaul + Station Cover Art
-
-Redesigns the radio player with an album-art-first card grid, genre filter tabs, a persistent mini-player bar, and lazily-loaded station cover images (from community radio API or local cache). Falls back to a branded monogram tile when no image is available.
-
-### 6. Collaboration — Team Notes Board
-
-A lightweight, serverless team board stored as a JSON file on the shared NAS workspace (`_Team/team-notes.json`). Designers can post, read, and pin team announcements directly in SS-CAM. Auto-refreshes every 30 seconds.
+### 4. Code Quality & Source Guardian Zero-Warning Attestation
+* Zero silent catches across all views.
+* Strict UTF-8 BOM encoding and Fluent 2 token verification.
 
 ---
 
-## 🗓️ Planned — v2.7.0 (Target: Q1 2027)
+## 🗓️ Planned — v4.2.0: Desktop-First Real-Time Automation & Web Synchronization (Target: Q4 2026)
+
+### Phase 1: Native Desktop Operations & Media Engine (Desktop First)
+* **Desktop Real-Time NAS File Watcher**: Native `FileSystemWatcher` service monitoring `_comments.jsonl`, `audit_log.jsonl`, and project frontmatter changes across the shared Synology NAS with live in-app notifications and zero manual refresh needed.
+* **Native Desktop Deliverable Thumbnail & Quick-Preview**: Asynchronous thumbnail extractor and local cache engine for `.afdesign`, `.psd`, `.ai`, and deliverable exports, enabling instantaneous lightbox loading.
+* **Desktop Batch Project Operations**: Multi-selection command bar in desktop catalog for bulk status transitions, batch tag edits, and 1-click quarterly ZIP exports.
+* **Desktop UI Virtualization & High-Volume NAS Performance**: `VirtualizingWrapPanel` and incremental background streaming for 1,000+ project vaults with zero UI frame drops.
+
+### Phase 2: Web Portal Real-Time & Media Pipeline (Web Synchronization)
+* **Server-Sent Events (SSE) Live Feed**: Lightweight HTTP event streaming pushing live comment mentions and sign-off events to browser clients.
+* **Server Thumbnail Endpoint & Media Delivery**: Background image caching and thumbnail pipeline serving the web portal deliverable lightbox.
+
+---
+
+## 🐧 Planned — v4.3.0: Cross-Platform Linux & Multi-Workspace (Target: Q1 2027)
 
 | Feature | Description |
 |---------|-------------|
-| **Kanban Drag-and-Drop** | Full drag-and-drop between Kanban columns in the Task Manager |
-| **Project Timeline View** | Gantt-style timeline visualising all active projects and their deadlines |
-| **Asset Quick Export** | Right-click an artboard in the Brand Assets vault to export as PNG/PDF without opening Affinity |
-| **Client Portal Link Generator** | Generate a shareable read-only link to a project's `Artwork Mockup` folder (via Synology sharing API) |
-| **Notification Centre** | In-app toast for approaching deadlines and team note mentions |
+| **Avalonia UI Linux v4.x Port** | Complete feature parity for Fedora/Ubuntu workstations with Fluent 2 styling and .NET 8 LTS |
+| **Multi-Workspace NAS Switching** | Fast switching between business unit shares (`Creative-Team`, `Video-Production`, `Marketing-Assets`) |
 
 ---
 
-## 🔭 Future Exploration — v3.x
+## 🔮 Future Exploration — v5.0.0: Enterprise Intelligence & Asset Versioning (Target: Q2 2027)
 
 | Area | Idea |
 |------|------|
-| **AI Brief Generation** | Input client name + campaign type → generate a structured Markdown project brief using a local or cloud LLM |
-| **Version Control** | Track revision history for key asset files using lightweight Git operations via `LibGit2Sharp` |
-| **Multi-workspace** | Support multiple NAS mount points (e.g. one per business unit) switchable from the settings page |
-| **Mobile Companion** | Read-only Android/iOS app to view project status and team notes while away from the workstation |
-| **Design Review Mode** | Full-screen presentation mode for showing mockups to stakeholders directly from SS-CAM |
+| **Asset Revision Snapshots** | Visual diff timeline and rollback engine for `.afdesign` and `.psd` binaries |
+| **AI Creative Assistant** | Local/Offline LLM integration for generating ad hooks, drafting campaign briefs, and translating copy |
+| **Mobile Companion PWA** | Responsive touch-first web app for creative directors to review and sign-off deliverables on tablets/phones |
 
 ---
 

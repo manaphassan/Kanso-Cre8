@@ -277,6 +277,35 @@ export class ApiClient {
     return this.request(`/notifications?limit=${limit}`);
   }
 
+  // ─── Real-Time Server-Sent Events (SSE) Stream ───
+  static initEventStream(onEvent: (event: string, data: any) => void): () => void {
+    const eventSource = new EventSource('/api/events');
+
+    const handleMessage = (evt: MessageEvent, eventName: string) => {
+      try {
+        const parsed = JSON.parse(evt.data);
+        onEvent(eventName, parsed);
+      } catch {
+        onEvent(eventName, evt.data);
+      }
+    };
+
+    eventSource.addEventListener('connected', (e) => handleMessage(e, 'connected'));
+    eventSource.addEventListener('workspace:updated', (e) => handleMessage(e, 'workspace:updated'));
+    eventSource.addEventListener('project:updated', (e) => handleMessage(e, 'project:updated'));
+    eventSource.addEventListener('project:decision', (e) => handleMessage(e, 'project:decision'));
+    eventSource.addEventListener('comment:added', (e) => handleMessage(e, 'comment:added'));
+    eventSource.addEventListener('comment:resolved', (e) => handleMessage(e, 'comment:resolved'));
+
+    eventSource.onerror = (err) => {
+      console.warn('[SSE] Connection interrupted, retrying in background...', err);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }
+
   // ─── Audit & System ───
   static getAuditLogs(params: Record<string, string> = {}): Promise<{ logs: any[] }> {
     const searchParams = new URLSearchParams(params);

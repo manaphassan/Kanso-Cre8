@@ -21,11 +21,14 @@ namespace SS_CAM.Views
         private DesignerFolderItem selectedItem;
         private string rawReadmeText = "";
         private string cleanedReadmeText = "";
+        private ProjectStatusItem currentStatusItem = null;
+        private bool isInternalInspectorUpdate = false;
 
         public SearchCopyPage()
         {
             InitializeComponent();
             Loaded += OnPageLoaded;
+            Unloaded += OnPageUnloaded;
         }
 
         private async void OnPageLoaded(object sender, RoutedEventArgs e)
@@ -35,6 +38,8 @@ namespace SS_CAM.Views
             {
                 workspaceRoot = profile.WorkspaceRoot;
             }
+
+            WorkspaceWatcherService.Instance.WorkspaceChanged += OnWorkspaceChanged;
 
             // Populate Designer filter by scanning workspace root
             DesignerFilterCmb.Items.Clear();
@@ -79,6 +84,43 @@ namespace SS_CAM.Views
             if (!found) DesignerFilterCmb.SelectedIndex = 0;
 
             await PerformSearch();
+        }
+
+        private void OnPageUnloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                WorkspaceWatcherService.Instance.WorkspaceChanged -= OnWorkspaceChanged;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] PageUnload error: " + ex.Message);
+            }
+        }
+
+        private void OnWorkspaceChanged(object sender, WorkspaceChangedEventArgs e)
+        {
+            Dispatcher.Invoke(async delegate
+            {
+                try
+                {
+                    if (e.ChangeType == WorkspaceChangeType.ProjectMetadata || e.ChangeType == WorkspaceChangeType.ProjectComments)
+                    {
+                        if (selectedItem != null && string.Equals(e.ProjectPath, selectedItem.FullPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            UpdateReadmeDisplay();
+                        }
+                    }
+                    else if (e.ChangeType == WorkspaceChangeType.ProjectFolderStructure)
+                    {
+                        await PerformSearch();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SearchCopyPage] OnWorkspaceChanged: " + ex.Message);
+                }
+            });
         }
 
         private void OnScrollViewerPreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -227,8 +269,86 @@ namespace SS_CAM.Views
 
         private void OnListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selectedItem = ResultsListBox.SelectedItem as DesignerFolderItem;
-            UpdateReadmeDisplay();
+            if (ResultsListBox.SelectedItems.Count > 1)
+            {
+                BatchActionBar.Visibility = Visibility.Visible;
+                TxtBatchCount.Text = string.Format("{0} selected", ResultsListBox.SelectedItems.Count);
+                isInternalInspectorUpdate = true;
+                BatchStatusCmb.SelectedIndex = 0;
+                BatchPriorityCmb.SelectedIndex = 0;
+                isInternalInspectorUpdate = false;
+            }
+            else
+            {
+                BatchActionBar.Visibility = Visibility.Collapsed;
+                selectedItem = ResultsListBox.SelectedItem as DesignerFolderItem;
+                UpdateReadmeDisplay();
+            }
+        }
+
+        private void OnBatchStatusChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInternalInspectorUpdate || ResultsListBox.SelectedItems.Count <= 1) return;
+
+            ComboBoxItem item = BatchStatusCmb.SelectedItem as ComboBoxItem;
+            if (item == null || item.Content == null) return;
+            string status = item.Content.ToString();
+            if (status.StartsWith("Set Status")) return;
+
+            int count = 0;
+            foreach (var sel in ResultsListBox.SelectedItems)
+            {
+                DesignerFolderItem dfi = sel as DesignerFolderItem;
+                if (dfi != null && Directory.Exists(dfi.FullPath))
+                {
+                    ProjectStatusItem psi = FrontmatterService.ReadStatus(dfi.FullPath);
+                    psi.Status = status;
+                    FrontmatterService.WriteStatus(psi);
+                    count++;
+                }
+            }
+
+            NotificationService.ShowSuccess("Batch Status Updated", string.Format("Updated status to '{0}' for {1} projects.", status, count));
+            isInternalInspectorUpdate = true;
+            BatchStatusCmb.SelectedIndex = 0;
+            isInternalInspectorUpdate = false;
+        }
+
+        private void OnBatchPriorityChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInternalInspectorUpdate || ResultsListBox.SelectedItems.Count <= 1) return;
+
+            ComboBoxItem item = BatchPriorityCmb.SelectedItem as ComboBoxItem;
+            if (item == null || item.Content == null) return;
+            string priority = item.Content.ToString();
+            if (priority.StartsWith("Set Priority")) return;
+
+            int count = 0;
+            foreach (var sel in ResultsListBox.SelectedItems)
+            {
+                DesignerFolderItem dfi = sel as DesignerFolderItem;
+                if (dfi != null && Directory.Exists(dfi.FullPath))
+                {
+                    ProjectStatusItem psi = FrontmatterService.ReadStatus(dfi.FullPath);
+                    psi.Priority = priority;
+                    FrontmatterService.WriteStatus(psi);
+                    count++;
+                }
+            }
+
+            NotificationService.ShowSuccess("Batch Priority Updated", string.Format("Updated priority to '{0}' for {1} projects.", priority, count));
+            isInternalInspectorUpdate = true;
+            BatchPriorityCmb.SelectedIndex = 0;
+            isInternalInspectorUpdate = false;
+        }
+
+        private void OnBatchDeselectClicked(object sender, RoutedEventArgs e)
+        {
+            ResultsListBox.SelectedItems.Clear();
+            if (ResultsListBox.Items.Count > 0)
+            {
+                ResultsListBox.SelectedIndex = 0;
+            }
         }
 
         private void UpdateReadmeDisplay()
@@ -239,6 +359,13 @@ namespace SS_CAM.Views
                 SelectedProjectPath.Text = selectedItem.FullPath;
                 SelectedHighlightBadge.Visibility = Visibility.Visible;
 
+                // Load frontmatter
+                currentStatusItem = FrontmatterService.ReadStatus(selectedItem.FullPath);
+                UpdateInspectorUI();
+
+                // Load comments
+                LoadComments();
+
                 string readmePath = Path.Combine(selectedItem.FullPath, "README.md");
                 if (File.Exists(readmePath))
                 {
@@ -247,8 +374,9 @@ namespace SS_CAM.Views
                         rawReadmeText = File.ReadAllText(readmePath);
                         cleanedReadmeText = StripFrontmatter(rawReadmeText);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine("[SearchCopyPage] Read README: " + ex.Message);
                         rawReadmeText = "Could not read README.md.";
                         cleanedReadmeText = rawReadmeText;
                     }
@@ -265,10 +393,81 @@ namespace SS_CAM.Views
                 SelectedProjectPath.Text = "Select a folder in the table to inspect.";
                 rawReadmeText = "";
                 cleanedReadmeText = "";
+                currentStatusItem = null;
+                UpdateInspectorUI();
+                if (CommentsList != null) CommentsList.ItemsSource = null;
+                if (TxtCommentCount != null) TxtCommentCount.Text = "0 comments";
             }
 
             RawMarkdownBox.Text = rawReadmeText;
             RenderFormattedMarkdown(cleanedReadmeText);
+        }
+
+        private void UpdateInspectorUI()
+        {
+            if (InspectorStatusCmb == null) return;
+
+            isInternalInspectorUpdate = true;
+            try
+            {
+                if (currentStatusItem != null)
+                {
+                    string status = string.IsNullOrWhiteSpace(currentStatusItem.Status) ? "in-progress" : currentStatusItem.Status.ToLowerInvariant();
+                    TxtInspectorStatusBadge.Text = status;
+
+                    for (int i = 0; i < InspectorStatusCmb.Items.Count; i++)
+                    {
+                        ComboBoxItem item = InspectorStatusCmb.Items[i] as ComboBoxItem;
+                        if (item != null && string.Equals(item.Content.ToString(), status, StringComparison.OrdinalIgnoreCase))
+                        {
+                            InspectorStatusCmb.SelectedIndex = i;
+                            break;
+                        }
+                    }
+
+                    string priority = string.IsNullOrWhiteSpace(currentStatusItem.Priority) ? "medium" : currentStatusItem.Priority.ToLowerInvariant();
+                    for (int i = 0; i < InspectorPriorityCmb.Items.Count; i++)
+                    {
+                        ComboBoxItem item = InspectorPriorityCmb.Items[i] as ComboBoxItem;
+                        if (item != null && string.Equals(item.Content.ToString(), priority, StringComparison.OrdinalIgnoreCase))
+                        {
+                            InspectorPriorityCmb.SelectedIndex = i;
+                            break;
+                        }
+                    }
+
+                    TxtInspectorRev.Text = currentStatusItem.Revision.ToString();
+                }
+                else
+                {
+                    TxtInspectorStatusBadge.Text = "none";
+                    TxtInspectorRev.Text = "0";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] UpdateInspectorUI: " + ex.Message);
+            }
+            finally
+            {
+                isInternalInspectorUpdate = false;
+            }
+        }
+
+        private void LoadComments()
+        {
+            if (selectedItem == null || CommentsList == null) return;
+
+            try
+            {
+                List<ProjectComment> comments = ProjectCommentService.GetComments(selectedItem.FullPath, selectedItem.Project, workspaceRoot);
+                CommentsList.ItemsSource = comments;
+                TxtCommentCount.Text = string.Format("{0} comment{1}", comments.Count, comments.Count == 1 ? "" : "s");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] LoadComments: " + ex.Message);
+            }
         }
 
         private string StripFrontmatter(string text)
@@ -418,7 +617,7 @@ namespace SS_CAM.Views
             LoadProjectImages();
         }
 
-        private void LoadProjectImages()
+        private async void LoadProjectImages()
         {
             if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
             {
@@ -426,30 +625,37 @@ namespace SS_CAM.Views
                 return;
             }
 
-            List<ProjectImageItem> images = new List<ProjectImageItem>();
-            try
+            string projectPath = selectedItem.FullPath;
+            List<ProjectImageItem> images = await System.Threading.Tasks.Task.Factory.StartNew(delegate
             {
-                string[] exts = new[] { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp", "*.svg" };
-                foreach (string ext in exts)
+                List<ProjectImageItem> list = new List<ProjectImageItem>();
+                try
                 {
-                    foreach (string file in Directory.GetFiles(selectedItem.FullPath, ext, SearchOption.AllDirectories))
+                    string[] exts = new[] { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp", "*.svg" };
+                    foreach (string ext in exts)
                     {
-                        FileInfo fi = new FileInfo(file);
-                        string relDir = fi.DirectoryName.Replace(selectedItem.FullPath, "").TrimStart('\\', '/');
-                        images.Add(new ProjectImageItem
+                        foreach (string file in Directory.GetFiles(projectPath, ext, SearchOption.AllDirectories))
                         {
-                            FileName = fi.Name,
-                            ImagePath = fi.FullName,
-                            FullPath = fi.FullName,
-                            SubFolder = string.IsNullOrWhiteSpace(relDir) ? "Root" : relDir
-                        });
+                            FileInfo fi = new FileInfo(file);
+                            string relDir = fi.DirectoryName.Replace(projectPath, "").TrimStart('\\', '/');
+                            System.Windows.Media.ImageSource thumb = ThumbnailCacheService.GetThumbnail(fi.FullName, 320);
+                            list.Add(new ProjectImageItem
+                            {
+                                FileName = fi.Name,
+                                ImagePath = fi.FullName,
+                                FullPath = fi.FullName,
+                                SubFolder = string.IsNullOrWhiteSpace(relDir) ? "Root" : relDir,
+                                ThumbnailSource = thumb
+                            });
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] LoadImageGallery: " + ex.Message);
-            }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SearchCopyPage] LoadImageGallery: " + ex.Message);
+                }
+                return list;
+            });
 
             ImageGalleryList.ItemsSource = images;
         }
@@ -484,6 +690,103 @@ namespace SS_CAM.Views
             g.Children.Add(img);
             win.Content = g;
             win.ShowDialog();
+        }
+
+        private void OnInspectorStatusChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInternalInspectorUpdate || currentStatusItem == null) return;
+
+            ComboBoxItem item = InspectorStatusCmb.SelectedItem as ComboBoxItem;
+            if (item != null && item.Content != null)
+            {
+                currentStatusItem.Status = item.Content.ToString();
+                TxtInspectorStatusBadge.Text = currentStatusItem.Status;
+                FrontmatterService.WriteStatus(currentStatusItem);
+            }
+        }
+
+        private void OnInspectorPriorityChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInternalInspectorUpdate || currentStatusItem == null) return;
+
+            ComboBoxItem item = InspectorPriorityCmb.SelectedItem as ComboBoxItem;
+            if (item != null && item.Content != null)
+            {
+                currentStatusItem.Priority = item.Content.ToString();
+                FrontmatterService.WriteStatus(currentStatusItem);
+            }
+        }
+
+        private void OnInspectorRevIncClicked(object sender, RoutedEventArgs e)
+        {
+            if (currentStatusItem == null) return;
+            currentStatusItem.Revision++;
+            TxtInspectorRev.Text = currentStatusItem.Revision.ToString();
+            FrontmatterService.WriteStatus(currentStatusItem);
+        }
+
+        private void OnInspectorRevDecClicked(object sender, RoutedEventArgs e)
+        {
+            if (currentStatusItem == null || currentStatusItem.Revision <= 0) return;
+            currentStatusItem.Revision--;
+            TxtInspectorRev.Text = currentStatusItem.Revision.ToString();
+            FrontmatterService.WriteStatus(currentStatusItem);
+        }
+
+        private void OnSignOffClicked(object sender, RoutedEventArgs e)
+        {
+            if (currentStatusItem == null || selectedItem == null) return;
+
+            currentStatusItem.Status = "done";
+            FrontmatterService.WriteStatus(currentStatusItem);
+            UpdateReadmeDisplay();
+            NotificationService.ShowSuccess("Sign-Off Approved", string.Format("Project '{0}' signed off and marked as Done.", selectedItem.Project), selectedItem.FullPath);
+        }
+
+        private void OnRequestRevisionClicked(object sender, RoutedEventArgs e)
+        {
+            if (currentStatusItem == null || selectedItem == null) return;
+
+            currentStatusItem.Revision++;
+            currentStatusItem.Status = "review";
+            FrontmatterService.WriteStatus(currentStatusItem);
+            UpdateReadmeDisplay();
+            NotificationService.ShowWarning("Revision Requested", string.Format("Project '{0}' revision round bumped to #{1}.", selectedItem.Project, currentStatusItem.Revision), selectedItem.FullPath);
+        }
+
+        private void OnPostCommentClicked(object sender, RoutedEventArgs e)
+        {
+            PostNewComment();
+        }
+
+        private void OnCommentInputKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                PostNewComment();
+            }
+        }
+
+        private void PostNewComment()
+        {
+            if (selectedItem == null || CommentInputBox == null) return;
+
+            string content = CommentInputBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(content)) return;
+
+            UserProfile profile = UserProfileService.LoadProfile();
+            ProjectComment comment = new ProjectComment();
+            comment.Author = (profile != null && !string.IsNullOrWhiteSpace(profile.DesignerName)) ? profile.DesignerName : "Designer";
+            comment.Content = content;
+            comment.ProjectId = selectedItem.Project;
+
+            bool added = ProjectCommentService.AddComment(selectedItem.FullPath, selectedItem.Project, workspaceRoot, comment);
+            if (added)
+            {
+                CommentInputBox.Text = string.Empty;
+                LoadComments();
+            }
         }
 
         private void OnCopyPathClicked(object sender, RoutedEventArgs e)
@@ -549,5 +852,6 @@ namespace SS_CAM.Views
         public string ImagePath { get; set; }
         public string FullPath { get; set; }
         public string SubFolder { get; set; }
+        public System.Windows.Media.ImageSource ThumbnailSource { get; set; }
     }
 }

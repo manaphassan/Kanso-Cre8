@@ -393,6 +393,77 @@ This is the project brief content.
     fs.rmSync(testDir, { recursive: true, force: true });
   });
 
+  // ─── TEST 17: Real-time Server-Sent Events (SSE) Service ────────────
+  test('SseService registers clients and broadcasts structured events', () => {
+    const SseService = require('../services/SseService');
+    
+    let writtenData = [];
+    const mockRes = {
+      setHeader: () => {},
+      flushHeaders: () => {},
+      write: (chunk) => {
+        writtenData.push(chunk);
+      }
+    };
+    const mockReq = {
+      on: () => {},
+      user: { name: 'Test Client' }
+    };
+
+    const initialCount = SseService.getClientCount();
+    SseService.addClient(mockReq, mockRes);
+    assert.strictEqual(SseService.getClientCount(), initialCount + 1, 'Client count should increase by 1');
+
+    // Broadcast test
+    SseService.broadcast('project:updated', { projectId: '0085D', status: 'review' });
+    const hasBroadcast = writtenData.some(d => d.includes('event: project:updated') && d.includes('0085D'));
+    assert.ok(hasBroadcast, 'Broadcast message must be written to client stream');
+  });
+
+  // ─── TEST 18: Deliverable Media Partial Content (Range) Streaming ───
+  test('DeliverableService supports HTTP 206 Partial Content range requests for video media', () => {
+    const tempFile = path.join(__dirname, 'temp-video-stream.mp4');
+    const dummyBuffer = Buffer.alloc(1024 * 10, 'A'); // 10 KB dummy video
+    fs.writeFileSync(tempFile, dummyBuffer);
+
+    let status = 200;
+    let headers = {};
+    const mockRes = {
+      writeHead: (code, hdrs) => {
+        status = code;
+        headers = hdrs;
+      },
+      status: (code) => {
+        status = code;
+        return {
+          setHeader: (k, v) => { headers[k] = v; },
+          end: () => {}
+        };
+      },
+      write: () => {},
+      end: () => {},
+      on: () => {},
+      once: () => {},
+      emit: () => {}
+    };
+
+    const mockReq = {
+      headers: {
+        range: 'bytes=0-1023'
+      }
+    };
+
+    DeliverableService.streamMedia(tempFile, mockReq, mockRes);
+
+    assert.strictEqual(status, 206, 'Should respond with HTTP 206 Partial Content');
+    assert.strictEqual(headers['Content-Range'], 'bytes 0-1023/10240');
+    assert.strictEqual(headers['Content-Length'], 1024);
+    assert.strictEqual(headers['Content-Type'], 'video/mp4');
+
+    // Cleanup
+    try { fs.unlinkSync(tempFile); } catch (e) {}
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
