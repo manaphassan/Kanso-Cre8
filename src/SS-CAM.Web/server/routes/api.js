@@ -14,6 +14,7 @@ const AuditService = require('../services/AuditService');
 const CompanyService = require('../services/CompanyService');
 const CommentService = require('../services/CommentService');
 const SseService = require('../services/SseService');
+const ExportService = require('../services/ExportService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -134,6 +135,21 @@ router.get('/projects/:id', authenticateToken, (req, res) => {
       deliverables,
       auditLogs,
       comments
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/projects/:id/export', (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found.' });
+    }
+
+    ExportService.streamProjectHandover(project.fullPath, req.params.id, res, {
+      includeWip: req.query.wip === 'true'
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

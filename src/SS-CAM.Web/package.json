@@ -1,6 +1,6 @@
 {
   "name": "ss-cam-web-portal",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "SuamiSihat Creative Team Management Web Portal",
   "main": "server/index.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "test": "node server/test/run-tests.js"
   },
   "dependencies": {
+    "archiver": "^8.0.0",
     "bcryptjs": "^2.4.3",
     "chokidar": "^4.0.3",
     "cors": "^2.8.5",

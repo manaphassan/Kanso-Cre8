@@ -216,6 +216,8 @@
     <Compile Include="Services\CopywritingDesktopService.cs" />
     <Compile Include="Services\WorkspaceWatcherService.cs" />
     <Compile Include="Services\ThumbnailCacheService.cs" />
+    <Compile Include="Services\ExportPackagingService.cs" />
+    <Compile Include="Services\AssetNamingService.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

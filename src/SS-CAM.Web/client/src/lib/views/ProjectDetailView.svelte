@@ -243,6 +243,19 @@
             ⚠️ Request Revision
           </FluentButton>
 
+          <!-- Export Handover ZIP Button -->
+          <a
+            href={`/api/projects/${encodeURIComponent(p.id)}/export`}
+            download
+            class="export-handover-btn"
+            title="Download client-ready creative handover ZIP with HTML summary sheet"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            <span>Export Handover (ZIP)</span>
+          </a>
+
           {#if isAdminUser}
             <FluentButton
               appearance="danger"
@@ -669,6 +682,26 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  .export-handover-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--brand-primary, #043388);
+    color: #FFFFFF;
+    border: 1px solid var(--brand-primary, #043388);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .export-handover-btn:hover {
+    background: #0640A8;
+    color: #FFFFFF;
   }
 
   .status-select {

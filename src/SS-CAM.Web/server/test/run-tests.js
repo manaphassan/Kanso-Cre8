@@ -464,6 +464,47 @@ This is the project brief content.
     try { fs.unlinkSync(tempFile); } catch (e) {}
   });
 
+  // ─── TEST 19: Creative Handover Package Export (ZIP + HTML) ─────────
+  test('ExportService generates clean ZIP stream and HTML handover summary manifest', (done) => {
+    const ExportService = require('../services/ExportService');
+    const testDir = path.join(__dirname, 'temp-export-project');
+    const delivDir = path.join(testDir, '05_DELIVERABLES');
+    const copyDir = path.join(testDir, '03_COPYWRITING');
+
+    fs.mkdirSync(delivDir, { recursive: true });
+    fs.mkdirSync(copyDir, { recursive: true });
+
+    fs.writeFileSync(path.join(testDir, 'README.md'), '---\nstatus: done\ndesigner: 0001D\n---\n# Export Project\n', 'utf8');
+    fs.writeFileSync(path.join(copyDir, 'COPY.md'), '# Master Copywriting\nHeadline text here\n', 'utf8');
+    fs.writeFileSync(path.join(delivDir, '202608_0085D_SS_Poster_Print.pdf'), 'Dummy PDF Deliverable Content', 'utf8');
+
+    const tempZipOut = path.join(__dirname, 'temp-output-handover.zip');
+    const outStream = fs.createWriteStream(tempZipOut);
+
+    let headers = {};
+    const mockRes = {
+      setHeader: (k, v) => { headers[k] = v; },
+      writeHead: () => {},
+      headersSent: false,
+      write: (c) => outStream.write(c),
+      end: (c) => outStream.end(c),
+      on: (e, cb) => outStream.on(e, cb),
+      once: (e, cb) => outStream.once(e, cb),
+      emit: (e, ...args) => outStream.emit(e, ...args)
+    };
+
+    ExportService.streamProjectHandover(testDir, '0085D', mockRes);
+
+    assert.strictEqual(headers['Content-Type'], 'application/zip');
+    assert.ok(headers['Content-Disposition'].includes('Handover.zip'));
+
+    // Cleanup
+    setTimeout(() => {
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+      try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
+    }, 500);
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

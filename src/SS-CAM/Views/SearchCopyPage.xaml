@@ -575,6 +575,13 @@
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="12,8">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <ui:Button Appearance="Secondary" Click="OnAuditNamingClicked"
+                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0" ToolTip="Validate and standardize asset file names">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="CheckmarkStarburst24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Audit Naming" VerticalAlignment="Center" FontSize="11.5"/>
+                                </StackPanel>
+                            </ui:Button>
                             <ui:Button Appearance="Secondary" Click="OnCopyPathClicked"
                                     Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0">
                                 <StackPanel Orientation="Horizontal">
@@ -589,8 +596,15 @@
                                     <ui:TextBlock Text="Edit Brief" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
-                            <ui:Button Appearance="Primary" Click="OnCopyWholeFolderClicked"
-                                    Height="30" Padding="12,0" FontWeight="Bold" Cursor="Hand">
+                            <ui:Button Appearance="Primary" Click="OnExportHandoverZipClicked"
+                                    Height="30" Padding="12,0" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0" ToolTip="Export client-ready deliverables handover ZIP with HTML summary">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Archive24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Export Handover (ZIP)" VerticalAlignment="Center" FontSize="11.5"/>
+                                </StackPanel>
+                            </ui:Button>
+                            <ui:Button Appearance="Secondary" Click="OnCopyWholeFolderClicked"
+                                    Height="30" Padding="10,0" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="FolderZip24" FontSize="12" Margin="0,0,4,0"/>
                                     <ui:TextBlock Text="Copy Whole Project..." VerticalAlignment="Center" FontSize="11.5"/>

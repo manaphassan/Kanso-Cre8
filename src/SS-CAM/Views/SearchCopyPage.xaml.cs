@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -795,6 +796,99 @@ namespace SS_CAM.Views
             {
                 ClipboardService.SetText(selectedItem.FullPath);
                 MessageBox.Show("Project folder path copied to clipboard.", "Path Copied", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private async void OnExportHandoverZipClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
+            {
+                MessageBox.Show("Select a valid project folder first.", "No Project Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Export Creative Handover Package (ZIP)",
+                FileName = string.Format("{0}_Handover.zip", selectedItem.Project),
+                Filter = "ZIP Archive (*.zip)|*.zip|All Files (*.*)|*.*",
+                DefaultExt = ".zip"
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                try
+                {
+                    ExportPackageOptions options = new ExportPackageOptions
+                    {
+                        IncludeDeliverables = true,
+                        IncludeWipMockups = false,
+                        IncludeCopywriting = true,
+                        IncludeBriefMarkdown = true,
+                        IncludeHtmlSummary = true
+                    };
+
+                    ExportPackageResult result = await ExportPackagingService.CreateHandoverPackageAsync(selectedItem.FullPath, sfd.FileName, options);
+                    if (result.Success)
+                    {
+                        NotificationService.ShowSuccess("Handover Exported", string.Format("Packaged {0} files into:\n{1}", result.FileCount, Path.GetFileName(result.ZipFilePath)));
+                        if (MessageBox.Show(string.Format("Creative Handover Package created successfully with {0} files.\n\nOpen target directory?", result.FileCount), "Export Complete", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", sfd.FileName));
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(string.Format("Failed to create package: {0}", result.ErrorMessage), "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Export failed: {0}", ex.Message), "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnAuditNamingClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
+            {
+                MessageBox.Show("Select a valid project folder first.", "No Project Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            AssetNamingAuditReport report = AssetNamingService.AuditProjectAssets(selectedItem.FullPath);
+            if (report.TotalAudited == 0)
+            {
+                MessageBox.Show("No deliverable files found to audit in this project.", "Asset Naming Audit", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (report.IssueCount == 0)
+            {
+                MessageBox.Show(string.Format("All {0} audited deliverable assets follow SuamiSihat canonical naming standards.", report.TotalAudited), "Asset Naming Audit - 100% Compliant", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(string.Format("Audited {0} assets: {1} compliant, {2} non-standard.\n", report.TotalAudited, report.ValidCount, report.IssueCount));
+                sb.AppendLine("Suggested Renames:");
+                for (int i = 0; i < Math.Min(5, report.Issues.Count); i++)
+                {
+                    sb.AppendLine(string.Format("• {0} -> {1}", report.Issues[i].CurrentFileName, report.Issues[i].SuggestedFileName));
+                }
+                if (report.Issues.Count > 5)
+                {
+                    sb.AppendLine(string.Format("... and {0} more.", report.Issues.Count - 5));
+                }
+                sb.AppendLine("\nWould you like to automatically rename non-standard files to match canonical naming conventions?");
+
+                if (MessageBox.Show(sb.ToString(), "Asset Naming Audit & Sanitizer", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    int renamed = AssetNamingService.ApplySuggestedRenames(report.Issues);
+                    NotificationService.ShowSuccess("Asset Naming Standardized", string.Format("Renamed {0} files to canonical naming standard.", renamed));
+                    LoadProjectImages();
+                }
             }
         }
 
