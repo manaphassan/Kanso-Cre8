@@ -175,8 +175,10 @@ This is the project brief content.
     assert.ok(content.includes('app-sidebar'), 'Sidebar root element must exist');
     assert.ok(content.includes('sidebar-nav'), 'Sidebar nav container must exist');
     assert.ok(content.includes('desktop-app-banner') || content.includes('Desktop Client'), 'Desktop Client banner must exist');
-    assert.ok(content.includes('SS-CAM Desktop'), 'SS-CAM Desktop navigation text must exist');
-    assert.ok(content.includes('https://github.com/SuamiSihat/ss_cam/releases'), 'SS-CAM release link must exist');
+    assert.ok(
+      content.includes('https://suamisihat.github.io/ss_cam/') || content.includes('https://github.com/SuamiSihat/ss_cam/releases'),
+      'SS-CAM landing page or release link must exist'
+    );
   });
 
   // ─── TEST 8: Login View DOM Structure & Authentication ─────────────

@@ -206,19 +206,30 @@
             </div>
             <div class="banner-title">SS-CAM Desktop</div>
             <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
-            <button type="button" class="banner-btn" onclick={() => { showDownloadModal = true; }}>
+            <a
+              href="https://suamisihat.github.io/ss_cam/"
+              class="banner-btn"
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
               </svg>
-              Download Clients (Win / Linux)
-            </button>
+              Download App ↗
+            </a>
           </div>
         {:else}
-          <button type="button" class="nav-link rail-link" onclick={() => { showDownloadModal = true; }} title="Download SS-CAM Clients">
+          <a
+            href="https://suamisihat.github.io/ss_cam/"
+            class="nav-link rail-link"
+            target="_blank"
+            rel="noreferrer"
+            title="Download SS-CAM App"
+          >
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-          </button>
+          </a>
         {/if}
       </nav>
     </aside>
@@ -397,7 +408,7 @@
         </div>
         <div class="platform-actions">
           <a
-            href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.4.0/SS-CAM-v4.4.0.exe"
+            href="https://suamisihat.github.io/ss_cam/"
             class="platform-download-btn win-btn"
             target="_blank"
             rel="noreferrer"
@@ -405,7 +416,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-            Download Windows Exe (v4.4.0)
+            Download App (suamisihat.github.io) ↗
           </a>
         </div>
       </div>
