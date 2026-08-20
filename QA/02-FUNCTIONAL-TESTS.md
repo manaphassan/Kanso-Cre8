@@ -1,5 +1,5 @@
 # 02 — Functional Test Suite
-**SS-CAM v3.2.0** | Last updated: 2026-08-12
+**SS-CAM v4.4.0** | Last updated: 2026-08-20
 
 ---
 

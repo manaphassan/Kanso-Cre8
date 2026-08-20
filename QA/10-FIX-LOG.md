@@ -1,6 +1,41 @@
 # SS-CAM FIX LOG
 
-## v3.6.1 — 2026-08-17 (Metamorphosis Theme Surface Opacity & Legibility Overhaul)
+## v4.4.0 — 2026-08-20 (Designer Workload Heatmaps & Creative SLA Analytics)
+- **GitHub Release**: PUBLISHED (`v4.4.0` set as Latest on SuamiSihat/ss_cam)
+- **Designer Workload & Capacity Radar**: Integrated `WorkloadSlaService.cs` and `DashboardPage.xaml` radar grid computing real-time designer capacity scores and bandwidth statuses (`Optimal`, `High Load`, `At Capacity`).
+- **Creative SLA Turnaround Telemetry**: Added First-Time Right %, Average Turnaround Days, and Average Revision Rounds tracking.
+- **Web Portal Analytics**: Extended `WorkspaceService.js` and `DashboardView.svelte` with capacity progress bars and SLA analytics cards.
+- **Source Guardian**: PASS (9/9 checks passed).
+- **Test Suite**: PASS (20/20 web tests passed, MSBuild Release build passed).
+
+---
+
+## v4.3.0 — 2026-08-20 (Asset Export, Packaging & Naming Engine)
+- **1-Click Creative Handover Packaging**: Built `ExportPackagingService.cs` and `ExportService.js` with auto-generated `HANDOVER_SUMMARY.html`.
+- **Canonical Asset Naming & Sanitizer**: Built `AssetNamingService.cs` canonical validator and batch sanitizer.
+- **Source Guardian & Build**: PASS (9/9 checks, 19/19 tests).
+
+---
+
+## v4.2.0 — 2026-08-20 (Desktop NAS Sync & Batch Operations + Web Real-Time SSE)
+- **Desktop NAS File Watcher & Thumbnail Engine**: Built `WorkspaceWatcherService.cs` and `ThumbnailCacheService.cs`.
+- **Desktop Batch Operations & Virtualization**: Extended `SearchCopyPage.xaml` with multi-select ribbon and virtualization.
+- **Web Real-Time SSE Feed & Video Range Streaming**: Built `SseService.js` and HTTP 206 partial content range requests in `DeliverableService.js`.
+
+---
+
+## v4.1.0 — 2026-08-19 (Desktop Feature Parity & Studio Overhaul)
+- **Desktop Copywriting Studio**: Built `CopywritingPage.xaml` and `CopywritingDesktopService.cs`.
+- **Contextual Discussions & Comments Engine**: Built `ProjectCommentService.cs` for `_comments.jsonl`.
+- **ClickUp 3.0-Style 2-Column Task Workspace**: Upgraded `SearchCopyPage.xaml`.
+
+---
+
+## v4.0.0 — 2026-08-18 (Centralized Vault Hierarchy & Web Management Portal)
+- Unified Year-first hierarchy (`Creative-Team/[YYYY]/[YYYYMM_Month]/[ProjectFolder]`).
+- Built Svelte 5 + Node.js Web Management Portal (`SS-CAM.Web`).
+
+---
 
 ### Added & Refined Modules
 - **Metamorphosis Theme Surface Opacity (`MetamorphosisTheme.xaml`)**: Replaced all semi-transparent white card background brushes (`#26FFFFFF`, `#14FFFFFF`) with solid opaque deep space navy surface colors (`#0F1A3A`, `#142045`), eliminating background text bleed-through on overlay drawers (`DayDetailPanel`) and cards.
@@ -57,7 +92,6 @@
 ### Verification
 - Release Build: PASS (`src/SS-CAM/bin/Release/SS-CAM.exe`).
 - Source Guardian: PASS with 9/9 passed, 0 warnings, 0 fails (`verify-sscam.ps1`).
->>>>>>> c0832ca (feat(v3.5.0): in-app project brief editor, workspace designer scoping, and QA verification)
 
 ---
 
