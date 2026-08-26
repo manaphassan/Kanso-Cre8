@@ -209,15 +209,17 @@ namespace SS_CAM.Services
         {
             Dictionary<string, DesignerFolderChoice> map = new Dictionary<string, DesignerFolderChoice>(StringComparer.OrdinalIgnoreCase);
 
-            // 1. Staff directory members
+            // 1. Staff directory members (User / Designer & Admin roles only, excluding Managers)
+            List<StaffDirectoryItem> staffList = null;
             try
             {
-                var staffList = UserProfileService.GetStaffDirectory(root);
+                staffList = UserProfileService.GetStaffDirectory(root);
                 if (staffList != null)
                 {
                     foreach (var staff in staffList)
                     {
-                        if (staff != null && !string.IsNullOrWhiteSpace(staff.Name))
+                        if (staff != null && !string.IsNullOrWhiteSpace(staff.Name) &&
+                            WorkloadSlaService.IsDesignerOrAdminRole(staff.Role, staff.Department))
                         {
                             if (!map.ContainsKey(staff.Name))
                             {
@@ -250,6 +252,16 @@ namespace SS_CAM.Services
                             ProjectPattern.IsMatch(name))
                         {
                             continue;
+                        }
+
+                        if (staffList != null)
+                        {
+                            var matched = staffList.Find(s => string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase) ||
+                                                              string.Equals(s.StaffId, name, StringComparison.OrdinalIgnoreCase));
+                            if (matched != null && !WorkloadSlaService.IsDesignerOrAdminRole(matched.Role, matched.Department))
+                            {
+                                continue; // Exclude manager role
+                            }
                         }
 
                         if (!map.ContainsKey(name))

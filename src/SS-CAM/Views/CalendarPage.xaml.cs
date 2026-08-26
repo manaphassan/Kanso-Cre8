@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -75,6 +76,10 @@ namespace SS_CAM.Views
 
                 HashSet<string> designerSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+                List<StaffDirectoryItem> staffList = null;
+                try { staffList = UserProfileService.GetStaffDirectory(_workspaceRoot); }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[CalendarPage] GetStaffDirectory: " + ex.Message); }
+
                 if (!string.IsNullOrWhiteSpace(_workspaceRoot))
                 {
                     List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(_workspaceRoot);
@@ -82,8 +87,8 @@ namespace SS_CAM.Views
                     {
                         foreach (DesignerFolderChoice d in designers)
                         {
-                            if (d != null && !string.IsNullOrWhiteSpace(d.StaffId))
-                                designerSet.Add(d.StaffId);
+                            if (d != null && !string.IsNullOrWhiteSpace(d.Name))
+                                designerSet.Add(d.Name);
                         }
                     }
                 }
@@ -92,7 +97,20 @@ namespace SS_CAM.Views
                 {
                     if (p != null && !string.IsNullOrWhiteSpace(p.Designer))
                     {
-                        designerSet.Add(p.Designer);
+                        if (!Regex.IsMatch(p.Designer, @"^\d{4}$") && !Regex.IsMatch(p.Designer, @"^\d{6}") &&
+                            !p.Designer.StartsWith("#") && !p.Designer.StartsWith("_"))
+                        {
+                            if (staffList != null)
+                            {
+                                var matched = staffList.Find(s => string.Equals(s.Name, p.Designer, StringComparison.OrdinalIgnoreCase) ||
+                                                                  string.Equals(s.StaffId, p.Designer, StringComparison.OrdinalIgnoreCase));
+                                if (matched != null && !WorkloadSlaService.IsDesignerOrAdminRole(matched.Role, matched.Department))
+                                {
+                                    continue; // Exclude manager role
+                                }
+                            }
+                            designerSet.Add(p.Designer);
+                        }
                     }
                 }
 
