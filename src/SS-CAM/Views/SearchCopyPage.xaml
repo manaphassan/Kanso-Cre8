@@ -121,20 +121,20 @@
                                     <ColumnDefinition Width="4"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="BatchStatusCmb" Grid.Column="0" Height="26" FontSize="10.5" SelectionChanged="OnBatchStatusChanged">
-                                    <ComboBoxItem Content="Set Status..."/>
-                                    <ComboBoxItem Content="backlog"/>
-                                    <ComboBoxItem Content="in-progress"/>
-                                    <ComboBoxItem Content="review"/>
-                                    <ComboBoxItem Content="done"/>
-                                    <ComboBoxItem Content="on-hold"/>
+                                <ComboBox x:Name="BatchStatusCmb" Grid.Column="0" Height="30" Padding="6,2" VerticalContentAlignment="Center" FontSize="10.5" SelectionChanged="OnBatchStatusChanged">
+                                    <ComboBoxItem Content="Set Status..." VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="review" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="done" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="on-hold" VerticalContentAlignment="Center"/>
                                 </ComboBox>
-                                <ComboBox x:Name="BatchPriorityCmb" Grid.Column="2" Height="26" FontSize="10.5" SelectionChanged="OnBatchPriorityChanged">
-                                    <ComboBoxItem Content="Set Priority..."/>
-                                    <ComboBoxItem Content="low"/>
-                                    <ComboBoxItem Content="medium"/>
-                                    <ComboBoxItem Content="high"/>
-                                    <ComboBoxItem Content="urgent"/>
+                                <ComboBox x:Name="BatchPriorityCmb" Grid.Column="2" Height="30" Padding="6,2" VerticalContentAlignment="Center" FontSize="10.5" SelectionChanged="OnBatchPriorityChanged">
+                                    <ComboBoxItem Content="Set Priority..." VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
+                                    <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
                                 </ComboBox>
                             </Grid>
                         </StackPanel>
@@ -261,7 +261,8 @@
                                 </StackPanel>
                                 <ui:TextBlock x:Name="SelectedProjectTitle" Text="None selected"
                                            Foreground="{DynamicResource FluentBrand80}"
-                                           FontSize="15" FontWeight="Bold" Margin="0,2,0,0"/>
+                                           FontSize="15" FontWeight="Bold" Margin="0,2,0,0"
+                                           TextTrimming="CharacterEllipsis"/>
                                 <ui:TextBlock x:Name="SelectedProjectPath"
                                            Text="Select a project from the sidebar to inspect its brief."
                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
@@ -437,21 +438,21 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
                                             <ui:TextBlock Text="Status" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
-                                            <ComboBox x:Name="InspectorStatusCmb" Height="28" FontSize="11" SelectionChanged="OnInspectorStatusChanged">
-                                                <ComboBoxItem Content="backlog"/>
-                                                <ComboBoxItem Content="in-progress"/>
-                                                <ComboBoxItem Content="review"/>
-                                                <ComboBoxItem Content="done"/>
-                                                <ComboBoxItem Content="on-hold"/>
+                                            <ComboBox x:Name="InspectorStatusCmb" Height="32" Padding="8,2" VerticalContentAlignment="Center" FontSize="11" SelectionChanged="OnInspectorStatusChanged">
+                                                <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="review" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="done" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="on-hold" VerticalContentAlignment="Center"/>
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <ui:TextBlock Text="Priority" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
-                                            <ComboBox x:Name="InspectorPriorityCmb" Height="28" FontSize="11" SelectionChanged="OnInspectorPriorityChanged">
-                                                <ComboBoxItem Content="low"/>
-                                                <ComboBoxItem Content="medium"/>
-                                                <ComboBoxItem Content="high"/>
-                                                <ComboBoxItem Content="urgent"/>
+                                            <ComboBox x:Name="InspectorPriorityCmb" Height="32" Padding="8,2" VerticalContentAlignment="Center" FontSize="11" SelectionChanged="OnInspectorPriorityChanged">
+                                                <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
+                                                <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
                                             </ComboBox>
                                         </StackPanel>
                                     </Grid>
@@ -466,11 +467,11 @@
                                         <StackPanel Grid.Column="0" Margin="0,0,6,0">
                                             <ui:TextBlock Text="Rev" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
                                             <StackPanel Orientation="Horizontal">
-                                                <ui:Button Appearance="Secondary" Width="24" Height="26" Padding="0" Click="OnInspectorRevDecClicked" Cursor="Hand" ToolTip="Decrement revision">
+                                                <ui:Button Appearance="Secondary" Width="26" Height="28" Padding="0" Click="OnInspectorRevDecClicked" Cursor="Hand" ToolTip="Decrement revision">
                                                     <ui:SymbolIcon Symbol="Subtract24" FontSize="10"/>
                                                 </ui:Button>
                                                 <ui:TextBlock x:Name="TxtInspectorRev" Text="0" FontWeight="Bold" FontSize="11.5" Width="22" TextAlignment="Center" VerticalAlignment="Center"/>
-                                                <ui:Button Appearance="Secondary" Width="24" Height="26" Padding="0" Click="OnInspectorRevIncClicked" Cursor="Hand" ToolTip="Increment revision">
+                                                <ui:Button Appearance="Secondary" Width="26" Height="28" Padding="0" Click="OnInspectorRevIncClicked" Cursor="Hand" ToolTip="Increment revision">
                                                     <ui:SymbolIcon Symbol="Add24" FontSize="10"/>
                                                 </ui:Button>
                                             </StackPanel>
@@ -483,16 +484,16 @@
                                                     <ColumnDefinition Width="4"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <ui:Button x:Name="BtnSignOff" Grid.Column="0" Appearance="Primary" Height="26" Padding="0" Click="OnSignOffClicked" Cursor="Hand" ToolTip="Sign-Off as Done">
+                                                <ui:Button x:Name="BtnSignOff" Grid.Column="0" Appearance="Primary" Height="28" Padding="4,0" Click="OnSignOffClicked" Cursor="Hand" ToolTip="Sign-Off as Done">
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <ui:SymbolIcon Symbol="Checkmark24" FontSize="10" Margin="0,0,3,0"/>
-                                                        <ui:TextBlock Text="Sign-Off" FontSize="10" FontWeight="Bold"/>
+                                                        <ui:TextBlock Text="Sign-Off" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </ui:Button>
-                                                <ui:Button x:Name="BtnRequestRevision" Grid.Column="2" Appearance="Secondary" Height="26" Padding="0" Click="OnRequestRevisionClicked" Cursor="Hand" ToolTip="Request Revision (+1 Rev)">
+                                                <ui:Button x:Name="BtnRequestRevision" Grid.Column="2" Appearance="Secondary" Height="28" Padding="4,0" Click="OnRequestRevisionClicked" Cursor="Hand" ToolTip="Request Revision (+1 Rev)">
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <ui:SymbolIcon Symbol="ArrowCounterclockwise24" FontSize="10" Margin="0,0,3,0"/>
-                                                        <ui:TextBlock Text="Revise" FontSize="10"/>
+                                                        <ui:TextBlock Text="Revise" FontSize="10" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </ui:Button>
                                             </Grid>

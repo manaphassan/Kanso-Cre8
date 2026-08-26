@@ -8,7 +8,7 @@ namespace SS_CAM.Services
 {
     public static class WorkloadSlaService
     {
-        private static readonly Regex ProjectDirPattern = new Regex(@"^\d{6}_([A-Z0-9]+)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase);
+        private static readonly Regex ProjectDirPattern = new Regex(@"^\d{6}_(\d[A-Z0-9]*)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase);
 
         public static List<DesignerWorkloadItem> ComputeDesignerWorkloads(string workspaceRoot)
         {

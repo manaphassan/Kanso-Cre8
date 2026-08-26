@@ -510,6 +510,12 @@ namespace SS_CAM.Services
                     AllStations.Insert(0, GetInitialDStation());
                 }
 
+                // Ensure SuamiSihat Radio is present as the pinned first station
+                if (!AllStations.Any(s => s.Id == "preset_suamisihat" || s.StreamUrl.Contains("dj.suamisihat.myds.me")))
+                {
+                    AllStations.Insert(0, GetSuamiSihatRadioStation());
+                }
+
                 SyncConfigStations();
                 SaveConfig();
             }
@@ -537,6 +543,22 @@ namespace SS_CAM.Services
             {
                 CurrentStation = AllStations[0];
             }
+        }
+
+        public static RadioStation GetSuamiSihatRadioStation()
+        {
+            return new RadioStation
+            {
+                Id = "preset_suamisihat",
+                Name = "SuamiSihat Radio",
+                Genre = "Health / Lifestyle",
+                StreamUrl = "https://dj.suamisihat.myds.me/listen/suamisihat-radio/radio.mp3",
+                IconEmoji = "📻",
+                IsPreset = true,
+                Language = "Malay",
+                Country = "Malaysia",
+                Description = "Official SuamiSihat Radio — health, wellness & lifestyle broadcasting 24/7."
+            };
         }
 
         public static RadioStation GetInitialDStation()
@@ -571,6 +593,7 @@ namespace SS_CAM.Services
         {
             return new List<RadioStation>
             {
+                GetSuamiSihatRadioStation(),
                 GetInitialDStation(),
                 GetBabymetalStation(),
                 new RadioStation

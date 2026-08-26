@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-20.
+> **Living document.** Updated with every release. Last updated: 2026-08-26.
 
 ---
 
@@ -36,6 +36,7 @@
 | **v4.2.0** | 2026-08-20 | **Desktop NAS Sync & Batch Operations + Web Real-Time SSE**: Background `WorkspaceWatcherService`, `ThumbnailCacheService`, UI virtualization, batch operations ribbon, and Web SSE event stream + HTTP 206 video range streaming |
 | **v4.3.0** | 2026-08-20 | **Asset Export, Packaging & Naming Engine**: Desktop `ExportPackagingService` (1-click ZIP with `HANDOVER_SUMMARY.html`), `AssetNamingService` canonical sanitizer, and Web `ExportService` ZIP streaming |
 | **v4.4.0** | 2026-08-20 | **Designer Workload Heatmaps & Creative SLA Analytics**: Live designer capacity radars (`WorkloadSlaService`), capacity progress meters, and operational SLA telemetry across Desktop and Web |
+| **v4.4.1** | 2026-08-26 | **Radio Stream, Deep Scanner & Copywriting FlowDocument Engine**: Official SuamiSihat Radio Stream preset `#1`, deep month-container project discovery, dynamic project ID auto-calculation, FlowDocument markdown rendering by default, sanitized designer catalog filtering |
 
 ---
 

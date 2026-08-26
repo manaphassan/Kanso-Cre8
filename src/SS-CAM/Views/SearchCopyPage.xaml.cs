@@ -233,11 +233,32 @@ namespace SS_CAM.Views
         private async System.Threading.Tasks.Task PerformSearch()
         {
             string selectedDesigner = DesignerFilterCmb.SelectedItem != null ? DesignerFilterCmb.SelectedItem.ToString() : "All Designers";
-            if (selectedDesigner == "All Designers") selectedDesigner = "";
-
             string query = SearchInput != null ? SearchInput.Text.Trim() : "";
 
-            allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, selectedDesigner, query, 50);
+            allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, "", query, 200);
+
+            if (!string.IsNullOrWhiteSpace(selectedDesigner) && !selectedDesigner.Equals("All Designers", StringComparison.OrdinalIgnoreCase))
+            {
+                allItems = allItems.Where(item =>
+                {
+                    if (item == null) return false;
+                    if (!string.IsNullOrWhiteSpace(item.Designer))
+                    {
+                        if (string.Equals(item.Designer, selectedDesigner, StringComparison.OrdinalIgnoreCase) ||
+                            item.Designer.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            selectedDesigner.IndexOf(item.Designer, StringComparison.OrdinalIgnoreCase) >= 0)
+                            return true;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(item.Project) && item.Project.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
+                        return true;
+
+                    if (!string.IsNullOrWhiteSpace(item.FullPath) && item.FullPath.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
+                        return true;
+
+                    return false;
+                }).ToList();
+            }
 
             string selectedCat = CategoryFilterCmb != null && CategoryFilterCmb.SelectedItem != null ? CategoryFilterCmb.SelectedItem.ToString() : "All Categories";
             if (selectedCat != "All Categories")

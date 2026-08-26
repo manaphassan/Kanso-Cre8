@@ -101,31 +101,107 @@ namespace SS_CAM.Views
             return preset ?? _categoryPresets[0];
         }
 
+        private void ScanDirectoryForMaxProjectId(string dir, Regex regex, ref int maxId)
+        {
+            if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir)) return;
+            try
+            {
+                string[] subDirs = Directory.GetDirectories(dir);
+                foreach (string sub in subDirs)
+                {
+                    string dirName = Path.GetFileName(sub);
+                    Match m = regex.Match(dirName);
+                    if (m.Success)
+                    {
+                        int idVal;
+                        if (int.TryParse(m.Groups[1].Value, out idVal))
+                        {
+                            if (idVal > maxId) maxId = idVal;
+                        }
+                    }
+                    else if (!dirName.StartsWith(".") && !dirName.StartsWith("_"))
+                    {
+                        try
+                        {
+                            string[] nested = Directory.GetDirectories(sub);
+                            foreach (string n in nested)
+                            {
+                                string nName = Path.GetFileName(n);
+                                Match nm = regex.Match(nName);
+                                if (nm.Success)
+                                {
+                                    int idVal;
+                                    if (int.TryParse(nm.Groups[1].Value, out idVal))
+                                    {
+                                        if (idVal > maxId) maxId = idVal;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] Nested scan: " + ex.Message); }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] ScanDirectoryForMaxProjectId: " + ex.Message);
+            }
+        }
+
         private void AutoCalculateNextProjectId()
         {
             try
             {
                 SyncWorkspaceRootFromInput();
-                string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
-                string targetDir = Path.Combine(workspaceRoot, designerFolder);
-                
-                int maxId = 0;
+                if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+                    return;
 
-                if (Directory.Exists(targetDir))
+                int maxId = 0;
+                Regex regex = new Regex(@"^\d{6}_(\d{4})[A-Z]", RegexOptions.IgnoreCase);
+
+                // 1. Check current month container directory (e.g. Creative-Team\2026\202608_August)
+                string containerDir = GetProjectContainerDirectory();
+                if (Directory.Exists(containerDir))
                 {
-                    string[] dirs = Directory.GetDirectories(targetDir);
-                    Regex regex = new Regex(@"^\d{6}_(\d{4})[A-Z]_");
-                    
-                    foreach (string dir in dirs)
+                    ScanDirectoryForMaxProjectId(containerDir, regex, ref maxId);
+                }
+
+                // 2. Check current year directory (e.g. Creative-Team\2026)
+                string year = DateTime.Now.Year.ToString();
+                if (YearComboBox != null && YearComboBox.SelectedItem != null)
+                {
+                    year = YearComboBox.SelectedItem.ToString();
+                }
+                string yearDir = Path.Combine(workspaceRoot, year);
+                if (Directory.Exists(yearDir) && !string.Equals(yearDir, containerDir, StringComparison.OrdinalIgnoreCase))
+                {
+                    ScanDirectoryForMaxProjectId(yearDir, regex, ref maxId);
+                }
+
+                // 3. Check legacy designer folder (e.g. Creative-Team\Brand)
+                string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
+                string legacyDir = Path.Combine(workspaceRoot, designerFolder);
+                if (Directory.Exists(legacyDir))
+                {
+                    ScanDirectoryForMaxProjectId(legacyDir, regex, ref maxId);
+                }
+
+                // 4. Scan existing projects found by WorkspaceScanner
+                List<DesignerFolderItem> recentProjects = WorkspaceScanner.ListDesignerFolders(workspaceRoot, "", "", 200);
+                if (recentProjects != null)
+                {
+                    foreach (var item in recentProjects)
                     {
-                        string dirName = new DirectoryInfo(dir).Name;
-                        Match m = regex.Match(dirName);
-                        if (m.Success)
+                        if (item != null && !string.IsNullOrWhiteSpace(item.Project))
                         {
-                            int idVal;
-                            if (int.TryParse(m.Groups[1].Value, out idVal))
+                            Match m = regex.Match(item.Project);
+                            if (m.Success)
                             {
-                                if (idVal > maxId) maxId = idVal;
+                                int idVal;
+                                if (int.TryParse(m.Groups[1].Value, out idVal))
+                                {
+                                    if (idVal > maxId) maxId = idVal;
+                                }
                             }
                         }
                     }
@@ -367,12 +443,26 @@ namespace SS_CAM.Views
 
         private void OnFormInputChanged(object sender, TextChangedEventArgs e)
         {
-            if (IsLoaded) UpdateLivePreview();
+            if (IsLoaded)
+            {
+                if (sender == TargetDirectoryInput)
+                {
+                    AutoCalculateNextProjectId();
+                }
+                UpdateLivePreview();
+            }
         }
 
         private void OnFormInputChanged(object sender, RoutedEventArgs e)
         {
-            if (IsLoaded) UpdateLivePreview();
+            if (IsLoaded)
+            {
+                if (sender == YearComboBox)
+                {
+                    AutoCalculateNextProjectId();
+                }
+                UpdateLivePreview();
+            }
         }
 
         private string GenerateFolderName()

@@ -9,8 +9,11 @@ namespace SS_CAM.Services
 {
     public static class WorkspaceScanner
     {
+        // Job-ID segment must start with a digit (e.g. 0001D, 0002S).
+        // This excludes month-container folders like 202608_August (letter-only segment)
+        // while correctly matching all canonical project folder names.
         private static readonly Regex ProjectPattern = new Regex(
-            @"^\d{6}_([A-Z0-9]+)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            @"^\d{6}_(\d[A-Z0-9]*)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private static readonly string[] ChartColors = new[] { "#21A1F7", "#043388", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
 
@@ -199,33 +202,125 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
-        /// Scans the workspace root for first-level subdirectories that represent designer folders (e.g. Ahmad, Faizal, Siti).
-        /// Returns them as DesignerFolderChoice items for the filter dropdown.
+        /// Returns staff directory designers and active team folder names for the filter dropdown.
+        /// Excludes system, hidden, recycle, year (e.g. 2026), and month container folders.
         /// </summary>
         public static List<DesignerFolderChoice> GetDesignerFolders(string root)
         {
-            List<DesignerFolderChoice> result = new List<DesignerFolderChoice>();
-            if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root)) return result;
+            Dictionary<string, DesignerFolderChoice> map = new Dictionary<string, DesignerFolderChoice>(StringComparer.OrdinalIgnoreCase);
 
-            string[] dirs;
-            try { dirs = Directory.GetDirectories(root); }
-            catch { return result; }
-
-            foreach (string dir in dirs)
+            // 1. Staff directory members
+            try
             {
-                string name = Path.GetFileName(dir);
-                // Include any non-system subfolder that is not a project directory itself
-                if (!name.StartsWith("_") && !name.StartsWith(".") && !ProjectPattern.IsMatch(name))
+                var staffList = UserProfileService.GetStaffDirectory(root);
+                if (staffList != null)
                 {
-                    result.Add(new DesignerFolderChoice { Name = name, StaffId = name });
+                    foreach (var staff in staffList)
+                    {
+                        if (staff != null && !string.IsNullOrWhiteSpace(staff.Name))
+                        {
+                            if (!map.ContainsKey(staff.Name))
+                            {
+                                map[staff.Name] = new DesignerFolderChoice
+                                {
+                                    Name = staff.Name,
+                                    StaffId = staff.StaffId ?? staff.Name
+                                };
+                            }
+                        }
+                    }
                 }
             }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] StaffDirectory: " + ex.Message); }
 
+            // 2. Discover legacy first-level folders in workspace root
+            if (!string.IsNullOrWhiteSpace(root) && Directory.Exists(root))
+            {
+                try
+                {
+                    string[] dirs = Directory.GetDirectories(root);
+                    foreach (string dir in dirs)
+                    {
+                        string name = Path.GetFileName(dir);
+                        if (name.StartsWith("_") || name.StartsWith(".") || name.StartsWith("#") ||
+                            string.Equals(name, "recycle", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(name, "#recycle", StringComparison.OrdinalIgnoreCase) ||
+                            Regex.IsMatch(name, @"^\d{4}$") ||
+                            Regex.IsMatch(name, @"^\d{6}") ||
+                            ProjectPattern.IsMatch(name))
+                        {
+                            continue;
+                        }
+
+                        if (!map.ContainsKey(name))
+                        {
+                            map[name] = new DesignerFolderChoice { Name = name, StaffId = name };
+                        }
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] Root dirs: " + ex.Message); }
+            }
+
+            List<DesignerFolderChoice> result = new List<DesignerFolderChoice>(map.Values);
             result.Sort(delegate(DesignerFolderChoice a, DesignerFolderChoice b)
             {
                 return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
             });
             return result;
+        }
+
+        private static string ResolveProjectDesigner(string root, string directory, string projectName)
+        {
+            try
+            {
+                // 1. Check README.md frontmatter
+                string readmePath = Path.Combine(directory, "README.md");
+                if (File.Exists(readmePath))
+                {
+                    ProjectStatusItem psi = FrontmatterService.ReadStatus(directory);
+                    if (psi != null && !string.IsNullOrWhiteSpace(psi.Designer))
+                    {
+                        return psi.Designer;
+                    }
+                }
+
+                // 2. Extract job code (e.g. 0001D, 0004P) and map to staff directory
+                Match m = Regex.Match(projectName, @"^\d{6}_([A-Z0-9]+)_", RegexOptions.IgnoreCase);
+                if (m.Success)
+                {
+                    string code = m.Groups[1].Value;
+                    var staffList = UserProfileService.GetStaffDirectory(root);
+                    if (staffList != null)
+                    {
+                        foreach (var staff in staffList)
+                        {
+                            if (string.Equals(staff.StaffId, code, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(staff.StaffId) && (staff.StaffId.EndsWith(code, StringComparison.OrdinalIgnoreCase) || code.EndsWith(staff.StaffId, StringComparison.OrdinalIgnoreCase))) ||
+                                string.Equals(staff.Name, code, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return staff.Name;
+                            }
+                        }
+                    }
+                    return code;
+                }
+
+                // 3. Check legacy non-system folder relative to root
+                string rel = GetFirstRelativePart(root, directory);
+                if (!string.IsNullOrWhiteSpace(rel) &&
+                    !Regex.IsMatch(rel, @"^\d{4}$") &&
+                    !Regex.IsMatch(rel, @"^\d{6}") &&
+                    !rel.StartsWith("_") && !rel.StartsWith("#") && !rel.StartsWith("."))
+                {
+                    return rel;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] ResolveDesigner: " + ex.Message);
+            }
+
+            return "Creative Team";
         }
 
         public static List<DesignerFolderItem> ListDesignerFolders(string root, string staffId, string query, int limit)
@@ -254,7 +349,7 @@ namespace SS_CAM.Services
                     if (ProjectPattern.IsMatch(name))
                     {
                         if (!string.IsNullOrWhiteSpace(query) && name.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                        string designer = string.IsNullOrWhiteSpace(staffId) ? GetFirstRelativePart(root, directory) : staffId;
+                        string designer = string.IsNullOrWhiteSpace(staffId) ? ResolveProjectDesigner(root, directory, name) : staffId;
                         DateTime modified;
                         try { modified = Directory.GetLastWriteTime(directory); } catch { modified = DateTime.MinValue; }
 

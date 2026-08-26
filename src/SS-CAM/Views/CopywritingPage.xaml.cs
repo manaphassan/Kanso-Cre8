@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using SS_CAM.Models;
 using SS_CAM.Services;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Views
 {
@@ -74,6 +75,10 @@ namespace SS_CAM.Views
                         {
                             string content = CopywritingDesktopService.LoadCopywriting(selectedProject.FullPath, selectedProject.ProjectId, workspaceRoot, selectedProject.Name);
                             CopyScriptEditor.Text = content;
+                            if (RenderedCopyViewer != null)
+                            {
+                                RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(content);
+                            }
                             UpdateMetrics(content);
                         }
                     }
@@ -104,7 +109,7 @@ namespace SS_CAM.Views
                 {
                     Queue<string> queue = new Queue<string>();
                     queue.Enqueue(workspaceRoot);
-                    Regex pattern = new Regex(@"^\d{6}_[A-Z0-9]+", RegexOptions.IgnoreCase);
+                    Regex pattern = new Regex(@"^\d{6}_\d[A-Z0-9]*", RegexOptions.IgnoreCase);
 
                     while (queue.Count > 0)
                     {
@@ -172,6 +177,10 @@ namespace SS_CAM.Views
             {
                 TxtFilePath.Text = "No project selected";
                 CopyScriptEditor.Text = string.Empty;
+                if (RenderedCopyViewer != null)
+                {
+                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(string.Empty);
+                }
                 UpdateMetrics(string.Empty);
                 return;
             }
@@ -187,6 +196,49 @@ namespace SS_CAM.Views
 
             UpdateMetrics(content);
             TxtSaveStatus.Text = "Loaded from NAS";
+
+            // Always show rendered preview by default
+            SetPreviewMode(true);
+        }
+
+        private void OnModePreviewClicked(object sender, RoutedEventArgs e)
+        {
+            SetPreviewMode(true);
+        }
+
+        private void OnModeEditClicked(object sender, RoutedEventArgs e)
+        {
+            SetPreviewMode(false);
+        }
+
+        private void SetPreviewMode(bool isPreview)
+        {
+            if (isPreview)
+            {
+                if (RenderedCopyViewer != null && CopyScriptEditor != null)
+                {
+                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(CopyScriptEditor.Text);
+                    RenderedCopyViewer.Visibility = Visibility.Visible;
+                    CopyScriptEditor.Visibility = Visibility.Collapsed;
+                }
+                if (TxtCanvasHeader != null) TxtCanvasHeader.Text = "Rendered Copy Preview";
+                if (TxtEditorShortcutHint != null) TxtEditorShortcutHint.Visibility = Visibility.Collapsed;
+                if (BtnModePreview != null) BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+                if (BtnModeEdit != null) BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            }
+            else
+            {
+                if (RenderedCopyViewer != null && CopyScriptEditor != null)
+                {
+                    RenderedCopyViewer.Visibility = Visibility.Collapsed;
+                    CopyScriptEditor.Visibility = Visibility.Visible;
+                    CopyScriptEditor.Focus();
+                }
+                if (TxtCanvasHeader != null) TxtCanvasHeader.Text = "Markdown Copy Script (COPY.md)";
+                if (TxtEditorShortcutHint != null) TxtEditorShortcutHint.Visibility = Visibility.Visible;
+                if (BtnModePreview != null) BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                if (BtnModeEdit != null) BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            }
         }
 
         private void OnCopyScriptTextChanged(object sender, TextChangedEventArgs e)
@@ -237,6 +289,10 @@ namespace SS_CAM.Views
             if (success)
             {
                 TxtSaveStatus.Text = string.Format("Saved at {0}", DateTime.Now.ToString("HH:mm:ss"));
+                if (RenderedCopyViewer != null)
+                {
+                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(text);
+                }
                 NotificationService.ShowSuccess("Script Saved", "Script saved to 03_COPYWRITING/COPY.md on NAS.");
             }
             else
@@ -284,6 +340,7 @@ namespace SS_CAM.Views
 
         private void InsertPresetFramework(string presetKey)
         {
+            SetPreviewMode(false);
             string projectTitle = selectedProject != null ? selectedProject.Name : "Project";
             string snippet = CopywritingDesktopService.GetPresetTemplate(presetKey, projectTitle);
 
@@ -309,7 +366,12 @@ namespace SS_CAM.Views
             if (MessageBox.Show("Are you sure you want to replace current content with the standard brand copywriting template?", "Reset Template", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 string projectTitle = selectedProject != null ? selectedProject.Name : "Project";
-                CopyScriptEditor.Text = CopywritingDesktopService.GetDefaultTemplate(projectTitle);
+                string def = CopywritingDesktopService.GetDefaultTemplate(projectTitle);
+                CopyScriptEditor.Text = def;
+                if (RenderedCopyViewer != null)
+                {
+                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(def);
+                }
                 TxtSaveStatus.Text = "Template reset (Unsaved)";
             }
         }

@@ -215,12 +215,37 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <ui:TextBlock Text="Markdown Copy Script (COPY.md)" FontWeight="SemiBold" FontSize="13"
-                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                        <ui:TextBlock Text="Ctrl+S to save" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                      Grid.Column="1"/>
+                        <ui:TextBlock x:Name="TxtCanvasHeader" Text="Rendered Copy Preview" FontWeight="SemiBold" FontSize="13"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:TextBlock x:Name="TxtEditorShortcutHint" Text="Ctrl+S to save" FontSize="11.5"
+                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"
+                                          Margin="0,0,12,0" Visibility="Collapsed"/>
+                            
+                            <!-- Icon-Only Preview & Edit Toggle Buttons -->
+                            <ui:Button x:Name="BtnModePreview" Appearance="Primary" Height="28" Width="32" Padding="0"
+                                       Click="OnModePreviewClicked" Cursor="Hand" ToolTip="Preview Rendered Markdown">
+                                <ui:SymbolIcon Symbol="Eye24" FontSize="13"/>
+                            </ui:Button>
+                            <ui:Button x:Name="BtnModeEdit" Appearance="Secondary" Height="28" Width="32" Padding="0" Margin="4,0,0,0"
+                                       Click="OnModeEditClicked" Cursor="Hand" ToolTip="Edit Markdown Script">
+                                <ui:SymbolIcon Symbol="Edit24" FontSize="13"/>
+                            </ui:Button>
+                        </StackPanel>
                     </Grid>
 
+                    <!-- Rendered Markdown FlowDocument Viewer (Default) -->
+                    <FlowDocumentScrollViewer x:Name="RenderedCopyViewer" Grid.Row="1"
+                                              MinHeight="450" MaxHeight="800"
+                                              VerticalScrollBarVisibility="Auto"
+                                              Background="{DynamicResource TextControlBackground}"
+                                              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                              BorderThickness="1"
+                                              Padding="14"
+                                              Visibility="Visible"/>
+
+                    <!-- Raw Markdown Editor -->
                     <TextBox x:Name="CopyScriptEditor" Grid.Row="1"
                              MinHeight="450" MaxHeight="800"
                              AcceptsReturn="True" AcceptsTab="True"
@@ -235,7 +260,8 @@
                              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                              BorderThickness="1"
                              TextChanged="OnCopyScriptTextChanged"
-                             KeyDown="OnEditorKeyDown"/>
+                             KeyDown="OnEditorKeyDown"
+                             Visibility="Collapsed"/>
                 </Grid>
             </ui:Card>
 

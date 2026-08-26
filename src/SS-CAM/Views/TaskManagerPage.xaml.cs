@@ -87,8 +87,8 @@ namespace SS_CAM.Views
                     {
                         foreach (DesignerFolderChoice d in designers)
                         {
-                            if (d != null && !string.IsNullOrWhiteSpace(d.StaffId))
-                                designerSet.Add(d.StaffId);
+                            if (d != null && !string.IsNullOrWhiteSpace(d.Name))
+                                designerSet.Add(d.Name);
                         }
                     }
                 }
