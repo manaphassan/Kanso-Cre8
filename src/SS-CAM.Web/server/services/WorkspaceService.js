@@ -506,10 +506,82 @@ class WorkspaceService {
       typeCounts[p.presetType] = (typeCounts[p.presetType] || 0) + 1;
     });
 
-    // Designer workload
+    // Designer workload (User / Designer & Admin roles only, excluding Manager / Executive roles)
+    let staffRoster = [];
+    try {
+      const TeamService = require('./TeamService');
+      staffRoster = TeamService.getStaffRoster();
+    } catch (e) {
+      staffRoster = [];
+    }
+
+    const isAllowedWorkloadRole = (staffOrName) => {
+      if (!staffOrName) return false;
+      let role = '';
+      let dept = '';
+      if (typeof staffOrName === 'object' && staffOrName !== null) {
+        role = staffOrName.role || '';
+        dept = staffOrName.department || '';
+      } else {
+        const found = staffRoster.find(s => s.name === staffOrName || s.staffId === staffOrName || s.username === staffOrName);
+        if (found) {
+          role = found.role || '';
+          dept = found.department || '';
+        } else {
+          role = String(staffOrName);
+        }
+      }
+      const r = role.toLowerCase();
+      const d = dept.toLowerCase();
+      // Exclude managers, CEOs, executive directors, and marketing/sales heads
+      if (r.includes('manager') || r.includes('ceo') || r.includes('chief') ||
+          r.includes('head of') || r.includes('executive') || r.includes('director of') ||
+          d.includes('executive') || d.includes('management') || d.includes('marketing & sales') ||
+          r === 'manager' || r === 'mgr') {
+        return false;
+      }
+      return true;
+    };
+
     const designerMap = {};
+
+    // 1. Seed active designers & admins from roster
+    staffRoster.forEach(member => {
+      if (member.active !== false && isAllowedWorkloadRole(member)) {
+        const d = member.name || member.staffId;
+        designerMap[d] = {
+          designer: d,
+          staffId: member.staffId,
+          role: member.role,
+          total: 0,
+          active: 0,
+          inProgress: 0,
+          inReview: 0,
+          revision: 0,
+          overdue: 0,
+          completed: 0
+        };
+      }
+    });
+
+    // 2. Aggregate projects
     projects.forEach(p => {
-      const d = p.designer || 'Unassigned';
+      let d = p.designer || 'Unassigned';
+      if (d === 'Unassigned' || d === '2026' || /^\d{4}$/.test(d) || /^\d{6}/.test(d) || d.startsWith('#') || d.startsWith('_')) {
+        return;
+      }
+
+      // Check if this designer is a manager/executive
+      if (!isAllowedWorkloadRole(d)) {
+        return;
+      }
+
+      // Map to canonical roster name if match
+      const matched = staffRoster.find(s => s.name === d || s.staffId === d || s.username === d);
+      if (matched) {
+        d = matched.name;
+      }
+
       if (!designerMap[d]) {
         designerMap[d] = {
           designer: d,
@@ -531,7 +603,7 @@ class WorkspaceService {
       if (p.isOverdue) designerMap[d].overdue++;
     });
 
-    const designerWorkload = Object.values(designerMap).map(item => {
+    const designerWorkload = Object.values(designerMap).filter(item => isAllowedWorkloadRole(item.designer)).map(item => {
       const active = item.active || 0;
       const capacityPercent = Math.min(100, Math.round((active / 4) * 100));
       let capacityStatus = 'Optimal Bandwidth';

@@ -126,14 +126,17 @@ class TeamService {
 
   /**
    * Returns list of team members with assigned active workloads and capacity indicators.
-   * Filters strictly to User / Designer role staff (excluding Managers & Admins).
+   * Filters strictly to User / Designer & Admin role staff (excluding Managers & Executives).
    */
   static getTeamDirectory() {
-    const isUserRole = (member) => {
+    const isUserOrAdminRole = (member) => {
       const roleLower = (member.role || '').toLowerCase();
       const deptLower = (member.department || '').toLowerCase();
-      // Exclude Admins, CEOs, Directors, and Managers from Team Workload grid
-      if (roleLower.includes('admin') || roleLower.includes('ceo') || roleLower.includes('manager') || roleLower.includes('director') || deptLower.includes('executive')) {
+      // Exclude Managers, CEOs, Executive Directors, and Sales/Marketing Heads
+      if (roleLower.includes('manager') || roleLower.includes('ceo') || roleLower.includes('chief') ||
+          roleLower.includes('head of') || roleLower.includes('executive') || roleLower.includes('director of') ||
+          deptLower.includes('executive') || deptLower.includes('management') || deptLower.includes('marketing & sales') ||
+          roleLower === 'manager' || roleLower === 'mgr') {
         return false;
       }
       return true;
@@ -141,16 +144,19 @@ class TeamService {
 
     const roster = this.getStaffRoster()
       .filter(m => m.active !== false)
-      .filter(isUserRole);
+      .filter(isUserOrAdminRole);
 
     const metrics = WorkspaceService.getDashboardMetrics();
     const workloadMap = {};
     metrics.designerWorkload.forEach(dw => {
       workloadMap[dw.designer] = dw;
+      if (dw.staffId) {
+        workloadMap[dw.staffId] = dw;
+      }
     });
 
     return roster.map(member => {
-      const w = workloadMap[member.staffId] || {
+      const w = workloadMap[member.name] || workloadMap[member.staffId] || workloadMap[member.username] || {
         total: 0,
         active: 0,
         inProgress: 0,

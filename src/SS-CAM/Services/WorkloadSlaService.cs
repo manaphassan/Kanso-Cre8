@@ -10,6 +10,23 @@ namespace SS_CAM.Services
     {
         private static readonly Regex ProjectDirPattern = new Regex(@"^\d{6}_(\d[A-Z0-9]*)(?:_([A-Z0-9]+))?", RegexOptions.IgnoreCase);
 
+        public static bool IsDesignerOrAdminRole(string role, string department)
+        {
+            string r = (role ?? string.Empty).ToLowerInvariant();
+            string d = (department ?? string.Empty).ToLowerInvariant();
+
+            // Exclude managers, CEOs, executive directors, and marketing/sales heads
+            if (r.Contains("manager") || r.Contains("ceo") || r.Contains("chief") ||
+                r.Contains("head of") || r.Contains("executive") || r.Contains("director of") ||
+                d.Contains("executive") || d.Contains("management") || d.Contains("marketing & sales") ||
+                r == "manager" || r == "mgr")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static List<DesignerWorkloadItem> ComputeDesignerWorkloads(string workspaceRoot)
         {
             List<DesignerWorkloadItem> list = new List<DesignerWorkloadItem>();
@@ -19,18 +36,20 @@ namespace SS_CAM.Services
             }
 
             Dictionary<string, DesignerWorkloadItem> map = new Dictionary<string, DesignerWorkloadItem>(StringComparer.OrdinalIgnoreCase);
+            List<StaffDirectoryItem> staffList = null;
 
-            // 1. Seed with staff directory members
+            // 1. Seed with staff directory members (Designer / User & Admin roles only)
             try
             {
-                var staffList = UserProfileService.GetStaffDirectory(workspaceRoot);
+                staffList = UserProfileService.GetStaffDirectory(workspaceRoot);
                 if (staffList != null)
                 {
                     foreach (var s in staffList)
                     {
                         if (s != null && !string.IsNullOrWhiteSpace(s.Name) &&
                             !Regex.IsMatch(s.Name, @"^\d{4}$") &&
-                            !s.Name.StartsWith("#") && !s.Name.StartsWith("_"))
+                            !s.Name.StartsWith("#") && !s.Name.StartsWith("_") &&
+                            IsDesignerOrAdminRole(s.Role, s.Department))
                         {
                             map[s.Name] = new DesignerWorkloadItem
                             {
@@ -70,6 +89,22 @@ namespace SS_CAM.Services
                         {
                             string staffIdOut;
                             string designerName = ResolveProjectDesigner(workspaceRoot, sub, dirName, out staffIdOut);
+
+                            // Check if this resolved designer is a manager/executive
+                            if (staffList != null)
+                            {
+                                var matchedStaff = staffList.Find(s => string.Equals(s.Name, designerName, StringComparison.OrdinalIgnoreCase) ||
+                                                                      string.Equals(s.StaffId, designerName, StringComparison.OrdinalIgnoreCase));
+                                if (matchedStaff != null && !IsDesignerOrAdminRole(matchedStaff.Role, matchedStaff.Department))
+                                {
+                                    continue; // Exclude manager role from metric
+                                }
+                            }
+
+                            if (!IsDesignerOrAdminRole(staffIdOut, null))
+                            {
+                                continue;
+                            }
 
                             if (!map.ContainsKey(designerName))
                             {
@@ -136,6 +171,16 @@ namespace SS_CAM.Services
                     item.DesignerName.StartsWith("#") || item.DesignerName.StartsWith("_"))
                 {
                     continue;
+                }
+
+                if (staffList != null)
+                {
+                    var matchedStaff = staffList.Find(s => string.Equals(s.Name, item.DesignerName, StringComparison.OrdinalIgnoreCase) ||
+                                                          string.Equals(s.StaffId, item.DesignerName, StringComparison.OrdinalIgnoreCase));
+                    if (matchedStaff != null && !IsDesignerOrAdminRole(matchedStaff.Role, matchedStaff.Department))
+                    {
+                        continue;
+                    }
                 }
 
                 item.ActiveCount = item.InProgressCount + item.ReviewCount + item.RevisionCount;
