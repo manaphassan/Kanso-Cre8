@@ -20,28 +20,106 @@ namespace SS_CAM.Services
 
             Dictionary<string, DesignerWorkloadItem> map = new Dictionary<string, DesignerWorkloadItem>(StringComparer.OrdinalIgnoreCase);
 
+            // 1. Seed with staff directory members
             try
             {
-                string[] topLevelDirs = Directory.GetDirectories(workspaceRoot);
-                foreach (string topDir in topLevelDirs)
+                var staffList = UserProfileService.GetStaffDirectory(workspaceRoot);
+                if (staffList != null)
                 {
-                    string dirName = Path.GetFileName(topDir);
-                    if (dirName.StartsWith(".") || dirName.StartsWith("_")) continue;
-
-                    // Determine if topDir is a designer folder (e.g. 0001D_Ahmad_Faiz, 0002S_Siti_Sarah, 0001D, Faiz)
-                    string designerKey = dirName;
-                    string staffId = dirName;
-                    string displayName = dirName;
-
-                    if (dirName.Contains("_"))
+                    foreach (var s in staffList)
                     {
-                        string[] parts = dirName.Split('_');
-                        staffId = parts[0];
-                        displayName = string.Join(" ", parts);
+                        if (s != null && !string.IsNullOrWhiteSpace(s.Name) &&
+                            !Regex.IsMatch(s.Name, @"^\d{4}$") &&
+                            !s.Name.StartsWith("#") && !s.Name.StartsWith("_"))
+                        {
+                            map[s.Name] = new DesignerWorkloadItem
+                            {
+                                DesignerName = s.Name,
+                                StaffId = !string.IsNullOrWhiteSpace(s.StaffId) ? s.StaffId : (s.Role ?? "Designer")
+                            };
+                        }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WorkloadSlaService] Seed staff error: " + ex.Message);
+            }
 
-                    // Discover project folders under this designer folder or recursively
-                    ScanProjectsForDesigner(topDir, designerKey, displayName, staffId, map);
+            // 2. Discover all project vaults across workspaceRoot
+            try
+            {
+                Queue<string> queue = new Queue<string>();
+                queue.Enqueue(workspaceRoot);
+
+                while (queue.Count > 0)
+                {
+                    string current = queue.Dequeue();
+                    string[] subDirs;
+                    try { subDirs = Directory.GetDirectories(current); } catch { continue; }
+
+                    foreach (string sub in subDirs)
+                    {
+                        string dirName = Path.GetFileName(sub);
+                        if (dirName.StartsWith(".") || dirName.Equals("#recycle", StringComparison.OrdinalIgnoreCase) || dirName.Equals("_Team", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        if (ProjectDirPattern.IsMatch(dirName))
+                        {
+                            string staffIdOut;
+                            string designerName = ResolveProjectDesigner(workspaceRoot, sub, dirName, out staffIdOut);
+
+                            if (!map.ContainsKey(designerName))
+                            {
+                                map[designerName] = new DesignerWorkloadItem
+                                {
+                                    DesignerName = designerName,
+                                    StaffId = staffIdOut
+                                };
+                            }
+
+                            DesignerWorkloadItem workload = map[designerName];
+                            workload.TotalProjects++;
+
+                            // Parse README.md status if available
+                            string readmePath = Path.Combine(sub, "README.md");
+                            string status = "in-progress";
+                            bool isOverdue = false;
+
+                            if (File.Exists(readmePath))
+                            {
+                                try
+                                {
+                                    string text = File.ReadAllText(readmePath);
+                                    status = ExtractFrontmatterValue(text, "status", "in-progress").ToLower();
+                                    string deadlineStr = ExtractFrontmatterValue(text, "deadline", "");
+                                    DateTime deadline;
+                                    if (DateTime.TryParse(deadlineStr, out deadline) && deadline < DateTime.Today && status != "done" && status != "approved")
+                                    {
+                                        isOverdue = true;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("[WorkloadSlaService] Readme parse warning: " + ex.Message);
+                                }
+                            }
+
+                            if (status == "in-progress") workload.InProgressCount++;
+                            else if (status == "review") workload.ReviewCount++;
+                            else if (status == "revision") workload.RevisionCount++;
+                            else if (status == "done" || status == "approved") workload.DoneCount++;
+                            else workload.InProgressCount++;
+
+                            if (isOverdue) workload.OverdueCount++;
+                        }
+                        else
+                        {
+                            queue.Enqueue(sub);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -52,6 +130,14 @@ namespace SS_CAM.Services
             foreach (var kvp in map)
             {
                 DesignerWorkloadItem item = kvp.Value;
+                // Exclude any accidental year or system entries
+                if (Regex.IsMatch(item.DesignerName, @"^\d{4}$") ||
+                    Regex.IsMatch(item.DesignerName, @"^\d{6}") ||
+                    item.DesignerName.StartsWith("#") || item.DesignerName.StartsWith("_"))
+                {
+                    continue;
+                }
+
                 item.ActiveCount = item.InProgressCount + item.ReviewCount + item.RevisionCount;
                 item.CapacityPercent = Math.Min(100.0, Math.Round((item.ActiveCount / 4.0) * 100.0, 0));
 
@@ -74,71 +160,107 @@ namespace SS_CAM.Services
                 list.Add(item);
             }
 
-            list.Sort((a, b) => b.ActiveCount.CompareTo(a.ActiveCount));
+            list.Sort((a, b) =>
+            {
+                int cmp = b.ActiveCount.CompareTo(a.ActiveCount);
+                if (cmp != 0) return cmp;
+                return b.TotalProjects.CompareTo(a.TotalProjects);
+            });
             return list;
         }
 
-        private static void ScanProjectsForDesigner(string dir, string designerKey, string displayName, string staffId, Dictionary<string, DesignerWorkloadItem> map)
+        private static string ResolveProjectDesigner(string root, string directory, string projectName, out string staffId)
         {
-            string[] subDirs;
-            try { subDirs = Directory.GetDirectories(dir); } catch { return; }
-
-            foreach (string sub in subDirs)
+            staffId = "Designer";
+            try
             {
-                string folderName = Path.GetFileName(sub);
-                Match m = ProjectDirPattern.Match(folderName);
+                var staffList = UserProfileService.GetStaffDirectory(root);
 
-                if (m.Success)
+                // 1. Check README.md frontmatter
+                string readmePath = Path.Combine(directory, "README.md");
+                if (File.Exists(readmePath))
                 {
-                    if (!map.ContainsKey(designerKey))
+                    ProjectStatusItem psi = FrontmatterService.ReadStatus(directory);
+                    if (psi != null && !string.IsNullOrWhiteSpace(psi.Designer) &&
+                        !Regex.IsMatch(psi.Designer, @"^\d{4}$") &&
+                        !Regex.IsMatch(psi.Designer, @"^\d{6}") &&
+                        !psi.Designer.StartsWith("#") && !psi.Designer.StartsWith("_"))
                     {
-                        map[designerKey] = new DesignerWorkloadItem
+                        if (staffList != null)
                         {
-                            DesignerName = displayName,
-                            StaffId = staffId
-                        };
-                    }
-
-                    DesignerWorkloadItem workload = map[designerKey];
-                    workload.TotalProjects++;
-
-                    // Parse README.md status if available
-                    string readmePath = Path.Combine(sub, "README.md");
-                    string status = "in-progress";
-                    bool isOverdue = false;
-
-                    if (File.Exists(readmePath))
-                    {
-                        try
-                        {
-                            string text = File.ReadAllText(readmePath);
-                            status = ExtractFrontmatterValue(text, "status", "in-progress").ToLower();
-                            string deadlineStr = ExtractFrontmatterValue(text, "deadline", "");
-                            DateTime deadline;
-                            if (DateTime.TryParse(deadlineStr, out deadline) && deadline < DateTime.Today && status != "done" && status != "approved")
+                            foreach (var s in staffList)
                             {
-                                isOverdue = true;
+                                if (string.Equals(s.Name, psi.Designer, StringComparison.OrdinalIgnoreCase) ||
+                                    string.Equals(s.StaffId, psi.Designer, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    staffId = s.StaffId ?? s.Role ?? "Designer";
+                                    return s.Name;
+                                }
                             }
                         }
-                        catch (Exception ex)
+                        return psi.Designer;
+                    }
+                }
+
+                // 2. Extract job code (e.g. 0001D, 0004P) and map to staff directory
+                Match m = Regex.Match(projectName, @"^\d{6}_([A-Z0-9]+)_", RegexOptions.IgnoreCase);
+                if (m.Success)
+                {
+                    string code = m.Groups[1].Value;
+                    if (staffList != null)
+                    {
+                        foreach (var s in staffList)
                         {
-                            System.Diagnostics.Debug.WriteLine("[WorkloadSlaService] Readme parse warning: " + ex.Message);
+                            if (string.Equals(s.StaffId, code, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(s.StaffId) && (s.StaffId.EndsWith(code, StringComparison.OrdinalIgnoreCase) || code.EndsWith(s.StaffId, StringComparison.OrdinalIgnoreCase))) ||
+                                string.Equals(s.Name, code, StringComparison.OrdinalIgnoreCase))
+                            {
+                                staffId = s.StaffId ?? s.Role ?? "Designer";
+                                return s.Name;
+                            }
                         }
                     }
-
-                    if (status == "in-progress") workload.InProgressCount++;
-                    else if (status == "review") workload.ReviewCount++;
-                    else if (status == "revision") workload.RevisionCount++;
-                    else if (status == "done" || status == "approved") workload.DoneCount++;
-                    else workload.InProgressCount++;
-
-                    if (isOverdue) workload.OverdueCount++;
+                    staffId = code;
+                    return code;
                 }
-                else
+
+                // 3. Check legacy non-system folder relative to root
+                string fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+                string fullPath = Path.GetFullPath(directory);
+                if (fullPath.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase))
                 {
-                    ScanProjectsForDesigner(sub, designerKey, displayName, staffId, map);
+                    string[] parts = fullPath.Substring(fullRoot.Length).Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (parts.Length > 0)
+                    {
+                        string rel = parts[0];
+                        if (!string.IsNullOrWhiteSpace(rel) &&
+                            !Regex.IsMatch(rel, @"^\d{4}$") &&
+                            !Regex.IsMatch(rel, @"^\d{6}") &&
+                            !rel.StartsWith("_") && !rel.StartsWith("#") && !rel.StartsWith("."))
+                        {
+                            if (staffList != null)
+                            {
+                                foreach (var s in staffList)
+                                {
+                                    if (string.Equals(s.Name, rel, StringComparison.OrdinalIgnoreCase) ||
+                                        string.Equals(s.StaffId, rel, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        staffId = s.StaffId ?? s.Role ?? "Designer";
+                                        return s.Name;
+                                    }
+                                }
+                            }
+                            return rel;
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WorkloadSlaService] ResolveDesigner: " + ex.Message);
+            }
+
+            return "Harussani";
         }
 
         public static SlaMetricsSnapshot ComputeSlaMetrics(string workspaceRoot)
