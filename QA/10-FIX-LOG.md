@@ -1,13 +1,24 @@
 # SS-CAM FIX LOG
 
-## v4.4.1 — 2026-08-26 (Radio Stream, Deep Scanner & Copywriting FlowDocument Engine)
+## v4.4.1 — 2026-08-26 (Maintenance & Enhancement Release — PUBLISHED)
+- **GitHub Release**: PUBLISHED (`v4.4.1` set as Latest on SuamiSihat/ss_cam)
+- **Documentation**: Updated (CHANGELOG.md, ROADMAP.md, QA suite headers aligned to v4.4.1)
+- **Source Guardian**: PASS (9/9 checks passed)
+- **Web Test Suite**: PASS (20/20 tests passed)
+- **Wiki**: N/A (wiki update deferred)
+
+### Features
 - **Official SuamiSihat Radio Stream**: Integrated live stream (`https://dj.suamisihat.myds.me/listen/suamisihat-radio/radio.mp3`) as pinned `#1` preset in `RadioStreamService.cs` with migration preservation.
 - **Deep Month-Container Vault Discovery**: Updated directory matching regex to bypass intermediate month containers (`202608_August`) across `WorkspaceScanner.cs`, `WorkloadSlaService.cs`, and `CopywritingPage.xaml.cs`.
 - **Dynamic Project ID Counter Calculation**: Multi-tier directory scan in `ProjectCreatorPage.xaml.cs` to accurately compute sequential job IDs across containers and year vaults.
 - **Copywriting Studio Rich FlowDocument Rendering**: Integrated `MarkdownHelper.ToFlowDocument` into `CopywritingPage.xaml.cs` with default rendered preview and icon-only Preview/Edit mode toggles (`Eye24` / `Edit24`).
 - **Catalog Designer Filtering Sanitization**: Filtered out raw system folders (`#recycle`, `2026`) and mapped projects to team members via `UserProfileService.GetStaffDirectory()` and `ResolveProjectDesigner`.
 - **UI Text Clipping Remediation**: Standardized ComboBox heights and paddings in `SearchCopyPage.xaml`.
-- **Source Guardian & Build**: PASS (9/9 checks passed, MSBuild Release build passed).
+
+### Fixes
+- **Dashboard Workload Year Bug**: Fixed `ComputeDesignerWorkloads` erroneously returning year folder names (`2026`) as designer names. Overhauled to use staff directory + `ResolveProjectDesigner`.
+- **Manager Role Exclusion — Metrics & Filters**: Added `IsDesignerOrAdminRole` predicate; excluded Manager / CEO / Executive roles from Dashboard capacity radar (Desktop & Web), all designer filter dropdowns (`WorkspaceScanner.GetDesignerFolders`, `TaskManagerPage`, `CalendarPage`), Web metrics (`WorkspaceService.js`, `TeamService.js`).
+- **Mouse Wheel Scrolling Restored (All 15 Pages)**: Added global `OnGlobalPreviewMouseWheel` on `MainWindow` NavigationView (walks visual tree). Per-page `PreviewMouseWheel` wire-up on 10 previously broken pages. Kanban board gains horizontal wheel scroll support.
 
 ---
 

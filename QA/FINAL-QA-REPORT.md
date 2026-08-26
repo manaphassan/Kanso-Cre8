@@ -1,6 +1,6 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v4.4.1 Release
+## Status: PASS — v4.4.1 Stable Release
 
 **QA Date**: 2026-08-26  
 **Configuration**: Release (MSBuild 4.8)  
@@ -17,10 +17,13 @@
 
 ---
 
-### Major Release Capabilities (v4.0.0 – v4.4.1)
+### Resolved Issues (v4.0.0 – v4.4.1)
 
 | ID | Severity | Description | Resolution | Status |
 |---|---|---|---|---|
+| SCROLL-01 | P0 | Mouse wheel scrolling broken on all pages | Global `OnGlobalPreviewMouseWheel` on `MainWindow` + per-page wire-up on 10 broken pages | **Resolved** |
+| ROLE-01 | P0 | Manager / CEO roles appearing in designer filters | `IsDesignerOrAdminRole` predicate; filtered from `WorkspaceScanner`, `TaskManagerPage`, `CalendarPage`, Web metrics | **Resolved** |
+| DASH-01 | P0 | Dashboard workload showing `2026` (year folder) as designer name | `ComputeDesignerWorkloads` overhauled to use staff directory + `ResolveProjectDesigner` | **Resolved** |
 | RAD-01 | P0 | Official SuamiSihat Radio Stream | Pinned `#1` preset station with live audio playback (`RadioStreamService.cs`) | **Resolved** |
 | SCAN-01 | P0 | Deep Month-Container Vault Discovery | Bypasses intermediate month folders to index nested project vaults (`WorkspaceScanner.cs`) | **Resolved** |
 | PID-01 | P0 | Dynamic Project ID Counter Auto-Calculation | Scans active month containers, year folders, and local workspaces for next sequential ID | **Resolved** |
@@ -39,5 +42,3 @@
 ### Executable Binary
 - Desktop Binary: [`dist/SS-CAM-v4.4.1.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v4.4.1.exe) (5.61 MB)
 - Assembly Version: `4.4.1.0`
-
-
