@@ -21,6 +21,21 @@ All notable SS-CAM changes are documented here.
 - **UI Control & ComboBox Layout Enhancements (`SearchCopyPage.xaml`)**:
   - Increased ComboBox heights, padding, and vertical centering to eliminate text clipping across Windows scaling modes.
 
+### Fixed — Dashboard, Role Filtering & Scroll
+- **Dashboard Designer Workload — Year Bug (`WorkloadSlaService.cs`)**:
+  - Fixed `ComputeDesignerWorkloads` returning year folders (`2026`) as designer names instead of actual designer names. Overhauled to seed staff directory members and traverse nested project vaults via `ResolveProjectDesigner`.
+- **Manager Role Excluded from All Metrics & Filters**:
+  - Added `IsDesignerOrAdminRole` predicate to `WorkloadSlaService.cs` to exclude Manager / CEO / Executive roles from Designer Workload & Capacity Radar (Desktop & Web).
+  - Updated `WorkspaceScanner.GetDesignerFolders` to filter out management staff from all designer dropdown filters.
+  - Updated `TaskManagerPage.xaml.cs` and `CalendarPage.xaml.cs` `PopulateDesignerFilter()` to exclude any manager-role entries derived from project metadata.
+  - Updated Web portal `WorkspaceService.js` and `TeamService.js` to exclude manager roles from dashboard metrics and team directory filter.
+- **Mouse Wheel Scrolling Restored Across All Pages**:
+  - Diagnosed root cause: `PreviewMouseWheel` event not wired on root `ScrollViewer` for 10+ pages; inner controls (ListBox, ComboBox, FlowDocumentScrollViewer) swallowing wheel events.
+  - Added global `OnGlobalPreviewMouseWheel` handler on `MainWindow` `NavigationView` — walks visual tree to find nearest scrollable `ScrollViewer`, performs step-clamped `LineUp()`/`LineDown()`/`LineLeft()`/`LineRight()`. Covers all pages automatically.
+  - Per-page `PreviewMouseWheel` wire-up added to all 10 broken pages: `DashboardPage`, `WorkstationHealthPage`, `WellbeingPage`, `SettingsPage`, `WaktuSolatPage`, `QrCodePage`, `ProjectCreatorPage`, `RadioPage`, `TaskManagerPage`, `DesignTokensPage`.
+  - Added missing `OnScrollViewerPreviewMouseWheel` handler to `TaskManagerPage.xaml.cs` and `DesignTokensPage.xaml.cs`.
+  - `TaskManagerPage` kanban board now also supports **horizontal mouse wheel scrolling** through columns.
+
 ### Integrity
 | File | Details |
 |---|---|
