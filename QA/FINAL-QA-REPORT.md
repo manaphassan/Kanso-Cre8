@@ -1,8 +1,8 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v4.4.0 Release
+## Status: PASS — v4.4.1 Release
 
-**QA Date**: 2026-08-20  
+**QA Date**: 2026-08-26  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**  
 **Web Test Suite**: **PASS — 20 passed, 0 failed**
@@ -17,10 +17,15 @@
 
 ---
 
-### Major Release Capabilities (v4.0.0 – v4.4.0)
+### Major Release Capabilities (v4.0.0 – v4.4.1)
 
 | ID | Severity | Description | Resolution | Status |
 |---|---|---|---|---|
+| RAD-01 | P0 | Official SuamiSihat Radio Stream | Pinned `#1` preset station with live audio playback (`RadioStreamService.cs`) | **Resolved** |
+| SCAN-01 | P0 | Deep Month-Container Vault Discovery | Bypasses intermediate month folders to index nested project vaults (`WorkspaceScanner.cs`) | **Resolved** |
+| PID-01 | P0 | Dynamic Project ID Counter Auto-Calculation | Scans active month containers, year folders, and local workspaces for next sequential ID | **Resolved** |
+| COPY-02 | P0 | Copywriting Studio FlowDocument Preview | Default rendered rich markdown preview with compact icon-only mode toggles | **Resolved** |
+| CAT-01 | P0 | Catalog Designer Resolution & Filtering | Sanitized designer filter mapped to staff directory with system folder exclusion | **Resolved** |
 | SLA-01 | P0 | Designer Workload & Capacity Radar | Live capacity calculations (`WorkloadSlaService.cs`) and bandwidth status tags | **Resolved** |
 | SLA-02 | P0 | Creative SLA & Turnaround Telemetry | First-time right %, turnaround days, revision averages across desktop & web | **Resolved** |
 | EXP-01 | P0 | 1-Click Handover Packaging & Manifest | Async ZIP packaging with `HANDOVER_SUMMARY.html` and REST endpoint | **Resolved** |
@@ -32,7 +37,7 @@
 ---
 
 ### Executable Binary
-- Desktop Binary: [`dist/SS-CAM-v4.4.0.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v4.4.0.exe) (5.61 MB)
-- Assembly Version: `4.4.0.0`
+- Desktop Binary: [`dist/SS-CAM-v4.4.1.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v4.4.1.exe) (5.61 MB)
+- Assembly Version: `4.4.1.0`
 
 

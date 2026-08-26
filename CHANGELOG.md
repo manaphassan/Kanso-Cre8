@@ -2,6 +2,34 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.4.1] - 2026-08-26 (Maintenance & Enhancement Release)
+
+### Added & Refined — Radio Stream Integration, Deep Scanner Routing & Copywriting FlowDocument Engine
+- **Official SuamiSihat Radio Stream Integration (`RadioStreamService.cs`)**:
+  - Integrated official SuamiSihat Radio Stream (`https://dj.suamisihat.myds.me/listen/suamisihat-radio/radio.mp3`) as pinned `#1` preset station with live audio playback.
+  - Automatic station migration preserving user custom radio presets.
+- **Deep Month-Container Project Vault Discovery (`WorkspaceScanner.cs`, `WorkloadSlaService.cs`, `CopywritingPage.xaml.cs`)**:
+  - Updated project directory matching regex from `^\d{6}_([A-Z0-9]+)` to `^\d{6}_(\d[A-Z0-9]*)` to prevent premature stoppage at intermediate month containers (e.g. `202608_August`), correctly indexing nested projects (`202608_0001D_SS_brand campaign`).
+- **Dynamic Project ID Auto-Calculation Overhaul (`ProjectCreatorPage.xaml.cs`)**:
+  - Implemented multi-tier directory scanning (`ScanDirectoryForMaxProjectId`) checking active month containers, year folders, and local workspaces to reliably calculate the next sequential project ID (e.g., `0001D` -> `0002P` -> `0003D`).
+- **Copywriting Studio Default FlowDocument Markdown Rendering (`CopywritingPage.xaml` & `CopywritingPage.xaml.cs`)**:
+  - Script canvas now renders rich formatted Markdown preview by default when loading or selecting projects.
+  - Added compact icon-only mode toggles (`Eye24` for Preview, `Edit24` for Edit) with real-time text sync and automated focus switching.
+- **Catalog Designer Resolution & System Folder Filtering (`SearchCopyPage.xaml.cs` & `WorkspaceScanner.cs`)**:
+  - Sanitized Designer filter to load active team members from `UserProfileService.GetStaffDirectory()` while stripping out NAS system/year folders (`#recycle`, `2026`).
+  - Added `ResolveProjectDesigner` to accurately attribute projects to designers via frontmatter, job codes (`0001D`, `0004P`), and staff directory.
+- **UI Control & ComboBox Layout Enhancements (`SearchCopyPage.xaml`)**:
+  - Increased ComboBox heights, padding, and vertical centering to eliminate text clipping across Windows scaling modes.
+
+### Integrity
+| File | Details |
+|---|---|
+| `SS-CAM-v4.4.1.exe` | Compiled Native C# WPF Executable (5.61 MB) |
+| `AssemblyVersion` | 4.4.1.0 |
+| `AssemblyFileVersion` | 4.4.1.0 |
+
+---
+
 ## [4.4.0] - 2026-08-20 (Stable Release)
 
 ### Added & Refined — Designer Workload Heatmaps & Creative SLA Analytics
