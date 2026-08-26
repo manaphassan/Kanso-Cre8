@@ -5,7 +5,7 @@
       Title="Project Creator">
 
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
             <StackPanel>
                 <!-- Fluent 2 Header -->
                 <Grid Margin="0,0,0,24">

@@ -5,7 +5,7 @@
       Title="Waktu Solat &amp; Islamic Dashboard">
 
     <Grid>
-        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
+        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
             <StackPanel>
 
                 <!-- ── HEADER BAR ─────────────────────────────────────────────── -->

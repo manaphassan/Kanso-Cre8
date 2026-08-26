@@ -163,6 +163,7 @@
                            IsBackButtonVisible="Collapsed"
                            HeaderVisibility="Collapsed"
                            OpenPaneLength="200"
+                           PreviewMouseWheel="OnGlobalPreviewMouseWheel"
                            PaneOpened="OnNavigationPaneOpened"
                            PaneClosed="OnNavigationPaneClosed">
 

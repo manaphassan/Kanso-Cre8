@@ -4,7 +4,7 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       Title="Dashboard">
 
-    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
+    <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel>
             <!-- Fluent 2 Page Header Bar -->
             <Grid Margin="0,0,0,40">

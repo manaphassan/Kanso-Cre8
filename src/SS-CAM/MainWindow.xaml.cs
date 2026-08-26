@@ -81,6 +81,47 @@ namespace SS_CAM
             NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, " + displayName + "!");
         }
 
+        // ─── Global Mouse Wheel Scroll Handler ────────────────────────────────────
+        // Fixes WPF mouse-wheel-only-by-dragging-scrollbar issue.
+        // Walks visual tree from source element upward to find the nearest
+        // ScrollViewer with scrollable content and performs LineDown/LineUp scrolling.
+        private void OnGlobalPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            try
+            {
+                if (e.Handled) return;
+                var element = e.OriginalSource as DependencyObject;
+                while (element != null)
+                {
+                    var sv = element as ScrollViewer;
+                    if (sv != null)
+                    {
+                        bool canScrollV = sv.ScrollableHeight > 0;
+                        bool canScrollH = sv.ScrollableWidth > 0;
+
+                        if (canScrollV || canScrollH)
+                        {
+                            int steps = Math.Max(1, Math.Min(8, Math.Abs(e.Delta) / 30));
+                            if (canScrollV)
+                            {
+                                if (e.Delta < 0) for (int i = 0; i < steps; i++) sv.LineDown();
+                                else for (int i = 0; i < steps; i++) sv.LineUp();
+                            }
+                            else if (canScrollH)
+                            {
+                                if (e.Delta < 0) for (int i = 0; i < steps; i++) sv.LineRight();
+                                else for (int i = 0; i < steps; i++) sv.LineLeft();
+                            }
+                            e.Handled = true;
+                            return;
+                        }
+                    }
+                    element = VisualTreeHelper.GetParent(element);
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] OnGlobalPreviewMouseWheel: " + ex.Message); }
+        }
+
         private void InitRadioStatusListeners()
         {
             var radio = RadioStreamService.Instance;

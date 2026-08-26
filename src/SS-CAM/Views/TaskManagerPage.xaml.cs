@@ -57,6 +57,28 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            try
+            {
+                var scroller = sender as ScrollViewer;
+                if (scroller == null || e.Handled) return;
+                int steps = Math.Max(1, Math.Min(8, Math.Abs(e.Delta) / 30));
+                if (scroller.ScrollableHeight > 0)
+                {
+                    if (e.Delta < 0) for (int i = 0; i < steps; i++) scroller.LineDown();
+                    else for (int i = 0; i < steps; i++) scroller.LineUp();
+                }
+                else if (scroller.ScrollableWidth > 0)
+                {
+                    if (e.Delta < 0) for (int i = 0; i < steps; i++) scroller.LineRight();
+                    else for (int i = 0; i < steps; i++) scroller.LineLeft();
+                }
+                e.Handled = true;
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[TaskManagerPage] OnScrollViewerPreviewMouseWheel: " + ex.Message); }
+        }
+
         private void OnWorkspaceChanged(object sender, WorkspaceChangedEventArgs e)
         {
             Dispatcher.Invoke(delegate

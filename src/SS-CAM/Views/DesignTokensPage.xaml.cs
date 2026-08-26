@@ -41,6 +41,20 @@ namespace SS_CAM.Views
             Unloaded += (s, e) => { if (_copiedTimer != null) _copiedTimer.Stop(); };
         }
 
+        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            try
+            {
+                var scroller = sender as ScrollViewer;
+                if (scroller == null || e.Handled) return;
+                int steps = System.Math.Max(1, System.Math.Min(8, System.Math.Abs(e.Delta) / 30));
+                if (e.Delta < 0) for (int i = 0; i < steps; i++) scroller.LineDown();
+                else for (int i = 0; i < steps; i++) scroller.LineUp();
+                e.Handled = true;
+            }
+            catch (Exception ex) { Debug.WriteLine("[DesignTokensPage] OnScrollViewerPreviewMouseWheel: " + ex.Message); }
+        }
+
         // ── Load / parse ──────────────────────────────────────────────────────
         private async void LoadTokensAsync()
         {

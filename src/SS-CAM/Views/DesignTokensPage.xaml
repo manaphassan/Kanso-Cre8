@@ -204,7 +204,8 @@
 
             <!-- Token scroll list -->
             <ScrollViewer x:Name="TokenScrollViewer" Visibility="Collapsed"
-                          VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent" Padding="24,8,24,24">
+                          VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent" Padding="24,8,24,24"
+                          PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
                 <StackPanel x:Name="TokenPanel"/>
             </ScrollViewer>
         </Grid>

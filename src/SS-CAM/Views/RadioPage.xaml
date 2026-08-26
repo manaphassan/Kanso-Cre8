@@ -331,7 +331,7 @@
             </ui:Card>
 
             <!-- Station Cards (3-column, scrollable) -->
-            <ScrollViewer Grid.Row="3" Margin="0" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent">
+            <ScrollViewer Grid.Row="3" Margin="0" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
                 <ItemsControl x:Name="StationItemsControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

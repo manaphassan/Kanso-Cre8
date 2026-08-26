@@ -7,6 +7,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   ScrollViewer.CanContentScroll="False"
                   Padding="28,24,28,28"
+                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel"
                   Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel>
 

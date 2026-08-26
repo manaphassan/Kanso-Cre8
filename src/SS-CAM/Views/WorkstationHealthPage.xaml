@@ -8,7 +8,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel HorizontalAlignment="Stretch">
             <!-- Fluent 2 Page Header with Action Button -->
             <Grid Margin="0,0,0,24">
