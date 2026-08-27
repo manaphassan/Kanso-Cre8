@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using SS_CAM.Models;
 using SS_CAM.Services;
 using SS_CAM.Utilities;
@@ -19,6 +20,7 @@ namespace SS_CAM.Views
         private List<ProjectItemInfo> discoveredProjects = new List<ProjectItemInfo>();
         private ProjectItemInfo selectedProject = null;
         private bool isInternalChange = false;
+        private int currentViewMode = 0; // 0 = Split, 1 = RenderedDoc, 2 = EditorOnly
 
         public class ProjectItemInfo
         {
@@ -80,6 +82,7 @@ namespace SS_CAM.Views
                                 RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(content);
                             }
                             UpdateMetrics(content);
+                            UpdateLiveSimulation(content);
                         }
                     }
                     catch (Exception ex)
@@ -98,10 +101,11 @@ namespace SS_CAM.Views
             if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
             {
                 TxtFilePath.Text = "Workspace root not found or not configured in Settings.";
+                SetStatusBadge("Not Configured", false);
                 return;
             }
 
-            TxtSaveStatus.Text = "Scanning projects...";
+            SetStatusBadge("Scanning...", false);
             List<ProjectItemInfo> projects = await Task.Factory.StartNew(delegate
             {
                 List<ProjectItemInfo> list = new List<ProjectItemInfo>();
@@ -166,7 +170,7 @@ namespace SS_CAM.Views
             else
             {
                 TxtFilePath.Text = "No project vaults discovered in workspace.";
-                TxtSaveStatus.Text = "Idle";
+                SetStatusBadge("Idle", false);
             }
         }
 
@@ -182,6 +186,8 @@ namespace SS_CAM.Views
                     RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(string.Empty);
                 }
                 UpdateMetrics(string.Empty);
+                UpdateLiveSimulation(string.Empty);
+                SetStatusBadge("No Project", false);
                 return;
             }
 
@@ -195,49 +201,130 @@ namespace SS_CAM.Views
             isInternalChange = false;
 
             UpdateMetrics(content);
-            TxtSaveStatus.Text = "Loaded from NAS";
+            UpdateLiveSimulation(content);
+            SetStatusBadge("NAS Synced", true);
 
-            // Always show rendered preview by default
-            SetPreviewMode(true);
+            // Default to Preview Live Markdown mode (Default View)
+            ApplyViewMode(0);
         }
 
         private void OnModePreviewClicked(object sender, RoutedEventArgs e)
         {
-            SetPreviewMode(true);
+            ApplyViewMode(0);
+        }
+
+        private void OnModeSplitClicked(object sender, RoutedEventArgs e)
+        {
+            ApplyViewMode(1);
         }
 
         private void OnModeEditClicked(object sender, RoutedEventArgs e)
         {
-            SetPreviewMode(false);
+            ApplyViewMode(2);
         }
 
-        private void SetPreviewMode(bool isPreview)
+        private void OnModeMockupClicked(object sender, RoutedEventArgs e)
         {
-            if (isPreview)
+            ApplyViewMode(3);
+        }
+
+        private void ApplyViewMode(int mode)
+        {
+            currentViewMode = mode;
+
+            if (mode == 0) // 1. Preview Live Markdown (Default Full-Width View)
             {
+                ColEditor.Width = new GridLength(1, GridUnitType.Star);
+                ColSplitter.Width = new GridLength(0, GridUnitType.Pixel);
+                ColLivePreview.Width = new GridLength(0, GridUnitType.Pixel);
+
+                CopyScriptEditor.Visibility = Visibility.Collapsed;
+                RenderedCopyViewer.Visibility = Visibility.Visible;
+                LiveGridSplitter.Visibility = Visibility.Collapsed;
+                RightPaneContainer.Visibility = Visibility.Collapsed;
+
                 if (RenderedCopyViewer != null && CopyScriptEditor != null)
                 {
-                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(CopyScriptEditor.Text);
-                    RenderedCopyViewer.Visibility = Visibility.Visible;
-                    CopyScriptEditor.Visibility = Visibility.Collapsed;
+                    RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(CopyScriptEditor.Text ?? string.Empty);
                 }
-                if (TxtCanvasHeader != null) TxtCanvasHeader.Text = "Rendered Copy Preview";
-                if (TxtEditorShortcutHint != null) TxtEditorShortcutHint.Visibility = Visibility.Collapsed;
-                if (BtnModePreview != null) BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
-                if (BtnModeEdit != null) BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+
+                TxtCanvasHeader.Text = "Rendered Markdown Document (Preview Live)";
+                TxtEditorShortcutHint.Visibility = Visibility.Collapsed;
+
+                BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+                BtnModeSplit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeMockup.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
             }
-            else
+            else if (mode == 1) // 2. Split View: Raw Editor (Left) + Live Rendered Markdown (Right) Side-by-Side
             {
-                if (RenderedCopyViewer != null && CopyScriptEditor != null)
+                ColEditor.Width = new GridLength(1, GridUnitType.Star);
+                ColSplitter.Width = new GridLength(12, GridUnitType.Pixel);
+                ColLivePreview.Width = new GridLength(1, GridUnitType.Star);
+
+                CopyScriptEditor.Visibility = Visibility.Visible;
+                RenderedCopyViewer.Visibility = Visibility.Collapsed;
+                LiveGridSplitter.Visibility = Visibility.Visible;
+                RightPaneContainer.Visibility = Visibility.Visible;
+                RenderedCopyViewerSplit.Visibility = Visibility.Visible;
+                LivePreviewPanel.Visibility = Visibility.Collapsed;
+
+                if (RenderedCopyViewerSplit != null && CopyScriptEditor != null)
                 {
-                    RenderedCopyViewer.Visibility = Visibility.Collapsed;
-                    CopyScriptEditor.Visibility = Visibility.Visible;
-                    CopyScriptEditor.Focus();
+                    RenderedCopyViewerSplit.Document = MarkdownHelper.ToFlowDocument(CopyScriptEditor.Text ?? string.Empty);
                 }
-                if (TxtCanvasHeader != null) TxtCanvasHeader.Text = "Markdown Copy Script (COPY.md)";
-                if (TxtEditorShortcutHint != null) TxtEditorShortcutHint.Visibility = Visibility.Visible;
-                if (BtnModePreview != null) BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
-                if (BtnModeEdit != null) BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+
+                TxtCanvasHeader.Text = "Copywriting Studio — Side-by-Side Split View";
+                TxtEditorShortcutHint.Visibility = Visibility.Visible;
+
+                BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeSplit.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+                BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeMockup.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            }
+            else if (mode == 2) // 3. Edit Mode: Full Width Monospace Markdown Editor
+            {
+                ColEditor.Width = new GridLength(1, GridUnitType.Star);
+                ColSplitter.Width = new GridLength(0, GridUnitType.Pixel);
+                ColLivePreview.Width = new GridLength(0, GridUnitType.Pixel);
+
+                CopyScriptEditor.Visibility = Visibility.Visible;
+                RenderedCopyViewer.Visibility = Visibility.Collapsed;
+                LiveGridSplitter.Visibility = Visibility.Collapsed;
+                RightPaneContainer.Visibility = Visibility.Collapsed;
+
+                TxtCanvasHeader.Text = "Markdown Copy Editor (COPY.md)";
+                TxtEditorShortcutHint.Visibility = Visibility.Visible;
+
+                BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeSplit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+                BtnModeMockup.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+
+                CopyScriptEditor.Focus();
+            }
+            else // mode == 3: 4. Mockup View: WhatsApp & Meta Ads Live Simulation
+            {
+                ColEditor.Width = new GridLength(0, GridUnitType.Pixel);
+                ColSplitter.Width = new GridLength(0, GridUnitType.Pixel);
+                ColLivePreview.Width = new GridLength(1, GridUnitType.Star);
+
+                CopyScriptEditor.Visibility = Visibility.Collapsed;
+                RenderedCopyViewer.Visibility = Visibility.Collapsed;
+                LiveGridSplitter.Visibility = Visibility.Collapsed;
+                RightPaneContainer.Visibility = Visibility.Visible;
+                RenderedCopyViewerSplit.Visibility = Visibility.Collapsed;
+                LivePreviewPanel.Visibility = Visibility.Visible;
+
+                TxtCanvasHeader.Text = "WhatsApp Broadcast & Meta Ad Live Mockups";
+                TxtEditorShortcutHint.Visibility = Visibility.Collapsed;
+
+                BtnModePreview.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeSplit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeEdit.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                BtnModeMockup.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+
+                UpdateLiveSimulation(CopyScriptEditor.Text ?? string.Empty);
             }
         }
 
@@ -245,14 +332,82 @@ namespace SS_CAM.Views
         {
             if (isInternalChange) return;
 
-            UpdateMetrics(CopyScriptEditor.Text);
-            TxtSaveStatus.Text = "Unsaved changes";
+            string currentText = CopyScriptEditor.Text ?? string.Empty;
+            UpdateMetrics(currentText);
+            UpdateLiveSimulation(currentText);
+
+            if (currentViewMode == 0 && RenderedCopyViewer != null)
+            {
+                RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(currentText);
+            }
+            else if (currentViewMode == 1 && RenderedCopyViewerSplit != null)
+            {
+                RenderedCopyViewerSplit.Document = MarkdownHelper.ToFlowDocument(currentText);
+            }
+
+            SetStatusBadge("Unsaved Changes", false);
+        }
+
+        private void UpdateLiveSimulation(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                if (TxtWhatsAppLiveContent != null)
+                    TxtWhatsAppLiveContent.Text = "Drafting your copy in the editor on the left will render formatted WhatsApp & Meta Ad previews here in real time...";
+                if (TxtMetaAdLiveContent != null)
+                    TxtMetaAdLiveContent.Text = "Primary ad copy will appear here formatted for Facebook & Instagram feed ads.";
+                return;
+            }
+
+            // Convert Markdown to clean simulated WhatsApp / Ad body
+            string clean = CopywritingDesktopService.StripMarkdownToPlainText(content);
+
+            // WhatsApp formatting (simulate bold, emojis, clean line breaks)
+            if (TxtWhatsAppLiveContent != null)
+            {
+                TxtWhatsAppLiveContent.Text = clean.Trim();
+            }
+
+            // Meta Ad body formatting (first 400 characters preview with natural wrap)
+            if (TxtMetaAdLiveContent != null)
+            {
+                TxtMetaAdLiveContent.Text = clean.Trim();
+            }
+
+            if (TxtWhatsAppTimestamp != null)
+            {
+                TxtWhatsAppTimestamp.Text = DateTime.Now.ToString("h:mm tt");
+            }
+        }
+
+        private void SetStatusBadge(string statusText, bool isSuccess)
+        {
+            if (TxtSaveStatus != null)
+            {
+                TxtSaveStatus.Text = statusText;
+            }
+
+            if (StatusBadgeDot != null)
+            {
+                if (isSuccess)
+                {
+                    StatusBadgeDot.Fill = (Brush)FindResource("SystemFillColorSuccessBrush");
+                }
+                else if (string.Equals(statusText, "Unsaved Changes", StringComparison.OrdinalIgnoreCase))
+                {
+                    StatusBadgeDot.Fill = (Brush)FindResource("SystemFillColorCautionBrush");
+                }
+                else
+                {
+                    StatusBadgeDot.Fill = (Brush)FindResource("TextFillColorSecondaryBrush");
+                }
+            }
         }
 
         private void UpdateMetrics(string content)
         {
-            int words, chars, lines, readingSec;
-            CopywritingDesktopService.ComputeMetrics(content, out words, out chars, out lines, out readingSec);
+            int words, chars, lines, readingSec, speakingSec;
+            CopywritingDesktopService.ComputeMetrics(content, out words, out chars, out lines, out readingSec, out speakingSec);
 
             TxtMetricWords.Text = string.Format("{0} words", words);
             TxtMetricChars.Text = string.Format("{0} chars", chars);
@@ -267,6 +422,17 @@ namespace SS_CAM.Views
                 int min = readingSec / 60;
                 int sec = readingSec % 60;
                 TxtMetricReadingTime.Text = string.Format("~{0}m {1}s", min, sec);
+            }
+
+            if (speakingSec < 60)
+            {
+                TxtMetricSpeakingTime.Text = string.Format("~{0} sec", speakingSec);
+            }
+            else
+            {
+                int sMin = speakingSec / 60;
+                int sSec = speakingSec % 60;
+                TxtMetricSpeakingTime.Text = string.Format("~{0}m {1}s", sMin, sSec);
             }
         }
 
@@ -288,7 +454,10 @@ namespace SS_CAM.Views
 
             if (success)
             {
-                TxtSaveStatus.Text = string.Format("Saved at {0}", DateTime.Now.ToString("HH:mm:ss"));
+                // Save local revision snapshot
+                CopywritingDesktopService.SaveSnapshot(selectedProject.FullPath, selectedProject.ProjectId, workspaceRoot, text);
+
+                SetStatusBadge(string.Format("Saved {0}", DateTime.Now.ToString("HH:mm:ss")), true);
                 if (RenderedCopyViewer != null)
                 {
                     RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(text);
@@ -297,7 +466,7 @@ namespace SS_CAM.Views
             }
             else
             {
-                TxtSaveStatus.Text = "Save failed";
+                SetStatusBadge("Save Failed", false);
                 MessageBox.Show("Failed to write COPY.md to NAS. Please check directory permissions.", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -314,8 +483,8 @@ namespace SS_CAM.Views
             try
             {
                 ClipboardService.SetText(text);
-                TxtSaveStatus.Text = "Copied to clipboard";
-                NotificationService.ShowInfo("Clipboard", "Full copy script copied to clipboard!");
+                SetStatusBadge("Markdown Copied", true);
+                NotificationService.ShowInfo("Clipboard", "Full Markdown copy script copied to clipboard!");
             }
             catch (Exception ex)
             {
@@ -323,9 +492,32 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnCopyPlainTextClicked(object sender, RoutedEventArgs e)
+        {
+            string text = CopyScriptEditor.Text;
+            if (string.IsNullOrEmpty(text))
+            {
+                MessageBox.Show("No copy text to copy.", "Copywriting Studio", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                string plain = CopywritingDesktopService.StripMarkdownToPlainText(text);
+                ClipboardService.SetText(plain);
+                SetStatusBadge("Clean Text Copied", true);
+                NotificationService.ShowSuccess("Plain Text Copied", "Clean copy without markdown symbols copied for Ads & WhatsApp!");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CopywritingPage] Copy plain text error: " + ex.Message);
+            }
+        }
+
+        // Framework Inserts
         private void OnInsertTikTokClicked(object sender, RoutedEventArgs e)
         {
-            InsertPresetFramework("tiktok");
+            InsertPresetFramework("tiktok_3hooks");
         }
 
         private void OnInsertMetaPasClicked(object sender, RoutedEventArgs e)
@@ -333,32 +525,83 @@ namespace SS_CAM.Views
             InsertPresetFramework("meta_pas");
         }
 
+        private void OnInsertWhatsAppClicked(object sender, RoutedEventArgs e)
+        {
+            InsertPresetFramework("whatsapp_broadcast");
+        }
+
+        private void OnInsertNeubrutalistClicked(object sender, RoutedEventArgs e)
+        {
+            InsertPresetFramework("neubrutalist_hook");
+        }
+
+        private void OnInsertRetroClicked(object sender, RoutedEventArgs e)
+        {
+            InsertPresetFramework("retro_story");
+        }
+
         private void OnInsertClaimsClicked(object sender, RoutedEventArgs e)
         {
             InsertPresetFramework("claims");
         }
 
+        // Quick Snippets Inserts
+        private void OnSnippetWhatsappLinkClicked(object sender, RoutedEventArgs e)
+        {
+            InsertSnippetText(Environment.NewLine + "👉 *Klik link untuk WhatsApp Direct:* https://suamisihat.clinic/wsap" + Environment.NewLine);
+        }
+
+        private void OnSnippetPromoVoucherClicked(object sender, RoutedEventArgs e)
+        {
+            InsertSnippetText(Environment.NewLine + "🎟️ *KOD VOUCHER EKSKLUSIF:* `SSPROMO50` (Diskaun RM50 untuk 20 pelanggan terawal)" + Environment.NewLine);
+        }
+
+        private void OnSnippetKkmDisclaimerClicked(object sender, RoutedEventArgs e)
+        {
+            InsertSnippetText(Environment.NewLine + "> ⚠️ *Penafian Kesihatan:* Produk & rawatan ini berdaftar di bawah kawalan pihak berkuasa kesihatan. Kesan mungkin berbeza mengikut individu. Sila rujuk pakar perubatan kami untuk konsultasi penuh." + Environment.NewLine);
+        }
+
+        private void OnSnippetHalalGuaranteeClicked(object sender, RoutedEventArgs e)
+        {
+            InsertSnippetText(Environment.NewLine + "🛡️ *100% DIJAMIN ASLI & HALAL:* Diproses mengikut piawaian GMP & mendapat kelulusan persijilan Halal rasmi." + Environment.NewLine);
+        }
+
+        private void OnSnippetUrgencyTimerClicked(object sender, RoutedEventArgs e)
+        {
+            InsertSnippetText(Environment.NewLine + "⏳ *TAWARAN TERHAD HARI INI SAHAJA!* Slot konsultasi percuma terhad kepada 15 individu terawal." + Environment.NewLine);
+        }
+
         private void InsertPresetFramework(string presetKey)
         {
-            SetPreviewMode(false);
             string projectTitle = selectedProject != null ? selectedProject.Name : "Project";
             string snippet = CopywritingDesktopService.GetPresetTemplate(presetKey, projectTitle);
+            InsertSnippetText(Environment.NewLine + snippet + Environment.NewLine);
+        }
+
+        private void InsertSnippetText(string snippet)
+        {
+            if (currentViewMode == 1)
+            {
+                ApplyViewMode(0); // Return to split view if currently viewing FlowDocument
+            }
 
             int caret = CopyScriptEditor.CaretIndex;
             string current = CopyScriptEditor.Text ?? string.Empty;
 
             if (caret >= 0 && caret <= current.Length)
             {
-                string updated = current.Insert(caret, Environment.NewLine + snippet + Environment.NewLine);
+                string updated = current.Insert(caret, snippet);
                 CopyScriptEditor.Text = updated;
-                CopyScriptEditor.CaretIndex = caret + snippet.Length + 4;
+                CopyScriptEditor.CaretIndex = caret + snippet.Length;
             }
             else
             {
-                CopyScriptEditor.Text = current + Environment.NewLine + snippet;
+                CopyScriptEditor.Text = current + snippet;
+                CopyScriptEditor.CaretIndex = CopyScriptEditor.Text.Length;
             }
 
-            TxtSaveStatus.Text = "Framework inserted (Unsaved)";
+            CopyScriptEditor.Focus();
+            SetStatusBadge("Unsaved Changes", false);
         }
 
         private void OnResetTemplateClicked(object sender, RoutedEventArgs e)
@@ -372,7 +615,8 @@ namespace SS_CAM.Views
                 {
                     RenderedCopyViewer.Document = MarkdownHelper.ToFlowDocument(def);
                 }
-                TxtSaveStatus.Text = "Template reset (Unsaved)";
+                UpdateLiveSimulation(def);
+                SetStatusBadge("Template Reset (Unsaved)", false);
             }
         }
 
@@ -420,3 +664,4 @@ namespace SS_CAM.Views
         }
     }
 }
+

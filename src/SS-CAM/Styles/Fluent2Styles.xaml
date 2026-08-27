@@ -78,9 +78,11 @@
     <!-- Typography Ramp -->
     <FontFamily x:Key="FluentFontFamily">Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif</FontFamily>
 
-    <!-- Elevation Depth Shadows -->
+    <!-- Elevation Depth Shadows & Glowing Effects -->
     <DropShadowEffect x:Key="FluentDepth4" BlurRadius="6" ShadowDepth="2" Direction="270" Color="#000000" Opacity="0.14"/>
     <DropShadowEffect x:Key="FluentDepth8" BlurRadius="12" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.20"/>
     <DropShadowEffect x:Key="FluentDepth16" BlurRadius="24" ShadowDepth="8" Direction="270" Color="#000000" Opacity="0.28"/>
+    <DropShadowEffect x:Key="FluentCyberGlow" BlurRadius="16" ShadowDepth="0" Color="#00CFFF" Opacity="0.45"/>
+    <SolidColorBrush x:Key="FluentGlassBorder" Color="#28FFFFFF"/>
 
 </ResourceDictionary>

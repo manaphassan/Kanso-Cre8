@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -726,24 +727,65 @@ namespace SS_CAM.Views
         private async void LoadRecentProjects()
         {
             SyncWorkspaceRootFromInput();
-            string designerFolder = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : "Brand";
-            List<DesignerFolderItem> items = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, designerFolder, "", 10);
-            RecentProjectsList.ItemsSource = items;
-            RecentProjectsList.DisplayMemberPath = "Project";
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot)) return;
+
+            List<ProjectStatusItem> projectList = await Task.Factory.StartNew(delegate
+            {
+                List<ProjectStatusItem> list = new List<ProjectStatusItem>();
+                try
+                {
+                    string designerFolder = !string.IsNullOrWhiteSpace(currentProfile != null ? currentProfile.DesignerName : null) ? currentProfile.DesignerName : "";
+                    List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(workspaceRoot, designerFolder, "", 10);
+                    if (folders != null)
+                    {
+                        foreach (DesignerFolderItem f in folders)
+                        {
+                            if (f != null && !string.IsNullOrWhiteSpace(f.FullPath))
+                            {
+                                ProjectStatusItem st = FrontmatterService.ReadStatus(f.FullPath);
+                                if (st != null)
+                                {
+                                    if (string.IsNullOrWhiteSpace(st.Designer) && !string.IsNullOrWhiteSpace(f.Designer))
+                                    {
+                                        st.Designer = f.Designer;
+                                    }
+                                    list.Add(st);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("[ProjectCreatorPage] LoadRecentProjects: " + ex.Message);
+                }
+                return list;
+            });
+
+            if (RecentProjectsItemsControl != null)
+            {
+                RecentProjectsItemsControl.ItemsSource = projectList;
+            }
         }
 
-        private void OnRecentProjectDoubleClicked(object sender, MouseButtonEventArgs e)
+        private void OnRecentProjectCardDoubleClicked(object sender, MouseButtonEventArgs e)
         {
-            DesignerFolderItem selected = RecentProjectsList.SelectedItem as DesignerFolderItem;
+            FrameworkElement el = sender as FrameworkElement;
+            if (el == null) return;
+            ProjectStatusItem selected = el.DataContext as ProjectStatusItem;
             if (selected != null && Directory.Exists(selected.FullPath))
             {
                 try
                 {
-                    Process.Start("explorer.exe", selected.FullPath);
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = selected.FullPath,
+                        UseShellExecute = true
+                    });
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] OpenExplorer: " + ex.Message);
+                    Debug.WriteLine("[ProjectCreatorPage] OpenExplorer error: " + ex.Message);
                 }
             }
         }

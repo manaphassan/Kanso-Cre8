@@ -107,6 +107,18 @@ namespace SS_CAM.Models
             }
         }
 
+        public string StatusBadgeColor
+        {
+            get
+            {
+                if (Status == "done") return "#10B981";
+                if (Status == "review") return "#F59E0B";
+                if (Status == "in-progress") return "#0078D4";
+                if (Status == "on-hold") return "#64748B";
+                return "#8B5CF6";
+            }
+        }
+
         public string PriorityColor
         {
             get

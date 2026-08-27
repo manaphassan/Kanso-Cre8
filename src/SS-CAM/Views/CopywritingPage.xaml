@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       mc:Ignorable="d" 
-      d:DesignHeight="900" d:DesignWidth="1100"
+      d:DesignHeight="1000" d:DesignWidth="1200"
       Title="Copywriting Studio"
       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
@@ -14,29 +14,39 @@
                   HorizontalScrollBarVisibility="Disabled"
                   Padding="24"
                   PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
-        <StackPanel MaxWidth="1200" HorizontalAlignment="Stretch">
+        <StackPanel HorizontalAlignment="Stretch">
 
             <!-- 1. PAGE HEADER -->
-            <Grid Margin="0,0,0,20">
+            <Grid Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
+                    <ui:TextBlock Text="COPYWRITING &amp; AD SCRIPTING" FontSize="11" FontWeight="Bold"
+                                  Foreground="{DynamicResource FluentBrand80}" Margin="0,0,0,2"/>
                     <ui:TextBlock Text="Copywriting Studio" FontSize="24" FontWeight="Bold"
                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                    <ui:TextBlock Text="Draft, optimize, and persist high-converting copy directly into 03_COPYWRITING/COPY.md."
+                    <ui:TextBlock Text="Draft, optimize, and persist high-converting copy directly into 03_COPYWRITING/COPY.md with live WhatsApp &amp; Ad preview."
                                   FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- Action Buttons -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button x:Name="BtnCopyPlainText" Appearance="Secondary" Margin="0,0,8,0"
+                               Click="OnCopyPlainTextClicked" Cursor="Hand" ToolTip="Copy clean plain text (strips markdown formatting for Ads/WhatsApp)">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="DocumentBulletList24" Margin="0,0,6,0" FontSize="14"/>
+                            <ui:TextBlock Text="Copy Plain Text"/>
+                        </StackPanel>
+                    </ui:Button>
+
                     <ui:Button x:Name="BtnCopyClipboard" Appearance="Secondary" Margin="0,0,8,0"
-                               Click="OnCopyClipboardClicked" Cursor="Hand" ToolTip="Copy all copy text to clipboard">
+                               Click="OnCopyClipboardClicked" Cursor="Hand" ToolTip="Copy raw Markdown script to clipboard">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Copy24" Margin="0,0,6,0" FontSize="14"/>
-                            <ui:TextBlock Text="Copy Text"/>
+                            <ui:TextBlock Text="Copy Markdown"/>
                         </StackPanel>
                     </ui:Button>
 
@@ -92,7 +102,7 @@
                         </ui:Button>
                     </Grid>
 
-                    <!-- Bottom Row: Path & Status Feedback -->
+                    <!-- Bottom Row: Path & Status Feedback with Pill Badge -->
                     <Grid Grid.Row="1" Margin="0,12,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -105,15 +115,24 @@
                                           FontFamily="Consolas" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                         </StackPanel>
 
-                        <ui:TextBlock x:Name="TxtSaveStatus" Grid.Column="1" Text="Ready" FontSize="11.5" FontWeight="SemiBold"
-                                      Foreground="{DynamicResource SystemFillColorSuccessBrush}"/>
+                        <!-- Status Pill Badge -->
+                        <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="12" Padding="10,3">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse x:Name="StatusBadgeDot" Width="6" Height="6" Fill="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,0,6,0"/>
+                                <ui:TextBlock x:Name="TxtSaveStatus" Text="Ready" FontSize="11" FontWeight="SemiBold"
+                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Grid>
             </ui:Card>
 
-            <!-- 3. LIVE COPY TELEMETRY METRICS -->
+            <!-- 3. LIVE COPY TELEMETRY METRICS (5 METRIC CARDS) -->
             <Grid Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -121,87 +140,186 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Words -->
-                <ui:Card Grid.Column="0" Margin="0,0,6,0" Padding="14">
+                <ui:Card Grid.Column="0" Margin="0,0,4,0" Padding="12">
                     <StackPanel>
-                        <ui:TextBlock Text="WORD COUNT" FontSize="10.5" FontWeight="SemiBold"
+                        <ui:TextBlock Text="WORD COUNT" FontSize="10" FontWeight="SemiBold"
                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <ui:TextBlock x:Name="TxtMetricWords" Text="0 words" FontSize="20" FontWeight="Bold"
+                        <ui:TextBlock x:Name="TxtMetricWords" Text="0 words" FontSize="18" FontWeight="Bold"
                                       Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </ui:Card>
 
                 <!-- Characters -->
-                <ui:Card Grid.Column="1" Margin="6,0,6,0" Padding="14">
+                <ui:Card Grid.Column="1" Margin="4,0,4,0" Padding="12">
                     <StackPanel>
-                        <ui:TextBlock Text="CHARACTERS" FontSize="10.5" FontWeight="SemiBold"
+                        <ui:TextBlock Text="CHARACTERS" FontSize="10" FontWeight="SemiBold"
                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <ui:TextBlock x:Name="TxtMetricChars" Text="0 chars" FontSize="20" FontWeight="Bold"
+                        <ui:TextBlock x:Name="TxtMetricChars" Text="0 chars" FontSize="18" FontWeight="Bold"
                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </ui:Card>
 
                 <!-- Reading Duration -->
-                <ui:Card Grid.Column="2" Margin="6,0,6,0" Padding="14">
+                <ui:Card Grid.Column="2" Margin="4,0,4,0" Padding="12">
                     <StackPanel>
-                        <ui:TextBlock Text="EST. READING TIME" FontSize="10.5" FontWeight="SemiBold"
+                        <ui:TextBlock Text="SILENT READING" FontSize="10" FontWeight="SemiBold"
                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <ui:TextBlock x:Name="TxtMetricReadingTime" Text="0 sec" FontSize="20" FontWeight="Bold"
+                        <ui:TextBlock x:Name="TxtMetricReadingTime" Text="0 sec" FontSize="18" FontWeight="Bold"
                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </ui:Card>
 
-                <!-- Line Count -->
-                <ui:Card Grid.Column="3" Margin="6,0,0,0" Padding="14">
+                <!-- Speaking VO Duration -->
+                <ui:Card Grid.Column="3" Margin="4,0,4,0" Padding="12">
                     <StackPanel>
-                        <ui:TextBlock Text="LINE COUNT" FontSize="10.5" FontWeight="SemiBold"
+                        <ui:TextBlock Text="SPEAKING VO (~130 WPM)" FontSize="10" FontWeight="SemiBold"
                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                        <ui:TextBlock x:Name="TxtMetricLines" Text="0 lines" FontSize="20" FontWeight="Bold"
+                        <ui:TextBlock x:Name="TxtMetricSpeakingTime" Text="0 sec" FontSize="18" FontWeight="Bold"
+                                      Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </ui:Card>
+
+                <!-- Line Count -->
+                <ui:Card Grid.Column="4" Margin="4,0,0,0" Padding="12">
+                    <StackPanel>
+                        <ui:TextBlock Text="LINE COUNT" FontSize="10" FontWeight="SemiBold"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <ui:TextBlock x:Name="TxtMetricLines" Text="0 lines" FontSize="18" FontWeight="Bold"
                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </ui:Card>
             </Grid>
 
-            <!-- 4. VIRAL HOOK PRESETS & FORMATTING TOOLBAR -->
-            <ui:Card Margin="0,0,0,16" Padding="12">
-                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <ui:TextBlock Text="Insert Framework:" FontWeight="SemiBold" FontSize="12"
-                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <!-- 4. CREATIVE SNIPPET & HOOK DRAWER -->
+            <ui:Card Margin="0,0,0,16" Padding="14">
+                <StackPanel>
+                    <!-- Header -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <ui:Button x:Name="BtnInsertTikTok" Appearance="Secondary" Margin="0,2,8,2"
-                               Click="OnInsertTikTokClicked" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Video24" Margin="0,0,6,0" FontSize="13"/>
-                            <ui:TextBlock Text="TikTok / Reels Script Table" FontSize="11.5"/>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:SymbolIcon Symbol="Flash24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0"/>
+                            <ui:TextBlock Text="QUICK SNIPPET &amp; HOOK DRAWER" FontSize="11" FontWeight="Bold"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                            <ui:TextBlock Text="&#x2014; Click chip to insert directly at cursor" FontSize="11"
+                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="6,0,0,0"/>
                         </StackPanel>
-                    </ui:Button>
 
-                    <ui:Button x:Name="BtnInsertMetaPas" Appearance="Secondary" Margin="0,2,8,2"
-                               Click="OnInsertMetaPasClicked" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Speaker224" Margin="0,0,6,0" FontSize="13"/>
-                            <ui:TextBlock Text="Meta Problem-Agitate-Solve" FontSize="11.5"/>
-                        </StackPanel>
-                    </ui:Button>
+                        <ui:Button x:Name="BtnResetTemplate" Grid.Column="1" Appearance="Secondary" Height="26" Padding="8,0"
+                                   Click="OnResetTemplateClicked" Cursor="Hand" ToolTip="Reset to standard brand copy template">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="DocumentSync24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Reset Template" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+                    </Grid>
 
-                    <ui:Button x:Name="BtnInsertClaims" Appearance="Secondary" Margin="0,2,8,2"
-                               Click="OnInsertClaimsClicked" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="Checkmark24" Margin="0,0,6,0" FontSize="13"/>
-                            <ui:TextBlock Text="Product Claims Matrix" FontSize="11.5"/>
-                        </StackPanel>
-                    </ui:Button>
+                    <!-- Row 1: Viral Script Frameworks -->
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <ui:TextBlock Text="Frameworks:" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" Width="85"/>
 
-                    <ui:Button x:Name="BtnResetTemplate" Appearance="Secondary" Margin="0,2,0,2"
-                               Click="OnResetTemplateClicked" Cursor="Hand" ToolTip="Reset to standard brand copy template">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="DocumentSync24" Margin="0,0,6,0" FontSize="13"/>
-                            <ui:TextBlock Text="Reset Template" FontSize="11.5"/>
-                        </StackPanel>
-                    </ui:Button>
-                </WrapPanel>
+                        <ui:Button x:Name="BtnInsertTikTok" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnInsertTikTokClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Video24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="TikTok 3-Hook Table" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnInsertMetaPas" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnInsertMetaPasClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Speaker224" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Meta PAS Framework" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnInsertWhatsApp" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnInsertWhatsAppClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Chat24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="WhatsApp Broadcast" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnInsertNeubrutalist" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnInsertNeubrutalistClicked" Cursor="Hand" ToolTip="High-CTR bold direct-response ad framework">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Flash24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Neubrutalist Hook" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnInsertRetro" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnInsertRetroClicked" Cursor="Hand" ToolTip="Retro-futuristic nostalgic storytelling framework">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Games24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Retro Story Angle" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnInsertClaims" Appearance="Secondary" Margin="0,2,0,2" Height="26" Padding="8,0"
+                                   Click="OnInsertClaimsClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Checkmark24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Claims Matrix" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+                    </WrapPanel>
+
+                    <!-- Row 2: Instant Snippets (CTAs & Compliance) -->
+                    <WrapPanel Orientation="Horizontal">
+                        <ui:TextBlock Text="Quick Snippets:" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" Width="85"/>
+
+                        <ui:Button x:Name="BtnSnippetWhatsappLink" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnSnippetWhatsappLinkClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Link24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="WhatsApp CTA Link" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnSnippetPromoVoucher" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnSnippetPromoVoucherClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Tag24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Promo Voucher Code" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnSnippetKkmDisclaimer" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnSnippetKkmDisclaimerClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Shield24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="KKM / Health Disclaimer" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnSnippetHalalGuarantee" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
+                                   Click="OnSnippetHalalGuaranteeClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Certificate24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="100% Original Guarantee" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnSnippetUrgencyTimer" Appearance="Secondary" Margin="0,2,0,2" Height="26" Padding="8,0"
+                                   Click="OnSnippetUrgencyTimerClicked" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Timer24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Urgency Scarcity Box" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+                    </WrapPanel>
+                </StackPanel>
             </ui:Card>
 
-            <!-- 5. MAIN COPY EDITOR CANVAS -->
+            <!-- 5. MAIN COPY EDITOR & LIVE SIMULATION WORKSPACE -->
             <ui:Card Padding="16">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -209,62 +327,241 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <!-- Workspace Header & 4-Way View Mode Switcher -->
+                    <Grid Grid.Row="0" Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <ui:TextBlock x:Name="TxtCanvasHeader" Text="Rendered Copy Preview" FontWeight="SemiBold" FontSize="13"
-                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                        
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ui:TextBlock x:Name="TxtEditorShortcutHint" Text="Ctrl+S to save" FontSize="11.5"
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:TextBlock x:Name="TxtCanvasHeader" Text="Rendered Copy Preview (FlowDocument)" FontWeight="Bold" FontSize="14"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            <ui:TextBlock x:Name="TxtEditorShortcutHint" Text="&#x2022; Press Ctrl+S to save instantly to NAS" FontSize="11.5"
                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"
-                                          Margin="0,0,12,0" Visibility="Collapsed"/>
-                            
-                            <!-- Icon-Only Preview & Edit Toggle Buttons -->
-                            <ui:Button x:Name="BtnModePreview" Appearance="Primary" Height="28" Width="32" Padding="0"
-                                       Click="OnModePreviewClicked" Cursor="Hand" ToolTip="Preview Rendered Markdown">
-                                <ui:SymbolIcon Symbol="Eye24" FontSize="13"/>
-                            </ui:Button>
-                            <ui:Button x:Name="BtnModeEdit" Appearance="Secondary" Height="28" Width="32" Padding="0" Margin="4,0,0,0"
-                                       Click="OnModeEditClicked" Cursor="Hand" ToolTip="Edit Markdown Script">
-                                <ui:SymbolIcon Symbol="Edit24" FontSize="13"/>
-                            </ui:Button>
+                                          Margin="8,0,0,0" Visibility="Collapsed"/>
                         </StackPanel>
+                        
+                        <!-- 4-Way Mode Segmented Switcher -->
+                        <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                CornerRadius="8" Padding="2">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- 1. Preview Live Markdown (Default) -->
+                                <ui:Button x:Name="BtnModePreview" Appearance="Primary" Height="28" Padding="10,0" Margin="0,0,2,0"
+                                           Click="OnModePreviewClicked" Cursor="Hand" ToolTip="Preview Live Markdown (Default View)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Eye24" Margin="0,0,4,0" FontSize="13"/>
+                                        <ui:TextBlock Text="Preview Live" FontSize="11.5"/>
+                                    </StackPanel>
+                                </ui:Button>
+
+                                <!-- 2. Split View (Live & Edit Markdown Side by Side) -->
+                                <ui:Button x:Name="BtnModeSplit" Appearance="Secondary" Height="28" Padding="10,0" Margin="0,0,2,0"
+                                           Click="OnModeSplitClicked" Cursor="Hand" ToolTip="Split View: Raw Editor &amp; Live Rendered Markdown side by side">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="SplitVertical24" Margin="0,0,4,0" FontSize="13"/>
+                                        <ui:TextBlock Text="Split View" FontSize="11.5"/>
+                                    </StackPanel>
+                                </ui:Button>
+
+                                <!-- 3. Edit Mode (Full Width Editor) -->
+                                <ui:Button x:Name="BtnModeEdit" Appearance="Secondary" Height="28" Padding="10,0" Margin="0,0,2,0"
+                                           Click="OnModeEditClicked" Cursor="Hand" ToolTip="Edit Mode: Full Width Markdown Editor">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Edit24" Margin="0,0,4,0" FontSize="13"/>
+                                        <ui:TextBlock Text="Edit Mode" FontSize="11.5"/>
+                                    </StackPanel>
+                                </ui:Button>
+
+                                <!-- 4. Mockup View (Ad & WhatsApp Simulation) -->
+                                <ui:Button x:Name="BtnModeMockup" Appearance="Secondary" Height="28" Padding="10,0"
+                                           Click="OnModeMockupClicked" Cursor="Hand" ToolTip="Mockup View: Live WhatsApp &amp; Meta Ad Simulation">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Phone24" Margin="0,0,4,0" FontSize="13"/>
+                                        <ui:TextBlock Text="Mockup View" FontSize="11.5"/>
+                                    </StackPanel>
+                                </ui:Button>
+                            </StackPanel>
+                        </Border>
                     </Grid>
 
-                    <!-- Rendered Markdown FlowDocument Viewer (Default) -->
-                    <FlowDocumentScrollViewer x:Name="RenderedCopyViewer" Grid.Row="1"
-                                              MinHeight="450" MaxHeight="800"
-                                              VerticalScrollBarVisibility="Auto"
-                                              Background="{DynamicResource TextControlBackground}"
-                                              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                              BorderThickness="1"
-                                              Padding="14"
-                                              Visibility="Visible"/>
+                    <!-- Workspace Content Grid -->
+                    <Grid Grid.Row="1" MinHeight="520">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="ColEditor" Width="*"/>
+                            <ColumnDefinition x:Name="ColSplitter" Width="0"/>
+                            <ColumnDefinition x:Name="ColLivePreview" Width="0"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Raw Markdown Editor -->
-                    <TextBox x:Name="CopyScriptEditor" Grid.Row="1"
-                             MinHeight="450" MaxHeight="800"
-                             AcceptsReturn="True" AcceptsTab="True"
-                             TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             HorizontalScrollBarVisibility="Disabled"
-                             FontFamily="Consolas, Segoe UI Variable Text, Arial"
-                             FontSize="13"
-                             Padding="12"
-                             Background="{DynamicResource TextControlBackground}"
-                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                             BorderThickness="1"
-                             TextChanged="OnCopyScriptTextChanged"
-                             KeyDown="OnEditorKeyDown"
-                             Visibility="Collapsed"/>
+                        <!-- LEFT COLUMN: Primary Canvas (FlowDocument in Preview Live, Editor in Edit & Split) -->
+                        <Grid Grid.Column="0">
+                            <!-- 1. Full FlowDocument Viewer (Active in Preview Live Mode) -->
+                            <FlowDocumentScrollViewer x:Name="RenderedCopyViewer"
+                                                      MinHeight="480" MaxHeight="850"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      FontFamily="{DynamicResource FluentFontFamily}"
+                                                      Background="{DynamicResource TextControlBackground}"
+                                                      BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                      BorderThickness="1"
+                                                      Padding="16"
+                                                      Visibility="Visible"/>
+
+                            <!-- 2. Raw Markdown Editor (Active in Edit Mode & Split Left) -->
+                            <TextBox x:Name="CopyScriptEditor"
+                                     MinHeight="480" MaxHeight="850"
+                                     AcceptsReturn="True" AcceptsTab="True"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Disabled"
+                                     FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"
+                                     FontSize="12.5"
+                                     Padding="14"
+                                     Background="{DynamicResource TextControlBackground}"
+                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                     BorderThickness="1"
+                                     TextChanged="OnCopyScriptTextChanged"
+                                     KeyDown="OnEditorKeyDown"
+                                     Visibility="Collapsed"/>
+                        </Grid>
+
+                        <!-- COLUMN SPLITTER (Active in Split Mode) -->
+                        <GridSplitter x:Name="LiveGridSplitter" Grid.Column="1" HorizontalAlignment="Stretch"
+                                      Background="Transparent" Cursor="SizeWE" Visibility="Collapsed"/>
+
+                        <!-- RIGHT COLUMN: SPLIT LIVE RENDERED MARKDOWN OR MOCKUP VIEW -->
+                        <Grid x:Name="RightPaneContainer" Grid.Column="2" Visibility="Collapsed">
+                            <!-- 1. Split Live Rendered FlowDocument (Right pane in Split Mode) -->
+                            <FlowDocumentScrollViewer x:Name="RenderedCopyViewerSplit"
+                                                      MinHeight="480" MaxHeight="850"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      FontFamily="{DynamicResource FluentFontFamily}"
+                                                      Background="{DynamicResource TextControlBackground}"
+                                                      BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                      BorderThickness="1"
+                                                      Padding="16"
+                                                      Visibility="Collapsed"/>
+
+                            <!-- 2. Ad & WhatsApp Live Mockups (Mockup View) -->
+                            <Border x:Name="LivePreviewPanel"
+                                    Background="{DynamicResource TextControlBackground}"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="8" Padding="14"
+                                    Visibility="Collapsed">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel>
+                                        <!-- WhatsApp Live Simulation Card -->
+                                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                BorderThickness="1" CornerRadius="10" Margin="0,0,0,16">
+                                            <StackPanel>
+                                                <!-- WhatsApp Header Bar -->
+                                                <Border Background="#075E54" CornerRadius="9,9,0,0" Padding="12,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <Ellipse Grid.Column="0" Width="28" Height="28" Fill="#25D366" Margin="0,0,10,0"/>
+                                                        
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <ui:TextBlock Text="SuamiSihat&#x2122; Official" FontWeight="Bold" FontSize="12.5" Foreground="#FFFFFF"/>
+                                                            <ui:TextBlock Text="WhatsApp Broadcast Live Preview" FontSize="10" Foreground="#DCF8C6"/>
+                                                        </StackPanel>
+
+                                                        <Border Grid.Column="2" Background="#128C7E" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                                            <ui:TextBlock Text="LIVE AD CHAT" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- WhatsApp Chat Bubble Surface -->
+                                                <Border Background="#E5DDD5" Padding="12" MinHeight="160">
+                                                    <Border Background="#FFFFFF" CornerRadius="8" Padding="10,8" MaxWidth="450" HorizontalAlignment="Left"
+                                                            BorderBrush="#D0D7DE" BorderThickness="1">
+                                                        <StackPanel>
+                                                            <TextBlock x:Name="TxtWhatsAppLiveContent" Text="Drafting your copy in the editor on the left will render formatted text here in real time..."
+                                                                       TextWrapping="Wrap" FontSize="12.5" FontFamily="Segoe UI" LineHeight="19"
+                                                                       Foreground="#111B21"/>
+                                                            
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                                                                <TextBlock x:Name="TxtWhatsAppTimestamp" Text="10:30 AM" FontSize="9.5" Foreground="#667781" Margin="0,0,4,0"/>
+                                                                <TextBlock Text="&#x2713;&#x2713;" FontSize="9.5" FontWeight="Bold" Foreground="#53BDEB"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Meta Ad Primary Text Card -->
+                                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                BorderThickness="1" CornerRadius="10" Padding="12">
+                                            <StackPanel>
+                                                <!-- Meta Sponsor Header -->
+                                                <Grid Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Ellipse Grid.Column="0" Width="28" Height="28" Fill="{DynamicResource FluentBrand80}" Margin="0,0,8,0"/>
+
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <ui:TextBlock Text="SuamiSihat" FontWeight="SemiBold" FontSize="12"
+                                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                                        <ui:TextBlock Text="Sponsored &#x2022; Meta Ads" FontSize="10"
+                                                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                    </StackPanel>
+
+                                                    <ui:SymbolIcon Grid.Column="2" Symbol="MoreHorizontal24" FontSize="14"
+                                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </Grid>
+
+                                                <!-- Ad Body Text -->
+                                                <TextBlock x:Name="TxtMetaAdLiveContent" Text="Primary ad copy will appear here formatted for Facebook &amp; Instagram feed ads."
+                                                           TextWrapping="Wrap" FontSize="12" FontFamily="Segoe UI" LineHeight="18"
+                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,10"/>
+
+                                                <!-- Mock CTA Footer -->
+                                                <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1" CornerRadius="6" Padding="10,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                            <ui:TextBlock Text="SUAMISIHAT.CLINIC" FontSize="9.5" FontWeight="SemiBold"
+                                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                            <ui:TextBlock Text="Dapatkan Konsultasi &amp; Rawatan Premium" FontSize="11" FontWeight="Bold"
+                                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                                        </StackPanel>
+
+                                                        <Border Grid.Column="1" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="10,5">
+                                                            <ui:TextBlock Text="Send Message" FontSize="10.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </ui:Card>
 
         </StackPanel>
     </ScrollViewer>
 </Page>
+
+

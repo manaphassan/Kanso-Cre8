@@ -273,12 +273,20 @@ namespace SS_CAM.Views
                 }).ToList();
             }
 
-            ResultsListBox.ItemsSource = allItems;
+            var displayItems = allItems.Take(10).ToList();
+            ResultsListBox.ItemsSource = displayItems;
 
-            // Update sidebar project count label
-            TxtProjectCount.Text = allItems.Count == 1 ? "1 project" : string.Format("{0} projects", allItems.Count);
+            // Update top tray project count label
+            if (allItems.Count > 10)
+            {
+                TxtProjectCount.Text = string.Format("Showing 10 of {0} projects", allItems.Count);
+            }
+            else
+            {
+                TxtProjectCount.Text = allItems.Count == 1 ? "1 project" : string.Format("{0} projects", allItems.Count);
+            }
 
-            if (allItems.Count > 0)
+            if (displayItems.Count > 0)
             {
                 ResultsListBox.SelectedIndex = 0;
             }

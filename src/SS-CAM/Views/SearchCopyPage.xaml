@@ -2,234 +2,189 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      Title="Search &amp; Copy">
+      Title="Search &amp; Copy"
+      Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
-        <Grid PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
-            <Grid.RowDefinitions>
-                <!-- Search bar (fixed height) -->
-                <RowDefinition Height="Auto"/>
-                <!-- Main content -->
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+    <ScrollViewer x:Name="PageScrollViewer"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  ScrollViewer.CanContentScroll="False"
+                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+        <StackPanel Margin="24,16,24,24">
 
-        <!-- ── Page Header + Search Bar ── -->
-        <StackPanel Grid.Row="0" Margin="24,16,24,0">
-            <StackPanel Margin="0,0,0,10">
+            <!-- ── Page Header ── -->
+            <StackPanel Margin="0,0,0,12">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                     <ui:SymbolIcon Symbol="Search24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <ui:TextBlock Text="Project Workspace Catalog" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <ui:TextBlock Text="Browse your workspace like a catalog - select a project to inspect its brief, assets, and images."
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12"
-                           Margin="0,4,0,0" />
+                <ui:TextBlock Text="Browse your workspace like a catalog &#x2014; select a project from the top tray to inspect its brief, assets, and task telemetry."
+                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,2,0,0" />
             </StackPanel>
 
-            <!-- Search Controls Bar -->
-            <ui:Card Padding="12,8" Margin="0,0,0,12">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+            <!-- ── 1. TOP SECTION: SEARCH FILTERS & HORIZONTAL PROJECT FOLDERS TRAY (MAX 10) ── -->
+            <ui:Card Padding="16,14" Margin="0,0,0,16">
+                <StackPanel>
+                    <!-- Row 1: Search Bar & Filter Dropdowns -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="36"
-                                PlaceholderText="Search project title, Project ID..." 
-                                TextChanged="OnSearchInputChanged"/>
+                        <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="34"
+                                    PlaceholderText="Search project title, Project ID..." 
+                                    TextChanged="OnSearchInputChanged"/>
 
-                    <ui:Button Grid.Column="2" Appearance="Primary" Click="OnSearchClicked"
-                            Height="36" Padding="16,0" FontWeight="Bold" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                       Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <ui:TextBlock Text="Search" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ui:Button>
-                </Grid>
-            </ui:Card>
-        </StackPanel>
+                        <ComboBox x:Name="DesignerFilterCmb" Grid.Column="2" Height="34" Padding="8,2" FontSize="11.5" SelectionChanged="OnFilterChanged"
+                                  VerticalContentAlignment="Center"/>
 
-        <!-- ── Catalog Body: Responsive Sidebar + GridSplitter + Wide README Pane ── -->
-        <Grid Grid.Row="1" Height="620" Margin="24,0,24,16">
-            <Grid.ColumnDefinitions>
-                <!-- Project list sidebar (Default 320px, Min 280px, Max 400px) -->
-                <ColumnDefinition Width="320" MinWidth="280" MaxWidth="400"/>
-                <!-- Resizable Splitter Gutter -->
-                <ColumnDefinition Width="Auto"/>
-                <!-- README / Preview pane takes all remaining space -->
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="CategoryFilterCmb" Grid.Column="4" Height="34" Padding="8,2" FontSize="11.5" SelectionChanged="OnFilterChanged"
+                                  VerticalContentAlignment="Center"/>
 
-            <!-- ————————————————— Left Sidebar: Project Cards List ————————————————— -->
-            <ui:Card Grid.Column="0" Padding="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
-                <DockPanel>
-                    <!-- Sidebar Header -->
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1"
-                            CornerRadius="8,8,0,0" Padding="12,10">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                <ui:TextBlock Text="&#xED25;" FontFamily="Segoe Fluent Icons" FontSize="14"
-                                           Foreground="{DynamicResource FluentBrand80}"
-                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <StackPanel>
-                                    <ui:TextBlock Text="PROJECT FOLDERS" 
-                                               FontSize="10" FontWeight="Bold"
-                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                    <ui:TextBlock x:Name="TxtProjectCount" Text="Loading..."
-                                                FontSize="11"
-                                               Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
-                                </StackPanel>
+                        <ui:Button Grid.Column="6" Appearance="Primary" Click="OnSearchClicked"
+                                   Height="34" Padding="16,0" FontWeight="Bold" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Search24" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Search" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <!-- Designer & Category Filters -->
-                            <Grid Margin="0,4,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="6"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="DesignerFilterCmb" Grid.Column="0" Height="32" Padding="6,2" FontSize="11" SelectionChanged="OnFilterChanged"/>
-                                <ComboBox x:Name="CategoryFilterCmb" Grid.Column="2" Height="32" Padding="6,2" FontSize="11" SelectionChanged="OnFilterChanged"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                        </ui:Button>
+                    </Grid>
 
-                    <!-- Batch Operations Ribbon (Slides in when >1 item selected) -->
-                    <Border DockPanel.Dock="Bottom" x:Name="BatchActionBar"
-                            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
-                            BorderBrush="{DynamicResource FluentBrand80}"
-                            BorderThickness="0,1,0,0"
-                            Padding="10,8" Visibility="Collapsed">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="CheckmarkSquare24" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                    <ui:TextBlock x:Name="TxtBatchCount" Text="0 selected" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <ui:Button Grid.Column="1" Appearance="Secondary" Height="22" Padding="6,0" FontSize="10" Click="OnBatchDeselectClicked" Cursor="Hand">
-                                    Clear
-                                </ui:Button>
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="4"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="BatchStatusCmb" Grid.Column="0" Height="30" Padding="6,2" VerticalContentAlignment="Center" FontSize="10.5" SelectionChanged="OnBatchStatusChanged">
-                                    <ComboBoxItem Content="Set Status..." VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="review" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="done" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="on-hold" VerticalContentAlignment="Center"/>
-                                </ComboBox>
-                                <ComboBox x:Name="BatchPriorityCmb" Grid.Column="2" Height="30" Padding="6,2" VerticalContentAlignment="Center" FontSize="10.5" SelectionChanged="OnBatchPriorityChanged">
-                                    <ComboBoxItem Content="Set Priority..." VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
-                                    <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
-                                </ComboBox>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                    <!-- Row 2: Tray Header + Project Count Badge + Batch Action Bar (if active) -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Scrollable project list with UI Virtualization -->
-                    <ListBox x:Name="ResultsListBox"
-                             SelectionMode="Extended"
-                             SelectionChanged="OnListSelectionChanged"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             ScrollViewer.CanContentScroll="True"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             VirtualizingStackPanel.IsVirtualizing="True"
-                             VirtualizingStackPanel.VirtualizationMode="Recycling"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             Padding="6,6,6,6">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,0,4"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="Transparent"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border x:Name="CardBorder"
-                                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                        BorderThickness="1" CornerRadius="6" Padding="10,8"
-                                        Cursor="Hand">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="28"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <ui:TextBlock Text="&#xED25;" FontFamily="Segoe Fluent Icons"
-                                                   FontSize="14" Foreground="{DynamicResource FluentBrand80}"
-                                                   VerticalAlignment="Top" Margin="0,2,0,0"/>
-                                        <StackPanel Grid.Column="1">
-                                            <ui:TextBlock Text="{Binding Project}"
-                                                       FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       TextWrapping="NoWrap"/>
-                                            <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                                                <ui:TextBlock Text="{Binding FileCount}"
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text=" files &#x00B7; "
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text="{Binding FormattedSize}"
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text=" &#x00B7; "
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text="{Binding Modified}"
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:SymbolIcon Symbol="FolderOpen24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock Text="PROJECT FOLDERS" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" CornerRadius="10" Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <ui:TextBlock x:Name="TxtProjectCount" Text="Loading..." FontSize="10.5" Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold"/>
+                            </Border>
+                            <ui:TextBlock Text="&#x2022; Max 10 recent projects displayed" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Inline Batch Action Bar -->
+                        <StackPanel x:Name="BatchActionBar" Grid.Column="1" Orientation="Horizontal" Visibility="Collapsed" VerticalAlignment="Center">
+                            <ui:SymbolIcon Symbol="CheckmarkSquare24" FontSize="12" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <ui:TextBlock x:Name="TxtBatchCount" Text="0 selected" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox x:Name="BatchStatusCmb" Height="28" Width="120" Padding="6,2" VerticalContentAlignment="Center" FontSize="10" SelectionChanged="OnBatchStatusChanged" Margin="0,0,6,0">
+                                <ComboBoxItem Content="Set Status..." VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="review" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="done" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="on-hold" VerticalContentAlignment="Center"/>
+                            </ComboBox>
+                            <ComboBox x:Name="BatchPriorityCmb" Height="28" Width="120" Padding="6,2" VerticalContentAlignment="Center" FontSize="10" SelectionChanged="OnBatchPriorityChanged" Margin="0,0,6,0">
+                                <ComboBoxItem Content="Set Priority..." VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
+                                <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
+                            </ComboBox>
+                            <ui:Button Appearance="Secondary" Height="28" Padding="8,0" FontSize="10.5" Click="OnBatchDeselectClicked" Cursor="Hand">
+                                Clear
+                            </ui:Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 3: Horizontal Scrollable List of Project Tiles (Max 10) -->
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="0,2">
+                        <ListBox x:Name="ResultsListBox"
+                                 SelectionMode="Extended"
+                                 SelectionChanged="OnListSelectionChanged"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                 ScrollViewer.CanContentScroll="True"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Padding="0">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,0,8,0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="CardBorder"
+                                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1" CornerRadius="8" Padding="12,10"
+                                            Width="250" Height="78" Cursor="Hand">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <!-- Top Row: Icon + Title -->
+                                            <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="22"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ui:SymbolIcon Symbol="Folder24" FontSize="14" Foreground="{DynamicResource FluentBrand80}"
+                                                               VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                <ui:TextBlock Grid.Column="1" Text="{Binding Project}"
+                                                              FontSize="11.5" FontWeight="SemiBold"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                              TextTrimming="CharacterEllipsis"
+                                                              TextWrapping="NoWrap" VerticalAlignment="Center"/>
+                                            </Grid>
+
+                                            <!-- Bottom Row: File Count, Size, Modified Date -->
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,4,0,0">
+                                                <ui:TextBlock Text="{Binding FileCount}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text=" files &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding FormattedSize}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text=" &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                <ui:TextBlock Text="{Binding Modified}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-                                                    <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource FluentBrand80}"/>
-                                                    <Setter Property="BorderThickness" Value="1.5"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
+                                        </Grid>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource FluentBrand80}"/>
+                                                        <Setter Property="BorderThickness" Value="1.5"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </StackPanel>
             </ui:Card>
 
-            <!-- ————————————————— Column Splitter ————————————————— -->
-            <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                          Background="Transparent" Focusable="False" Margin="2,0"/>
-
-            <!-- ————————————————— Right Pane: ClickUp 3.0-Style 2-Column Task Workspace ————————————————— -->
-            <ui:Card Grid.Column="2" Padding="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <!-- ── 2. BOTTOM SECTION: FULL-WIDTH & FULL-HEIGHT PROJECT WORKSPACE ── -->
+            <ui:Card Padding="0" MinHeight="680" VerticalAlignment="Stretch">
                 <Grid>
                     <Grid.RowDefinitions>
                         <!-- Top Header Strip -->
@@ -244,7 +199,7 @@
                     <Border Grid.Row="0" x:Name="SelectedHighlightBadge"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="0,0,0,1" CornerRadius="8,8,0,0" Padding="14,10">
+                            BorderThickness="0,0,0,1" CornerRadius="8,8,0,0" Padding="16,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -253,52 +208,61 @@
                             <StackPanel Grid.Column="0">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:TextBlock Text="PROJECT WORKSPACE" 
-                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                               FontSize="9.5" FontWeight="Bold"/>
-                                    <Border x:Name="InspectorStatusBadge" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="5,1" Margin="8,0,0,0">
+                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                  FontSize="10" FontWeight="Bold"/>
+                                    <Border x:Name="InspectorStatusBadge" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="6,1" Margin="8,0,0,0">
                                         <ui:TextBlock x:Name="TxtInspectorStatusBadge" Text="in-progress" FontSize="9.5" FontWeight="Bold" Foreground="White"/>
                                     </Border>
                                 </StackPanel>
                                 <ui:TextBlock x:Name="SelectedProjectTitle" Text="None selected"
-                                           Foreground="{DynamicResource FluentBrand80}"
-                                           FontSize="15" FontWeight="Bold" Margin="0,2,0,0"
-                                           TextTrimming="CharacterEllipsis"/>
+                                              Foreground="{DynamicResource FluentBrand80}"
+                                              FontSize="16" FontWeight="Bold" Margin="0,3,0,0"
+                                              TextTrimming="CharacterEllipsis"/>
                                 <ui:TextBlock x:Name="SelectedProjectPath"
-                                           Text="Select a project from the sidebar to inspect its brief."
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                              Text="Select a project from the top tray to inspect its brief."
+                                              Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                              FontSize="11" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
 
                             <!-- Mode Toggle Tab Strip -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                 <ui:Button x:Name="BtnModeRendered" Appearance="Primary" Click="OnModeRenderedClicked"
-                                        Height="28" Width="32" Padding="0"
-                                        Cursor="Hand" ToolTip="Preview - rendered README">
-                                    <ui:SymbolIcon Symbol="Eye24" FontSize="13"/>
+                                           Height="30" Padding="12,0"
+                                           Cursor="Hand" ToolTip="Preview - rendered README">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Eye24" FontSize="13" Margin="0,0,5,0"/>
+                                        <ui:TextBlock Text="Rendered Brief" FontSize="11.5"/>
+                                    </StackPanel>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnModeRaw" Appearance="Secondary" Click="OnModeRawClicked"
-                                        Height="28" Width="32" Padding="0" Margin="4,0,0,0"
-                                        Cursor="Hand" ToolTip="Raw - plain Markdown source">
-                                    <ui:SymbolIcon Symbol="Code24" FontSize="13"/>
+                                           Height="30" Padding="12,0" Margin="6,0,0,0"
+                                           Cursor="Hand" ToolTip="Raw - plain Markdown source">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Code24" FontSize="13" Margin="0,0,5,0"/>
+                                        <ui:TextBlock Text="Raw Source" FontSize="11.5"/>
+                                    </StackPanel>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnModeImages" Appearance="Secondary" Click="OnModeImagesClicked"
-                                        Height="28" Width="32" Padding="0" Margin="4,0,0,0"
-                                        Cursor="Hand" ToolTip="Gallery - project image assets">
-                                    <ui:SymbolIcon Symbol="Image24" FontSize="13"/>
+                                           Height="30" Padding="12,0" Margin="6,0,0,0"
+                                           Cursor="Hand" ToolTip="Gallery - project image assets">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Image24" FontSize="13" Margin="0,0,5,0"/>
+                                        <ui:TextBlock Text="Assets Gallery" FontSize="11.5"/>
+                                    </StackPanel>
                                 </ui:Button>
                             </StackPanel>
                         </Grid>
                     </Border>
 
                     <!-- 2. Center 2-Column Split: Left Canvas + Right Inspector -->
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="1" MinHeight="520">
                         <Grid.ColumnDefinitions>
                             <!-- Left Canvas (Brief / Markdown / Images) -->
                             <ColumnDefinition Width="*"/>
                             <!-- Splitter -->
                             <ColumnDefinition Width="Auto"/>
-                            <!-- Right Inspector Sheet -->
-                            <ColumnDefinition Width="310"/>
+                            <!-- Right Inspector Sheet (Expanded breathing room) -->
+                            <ColumnDefinition Width="340"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- Left Canvas Area -->
@@ -307,41 +271,41 @@
                             <DockPanel x:Name="EditBriefPanel" Visibility="Collapsed">
                                 <!-- Edit Toolbar -->
                                 <Border DockPanel.Dock="Top" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8,4">
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Padding="8,6">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                            <ui:Button Content="B" Click="OnEditMdBold" Height="24" Width="28" Background="Transparent"
-                                                    Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
-                                                    BorderThickness="0" Cursor="Hand" />
-                                            <ui:Button Content="I" Click="OnEditMdItalic" Height="24" Width="28" Background="Transparent"
-                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontStyle="Italic"
-                                                    FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
-                                            <ui:Button Click="OnEditMdCode" Height="24" Width="28" Background="Transparent"
-                                                    BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
-                                                <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10"
-                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:Button Content="B" Click="OnEditMdBold" Height="26" Width="30" Background="Transparent"
+                                                       Foreground="{DynamicResource FluentBrand80}" FontWeight="Bold" FontSize="12"
+                                                       BorderThickness="0" Cursor="Hand" />
+                                            <ui:Button Content="I" Click="OnEditMdItalic" Height="26" Width="30" Background="Transparent"
+                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontStyle="Italic"
+                                                       FontFamily="Georgia, serif" FontSize="12" BorderThickness="0" Cursor="Hand"/>
+                                            <ui:Button Click="OnEditMdCode" Height="26" Width="30" Background="Transparent"
+                                                       BorderThickness="0" Cursor="Hand" FontFamily="Consolas">
+                                                <ui:TextBlock Text="&lt;/&gt;" FontFamily="Consolas" FontSize="10.5"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                             </ui:Button>
-                                            <ui:Button Content="H2" Click="OnEditMdH2" Height="24" Width="32" Background="Transparent"
-                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
-                                                    FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
-                                            <ui:Button Content="* List" Click="OnEditMdList" Height="24" Padding="4,0" Background="Transparent"
-                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10"
-                                                    BorderThickness="0" Cursor="Hand"/>
+                                            <ui:Button Content="H2" Click="OnEditMdH2" Height="26" Width="34" Background="Transparent"
+                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10.5"
+                                                       FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+                                            <ui:Button Content="* List" Click="OnEditMdList" Height="26" Padding="6,0" Background="Transparent"
+                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="10.5"
+                                                       BorderThickness="0" Cursor="Hand"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                                             <ui:Button Appearance="Primary" Click="OnSaveBriefClicked"
-                                                    Height="26" Padding="10,0" FontSize="11" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0">
+                                                       Height="28" Padding="12,0" FontSize="11.5" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0">
                                                 <StackPanel Orientation="Horizontal">
                                                     <ui:SymbolIcon Symbol="Save24" FontSize="12" Margin="0,0,4,0"/>
-                                                    <ui:TextBlock Text="Save"/>
+                                                    <ui:TextBlock Text="Save Brief"/>
                                                 </StackPanel>
                                             </ui:Button>
                                             <ui:Button Appearance="Secondary" Click="OnCancelEditClicked"
-                                                    Height="26" Padding="10,0" FontSize="11" Cursor="Hand">
+                                                       Height="28" Padding="12,0" FontSize="11.5" Cursor="Hand">
                                                 Cancel
                                             </ui:Button>
                                         </StackPanel>
@@ -351,27 +315,28 @@
                                 <TextBox x:Name="BriefEditor"
                                          AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
                                          VerticalScrollBarVisibility="Auto"
-                                         FontFamily="Consolas" FontSize="12"
-                                         Padding="14" BorderThickness="0" Background="{DynamicResource TextControlBackground}"
+                                         FontFamily="Consolas, Cascadia Code, monospace" FontSize="12.5"
+                                         Padding="16" BorderThickness="0" Background="{DynamicResource TextControlBackground}"
                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                             </DockPanel>
 
                             <!-- Rendered Markdown Viewer -->
                             <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
-                                                     VerticalScrollBarVisibility="Auto"
-                                                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                                     BorderThickness="0"
-                                                     Padding="14"/>
+                                                      FontFamily="{DynamicResource FluentFontFamily}"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                      BorderThickness="0"
+                                                      Padding="18"/>
 
                             <!-- Raw Text Viewer -->
                             <TextBox x:Name="RawMarkdownBox"
                                      IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"
                                      Visibility="Collapsed"
-                                     FontFamily="Consolas" FontSize="11"
+                                     FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace" FontSize="12"
                                      Background="{DynamicResource TextControlBackground}"
                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                     BorderThickness="0" Padding="14"/>
+                                     BorderThickness="0" Padding="16"/>
 
                             <!-- Image Gallery Grid -->
                             <ScrollViewer x:Name="ImageGalleryViewer"
@@ -379,7 +344,7 @@
                                           ScrollViewer.CanContentScroll="False"
                                           Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                           BorderThickness="0"
-                                          Padding="10"
+                                          Padding="14"
                                           Visibility="Collapsed">
                                 <ListBox x:Name="ImageGalleryList"
                                          BorderThickness="0" Background="Transparent"
@@ -393,19 +358,19 @@
                                         <DataTemplate>
                                             <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                                     BorderThickness="1" CornerRadius="8"
-                                                    Width="200" Margin="4" Padding="6" Cursor="Hand">
+                                                    Width="210" Margin="6" Padding="8" Cursor="Hand">
                                                 <StackPanel>
-                                                    <Border Height="130" Background="{DynamicResource TextControlBackground}"
+                                                    <Border Height="140" Background="{DynamicResource TextControlBackground}"
                                                             CornerRadius="6" Margin="0,0,0,6">
                                                         <Image Source="{Binding ThumbnailSource}" Stretch="Uniform"/>
                                                     </Border>
                                                     <ui:TextBlock Text="{Binding FileName}"
-                                                               FontSize="11" FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                               TextTrimming="CharacterEllipsis"/>
+                                                                  FontSize="11.5" FontWeight="SemiBold"
+                                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                  TextTrimming="CharacterEllipsis"/>
                                                     <ui:TextBlock Text="{Binding SubFolder}"
-                                                               FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                               TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                                                                  FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                                  TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>
@@ -415,29 +380,29 @@
                         </Grid>
 
                         <!-- Subtle Inner Splitter -->
-                        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
                                       Background="{DynamicResource CardStrokeColorDefaultBrush}" Focusable="False"/>
 
                         <!-- Right Inspector Sheet -->
                         <Border Grid.Column="2" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1,0,0,0">
-                            <DockPanel Margin="10" LastChildFill="True">
+                            <DockPanel Margin="12" LastChildFill="True">
                                 <!-- Top Properties -->
                                 <StackPanel DockPanel.Dock="Top">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                         <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="TASK INSPECTOR" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="TASK INSPECTOR" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- Status & Priority Grid -->
                                     <Grid Margin="0,0,0,8">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="8"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
-                                            <ui:TextBlock Text="Status" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                            <ui:TextBlock Text="Status" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,3"/>
                                             <ComboBox x:Name="InspectorStatusCmb" Height="32" Padding="8,2" VerticalContentAlignment="Center" FontSize="11" SelectionChanged="OnInspectorStatusChanged">
                                                 <ComboBoxItem Content="backlog" VerticalContentAlignment="Center"/>
                                                 <ComboBoxItem Content="in-progress" VerticalContentAlignment="Center"/>
@@ -447,7 +412,7 @@
                                             </ComboBox>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <ui:TextBlock Text="Priority" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                            <ui:TextBlock Text="Priority" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,3"/>
                                             <ComboBox x:Name="InspectorPriorityCmb" Height="32" Padding="8,2" VerticalContentAlignment="Center" FontSize="11" SelectionChanged="OnInspectorPriorityChanged">
                                                 <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
                                                 <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
@@ -458,20 +423,20 @@
                                     </Grid>
 
                                     <!-- Revision & Review Actions -->
-                                    <Grid Margin="0,0,0,8">
+                                    <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                                            <ui:TextBlock Text="Rev" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,2"/>
+                                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <ui:TextBlock Text="Rev" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,3"/>
                                             <StackPanel Orientation="Horizontal">
-                                                <ui:Button Appearance="Secondary" Width="26" Height="28" Padding="0" Click="OnInspectorRevDecClicked" Cursor="Hand" ToolTip="Decrement revision">
+                                                <ui:Button Appearance="Secondary" Width="28" Height="28" Padding="0" Click="OnInspectorRevDecClicked" Cursor="Hand" ToolTip="Decrement revision">
                                                     <ui:SymbolIcon Symbol="Subtract24" FontSize="10"/>
                                                 </ui:Button>
-                                                <ui:TextBlock x:Name="TxtInspectorRev" Text="0" FontWeight="Bold" FontSize="11.5" Width="22" TextAlignment="Center" VerticalAlignment="Center"/>
-                                                <ui:Button Appearance="Secondary" Width="26" Height="28" Padding="0" Click="OnInspectorRevIncClicked" Cursor="Hand" ToolTip="Increment revision">
+                                                <ui:TextBlock x:Name="TxtInspectorRev" Text="0" FontWeight="Bold" FontSize="12" Width="24" TextAlignment="Center" VerticalAlignment="Center"/>
+                                                <ui:Button Appearance="Secondary" Width="28" Height="28" Padding="0" Click="OnInspectorRevIncClicked" Cursor="Hand" ToolTip="Increment revision">
                                                     <ui:SymbolIcon Symbol="Add24" FontSize="10"/>
                                                 </ui:Button>
                                             </StackPanel>
@@ -481,26 +446,26 @@
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="6"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <ui:Button x:Name="BtnSignOff" Grid.Column="0" Appearance="Primary" Height="28" Padding="4,0" Click="OnSignOffClicked" Cursor="Hand" ToolTip="Sign-Off as Done">
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <ui:SymbolIcon Symbol="Checkmark24" FontSize="10" Margin="0,0,3,0"/>
-                                                        <ui:TextBlock Text="Sign-Off" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                                                        <ui:SymbolIcon Symbol="Checkmark24" FontSize="11" Margin="0,0,3,0"/>
+                                                        <ui:TextBlock Text="Sign-Off" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </ui:Button>
                                                 <ui:Button x:Name="BtnRequestRevision" Grid.Column="2" Appearance="Secondary" Height="28" Padding="4,0" Click="OnRequestRevisionClicked" Cursor="Hand" ToolTip="Request Revision (+1 Rev)">
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <ui:SymbolIcon Symbol="ArrowCounterclockwise24" FontSize="10" Margin="0,0,3,0"/>
-                                                        <ui:TextBlock Text="Revise" FontSize="10" VerticalAlignment="Center"/>
+                                                        <ui:SymbolIcon Symbol="ArrowCounterclockwise24" FontSize="11" Margin="0,0,3,0"/>
+                                                        <ui:TextBlock Text="Revise" FontSize="10.5" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </ui:Button>
                                             </Grid>
                                         </StackPanel>
                                     </Grid>
 
-                                    <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,2,0,8"/>
+                                    <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,2,0,10"/>
                                 </StackPanel>
 
                                 <!-- Discussions Header -->
@@ -512,27 +477,27 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Orientation="Horizontal">
                                             <ui:SymbolIcon Symbol="Chat24" FontSize="13" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                            <ui:TextBlock Text="DISCUSSIONS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                            <ui:TextBlock Text="DISCUSSIONS" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                        <ui:TextBlock x:Name="TxtCommentCount" Grid.Column="1" Text="0 comments" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <ui:TextBlock x:Name="TxtCommentCount" Grid.Column="1" Text="0 comments" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                     </Grid>
                                 </Border>
 
                                 <!-- Add Comment Input at Bottom of Inspector -->
-                                <Border DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                                <Border DockPanel.Dock="Bottom" Margin="0,8,0,0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="CommentInputBox" Height="28" FontSize="11" Padding="6,2"
+                                        <TextBox x:Name="CommentInputBox" Height="30" FontSize="11.5" Padding="8,4"
                                                  Background="{DynamicResource TextControlBackground}"
                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                  BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                                  KeyDown="OnCommentInputKeyDown"/>
-                                        <ui:Button x:Name="BtnPostComment" Grid.Column="1" Appearance="Primary" Margin="4,0,0,0" Height="28" Width="30" Padding="0"
+                                        <ui:Button x:Name="BtnPostComment" Grid.Column="1" Appearance="Primary" Margin="6,0,0,0" Height="30" Width="34" Padding="0"
                                                    Click="OnPostCommentClicked" Cursor="Hand" ToolTip="Post Comment">
-                                            <ui:SymbolIcon Symbol="Send24" FontSize="11"/>
+                                            <ui:SymbolIcon Symbol="Send24" FontSize="12"/>
                                         </ui:Button>
                                     </Grid>
                                 </Border>
@@ -544,7 +509,7 @@
                                             <DataTemplate>
                                                 <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                                                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                        BorderThickness="1" CornerRadius="6" Padding="6,5" Margin="0,0,0,5">
+                                                        BorderThickness="1" CornerRadius="6" Padding="8,6" Margin="0,0,0,6">
                                                     <StackPanel>
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
@@ -552,14 +517,14 @@
                                                                 <ColumnDefinition Width="Auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <StackPanel Orientation="Horizontal">
-                                                                <Border Width="14" Height="14" CornerRadius="7" Background="{DynamicResource FluentBrand80}" Margin="0,0,4,0">
-                                                                    <ui:TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons" FontSize="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                <Border Width="16" Height="16" CornerRadius="8" Background="{DynamicResource FluentBrand80}" Margin="0,0,6,0">
+                                                                    <ui:TextBlock Text="&#xE77B;" FontFamily="Segoe Fluent Icons" FontSize="8.5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                                 </Border>
-                                                                <ui:TextBlock Text="{Binding Author}" FontWeight="SemiBold" FontSize="10.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                                                <ui:TextBlock Text="{Binding Author}" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                                             </StackPanel>
-                                                            <ui:TextBlock Grid.Column="1" Text="{Binding DisplayTimestamp}" FontSize="8.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                            <ui:TextBlock Grid.Column="1" Text="{Binding DisplayTimestamp}" FontSize="9" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                         </Grid>
-                                                        <ui:TextBlock Text="{Binding Content}" FontSize="10.5" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                                        <ui:TextBlock Text="{Binding Content}" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" Margin="0,4,0,0"/>
                                                     </StackPanel>
                                                 </Border>
                                             </DataTemplate>
@@ -574,40 +539,40 @@
                     <Border Grid.Row="2"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="12,8">
+                            BorderThickness="0,1,0,0" CornerRadius="0,0,8,8" Padding="16,10">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <ui:Button Appearance="Secondary" Click="OnAuditNamingClicked"
-                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0" ToolTip="Validate and standardize asset file names">
+                                       Height="32" Padding="12,0" Cursor="Hand" Margin="0,0,8,0" ToolTip="Validate and standardize asset file names">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="CheckmarkStarburst24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:SymbolIcon Symbol="CheckmarkStarburst24" FontSize="13" Margin="0,0,5,0"/>
                                     <ui:TextBlock Text="Audit Naming" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button Appearance="Secondary" Click="OnCopyPathClicked"
-                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0">
+                                       Height="32" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Copy24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:SymbolIcon Symbol="Copy24" FontSize="13" Margin="0,0,5,0"/>
                                     <ui:TextBlock Text="Copy Path" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button x:Name="BtnEditBrief" Appearance="Secondary" Click="OnEditBriefClicked"
-                                    Height="30" Padding="10,0" Cursor="Hand" Margin="0,0,6,0">
+                                       Height="32" Padding="12,0" Cursor="Hand" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Edit24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:SymbolIcon Symbol="Edit24" FontSize="13" Margin="0,0,5,0"/>
                                     <ui:TextBlock Text="Edit Brief" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button Appearance="Primary" Click="OnExportHandoverZipClicked"
-                                    Height="30" Padding="12,0" FontWeight="Bold" Cursor="Hand" Margin="0,0,6,0" ToolTip="Export client-ready deliverables handover ZIP with HTML summary">
+                                       Height="32" Padding="14,0" FontWeight="Bold" Cursor="Hand" Margin="0,0,8,0" ToolTip="Export client-ready deliverables handover ZIP with HTML summary">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Archive24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:SymbolIcon Symbol="Archive24" FontSize="13" Margin="0,0,5,0"/>
                                     <ui:TextBlock Text="Export Handover (ZIP)" VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
                             <ui:Button Appearance="Secondary" Click="OnCopyWholeFolderClicked"
-                                    Height="30" Padding="10,0" Cursor="Hand">
+                                       Height="32" Padding="12,0" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="FolderZip24" FontSize="12" Margin="0,0,4,0"/>
+                                    <ui:SymbolIcon Symbol="FolderZip24" FontSize="13" Margin="0,0,5,0"/>
                                     <ui:TextBlock Text="Copy Whole Project..." VerticalAlignment="Center" FontSize="11.5"/>
                                 </StackPanel>
                             </ui:Button>
@@ -615,10 +580,10 @@
                     </Border>
                 </Grid>
             </ui:Card>
-        </Grid>
 
-        </Grid>
+        </StackPanel>
     </ScrollViewer>
 </Page>
+
 
 

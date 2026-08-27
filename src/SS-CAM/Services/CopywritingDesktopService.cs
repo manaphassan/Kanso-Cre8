@@ -156,7 +156,7 @@ namespace SS_CAM.Services
             }
         }
 
-        public static void ComputeMetrics(string content, out int wordCount, out int charCount, out int lineCount, out int readingTimeSec)
+        public static void ComputeMetrics(string content, out int wordCount, out int charCount, out int lineCount, out int readingTimeSec, out int speakingTimeSec)
         {
             if (string.IsNullOrEmpty(content))
             {
@@ -164,6 +164,7 @@ namespace SS_CAM.Services
                 charCount = 0;
                 lineCount = 0;
                 readingTimeSec = 0;
+                speakingTimeSec = 0;
                 return;
             }
 
@@ -179,39 +180,187 @@ namespace SS_CAM.Services
             // Reading time estimated at 200 words per minute (approx 3.33 words per second)
             readingTimeSec = (int)Math.Ceiling(wordCount / 3.33);
             if (wordCount > 0 && readingTimeSec == 0) readingTimeSec = 1;
+
+            // Speaking voiceover tempo estimated at 130 words per minute (~2.16 words per second)
+            speakingTimeSec = (int)Math.Ceiling(wordCount / 2.16);
+            if (wordCount > 0 && speakingTimeSec == 0) speakingTimeSec = 1;
+        }
+
+        public static void ComputeMetrics(string content, out int wordCount, out int charCount, out int lineCount, out int readingTimeSec)
+        {
+            int speakingTimeSec;
+            ComputeMetrics(content, out wordCount, out charCount, out lineCount, out readingTimeSec, out speakingTimeSec);
+        }
+
+        public static string StripMarkdownToPlainText(string markdown)
+        {
+            if (string.IsNullOrWhiteSpace(markdown)) return string.Empty;
+
+            string text = markdown;
+            // Remove headers #
+            text = Regex.Replace(text, @"^#{1,6}\s*", "", RegexOptions.Multiline);
+            // Remove bold/italic ** or * or _
+            text = Regex.Replace(text, @"\*\*([^*]+)\*\*", "$1");
+            text = Regex.Replace(text, @"\*([^*]+)\*", "$1");
+            text = Regex.Replace(text, @"__([^_]+)__", "$1");
+            text = Regex.Replace(text, @"_([^_]+)_", "$1");
+            // Remove markdown links [text](url) -> text (url)
+            text = Regex.Replace(text, @"\[([^\]]+)\]\(([^)]+)\)", "$1 ($2)");
+            // Remove blockquotes >
+            text = Regex.Replace(text, @"^>\s*", "", RegexOptions.Multiline);
+            // Clean table delimiters |
+            text = Regex.Replace(text, @"^\|?\s*:?-+:?\s*\|.*$", "", RegexOptions.Multiline);
+            text = Regex.Replace(text, @"\|", " ");
+            // Remove list checkboxes
+            text = Regex.Replace(text, @"-\s*\[[ xX]\]\s*", "• ");
+            text = Regex.Replace(text, @"^-\s+", "• ", RegexOptions.Multiline);
+            // Remove consecutive blank lines
+            text = Regex.Replace(text, @"\n{3,}", "\n\n");
+
+            return text.Trim();
+        }
+
+        public static void SaveSnapshot(string projectPath, string projectId, string workspaceRoot, string content)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return;
+
+            try
+            {
+                string snapshotDir = null;
+                if (!string.IsNullOrWhiteSpace(projectPath) && Directory.Exists(projectPath))
+                {
+                    snapshotDir = Path.Combine(projectPath, "03_COPYWRITING", ".snapshots");
+                }
+                else if (!string.IsNullOrWhiteSpace(workspaceRoot) && Directory.Exists(workspaceRoot))
+                {
+                    snapshotDir = Path.Combine(workspaceRoot, "_Team", "copywriting", ".snapshots");
+                }
+
+                if (!string.IsNullOrWhiteSpace(snapshotDir))
+                {
+                    if (!Directory.Exists(snapshotDir)) Directory.CreateDirectory(snapshotDir);
+                    string safeId = !string.IsNullOrWhiteSpace(projectId) ? projectId : "draft";
+                    string stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    string snapFile = Path.Combine(snapshotDir, string.Format("{0}_{1}.md", safeId, stamp));
+                    File.WriteAllText(snapFile, content, Encoding.UTF8);
+
+                    // Keep maximum 10 latest snapshots
+                    string[] files = Directory.GetFiles(snapshotDir, string.Format("{0}_*.md", safeId));
+                    if (files.Length > 10)
+                    {
+                        Array.Sort(files);
+                        for (int i = 0; i < files.Length - 10; i++)
+                        {
+                            try { File.Delete(files[i]); }
+                            catch (Exception ex) { Debug.WriteLine("[CopywritingDesktopService] Snapshot purge error: " + ex.Message); }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("[CopywritingDesktopService] SaveSnapshot error: {0}", ex.Message));
+            }
         }
 
         public static string GetPresetTemplate(string presetKey, string projectTitle)
         {
             if (string.IsNullOrWhiteSpace(projectTitle)) projectTitle = "Project";
 
-            if (presetKey == "tiktok")
+            if (presetKey == "tiktok" || presetKey == "tiktok_3hooks")
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine("## 🎬 TikTok / Reels Video Script (9:16)");
+                sb.AppendLine("## 🎬 TikTok / Reels Video Script & 3-Hook Matrix (9:16)");
                 sb.AppendLine();
-                sb.AppendLine("| Scene | Visual / On-Screen Action | Audio / Voiceover (Malay) |");
+                sb.AppendLine("### 🪝 Hook Variations (First 3 Seconds)");
+                sb.AppendLine("> **Hook A (Curiosity)**: *\"Ramai lelaki ingat punca badan cepat lesu sebab umur... padahal bukan!\"*");
+                sb.AppendLine("> **Hook B (Direct Benefit)**: *\"Bang, kalau nak kekal bertenaga sampai malam tanpa rasa letih, cuba tips ni.\"*");
+                sb.AppendLine("> **Hook C (Common Mistake)**: *\"Elakkan minum kopi berlebihan bila rasa lemau, ini cara semulajadi yang lebih berkesan.\"*");
+                sb.AppendLine();
+                sb.AppendLine("### 📋 Video Scene Blueprint");
+                sb.AppendLine("| Timecode | Visual & On-Screen Direction | Audio & Voiceover Script (Malay) |");
                 sb.AppendLine("| :--- | :--- | :--- |");
-                sb.AppendLine("| **00:00 - 00:03** | Hook visual pantas, ekspresi terkejut | *\"Ramai lelaki tak tahu petua mudah ni...\"* |");
-                sb.AppendLine("| **00:03 - 00:08** | Product presentation / B-roll | *\"Guna formula herba semulajadi SuamiSihat setiap pagi.\"* |");
-                sb.AppendLine("| **00:08 - 00:15** | Demo & CTA end card | *\"Komen 'NAK' atau klik beg kuning sekarang!\"* |");
+                sb.AppendLine("| **00:00 - 00:03** | Hook visual pantas (Hook A/B/C) + text overlay | *[Pilih Hook A/B/C]* |");
+                sb.AppendLine("| **00:03 - 00:08** | Product presentation / B-roll bertenaga | *\"Guna formula herba semulajadi SuamiSihat setiap pagi.\"* |");
+                sb.AppendLine("| **00:08 - 00:12** | Unboxing packaging eksklusif & info KKM | *\"100% ekstrak herba gred premium dan lulus KKM.\"* |");
+                sb.AppendLine("| **00:12 - 00:15** | Demo penggunaan & CTA end card | *\"Komen 'NAK' atau klik beg kuning sekarang sebelum stok habis!\"* |");
                 return sb.ToString();
             }
             else if (presetKey == "meta_pas")
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine("## 📢 Meta Problem-Agitate-Solve (PAS) Ad Copy");
+                sb.AppendLine("## 📢 Meta Problem-Agitate-Solve (PAS) Direct-Response Copy");
                 sb.AppendLine();
                 sb.AppendLine("### [Problem]");
-                sb.AppendLine("Mudah letih dan hilang fokus waktu petang?");
+                sb.AppendLine("Mudah letih, hilang fokus, dan kurang bertenaga selepas seharian bekerja keras?");
                 sb.AppendLine();
                 sb.AppendLine("### [Agitate]");
-                sb.AppendLine("Bila tenaga menurun, prestasi kerja dan masa berkualiti bersama keluarga terjejas.");
+                sb.AppendLine("Bila stamina menurun, bukan sahaja produktiviti kerja merosot, malah masa berharga bersama isteri dan keluarga turut terjejas. Jangan biarkan keletihan berlarutan.");
                 sb.AppendLine();
                 sb.AppendLine("### [Solve]");
-                sb.AppendLine("Kembalikan tenaga maskulin anda dengan ramuan herba asli SuamiSihat. Terbukti selamat dan lulus KKM.");
+                sb.AppendLine("Kembalikan tenaga maskulin dan keyakinan puncak anda dengan formulasi herba premium SuamiSihat. Dihasilkan khusus untuk kesihatan optimum lelaki moden.");
                 sb.AppendLine();
-                sb.AppendLine("> **CTA**: [ Dapatkan Tawaran Kombo Istimewa ]");
+                sb.AppendLine("> **Headline**: \"Rahsia Stamina Padu Lelaki Sejati — 100% Asli & Lulus KKM.\"");
+                sb.AppendLine("> **CTA**: [ Tempah Sekarang — Penghantaran Percuma Seluruh Malaysia ]");
+                return sb.ToString();
+            }
+            else if (presetKey == "whatsapp_broadcast")
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("## 💬 WhatsApp Direct Broadcast & Follow-Up Template");
+                sb.AppendLine();
+                sb.AppendLine("Assalamualaikum & Salam Sejahtera Tuan [Nama],");
+                sb.AppendLine();
+                sb.AppendLine("🔥 *TAWARAN KHAS UNTUK PELANGGAN SETIA SUAMISIHAT* 🔥");
+                sb.AppendLine();
+                sb.AppendLine("Kami sedar cabaran harian kaum lelaki yang bekerja keras demi keluarga tercinta. Untuk bantu Tuan kekal berstamina tinggi setiap hari:");
+                sb.AppendLine();
+                sb.AppendLine("✅ *100% Ekstrak Herba Tradisional Gred Premium*");
+                sb.AppendLine("✅ *Lulus KKM & Halal JAKIM*");
+                sb.AppendLine("✅ *Penghantaran Pantas & Bungkusan Privasi*");
+                sb.AppendLine();
+                sb.AppendLine("🎁 *PROMOSI BULAN INI*: Diskaun sehingga 35% + Free Gift Eksklusif!");
+                sb.AppendLine();
+                sb.AppendLine("👉 Balas mesej ini dengan kod **\"NAK\"** atau klik link pantas:");
+                sb.AppendLine("🔗 https://suamisihat.clinic/promo");
+                return sb.ToString();
+            }
+            else if (presetKey == "neubrutalist_hook")
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("## ⚡ NEUBRUTALIST HIGH-CTR AD HOOK (RAW & PUNCHY)");
+                sb.AppendLine();
+                sb.AppendLine("### 💥 ULTRA-BOLD HEADLINE (HIGH CONTRAST)");
+                sb.AppendLine("> **\"LELAKI UMUR 30-AN KE ATAS JANGAN BACA NI KALAU TAK NAK STAMINA NAIK 2X GANDA!\"**");
+                sb.AppendLine();
+                sb.AppendLine("### 🎯 3 RAW HARD-HITTING FACTS");
+                sb.AppendLine("- 🛑 **FAKTA 1**: Minum 3 cawan kopi sehari bukan selesaikan masalah — ia cuma pinjam tenaga esok.");
+                sb.AppendLine("- 🛑 **FAKTA 2**: 78% lelaki rasa cepat lemau sebab hormon & nutrient mikro tak seimbang.");
+                sb.AppendLine("- 🛑 **FAKTA 3**: 1 sachet herba pekat SuamiSihat setiap pagi cukup untuk reboot stamina dari akar umbi.");
+                sb.AppendLine();
+                sb.AppendLine("### 📦 THE OFFER (UNAPOLOGETIC & DIRECT)");
+                sb.AppendLine("- **Formula**: 100% Ekstrak Tongkat Ali Hitam + Maca Premium.");
+                sb.AppendLine("- **Status**: Lulus KKM, 0% Bahan Terlarang.");
+                sb.AppendLine("- **Jaminan**: Tak berkesan? Kami pulangkan wang 100%.");
+                sb.AppendLine();
+                sb.AppendLine("> **CTA BUTTON**: 👉 [ KLIK SINI & DAPATKAN DISKAUN 40% HARI INI ] 👈");
+                return sb.ToString();
+            }
+            else if (presetKey == "retro_story")
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("## 🕹️ RETRO-FUTURISTIC NOSTALGIC STORY HOOK");
+                sb.AppendLine();
+                sb.AppendLine("### 📼 Level 1: Flashback Nostalgia (Tahun 90-an)");
+                sb.AppendLine("Ingat lagi zaman kita boleh main bola 2 jam tanpa henti, lepak sampai pagi, esoknya bangun masih bertenaga macam bateri baru?");
+                sb.AppendLine();
+                sb.AppendLine("### 🕹️ Level 2: The Modern Boss Fight");
+                sb.AppendLine("Sekarang, baru pukul 3 petang duduk depan laptop mata dah berat. Naik tangga dua tingkat dah mengah. Mana hilangnya stamina 'Champion' kita dulu?");
+                sb.AppendLine();
+                sb.AppendLine("### 🔋 Level 3: Retro Power-Up Item");
+                sb.AppendLine("SuamiSihat ialah 'Power-Up Potion' moden berasaskan khazanah herba nusantara purba yang dinaiktaraf dengan sains formulasi abad ke-21.");
+                sb.AppendLine();
+                sb.AppendLine("> **Insert Coin / Unlock Power**: 🪙 [ PRESS START — CLAIM YOUR BOOST PACK ]");
                 return sb.ToString();
             }
             else if (presetKey == "claims")

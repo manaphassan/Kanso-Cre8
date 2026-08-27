@@ -325,6 +325,7 @@
 
                         <!-- Preview Mode -->
                         <FlowDocumentScrollViewer x:Name="NotePreviewViewer"
+                                                  FontFamily="{DynamicResource FluentFontFamily}"
                                                   VerticalScrollBarVisibility="Auto"
                                                   Background="{DynamicResource TextControlBackground}" BorderThickness="0"
                                                   Padding="20" Visibility="Collapsed"/>

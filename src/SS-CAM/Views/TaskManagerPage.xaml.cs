@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 using SS_CAM.Models;
 using SS_CAM.Services;
 using SS_CAM.Utilities;
@@ -781,6 +785,187 @@ namespace SS_CAM.Views
             catch (Exception ex)
             {
                 DetailSaveStatus.Text = string.Format("Error: {0}", ex.Message);
+            }
+        }
+
+        private void OnDetailOpenFolderClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject != null && Directory.Exists(_editingProject.FullPath))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = _editingProject.FullPath,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("[TaskManagerPage] OpenFolder error: " + ex.Message);
+                }
+            }
+        }
+
+        private void OnDetailOpenSourceClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject != null && Directory.Exists(_editingProject.FullPath))
+            {
+                string srcDir = Path.Combine(_editingProject.FullPath, "02_SOURCE_FILES");
+                string targetFile = null;
+                if (Directory.Exists(srcDir))
+                {
+                    string[] files = Directory.GetFiles(srcDir);
+                    foreach (string f in files)
+                    {
+                        string ext = Path.GetExtension(f).ToLowerInvariant();
+                        if (ext == ".afdesign" || ext == ".psd" || ext == ".ai" || ext == ".afphoto" || ext == ".afpub")
+                        {
+                            targetFile = f;
+                            break;
+                        }
+                    }
+                }
+
+                if (targetFile != null && File.Exists(targetFile))
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = targetFile,
+                            UseShellExecute = true
+                        });
+                        NotificationService.ShowInfo("Launching Source File", Path.GetFileName(targetFile));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("[TaskManagerPage] OpenSource error: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("No working source file (.afdesign, .psd, .ai) found in 02_SOURCE_FILES.", "Source File Not Found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
+            }
+        }
+
+        private async void OnDetailHandoverZipClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject == null || !Directory.Exists(_editingProject.FullPath)) return;
+
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Title = "Export Creative Handover Package (ZIP)",
+                Filter = "ZIP Archive (*.zip)|*.zip",
+                FileName = string.Format("{0}_Handover.zip", _editingProject.Project),
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                ExportPackageOptions options = new ExportPackageOptions
+                {
+                    IncludeDeliverables = true,
+                    IncludeCopywriting = true,
+                    IncludeBriefMarkdown = true,
+                    IncludeHtmlSummary = true,
+                    IncludeWipMockups = false
+                };
+
+                ExportPackageResult res = await ExportPackagingService.CreateHandoverPackageAsync(_editingProject.FullPath, sfd.FileName, options);
+                if (res != null && res.Success)
+                {
+                    NotificationService.ShowSuccess("Handover Exported", string.Format("Packaged {0} files into {1}", res.FileCount, Path.GetFileName(res.ZipFilePath)));
+                    if (System.Windows.MessageBox.Show(string.Format("Creative Handover Package created with {0} files.\n\nOpen destination folder?", res.FileCount), "Export Complete", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Information) == System.Windows.MessageBoxResult.Yes)
+                    {
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = Path.GetDirectoryName(sfd.FileName),
+                                UseShellExecute = true
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("[TaskManagerPage] Open exported folder error: " + ex.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show(res != null ? res.ErrorMessage : "Packaging failed", "Export Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnAssetDropzoneOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+                if (CardAssetDropzone != null)
+                {
+                    CardAssetDropzone.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("FluentBrand80");
+                    CardAssetDropzone.BorderThickness = new Thickness(2);
+                }
+            }
+        }
+
+        private void OnAssetDropzoneLeave(object sender, DragEventArgs e)
+        {
+            if (CardAssetDropzone != null)
+            {
+                CardAssetDropzone.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush");
+                CardAssetDropzone.BorderThickness = new Thickness(1);
+            }
+        }
+
+        private void OnAssetDropzoneDrop(object sender, DragEventArgs e)
+        {
+            if (CardAssetDropzone != null)
+            {
+                CardAssetDropzone.BorderBrush = (System.Windows.Media.Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush");
+                CardAssetDropzone.BorderThickness = new Thickness(1);
+            }
+
+            if (_editingProject == null || !Directory.Exists(_editingProject.FullPath)) return;
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0)
+                {
+                    int ingestedCount = 0;
+                    foreach (string src in files)
+                    {
+                        if (File.Exists(src))
+                        {
+                            string ext = Path.GetExtension(src).ToLowerInvariant();
+                            string targetFolder = (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".mp4" || ext == ".mov")
+                                ? "05_DELIVERABLES"
+                                : (ext == ".afdesign" || ext == ".psd" || ext == ".ai" ? "02_SOURCE_FILES" : "01_BRIEF_ASSETS");
+
+                            string destDir = Path.Combine(_editingProject.FullPath, targetFolder);
+                            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+
+                            string destPath = Path.Combine(destDir, Path.GetFileName(src));
+                            File.Copy(src, destPath, true);
+                            ingestedCount++;
+                        }
+                    }
+
+                    if (ingestedCount > 0)
+                    {
+                        if (TxtAssetDropHint != null)
+                        {
+                            TxtAssetDropHint.Text = string.Format("\u2713 Ingested {0} file(s) successfully!", ingestedCount);
+                        }
+                        NotificationService.ShowSuccess("Assets Ingested", string.Format("Ingested {0} file(s) into project vault.", ingestedCount));
+                    }
+                }
             }
         }
 

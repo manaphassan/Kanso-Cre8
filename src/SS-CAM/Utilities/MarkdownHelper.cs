@@ -10,10 +10,15 @@ namespace SS_CAM.Utilities
 {
     public static class MarkdownHelper
     {
+        private static readonly FontFamily FluentFontFamily = new FontFamily("Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif");
+        private static readonly FontFamily FluentMonoFamily = new FontFamily("Cascadia Code, Segoe UI Mono, Consolas, monospace");
+
         public static FlowDocument ToFlowDocument(string markdown)
         {
             FlowDocument doc = new FlowDocument
             {
+                FontFamily = FluentFontFamily,
+                FontSize = 12,
                 PagePadding = new Thickness(4),
                 TextAlignment = TextAlignment.Left,
                 LineHeight = 20
@@ -60,7 +65,7 @@ namespace SS_CAM.Utilities
                             isMermaidBlock = false;
                             codeBlockPara = new Paragraph
                             {
-                                FontFamily = new FontFamily("Consolas, Courier New"),
+                                FontFamily = FluentMonoFamily,
                                 FontSize = 11,
                                 Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
                                 Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
@@ -685,7 +690,7 @@ namespace SS_CAM.Utilities
                     string content = part.Substring(5, part.Length - 11);
                     inlines.Add(new Run(" " + content + " ")
                     {
-                        FontFamily = new FontFamily("Consolas"),
+                        FontFamily = FluentMonoFamily,
                         FontSize = 10,
                         FontWeight = FontWeights.Bold,
                         Background = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
@@ -698,7 +703,7 @@ namespace SS_CAM.Utilities
                     string content = part.Substring(1, part.Length - 2);
                     inlines.Add(new Run(" " + content + " ")
                     {
-                        FontFamily = new FontFamily("Consolas"),
+                        FontFamily = FluentMonoFamily,
                         FontSize = 10.5,
                         Background = new SolidColorBrush(Color.FromRgb(241, 245, 249)),
                         Foreground = new SolidColorBrush(Color.FromRgb(225, 29, 72))

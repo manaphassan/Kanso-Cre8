@@ -283,10 +283,69 @@
                                 </ScrollViewer>
                             </ui:Card>
 
-                            <!-- Recent Projects List Section -->
-                            <StackPanel DockPanel.Dock="Bottom">
-                                <ui:TextBlock Text="Recent Projects (Double Click to Open)" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,8"/>
-                                <ListBox x:Name="RecentProjectsList" MouseDoubleClick="OnRecentProjectDoubleClicked" MaxHeight="160"/>
+                            <!-- Recent Projects List Section (Rich Card List with Date & Status) -->
+                            <StackPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ui:SymbolIcon Symbol="History24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Recent Projects" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <ui:TextBlock Grid.Column="1" Text="Double-click to open in Explorer" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="220"
+                                              PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+                                    <ItemsControl x:Name="RecentProjectsItemsControl">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <ui:CardAction Margin="0,0,0,6" Padding="10,8" Cursor="Hand"
+                                                               MouseDoubleClick="OnRecentProjectCardDoubleClicked">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- Folder Icon Container -->
+                                                        <Border Grid.Column="0" Width="30" Height="30" CornerRadius="6"
+                                                                Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                                                Margin="0,0,10,0" VerticalAlignment="Center">
+                                                            <ui:SymbolIcon Symbol="Folder24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+
+                                                        <!-- Project Title & Subtitle Info (Date & Designer) -->
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <ui:TextBlock Text="{Binding Project}" FontSize="12" FontWeight="SemiBold"
+                                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,6,2"/>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <ui:SymbolIcon Symbol="CalendarMonth24" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                                <ui:TextBlock Text="{Binding CreatedDateDisplay}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                                                <ui:TextBlock Text="&#x2022;" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                                <ui:TextBlock Text="{Binding Designer}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+
+                                                        <!-- Status Badge -->
+                                                        <Border Grid.Column="2" CornerRadius="4" Padding="6,2" VerticalAlignment="Center"
+                                                                Background="{DynamicResource TextControlBackground}"
+                                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                <Border Width="6" Height="6" CornerRadius="3" Background="{Binding StatusBadgeColor}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                                <ui:TextBlock Text="{Binding StatusDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding StatusBadgeColor}" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
+                                                </ui:CardAction>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
                             </StackPanel>
                         </DockPanel>
                     </ui:Card>

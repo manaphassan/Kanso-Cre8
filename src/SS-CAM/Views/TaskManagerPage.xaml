@@ -350,12 +350,15 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Project Detail Overlay (Edit panel drawer - full height expanded README notes down to Save button) -->
+        <!-- Project Detail Overlay (Glassmorphic Frosted Drawer with Depth Shadow) -->
         <Border x:Name="DetailPanel" Grid.Row="0" Grid.RowSpan="3"
-                Width="400" HorizontalAlignment="Right"
+                Width="420" HorizontalAlignment="Right"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1,0,0,0"
                 Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="28" ShadowDepth="0" Opacity="0.28" Color="#000000"/>
+            </Border.Effect>
             <DockPanel Margin="20" LastChildFill="True">
                 <!-- Close Button -->
                 <ui:Button DockPanel.Dock="Top" Click="OnDetailClose" HorizontalAlignment="Right"
@@ -363,10 +366,52 @@
                     <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                 </ui:Button>
 
-                <!-- Project Title -->
-                <ui:TextBlock DockPanel.Dock="Top" x:Name="DetailProjectName"
-                             FontSize="16" FontWeight="Bold"
-                             Foreground="{DynamicResource FluentBrand80}" TextWrapping="Wrap" Margin="0,0,0,16"/>
+                <!-- Project Title & Quick Actions Bar -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                    <ui:TextBlock x:Name="DetailProjectName"
+                                 FontSize="15" FontWeight="Bold"
+                                 Foreground="{DynamicResource FluentBrand80}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                    <!-- 1-Click Launchers & Handover Bar -->
+                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <ui:Button x:Name="BtnDetailOpenFolder" Click="OnDetailOpenFolderClicked" Appearance="Secondary" Height="28" Padding="8,2" Margin="0,0,6,4" ToolTip="Open project folder in Windows Explorer">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="FolderOpen24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Folder" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnDetailOpenSource" Click="OnDetailOpenSourceClicked" Appearance="Secondary" Height="28" Padding="8,2" Margin="0,0,6,4" ToolTip="Open working file in Affinity Designer / Photoshop">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Color24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Source File" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnDetailHandoverZip" Click="OnDetailHandoverZipClicked" Appearance="Primary" Height="28" Padding="8,2" Margin="0,0,0,4" ToolTip="Generate 1-click Handover ZIP package">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="ArrowDownload24" Margin="0,0,4,0" FontSize="12"/>
+                                <ui:TextBlock Text="Handover ZIP" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+                    </WrapPanel>
+
+                    <!-- Asset Drag & Drop Ingestion Zone -->
+                    <ui:Card x:Name="CardAssetDropzone" AllowDrop="True" Padding="10,8" Margin="0,0,0,6"
+                             DragOver="OnAssetDropzoneOver" DragLeave="OnAssetDropzoneLeave" Drop="OnAssetDropzoneDrop">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="ArrowUpload24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <ui:TextBlock Text="Drag &amp; Drop Assets Here" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <ui:TextBlock x:Name="TxtAssetDropHint" Text="Auto-ingests into 01_BRIEF or 05_DELIVERABLES" FontSize="9.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Grid>
+                    </ui:Card>
+                </StackPanel>
 
                 <!-- Compact 3x2 Form Metadata Row -->
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
@@ -482,9 +527,17 @@
                 <!-- README Content Preview Area (Expands to Fill ALL Vertical Space down to Save Button!) -->
                 <Grid VerticalAlignment="Stretch">
                     <!-- Rendered Markdown View (Default) -->
-                    <FlowDocumentScrollViewer x:Name="DetailReadmeRendered" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Visibility="Visible" Margin="0"/>
+                    <FlowDocumentScrollViewer x:Name="DetailReadmeRendered"
+                                              FontFamily="{DynamicResource FluentFontFamily}"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              Visibility="Visible" Margin="0"/>
                     <!-- Raw Text Editor -->
-                    <ui:TextBox x:Name="DetailReadmePreview" FontSize="12" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Visibility="Collapsed" PlaceholderText="No notes/content below frontmatter in README.md"/>
+                    <ui:TextBox x:Name="DetailReadmePreview" FontSize="12"
+                                FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"
+                                AcceptsReturn="True" TextWrapping="Wrap"
+                                VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top"
+                                Visibility="Collapsed" PlaceholderText="No notes/content below frontmatter in README.md"/>
                 </Grid>
             </DockPanel>
         </Border>
