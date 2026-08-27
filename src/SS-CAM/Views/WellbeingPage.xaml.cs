@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -53,38 +54,61 @@ namespace SS_CAM.Views
         public WellbeingPage()
         {
             InitializeComponent();
-            _dataService = new WellbeingDataService();
-            _timer = WellbeingTimerService.SharedInstance;
-            _fatigueEngine = new FatigueRuleEngine(_dataService);
-
-            _uiTimer = new DispatcherTimer();
-            _uiTimer.Interval = TimeSpan.FromSeconds(1);
-            _uiTimer.Tick += OnUiTick;
-            _uiTimer.Start();
-
-            _animTimer = new DispatcherTimer();
-            _animTimer.Interval = TimeSpan.FromMilliseconds(50);
-            _animTimer.Tick += OnAnimTick;
-            _animTimer.Start();
-
-            Loaded += (s, e) =>
+            try
             {
-                RefreshMetrics();
-                UpdateTimerUI();
-                UpdateWaterIntakeUI();
-                UpdateRadarChart();
-            };
+                _dataService = new WellbeingDataService();
+                _timer = WellbeingTimerService.SharedInstance;
+                _fatigueEngine = new FatigueRuleEngine(_dataService);
 
-            Unloaded += (s, e) =>
+                _uiTimer = new DispatcherTimer();
+                _uiTimer.Interval = TimeSpan.FromSeconds(1);
+                _uiTimer.Tick += OnUiTick;
+
+                _animTimer = new DispatcherTimer();
+                _animTimer.Interval = TimeSpan.FromMilliseconds(50);
+                _animTimer.Tick += OnAnimTick;
+
+                Loaded += (s, e) =>
+                {
+                    try
+                    {
+                        if (_uiTimer != null && !_uiTimer.IsEnabled) _uiTimer.Start();
+                        if (_animTimer != null && !_animTimer.IsEnabled) _animTimer.Start();
+
+                        if (_dataService != null)
+                        {
+                            _waterIntakeMl = _dataService.GetHydrationForDay(DateTime.Today);
+                        }
+                        RefreshMetrics();
+                        UpdateTimerUI();
+                        UpdateWaterIntakeUI(saveToDisk: false);
+                        UpdateRadarChart();
+                        RefreshMindDropsList();
+                        RenderHeatmap();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[WellbeingPage] Loaded error: " + ex.Message);
+                    }
+                };
+
+                Unloaded += (s, e) =>
+                {
+                    try
+                    {
+                        if (_uiTimer != null) _uiTimer.Stop();
+                        if (_animTimer != null) _animTimer.Stop();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[WellbeingPage] Unloaded error: " + ex.Message);
+                    }
+                };
+            }
+            catch (Exception ex)
             {
-                if (_uiTimer != null) _uiTimer.Stop();
-                if (_animTimer != null) _animTimer.Stop();
-            };
-
-            RefreshMetrics();
-            UpdateTimerUI();
-            UpdateWaterIntakeUI();
-            UpdateRadarChart();
+                System.Diagnostics.Debug.WriteLine("[WellbeingPage] Constructor error: " + ex.Message);
+            }
         }
 
         private void OnUiTick(object sender, EventArgs e)
@@ -98,6 +122,7 @@ namespace SS_CAM.Views
                     _timer.StopSession("Completed");
                     RefreshMetrics();
                     UpdateRadarChart();
+                    RenderHeatmap();
                 }
             }
 
@@ -167,7 +192,7 @@ namespace SS_CAM.Views
             double centerY = height / 2.0;
 
             double radius = 65.0;
-            Color circleColor = Color.FromArgb(40, 33, 161, 247);
+            Color circleColor = Color.FromArgb(40, 99, 102, 241);
 
             if (_isBreathingMode)
             {
@@ -181,30 +206,30 @@ namespace SS_CAM.Views
                     // Inhale (0 to 4s) -> Scale 0.0 to 1.0
                     scale = _breathingPhase / 4.0;
                     scale = Math.Sin(scale * Math.PI / 2.0); // Ease out
-                    TxtBreathingInstruction.Text = "Inhale... 🫁";
-                    circleColor = Color.FromArgb(70, 56, 189, 248); // Sky Blue
+                    TxtBreathingInstruction.Text = "Inhale...";
+                    circleColor = Color.FromArgb(80, 56, 189, 248); // Sky Blue
                 }
                 else if (_breathingPhase < 8.0)
                 {
                     // Hold Full (4 to 8s) -> Scale 1.0
                     scale = 1.0;
-                    TxtBreathingInstruction.Text = "Hold... ⏸️";
-                    circleColor = Color.FromArgb(70, 16, 185, 129); // Emerald Green
+                    TxtBreathingInstruction.Text = "Hold...";
+                    circleColor = Color.FromArgb(80, 16, 185, 129); // Emerald Green
                 }
                 else if (_breathingPhase < 12.0)
                 {
                     // Exhale (8 to 12s) -> Scale 1.0 to 0.0
                     scale = 1.0 - ((_breathingPhase - 8.0) / 4.0);
                     scale = Math.Sin(scale * Math.PI / 2.0); // Ease in
-                    TxtBreathingInstruction.Text = "Exhale... 💨";
-                    circleColor = Color.FromArgb(70, 245, 158, 11); // Amber
+                    TxtBreathingInstruction.Text = "Exhale...";
+                    circleColor = Color.FromArgb(80, 245, 158, 11); // Amber
                 }
                 else
                 {
                     // Hold Empty (12 to 16s) -> Scale 0.0
                     scale = 0.0;
-                    TxtBreathingInstruction.Text = "Hold... ⏸️";
-                    circleColor = Color.FromArgb(70, 100, 116, 139); // Slate Gray
+                    TxtBreathingInstruction.Text = "Hold...";
+                    circleColor = Color.FromArgb(80, 139, 92, 246); // Purple
                 }
 
                 radius = 40.0 + (scale * 35.0);
@@ -219,9 +244,9 @@ namespace SS_CAM.Views
             {
                 Width = 150,
                 Height = 150,
-                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1")),
+                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#475569")),
                 StrokeThickness = 2,
-                StrokeDashArray = new DoubleCollection { 3, 3 }
+                StrokeDashArray = new DoubleCollection { 4, 3 }
             };
             Canvas.SetLeft(outerTrack, centerX - 75);
             Canvas.SetTop(outerTrack, centerY - 75);
@@ -233,7 +258,7 @@ namespace SS_CAM.Views
                 Width = radius * 2,
                 Height = radius * 2,
                 Fill = new SolidColorBrush(circleColor),
-                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388")),
+                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#818CF8")),
                 StrokeThickness = 2.5
             };
             Canvas.SetLeft(innerCircle, centerX - radius);
@@ -283,26 +308,50 @@ namespace SS_CAM.Views
 
         private void BtnBreak5_Click(object sender, RoutedEventArgs e)
         {
+            if (_timer == null) return;
             AudioFeedbackService.PlayBreakSound();
             _isBreathingMode = false;
-            _timer.StartSession(5, "5-Min Break");
+            _breaksCompletedToday++;
+            _timer.StartSession(5, "5m Break");
             UpdateTimerUI();
             UpdateRadarChart();
+            RefreshMetrics();
         }
 
         private void BtnBreathing_Click(object sender, RoutedEventArgs e)
         {
+            if (_timer == null) return;
             AudioFeedbackService.PlayBreathingSound();
             _isBreathingMode = true;
             _breathingPhase = 0.0;
+            _breathingCompletedToday++;
             _timer.StartSession(2, "Breathing (2m)");
             UpdateTimerUI();
             UpdateRadarChart();
+            RefreshMetrics();
         }
+
+        private void UpdateTimerButtonStates()
+        {
+            if (_timer == null) return;
+            bool isRunning = _timer.State == WellbeingTimerService.TimerState.Running || _timer.State == WellbeingTimerService.TimerState.Paused;
+
+            if (BtnStartFocus != null) BtnStartFocus.Visibility = isRunning ? Visibility.Collapsed : Visibility.Visible;
+            if (BtnPauseFocus != null)
+            {
+                BtnPauseFocus.Visibility = isRunning ? Visibility.Visible : Visibility.Collapsed;
+                BtnPauseFocus.Content = _timer.State == WellbeingTimerService.TimerState.Paused ? "Resume" : "Pause";
+            }
+            if (BtnStopFocus != null) BtnStopFocus.Visibility = isRunning ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private int _breaksCompletedToday = 0;
+        private int _breathingCompletedToday = 0;
+        private List<MindDropItemView> _activeMindDrops = new List<MindDropItemView>();
 
         private void BtnEnergy_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
+            var btn = sender as Wpf.Ui.Controls.Button;
             if (btn != null && btn.Tag != null)
             {
                 int energy = int.Parse(btn.Tag.ToString());
@@ -331,46 +380,86 @@ namespace SS_CAM.Views
                 }
 
                 UpdateRadarChart();
+                RefreshMetrics();
             }
+        }
+
+        private int _selectedFocus = 3;
+
+        private void BtnFocusRating_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Wpf.Ui.Controls.Button;
+            if (btn != null && btn.Tag != null)
+            {
+                int val;
+                if (int.TryParse(btn.Tag.ToString(), out val))
+                {
+                    _selectedFocus = val;
+                    HighlightButtonGroup(new[] { BtnF1, BtnF2, BtnF3, BtnF4, BtnF5 }, val);
+                    UpdateRadarChart();
+                    RefreshMetrics();
+                }
+            }
+        }
+
+        private void BtnPressureRating_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Wpf.Ui.Controls.Button;
+            if (btn != null && btn.Tag != null)
+            {
+                int val;
+                if (int.TryParse(btn.Tag.ToString(), out val))
+                {
+                    _selectedPressure = val;
+                    HighlightButtonGroup(new[] { BtnP1, BtnP2, BtnP3, BtnP4, BtnP5 }, val);
+                    UpdateRadarChart();
+                    RefreshMetrics();
+                }
+            }
+        }
+
+        private void OnQuickEyeRest_Click(object sender, RoutedEventArgs e)
+        {
+            AudioFeedbackService.PlayBreakSound();
+            _breaksCompletedToday++;
+            NotificationService.ShowInfo("20-20-20 Eye Rest", "Look at an object 20 feet away for 20 seconds to relax your ciliary eye muscles.");
+            UpdateRadarChart();
+            RefreshMetrics();
         }
 
         private void HighlightEnergyButton(int selected)
         {
-            Button[] btns = new[] { BtnE1, BtnE2, BtnE3, BtnE4, BtnE5 };
+            HighlightButtonGroup(new[] { BtnE1, BtnE2, BtnE3, BtnE4, BtnE5 }, selected);
+        }
+
+        private void HighlightButtonGroup(Wpf.Ui.Controls.Button[] btns, int selected)
+        {
             for (int i = 0; i < btns.Length; i++)
             {
+                if (btns[i] == null) continue;
                 if (i + 1 == selected)
                 {
-                    btns[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-                    btns[i].Foreground = Brushes.White;
+                    btns[i].Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+                    btns[i].FontWeight = FontWeights.Bold;
                 }
                 else
                 {
-                    btns[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-                    btns[i].Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+                    btns[i].Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+                    btns[i].FontWeight = FontWeights.Normal;
                 }
             }
         }
 
-        private void BtnSaveDrop_EndOfDay(object sender, RoutedEventArgs e)
+        private void RefreshMindDropsList()
         {
-            SaveMindDrop("EndOfDay");
-        }
-
-        private void BtnSaveDrop_Session(object sender, RoutedEventArgs e)
-        {
-            SaveMindDrop("SessionOnly");
-        }
-
-        private void SaveMindDrop(string retention)
-        {
-            string content = TxtMindDrop.Text;
-            if (string.IsNullOrWhiteSpace(content)) return;
-
-            _dataService.SaveMindDrop(content, retention);
-            TxtMindDrop.Text = "";
-            RefreshMetrics();
-            MessageBox.Show("Thought drop saved securely to DPAPI encrypted local vault.", "Drop Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                _activeMindDrops = _dataService != null ? _dataService.GetActiveMindDrops() : new List<MindDropItemView>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WellbeingPage] RefreshMindDropsList error: " + ex.Message);
+            }
         }
 
         private void RefreshMetrics()
@@ -378,14 +467,10 @@ namespace SS_CAM.Views
             WellbeingDayMetrics metrics = _dataService.GetMetricsForDay(DateTime.Today);
             if (TxtMetricFocus != null)
                 TxtMetricFocus.Text = string.Format("{0}h {1}m", metrics.TotalFocusMinutes / 60, metrics.TotalFocusMinutes % 60);
-            
-            if (TxtMetricDrops != null)
-                TxtMetricDrops.Text = string.Format("{0} captured", metrics.MindDropCount);
 
             if (TxtMetricWater != null)
                 TxtMetricWater.Text = string.Format("{0:N0} / 2,000 mL", _waterIntakeMl);
 
-            // Compute Burnout Risk Index based on Energy (1-5), Hydration %, and Focus Time
             if (TxtMetricBurnout != null)
             {
                 double hydrationRatio = Math.Min(1.0, _waterIntakeMl / (double)_waterGoalMl);
@@ -408,9 +493,22 @@ namespace SS_CAM.Views
                     TxtMetricBurnout.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
                 }
             }
+
+            if (TxtMetricFlow != null)
+            {
+                double baseVitality = _selectedEnergy / 5.0;
+                double dailyFocusRatio = Math.Min(1.0, metrics.TotalFocusMinutes / 120.0);
+                double normEnergy = Math.Min(1.0, Math.Max(0.20, ((Math.Min(1.0, _waterIntakeMl / (double)_waterGoalMl)) * 0.40) + (baseVitality * 0.35) + (_breaksCompletedToday * 0.10) + 0.10));
+                double normFocus = Math.Min(1.0, Math.Max(0.20, (dailyFocusRatio * 0.30) + ((_selectedFocus / 5.0) * 0.30) + 0.20));
+                double normRest = Math.Min(1.0, Math.Max(0.20, 0.35 + Math.Min(0.50, (_breaksCompletedToday * 0.20) + (_breathingCompletedToday * 0.15))));
+                double normPressure = Math.Min(1.0, Math.Max(0.20, ((_selectedPressure / 5.0) * 0.50) + 0.10));
+                double rawFlow = (normFocus * 0.40) + (normEnergy * 0.30) + (normRest * 0.20) - (normPressure > 0.60 ? (normPressure - 0.60) * 0.40 : 0.0);
+                int flowPct = (int)(Math.Min(1.0, Math.Max(0.20, rawFlow + 0.10)) * 100);
+                string flowStatus = flowPct >= 80 ? "Peak Flow" : (flowPct >= 60 ? "Balanced" : "Calibrating");
+                TxtMetricFlow.Text = string.Format("{0}% ({1})", flowPct, flowStatus);
+            }
         }
 
-        // ── 💧 Water Intake Animation & Interactions ───────────────────────────
         private void DrawWaterWaveAnimation()
         {
             if (WaterCanvas == null || WaterWavePath == null) return;
@@ -419,7 +517,7 @@ namespace SS_CAM.Views
             if (_waterWavePhase > Math.PI * 2) _waterWavePhase -= Math.PI * 2;
 
             double width = WaterCanvas.ActualWidth > 50 ? WaterCanvas.ActualWidth : 380;
-            double height = 80;
+            double height = WaterCanvas.ActualHeight > 20 ? WaterCanvas.ActualHeight : 64;
             double pct = Math.Min(1.0, Math.Max(0.0, _waterIntakeMl / (double)_waterGoalMl));
             double targetY = height - (pct * height);
 
@@ -428,21 +526,22 @@ namespace SS_CAM.Views
 
             for (double x = 0; x <= width; x += 15)
             {
-                double y = targetY + Math.Sin((x * 0.05) + _waterWavePhase) * 3.5;
-                figure.Segments.Add(new LineSegment(new Point(x, y), true));
+                double wave = Math.Sin((x / 50.0) + _waterWavePhase) * 3.5;
+                figure.Segments.Add(new LineSegment(new Point(x, targetY + wave), true));
             }
 
-            figure.Segments.Add(new LineSegment(new Point(width, height), true));
+            figure.Segments.Add(new LineSegment(new Point(width, height), false));
+            figure.Segments.Add(new LineSegment(new Point(0, height), false));
 
             var geometry = new PathGeometry();
             geometry.Figures.Add(figure);
             WaterWavePath.Data = geometry;
         }
 
-        private void UpdateWaterIntakeUI()
+        private void UpdateWaterIntakeUI(bool saveToDisk = false)
         {
-            double pct = (_waterIntakeMl / (double)_waterGoalMl) * 100.0;
-            int cups = _waterIntakeMl / 250;
+            int cups = Math.Min(8, _waterIntakeMl / 250);
+            double pct = Math.Min(100.0, (_waterIntakeMl / (double)_waterGoalMl) * 100.0);
 
             if (TxtWaterPct != null)
                 TxtWaterPct.Text = string.Format("{0:N0} mL ({1:F0}%)", _waterIntakeMl, pct);
@@ -450,45 +549,54 @@ namespace SS_CAM.Views
             if (TxtWaterStatusLabel != null)
             {
                 if (_waterIntakeMl >= _waterGoalMl)
-                    TxtWaterStatusLabel.Text = "🎉 2,000 mL Hydration Goal Achieved!";
+                    TxtWaterStatusLabel.Text = "Goal Achieved: 2,000 mL (8/8 Cups Logged)";
                 else
-                    TxtWaterStatusLabel.Text = string.Format("Target: 8 Cups Daily ({0} Cups Logged)", cups);
+                    TxtWaterStatusLabel.Text = string.Format("Daily Goal: 2,000 mL ({0}/8 Cups Logged)", cups);
             }
 
-            // Update 8-Cup Tiles Visual State
             Border[] cupsTiles = new[] { Cup1, Cup2, Cup3, Cup4, Cup5, Cup6, Cup7, Cup8 };
             for (int i = 0; i < cupsTiles.Length; i++)
             {
                 if (cupsTiles[i] == null) continue;
                 if (i < cups)
                 {
-                    cupsTiles[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#38BDF8"));
+                    cupsTiles[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0284C7"));
+                    var icon = cupsTiles[i].Child as Wpf.Ui.Controls.SymbolIcon;
+                    if (icon != null) icon.Foreground = Brushes.White;
                 }
                 else
                 {
-                    cupsTiles[i].Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+                    cupsTiles[i].Background = (Brush)Application.Current.TryFindResource("CardBackgroundFillColorSecondaryBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+                    var icon = cupsTiles[i].Child as Wpf.Ui.Controls.SymbolIcon;
+                    if (icon != null) icon.Foreground = (Brush)Application.Current.TryFindResource("TextFillColorSecondaryBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
                 }
             }
 
+            if (saveToDisk)
+            {
+                _dataService.SaveHydrationForDay(DateTime.Today, _waterIntakeMl);
+            }
+
             RefreshMetrics();
+            UpdateRadarChart();
         }
 
         private void OnAddWater250_Click(object sender, RoutedEventArgs e)
         {
             _waterIntakeMl = Math.Min(3000, _waterIntakeMl + 250);
-            UpdateWaterIntakeUI();
+            UpdateWaterIntakeUI(saveToDisk: true);
         }
 
         private void OnAddWater500_Click(object sender, RoutedEventArgs e)
         {
             _waterIntakeMl = Math.Min(3000, _waterIntakeMl + 500);
-            UpdateWaterIntakeUI();
+            UpdateWaterIntakeUI(saveToDisk: true);
         }
 
         private void OnResetWater_Click(object sender, RoutedEventArgs e)
         {
             _waterIntakeMl = 0;
-            UpdateWaterIntakeUI();
+            UpdateWaterIntakeUI(saveToDisk: true);
         }
 
         private void OnCupClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -500,123 +608,296 @@ namespace SS_CAM.Views
                 if (int.TryParse(tile.Tag.ToString(), out cupNum))
                 {
                     _waterIntakeMl = cupNum * 250;
-                    UpdateWaterIntakeUI();
+                    UpdateWaterIntakeUI(saveToDisk: true);
                 }
             }
         }
 
-        // ── Dynamic Interactive Spider / Radar Chart Renderer ───────────
         private void UpdateRadarChart()
         {
             if (RadarCanvas == null) return;
-            RadarCanvas.Children.Clear();
-
-            double width = RadarCanvas.Width;
-            double height = RadarCanvas.Height;
-            double centerX = width / 2.0;
-            double centerY = height / 2.0;
-            double radius = 95.0;
-
-            string[] axisLabels = new[] { "Energy", "Focus", "Rest", "Pressure", "Flow" };
-            int axesCount = axisLabels.Length;
-
-            WellbeingDayMetrics metrics = _dataService.GetMetricsForDay(DateTime.Today);
-
-            double normEnergy = Math.Min(1.0, Math.Max(0.2, _selectedEnergy / 5.0));
-            double normFocus = Math.Min(1.0, Math.Max(0.2, metrics.CompletedSessions / 6.0 + 0.3));
-            double normRest = Math.Min(1.0, Math.Max(0.2, (metrics.TotalFocusMinutes > 0 ? 0.6 : 0.3)));
-            double normPressure = Math.Min(1.0, Math.Max(0.2, (6.0 - _selectedEnergy) / 5.0));
-            double normFlow = Math.Min(1.0, Math.Max(0.2, (normEnergy + normFocus) / 2.0));
-
-            double[] values = new[] { normEnergy, normFocus, normRest, normPressure, normFlow };
-
-            // 1. Draw Concentric Web Grids (3 levels)
-            for (int level = 1; level <= 3; level++)
+            try
             {
-                double r = radius * (level / 3.0);
-                Polygon webPoly = new Polygon
+                RadarCanvas.Children.Clear();
+
+                double width = RadarCanvas.ActualWidth > 50 ? RadarCanvas.ActualWidth : (RadarCanvas.Width > 0 ? RadarCanvas.Width : 330);
+                double height = RadarCanvas.ActualHeight > 50 ? RadarCanvas.ActualHeight : (RadarCanvas.Height > 0 ? RadarCanvas.Height : 220);
+                double centerX = width / 2.0;
+                double centerY = (height / 2.0) - 2.0;
+                double radius = 68.0;
+
+                string[] axisLabels = new[] { "Energy", "Focus", "Rest", "Pressure", "Flow" };
+                int axesCount = axisLabels.Length;
+
+                WellbeingDayMetrics metrics = _dataService != null ? _dataService.GetMetricsForDay(DateTime.Today) : new WellbeingDayMetrics();
+                
+                double hydrationRatio = Math.Min(1.0, _waterIntakeMl / (double)_waterGoalMl);
+                double baseVitality = _selectedEnergy / 5.0;
+                double normEnergy = Math.Min(1.0, Math.Max(0.20, (hydrationRatio * 0.40) + (baseVitality * 0.35) + (_breaksCompletedToday * 0.10) + 0.10));
+
+                bool isFocusing = _timer != null && _timer.State == WellbeingTimerService.TimerState.Running && !_isBreathingMode;
+                double activeFocusBonus = isFocusing ? 0.30 : (_timer != null && _timer.State == WellbeingTimerService.TimerState.Paused ? 0.10 : 0.0);
+                double dailyFocusRatio = Math.Min(1.0, metrics.TotalFocusMinutes / 120.0);
+                double focusClarity = _selectedFocus / 5.0;
+                double normFocus = Math.Min(1.0, Math.Max(0.20, (dailyFocusRatio * 0.30) + (focusClarity * 0.30) + activeFocusBonus + (metrics.CompletedSessions * 0.10) + 0.10));
+
+                double breakBonus = Math.Min(0.50, (_breaksCompletedToday * 0.20) + (_breathingCompletedToday * 0.15));
+                double continuousStrain = (isFocusing && _timer != null && _timer.GetLiveElapsedSeconds() > 1800) ? 0.20 : 0.0;
+                double normRest = Math.Min(1.0, Math.Max(0.20, 0.35 + breakBonus - continuousStrain));
+
+                double baseStress = _selectedPressure / 5.0;
+                double strainLoad = (metrics.TotalFocusMinutes > 150 && _breaksCompletedToday == 0) ? 0.25 : 0.0;
+                double breathingRelief = _isBreathingMode ? 0.35 : (_breathingCompletedToday * 0.10);
+                double normPressure = Math.Min(1.0, Math.Max(0.20, (baseStress * 0.50) + strainLoad - breathingRelief + 0.10));
+
+                double rawFlow = (normFocus * 0.40) + (normEnergy * 0.30) + (normRest * 0.20) - (normPressure > 0.60 ? (normPressure - 0.60) * 0.40 : 0.0);
+                double normFlow = Math.Min(1.0, Math.Max(0.20, rawFlow + 0.10));
+
+                double[] values = new[] { normEnergy, normFocus, normRest, normPressure, normFlow };
+
+                if (TxtFatigueRec != null)
                 {
-                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1")),
-                    StrokeThickness = 1,
-                    StrokeDashArray = new DoubleCollection { 2, 2 }
-                };
+                    if (normPressure >= 0.70)
+                    {
+                        TxtFatigueRec.Text = "⚠️ High Cognitive Tension: Distractions or continuous strain detected. Take a 2-min Box Breathing session to reset.";
+                        if (BorderPrescription != null) BorderPrescription.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+                    }
+                    else if (normRest <= 0.30 && metrics.TotalFocusMinutes >= 45)
+                    {
+                        TxtFatigueRec.Text = "☕ Ergonomics Alert: Continuous screen time without breaks. Step away for 5 minutes to protect visual acuity.";
+                        if (BorderPrescription != null) BorderPrescription.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
+                    }
+                    else if (normEnergy <= 0.40 && _waterIntakeMl < 500)
+                    {
+                        TxtFatigueRec.Text = "💧 Low Hydration: Physical battery low. Drink 250 mL of water to re-energize cognitive processing speed.";
+                        if (BorderPrescription != null) BorderPrescription.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0284C7"));
+                    }
+                    else if (normFlow >= 0.75)
+                    {
+                        TxtFatigueRec.Text = "✨ Optimal Flow State: Deep focus, balanced rest, and hydration aligned. Perfect momentum for creative work!";
+                        if (BorderPrescription != null) BorderPrescription.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
+                    }
+                    else
+                    {
+                        TxtFatigueRec.Text = "Workstation calibrated. Start a focus timer or log water to elevate your flow state in real-time.";
+                        if (BorderPrescription != null) BorderPrescription.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0284C7"));
+                    }
+                }
+
+                for (int level = 1; level <= 3; level++)
+                {
+                    double r = radius * (level / 3.0);
+                    Polygon webPoly = new Polygon
+                    {
+                        Stroke = (Brush)Application.Current.TryFindResource("CardStrokeColorDefaultBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                        StrokeThickness = 1,
+                        StrokeDashArray = new DoubleCollection { 2, 2 }
+                    };
+
+                    for (int i = 0; i < axesCount; i++)
+                    {
+                        double angle = (2 * Math.PI / axesCount) * i - (Math.PI / 2);
+                        double x = centerX + r * Math.Cos(angle);
+                        double y = centerY + r * Math.Sin(angle);
+                        webPoly.Points.Add(new Point(x, y));
+                    }
+                    RadarCanvas.Children.Add(webPoly);
+                }
+
+                PointCollection valuePoints = new PointCollection();
 
                 for (int i = 0; i < axesCount; i++)
                 {
                     double angle = (2 * Math.PI / axesCount) * i - (Math.PI / 2);
-                    double x = centerX + r * Math.Cos(angle);
-                    double y = centerY + r * Math.Sin(angle);
-                    webPoly.Points.Add(new Point(x, y));
+                    double endX = centerX + radius * Math.Cos(angle);
+                    double endY = centerY + radius * Math.Sin(angle);
+
+                    Line axisLine = new Line
+                    {
+                        X1 = centerX,
+                        Y1 = centerY,
+                        X2 = endX,
+                        Y2 = endY,
+                        Stroke = (Brush)Application.Current.TryFindResource("CardStrokeColorDefaultBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1")),
+                        StrokeThickness = 1
+                    };
+                    RadarCanvas.Children.Add(axisLine);
+
+                    TextBlock label = new TextBlock
+                    {
+                        Text = string.Format("{0} ({1:F0}%)", axisLabels[i], values[i] * 100),
+                        FontSize = 10,
+                        FontWeight = FontWeights.Bold,
+                        Foreground = (Brush)Application.Current.TryFindResource("FluentBrand80") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0284C7"))
+                    };
+                    label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    double lblW = label.DesiredSize.Width > 0 ? label.DesiredSize.Width : 64;
+                    double lblH = label.DesiredSize.Height > 0 ? label.DesiredSize.Height : 14;
+
+                    double lblX = 0;
+                    double lblY = 0;
+
+                    if (i == 0) { lblX = centerX - (lblW / 2.0); lblY = (centerY - radius) - lblH - 4; }
+                    else if (i == 1) { lblX = endX + 6; lblY = endY - (lblH / 2.0); }
+                    else if (i == 2) { lblX = endX + 4; lblY = endY + 2; }
+                    else if (i == 3) { lblX = endX - lblW - 4; lblY = endY + 2; }
+                    else if (i == 4) { lblX = endX - lblW - 6; lblY = endY - (lblH / 2.0); }
+
+                    Canvas.SetLeft(label, lblX);
+                    Canvas.SetTop(label, lblY);
+                    RadarCanvas.Children.Add(label);
+
+                    double valR = radius * values[i];
+                    double vx = centerX + valR * Math.Cos(angle);
+                    double vy = centerY + valR * Math.Sin(angle);
+                    valuePoints.Add(new Point(vx, vy));
                 }
-                RadarCanvas.Children.Add(webPoly);
+
+                Color polyColor = normFlow >= 0.75 
+                    ? Color.FromArgb(110, 16, 185, 129)
+                    : Color.FromArgb(100, 2, 132, 199);
+
+                Color strokeColor = normFlow >= 0.75
+                    ? (Color)ColorConverter.ConvertFromString("#10B981")
+                    : (Color)ColorConverter.ConvertFromString("#0284C7");
+
+                Polygon dataPoly = new Polygon
+                {
+                    Points = valuePoints,
+                    Fill = new SolidColorBrush(polyColor),
+                    Stroke = new SolidColorBrush(strokeColor),
+                    StrokeThickness = 2
+                };
+                RadarCanvas.Children.Add(dataPoly);
+
+                foreach (Point pt in valuePoints)
+                {
+                    Ellipse dot = new Ellipse
+                    {
+                        Width = 8,
+                        Height = 8,
+                        Fill = new SolidColorBrush(strokeColor),
+                        Stroke = Brushes.White,
+                        StrokeThickness = 1.5
+                    };
+                    Canvas.SetLeft(dot, pt.X - 4);
+                    Canvas.SetTop(dot, pt.Y - 4);
+                    RadarCanvas.Children.Add(dot);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WellbeingPage] UpdateRadarChart error: " + ex.Message);
+            }
+        }
+
+        private void RenderHeatmap()
+        {
+            if (HeatmapCanvas == null) return;
+            HeatmapCanvas.Children.Clear();
+
+            var history = _dataService.Get30DayFocusHistory();
+            int totalMins = history.Values.Sum();
+
+            int streak = 0;
+            DateTime checkDate = DateTime.Today;
+            while (true)
+            {
+                string key = checkDate.ToString("yyyy-MM-dd");
+                if (history.ContainsKey(key) && history[key] > 0)
+                {
+                    streak++;
+                    checkDate = checkDate.AddDays(-1);
+                }
+                else
+                {
+                    if (checkDate == DateTime.Today && streak == 0)
+                    {
+                        checkDate = checkDate.AddDays(-1);
+                        continue;
+                    }
+                    break;
+                }
             }
 
-            // 2. Draw Axis Lines and Labels
-            PointCollection valuePoints = new PointCollection();
+            if (TxtStreakCount != null) TxtStreakCount.Text = string.Format("Active Streak: {0} Day{1}", streak, streak == 1 ? "" : "s");
+            if (TxtHeatmap30DayTotal != null) TxtHeatmap30DayTotal.Text = string.Format("30-Day Total: {0}h {1}m", totalMins / 60, totalMins % 60);
 
-            for (int i = 0; i < axesCount; i++)
+            double tileSize = 18.0;
+            double tileGap = 6.0;
+            double startX = 36.0;
+            double startY = 6.0;
+
+            string[] dayShort = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+            for (int r = 0; r < 7; r++)
             {
-                double angle = (2 * Math.PI / axesCount) * i - (Math.PI / 2);
-                double endX = centerX + radius * Math.Cos(angle);
-                double endY = centerY + radius * Math.Sin(angle);
-
-                Line axisLine = new Line
+                if (r == 0 || r == 2 || r == 4)
                 {
-                    X1 = centerX,
-                    Y1 = centerY,
-                    X2 = endX,
-                    Y2 = endY,
-                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
-                    StrokeThickness = 1
-                };
-                RadarCanvas.Children.Add(axisLine);
-
-                // Label Position
-                double labelX = centerX + (radius + 20) * Math.Cos(angle);
-                double labelY = centerY + (radius + 14) * Math.Sin(angle);
-
-                TextBlock label = new TextBlock
-                {
-                    Text = axisLabels[i],
-                    FontSize = 11,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"))
-                };
-                Canvas.SetLeft(label, labelX - 18);
-                Canvas.SetTop(label, labelY - 8);
-                RadarCanvas.Children.Add(label);
-
-                // Calculate Metric Value Point for Polygon
-                double valR = radius * values[i];
-                double vx = centerX + valR * Math.Cos(angle);
-                double vy = centerY + valR * Math.Sin(angle);
-                valuePoints.Add(new Point(vx, vy));
+                    TextBlock dayLbl = new TextBlock
+                    {
+                        Text = dayShort[r],
+                        FontSize = 9,
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = (Brush)Application.Current.TryFindResource("TextFillColorSecondaryBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8")),
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    Canvas.SetLeft(dayLbl, startX - 30);
+                    Canvas.SetTop(dayLbl, startY + r * (tileSize + tileGap) + 2);
+                    HeatmapCanvas.Children.Add(dayLbl);
+                }
             }
 
-            // 3. Draw Polygon Overlay for Values
-            Polygon dataPoly = new Polygon
-            {
-                Points = valuePoints,
-                Fill = new SolidColorBrush(Color.FromArgb(90, 33, 161, 247)),
-                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388")),
-                StrokeThickness = 2
-            };
-            RadarCanvas.Children.Add(dataPoly);
+            DateTime startDate = DateTime.Today.AddDays(-29);
+            int startDayOfWeek = ((int)startDate.DayOfWeek + 6) % 7;
 
-            // 4. Draw Vertex Dots
-            foreach (Point pt in valuePoints)
+            int col = 0;
+            int row = startDayOfWeek;
+
+            for (int i = 0; i < 30; i++)
             {
-                Ellipse dot = new Ellipse
+                DateTime day = startDate.AddDays(i);
+                string key = day.ToString("yyyy-MM-dd");
+                int mins = history.ContainsKey(key) ? history[key] : 0;
+
+                Brush tileBg;
+                Brush tileBorder = (Brush)Application.Current.TryFindResource("CardStrokeColorDefaultBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334155"));
+
+                if (mins == 0)
+                    tileBg = (Brush)Application.Current.TryFindResource("CardBackgroundFillColorDefaultBrush") ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+                else if (mins < 25)
+                    tileBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#64748B"));
+                else if (mins < 60)
+                    tileBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+                else if (mins < 120)
+                    tileBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B5CF6"));
+                else
+                    tileBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#06B6D4"));
+
+                Border tile = new Border
                 {
-                    Width = 8,
-                    Height = 8,
-                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7")),
-                    Stroke = Brushes.White,
-                    StrokeThickness = 1.5
+                    Width = tileSize,
+                    Height = tileSize,
+                    CornerRadius = new CornerRadius(3),
+                    Background = tileBg,
+                    BorderBrush = tileBorder,
+                    BorderThickness = new Thickness(1),
+                    ToolTip = string.Format("{0:MMM dd, yyyy}: {1} mins focus", day, mins),
+                    Cursor = System.Windows.Input.Cursors.Hand
                 };
-                Canvas.SetLeft(dot, pt.X - 4);
-                Canvas.SetTop(dot, pt.Y - 4);
-                RadarCanvas.Children.Add(dot);
+
+                double posX = startX + col * (tileSize + tileGap);
+                double posY = startY + row * (tileSize + tileGap);
+
+                Canvas.SetLeft(tile, posX);
+                Canvas.SetTop(tile, posY);
+                HeatmapCanvas.Children.Add(tile);
+
+                row++;
+                if (row >= 7)
+                {
+                    row = 0;
+                    col++;
+                }
             }
         }
     }

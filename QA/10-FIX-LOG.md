@@ -367,3 +367,15 @@
 - Hardened `PrayerTimeService.cs` to enforce TLS 1.2 and use a 10s timeout to prevent UI freezes.
 - Added NAS Pre-flight checks (`Directory.Exists`) to `ProjectGeneratorService.cs` and `WorkspaceScanner.cs`.
 
+## P1: Creative Wellbeing & Biometric Suite Overhaul (v4.4.4)
+
+- **Biometric Radar Mathematical Label Positioning**:
+  - Replaced hardcoded text offsets with dynamic quadrant-specific text measurement (`Measure(Size)`), resolving label-polygon overlap across all 5 axes (`Energy`, `Focus`, `Rest`, `Pressure`, `Flow`).
+- **Biometric Flow Calibrator**:
+  - Integrated 1–5 baseline rating system for Vitality, Cognitive Lock, and Perceived Stress with standardized Segoe UI Variable typography.
+- **Hydration Tracker & Full-Height Balance**:
+  - Fixed empty top/bottom whitespace by normalizing Fluent 2 card padding and wave container height.
+- **Dynamic 30-Day Heatmap**:
+  - Standardized day coordinate math, day labels (`Mon`, `Wed`, `Fri`), and high-contrast theme-aware 0-minute day tiles.
+
+

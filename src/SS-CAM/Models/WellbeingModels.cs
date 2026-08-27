@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SS_CAM.Models
@@ -13,6 +13,8 @@ namespace SS_CAM.Models
         public ActiveSessionState ActiveSessionState { get; set; }
         public WellbeingPreferences Preferences { get; set; }
 
+        public Dictionary<string, int> DailyHydrationRecords { get; set; }
+
         public WellbeingData()
         {
             SchemaVersion = 1;
@@ -20,6 +22,7 @@ namespace SS_CAM.Models
             CheckIns = new List<CheckIn>();
             ResetSessions = new List<ResetSession>();
             MindDrops = new List<MindDrop>();
+            DailyHydrationRecords = new Dictionary<string, int>();
             Preferences = new WellbeingPreferences();
         }
     }
@@ -107,5 +110,13 @@ namespace SS_CAM.Models
         public int EnergyLevel { get; set; }
         public int MoodLevel { get; set; }
         public int PressureLevel { get; set; }
+    }
+
+    public class MindDropItemView
+    {
+        public string Id { get; set; }
+        public string Text { get; set; }
+        public string TimeFormatted { get; set; }
+        public string RetentionMode { get; set; }
     }
 }
