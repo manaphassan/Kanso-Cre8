@@ -76,9 +76,12 @@ All creative projects follow a canonical directory structure on Synology NAS (`C
 * **Live Swatch Telemetry**: Live interactive explorer for SuamiSihat holding palettes (`SSH`, `SSC`, `SSW`, `SSE`, `SST`) displaying **HEX**, **RGB**, **CMYK**, and **Pantone** breakdowns with 1-click clipboard copying.
 * **Vector QR Code Studio**: Generate branded QR codes for URLs, Wi-Fi credentials, and vCards with high-resolution PNG export.
 
-### 7. Creative Wellbeing & Daily Rhythm
+### 7. Creative Wellbeing & Biometric Rhythm
+* **Real-Time 5-Axis Biometric Radar**: Live spider chart calculating creative flow, vitality, rest, focus, and pressure.
+* **Biometric Flow Calibrator & 1-Click Rebalancers**: Tactile 1–5 baseline rating matrix and instant cognitive reset shortcuts.
+* **30-Day Creative Focus Heatmap**: GitHub-style activity grid mapping daily deep work intensity and streaks.
+* **Interactive Vector Hydration Tracker**: Real-time water intake tracking with animated wave physics and 8 glass cup tiles.
 * **16-Second Box Breathing Coach**: Visual stress reset coach for high-intensity design sprints.
-* **DPAPI Mind Drops**: Private reflection journal encrypted with Windows Data Protection API.
 * **JAKIM Waktu Solat**: Real-time prayer timetable for 41 Malaysian zones with live countdowns and adhan notifications.
 * **Focus Radio Player**: Low-latency stream player for Malaysian stations (BFM 89.9, Hitz, Era, Hot FM, Suria, THR Raaga) and lo-fi focus beats.
 
