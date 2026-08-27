@@ -1,6 +1,6 @@
 # 08 — Security & Data Safety Review
 
-Last updated: 2026-08-20 | Version: v4.4.0
+Last updated: 2026-08-27 | Version: v4.4.3
 
 ---
 
