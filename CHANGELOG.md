@@ -2,6 +2,27 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.4.4] - 2026-08-27 (Creative Wellbeing & Biometric Suite Overhaul)
+
+### Added & Refined — Real-Time Biometric Radar, 30-Day Heatmap & Hydration Tracker
+- **Real-Time 5-Axis Biometric Radar (`WellbeingPage.xaml`, `WellbeingPage.xaml.cs`)**:
+  - Live spider chart tracking 5 creative dimensions: **Energy**, **Focus**, **Rest**, **Pressure**, and **Flow**.
+  - Real-time mathematical updates triggered by focus timer sessions, box breathing, 5m breaks, hydration logs, and manual flow calibration.
+  - Quadrant-aware text bounding box measurement ensuring zero overlap between polygon vertices and metric labels.
+- **Biometric Flow Calibrator & 1-Click Rebalancers (`WellbeingPage.xaml`)**:
+  - Tactile 1-to-5 baseline calibrators for Vitality, Cognitive Focus, and Perceived Stress with proportional Segoe UI Variable typography.
+  - 1-Click Rebalancer actions: `2m Box Breath`, `+250 mL Hydrate`, `20s Eye Rest`, and `5m Break Reset`.
+- **Dynamic 30-Day Creative Focus & Flow Heatmap (`WellbeingPage.xaml`, `WellbeingPage.xaml.cs`)**:
+  - Full 30-day focus intensity matrix with 4 color-graded tiers (`0m`, `<25m`, `<60m`, `<120m`, `120m+`) and live tooltips.
+  - Active Streak and 30-day total focus minutes aggregation.
+- **Interactive Vector Water Hydration Tracker (`WellbeingPage.xaml`, `WellbeingPage.xaml.cs`)**:
+  - Smooth sinusoidal water wave animation with live fill percentage.
+  - 8 interactive Fluent 2 glass cup tiles with dynamic theme-adaptive backgrounds.
+  - One-click `+250 mL`, `+500 mL`, and `Reset` quick logging buttons.
+- **Layout & Visual Hierarchy Polish (`WellbeingPage.xaml`)**:
+  - Eliminated excess padding and dead white space for a compact, high-density Fluent 2 aesthetic.
+  - Synchronized top summary bar with `FLOW HARMONIC` score and `BURNOUT RISK INDEX`.
+
 ## [4.4.3] - 2026-08-27 (Radio Visualizer Overhaul & Station Upgrades)
 
 ### Added & Refined — Dynamic Hero Audio Visualizer, Playback Gating & Curated Stations
