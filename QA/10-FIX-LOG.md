@@ -1,5 +1,16 @@
 # SS-CAM FIX LOG
 
+## v4.4.3 — 2026-08-27 (Radio Visualizer Overhaul & Station Upgrades)
+- **Assembly Version**: `4.4.3.0`
+- **Dynamic Real-Time Playback Gating**: Mars symbols and logomarks automatically hide (`Opacity = 0.0`) when radio is stopped/idle, smoothly fading in on active playback.
+- **Song Wavelength & Beat Modulation**: Particles oscillate along sinusoidal wavelength across canvas width; beat kicks trigger size pulse (+35%) and upward acceleration.
+- **Cross-Mode Visualizer Architecture**: Unlinked backdrop particles from `HeroMesh` so they animate seamlessly across `WaterDrop`, `Waveform`, `SpectrumBars`, and `HeroMesh`.
+- **Curated Radio Presets**: Replaced `CITYPlus FM` with `Nightwave Plaza` (Synthwave) and `SomaFM: Groove Salad` (Ambient/Chill).
+- **Calendar Malaysia Public Holidays**: Added full Malaysia public holidays schedule into calendar event dispatcher.
+- **Copywriting Studio Rich FlowDocument Mode**: Script canvas renders FlowDocument formatted markdown preview by default with smooth edit toggle.
+
+---
+
 ## v4.4.2 — 2026-08-27 (Art Director Polish & Live Ad/WhatsApp Preview Engine)
 - **Assembly Version**: `4.4.2.0`
 - **Copywriting Studio Split-View Live Preview**: Built real-time 3-mode segmented switcher (`Split Preview`, `Rendered Doc`, `Editor Only`) with dual-pane layout.

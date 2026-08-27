@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-26.
+> **Living document.** Updated with every release. Last updated: 2026-08-27.
 
 ---
 
@@ -38,10 +38,11 @@
 | **v4.4.0** | 2026-08-20 | **Designer Workload Heatmaps & Creative SLA Analytics**: Live designer capacity radars (`WorkloadSlaService`), capacity progress meters, and operational SLA telemetry across Desktop and Web |
 | **v4.4.1** | 2026-08-26 | **Radio Stream, Deep Scanner & Copywriting FlowDocument Engine**: Official SuamiSihat Radio Stream preset `#1`, deep month-container project discovery, dynamic project ID auto-calculation, FlowDocument markdown rendering by default, sanitized designer catalog filtering |
 | **v4.4.2** | 2026-08-27 | **Art Director Polish & Live Ad/WhatsApp Preview Engine**: Live Split-View formatting preview (WhatsApp & Meta Ads), one-click Hook & CTA snippet drawer, dynamic status pill badges, polished vector empty states, and overline typographic rhythm |
+| **v4.4.3** | 2026-08-27 | **Radio Visualizer Overhaul & Station Upgrades**: Dynamic real-time playback gating for 69 Mars symbols & 6 SuamiSihat logomarks, song wavelength sinusoidal vertical oscillation & beat kick pulsing across all visualizer modes, curated Nightwave Plaza & SomaFM Groove Salad stations, Malaysia holidays calendar integration |
 
 ---
 
-## 🎯 Active Milestone — v4.4.2: Art Director Polish & Live Ad/WhatsApp Preview (Target: August 2026)
+## 🎯 Active Milestone — v4.5.0: Production Pipeline Intelligence (Target: Q3 2026)
 
 ### 1. Copywriting Studio Split-View Live Preview (Desktop)
 * **Live WhatsApp & Ad Message Card**: Real-time side-by-side rendering transforming structured Markdown into live WhatsApp bubbles (bold asterisks `*text*`, emoji spacing, call-to-action link previews) and Meta Ad primary text mockups.

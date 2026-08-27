@@ -1,8 +1,8 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v4.4.1 Stable Release
+## Status: PASS — v4.4.3 Stable Release
 
-**QA Date**: 2026-08-26  
+**QA Date**: 2026-08-27  
 **Configuration**: Release (MSBuild 4.8)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**  
 **Web Test Suite**: **PASS — 20 passed, 0 failed**
@@ -17,10 +17,14 @@
 
 ---
 
-### Resolved Issues (v4.0.0 – v4.4.1)
+### Resolved Issues (v4.0.0 – v4.4.3)
 
 | ID | Severity | Description | Resolution | Status |
 |---|---|---|---|---|
+| RAD-02 | P0 | Radio Hero Background Animation Overhaul | Unified 69 Mars symbols & 6 logomarks across all visualizer modes with song wavelength oscillation and kick pulses | **Resolved** |
+| RAD-03 | P1 | Dynamic Playback Gating | Symbols completely hide (`Opacity = 0.0`) when radio is stopped/paused and smoothly reveal on active play | **Resolved** |
+| RAD-04 | P1 | Curated Creative Station Upgrades | Replaced `CITYPlus FM` with `Nightwave Plaza` (Synthwave) and `SomaFM: Groove Salad` (Ambient/Chill) | **Resolved** |
+| CAL-01 | P1 | Malaysia Public Holidays Integration | Added comprehensive national and state holiday schedule into Calendar module | **Resolved** |
 | SCROLL-01 | P0 | Mouse wheel scrolling broken on all pages | Global `OnGlobalPreviewMouseWheel` on `MainWindow` + per-page wire-up on 10 broken pages | **Resolved** |
 | ROLE-01 | P0 | Manager / CEO roles appearing in designer filters | `IsDesignerOrAdminRole` predicate; filtered from `WorkspaceScanner`, `TaskManagerPage`, `CalendarPage`, Web metrics | **Resolved** |
 | DASH-01 | P0 | Dashboard workload showing `2026` (year folder) as designer name | `ComputeDesignerWorkloads` overhauled to use staff directory + `ResolveProjectDesigner` | **Resolved** |
@@ -40,5 +44,5 @@
 ---
 
 ### Executable Binary
-- Desktop Binary: [`dist/SS-CAM-v4.4.1.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v4.4.1.exe) (5.61 MB)
-- Assembly Version: `4.4.1.0`
+- Desktop Binary: [`dist/SS-CAM-v4.4.3.exe`](file:///e:/Dev/Projects/SS-Brand-Assets/dist/SS-CAM-v4.4.3.exe) (5.61 MB)
+- Assembly Version: `4.4.3.0`

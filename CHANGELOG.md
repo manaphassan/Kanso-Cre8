@@ -2,6 +2,33 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.4.3] - 2026-08-27 (Radio Visualizer Overhaul & Station Upgrades)
+
+### Added & Refined — Dynamic Hero Audio Visualizer, Playback Gating & Curated Stations
+- **Dynamic Real-Time Playback Gating (`RadioPage.xaml`, `RadioPage.xaml.cs`)**:
+  - The hero backdrop scattered Mars symbols (`♂`) and SuamiSihat logomarks are completely hidden (`Opacity = 0.0`) when radio is stopped or paused, seamlessly fading in on active playback.
+- **Song Wavelength & Beat Modulation (`RadioPage.xaml.cs`)**:
+  - Mars symbols and logomarks oscillate vertically along a continuous sinusoidal wave parameterized across canvas width.
+  - Beat kicks (`e.IsBassHit` / `e.IsKickHit`) trigger size pulsing (up to +35%), accelerated upward flow velocity, and audio-amplitude luminance twinkling.
+  - Multi-hue palette with vibrant brand colors (`#21A1F7`, `#38BDF8`, `#6DC6EC`, `#60A5FA`, `#FCE53D`) and 8px stroke thickness for clear visibility.
+- **Unified Cross-Mode Visualizer Architecture (`RadioPage.xaml.cs`)**:
+  - Decoupled floating backdrop particles from single-mode restrictions, allowing them to animate across all visualizer modes (`HeroMesh`, `WaterDrop`, `Waveform`, `SpectrumBars`).
+- **Curated Radio Preset Station Upgrades (`RadioStreamService.cs`)**:
+  - Replaced `CITYPlus FM` with two high-uptime creative focus stations:
+    - **Nightwave Plaza** (`preset_nightwave`): 24/7 Vaporwave & Synthwave.
+    - **SomaFM: Groove Salad** (`preset_groovesalad`): Chilled ambient & downtempo grooves.
+- **Calendar Malaysia Public Holidays Integration (`CalendarPage.xaml.cs`)**:
+  - Added comprehensive Malaysian national and state public holiday observances into the studio calendar.
+- **Copywriting Studio Rich FlowDocument Mode & Search UI (`CopywritingPage.xaml`, `SearchCopyPage.xaml`)**:
+  - Default FlowDocument markdown rendering for script canvas with smooth edit toggle.
+  - Fixed ComboBox padding and text overlap issues across high-DPI scaling.
+
+### Integrity
+| File | Details |
+|---|---|
+| `src/SS-CAM/bin/Release/SS-CAM.exe` | AssemblyVersion `4.4.3.0` |
+| `src/SS-CAM/Properties/AssemblyInfo.cs` | AssemblyFileVersion `4.4.3.0` |
+
 ## [4.4.1] - 2026-08-26 (Maintenance & Enhancement Release)
 
 ### Added & Refined — Radio Stream Integration, Deep Scanner Routing & Copywriting FlowDocument Engine
