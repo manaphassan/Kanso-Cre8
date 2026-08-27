@@ -219,6 +219,7 @@
     <Compile Include="Services\ExportPackagingService.cs" />
     <Compile Include="Services\AssetNamingService.cs" />
     <Compile Include="Services\WorkloadSlaService.cs" />
+    <Compile Include="Services\MalaysiaHolidayService.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

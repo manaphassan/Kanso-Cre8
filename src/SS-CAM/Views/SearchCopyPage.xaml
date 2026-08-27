@@ -5,11 +5,12 @@
       Title="Search &amp; Copy"
       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer x:Name="PageScrollViewer"
-                  VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
-                  ScrollViewer.CanContentScroll="False"
-                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <Grid>
+        <ScrollViewer x:Name="PageScrollViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      ScrollViewer.CanContentScroll="False"
+                      PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel Margin="24,16,24,24">
 
             <!-- ── Page Header ── -->
@@ -37,18 +38,18 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="34"
+                        <ui:TextBox x:Name="SearchInput" Grid.Column="0" Height="36"
                                     PlaceholderText="Search project title, Project ID..." 
                                     TextChanged="OnSearchInputChanged"/>
 
-                        <ComboBox x:Name="DesignerFilterCmb" Grid.Column="2" Height="34" Padding="8,2" FontSize="11.5" SelectionChanged="OnFilterChanged"
+                        <ComboBox x:Name="DesignerFilterCmb" Grid.Column="2" Height="36" Padding="10,4" FontSize="12" SelectionChanged="OnFilterChanged"
                                   VerticalContentAlignment="Center"/>
 
-                        <ComboBox x:Name="CategoryFilterCmb" Grid.Column="4" Height="34" Padding="8,2" FontSize="11.5" SelectionChanged="OnFilterChanged"
+                        <ComboBox x:Name="CategoryFilterCmb" Grid.Column="4" Height="36" Padding="10,4" FontSize="12" SelectionChanged="OnFilterChanged"
                                   VerticalContentAlignment="Center"/>
 
                         <ui:Button Grid.Column="6" Appearance="Primary" Click="OnSearchClicked"
-                                   Height="34" Padding="16,0" FontWeight="Bold" Cursor="Hand">
+                                   Height="36" Padding="16,0" FontWeight="Bold" Cursor="Hand">
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Search24" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
                                 <ui:TextBlock Text="Search" VerticalAlignment="Center"/>
@@ -132,50 +133,78 @@
                                     <Border x:Name="CardBorder"
                                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1" CornerRadius="8" Padding="12,10"
-                                            Width="250" Height="78" Cursor="Hand">
+                                            BorderThickness="1" CornerRadius="8" Padding="0"
+                                            Width="255" Height="80" Cursor="Hand" Margin="0,0,8,0">
                                         <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            
-                                            <!-- Top Row: Icon + Title -->
-                                            <Grid Grid.Row="0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="22"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ui:SymbolIcon Symbol="Folder24" FontSize="14" Foreground="{DynamicResource FluentBrand80}"
-                                                               VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                                <ui:TextBlock Grid.Column="1" Text="{Binding Project}"
-                                                              FontSize="11.5" FontWeight="SemiBold"
-                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                              TextTrimming="CharacterEllipsis"
-                                                              TextWrapping="NoWrap" VerticalAlignment="Center"/>
-                                            </Grid>
+                                            <!-- Left Selected Accent Indicator -->
+                                            <Border x:Name="SelectedIndicator" Width="4" HorizontalAlignment="Left"
+                                                    Background="{DynamicResource FluentBrand80}" CornerRadius="8,0,0,8"
+                                                    Visibility="Collapsed"/>
 
-                                            <!-- Bottom Row: File Count, Size, Modified Date -->
-                                            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,4,0,0">
-                                                <ui:TextBlock Text="{Binding FileCount}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text=" files &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text="{Binding FormattedSize}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text=" &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                                <ui:TextBlock Text="{Binding Modified}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
-                                            </StackPanel>
+                                            <Grid Margin="12,10,12,10">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                
+                                                <!-- Top Row: Icon + Title + Active Pill -->
+                                                <Grid Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="22"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <ui:SymbolIcon x:Name="FolderIcon" Symbol="Folder24" FontSize="14"
+                                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    
+                                                    <ui:TextBlock x:Name="TxtTitle" Grid.Column="1" Text="{Binding Project}"
+                                                                  FontSize="11.5" FontWeight="SemiBold"
+                                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                  TextTrimming="CharacterEllipsis"
+                                                                  TextWrapping="NoWrap" VerticalAlignment="Center"/>
+
+                                                    <!-- Selected Badge -->
+                                                    <Border x:Name="ActivePill" Grid.Column="2"
+                                                            Background="{DynamicResource FluentBrand80}"
+                                                            CornerRadius="4" Padding="5,1" Margin="4,0,0,0"
+                                                            Visibility="Collapsed" VerticalAlignment="Center">
+                                                        <ui:TextBlock Text="ACTIVE" FontSize="8.5" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                </Grid>
+
+                                                <!-- Bottom Row: File Count, Size, Modified Date -->
+                                                <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,4,0,0">
+                                                    <ui:TextBlock Text="{Binding FileCount}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                    <ui:TextBlock Text=" files &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                    <ui:TextBlock Text="{Binding FormattedSize}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                    <ui:TextBlock Text=" &#x00B7; " FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                    <ui:TextBlock Text="{Binding Modified}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
                                         </Grid>
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-                                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
+                                                        <Setter Property="Background" Value="{DynamicResource FluentBrandTint}"/>
                                                         <Setter Property="BorderBrush" Value="{DynamicResource FluentBrand80}"/>
-                                                        <Setter Property="BorderThickness" Value="1.5"/>
+                                                        <Setter Property="BorderThickness" Value="2"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
                                     </Border>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                            <Setter TargetName="SelectedIndicator" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="ActivePill" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="FolderIcon" Property="Foreground" Value="{DynamicResource FluentBrand80}"/>
+                                            <Setter TargetName="TxtTitle" Property="FontWeight" Value="Bold"/>
+                                            <Setter TargetName="TxtTitle" Property="Foreground" Value="{DynamicResource FluentBrand80}"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
@@ -323,6 +352,7 @@
                             <!-- Rendered Markdown Viewer -->
                             <FlowDocumentScrollViewer x:Name="RenderedMarkdownViewer"
                                                       FontFamily="{DynamicResource FluentFontFamily}"
+                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                       VerticalScrollBarVisibility="Auto"
                                                       Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                                       BorderThickness="0"
@@ -583,6 +613,23 @@
 
         </StackPanel>
     </ScrollViewer>
+
+        <!-- ── Smooth Fluent 2 Loading Overlay (Indeterminate Ring & Feedback) ── -->
+        <Border x:Name="LoadingOverlay" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                Opacity="0.88" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Panel.ZIndex="100">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ui:ProgressRing IsIndeterminate="True" Width="44" Height="44"
+                                 Foreground="{DynamicResource FluentBrand80}" Margin="0,0,0,16"/>
+                <ui:TextBlock x:Name="TxtLoadingMessage" Text="Loading Projects &amp; Briefs..."
+                              FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"
+                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:TextBlock Text="Scanning workspace catalog on Synology NAS"
+                              FontSize="11.5" HorizontalAlignment="Center"
+                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Page>
 
 

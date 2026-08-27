@@ -149,9 +149,17 @@ namespace SS_CAM.Views
 
         private void OnVersionBadgeClicked(object sender, MouseButtonEventArgs e)
         {
-            var aboutWin = new AboutWindow();
-            aboutWin.Owner = Window.GetWindow(this);
-            aboutWin.ShowDialog();
+            try
+            {
+                var aboutWin = new AboutWindow();
+                aboutWin.Owner = Window.GetWindow(this);
+                aboutWin.ShowDialog();
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[DashboardPage] OnVersionBadgeClicked: " + ex.Message);
+            }
         }
 
         private async System.Threading.Tasks.Task RefreshDashboard()

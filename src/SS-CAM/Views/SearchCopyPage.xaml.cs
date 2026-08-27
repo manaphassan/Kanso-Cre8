@@ -9,9 +9,11 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Input;
+using System.Threading.Tasks;
 
 using SS_CAM.Models;
 using SS_CAM.Services;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Views
 {
@@ -34,22 +36,31 @@ namespace SS_CAM.Views
 
         private async void OnPageLoaded(object sender, RoutedEventArgs e)
         {
-            UserProfile profile = UserProfileService.LoadProfile();
-            if (!string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+            if (LoadingOverlay != null)
+            {
+                TxtLoadingMessage.Text = "Loading Project Catalog...";
+                LoadingOverlay.Visibility = Visibility.Visible;
+            }
+
+            UserProfile profile = await Task.Run(new Func<UserProfile>(() => UserProfileService.LoadProfile()));
+            if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
             {
                 workspaceRoot = profile.WorkspaceRoot;
             }
 
             WorkspaceWatcherService.Instance.WorkspaceChanged += OnWorkspaceChanged;
 
-            // Populate Designer filter by scanning workspace root
+            // Populate Designer filter asynchronously
             DesignerFilterCmb.Items.Clear();
             DesignerFilterCmb.Items.Add("All Designers");
-            List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(workspaceRoot);
-            foreach (DesignerFolderChoice d in designers)
+            List<DesignerFolderChoice> designers = await Task.Run(new Func<List<DesignerFolderChoice>>(() => WorkspaceScanner.GetDesignerFolders(workspaceRoot)));
+            if (designers != null)
             {
-                if (d != null && !string.IsNullOrWhiteSpace(d.Name))
-                    DesignerFilterCmb.Items.Add(d.Name);
+                foreach (DesignerFolderChoice d in designers)
+                {
+                    if (d != null && !string.IsNullOrWhiteSpace(d.Name))
+                        DesignerFilterCmb.Items.Add(d.Name);
+                }
             }
 
             // Populate Category filter
@@ -68,7 +79,7 @@ namespace SS_CAM.Views
 
             // Default to current user's Name or Staff ID if it appears in the list
             bool found = false;
-            string targetDesigner = !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : profile.StaffId;
+            string targetDesigner = profile != null && !string.IsNullOrWhiteSpace(profile.DesignerName) ? profile.DesignerName : (profile != null ? profile.StaffId : null);
             if (!string.IsNullOrWhiteSpace(targetDesigner))
             {
                 for (int i = 0; i < DesignerFilterCmb.Items.Count; i++)
@@ -232,68 +243,84 @@ namespace SS_CAM.Views
 
         private async System.Threading.Tasks.Task PerformSearch()
         {
-            string selectedDesigner = DesignerFilterCmb.SelectedItem != null ? DesignerFilterCmb.SelectedItem.ToString() : "All Designers";
-            string query = SearchInput != null ? SearchInput.Text.Trim() : "";
-
-            allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, "", query, 200);
-
-            if (!string.IsNullOrWhiteSpace(selectedDesigner) && !selectedDesigner.Equals("All Designers", StringComparison.OrdinalIgnoreCase))
+            if (LoadingOverlay != null)
             {
-                allItems = allItems.Where(item =>
+                TxtLoadingMessage.Text = "Scanning Projects...";
+                LoadingOverlay.Visibility = Visibility.Visible;
+            }
+
+            try
+            {
+                string selectedDesigner = DesignerFilterCmb.SelectedItem != null ? DesignerFilterCmb.SelectedItem.ToString() : "All Designers";
+                string query = SearchInput != null ? SearchInput.Text.Trim() : "";
+
+                allItems = await WorkspaceScanner.ListDesignerFoldersAsync(workspaceRoot, "", query, 200);
+
+                if (!string.IsNullOrWhiteSpace(selectedDesigner) && !selectedDesigner.Equals("All Designers", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (item == null) return false;
-                    if (!string.IsNullOrWhiteSpace(item.Designer))
+                    allItems = allItems.Where(item =>
                     {
-                        if (string.Equals(item.Designer, selectedDesigner, StringComparison.OrdinalIgnoreCase) ||
-                            item.Designer.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            selectedDesigner.IndexOf(item.Designer, StringComparison.OrdinalIgnoreCase) >= 0)
+                        if (item == null) return false;
+                        if (!string.IsNullOrWhiteSpace(item.Designer))
+                        {
+                            if (string.Equals(item.Designer, selectedDesigner, StringComparison.OrdinalIgnoreCase) ||
+                                item.Designer.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                selectedDesigner.IndexOf(item.Designer, StringComparison.OrdinalIgnoreCase) >= 0)
+                                return true;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(item.Project) && item.Project.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
                             return true;
-                    }
 
-                    if (!string.IsNullOrWhiteSpace(item.Project) && item.Project.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
-                        return true;
+                        if (!string.IsNullOrWhiteSpace(item.FullPath) && item.FullPath.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
+                            return true;
 
-                    if (!string.IsNullOrWhiteSpace(item.FullPath) && item.FullPath.IndexOf(selectedDesigner, StringComparison.OrdinalIgnoreCase) >= 0)
-                        return true;
+                        return false;
+                    }).ToList();
+                }
 
-                    return false;
-                }).ToList();
-            }
-
-            string selectedCat = CategoryFilterCmb != null && CategoryFilterCmb.SelectedItem != null ? CategoryFilterCmb.SelectedItem.ToString() : "All Categories";
-            if (selectedCat != "All Categories")
-            {
-                allItems = allItems.Where(item =>
+                string selectedCat = CategoryFilterCmb != null && CategoryFilterCmb.SelectedItem != null ? CategoryFilterCmb.SelectedItem.ToString() : "All Categories";
+                if (selectedCat != "All Categories")
                 {
-                    if (item == null) return false;
-                    string name = item.Project ?? "";
-                    string path = item.FullPath ?? "";
-                    return name.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                           path.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0;
-                }).ToList();
-            }
+                    allItems = allItems.Where(item =>
+                    {
+                        if (item == null) return false;
+                        string name = item.Project ?? "";
+                        string path = item.FullPath ?? "";
+                        return name.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                               path.IndexOf(selectedCat, StringComparison.OrdinalIgnoreCase) >= 0;
+                    }).ToList();
+                }
 
-            var displayItems = allItems.Take(10).ToList();
-            ResultsListBox.ItemsSource = displayItems;
+                var displayItems = allItems.Take(10).ToList();
+                ResultsListBox.ItemsSource = displayItems;
 
-            // Update top tray project count label
-            if (allItems.Count > 10)
-            {
-                TxtProjectCount.Text = string.Format("Showing 10 of {0} projects", allItems.Count);
-            }
-            else
-            {
-                TxtProjectCount.Text = allItems.Count == 1 ? "1 project" : string.Format("{0} projects", allItems.Count);
-            }
+                // Update top tray project count label
+                if (allItems.Count > 10)
+                {
+                    TxtProjectCount.Text = string.Format("Showing 10 of {0} projects", allItems.Count);
+                }
+                else
+                {
+                    TxtProjectCount.Text = allItems.Count == 1 ? "1 project" : string.Format("{0} projects", allItems.Count);
+                }
 
-            if (displayItems.Count > 0)
-            {
-                ResultsListBox.SelectedIndex = 0;
+                if (displayItems.Count > 0)
+                {
+                    ResultsListBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    selectedItem = null;
+                    UpdateReadmeDisplay();
+                }
             }
-            else
+            finally
             {
-                selectedItem = null;
-                UpdateReadmeDisplay();
+                if (LoadingOverlay != null)
+                {
+                    LoadingOverlay.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -511,95 +538,9 @@ namespace SS_CAM.Views
 
         private void RenderFormattedMarkdown(string markdown)
         {
-            FlowDocument doc = new FlowDocument();
-            doc.FontFamily = new FontFamily("Segoe UI");
-            doc.FontSize = 12;
-            doc.PagePadding = new Thickness(12);
-
-            if (string.IsNullOrWhiteSpace(markdown))
+            if (RenderedMarkdownViewer != null)
             {
-                doc.Blocks.Add(new Paragraph(new Run("No documentation content available.")) { Foreground = Brushes.Gray });
-            }
-            else
-            {
-                string[] lines = markdown.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-                foreach (string rawLine in lines)
-                {
-                    string line = rawLine.Trim();
-                    if (string.IsNullOrWhiteSpace(line)) continue;
-
-                    if (line.StartsWith("# "))
-                    {
-                        Paragraph p = new Paragraph();
-                        p.FontSize = 18;
-                        p.FontWeight = FontWeights.Bold;
-                        p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-                        p.Margin = new Thickness(0, 10, 0, 4);
-                        AddFormattedInlines(p, line.Substring(2).Trim());
-                        doc.Blocks.Add(p);
-                    }
-                    else if (line.StartsWith("## "))
-                    {
-                        Paragraph p = new Paragraph();
-                        p.FontSize = 14;
-                        p.FontWeight = FontWeights.Bold;
-                        p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-                        p.Margin = new Thickness(0, 8, 0, 4);
-                        AddFormattedInlines(p, line.Substring(3).Trim());
-                        doc.Blocks.Add(p);
-                    }
-                    else if (line.StartsWith("### "))
-                    {
-                        Paragraph p = new Paragraph();
-                        p.FontSize = 13;
-                        p.FontWeight = FontWeights.Bold;
-                        p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7"));
-                        p.Margin = new Thickness(0, 6, 0, 2);
-                        AddFormattedInlines(p, line.Substring(4).Trim());
-                        doc.Blocks.Add(p);
-                    }
-                    else if (line.StartsWith("- ") || line.StartsWith("* "))
-                    {
-                        Paragraph p = new Paragraph();
-                        p.Margin = new Thickness(14, 2, 0, 2);
-                        p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-                        p.Inlines.Add(new Run("• ") { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7")) });
-                        AddFormattedInlines(p, line.Substring(2).Trim());
-                        doc.Blocks.Add(p);
-                    }
-                    else
-                    {
-                        Paragraph p = new Paragraph();
-                        p.Margin = new Thickness(0, 3, 0, 3);
-                        p.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-                        AddFormattedInlines(p, line);
-                        doc.Blocks.Add(p);
-                    }
-                }
-            }
-
-            RenderedMarkdownViewer.Document = doc;
-        }
-
-        private void AddFormattedInlines(Paragraph p, string text)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-
-            // Simple regex tokenizer for **bold** text
-            string pattern = @"(\*\*.*?\*\*)";
-            string[] parts = Regex.Split(text, pattern);
-
-            foreach (string part in parts)
-            {
-                if (part.StartsWith("**") && part.EndsWith("**") && part.Length >= 4)
-                {
-                    string boldContent = part.Substring(2, part.Length - 4);
-                    p.Inlines.Add(new Run(boldContent) { FontWeight = FontWeights.Bold });
-                }
-                else if (!string.IsNullOrEmpty(part))
-                {
-                    p.Inlines.Add(new Run(part));
-                }
+                RenderedMarkdownViewer.Document = MarkdownHelper.ToFlowDocument(markdown);
             }
         }
 
@@ -609,12 +550,9 @@ namespace SS_CAM.Views
             RawMarkdownBox.Visibility = Visibility.Collapsed;
             ImageGalleryViewer.Visibility = Visibility.Collapsed;
 
-            BtnModeRendered.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-            BtnModeRendered.Foreground = Brushes.White;
-            BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeRaw.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-            BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeImages.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeRendered.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            BtnModeRaw.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnModeImages.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
         }
 
         private void OnModeRawClicked(object sender, RoutedEventArgs e)
@@ -623,12 +561,9 @@ namespace SS_CAM.Views
             RawMarkdownBox.Visibility = Visibility.Visible;
             ImageGalleryViewer.Visibility = Visibility.Collapsed;
 
-            BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-            BtnModeRaw.Foreground = Brushes.White;
-            BtnModeRendered.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeRendered.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-            BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeImages.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeRaw.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            BtnModeRendered.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnModeImages.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
         }
 
         private void OnModeImagesClicked(object sender, RoutedEventArgs e)
@@ -637,12 +572,9 @@ namespace SS_CAM.Views
             RawMarkdownBox.Visibility = Visibility.Collapsed;
             ImageGalleryViewer.Visibility = Visibility.Visible;
 
-            BtnModeImages.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
-            BtnModeImages.Foreground = Brushes.White;
-            BtnModeRendered.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeRendered.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
-            BtnModeRaw.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
-            BtnModeRaw.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E293B"));
+            BtnModeImages.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            BtnModeRendered.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnModeRaw.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
 
             LoadProjectImages();
         }

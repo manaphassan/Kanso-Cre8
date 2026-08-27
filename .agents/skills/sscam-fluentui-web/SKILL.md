@@ -25,6 +25,7 @@ This skill defines the official implementation standards for **Microsoft Fluent 
 
 For complete design system token tables, shadow ramps, typography specifications, and component standards, see:
 - [`fluentui-web-guideline.md`](file:///e:/Dev/Projects/SS-Brand-Assets/.agents/skills/sscam-fluentui-web/references/fluentui-web-guideline.md)
+- [`HERO-BANNER-BACKGROUND.md`](file:///e:/Dev/Projects/SS-Brand-Assets/docs/HERO-BANNER-BACKGROUND.md) (Canonical default background component for all Hero Banners)
 
 ---
 

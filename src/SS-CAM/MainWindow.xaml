@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v4.4.2" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v4.4.3" Height="820" Width="1280"
         MinHeight="680" MinWidth="1024"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
@@ -300,7 +300,7 @@
                     <!-- Station Name, Live Badge, Visualizer Badge & Now Playing Track Info -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="OnBottomRadioBarClicked">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <ui:TextBlock x:Name="TxtBottomRadioTitle" Text="Radio Stream" FontWeight="Bold" FontSize="13"
+                            <ui:TextBlock x:Name="TxtBottomRadioTitle" Text="SuamiSihat Radio" FontWeight="Bold" FontSize="13"
                                            Foreground="White" VerticalAlignment="Center"/>
                             <Border Background="#10B981" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
                                 <ui:TextBlock Text="LIVE" Foreground="White" FontSize="9" FontWeight="Bold"/>

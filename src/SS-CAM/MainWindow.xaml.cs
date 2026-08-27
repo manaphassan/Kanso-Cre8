@@ -206,7 +206,7 @@ namespace SS_CAM
                 else if (radio.State == RadioPlaybackState.Buffering)
                 {
                     if (TxtBottomRadioPlayIcon != null) TxtBottomRadioPlayIcon.Text = "\uE823";
-                    if (TxtBottomRadioTrack != null) TxtBottomRadioTrack.Text = "Connecting to stream...";
+                    if (TxtBottomRadioTrack != null) TxtBottomRadioTrack.Text = "Connecting & Buffering Stream...";
                 }
                 else
                 {

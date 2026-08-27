@@ -1,4 +1,4 @@
-<Page x:Class="SS_CAM.Views.CopywritingPage"
+﻿<Page x:Class="SS_CAM.Views.CopywritingPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,11 +9,12 @@
       Title="Copywriting Studio"
       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer x:Name="PageScrollViewer"
-                  VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
-                  Padding="24"
-                  PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <Grid>
+        <ScrollViewer x:Name="PageScrollViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="24"
+                      PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel HorizontalAlignment="Stretch">
 
             <!-- 1. PAGE HEADER -->
@@ -83,18 +84,27 @@
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <ComboBox x:Name="ProjectSelectorCmb" Grid.Column="1" Height="32"
-                                  SelectionChanged="OnProjectSelectionChanged" VerticalAlignment="Center"
+                        <ComboBox x:Name="ProjectSelectorCmb" Grid.Column="1" Height="36"
+                                  Padding="10,6" FontSize="12.5"
+                                  SelectionChanged="OnProjectSelectionChanged" VerticalAlignment="Center" VerticalContentAlignment="Center"
                                   Background="{DynamicResource TextControlBackground}"
-                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <ui:TextBlock Text="{Binding Name}" FontSize="12.5" VerticalAlignment="Center"
+                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                  Padding="4,2"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
                         <ui:Button x:Name="BtnReloadProjects" Grid.Column="2" Appearance="Secondary" Margin="8,0,0,0"
-                                   Click="OnReloadProjectsClicked" Height="32" Cursor="Hand" ToolTip="Rescan workspace projects">
+                                   Click="OnReloadProjectsClicked" Height="36" Cursor="Hand" ToolTip="Rescan workspace projects">
                             <ui:SymbolIcon Symbol="ArrowSync24" FontSize="14"/>
                         </ui:Button>
 
                         <ui:Button x:Name="BtnOpenFolder" Grid.Column="3" Appearance="Secondary" Margin="8,0,0,0"
-                                   Click="OnOpenFolderClicked" Height="32" Cursor="Hand" ToolTip="Open project folder in Windows Explorer">
+                                   Click="OnOpenFolderClicked" Height="36" Cursor="Hand" ToolTip="Open project folder in Windows Explorer">
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="FolderOpen24" Margin="0,0,6,0" FontSize="14"/>
                                 <ui:TextBlock Text="Open Folder"/>
@@ -386,8 +396,8 @@
                         </Border>
                     </Grid>
 
-                    <!-- Workspace Content Grid -->
-                    <Grid Grid.Row="1" MinHeight="520">
+                    <!-- Workspace Content Grid (Full Height) -->
+                    <Grid Grid.Row="1" MinHeight="720" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition x:Name="ColEditor" Width="*"/>
                             <ColumnDefinition x:Name="ColSplitter" Width="0"/>
@@ -395,28 +405,31 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- LEFT COLUMN: Primary Canvas (FlowDocument in Preview Live, Editor in Edit & Split) -->
-                        <Grid Grid.Column="0">
+                        <Grid Grid.Column="0" VerticalAlignment="Stretch">
                             <!-- 1. Full FlowDocument Viewer (Active in Preview Live Mode) -->
                             <FlowDocumentScrollViewer x:Name="RenderedCopyViewer"
-                                                      MinHeight="480" MaxHeight="850"
+                                                      MinHeight="700"
                                                       VerticalScrollBarVisibility="Auto"
+                                                      VerticalAlignment="Stretch"
                                                       FontFamily="{DynamicResource FluentFontFamily}"
+                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                       Background="{DynamicResource TextControlBackground}"
                                                       BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                                       BorderThickness="1"
-                                                      Padding="16"
+                                                      Padding="18"
                                                       Visibility="Visible"/>
 
                             <!-- 2. Raw Markdown Editor (Active in Edit Mode & Split Left) -->
                             <TextBox x:Name="CopyScriptEditor"
-                                     MinHeight="480" MaxHeight="850"
+                                     MinHeight="700"
+                                     VerticalAlignment="Stretch"
                                      AcceptsReturn="True" AcceptsTab="True"
                                      TextWrapping="Wrap"
                                      VerticalScrollBarVisibility="Auto"
                                      HorizontalScrollBarVisibility="Disabled"
                                      FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"
                                      FontSize="12.5"
-                                     Padding="14"
+                                     Padding="16"
                                      Background="{DynamicResource TextControlBackground}"
                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                      BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -431,33 +444,45 @@
                                       Background="Transparent" Cursor="SizeWE" Visibility="Collapsed"/>
 
                         <!-- RIGHT COLUMN: SPLIT LIVE RENDERED MARKDOWN OR MOCKUP VIEW -->
-                        <Grid x:Name="RightPaneContainer" Grid.Column="2" Visibility="Collapsed">
+                        <Grid x:Name="RightPaneContainer" Grid.Column="2" Visibility="Collapsed" VerticalAlignment="Stretch">
                             <!-- 1. Split Live Rendered FlowDocument (Right pane in Split Mode) -->
                             <FlowDocumentScrollViewer x:Name="RenderedCopyViewerSplit"
-                                                      MinHeight="480" MaxHeight="850"
+                                                      MinHeight="700"
                                                       VerticalScrollBarVisibility="Auto"
+                                                      VerticalAlignment="Stretch"
                                                       FontFamily="{DynamicResource FluentFontFamily}"
+                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                       Background="{DynamicResource TextControlBackground}"
                                                       BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                                       BorderThickness="1"
-                                                      Padding="16"
+                                                      Padding="18"
                                                       Visibility="Collapsed"/>
 
-                            <!-- 2. Ad & WhatsApp Live Mockups (Mockup View) -->
+                            <!-- 2. Ad & WhatsApp Live Mockups (Mockup View - Side by Side) -->
                             <Border x:Name="LivePreviewPanel"
+                                    MinHeight="700"
+                                    VerticalAlignment="Stretch"
                                     Background="{DynamicResource TextControlBackground}"
                                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1" CornerRadius="8" Padding="14"
+                                    BorderThickness="1" CornerRadius="8" Padding="16"
                                     Visibility="Collapsed">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                    <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <!-- Left: WhatsApp Broadcast Mockup -->
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="16"/>
+                                            <!-- Right: Meta Sponsored Ad Mockup -->
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
                                         <!-- WhatsApp Live Simulation Card -->
-                                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        <Border Grid.Column="0" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1" CornerRadius="10" Margin="0,0,0,16">
+                                                BorderThickness="1" CornerRadius="10" VerticalAlignment="Top">
                                             <StackPanel>
                                                 <!-- WhatsApp Header Bar -->
-                                                <Border Background="#075E54" CornerRadius="9,9,0,0" Padding="12,8">
+                                                <Border Background="#075E54" CornerRadius="9,9,0,0" Padding="14,10">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="Auto"/>
@@ -473,21 +498,21 @@
                                                         </StackPanel>
 
                                                         <Border Grid.Column="2" Background="#128C7E" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
-                                                            <ui:TextBlock Text="LIVE AD CHAT" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                            <ui:TextBlock Text="WHATSAPP BROADCAST" FontSize="9" FontWeight="Bold" Foreground="#FFFFFF"/>
                                                         </Border>
                                                     </Grid>
                                                 </Border>
 
                                                 <!-- WhatsApp Chat Bubble Surface -->
-                                                <Border Background="#E5DDD5" Padding="12" MinHeight="160">
-                                                    <Border Background="#FFFFFF" CornerRadius="8" Padding="10,8" MaxWidth="450" HorizontalAlignment="Left"
+                                                <Border Background="#E5DDD5" Padding="14" MinHeight="260">
+                                                    <Border Background="#FFFFFF" CornerRadius="8" Padding="12,10" HorizontalAlignment="Stretch"
                                                             BorderBrush="#D0D7DE" BorderThickness="1">
                                                         <StackPanel>
                                                             <TextBlock x:Name="TxtWhatsAppLiveContent" Text="Drafting your copy in the editor on the left will render formatted text here in real time..."
                                                                        TextWrapping="Wrap" FontSize="12.5" FontFamily="Segoe UI" LineHeight="19"
                                                                        Foreground="#111B21"/>
                                                             
-                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
                                                                 <TextBlock x:Name="TxtWhatsAppTimestamp" Text="10:30 AM" FontSize="9.5" Foreground="#667781" Margin="0,0,4,0"/>
                                                                 <TextBlock Text="&#x2713;&#x2713;" FontSize="9.5" FontWeight="Bold" Foreground="#53BDEB"/>
                                                             </StackPanel>
@@ -498,24 +523,24 @@
                                         </Border>
 
                                         <!-- Meta Ad Primary Text Card -->
-                                        <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                        <Border Grid.Column="2" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                BorderThickness="1" CornerRadius="10" Padding="12">
+                                                BorderThickness="1" CornerRadius="10" Padding="14" VerticalAlignment="Top">
                                             <StackPanel>
                                                 <!-- Meta Sponsor Header -->
-                                                <Grid Margin="0,0,0,8">
+                                                <Grid Margin="0,0,0,10">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <Ellipse Grid.Column="0" Width="28" Height="28" Fill="{DynamicResource FluentBrand80}" Margin="0,0,8,0"/>
+                                                    <Ellipse Grid.Column="0" Width="30" Height="30" Fill="{DynamicResource FluentBrand80}" Margin="0,0,10,0"/>
 
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                        <ui:TextBlock Text="SuamiSihat" FontWeight="SemiBold" FontSize="12"
+                                                        <ui:TextBlock Text="SuamiSihat" FontWeight="SemiBold" FontSize="12.5"
                                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                                        <ui:TextBlock Text="Sponsored &#x2022; Meta Ads" FontSize="10"
+                                                        <ui:TextBlock Text="Sponsored &#x2022; Meta Ads (FB/IG Feed)" FontSize="10"
                                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                                     </StackPanel>
 
@@ -526,12 +551,12 @@
                                                 <!-- Ad Body Text -->
                                                 <TextBlock x:Name="TxtMetaAdLiveContent" Text="Primary ad copy will appear here formatted for Facebook &amp; Instagram feed ads."
                                                            TextWrapping="Wrap" FontSize="12" FontFamily="Segoe UI" LineHeight="18"
-                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,10"/>
+                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,14"/>
 
                                                 <!-- Mock CTA Footer -->
                                                 <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
                                                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                                        BorderThickness="1" CornerRadius="6" Padding="10,8">
+                                                        BorderThickness="1" CornerRadius="6" Padding="12,10">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"/>
@@ -545,14 +570,14 @@
                                                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                                         </StackPanel>
 
-                                                        <Border Grid.Column="1" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="10,5">
+                                                        <Border Grid.Column="1" Background="{DynamicResource FluentBrand80}" CornerRadius="4" Padding="12,6">
                                                             <ui:TextBlock Text="Send Message" FontSize="10.5" FontWeight="Bold" Foreground="#FFFFFF"/>
                                                         </Border>
                                                     </Grid>
                                                 </Border>
                                             </StackPanel>
                                         </Border>
-                                    </StackPanel>
+                                    </Grid>
                                 </ScrollViewer>
                             </Border>
                         </Grid>
@@ -562,6 +587,23 @@
 
         </StackPanel>
     </ScrollViewer>
+
+        <!-- ── Smooth Fluent 2 Loading Overlay (Indeterminate Ring & Feedback) ── -->
+        <Border x:Name="LoadingOverlay" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                Opacity="0.88" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Panel.ZIndex="100">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ui:ProgressRing IsIndeterminate="True" Width="44" Height="44"
+                                 Foreground="{DynamicResource FluentBrand80}" Margin="0,0,0,16"/>
+                <ui:TextBlock x:Name="TxtLoadingMessage" Text="Loading Copywriting Workspace..."
+                              FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"
+                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <ui:TextBlock Text="Reading briefs and COPY.md from Synology NAS"
+                              FontSize="11.5" HorizontalAlignment="Center"
+                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Page>
 
 

@@ -95,82 +95,97 @@ namespace SS_CAM.Views
 
         private async Task LoadProjectsAsync()
         {
-            discoveredProjects.Clear();
-            ProjectSelectorCmb.Items.Clear();
-
-            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+            if (LoadingOverlay != null)
             {
-                TxtFilePath.Text = "Workspace root not found or not configured in Settings.";
-                SetStatusBadge("Not Configured", false);
-                return;
+                LoadingOverlay.Visibility = Visibility.Visible;
             }
 
-            SetStatusBadge("Scanning...", false);
-            List<ProjectItemInfo> projects = await Task.Factory.StartNew(delegate
+            try
             {
-                List<ProjectItemInfo> list = new List<ProjectItemInfo>();
-                try
+                discoveredProjects.Clear();
+                ProjectSelectorCmb.Items.Clear();
+
+                if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
                 {
-                    Queue<string> queue = new Queue<string>();
-                    queue.Enqueue(workspaceRoot);
-                    Regex pattern = new Regex(@"^\d{6}_\d[A-Z0-9]*", RegexOptions.IgnoreCase);
+                    TxtFilePath.Text = "Workspace root not found or not configured in Settings.";
+                    SetStatusBadge("Not Configured", false);
+                    return;
+                }
 
-                    while (queue.Count > 0)
+                SetStatusBadge("Scanning...", false);
+                List<ProjectItemInfo> projects = await Task.Factory.StartNew(delegate
+                {
+                    List<ProjectItemInfo> list = new List<ProjectItemInfo>();
+                    try
                     {
-                        string current = queue.Dequeue();
-                        string[] subdirs;
-                        try { subdirs = Directory.GetDirectories(current); }
-                        catch (Exception ex) { Debug.WriteLine("[CopywritingPage] GetDirectories: " + ex.Message); continue; }
+                        Queue<string> queue = new Queue<string>();
+                        queue.Enqueue(workspaceRoot);
+                        Regex pattern = new Regex(@"^\d{6}_\d[A-Z0-9]*", RegexOptions.IgnoreCase);
 
-                        foreach (string sub in subdirs)
+                        while (queue.Count > 0)
                         {
-                            string dirName = Path.GetFileName(sub);
-                            if (dirName.StartsWith(".") || dirName.Equals("_Team", StringComparison.OrdinalIgnoreCase) || dirName.Equals("#recycle", StringComparison.OrdinalIgnoreCase))
-                                continue;
+                            string current = queue.Dequeue();
+                            string[] subdirs;
+                            try { subdirs = Directory.GetDirectories(current); }
+                            catch (Exception ex) { Debug.WriteLine("[CopywritingPage] GetDirectories: " + ex.Message); continue; }
 
-                            if (pattern.IsMatch(dirName))
+                            foreach (string sub in subdirs)
                             {
-                                ProjectItemInfo info = new ProjectItemInfo();
-                                info.Name = dirName;
-                                info.FullPath = sub;
-                                info.ProjectId = dirName;
-                                list.Add(info);
-                            }
-                            else
-                            {
-                                queue.Enqueue(sub);
+                                string dirName = Path.GetFileName(sub);
+                                if (dirName.StartsWith(".") || dirName.Equals("_Team", StringComparison.OrdinalIgnoreCase) || dirName.Equals("#recycle", StringComparison.OrdinalIgnoreCase))
+                                    continue;
+
+                                if (pattern.IsMatch(dirName))
+                                {
+                                    ProjectItemInfo info = new ProjectItemInfo();
+                                    info.Name = dirName;
+                                    info.FullPath = sub;
+                                    info.ProjectId = dirName;
+                                    list.Add(info);
+                                }
+                                else
+                                {
+                                    queue.Enqueue(sub);
+                                }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("[CopywritingPage] Scan error: " + ex.Message);
-                }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("[CopywritingPage] Scan error: " + ex.Message);
+                    }
 
-                // Sort descending (newest projects first)
-                list.Sort(delegate (ProjectItemInfo a, ProjectItemInfo b)
-                {
-                    return string.Compare(b.Name, a.Name, StringComparison.OrdinalIgnoreCase);
+                    // Sort descending (newest projects first)
+                    list.Sort(delegate (ProjectItemInfo a, ProjectItemInfo b)
+                    {
+                        return string.Compare(b.Name, a.Name, StringComparison.OrdinalIgnoreCase);
+                    });
+
+                    return list;
                 });
 
-                return list;
-            });
+                discoveredProjects = projects;
+                foreach (ProjectItemInfo p in discoveredProjects)
+                {
+                    ProjectSelectorCmb.Items.Add(p);
+                }
 
-            discoveredProjects = projects;
-            foreach (ProjectItemInfo p in discoveredProjects)
-            {
-                ProjectSelectorCmb.Items.Add(p);
+                if (ProjectSelectorCmb.Items.Count > 0)
+                {
+                    ProjectSelectorCmb.SelectedIndex = 0;
+                }
+                else
+                {
+                    TxtFilePath.Text = "No project vaults discovered in workspace.";
+                    SetStatusBadge("Idle", false);
+                }
             }
-
-            if (ProjectSelectorCmb.Items.Count > 0)
+            finally
             {
-                ProjectSelectorCmb.SelectedIndex = 0;
-            }
-            else
-            {
-                TxtFilePath.Text = "No project vaults discovered in workspace.";
-                SetStatusBadge("Idle", false);
+                if (LoadingOverlay != null)
+                {
+                    LoadingOverlay.Visibility = Visibility.Collapsed;
+                }
             }
         }
 

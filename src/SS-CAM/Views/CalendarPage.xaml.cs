@@ -293,7 +293,18 @@ namespace SS_CAM.Views
                 if (TxtCurrentMonthTitle != null)
                 {
                     DateTime activeMonthDate = new DateTime(_currentYear, _currentMonth, 1);
-                    TxtCurrentMonthTitle.Text = activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+                    List<MalaysiaHolidayItem> monthHolidays = MalaysiaHolidayService.GetHolidaysForMonth(_currentYear, _currentMonth);
+                    if (monthHolidays != null && monthHolidays.Count > 0)
+                    {
+                        TxtCurrentMonthTitle.Text = string.Format("{0}  (🇲🇾 {1} Public Holiday{2})",
+                            activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture),
+                            monthHolidays.Count,
+                            monthHolidays.Count > 1 ? "s" : "");
+                    }
+                    else
+                    {
+                        TxtCurrentMonthTitle.Text = activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+                    }
                 }
 
                 if (CalendarGrid == null) return;
@@ -423,6 +434,32 @@ namespace SS_CAM.Views
                 topPanel.Children.Add(friBadge);
             }
 
+            // Malaysia Public Holiday Tag
+            MalaysiaHolidayItem holiday = MalaysiaHolidayService.GetHoliday(date);
+            if (holiday != null)
+            {
+                Border holBadge = new Border
+                {
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(4, 1, 4, 1),
+                    Margin = new Thickness(4, 0, 0, 0),
+                    Background = new SolidColorBrush(Color.FromArgb(40, 239, 68, 68)),
+                    BorderBrush = new SolidColorBrush(Color.FromArgb(120, 239, 68, 68)),
+                    BorderThickness = new Thickness(1),
+                    ToolTip = "Malaysia Public Holiday: " + holiday.Name
+                };
+                TextBlock holTxt = new TextBlock
+                {
+                    Text = "🇲🇾 " + holiday.ShortName,
+                    FontSize = 8.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = new SolidColorBrush(Color.FromRgb(220, 38, 38)),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                holBadge.Child = holTxt;
+                topPanel.Children.Add(holBadge);
+            }
+
             Grid.SetRow(topPanel, 0);
             cellGrid.Children.Add(topPanel);
 
@@ -430,7 +467,43 @@ namespace SS_CAM.Views
             StackPanel eventStack = new StackPanel();
             Grid.SetRow(eventStack, 1);
 
-            int displayCount = Math.Min(3, events.Count);
+            // Prepend Holiday Chip if applicable
+            if (holiday != null)
+            {
+                Border holChip = new Border
+                {
+                    CornerRadius = new CornerRadius(3),
+                    Padding = new Thickness(4, 2, 4, 2),
+                    Margin = new Thickness(0, 0, 0, 3),
+                    Background = new SolidColorBrush(Color.FromArgb(30, 239, 68, 68)),
+                    BorderBrush = new SolidColorBrush(Color.FromArgb(90, 239, 68, 68)),
+                    BorderThickness = new Thickness(1),
+                    ToolTip = "Malaysia Public Holiday: " + holiday.Name
+                };
+                StackPanel holPanel = new StackPanel { Orientation = Orientation.Horizontal };
+                TextBlock holIcon = new TextBlock
+                {
+                    Text = "🇲🇾",
+                    FontSize = 9.5,
+                    Margin = new Thickness(0, 0, 4, 0),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                TextBlock holTitle = new TextBlock
+                {
+                    Text = holiday.Name,
+                    FontSize = 9.5,
+                    FontWeight = FontWeights.SemiBold,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    Foreground = new SolidColorBrush(Color.FromRgb(220, 38, 38)),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                holPanel.Children.Add(holIcon);
+                holPanel.Children.Add(holTitle);
+                holChip.Child = holPanel;
+                eventStack.Children.Add(holChip);
+            }
+
+            int displayCount = Math.Min(holiday != null ? 2 : 3, events.Count);
             for (int e = 0; e < displayCount; e++)
             {
                 CalendarDayEventItem item = events[e];
@@ -476,11 +549,12 @@ namespace SS_CAM.Views
                 eventStack.Children.Add(chip);
             }
 
-            if (events.Count > 3)
+            int maxDisplay = holiday != null ? 2 : 3;
+            if (events.Count > maxDisplay)
             {
                 TextBlock txtMore = new TextBlock
                 {
-                    Text = string.Format("+{0} more", events.Count - 3),
+                    Text = string.Format("+{0} more", events.Count - maxDisplay),
                     FontSize = 9,
                     FontWeight = FontWeights.Bold,
                     Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
@@ -518,6 +592,21 @@ namespace SS_CAM.Views
 
             List<ProjectStatusItem> filtered = GetFilteredProjects();
             List<CalendarDayEventItem> dayEvents = new List<CalendarDayEventItem>();
+
+            // Prepend Malaysia Public Holiday if applicable
+            MalaysiaHolidayItem holiday = MalaysiaHolidayService.GetHoliday(cellDate);
+            if (holiday != null)
+            {
+                dayEvents.Add(new CalendarDayEventItem
+                {
+                    Project = "🇲🇾 " + holiday.Name,
+                    FullPath = "",
+                    Priority = "Holiday",
+                    PriorityColor = "#EF4444",
+                    EventType = "Public Holiday",
+                    DesignerDisplay = holiday.Description
+                });
+            }
 
             foreach (ProjectStatusItem p in filtered)
             {
@@ -723,6 +812,23 @@ namespace SS_CAM.Views
             {
                 if (GanttHeaderGrid == null || GanttRowsStack == null) return;
 
+                if (TxtCurrentMonthTitle != null)
+                {
+                    DateTime activeMonthDate = new DateTime(_currentYear, _currentMonth, 1);
+                    List<MalaysiaHolidayItem> monthHolidays = MalaysiaHolidayService.GetHolidaysForMonth(_currentYear, _currentMonth);
+                    if (monthHolidays != null && monthHolidays.Count > 0)
+                    {
+                        TxtCurrentMonthTitle.Text = string.Format("{0}  (🇲🇾 {1} Public Holiday{2})",
+                            activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture),
+                            monthHolidays.Count,
+                            monthHolidays.Count > 1 ? "s" : "");
+                    }
+                    else
+                    {
+                        TxtCurrentMonthTitle.Text = activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+                    }
+                }
+
                 GanttHeaderGrid.Children.Clear();
                 GanttHeaderGrid.ColumnDefinitions.Clear();
                 GanttRowsStack.Children.Clear();
@@ -750,15 +856,17 @@ namespace SS_CAM.Views
 
                     DateTime dt = new DateTime(_currentYear, _currentMonth, day);
                     bool isToday = (dt.Date == DateTime.Today);
+                    MalaysiaHolidayItem holiday = MalaysiaHolidayService.GetHoliday(dt);
 
                     TextBlock dayText = new TextBlock
                     {
                         Text = day.ToString(),
-                        FontWeight = isToday ? FontWeights.Bold : FontWeights.Normal,
+                        FontWeight = isToday || holiday != null ? FontWeights.Bold : FontWeights.Normal,
                         FontSize = 10,
                         Foreground = isToday 
                             ? (Brush)Application.Current.FindResource("FluentBrand80")
-                            : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                            : (holiday != null ? new SolidColorBrush(Color.FromRgb(220, 38, 38)) : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush")),
+                        ToolTip = holiday != null ? ("🇲🇾 " + holiday.Name) : null,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center
                     };

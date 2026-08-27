@@ -62,27 +62,27 @@
         </Grid>
 
         <!-- Row 1: ── TOP HERO FEATURED PLAYER BANNER (Standard Banner Hero Mesh) ── -->
-        <ui:Card Grid.Row="1" MinHeight="100" Padding="0" Margin="0,0,0,16"
+        <ui:Card Grid.Row="1" MinHeight="130" Height="130" Padding="0" Margin="0,0,0,16"
                  Background="#022057"
                  Effect="{DynamicResource FluentDepth4}"
                  ClipToBounds="True">
             <Border CornerRadius="12" Background="#022057" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True">
-                <Grid x:Name="HeroMeshContainer" MouseMove="OnHeroMeshMouseMove" MouseLeave="OnHeroMeshMouseLeave" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <!-- SuamiSihat Hero Mesh Backdrop Animation Layer (assets.suamisihat.myds.me visualizer hero) -->
+                <Grid x:Name="HeroMeshContainer" SizeChanged="OnHeroMeshSizeChanged" MouseMove="OnHeroMeshMouseMove" MouseLeave="OnHeroMeshMouseLeave" Background="#022057" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True">
+                <!-- SuamiSihat Hero Mesh Backdrop Animation Layer (HERO-BANNER-BACKGROUND.md standard) -->
                 <Rectangle x:Name="HeroMeshAtmosphere" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Rectangle.Fill>
-                        <LinearGradientBrush x:Name="HeroMeshGrad" StartPoint="0,0" EndPoint="1,1">
+                        <LinearGradientBrush x:Name="HeroMeshGrad" StartPoint="0,0" EndPoint="0,1">
                             <GradientStop x:Name="HeroMeshStop1" Color="#022057" Offset="0.0"/>
-                            <GradientStop x:Name="HeroMeshStop2" Color="#03296E" Offset="0.5"/>
-                            <GradientStop x:Name="HeroMeshStop3" Color="#043388" Offset="1.0"/>
+                            <GradientStop x:Name="HeroMeshStop2" Color="#043388" Offset="0.6"/>
+                            <GradientStop x:Name="HeroMeshStop3" Color="#021233" Offset="1.0"/>
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>
 
                 <!-- Dynamic Pulsating Aura Glow Rings & SuamiSihat Men Icon Backdrop -->
-                <Canvas x:Name="HeroMeshBackdropCanvas" IsHitTestVisible="False">
+                <Canvas x:Name="HeroMeshBackdropCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
                     <!-- Glowing Azure Aura Ring -->
-                    <Ellipse x:Name="AuraRing1" Width="380" Height="380" Canvas.Right="-90" Canvas.Top="-120" Opacity="0.45">
+                    <Ellipse x:Name="AuraRing1" Width="380" Height="380" Canvas.Right="-60" Canvas.Top="-120" Opacity="0.50">
                         <Ellipse.Fill>
                             <RadialGradientBrush>
                                 <GradientStop Color="#21A1F7" Offset="0.0"/>
@@ -95,7 +95,7 @@
                     </Ellipse>
 
                     <!-- Glowing Brand Yellow Aura Ring -->
-                    <Ellipse x:Name="AuraRing2" Width="320" Height="320" Canvas.Left="-80" Canvas.Bottom="-110" Opacity="0.35">
+                    <Ellipse x:Name="AuraRing2" Width="320" Height="320" Canvas.Left="-60" Canvas.Bottom="-110" Opacity="0.40">
                         <Ellipse.Fill>
                             <RadialGradientBrush>
                                 <GradientStop Color="#FCE53D" Offset="0.0"/>
@@ -108,7 +108,7 @@
                     </Ellipse>
 
                     <!-- Concentric Bass Shockwave Ripple Ring (Expanding on bass drops) -->
-                    <Ellipse x:Name="BassShockwaveRing" Width="140" Height="140" Canvas.Right="180" Canvas.Top="50" Opacity="0" IsHitTestVisible="False">
+                    <Ellipse x:Name="BassShockwaveRing" Width="140" Height="140" Canvas.Right="180" Canvas.Top="20" Opacity="0" IsHitTestVisible="False">
                         <Ellipse.Stroke>
                             <SolidColorBrush x:Name="ShockwaveBrush" Color="#21A1F7"/>
                         </Ellipse.Stroke>
@@ -121,7 +121,7 @@
                     </Ellipse>
 
                     <!-- Floating Spark Particles Layer (Transient treble & energy sparkles) -->
-                    <Canvas x:Name="ParticleCanvas" IsHitTestVisible="False">
+                    <Canvas x:Name="ParticleCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
                         <Ellipse x:Name="Spark1" Width="5" Height="5" Canvas.Right="140" Canvas.Top="20" Fill="#FCE53D" Opacity="0.6">
                             <Ellipse.Effect><DropShadowEffect Color="#FCE53D" BlurRadius="8" ShadowDepth="0"/></Ellipse.Effect>
                         </Ellipse>
@@ -142,16 +142,16 @@
                         </Ellipse>
                     </Canvas>
 
-                    <!-- 69 Scattered Floating Mars Symbols (♂) Canvas -->
-                    <Canvas x:Name="ScatteredSymbolsCanvas" IsHitTestVisible="False"/>
+                    <!-- 69 Scattered Floating Mars Symbols (♂) Canvas (Active only during audio playback) -->
+                    <Canvas x:Name="ScatteredSymbolsCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0" IsHitTestVisible="False"/>
 
-                    <!-- SuamiSihat Floating Crest Icon (Drifting near center-right) -->
-                    <Canvas x:Name="SSLogoCanvas" Canvas.Right="240" Canvas.Top="85" IsHitTestVisible="False">
+                    <!-- SuamiSihat Floating Crest Icon (Active only during audio playback) -->
+                    <Canvas x:Name="SSLogoCanvas" Canvas.Right="240" Canvas.Top="25" Opacity="0" IsHitTestVisible="False">
                         <Grid Width="70" Height="70">
                             <Grid.RenderTransform>
                                 <ScaleTransform x:Name="MenIconScale" CenterX="35" CenterY="35" ScaleX="1.0" ScaleY="1.0"/>
                             </Grid.RenderTransform>
-                            <Viewbox Width="60" Height="60" Opacity="0.30">
+                            <Viewbox Width="65" Height="65" Opacity="0.35">
                                 <Canvas Width="1081" Height="1080">
                                     <Path Data="M502.876,705.61c11.387,10.993 24.629,18.95 38.659,23.928c23.084,8.125 48.39,8.125 71.501,-0.03l0.027,-0.027c3.572,-1.209 7.031,-2.643 10.488,-4.301l0.03,-0.03c10.121,-4.836 19.652,-11.33 28.144,-19.54c0.505,-0.449 1.012,-0.956 1.491,-1.433c0.477,-0.48 0.982,-0.984 1.434,-1.491c8.21,-8.49 14.704,-18.024 19.539,-28.144c1.661,-3.46 3.122,-6.946 4.331,-10.516l0.028,-0.027c8.154,-23.113 8.154,-48.418 0.027,-71.501c-4.975,-14.032 -12.933,-27.275 -23.925,-38.662c-0.452,-0.504 -0.957,-1.011 -1.434,-1.488l-101.221,-101.221c-13.974,-13.974 -36.636,-13.974 -50.61,-0c-13.468,13.467 -13.945,35.032 -1.434,49.119c0.45,0.507 0.957,1.014 1.434,1.491l101.221,101.219c0.477,0.479 0.984,0.984 1.433,1.491c12.511,14.087 12.034,35.652 -1.433,49.119c-13.975,13.975 -36.636,13.975 -50.611,0l-62.559,-62.559l-50.611,50.61l62.56,62.56c0.479,0.477 0.984,0.984 1.491,1.433" Fill="#6DC6EC"/>
                                     <Path Data="M490.954,375.185c23.111,-8.155 48.418,-8.155 71.501,-0.028c14.03,4.975 27.272,12.933 38.659,23.928c0.507,0.449 1.012,0.954 1.491,1.433l38.659,38.66l50.611,-50.611l-38.659,-38.659c-0.48,-0.479 -0.984,-0.984 -1.491,-1.434c-11.387,-10.994 -24.63,-18.952 -38.662,-23.927c-23.083,-8.125 -48.387,-8.125 -71.498,0.027l-0.03,0.03c-3.57,1.209 -7.056,2.67 -10.516,4.329c-10.12,4.835 -19.651,11.331 -28.143,19.541c-0.507,0.45 -1.012,0.955 -1.491,1.434c-0.478,0.477 -0.985,0.984 -1.434,1.489c-8.21,8.492 -14.704,18.023 -19.54,28.146c3.457,-1.659 6.944,-3.122 10.516,-4.329l0.027,-0.029Z" Fill="#6DC6EC"/>
@@ -189,21 +189,26 @@
                 </Canvas>
 
                 <!-- Foreground Content Overlay -->
-                <Grid Panel.ZIndex="1" Margin="24,20">
+                <Grid Panel.ZIndex="1" Margin="24,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>      <!-- Track / Station Metadata -->
                         <ColumnDefinition Width="Auto"/>   <!-- Hero Controls & Visualizer -->
                     </Grid.ColumnDefinitions>
 
-                    <!-- Hidden image element for code-behind compatibility -->
-                    <Image x:Name="HeroCoverImage" Visibility="Collapsed"/>
-                    <ui:TextBlock x:Name="HeroIconText" Visibility="Collapsed"/>
-
                     <!-- Station Metadata + Status -->
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
+                            <!-- Cover Art / Fallback Emoji Container -->
+                            <Grid Width="28" Height="28" Margin="0,0,10,0" VerticalAlignment="Center">
+                                <Border CornerRadius="6" Background="#1E293B" ClipToBounds="True">
+                                    <Image x:Name="HeroCoverImage" Width="28" Height="28" Stretch="UniformToFill" Visibility="Collapsed"/>
+                                </Border>
+                                <ui:TextBlock x:Name="HeroIconText" Text="&#xE768;" FontFamily="Segoe Fluent Icons" FontSize="14"
+                                           Foreground="#21A1F7" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            </Grid>
+
                             <ui:TextBlock x:Name="HeroStationName" Text="No station selected"
-                                       FontSize="16" FontWeight="Bold" Foreground="White"/>
+                                       FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
                             <Border x:Name="HeroGenreBadge" Background="#21A1F7"
                                     CornerRadius="4" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
                                 <ui:TextBlock x:Name="HeroGenreText" Text="Select Stream" Foreground="White" FontSize="10" FontWeight="Bold"/>

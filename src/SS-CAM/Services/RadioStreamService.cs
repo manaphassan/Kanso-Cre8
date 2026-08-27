@@ -488,8 +488,40 @@ namespace SS_CAM.Services
             {
                 AllStations = new List<RadioStation>(_config.SavedStations);
 
-                // Purge removed Chinese station presets
-                AllStations.RemoveAll(s => s.Id == "preset_fm988" || s.Id == "preset_aifm" || s.Name.Contains("988 FM") || s.Name.Contains("Ai FM"));
+                // Purge removed station presets
+                AllStations.RemoveAll(s => s.Id == "preset_fm988" || s.Id == "preset_aifm" || s.Id == "preset_cityplus" || s.Name.Contains("988 FM") || s.Name.Contains("Ai FM") || s.Name.Contains("CITYPlus"));
+
+                // Ensure Nightwave Plaza is present
+                if (!AllStations.Any(s => s.Id == "preset_nightwave" || s.Name.Contains("Nightwave")))
+                {
+                    AllStations.Add(new RadioStation
+                    {
+                        Id = "preset_nightwave",
+                        Name = "Nightwave Plaza",
+                        Genre = "Synthwave / Vaporwave",
+                        StreamUrl = "https://radio.plaza.one/mp3",
+                        CoverImageUrl = "https://plaza.one/favicon.ico",
+                        IconEmoji = "🌃",
+                        IsPreset = true,
+                        Description = "24/7 Aesthetic Vaporwave & Synthwave soundtrack for late-night designing & deep focus."
+                    });
+                }
+
+                // Ensure Groove Salad is present
+                if (!AllStations.Any(s => s.Id == "preset_groovesalad" || s.Name.Contains("Groove Salad")))
+                {
+                    AllStations.Add(new RadioStation
+                    {
+                        Id = "preset_groovesalad",
+                        Name = "SomaFM: Groove Salad",
+                        Genre = "Downtempo / Ambient",
+                        StreamUrl = "https://ice6.somafm.com/groovesalad-256-mp3",
+                        CoverImageUrl = "https://somafm.com/img3/groovesalad-400.jpg",
+                        IconEmoji = "🥗",
+                        IsPreset = true,
+                        Description = "A nicely chilled plate of ambient/downtempo beats and grooves for creative flow."
+                    });
+                }
 
                 // Update BABYMETAL station if it used old jango URL
                 var bm = AllStations.FirstOrDefault(s => s.Id == "preset_babymetal" || s.Name.Contains("BABYMETAL"));
@@ -631,14 +663,25 @@ namespace SS_CAM.Services
                 },
                 new RadioStation
                 {
-                    Id = "preset_cityplus",
-                    Name = "CITYPlus FM",
-                    Genre = "Talk / News",
-                    StreamUrl = "https://stream.rcs.revma.com/9ykdmcawe1bwv",
-                    CoverImageUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/CITYplusFM_logo.png/250px-CITYplusFM_logo.png",
-                    IconEmoji = "🔥",
+                    Id = "preset_nightwave",
+                    Name = "Nightwave Plaza",
+                    Genre = "Synthwave / Vaporwave",
+                    StreamUrl = "https://radio.plaza.one/mp3",
+                    CoverImageUrl = "https://plaza.one/favicon.ico",
+                    IconEmoji = "🌃",
                     IsPreset = true,
-                    Description = "Malaysia business radio & financial insights."
+                    Description = "24/7 Aesthetic Vaporwave & Synthwave soundtrack for late-night designing & deep focus."
+                },
+                new RadioStation
+                {
+                    Id = "preset_groovesalad",
+                    Name = "SomaFM: Groove Salad",
+                    Genre = "Downtempo / Ambient",
+                    StreamUrl = "https://ice6.somafm.com/groovesalad-256-mp3",
+                    CoverImageUrl = "https://somafm.com/img3/groovesalad-400.jpg",
+                    IconEmoji = "🥗",
+                    IsPreset = true,
+                    Description = "A nicely chilled plate of ambient/downtempo beats and grooves for creative flow."
                 },
                 new RadioStation
                 {

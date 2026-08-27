@@ -18,20 +18,21 @@ namespace SS_CAM.Utilities
             FlowDocument doc = new FlowDocument
             {
                 FontFamily = FluentFontFamily,
-                FontSize = 12,
-                PagePadding = new Thickness(4),
+                FontSize = 12.5,
+                PagePadding = new Thickness(6),
                 TextAlignment = TextAlignment.Left,
-                LineHeight = 20
+                LineHeight = 22
             };
+            doc.SetResourceReference(FlowDocument.ForegroundProperty, "TextFillColorPrimaryBrush");
 
             if (string.IsNullOrWhiteSpace(markdown))
             {
                 Paragraph emptyPara = new Paragraph(new Run("No notes/content below frontmatter in README.md."))
                 {
-                    Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
                     FontStyle = FontStyles.Italic,
                     Margin = new Thickness(0, 8, 0, 8)
                 };
+                emptyPara.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorSecondaryBrush");
                 doc.Blocks.Add(emptyPara);
                 return doc;
             }
@@ -67,11 +68,11 @@ namespace SS_CAM.Utilities
                             {
                                 FontFamily = FluentMonoFamily,
                                 FontSize = 11,
-                                Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
-                                Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
                                 Padding = new Thickness(10, 8, 10, 8),
                                 Margin = new Thickness(0, 6, 0, 6)
                             };
+                            codeBlockPara.SetResourceReference(Paragraph.BackgroundProperty, "CardBackgroundFillColorSecondaryBrush");
+                            codeBlockPara.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
                         }
                     }
                     else
@@ -141,9 +142,9 @@ namespace SS_CAM.Utilities
                     Paragraph hr = new Paragraph
                     {
                         Margin = new Thickness(0, 10, 0, 10),
-                        BorderBrush = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
                         BorderThickness = new Thickness(0, 0, 0, 1)
                     };
+                    hr.SetResourceReference(Paragraph.BorderBrushProperty, "CardStrokeColorDefaultBrush");
                     doc.Blocks.Add(hr);
                     currentParagraph = null;
                     continue;
@@ -162,6 +163,7 @@ namespace SS_CAM.Utilities
                         FontSize = 11.5,
                         Margin = new Thickness(8, 3, 0, 3)
                     };
+                    taskPara.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
 
                     if (isChecked)
                     {
@@ -173,17 +175,15 @@ namespace SS_CAM.Utilities
 
                         Span doneSpan = new Span();
                         doneSpan.TextDecorations = TextDecorations.Strikethrough;
-                        doneSpan.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                        doneSpan.SetResourceReference(Span.ForegroundProperty, "TextFillColorSecondaryBrush");
                         ParseInlineMarkdown(taskContent, doneSpan.Inlines);
                         taskPara.Inlines.Add(doneSpan);
                     }
                     else
                     {
-                        taskPara.Inlines.Add(new Run("[  ]  ")
-                        {
-                            FontWeight = FontWeights.Bold,
-                            Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139))
-                        });
+                        Run uncheckedIcon = new Run("[  ]  ") { FontWeight = FontWeights.Bold };
+                        uncheckedIcon.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorSecondaryBrush");
+                        taskPara.Inlines.Add(uncheckedIcon);
                         ParseInlineMarkdown(taskContent, taskPara.Inlines);
                     }
 
@@ -207,13 +207,13 @@ namespace SS_CAM.Utilities
                         {
                             FontSize = 11.5,
                             FontStyle = FontStyles.Italic,
-                            Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105)),
-                            Background = new SolidColorBrush(Color.FromRgb(241, 245, 249)),
-                            BorderBrush = new SolidColorBrush(Color.FromRgb(59, 130, 246)),
                             BorderThickness = new Thickness(3, 0, 0, 0),
                             Padding = new Thickness(10, 6, 10, 6),
                             Margin = new Thickness(0, 6, 0, 6)
                         };
+                        quote.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
+                        quote.SetResourceReference(Paragraph.BackgroundProperty, "CardBackgroundFillColorSecondaryBrush");
+                        quote.SetResourceReference(Paragraph.BorderBrushProperty, "FluentBrand80");
                         ParseInlineMarkdown(quoteContent, quote.Inlines);
                         doc.Blocks.Add(quote);
                     }
@@ -228,9 +228,9 @@ namespace SS_CAM.Utilities
                     {
                         FontSize = 16,
                         FontWeight = FontWeights.Bold,
-                        Foreground = new SolidColorBrush(Color.FromRgb(30, 58, 138)),
                         Margin = new Thickness(0, 14, 0, 6)
                     };
+                    h1.SetResourceReference(Paragraph.ForegroundProperty, "FluentBrand80");
                     ParseInlineMarkdown(trimmedLine.Substring(2).Trim(), h1.Inlines);
                     doc.Blocks.Add(h1);
                     currentParagraph = null;
@@ -241,9 +241,9 @@ namespace SS_CAM.Utilities
                     {
                         FontSize = 14,
                         FontWeight = FontWeights.Bold,
-                        Foreground = new SolidColorBrush(Color.FromRgb(37, 99, 235)),
                         Margin = new Thickness(0, 12, 0, 4)
                     };
+                    h2.SetResourceReference(Paragraph.ForegroundProperty, "FluentBrand80");
                     ParseInlineMarkdown(trimmedLine.Substring(3).Trim(), h2.Inlines);
                     doc.Blocks.Add(h2);
                     currentParagraph = null;
@@ -254,9 +254,9 @@ namespace SS_CAM.Utilities
                     {
                         FontSize = 12.5,
                         FontWeight = FontWeights.SemiBold,
-                        Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105)),
                         Margin = new Thickness(0, 8, 0, 4)
                     };
+                    h3.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
                     ParseInlineMarkdown(trimmedLine.Substring(4).Trim(), h3.Inlines);
                     doc.Blocks.Add(h3);
                     currentParagraph = null;
@@ -275,11 +275,12 @@ namespace SS_CAM.Utilities
                         FontSize = 11.5,
                         Margin = new Thickness(leftMargin, 2, 0, 2)
                     };
-                    bullet.Inlines.Add(new Run(bulletSymbol)
-                    {
-                        FontWeight = FontWeights.Bold,
-                        Foreground = new SolidColorBrush(Color.FromRgb(59, 130, 246))
-                    });
+                    bullet.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
+
+                    Run bulletRun = new Run(bulletSymbol) { FontWeight = FontWeights.Bold };
+                    bulletRun.SetResourceReference(TextElement.ForegroundProperty, "FluentBrand80");
+                    bullet.Inlines.Add(bulletRun);
+
                     ParseInlineMarkdown(trimmedLine.Substring(2).Trim(), bullet.Inlines);
                     doc.Blocks.Add(bullet);
                     currentParagraph = null;
@@ -294,6 +295,7 @@ namespace SS_CAM.Utilities
                             FontSize = 11.5,
                             Margin = new Thickness(0, 2, 0, 4)
                         };
+                        currentParagraph.SetResourceReference(Paragraph.ForegroundProperty, "TextFillColorPrimaryBrush");
                         ParseInlineMarkdown(line, currentParagraph.Inlines);
                         doc.Blocks.Add(currentParagraph);
                     }
@@ -617,8 +619,7 @@ namespace SS_CAM.Utilities
                     string content = part.Substring(2, part.Length - 4);
                     inlines.Add(new Run(content)
                     {
-                        FontWeight = FontWeights.Bold,
-                        Foreground = new SolidColorBrush(Color.FromRgb(30, 41, 59))
+                        FontWeight = FontWeights.Bold
                     });
                 }
                 // Italic (*text*)
@@ -636,9 +637,9 @@ namespace SS_CAM.Utilities
                     string content = part.Substring(2, part.Length - 4);
                     Span strikeSpan = new Span(new Run(content))
                     {
-                        TextDecorations = TextDecorations.Strikethrough,
-                        Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184))
+                        TextDecorations = TextDecorations.Strikethrough
                     };
+                    strikeSpan.SetResourceReference(Span.ForegroundProperty, "TextFillColorSecondaryBrush");
                     inlines.Add(strikeSpan);
                 }
                 // Highlight (==text==)
@@ -666,48 +667,52 @@ namespace SS_CAM.Utilities
                 else if (part.StartsWith("~") && part.EndsWith("~") && part.Length >= 2 && !part.StartsWith("~~"))
                 {
                     string content = part.Substring(1, part.Length - 2);
-                    inlines.Add(new Run(content)
+                    Run subRun = new Run(content)
                     {
                         FontSize = 9.5,
-                        BaselineAlignment = BaselineAlignment.Subscript,
-                        Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105))
-                    });
+                        BaselineAlignment = BaselineAlignment.Subscript
+                    };
+                    subRun.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorSecondaryBrush");
+                    inlines.Add(subRun);
                 }
                 // Superscript (^sup^)
                 else if (part.StartsWith("^") && part.EndsWith("^") && part.Length >= 2)
                 {
                     string content = part.Substring(1, part.Length - 2);
-                    inlines.Add(new Run(content)
+                    Run supRun = new Run(content)
                     {
                         FontSize = 9.5,
-                        BaselineAlignment = BaselineAlignment.Superscript,
-                        Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105))
-                    });
+                        BaselineAlignment = BaselineAlignment.Superscript
+                    };
+                    supRun.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorSecondaryBrush");
+                    inlines.Add(supRun);
                 }
                 // Keycap Badge (<kbd>Key</kbd>)
                 else if (part.StartsWith("<kbd>") && part.EndsWith("</kbd>") && part.Length >= 11)
                 {
                     string content = part.Substring(5, part.Length - 11);
-                    inlines.Add(new Run(" " + content + " ")
+                    Run kbdRun = new Run(" " + content + " ")
                     {
                         FontFamily = FluentMonoFamily,
                         FontSize = 10,
-                        FontWeight = FontWeights.Bold,
-                        Background = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
-                        Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42))
-                    });
+                        FontWeight = FontWeights.Bold
+                    };
+                    kbdRun.SetResourceReference(TextElement.BackgroundProperty, "CardBackgroundFillColorSecondaryBrush");
+                    kbdRun.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
+                    inlines.Add(kbdRun);
                 }
                 // Inline Code (`code`)
                 else if (part.StartsWith("`") && part.EndsWith("`") && part.Length >= 2)
                 {
                     string content = part.Substring(1, part.Length - 2);
-                    inlines.Add(new Run(" " + content + " ")
+                    Run codeRun = new Run(" " + content + " ")
                     {
                         FontFamily = FluentMonoFamily,
-                        FontSize = 10.5,
-                        Background = new SolidColorBrush(Color.FromRgb(241, 245, 249)),
-                        Foreground = new SolidColorBrush(Color.FromRgb(225, 29, 72))
-                    });
+                        FontSize = 10.5
+                    };
+                    codeRun.SetResourceReference(TextElement.BackgroundProperty, "CardBackgroundFillColorSecondaryBrush");
+                    codeRun.SetResourceReference(TextElement.ForegroundProperty, "FluentBrand80");
+                    inlines.Add(codeRun);
                 }
                 else
                 {

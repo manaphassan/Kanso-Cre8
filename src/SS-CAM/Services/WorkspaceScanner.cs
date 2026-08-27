@@ -281,7 +281,7 @@ namespace SS_CAM.Services
             return result;
         }
 
-        private static string ResolveProjectDesigner(string root, string directory, string projectName)
+        private static string ResolveProjectDesigner(string root, string directory, string projectName, List<StaffDirectoryItem> staffList)
         {
             try
             {
@@ -301,7 +301,6 @@ namespace SS_CAM.Services
                 if (m.Success)
                 {
                     string code = m.Groups[1].Value;
-                    var staffList = UserProfileService.GetStaffDirectory(root);
                     if (staffList != null)
                     {
                         foreach (var staff in staffList)
@@ -345,6 +344,12 @@ namespace SS_CAM.Services
                 string candidate = Path.Combine(root, staffId);
                 if (Directory.Exists(candidate)) scanRoot = candidate;
             }
+
+            // Cache staff list once to avoid repeated NAS file reads
+            List<StaffDirectoryItem> cachedStaffList = null;
+            try { cachedStaffList = UserProfileService.GetStaffDirectory(root); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] CachedStaff: " + ex.Message); }
+
             Queue<string> pending = new Queue<string>();
             pending.Enqueue(scanRoot);
 
@@ -361,7 +366,7 @@ namespace SS_CAM.Services
                     if (ProjectPattern.IsMatch(name))
                     {
                         if (!string.IsNullOrWhiteSpace(query) && name.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                        string designer = string.IsNullOrWhiteSpace(staffId) ? ResolveProjectDesigner(root, directory, name) : staffId;
+                        string designer = string.IsNullOrWhiteSpace(staffId) ? ResolveProjectDesigner(root, directory, name, cachedStaffList) : staffId;
                         DateTime modified;
                         try { modified = Directory.GetLastWriteTime(directory); } catch { modified = DateTime.MinValue; }
 
@@ -448,20 +453,37 @@ namespace SS_CAM.Services
         {
             long total = 0;
             fileCount = 0;
-            Queue<string> pending = new Queue<string>();
-            pending.Enqueue(root);
-            while (pending.Count > 0)
+            try
             {
-                string current = pending.Dequeue();
-                try
+                // Fast shallow enumeration to keep folder listings near-instant over NAS network
+                string[] files = Directory.GetFiles(root);
+                fileCount += files.Length;
+                for (int i = 0; i < files.Length; i++)
                 {
-                    foreach (string file in Directory.GetFiles(current))
-                    {
-                        try { total += new FileInfo(file).Length; fileCount++; } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
-                    }
-                    foreach (string directory in Directory.GetDirectories(current)) pending.Enqueue(directory);
+                    try { total += new FileInfo(files[i]).Length; }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
                 }
-                catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+
+                // Check immediate subfolders (1 level only)
+                string[] subdirs = Directory.GetDirectories(root);
+                for (int d = 0; d < subdirs.Length; d++)
+                {
+                    try
+                    {
+                        string[] subFiles = Directory.GetFiles(subdirs[d]);
+                        fileCount += subFiles.Length;
+                        for (int f = 0; f < subFiles.Length; f++)
+                        {
+                            try { total += new FileInfo(subFiles[f]).Length; }
+                            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+                        }
+                    }
+                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[WorkspaceScanner] GetDirectoryBytes: " + ex.Message);
             }
             return total;
         }
