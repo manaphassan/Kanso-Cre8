@@ -1,5 +1,16 @@
 # SS-CAM FIX LOG
 
+## v4.4.2 — 2026-08-27 (Art Director Polish & Live Ad/WhatsApp Preview Engine)
+- **Assembly Version**: `4.4.2.0`
+- **Copywriting Studio Split-View Live Preview**: Built real-time 3-mode segmented switcher (`Split Preview`, `Rendered Doc`, `Editor Only`) with dual-pane layout.
+- **WhatsApp Live Chat Bubble Simulation**: Real-time rendering of formatted WhatsApp broadcast copy (`*bold*`, emojis, live timestamp, double checkmarks).
+- **Meta Ad Primary Text Preview**: Real-time mock rendering of sponsored feed ad with official brand avatar, headline, and `[Send Message]` CTA button.
+- **Creative Snippet & Hook Drawer**: 1-click insertion chips for viral frameworks (TikTok 3-Hook, Meta PAS, Neubrutalist, Retro Story) and instant snippets (WhatsApp link, Promo Voucher, KKM Disclaimer, 100% Original Halal Guarantee, Urgency Timer).
+- **Status Pill Badge**: Dynamic status indicator (`[● Ready / NAS Synced / Unsaved Changes]`).
+- **Typographic Rhythm & Overlines**: Standardized overlines (`11px Bold CharacterSpacing="50"` in `FluentBrand80`) for visual hierarchy.
+
+---
+
 ## v4.4.1 — 2026-08-26 (Maintenance & Enhancement Release — PUBLISHED)
 - **GitHub Release**: PUBLISHED (`v4.4.1` set as Latest on SuamiSihat/ss_cam)
 - **Documentation**: Updated (CHANGELOG.md, ROADMAP.md, QA suite headers aligned to v4.4.1)

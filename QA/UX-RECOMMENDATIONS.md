@@ -30,3 +30,27 @@
 **Resolution:** 
 - Standardized all top-level page titles to canonical `FontSize="24"` with `FontWeight="Bold"` across all 12 modules.
 
+---
+
+## 🎨 Art Director & Lead Product Designer Audit (v4.4.2 Specification)
+**Evaluation Date:** 2026-08-27 | **Version Target:** `v4.4.2`
+
+### Executive Rating
+- **UI Aesthetics & Visual Hierarchy:** `8.6 / 10`
+- **Functional Utility & Workflow:** `9.1 / 10`
+- **Design Consistency & Token System:** `9.0 / 10`
+- **Overall Studio Impact:** `8.9 / 10` (Essential Studio Daily Driver)
+
+### High-Impact Aesthetic Polish Requirements
+1. **Polished Empty States:** Replace text-only "No project selected" labels with elegant vector icon callouts and gentle focal glows.
+2. **Dynamic Pill Badges:** Visual indicators for project lifecycles (`Active`, `In Review`, `Archived`, `NAS Synced`).
+3. **Typographic Rhythm & Overlines:** Add uppercase overlines (`11px Bold CharacterSpacing="50"` with Brand Tint) above card section titles for clear cognitive grouping.
+
+### High-Impact Functional Enhancement Requirements
+1. **Split-View Live Formatting Preview (Copywriting Studio):**
+   - Live dual-pane view rendering raw Markdown side-by-side with WhatsApp chat bubble simulation (`*bold*`, emojis, line breaks) and Meta Ad primary text preview.
+   - 3-state view toggle: `[Split View]`, `[Editor Only]`, `[Preview Only]`.
+2. **Creative Snippet & Hook Palette Drawer:**
+   - 1-click insertion drawer for proven copywriting angles (PAS, BAB, AIDA), medical compliance disclaimers, WhatsApp routing URLs, and seasonal promo codes.
+
+

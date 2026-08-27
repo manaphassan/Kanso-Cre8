@@ -37,6 +37,23 @@
 | **v4.3.0** | 2026-08-20 | **Asset Export, Packaging & Naming Engine**: Desktop `ExportPackagingService` (1-click ZIP with `HANDOVER_SUMMARY.html`), `AssetNamingService` canonical sanitizer, and Web `ExportService` ZIP streaming |
 | **v4.4.0** | 2026-08-20 | **Designer Workload Heatmaps & Creative SLA Analytics**: Live designer capacity radars (`WorkloadSlaService`), capacity progress meters, and operational SLA telemetry across Desktop and Web |
 | **v4.4.1** | 2026-08-26 | **Radio Stream, Deep Scanner & Copywriting FlowDocument Engine**: Official SuamiSihat Radio Stream preset `#1`, deep month-container project discovery, dynamic project ID auto-calculation, FlowDocument markdown rendering by default, sanitized designer catalog filtering |
+| **v4.4.2** | 2026-08-27 | **Art Director Polish & Live Ad/WhatsApp Preview Engine**: Live Split-View formatting preview (WhatsApp & Meta Ads), one-click Hook & CTA snippet drawer, dynamic status pill badges, polished vector empty states, and overline typographic rhythm |
+
+---
+
+## 🎯 Active Milestone — v4.4.2: Art Director Polish & Live Ad/WhatsApp Preview (Target: August 2026)
+
+### 1. Copywriting Studio Split-View Live Preview (Desktop)
+* **Live WhatsApp & Ad Message Card**: Real-time side-by-side rendering transforming structured Markdown into live WhatsApp bubbles (bold asterisks `*text*`, emoji spacing, call-to-action link previews) and Meta Ad primary text mockups.
+* **Instant Toggle Controls**: View mode switcher (`[Split View]`, `[Editor Only]`, `[Preview Only]`) with live character and word counters.
+
+### 2. Creative Snippet & Hook Drawer
+* **1-Click Viral Hook & CTA Inserter**: Pre-approved medical disclaimers, viral hook formulas (Problem-Agitate-Solve, Before-After-Bridge), promo code snippets, and WhatsApp routing links inserted directly at cursor position.
+
+### 3. Visual Polish & Art Director Enhancements
+* **Dynamic Status Pill Badges**: Standardized visual indicators for campaign lifecycle (`Active`, `In Review`, `Archived`, `NAS Synced`).
+* **Polished Empty States**: Elegant vector empty states with helpful callouts for project selection across Copywriting, Search Copy, and Task Manager.
+* **Typographic Hierarchy & Overlines**: Consistent overlines (`11px Bold CharacterSpacing="50"`), 24px hero titles, and enhanced breathing room across cards.
 
 ---
 
@@ -51,17 +68,13 @@
 
 ---
 
-## 🗓️ Planned — v4.2.0: Desktop-First Real-Time Automation & Web Synchronization (Target: Q4 2026)
+## 🔮 Planned — v4.6.0: Global Studio Command Palette & Ingester (Target: Q4 2026)
 
-### Phase 1: Native Desktop Operations & Media Engine (Desktop First)
-* **Desktop Real-Time NAS File Watcher**: Native `FileSystemWatcher` service monitoring `_comments.jsonl`, `audit_log.jsonl`, and project frontmatter changes across the shared Synology NAS with live in-app notifications and zero manual refresh needed.
-* **Native Desktop Deliverable Thumbnail & Quick-Preview**: Asynchronous thumbnail extractor and local cache engine for `.afdesign`, `.psd`, `.ai`, and deliverable exports, enabling instantaneous lightbox loading.
-* **Desktop Batch Project Operations**: Multi-selection command bar in desktop catalog for bulk status transitions, batch tag edits, and 1-click quarterly ZIP exports.
-* **Desktop UI Virtualization & High-Volume NAS Performance**: `VirtualizingWrapPanel` and incremental background streaming for 1,000+ project vaults with zero UI frame drops.
+### 1. Global Command Palette (`Ctrl + K`)
+* Universal keyboard launcher for jumping to projects, copying brand hex codes, searching snippets, or toggling radio stations without leaving the current view.
 
-### Phase 2: Web Portal Real-Time & Media Pipeline (Web Synchronization)
-* **Server-Sent Events (SSE) Live Feed**: Lightweight HTTP event streaming pushing live comment mentions and sign-off events to browser clients.
-* **Server Thumbnail Endpoint & Media Delivery**: Background image caching and thumbnail pipeline serving the web portal deliverable lightbox.
+### 2. Drag-and-Drop Folder Ingester
+* Drag external assets directly onto project cards in Project Creator to automatically organize into `01_BRIEF_ASSETS`, `02_SOURCE_FILES`, etc.
 
 ---
 
