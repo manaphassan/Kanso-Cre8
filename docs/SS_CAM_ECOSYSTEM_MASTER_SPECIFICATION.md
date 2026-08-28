@@ -1,4 +1,5 @@
 # SS-CAM Ecosystem Master Specification
+
 **SuamiSihat Creative Assets Management (SS-CAM)**
 *Cross-Platform Architecture: WPF Desktop App & Web Portal*
 
@@ -9,11 +10,12 @@
 SS-CAM is a hybrid creative asset management and production coordination ecosystem built specifically for SuamiSihat's creative teams and holding companies (SSH, SSC, SSW, SSE, SST, SS).
 
 The ecosystem operates on an **Offline-First Markdown-as-Database** architecture:
+
 - **Single Source of Truth**: The Synology NAS directory structure and local file system.
 - **Zero Database Desync**: No external database or intermediate cloud storage is required. All state is maintained via YAML Frontmatter in `README.md`, JSON Lines (`_comments.jsonl`), JSON records (`_Team/team-notes.json`), and native folder vaults.
 - **Bi-directional Real-Time Sync**: Changes made in the desktop app reflect on the web portal in ~500ms via `chokidar` + Server-Sent Events (SSE). Actions taken on the web portal trigger real-time updates in the desktop app via .NET `FileSystemWatcher`.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 SYNOLOGY NAS / LOCAL VAULT ROOT                             │
 │                  (README.md Frontmatter, 05_DELIVERABLES, _comments.jsonl)                  │
@@ -49,7 +51,7 @@ The ecosystem operates on an **Offline-First Markdown-as-Database** architecture
 
 To ensure 100% interoperability across both clients, all projects move through a unified 6-stage lifecycle:
 
-```
+```text
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
 │  1. Backlog  │➔│2. In Progress│➔│3.Review Queue│➔│4.Revision Reqd  │➔│5.Done & Approved │  │ 6. On Hold / Que │
 │  (backlog)   │  │(in-progress) │  │   (review)   │  │   (revision)     │  │ (done/approved)  │  │    (on-hold)     │
@@ -98,15 +100,14 @@ sequenceDiagram
     %% Phase 3: Revision Loop
     rect rgb(50, 35, 20)
     Note over D,AD: Phase 3 — Revision Request (If changes needed)
-    AD->>NAS: 8. Clicks "Request Revision" with feedback notes
-    Note over NAS: Updates status: "revision"<br/>Increments revision: rev+1<br/>Appends frontmatter.approvals record<br/>Posts pinned alert to _Team/team-notes.json
-    NAS-->>D: 9. FileSystemWatcher alerts Desktop UI in real-time
-    D->>NAS: 10. Designer fixes assets & moves card back to "review"
+    AD->>NAS: 8. Clicks "Request Revision" (status: "revision", rev + 1, adds note to _Team/team-notes.json)
+    NAS-->>D: 9. Desktop alerts designer of revision & displays Art Director pinned feedback
+    D->>NAS: 10. Fixes assets, updates 05_DELIVERABLES, and resubmits to "review"
     end
 
-    %% Phase 4: Final Sign-Off & Handover
-    rect rgb(20, 50, 35)
-    Note over D,AD: Phase 4 — Final Approval & Handover
+    %% Phase 4: Final Sign-Off & Archive
+    rect rgb(20, 45, 30)
+    Note over D,AD: Phase 4 — Final Sign-Off & Handover
     AD->>NAS: 11. Clicks "Approve & Sign-Off" (status: "approved", completedAt: ISO)
     NAS-->>D: 12. Desktop & Web record SLA Turnaround & FTR% KPI
     AD->>NAS: 13. Downloads complete client ZIP Handover Package
@@ -119,7 +120,8 @@ sequenceDiagram
 ## 5. Storage Hierarchy & Data Schemas
 
 ### A. Folder Vault Layout
-```
+
+```text
 <WorkspaceRoot>/
 ├── _Staff/
 │   └── staff-directory.json         <-- Shared user profiles & RBAC
@@ -139,6 +141,7 @@ sequenceDiagram
 ```
 
 ### B. Project Frontmatter Specification (`README.md`)
+
 ```yaml
 ---
 status: in-progress       # backlog | in-progress | review | revision | approved | done | on-hold
@@ -169,12 +172,15 @@ approvals:
 ```
 
 ### C. Contextual Comment Specification (`_comments.jsonl`)
+
 Appended line-by-line in JSON Lines format:
+
 ```json
 {"id":"cmt_17248001","projectId":"0085D","deliverableId":"Rejal_Box_3D_Mockup_V1.png","author":"Harussani","authorRole":"Art Director","authorAvatar":"#043388","content":"@haikal please sharpen the gold foil displacement on the front flap.","mentions":["haikal"],"timestamp":"2026-08-28T22:52:00Z","resolved":false}
 ```
 
 ### D. Shared Team Board Notice (`_Team/team-notes.json`)
+
 ```json
 [
   {
@@ -189,8 +195,10 @@ Appended line-by-line in JSON Lines format:
 ```
 
 ### E. Handover ZIP Archive Specification
+
 Both desktop and web generate identical handover ZIP files:
-```
+
+```text
 <Project_Folder>_Handover.zip
 ├── Deliverables/           <-- Content of 05_DELIVERABLES
 ├── Mockups/                <-- Content of 04_WORK_IN_PROGRESS (optional)
