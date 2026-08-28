@@ -76,9 +76,9 @@ class WorkspaceService {
         headline: 'Sentuhan Kemewahan Untuk Lelaki Berprestasi',
         copyBody: 'Formula herba warisan dengan sentuhan saintifik moden. Memberikan ketahanan dan stamina berpanjangan.',
         deliverables: [
-          { name: 'Rejal_Box_3D_Mockup_V1.png', folder: 'Artwork Mockup', type: 'mockup' },
-          { name: 'Rejal_Packaging_Dieline_Final.pdf', folder: 'Production', type: 'print' },
-          { name: 'POSM_Counter_Display_1080.png', folder: 'Production', type: 'web' }
+          { name: 'Rejal_Box_3D_Mockup_V1.png', folder: '05_DELIVERABLES', type: 'mockup' },
+          { name: 'Rejal_Packaging_Dieline_Final.pdf', folder: '05_DELIVERABLES', type: 'print' },
+          { name: 'POSM_Counter_Display_1080.png', folder: '04_WORK_IN_PROGRESS', type: 'web' }
         ]
       },
       {
@@ -104,8 +104,8 @@ class WorkspaceService {
         headline: 'Merdeka Dari Keletihan! Tawaran Terhad 3 Hari Sahaja',
         copyBody: 'Jangan lepaskan peluang miliki set kombo SuamiSihat dengan diskaun luar biasa.',
         deliverables: [
-          { name: 'Merdeka_IG_Carousel_1080x1080.png', folder: 'Production', type: 'social' },
-          { name: 'TikTok_9x16_Story_Ad.png', folder: 'Artwork Mockup', type: 'social' }
+          { name: 'Merdeka_IG_Carousel_1080x1080.png', folder: '05_DELIVERABLES', type: 'social' },
+          { name: 'TikTok_9x16_Story_Ad.png', folder: '04_WORK_IN_PROGRESS', type: 'social' }
         ]
       },
       {
@@ -131,7 +131,7 @@ class WorkspaceService {
         headline: 'Perjalanan 10 Tahun Memacu Kesihatan Lelaki Malaysia',
         copyBody: 'Daripada permulaan sederhana hingga menjadi peneraju utama penjagaan kesejahteraan lelaki di Asia Tenggara.',
         deliverables: [
-          { name: 'Storyboard_V1_Draft.pdf', folder: 'Artwork Mockup', type: 'pdf' }
+          { name: 'Storyboard_V1_Draft.pdf', folder: '04_WORK_IN_PROGRESS', type: 'pdf' }
         ]
       },
       {
@@ -157,8 +157,8 @@ class WorkspaceService {
         headline: 'Selamat Datang Ke Pusat Pemulihan Tenaga & Kesihatan',
         copyBody: 'Rawatan profesional privasi tinggi untuk kesejahteraan fizikal dan mental.',
         deliverables: [
-          { name: 'Entrance_3D_Wall_Signage.pdf', folder: 'Production', type: 'print' },
-          { name: 'Reception_Lightbox_Graphic.png', folder: 'Production', type: 'print' }
+          { name: 'Entrance_3D_Wall_Signage.pdf', folder: '05_DELIVERABLES', type: 'print' },
+          { name: 'Reception_Lightbox_Graphic.png', folder: '05_DELIVERABLES', type: 'print' }
         ]
       },
       {
@@ -191,8 +191,8 @@ class WorkspaceService {
       const projDir = path.join(this.workspaceRoot, s.designer, `SS-${s.year}`, s.month, s.folder);
       fs.mkdirSync(projDir, { recursive: true });
 
-      // Create standard sub-folders
-      const subFolders = ['Artwork Design', 'Artwork Mockup', 'Assets', 'Production', 'Copywriting'];
+      // Create canonical SS-CAM 5-folder vault hierarchy
+      const subFolders = ['01_BRIEF_ASSETS', '02_SOURCE_FILES', '03_COPYWRITING', '04_WORK_IN_PROGRESS', '05_DELIVERABLES'];
       subFolders.forEach(sub => fs.mkdirSync(path.join(projDir, sub), { recursive: true }));
 
       // Create mock deliverables
@@ -345,9 +345,9 @@ class WorkspaceService {
     const deadline = frontmatter.deadline || '';
     const created = frontmatter.created || this.inferCreatedDate(folderName, fullPath);
 
-    // Count deliverables in subfolders
-    const deliverableCount = this.countFiles(path.join(fullPath, 'Production')) + 
-                             this.countFiles(path.join(fullPath, 'Artwork Mockup'));
+    // Count deliverables in canonical 05_DELIVERABLES (with fallback to legacy names)
+    const deliverableCount = this.countFiles(path.join(fullPath, '05_DELIVERABLES')) +
+                             this.countFiles(path.join(fullPath, '04_WORK_IN_PROGRESS'));
 
     // Check overdue
     let isOverdue = false;
