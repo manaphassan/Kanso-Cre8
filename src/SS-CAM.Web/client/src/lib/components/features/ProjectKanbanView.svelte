@@ -17,7 +17,8 @@
     { id: 'in-progress', label: 'In Progress', icon: '⚡', color: '#0284C7', hint: 'Active design production' },
     { id: 'review', label: 'Review Queue', icon: '🔍', color: '#8764B8', hint: 'Awaiting manager / lead sign-off' },
     { id: 'revision', label: 'Revision Required', icon: '⚠️', color: '#D97706', hint: 'Feedback & changes pending' },
-    { id: 'done', label: 'Approved & Done', icon: '✅', color: '#107C41', hint: 'Final deliverables signed off' }
+    { id: 'done', label: 'Approved & Done', icon: '✅', color: '#107C41', hint: 'Final deliverables signed off' },
+    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: '#64748B', hint: 'Paused, archived or blocked projects' }
   ];
 
   let draggedProjectId = $state<string | null>(null);
@@ -26,6 +27,9 @@
   function getProjectsForColumn(colId: string): Project[] {
     if (colId === 'done') {
       return projects.filter(p => p.status === 'done' || p.status === 'approved');
+    }
+    if (colId === 'on-hold') {
+      return projects.filter(p => p.status === 'on-hold' || p.status === 'rejected');
     }
     return projects.filter(p => p.status === colId);
   }
@@ -228,7 +232,7 @@
 
   .kanban-columns-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(250px, 1fr));
+    grid-template-columns: repeat(6, minmax(230px, 1fr));
     gap: 14px;
     width: 100%;
     flex: 1;

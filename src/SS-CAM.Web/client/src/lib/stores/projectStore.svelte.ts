@@ -32,7 +32,15 @@ class ProjectStore {
     return this.projects.filter(p => {
       const { query, status, brand, designer, priority, department } = this.activeFilters;
       
-      if (status !== 'all' && p.status !== status) return false;
+      if (status !== 'all') {
+        if (status === 'approved') {
+          if (p.status !== 'approved' && p.status !== 'done') return false;
+        } else if (status === 'on-hold') {
+          if (p.status !== 'on-hold' && p.status !== 'rejected') return false;
+        } else if (p.status !== status) {
+          return false;
+        }
+      }
       if (brand !== 'all' && p.brand !== brand) return false;
       if (designer !== 'all' && p.designer !== designer) return false;
       if (priority !== 'all' && p.priority !== priority) return false;

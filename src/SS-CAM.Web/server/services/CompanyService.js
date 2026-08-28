@@ -4,6 +4,19 @@ const config = require('../config');
 
 const DEFAULT_COMPANIES = [
   {
+    code: 'SS',
+    name: 'SuamiSihat Core',
+    shortName: 'Core Operations',
+    regNo: '202401012344 (1550122-W)',
+    address: 'Level 28, Menara SuamiSihat, Jalan Ampang, 50450 Kuala Lumpur, Malaysia',
+    contact: '+603-2181-8888 / info@suamisihat.com',
+    location: 'Kuala Lumpur, Malaysia',
+    status: 'active',
+    isParent: false,
+    establishedYear: '2020',
+    color: '#0078D4'
+  },
+  {
     code: 'SSH',
     name: 'SuamiSihat Holding Sdn Bhd',
     shortName: 'Holding Group',

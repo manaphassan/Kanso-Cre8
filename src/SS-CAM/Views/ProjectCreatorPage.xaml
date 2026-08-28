@@ -137,6 +137,16 @@
                                     </StackPanel>
                                 </Grid>
 
+                                <!-- Dynamic SLA Target & Turnaround Indicator -->
+                                <Border x:Name="SlaBadgeBorder" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ui:TextBlock Text="&#xE823;" FontFamily="Segoe Fluent Icons" FontSize="13" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <ui:TextBlock x:Name="SlaTargetText" Text="SLA Target: 3 Days" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                        <ui:TextBlock Text="&#xE787;" FontFamily="Segoe Fluent Icons" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                        <ui:TextBlock x:Name="SlaDeadlineText" Text="Target Due Date: 2026-08-31" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Visual Platform Cards Row -->
                                 <ui:TextBlock Text="Select Target Platform Preset" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,8"/>
                                 <UniformGrid Columns="4" Margin="0,0,0,14">

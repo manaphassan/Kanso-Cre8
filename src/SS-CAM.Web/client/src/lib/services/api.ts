@@ -10,7 +10,8 @@ import type {
   FilterState, 
   ApprovalRecord,
   CreativeDirectionState,
-  CopywritingState
+  CopywritingState,
+  TeamMember
 } from '$lib/types';
 
 const API_BASE = '/api';
@@ -82,8 +83,35 @@ export class ApiClient {
     });
   }
 
+  static async updateProfile(data: Partial<User> & { staffId?: string }): Promise<{ success: boolean; user: User }> {
+    try {
+      return await this.request('/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    } catch (err: any) {
+      if (err.message && (err.message.includes('404') || err.message.includes('Not Found'))) {
+        const id = data.staffId || 'SS0004';
+        const res = await this.request<any>(`/users/${encodeURIComponent(id)}`, {
+          method: 'PUT',
+          body: JSON.stringify(data)
+        });
+        return { success: true, user: res.user || res.member || res };
+      }
+      throw err;
+    }
+  }
+
+  static getStaffRoster(): Promise<{ success: boolean; roster: Array<{ staffId: string; username: string; name: string; role: string; department?: string; email?: string; avatar?: string; avatarColor?: string; defaultBrand?: string }> }> {
+    return this.request('/team/roster');
+  }
+
   static getUsers(): Promise<{ users: User[] }> {
     return this.request('/auth/users');
+  }
+
+  static getCompanies(): Promise<{ success: boolean; companies: Array<{ code: string; name: string; shortName?: string; color?: string; status?: string; isParent?: boolean }> }> {
+    return this.request('/companies');
   }
 
   // ─── Dashboard ───
@@ -169,8 +197,8 @@ export class ApiClient {
   }
 
   // ─── Team & Roster ───
-  static getTeam(): Promise<{ team: any[] }> {
-    return this.request('/team');
+  static getTeam(): Promise<{ team: TeamMember[] }> {
+    return this.request<{ team: TeamMember[] }>('/team');
   }
 
   // ─── User & Staff Management ───
@@ -302,15 +330,25 @@ export class ApiClient {
       }
     };
 
-    eventSource.addEventListener('connected', (e) => handleMessage(e, 'connected'));
+    eventSource.onopen = () => {
+      onEvent('connection:status', { status: 'connected' });
+    };
+
+    eventSource.addEventListener('connected', (e) => {
+      handleMessage(e, 'connected');
+      onEvent('connection:status', { status: 'connected' });
+    });
     eventSource.addEventListener('workspace:updated', (e) => handleMessage(e, 'workspace:updated'));
     eventSource.addEventListener('project:updated', (e) => handleMessage(e, 'project:updated'));
     eventSource.addEventListener('project:decision', (e) => handleMessage(e, 'project:decision'));
     eventSource.addEventListener('comment:added', (e) => handleMessage(e, 'comment:added'));
     eventSource.addEventListener('comment:resolved', (e) => handleMessage(e, 'comment:resolved'));
+    eventSource.addEventListener('team:updated', (e) => handleMessage(e, 'team:updated'));
+    eventSource.addEventListener('company:updated', (e) => handleMessage(e, 'company:updated'));
 
     eventSource.onerror = (err) => {
       console.warn('[SSE] Connection interrupted, retrying in background...', err);
+      onEvent('connection:status', { status: 'reconnecting' });
     };
 
     return () => {

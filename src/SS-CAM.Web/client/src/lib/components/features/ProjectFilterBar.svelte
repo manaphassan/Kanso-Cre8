@@ -7,8 +7,10 @@
     { id: 'all', label: 'All Statuses' },
     { id: 'review', label: 'Review Queue' },
     { id: 'in-progress', label: 'In Progress' },
-    { id: 'approved', label: 'Approved' },
-    { id: 'backlog', label: 'Backlog' }
+    { id: 'revision', label: 'Revision Required' },
+    { id: 'approved', label: 'Approved & Done' },
+    { id: 'backlog', label: 'Backlog' },
+    { id: 'on-hold', label: 'On Hold' }
   ];
 </script>
 

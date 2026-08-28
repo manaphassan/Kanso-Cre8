@@ -101,6 +101,11 @@ namespace SS_CAM.Models
             {
                 if (Status == "in-progress") return "In Progress";
                 if (Status == "on-hold") return "On Hold";
+                if (Status == "revision") return "Revision Required";
+                if (Status == "approved") return "Approved";
+                if (Status == "review") return "Review Queue";
+                if (Status == "done") return "Done";
+                if (Status == "backlog") return "Backlog";
                 if (string.IsNullOrWhiteSpace(Status)) return "Untracked";
                 string s = Status;
                 return char.ToUpper(s[0]) + s.Substring(1);
@@ -111,8 +116,9 @@ namespace SS_CAM.Models
         {
             get
             {
-                if (Status == "done") return "#10B981";
+                if (Status == "done" || Status == "approved") return "#10B981";
                 if (Status == "review") return "#F59E0B";
+                if (Status == "revision") return "#D97706";
                 if (Status == "in-progress") return "#0078D4";
                 if (Status == "on-hold") return "#64748B";
                 return "#8B5CF6";

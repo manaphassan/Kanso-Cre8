@@ -26,6 +26,8 @@ namespace SS_CAM.Services
                     Name = "Graphic & Print Design",
                     Suffix = "D",
                     IsDefault = true,
+                    SlaDays = 3,
+                    SlotWeight = 1.0,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
@@ -34,6 +36,8 @@ namespace SS_CAM.Services
                     Name = "Social Media Content",
                     Suffix = "S",
                     IsDefault = true,
+                    SlaDays = 2,
+                    SlotWeight = 0.7,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
@@ -42,6 +46,8 @@ namespace SS_CAM.Services
                     Name = "Video Production",
                     Suffix = "V",
                     IsDefault = true,
+                    SlaDays = 7,
+                    SlotWeight = 2.0,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
@@ -50,6 +56,8 @@ namespace SS_CAM.Services
                     Name = "Brand Identity",
                     Suffix = "P",
                     IsDefault = true,
+                    SlaDays = 10,
+                    SlotWeight = 2.5,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
@@ -58,6 +66,8 @@ namespace SS_CAM.Services
                     Name = "E-Commerce",
                     Suffix = "E",
                     IsDefault = true,
+                    SlaDays = 3,
+                    SlotWeight = 1.0,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 },
                 new CategoryPreset
@@ -66,9 +76,25 @@ namespace SS_CAM.Services
                     Name = "Web Design",
                     Suffix = "W",
                     IsDefault = true,
+                    SlaDays = 5,
+                    SlotWeight = 1.5,
                     Folders = new List<string> { "01_BRIEF_ASSETS", "02_SOURCE_FILES", "03_COPYWRITING", "04_WORK_IN_PROGRESS", "05_DELIVERABLES" }
                 }
             };
+        }
+
+        public static CategoryPreset GetPresetBySuffix(string suffix)
+        {
+            if (string.IsNullOrWhiteSpace(suffix)) return null;
+            List<CategoryPreset> presets = LoadPresets();
+            return presets.FirstOrDefault(p => string.Equals(p.Suffix, suffix.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static DateTime CalculateTargetDeadline(CategoryPreset preset, DateTime? startDate = null)
+        {
+            DateTime start = startDate ?? DateTime.Today;
+            int days = (preset != null && preset.SlaDays > 0) ? preset.SlaDays : 3;
+            return start.AddDays(days);
         }
 
         public static List<string> ParseFolderLines(string folderText)

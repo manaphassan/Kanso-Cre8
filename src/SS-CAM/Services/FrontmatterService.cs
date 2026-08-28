@@ -145,17 +145,21 @@ namespace SS_CAM.Services
         /// <summary>
         /// Generates the default frontmatter block for a new project.
         /// </summary>
-        public static string BuildDefaultFrontmatter(string designerStaffId, string client)
+        public static string BuildDefaultFrontmatter(string designerStaffId, string client, string deadline = null, string categoryPreset = null)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(Delimiter);
             sb.AppendLine("status: backlog");
             sb.AppendLine(string.Format("designer: {0}", designerStaffId ?? ""));
             sb.AppendLine(string.Format("client: {0}", client ?? ""));
-            sb.AppendLine("deadline: ");
+            sb.AppendLine(string.Format("deadline: {0}", deadline ?? ""));
             sb.AppendLine(string.Format("created: {0}", DateTime.Today.ToString("yyyy-MM-dd")));
             sb.AppendLine("priority: medium");
             sb.AppendLine("duration: ");
+            if (!string.IsNullOrWhiteSpace(categoryPreset))
+            {
+                sb.AppendLine(string.Format("category_preset: \"{0}\"", categoryPreset.Replace("\"", "\\\"")));
+            }
             sb.AppendLine("tags: []");
             sb.AppendLine("revision: 0");
             sb.AppendLine(Delimiter);

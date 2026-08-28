@@ -12,6 +12,11 @@ export interface User {
   roles?: string[];
   staffId: string;
   department: string;
+  email?: string;
+  avatar?: string;
+  avatarUrl?: string;
+  avatarColor?: string;
+  defaultBrand?: string;
   permissions: string[];
 }
 
@@ -273,3 +278,47 @@ export interface ActivityNotification {
   routeId?: string;
   unread: boolean;
 }
+
+export interface AssignedProjectSummary {
+  id: string;
+  jobId: string;
+  title: string;
+  status: ProjectStatus;
+  brand: string;
+  priority: ProjectPriority;
+  deadline?: string | null;
+  presetType?: string;
+  presetCode?: string;
+  slaDays?: number;
+  slotWeight?: number;
+  shortLabel?: string;
+}
+
+export interface TeamMember {
+  staffId: string;
+  username: string;
+  name: string;
+  email?: string;
+  role: string;
+  roles?: string[];
+  department: string;
+  defaultBrand?: string;
+  avatarColor?: string;
+  active?: boolean;
+  workload: {
+    total: number;
+    active: number;
+    inProgress: number;
+    inReview: number;
+    revision: number;
+    overdue: number;
+    completed: number;
+    weightedLoad?: number;
+    capacityPercent?: number;
+  };
+  capacityStatus: 'Available' | 'Normal' | 'High Workload' | 'Overloaded';
+  capacityColor: string;
+  assignedProjects?: AssignedProjectSummary[];
+  totalAssignedCount?: number;
+}
+

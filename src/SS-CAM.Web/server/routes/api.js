@@ -127,7 +127,91 @@ router.post('/auth/change-password', authenticateToken, (req, res) => {
 });
 
 router.get('/auth/me', authenticateToken, (req, res) => {
-  res.json({ user: req.user });
+  const staffRoster = TeamService.getStaffRoster();
+  const searchStaffId = (req.user.staffId || '').toLowerCase();
+  const searchUsername = (req.user.username || '').toLowerCase();
+  const liveStaff = staffRoster.find(u => 
+    (u.staffId && u.staffId.toLowerCase() === searchStaffId) ||
+    (u.username && u.username.toLowerCase() === searchUsername)
+  );
+
+  if (liveStaff) {
+    res.json({
+      user: {
+        ...req.user,
+        name: liveStaff.name || req.user.name,
+        role: liveStaff.role || req.user.role,
+        roles: liveStaff.roles || req.user.roles,
+        department: liveStaff.department || req.user.department,
+        email: liveStaff.email || req.user.email,
+        avatar: liveStaff.avatar || liveStaff.avatarUrl || liveStaff.avatarPath || '',
+        avatarColor: liveStaff.avatarColor || req.user.avatarColor || '#0078D4',
+        defaultBrand: liveStaff.defaultBrand || req.user.defaultBrand || 'SS'
+      }
+    });
+  } else {
+    res.json({ user: req.user });
+  }
+});
+
+router.put('/auth/profile', authenticateToken, (req, res) => {
+  try {
+    const staffRoster = TeamService.getStaffRoster();
+    const searchStaffId = (req.user.staffId || '').toLowerCase();
+    const searchUsername = (req.user.username || '').toLowerCase();
+    
+    let target = staffRoster.find(u => 
+      (u.staffId && u.staffId.toLowerCase() === searchStaffId) ||
+      (u.username && u.username.toLowerCase() === searchUsername)
+    );
+
+    const updates = {
+      name: req.body.name || (target ? target.name : req.user.name),
+      email: req.body.email !== undefined ? req.body.email : (target ? target.email : req.user.email),
+      department: req.body.department || (target ? target.department : req.user.department),
+      avatar: req.body.avatar !== undefined ? req.body.avatar : (target ? target.avatar : ''),
+      avatarColor: req.body.avatarColor || (target ? target.avatarColor : '#0078D4'),
+      defaultBrand: req.body.defaultBrand || (target ? target.defaultBrand : 'SS')
+    };
+
+    let updatedMember;
+    if (target) {
+      updatedMember = TeamService.updateStaffMember(target.staffId, updates);
+    } else {
+      updatedMember = TeamService.addStaffMember({
+        staffId: req.user.staffId || 'SS' + Math.floor(1000 + Math.random() * 9000),
+        username: req.user.username,
+        role: req.user.role || 'Designer',
+        ...updates
+      });
+    }
+
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'PROFILE_UPDATED',
+      entityType: 'User',
+      entityId: updatedMember.staffId,
+      details: { name: updatedMember.name, email: updatedMember.email }
+    });
+
+    SseService.broadcast('team:updated', { member: updatedMember, action: 'profile_updated' });
+
+    res.json({
+      success: true,
+      user: {
+        ...req.user,
+        name: updatedMember.name,
+        email: updatedMember.email,
+        department: updatedMember.department,
+        avatar: updatedMember.avatar || '',
+        avatarColor: updatedMember.avatarColor || '#0078D4',
+        defaultBrand: updatedMember.defaultBrand || 'SS'
+      }
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 router.get('/auth/users', authenticateToken, (req, res) => {
@@ -218,6 +302,7 @@ router.delete('/projects/:id', authenticateToken, (req, res) => {
       req.user ? req.user.name : 'Administrator',
       req.user ? req.user.role : 'Admin'
     );
+    SseService.broadcast('workspace:updated', { projectId: req.params.id, action: 'deleted' });
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -626,6 +711,7 @@ router.post('/users', authenticateToken, (req, res) => {
       entityId: newMember.staffId,
       details: { staffId: newMember.staffId, name: newMember.name, role: newMember.role }
     });
+    SseService.broadcast('team:updated', { member: newMember, action: 'created' });
     res.json({ success: true, user: newMember, member: newMember });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -646,6 +732,7 @@ router.put('/users/:id', authenticateToken, (req, res) => {
       entityId: req.params.id,
       details: updated
     });
+    SseService.broadcast('team:updated', { member: updated, action: 'updated' });
     res.json({ success: true, user: updated, member: updated });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -662,6 +749,7 @@ router.delete('/users/:id', authenticateToken, (req, res) => {
       entityType: 'User',
       entityId: req.params.id
     });
+    SseService.broadcast('team:updated', { deletedStaffId: req.params.id, action: 'deleted' });
     res.json({ success: true, ...result });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -696,6 +784,7 @@ router.post('/team/roster', authenticateToken, (req, res) => {
       entityId: newMember.staffId,
       details: newMember
     });
+    SseService.broadcast('team:updated', { member: newMember, action: 'created' });
     res.json({ success: true, member: newMember });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -713,6 +802,7 @@ router.put('/team/roster/:id', authenticateToken, (req, res) => {
       entityId: req.params.id,
       details: updated
     });
+    SseService.broadcast('team:updated', { member: updated, action: 'updated' });
     res.json({ success: true, member: updated });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -753,6 +843,7 @@ router.post('/companies', authenticateToken, (req, res) => {
       entityId: saved.code,
       details: saved
     });
+    SseService.broadcast('company:updated', { company: saved, action: 'saved' });
     res.json({ success: true, company: saved });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -771,6 +862,7 @@ router.put('/companies/:code', authenticateToken, (req, res) => {
       entityId: saved.code,
       details: saved
     });
+    SseService.broadcast('company:updated', { company: saved, action: 'updated' });
     res.json({ success: true, company: saved });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -788,6 +880,7 @@ router.put('/companies', authenticateToken, (req, res) => {
       entityId: saved.code,
       details: saved
     });
+    SseService.broadcast('company:updated', { company: saved, action: 'updated' });
     res.json({ success: true, company: saved });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -805,6 +898,7 @@ router.delete('/companies/:code', authenticateToken, (req, res) => {
       entityId: req.params.code,
       details: { deletedCode: req.params.code }
     });
+    SseService.broadcast('company:updated', { deletedCode: req.params.code, action: 'deleted' });
     res.json({ success: true, ...result });
   } catch (err) {
     res.status(400).json({ error: err.message });

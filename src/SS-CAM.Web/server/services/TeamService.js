@@ -186,6 +186,30 @@ class TeamService {
       }
     });
 
+    const allProjects = WorkspaceService.getAllProjects();
+
+    const CATEGORY_SLA_MAP = {
+      'D': { name: 'Graphic & Print Design', slaDays: 3, weight: 1.0, shortLabel: 'Graphic' },
+      'S': { name: 'Social Media Content', slaDays: 2, weight: 0.7, shortLabel: 'Social' },
+      'E': { name: 'E-Commerce', slaDays: 3, weight: 1.0, shortLabel: 'E-Com' },
+      'W': { name: 'Web Design', slaDays: 5, weight: 1.5, shortLabel: 'Web' },
+      'V': { name: 'Video Production', slaDays: 7, weight: 2.0, shortLabel: 'Video' },
+      'P': { name: 'Brand Identity', slaDays: 10, weight: 2.5, shortLabel: 'Branding' }
+    };
+
+    function resolveCategoryConfig(presetType, presetCode) {
+      if (presetCode && CATEGORY_SLA_MAP[presetCode.toUpperCase()]) {
+        return CATEGORY_SLA_MAP[presetCode.toUpperCase()];
+      }
+      const typeStr = (presetType || '').toLowerCase();
+      if (typeStr.includes('video') || typeStr.includes('motion')) return CATEGORY_SLA_MAP['V'];
+      if (typeStr.includes('brand') || typeStr.includes('identity')) return CATEGORY_SLA_MAP['P'];
+      if (typeStr.includes('web')) return CATEGORY_SLA_MAP['W'];
+      if (typeStr.includes('social') || typeStr.includes('media')) return CATEGORY_SLA_MAP['S'];
+      if (typeStr.includes('commerce') || typeStr.includes('e-com')) return CATEGORY_SLA_MAP['E'];
+      return CATEGORY_SLA_MAP['D']; // Default 3 days / 1.0 slot
+    }
+
     return roster.map(member => {
       const w = workloadMap[member.name] || workloadMap[member.staffId] || workloadMap[member.username] || {
         total: 0,
@@ -197,24 +221,65 @@ class TeamService {
         completed: 0
       };
 
+      // Filter assigned projects for this designer
+      const mName = (member.name || '').toLowerCase();
+      const mStaff = (member.staffId || '').toLowerCase();
+      const mUser = (member.username || '').toLowerCase();
+
+      const memberProjects = allProjects.filter(p => {
+        const d = (p.designer || '').toLowerCase();
+        return d === mName || d === mStaff || d === mUser || (mName && d.includes(mName));
+      }).map(p => {
+        const catCfg = resolveCategoryConfig(p.presetType, p.presetCode);
+        return {
+          id: p.id || p.jobId,
+          jobId: p.jobId || p.id,
+          title: p.title || 'Untitled Project',
+          status: p.status || 'in-progress',
+          brand: p.brand || 'SS',
+          priority: p.priority || 'medium',
+          deadline: p.deadline || null,
+          presetType: catCfg.name,
+          presetCode: p.presetCode || 'D',
+          slaDays: catCfg.slaDays,
+          slotWeight: catCfg.weight,
+          shortLabel: catCfg.shortLabel
+        };
+      });
+
+      // Calculate Category-Weighted Active Load (Max safe studio capacity: 5.0 slot points)
+      let weightedLoad = 0;
+      memberProjects.filter(p => p.status !== 'done' && p.status !== 'approved').forEach(p => {
+        weightedLoad += (p.slotWeight || 1.0);
+      });
+      weightedLoad = Math.round(weightedLoad * 10) / 10;
+
+      let capacityPercent = Math.min(100, Math.round((weightedLoad / 5.0) * 100));
       let capacityStatus = 'Normal';
       let capacityColor = '#10B981'; // Green
-      if (w.active >= 5) {
+
+      if (weightedLoad >= 4.5 || w.active >= 5) {
         capacityStatus = 'Overloaded';
         capacityColor = '#EF4444'; // Red
-      } else if (w.active >= 3) {
+      } else if (weightedLoad >= 2.5 || w.active >= 3) {
         capacityStatus = 'High Workload';
         capacityColor = '#F59E0B'; // Amber
-      } else if (w.active === 0) {
+      } else if (w.active === 0 || weightedLoad === 0) {
         capacityStatus = 'Available';
         capacityColor = '#21A1F7'; // Azure
       }
 
       return {
         ...member,
-        workload: w,
+        workload: {
+          ...w,
+          weightedLoad,
+          capacityPercent
+        },
         capacityStatus,
-        capacityColor
+        capacityColor,
+        assignedProjects: memberProjects.slice(0, 6),
+        totalAssignedCount: memberProjects.length
       };
     });
   }

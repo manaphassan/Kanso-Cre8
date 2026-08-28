@@ -11,7 +11,7 @@ public partial class MainViewModel : ViewModelBase
     private string _appName = "SS-CAM Desktop (Linux / Fedora Edition)";
 
     [ObservableProperty]
-    private string _appVersion = "v3.5.0-linux";
+    private string _appVersion = "v4.5.0-linux";
 
     [ObservableProperty]
     private string _synologyDrivePath = Path.Combine(

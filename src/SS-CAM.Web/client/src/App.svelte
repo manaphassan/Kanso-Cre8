@@ -58,7 +58,13 @@
 
     // Initialize real-time SSE listener
     const closeSse = ApiClient.initEventStream((event, data) => {
-      if (event === 'workspace:updated' || event === 'project:updated') {
+      if (event === 'connection:status') {
+        appState.sseStatus = data.status;
+        if (data.status === 'connected') {
+          appState.lastSyncedAt = new Date();
+        }
+      } else if (event === 'workspace:updated' || event === 'project:updated') {
+        appState.lastSyncedAt = new Date();
         projectStore.loadProjects();
         if (appState.currentRoute === 'dashboard') {
           projectStore.loadDashboard();
@@ -67,7 +73,15 @@
         } else if (appState.currentRoute === 'deliverables') {
           projectStore.loadDeliverables();
         }
+        window.dispatchEvent(new CustomEvent('workspace:updated', { detail: data }));
+      } else if (event === 'team:updated') {
+        appState.lastSyncedAt = new Date();
+        window.dispatchEvent(new CustomEvent('team:updated', { detail: data }));
+      } else if (event === 'company:updated') {
+        appState.lastSyncedAt = new Date();
+        window.dispatchEvent(new CustomEvent('company:updated', { detail: data }));
       } else if (event === 'project:decision') {
+        appState.lastSyncedAt = new Date();
         appState.addToast(`${data.reviewer} marked ${data.projectId} as ${(data.decision || '').replace('_', ' ')}`, 'info', 'Decision Updated');
         projectStore.loadProjects();
         if (appState.currentRoute === 'dashboard') {
@@ -75,7 +89,9 @@
         } else if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
           projectStore.loadProjectDetail(data.projectId);
         }
+        window.dispatchEvent(new CustomEvent('workspace:updated', { detail: data }));
       } else if (event === 'comment:added') {
+        appState.lastSyncedAt = new Date();
         if (data.comment?.author !== appState.currentUser?.name) {
           appState.addToast(`${data.comment?.author}: ${data.comment?.content?.substring(0, 40) || ''}...`, 'info', 'New Project Comment');
         }
@@ -83,6 +99,7 @@
           projectStore.loadProjectDetail(data.projectId);
         }
       } else if (event === 'comment:resolved') {
+        appState.lastSyncedAt = new Date();
         if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
           projectStore.loadProjectDetail(data.projectId);
         }
@@ -102,7 +119,7 @@
     team:             { title: 'Team & Workload',     layout: 'layout-page' },
     'copy-studio':    { title: 'Copywriting Studio',  layout: 'layout-page' },
     admin:            { title: 'Administration',      layout: 'layout-full' },
-    profile:          { title: 'My Profile',          layout: 'layout-narrow' },
+    profile:          { title: 'My Profile',          layout: 'layout-full' },
   };
 
   const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'SS-CAM', layout: 'layout-page' });
@@ -287,6 +304,18 @@
         </div>
 
         <div class="header-right">
+          <!-- Real-Time Vault Live Sync Pill -->
+          <div
+            class="live-sync-pill"
+            class:connected={appState.sseStatus === 'connected'}
+            class:reconnecting={appState.sseStatus === 'reconnecting'}
+            title={appState.lastSyncedAt ? `Live SSE Synced with Synology Vault. Last event: ${appState.lastSyncedAt.toLocaleTimeString()}` : 'Connecting to live vault stream...'}
+          >
+            <span class="live-pulse-dot" aria-hidden="true"></span>
+            <span class="live-label">
+              {appState.sseStatus === 'connected' ? 'Live Synced' : appState.sseStatus === 'reconnecting' ? 'Reconnecting' : 'Syncing'}
+            </span>
+          </div>
 
           <button
             class="icon-btn notif-btn"
@@ -325,7 +354,13 @@
               aria-haspopup="menu"
               aria-expanded={appState.userMenuOpen}
             >
-              <div class="user-avatar">{userInitial}</div>
+              <div class="user-avatar" style="background: {appState.currentUser?.avatarColor || 'var(--brand-gradient)'};">
+                {#if appState.currentUser?.avatar}
+                  <img src={appState.currentUser.avatar} alt={appState.currentUser.name} class="avatar-photo" />
+                {:else}
+                  <span>{userInitial}</span>
+                {/if}
+              </div>
               <div class="user-info">
                 <span class="user-name">{appState.currentUser?.name ?? 'User'}</span>
                 <span class="user-role-label">{appState.currentUser?.role}</span>
@@ -339,7 +374,13 @@
               <!-- svelte-ignore a11y_no_static_element_interactions -->
               <div class="user-dropdown" role="menu" onclick={(e) => e.stopPropagation()}>
                 <div class="dd-header">
-                  <div class="dd-avatar">{userInitial}</div>
+                  <div class="dd-avatar" style="background: {appState.currentUser?.avatarColor || 'var(--brand-gradient)'};">
+                    {#if appState.currentUser?.avatar}
+                      <img src={appState.currentUser.avatar} alt={appState.currentUser.name} class="avatar-photo" />
+                    {:else}
+                      <span>{userInitial}</span>
+                    {/if}
+                  </div>
                   <div>
                     <div class="dd-name">{appState.currentUser?.name}</div>
                     <div class="dd-meta">{appState.currentUser?.staffId} · {appState.currentUser?.role}</div>
@@ -849,6 +890,48 @@
     border: 1.5px solid var(--surface-card);
   }
 
+  /* Live Sync Pill */
+  .live-sync-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #059669;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+  .live-sync-pill.reconnecting {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.25);
+    color: #D97706;
+  }
+  .live-pulse-dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    animation: livePulse 2s infinite;
+  }
+  .live-sync-pill.reconnecting .live-pulse-dot {
+    background: #F59E0B;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+    animation: livePulse 0.8s infinite;
+  }
+  @keyframes livePulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+  .live-label {
+    letter-spacing: 0.2px;
+  }
+
   .vault-link {
     display: inline-flex;
     align-items: center;
@@ -891,6 +974,15 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .user-info  { display: flex; flex-direction: column; }
   .user-name  { font-size: 12.5px; font-weight: 700; color: var(--text-primary); white-space: nowrap; }
@@ -923,8 +1015,8 @@
     background: var(--bg-app);
   }
   .dd-avatar {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: var(--brand-gradient);
     color: #fff;
@@ -934,6 +1026,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
   .dd-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
   .dd-meta { font-size: 11px; color: var(--text-secondary); }
@@ -989,10 +1084,11 @@
     margin: 0 auto;
   }
   .view-pane.layout-full {
-    padding: 28px 32px;
-    max-width: 1600px;
+    padding: 24px 32px;
+    max-width: 100%;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
+    box-sizing: border-box;
   }
   .view-pane.layout-narrow {
     padding: 36px 48px;

@@ -18,6 +18,8 @@ class AppStateStore {
   notificationDrawerOpen = $state<boolean>(false);
   userMenuOpen = $state<boolean>(false);
   contextDrawerOpen = $state<boolean>(false);
+  sseStatus = $state<'connected' | 'reconnecting' | 'disconnected'>('disconnected');
+  lastSyncedAt = $state<Date | null>(null);
 
   constructor() {
     this.applyTheme(this.theme);

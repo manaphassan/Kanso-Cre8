@@ -521,6 +521,19 @@ namespace SS_CAM.Views
             UpdatePlatformCardHighlighting();
 
             CategoryPreset selectedPreset = GetSelectedCategoryPreset();
+            if (selectedPreset != null)
+            {
+                DateTime targetDue = CategoryPresetService.CalculateTargetDeadline(selectedPreset);
+                if (SlaTargetText != null)
+                {
+                    SlaTargetText.Text = string.Format("SLA Target: {0} Days", selectedPreset.SlaDays > 0 ? selectedPreset.SlaDays : 3);
+                }
+                if (SlaDeadlineText != null)
+                {
+                    SlaDeadlineText.Text = string.Format("Recommended Due Date: {0:yyyy-MM-dd} ({0:ddd})", targetDue);
+                }
+            }
+
             List<string> presetFolders = GetPresetFolders(selectedPreset);
 
             List<string> lines = new List<string>();
@@ -630,9 +643,15 @@ namespace SS_CAM.Views
                 }
 
                 string designerName = !string.IsNullOrWhiteSpace(currentProfile.DesignerName) ? currentProfile.DesignerName : (currentProfile.StaffId ?? "");
+                DateTime targetDeadline = CategoryPresetService.CalculateTargetDeadline(selectedPreset);
+                string deadlineFormatted = targetDeadline.ToString("yyyy-MM-dd");
+                string presetName = selectedPreset != null ? selectedPreset.Name : (PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "Graphic & Print Design");
+
                 string frontmatter = FrontmatterService.BuildDefaultFrontmatter(
                     designerName,
-                    subBrandCode);
+                    subBrandCode,
+                    deadlineFormatted,
+                    presetName);
 
                 string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Project ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
                     frontmatter,

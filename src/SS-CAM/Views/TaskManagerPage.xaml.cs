@@ -236,11 +236,11 @@ namespace SS_CAM.Views
                     string priority = (p.Priority ?? "").ToLowerInvariant();
                     string deadlineDisp = p.DeadlineDisplay ?? "";
 
-                    if (status == "in-progress") inProgressCount++;
+                    if (status == "in-progress" || status == "revision") inProgressCount++;
                     else if (status == "review") reviewCount++;
-                    else if (status == "done") doneCount++;
+                    else if (status == "done" || status == "approved") doneCount++;
 
-                    if (priority == "urgent" || p.IsOverdue || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
+                    if (priority == "urgent" || status == "revision" || p.IsOverdue || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
                     {
                         urgentCount++;
                     }
@@ -383,6 +383,7 @@ namespace SS_CAM.Views
                 List<ProjectStatusItem> backlog = new List<ProjectStatusItem>();
                 List<ProjectStatusItem> inProgress = new List<ProjectStatusItem>();
                 List<ProjectStatusItem> review = new List<ProjectStatusItem>();
+                List<ProjectStatusItem> revision = new List<ProjectStatusItem>();
                 List<ProjectStatusItem> done = new List<ProjectStatusItem>();
                 List<ProjectStatusItem> other = new List<ProjectStatusItem>();
 
@@ -393,19 +394,22 @@ namespace SS_CAM.Views
                     if (s == "backlog") backlog.Add(p);
                     else if (s == "in-progress") inProgress.Add(p);
                     else if (s == "review") review.Add(p);
-                    else if (s == "done") done.Add(p);
+                    else if (s == "revision") revision.Add(p);
+                    else if (s == "done" || s == "approved") done.Add(p);
                     else other.Add(p);   // on-hold, untracked, empty
                 }
 
                 if (ListBacklog != null) ListBacklog.ItemsSource = backlog;
                 if (ListInProgress != null) ListInProgress.ItemsSource = inProgress;
                 if (ListReview != null) ListReview.ItemsSource = review;
+                if (ListRevision != null) ListRevision.ItemsSource = revision;
                 if (ListDone != null) ListDone.ItemsSource = done;
                 if (ListOther != null) ListOther.ItemsSource = other;
 
                 if (CountBacklog != null) CountBacklog.Text = backlog.Count.ToString();
                 if (CountInProgress != null) CountInProgress.Text = inProgress.Count.ToString();
                 if (CountReview != null) CountReview.Text = review.Count.ToString();
+                if (CountRevision != null) CountRevision.Text = revision.Count.ToString();
                 if (CountDone != null) CountDone.Text = done.Count.ToString();
                 if (CountOther != null) CountOther.Text = other.Count.ToString();
 

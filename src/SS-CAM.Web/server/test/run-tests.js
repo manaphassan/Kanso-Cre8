@@ -301,6 +301,23 @@ This is the project brief content.
     const updatedPerms = getUserPermissions(updated);
     assert.ok(updatedPerms.includes('team:manage_workload'), 'Must contain Manager workload permission');
 
+    // Test Team Directory & Workload aggregation
+    const directory = TeamService.getTeamDirectory();
+    assert.ok(Array.isArray(directory), 'Team directory must return an array of creatives');
+    assert.ok(directory.length > 0, 'Directory must contain active creative staff');
+    
+    const harussani = directory.find(m => m.staffId === 'SS0004' || m.name === 'Harussani');
+    assert.ok(harussani, 'Harussani (Art Director) must be in creative team directory');
+    assert.ok(harussani.workload, 'Harussani must have workload metrics object');
+    assert.strictEqual(typeof harussani.workload.active, 'number', 'Workload active count must be a number');
+    assert.strictEqual(typeof harussani.capacityStatus, 'string', 'Capacity status must be a string');
+    assert.strictEqual(typeof harussani.workload.weightedLoad, 'number', 'Weighted load must be a number');
+    assert.ok(Array.isArray(harussani.assignedProjects), 'Assigned projects must be an array');
+    if (harussani.assignedProjects.length > 0) {
+      assert.strictEqual(typeof harussani.assignedProjects[0].slaDays, 'number', 'Assigned project must have numeric slaDays');
+      assert.strictEqual(typeof harussani.assignedProjects[0].slotWeight, 'number', 'Assigned project must have numeric slotWeight');
+    }
+
     // Cleanup
     TeamService.deleteStaffMember(testStaffId);
   });
