@@ -36,8 +36,19 @@ Write-Host ("Release: {0} | Date: {1} | DryRun: {2}" -f $tag, $today, $DryRun.Is
 Write-Host ("Repository: {0}" -f $repoRoot)
 Write-Host ''
 
-# ── STEP 1: Remove invalid GITHUB_TOKEN ─────────────────────────────────────
-Remove-Item Env:\GITHUB_TOKEN -ErrorAction SilentlyContinue
+# ── STEP 1: GitHub Authentication via Git Credential Manager ───────────────
+if (-not $env:GH_TOKEN -and -not $env:GITHUB_TOKEN) {
+    try {
+        $rawCred = "protocol=https`nhost=github.com`n`n" | git credential fill 2>$null
+        foreach ($line in ($rawCred -split "`n")) {
+            $trimmed = $line.Trim()
+            if ($trimmed.StartsWith("password=")) {
+                $env:GH_TOKEN = $trimmed.Substring(9).Trim()
+                break
+            }
+        }
+    } catch {}
+}
 
 # ── STEP 2: Source Guardian Health Check ─────────────────────────────────────
 $guardian = Join-Path $repoRoot 'QA\verify-sscam.ps1'
@@ -103,9 +114,24 @@ if (-not $DryRun) {
 
 # ── STEP 6: Publish GitHub Release ──────────────────────────────────────────
 Write-Host '[ GITHUB RELEASE ]' -ForegroundColor Cyan
-$headline = ($notesContent -split "`n" | Where-Object { $_ -match '^\S' } | Select-Object -Skip 1 -First 1).Trim()
-if (-not $headline) { $headline = "SS-CAM $tag Release" }
+$firstLine = ($notesContent -split "`n" | Select-Object -First 1).Trim()
+if ($firstLine -match '\((.*?)\)') {
+    $headline = $Matches[1].Trim()
+} else {
+    $headline = ($notesContent -split "`n" | Where-Object { $_ -match '^###' } | Select-Object -First 1)
+    $headline = ($headline -replace '^#+\s*', '').Trim()
+}
+if (-not $headline) { $headline = "Release $tag" }
 $releaseTitle = "SS-CAM $tag - $headline"
+
+# Look for executable asset in dist\
+$exeAsset = Join-Path $repoRoot "dist\SS-CAM-$tag.exe"
+if (-not (Test-Path $exeAsset)) {
+    $exeAsset = Join-Path $repoRoot "dist\SS-CAM-$Version.exe"
+}
+if (-not (Test-Path $exeAsset)) {
+    $exeAsset = Join-Path $repoRoot "src\SS-CAM\bin\Release\SS-CAM.exe"
+}
 
 if (-not $DryRun) {
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
@@ -117,23 +143,34 @@ if (-not $DryRun) {
             if ($LASTEXITCODE -eq 0) { $releaseExists = $true }
         } catch {}
 
-    if ($releaseExists) {
-        # Release exists — edit it
-        gh release edit $tag --repo SuamiSihat/ss_cam `
-            --title $releaseTitle `
-            --notes-file $notesFile `
-            --latest
-    } else {
-        # Create new release
-        gh release create $tag --repo SuamiSihat/ss_cam `
-            --title $releaseTitle `
-            --notes-file $notesFile
-    }
-    if ($LASTEXITCODE -eq 0) {
-        Write-Result 'GitHub Release' "$tag published as Latest" 'PASS'
-    } else {
-        Write-Result 'GitHub Release' "$tag publish failed" 'FAIL' "Check gh auth status and network connectivity."
-    }
+        if ($releaseExists) {
+            # Release exists — edit it
+            gh release edit $tag --repo SuamiSihat/ss_cam `
+                --title $releaseTitle `
+                --notes-file $notesFile `
+                --latest
+            if (Test-Path $exeAsset) {
+                gh release upload $tag $exeAsset --repo SuamiSihat/ss_cam --clobber
+            }
+        } else {
+            # Create new release
+            if (Test-Path $exeAsset) {
+                gh release create $tag $exeAsset --repo SuamiSihat/ss_cam `
+                    --title $releaseTitle `
+                    --notes-file $notesFile `
+                    --latest
+            } else {
+                gh release create $tag --repo SuamiSihat/ss_cam `
+                    --title $releaseTitle `
+                    --notes-file $notesFile `
+                    --latest
+            }
+        }
+        if ($LASTEXITCODE -eq 0) {
+            Write-Result 'GitHub Release' "$tag published as Latest" 'PASS'
+        } else {
+            Write-Result 'GitHub Release' "$tag publish failed" 'FAIL' "Check gh auth status and network connectivity."
+        }
     }
 } else {
     Write-Result 'GitHub Release' "$tag published as Latest" 'PASS' '(DryRun: skipped actual publish)'
