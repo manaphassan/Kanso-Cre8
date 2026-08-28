@@ -8,9 +8,12 @@
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
+  import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
 
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
+  let showIngesterModal = $state<boolean>(false);
+  let ingestTargetProject = $state<any>(null);
   let filterStatus = $state<string>('all');
   let searchQuery = $state<string>('');
   let filterBrand = $state<string>('all');
@@ -68,6 +71,20 @@
     </div>
 
     <div class="header-actions">
+      <FluentButton 
+        appearance="primary" 
+        size="sm" 
+        onclick={() => { 
+          ingestTargetProject = projectStore.projects[0] || null; 
+          showIngesterModal = true; 
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+        </svg>
+        <span>Ingest Deliverables</span>
+      </FluentButton>
+
       <FluentButton appearance="secondary" size="sm" onclick={() => projectStore.loadDeliverables()}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
@@ -227,6 +244,14 @@
         await projectStore.loadDeliverables();
       }
     }}
+  />
+
+  <!-- Vault Ingester Modal -->
+  <VaultIngesterModal
+    bind:open={showIngesterModal}
+    projectId={ingestTargetProject?.id}
+    projectTitle={ingestTargetProject?.title}
+    onSuccess={() => projectStore.loadDeliverables()}
   />
 </div>
 

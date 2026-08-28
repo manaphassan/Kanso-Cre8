@@ -650,6 +650,37 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 22: Drag-and-Drop Vault Ingester & Auto-Sorting ───────────
+  test('WorkspaceService.ingestFile stores files in canonical subfolders with path safety', () => {
+    const testDir = path.join(__dirname, 'temp-ingest-workspace');
+    const projectDir = path.join(testDir, '2026', '202608_August', '202608_0099T_SS_Ingest_Test');
+    fs.mkdirSync(projectDir, { recursive: true });
+    fs.writeFileSync(path.join(projectDir, 'README.md'), '---\nstatus: in-progress\n---\n# Ingest Test\n', 'utf8');
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+    WorkspaceService.isScanning = false;
+    WorkspaceService.scan(true);
+
+    try {
+      // Ingest test source file (.psd)
+      const base64Content = Buffer.from('FAKE_PSD_BINARY_CONTENT').toString('base64');
+      const res = WorkspaceService.ingestFile('0099T', '02_SOURCE_FILES', 'Master_Layout.psd', base64Content, 'Tester');
+
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.folder, '02_SOURCE_FILES');
+      assert.strictEqual(res.filename, 'Master_Layout.psd');
+
+      const expectedSavedFile = path.join(projectDir, '02_SOURCE_FILES', 'Master_Layout.psd');
+      assert.ok(fs.existsSync(expectedSavedFile), 'Master_Layout.psd must exist in 02_SOURCE_FILES');
+      assert.strictEqual(fs.readFileSync(expectedSavedFile, 'utf8'), 'FAKE_PSD_BINARY_CONTENT');
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      WorkspaceService.scan(true);
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

@@ -372,11 +372,21 @@ router.delete('/projects/:id/comments/:commentId', authenticateToken, (req, res)
       req.user ? req.user.name : 'System',
       req.user ? req.user.role : 'User'
     );
+router.post('/projects/:id/ingest', authenticateToken, (req, res) => {
+  try {
+    const { id } = req.params;
+    const { filename, targetSubfolder, fileData } = req.body;
+    if (!filename || !fileData) {
+      return res.status(400).json({ error: 'filename and fileData (base64) are required.' });
+    }
+    const actor = req.user ? req.user.name : 'Designer';
+    const result = WorkspaceService.ingestFile(id, targetSubfolder, filename, fileData, actor);
     res.json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 // ─── LIVE ACTIVITY & NOTIFICATIONS ───────────────────────────────────
 

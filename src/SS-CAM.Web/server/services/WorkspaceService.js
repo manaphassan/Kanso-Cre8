@@ -1049,6 +1049,65 @@ class WorkspaceService {
       lastScan: this.lastScanTime
     };
   }
+
+  ingestFile(projectId, targetSubfolder, filename, base64Data, actor = 'Designer') {
+    const project = this.getProjectById(projectId);
+    if (!project) {
+      throw new Error(`Project "${projectId}" not found in workspace.`);
+    }
+
+    // Sanitize filename and subfolder to prevent path traversal
+    const safeFilename = path.basename(filename);
+    const validSubfolders = ['01_BRIEF_ASSETS', '02_SOURCE_FILES', '03_COPYWRITING', '04_WORK_IN_PROGRESS', '05_DELIVERABLES'];
+    const safeSubfolder = validSubfolders.includes(targetSubfolder) ? targetSubfolder : '01_BRIEF_ASSETS';
+
+    const targetDir = path.join(project.fullPath, safeSubfolder);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const targetFilePath = path.join(targetDir, safeFilename);
+
+    // Decode base64 data or buffer
+    const buffer = Buffer.isBuffer(base64Data) 
+      ? base64Data 
+      : Buffer.from(base64Data.replace(/^data:.*?;base64,/, ''), 'base64');
+
+    fs.writeFileSync(targetFilePath, buffer);
+
+    // Audit log
+    AuditService.logEvent({
+      actor,
+      action: 'FILE_INGESTED',
+      entityType: 'Deliverable',
+      entityId: project.jobId || project.id,
+      details: {
+        filename: safeFilename,
+        subfolder: safeSubfolder,
+        sizeBytes: buffer.length,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    // Notify clients via SSE
+    try {
+      const SseService = require('./SseService');
+      SseService.broadcast('workspace:updated', {
+        projectId: project.id,
+        filename: safeFilename,
+        folder: safeSubfolder,
+        timestamp: new Date().toISOString()
+      });
+    } catch (e) {}
+
+    return {
+      success: true,
+      filename: safeFilename,
+      folder: safeSubfolder,
+      sizeBytes: buffer.length,
+      relPath: path.relative(this.workspaceRoot, targetFilePath).replace(/\\/g, '/')
+    };
+  }
 }
 
 module.exports = new WorkspaceService();

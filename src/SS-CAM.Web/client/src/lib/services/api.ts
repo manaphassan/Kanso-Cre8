@@ -159,6 +159,13 @@ export class ApiClient {
     });
   }
 
+  static ingestFile(projectId: string, filename: string, targetSubfolder: string, fileData: string): Promise<{ success: boolean; filename: string; folder: string; sizeBytes: number; relPath: string }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/ingest`, {
+      method: 'POST',
+      body: JSON.stringify({ filename, targetSubfolder, fileData })
+    });
+  }
+
   static updateCreativeDirection(id: string, payload: CreativeDirectionState): Promise<{ success: boolean; creativeDirection: CreativeDirectionState }> {
     return this.request(`/projects/${encodeURIComponent(id)}/direction`, {
       method: 'PUT',

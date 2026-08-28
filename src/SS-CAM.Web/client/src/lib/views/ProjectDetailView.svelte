@@ -7,9 +7,9 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
-  import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
+  import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
 
   interface Props {
     projectId?: string;
@@ -22,6 +22,7 @@
   let activeCanvasView = $state<MainCanvasView>('brief');
   let inspectorTab = $state<'properties' | 'discussion'>('properties');
   let inspectorOpen = $state<boolean>(true);
+  let showIngesterModal = $state<boolean>(false);
 
   // Deliverables & Lightbox
   let selectedDeliverable = $state<DeliverableItem | null>(null);
@@ -385,6 +386,18 @@
             </svg>
             <span>Open in Desktop</span>
           </a>
+
+          <!-- Ingest Vault Assets Button -->
+          <button
+            class="ingest-vault-btn"
+            onclick={() => (showIngesterModal = true)}
+            title="Drag and drop raw files or deliverables to auto-sort into NAS vault"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+            </svg>
+            <span>Ingest Assets</span>
+          </button>
 
           <!-- Export Handover ZIP Button -->
           <a
@@ -783,6 +796,13 @@
         </div>
       </div>
     </FluentDialog>
+
+    <!-- Vault Ingester Modal -->
+    <VaultIngesterModal
+      bind:open={showIngesterModal}
+      projectId={p?.id}
+      projectTitle={p?.title}
+    />
   {/if}
 </div>
 
@@ -885,6 +905,25 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  .ingest-vault-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(33, 161, 247, 0.15);
+    color: #21A1F7;
+    border: 1px solid rgba(33, 161, 247, 0.3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ingest-vault-btn:hover {
+    background: #21A1F7;
+    color: #0F172A;
   }
 
   .export-handover-btn {
