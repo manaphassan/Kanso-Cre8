@@ -19,6 +19,7 @@ const candidates = [
   path.resolve(__dirname, '../client/dist'),
   path.resolve(__dirname, '../../src/SS-CAM.Web/client/dist'),
   path.resolve(__dirname, '../src/SS-CAM.Web/client/dist'),
+  path.resolve(__dirname, './src/SS-CAM.Web/client/dist'),
   path.resolve(__dirname, './client/dist'),
   path.resolve(__dirname, '../client')
 ];
