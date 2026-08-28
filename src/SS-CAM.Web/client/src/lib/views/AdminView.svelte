@@ -1168,7 +1168,7 @@
           <div class="telemetry-detail-list">
             <div class="telemetry-row">
               <span class="tel-label">Server Version</span>
-              <b>SS-CAM Web v{systemStatus?.version || '3.6.1'} ({systemStatus?.platform || 'x64'})</b>
+              <b>SS-CAM Web v{systemStatus?.version || '4.5.0'} ({systemStatus?.platform || 'x64'})</b>
             </div>
             <div class="telemetry-row">
               <span class="tel-label">Client Framework</span>

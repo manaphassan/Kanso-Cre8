@@ -1,0 +1,68 @@
+[
+  {
+    "code": "SSH",
+    "name": "SuamiSihat Holding Sdn Bhd",
+    "shortName": "Holding Group",
+    "regNo": "202401012345 (1550123-X)",
+    "address": "Level 28, Menara SuamiSihat, Jalan Ampang, 50450 Kuala Lumpur, Malaysia",
+    "contact": "+603-2181-8888 / holding@suamisihat.com",
+    "location": "Kuala Lumpur, Malaysia",
+    "status": "active",
+    "isParent": true,
+    "establishedYear": "2020",
+    "color": "#022057"
+  },
+  {
+    "code": "SSC",
+    "name": "SuamiSihat Healthcare Sdn Bhd",
+    "shortName": "Healthcare & Clinic",
+    "regNo": "202401012346 (1550124-Y)",
+    "address": "SuamiSihat Clinic, No. 12, Ground Floor, Jalan Telawi 3, Bangsar, 59100 Kuala Lumpur",
+    "contact": "+603-2282-7777 / healthcare@suamisihat.com",
+    "location": "Bangsar, Kuala Lumpur",
+    "status": "active",
+    "isParent": false,
+    "establishedYear": "2021",
+    "color": "#043388"
+  },
+  {
+    "code": "SSW",
+    "name": "SuamiSihat Ellness Sdn Bhd",
+    "shortName": "Wellness & Nutrition",
+    "regNo": "202401012347 (1550125-Z)",
+    "address": "Unit 3A-01, Oval Damansara, 685 Jalan Damansara, 60000 Kuala Lumpur",
+    "contact": "+603-7733-6666 / wellness@suamisihat.com",
+    "location": "Damansara, Kuala Lumpur",
+    "status": "active",
+    "isParent": false,
+    "establishedYear": "2022",
+    "color": "#21A1F7"
+  },
+  {
+    "code": "SSE",
+    "name": "SuamiSihat Ecommerce Sdn Bhd",
+    "shortName": "E-Commerce & Retail",
+    "regNo": "202401012348 (1550126-A)",
+    "address": "Warehouse Hub 2, Jalan PJU 1A/41B, Ara Damansara, 47301 Petaling Jaya, Selangor",
+    "contact": "+603-7848-5555 / ecom@suamisihat.com",
+    "location": "Petaling Jaya, Selangor",
+    "status": "active",
+    "isParent": false,
+    "establishedYear": "2023",
+    "color": "#107C41"
+  },
+  {
+    "code": "SST",
+    "name": "SuamiSihat Technology Sdn Bhd",
+    "shortName": "SST",
+    "regNo": "",
+    "address": "",
+    "contact": "",
+    "location": "Cyberjaya, Selangor",
+    "status": "active",
+    "isParent": false,
+    "establishedYear": "2026",
+    "color": "#043388",
+    "updatedAt": "2026-08-28T08:53:07.067Z"
+  }
+]

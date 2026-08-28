@@ -202,7 +202,7 @@
           <div class="desktop-banner">
             <div class="banner-row">
               <span class="banner-pill">Desktop Client</span>
-              <span class="banner-ver">v4.4.0</span>
+              <span class="banner-ver">v4.5.0</span>
             </div>
             <div class="banner-title">SS-CAM Desktop</div>
             <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
@@ -394,7 +394,7 @@
 
   <FluentDialog
     bind:open={showDownloadModal}
-    title="Download SS-CAM Clients (v4.4.0)"
+    title="Download SS-CAM Clients (v4.5.0)"
     onClose={() => (showDownloadModal = false)}
   >
     <div class="download-modal-content">
