@@ -332,21 +332,40 @@ router.put('/projects/:id', authenticateToken, requirePermission('project:edit')
       expectedHash || null
     );
 
+    // Immediately update cached in-memory project fields
+    if (project) {
+      if (mergedFm.manager !== undefined) project.manager = mergedFm.manager;
+      if (mergedFm.status !== undefined) project.status = mergedFm.status;
+      if (mergedFm.priority !== undefined) project.priority = mergedFm.priority;
+      if (mergedFm.designer !== undefined) project.designer = mergedFm.designer;
+      if (mergedFm.brand !== undefined) project.brand = mergedFm.brand;
+      if (mergedFm.department !== undefined) project.department = mergedFm.department;
+      if (mergedFm.deadline !== undefined) project.deadline = mergedFm.deadline;
+      project.versionHash = result.versionHash;
+    }
+
     AuditService.logEvent({
-      actor: req.user.name || req.user.username,
-      role: req.user.role,
+      actor: (req.user && (req.user.name || req.user.username)) || 'Administrator',
+      role: (req.user && req.user.role) || 'Admin',
       action: 'PROJECT_UPDATED',
       entityType: 'Project',
       entityId: project.jobId || project.id,
-      details: { status: mergedFm.status, priority: mergedFm.priority }
+      details: { manager: mergedFm.manager, status: mergedFm.status, priority: mergedFm.priority }
     });
 
-    WorkspaceService.scan();
-    SseService.broadcast('project:updated', { projectId: req.params.id, status: mergedFm.status, priority: mergedFm.priority });
+    WorkspaceService.scan(true);
+    SseService.broadcast('project:updated', { 
+      projectId: req.params.id, 
+      manager: mergedFm.manager,
+      status: mergedFm.status, 
+      priority: mergedFm.priority 
+    });
+
+    const refreshedProject = WorkspaceService.getProjectById(req.params.id) || project;
 
     res.json({
       success: true,
-      project: WorkspaceService.getProjectById(req.params.id),
+      project: refreshedProject,
       versionHash: result.versionHash
     });
   } catch (err) {

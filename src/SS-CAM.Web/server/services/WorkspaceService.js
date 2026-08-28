@@ -507,7 +507,7 @@ class WorkspaceService {
           if (frontmatter.status) project.status = frontmatter.status;
           if (frontmatter.priority) project.priority = frontmatter.priority;
           if (frontmatter.designer) project.designer = frontmatter.designer;
-          if (frontmatter.manager) project.manager = frontmatter.manager;
+          project.manager = frontmatter.manager || 'Unassigned';
           if (frontmatter.department) project.department = frontmatter.department;
           if (frontmatter.deadline) project.deadline = frontmatter.deadline;
           if (frontmatter.revision !== undefined) project.revision = frontmatter.revision;

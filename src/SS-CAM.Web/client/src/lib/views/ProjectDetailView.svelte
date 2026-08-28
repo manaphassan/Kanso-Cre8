@@ -101,6 +101,7 @@
   }
   let staffList = $state<StaffMember[]>([]);
   let isUpdatingManager = $state<boolean>(false);
+  let selectedManager = $state<string>('Unassigned');
 
   // Filter to strictly managerial and leadership roles
   const managerList = $derived.by(() => {
@@ -116,6 +117,14 @@
         roleStr.includes('executive')
       );
     });
+  });
+
+  $effect(() => {
+    if (p && p.manager && p.manager !== 'Unassigned') {
+      selectedManager = p.manager;
+    } else {
+      selectedManager = 'Unassigned';
+    }
   });
 
   async function loadStaffList() {
@@ -137,18 +146,20 @@
   }
 
   async function handleManagerChange(newManager: string) {
-    if (!p || !newManager) return;
+    if (!p) return;
     isUpdatingManager = true;
+    selectedManager = newManager;
     try {
       await ApiClient.updateProject(p.id, { manager: newManager });
       currentFrontmatter.manager = newManager;
       if (projectStore.selectedProject) {
         projectStore.selectedProject.manager = newManager;
       }
-      appState.addToast(`Reviewer updated to ${newManager}`, 'success');
+      appState.addToast(`Reviewer updated to ${newManager === 'Unassigned' ? 'Unassigned' : newManager}`, 'success');
       await projectStore.loadProjectDetail(p.id);
     } catch (err: any) {
       appState.addToast(`Failed to update reviewer: ${err.message}`, 'error');
+      selectedManager = p.manager || 'Unassigned';
     } finally {
       isUpdatingManager = false;
     }
@@ -621,19 +632,19 @@
                   <span class="prop-label">Reviewer</span>
                   <div class="prop-value user-val-selectable">
                     <div class="user-avatar mgr-avatar">
-                      {(p.manager && p.manager !== 'Unassigned' ? p.manager.substring(0, 2) : 'AD').toUpperCase()}
+                      {(selectedManager && selectedManager !== 'Unassigned' ? selectedManager.substring(0, 2) : 'AD').toUpperCase()}
                     </div>
                     <select
                       class="prop-manager-select"
-                      value={p.manager || 'Unassigned'}
+                      bind:value={selectedManager}
                       disabled={isUpdatingManager}
-                      onchange={(e) => handleManagerChange((e.target as HTMLSelectElement).value)}
+                      onchange={() => handleManagerChange(selectedManager)}
                       aria-label="Select Reviewer"
                     >
                       <option value="Unassigned">-- Unassigned --</option>
                       {#if managerList.length === 0}
-                        {#if p.manager && p.manager !== 'Unassigned'}
-                          <option value={p.manager}>{p.manager}</option>
+                        {#if selectedManager && selectedManager !== 'Unassigned'}
+                          <option value={selectedManager}>{selectedManager}</option>
                         {/if}
                       {:else}
                         {#each managerList as mgr}
@@ -641,8 +652,8 @@
                             {mgr.name} {mgr.role ? `· ${mgr.role}` : ''}
                           </option>
                         {/each}
-                        {#if p.manager && p.manager !== 'Unassigned' && !managerList.some(m => m.name.toLowerCase() === p.manager.toLowerCase())}
-                          <option value={p.manager}>{p.manager} (Current)</option>
+                        {#if selectedManager && selectedManager !== 'Unassigned' && !managerList.some(m => m.name.toLowerCase() === selectedManager.toLowerCase())}
+                          <option value={selectedManager}>{selectedManager} (Current)</option>
                         {/if}
                       {/if}
                     </select>
