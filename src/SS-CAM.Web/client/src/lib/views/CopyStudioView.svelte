@@ -6,6 +6,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import CreativeAiAssistantModal from '$lib/components/features/CreativeAiAssistantModal.svelte';
 
   let selectedProject = $state<any>(null);
   let isEditorOpen = $state<boolean>(false);
@@ -13,6 +14,7 @@
   let draftBodyCopy = $state<string>('');
   let draftCta = $state<string>('');
   let isSavingCopy = $state<boolean>(false);
+  let showAiModal = $state<boolean>(false);
 
   type MockupPlatform = 'whatsapp' | 'meta' | 'tiktok';
   let activeMockupTab = $state<MockupPlatform>('whatsapp');
@@ -125,6 +127,9 @@
       <h1 class="view-title">Copywriting &amp; Script Studio</h1>
       <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and Synology NAS <code>COPY.md</code> sync.</p>
     </div>
+    <button class="ai-launch-btn" onclick={() => showAiModal = true}>
+      ✨ Gemini Creative AI
+    </button>
   </div>
 
   <!-- Social Ad SLA Platform Limits Bar -->
@@ -260,6 +265,7 @@
             <!-- Quick Snippet Inserters -->
             <div class="snippet-drawer">
               <span class="snippet-label">Quick Snippets:</span>
+              <button class="snippet-btn ai-snippet-btn" onclick={() => showAiModal = true}>✨ Gemini AI Generator</button>
               <button class="snippet-btn" onclick={() => insertSnippet('hook')}>+ Viral Hook</button>
               <button class="snippet-btn" onclick={() => insertSnippet('problem')}>+ Agitation</button>
               <button class="snippet-btn" onclick={() => insertSnippet('solution')}>+ Solution</button>
@@ -466,6 +472,16 @@
       </div>
     </div>
   {/if}
+
+  <!-- Creative AI Studio Modal -->
+  <CreativeAiAssistantModal
+    bind:open={showAiModal}
+    brand={selectedProject?.brand || 'SSH'}
+    projectTitle={selectedProject?.title}
+    onInsertCopy={(text) => {
+      draftBodyCopy += text;
+    }}
+  />
 </div>
 
 <style>
@@ -476,9 +492,45 @@
     padding-bottom: 30px;
   }
 
-  .view-header { margin-bottom: 2px; }
+  .view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
   .view-title { font-size: 26px; font-weight: 800; color: var(--text-primary); }
   .view-subtitle { font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; }
+
+  .ai-launch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #043388, #21A1F7);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(33, 161, 247, 0.35);
+    transition: all 0.15s ease;
+  }
+  .ai-launch-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(33, 161, 247, 0.5);
+  }
+
+  .ai-snippet-btn {
+    background: rgba(33, 161, 247, 0.15) !important;
+    border-color: #21A1F7 !important;
+    color: #38BDF8 !important;
+    font-weight: 800 !important;
+  }
+  .ai-snippet-btn:hover {
+    background: #21A1F7 !important;
+    color: #0F172A !important;
+  }
 
   /* Platform limits grid */
   .platform-gauges-grid {

@@ -764,6 +764,41 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 25: GeminiService Creative AI Studio Governance ───────────
+  test('GeminiService manages AI configuration and formats Gemini Ultra prompts', () => {
+    const GeminiService = require('../services/GeminiService');
+    const testDir = path.join(__dirname, 'temp-gemini-workspace');
+    fs.mkdirSync(testDir, { recursive: true });
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Save and retrieve AI configuration
+      const ok = GeminiService.saveApiKey('AIzaSyTestKey123456789', 'gemini-1.5-pro');
+      assert.strictEqual(ok, true);
+
+      const status = GeminiService.getStatus();
+      assert.strictEqual(status.configured, true);
+      assert.strictEqual(status.preferredModel, 'gemini-1.5-pro');
+      assert.ok(status.maskedKey.startsWith('AIzaSy'), 'Masked key must begin with prefix');
+
+      // 2. Format Gemini Ultra Web Prompt
+      const ultraPrompt = GeminiService.formatUltraWebPrompt({
+        brand: 'SSH',
+        title: 'Maca Gold Launch',
+        audience: 'Men 30-50',
+        goal: 'Direct Response'
+      });
+      assert.ok(ultraPrompt.includes('SUAMISIHAT CREATIVE CAMPAIGN PROMPT'), 'Must contain header');
+      assert.ok(ultraPrompt.includes('Maca Gold Launch'), 'Must contain project title');
+      assert.ok(ultraPrompt.includes('SSH'), 'Must contain brand code');
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

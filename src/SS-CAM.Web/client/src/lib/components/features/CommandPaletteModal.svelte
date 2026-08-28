@@ -33,6 +33,7 @@
 
   // Quick Action Commands
   const QUICK_ACTIONS = [
+    { type: 'action', id: 'nav-ai', label: 'Open Creative AI Studio (Gemini Assistant)', icon: '✨', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
     { type: 'action', id: 'nav-dashboard', label: 'Go to Dashboard', icon: '📊', category: 'Navigation', execute: () => appState.navigate('dashboard') },
     { type: 'action', id: 'nav-projects', label: 'Open Project Manager', icon: '📂', category: 'Navigation', execute: () => appState.navigate('projects') },
     { type: 'action', id: 'nav-review', label: 'Go to Review Queue', icon: '✅', category: 'Navigation', execute: () => appState.navigate('deliverables') },

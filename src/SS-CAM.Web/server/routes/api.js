@@ -16,6 +16,7 @@ const CommentService = require('../services/CommentService');
 const SseService = require('../services/SseService');
 const ExportService = require('../services/ExportService');
 const ShareService = require('../services/ShareService');
+const GeminiService = require('../services/GeminiService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -513,6 +514,69 @@ router.post('/public/review/:token/comments', (req, res) => {
     res.status(201).json({ success: true, comment });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+
+// ─── CREATIVE AI STUDIO & GEMINI PROMPT GENERATOR ───────────────────
+
+router.get('/ai/status', authenticateToken, (req, res) => {
+  try {
+    const status = GeminiService.getStatus();
+    res.json(status);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/ai/config', authenticateToken, (req, res) => {
+  try {
+    const { apiKey, preferredModel } = req.body;
+    const ok = GeminiService.saveApiKey(apiKey, preferredModel);
+    if (!ok) return res.status(500).json({ error: 'Failed to save AI configuration' });
+    res.json({ success: true, status: GeminiService.getStatus() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/ai/generate-hooks', authenticateToken, async (req, res) => {
+  try {
+    const { brand, product, audience, angle, language } = req.body;
+    const hooks = await GeminiService.generateHooks({ brand, product, audience, angle, language });
+    res.json({ success: true, hooks });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/ai/generate-script', authenticateToken, async (req, res) => {
+  try {
+    const { brand, product, hook, platform, language } = req.body;
+    const script = await GeminiService.generateAdScript({ brand, product, hook, platform, language });
+    res.json({ success: true, script });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/ai/generate-image-prompts', authenticateToken, async (req, res) => {
+  try {
+    const { product, style, environment, brandColors } = req.body;
+    const prompts = await GeminiService.generateImagePrompts({ product, style, environment, brandColors });
+    res.json({ success: true, prompts });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/ai/format-prompt', authenticateToken, (req, res) => {
+  try {
+    const { brand, title, audience, goal } = req.body;
+    const formatted = GeminiService.formatUltraWebPrompt({ brand, title, audience, goal });
+    res.json({ success: true, prompt: formatted });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

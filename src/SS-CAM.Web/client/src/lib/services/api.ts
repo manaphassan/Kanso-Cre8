@@ -444,6 +444,46 @@ export class ApiClient {
       body: JSON.stringify(payload)
     });
   }
+
+  // ─── Gemini Creative AI Studio ───
+  static getAiStatus(): Promise<{ configured: boolean; maskedKey: string; preferredModel: string; availableModels: string[] }> {
+    return this.request('/ai/status');
+  }
+
+  static saveAiConfig(payload: { apiKey: string; preferredModel?: string }): Promise<{ success: boolean; status: any }> {
+    return this.request('/ai/config', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static generateAiHooks(payload: { brand?: string; product?: string; audience?: string; angle?: string; language?: string }): Promise<{ success: boolean; hooks: string }> {
+    return this.request('/ai/generate-hooks', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static generateAiScript(payload: { brand?: string; product?: string; hook?: string; platform?: string; language?: string }): Promise<{ success: boolean; script: string }> {
+    return this.request('/ai/generate-script', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static generateAiImagePrompts(payload: { product?: string; style?: string; environment?: string; brandColors?: string }): Promise<{ success: boolean; prompts: string }> {
+    return this.request('/ai/generate-image-prompts', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static formatUltraPrompt(payload: { brand?: string; title?: string; audience?: string; goal?: string }): Promise<{ success: boolean; prompt: string }> {
+    return this.request('/ai/format-prompt', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 
