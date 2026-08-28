@@ -6,7 +6,7 @@
 
 Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
 
-[![Latest Release](https://img.shields.io/badge/release-v4.4.3--stable-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.4.3)
+[![Latest Release](https://img.shields.io/badge/release-v4.5.0--stable-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.5.0)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
@@ -31,7 +31,7 @@ SS-CAM provides 4 deployment targets to support diverse creative studio environm
 
 | Target Platform | Package / Variant | Deployment Command | Release Asset / Path |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File** | No install required. Run portable executable: <br> `.\SS-CAM-v4.4.3.exe` | [Download SS-CAM-v4.4.3.exe](https://github.com/SuamiSihat/ss_cam/releases/download/v4.4.3/SS-CAM-v4.4.3.exe) |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File** | No install required. Run portable executable: <br> `.\SS-CAM-v4.5.0.exe` | [Download SS-CAM-v4.5.0.exe](https://github.com/SuamiSihat/ss_cam/releases/download/v4.5.0/SS-CAM-v4.5.0.exe) |
 | 🐧 **Linux (Fedora, Ubuntu, Debian, Pop!_OS)** | **One-Line Terminal Installer** | Automatic build, install to `/opt/ss-cam`, and application menu integration: <br> `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | [install-linux.sh](https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh) |
 | 🐧 **Linux Desktop (.NET)** | **Cross-Platform Source** | Compile and execute Avalonia desktop client: <br> `dotnet run --project src/SS-CAM.Linux -c Release` | Source in `src/SS-CAM.Linux` |
 | 🌐 **Web Management Portal** | **Docker Web Container** | Deploy on Synology NAS / Linux Server: <br> `cd src/SS-CAM.Web && docker compose up -d` | Live at `https://creative.suamisihat.myds.me` |

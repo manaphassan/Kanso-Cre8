@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-27.
+> **Living document.** Updated with every release. Last updated: 2026-08-28.
 
 ---
 
@@ -39,10 +39,12 @@
 | **v4.4.1** | 2026-08-26 | **Radio Stream, Deep Scanner & Copywriting FlowDocument Engine**: Official SuamiSihat Radio Stream preset `#1`, deep month-container project discovery, dynamic project ID auto-calculation, FlowDocument markdown rendering by default, sanitized designer catalog filtering |
 | **v4.4.2** | 2026-08-27 | **Art Director Polish & Live Ad/WhatsApp Preview Engine**: Live Split-View formatting preview (WhatsApp & Meta Ads), one-click Hook & CTA snippet drawer, dynamic status pill badges, polished vector empty states, and overline typographic rhythm |
 | **v4.4.3** | 2026-08-27 | **Radio Visualizer Overhaul & Station Upgrades**: Dynamic real-time playback gating for 69 Mars symbols & 6 SuamiSihat logomarks, song wavelength sinusoidal vertical oscillation & beat kick pulsing across all visualizer modes, curated Nightwave Plaza & SomaFM Groove Salad stations, Malaysia holidays calendar integration |
+| **v4.4.4** | 2026-08-27 | **Creative Wellbeing & Biometric Suite Overhaul**: Real-time 5-axis biometric spider radar, dynamic 30-day focus intensity heatmap, interactive vector water hydration tracker with sinusoidal waves, and burnout risk analytics |
+| **v4.5.0** | 2026-08-28 | **Master Brand System v3.5.1 Integration & Brand Assets Vault Modernization**: Full alignment with official SuamiSihat Master Brand System Guide, Multi-Format Color Matrix (BAL/RAL standard, CIE-Lab, Pantone, CSS tokens), 5 Corporate Sub-Brands Hub with 1-click folder launchers, interactive Surface Contrast Previewer ($L \ge 50\%$ rule), 4-tier typography scale reference |
 
 ---
 
-## 🎯 Active Milestone — v4.5.0: Production Pipeline Intelligence (Target: Q3 2026)
+## 🎯 Active Milestone — v4.6.0: Production Pipeline Intelligence (Target: Q4 2026)
 
 ### 1. Copywriting Studio Split-View Live Preview (Desktop)
 * **Live WhatsApp & Ad Message Card**: Real-time side-by-side rendering transforming structured Markdown into live WhatsApp bubbles (bold asterisks `*text*`, emoji spacing, call-to-action link previews) and Meta Ad primary text mockups.

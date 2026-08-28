@@ -2,6 +2,44 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.5.0] - 2026-08-28 (Master Brand System Integration & Brand Assets Vault Modernization)
+
+### Added & Refined — Master Brand System v3.5.1, Multi-Format Color Matrix, 5 Sub-Brands Hub & Surface Contrast Tester
+- **Master Brand System Architecture Alignment (`BrandAssetsPage.xaml`, `BrandAssetsPage.xaml.cs`)**:
+  - Full synchronization with the authoritative [SuamiSihat™ Master Brand System Guide](https://assets.suamisihat.myds.me/brand-system/).
+  - Implemented the Two-Layer System Architecture: SuamiSihat Identity Visual Layer combined with Fluent 2 Dynamic Interaction Logic.
+- **Multi-Format Color Matrix & Live Specification Inspector (`BrandAssetsPage.xaml`, `BrandAssetsPage.xaml.cs`)**:
+  - **Primary Palette**: Prussian Blue (`#022057`), SS Blue (`#043388`), Azure (`#21A1F7`), Malibu (`#6DC6EC`), Neutral Black (`#1C1C1C`), and Porcelain White (`#FCFAF6`).
+  - **Secondary Warm Palette**: Lion Gold (`#BD9A73`), Fawn Warm (`#CCAC8D`), Arylide Yellow (`#E5D15C`), and Banana Yellow (`#FCE53D`).
+  - **Foundation & Semantic Tokens**: Canvas Light (`#F8FAFC`), Void Dark (`#090D16`), Semantic Success (`#107C10`), Semantic Warning (`#D83B01`), and Semantic Danger (`#A80000`).
+  - **7-Stop Grayscale Ribbon**: Calibrated with official Grey 90 (`#3C3C3B`) and uniform luminance distribution.
+  - **Live Specification Inspector**: Real-time readout of HEX, RGB, CMYK, BAL/RAL Standard (e.g. `RAL 5013 Cobalt Blue`), and Pantone PMS with 1-click **Copy HEX** and **Copy Token** (`--ss-prussian-blue`, etc.) buttons.
+- **5 Operating Corporate Sub-Brands Hub (`BrandAssetsPage.xaml`, `BrandAssetsPage.xaml.cs`)**:
+  - Dedicated identity cards with visual badges, operational scope descriptions, and 1-click local Explorer folder launchers for:
+    - **SS Health** (`01_logo_ssHealth`) — Parent holding company, governance & legal
+    - **SS Clinic** (`02_logo_ssClinic`) — Clinical men's health consultations & medical care
+    - **SS Wellness** (`03_logo_ssWellness`) — Physiotherapy, vitality recovery & lifestyle care
+    - **SS Ecommerce** (`04_logo_ssEcom`) — Official store vectors, packaging & digital retail
+    - **SS Technology** (`05_logo_ssTech`) — Digital health apps, EHR integrations & developer graphics
+- **Master Logo & Surface Contrast Previewer (`BrandAssetsPage.xaml`, `BrandAssetsPage.xaml.cs`)**:
+  - Interactive background stage switcher (Porcelain Light `#FCFAF6`, Void Dark `#090D16`, Prussian Blue `#022057`).
+  - Dynamic visual validation of the HSL Lightness Rule ($L \ge 50\%$ for primary light vs $L < 50\%$ for primary dark).
+  - Direct "Open Master Kit" folder launcher for `00_logo_SuamiSihat`.
+- **4-Tier Typography Scale Reference (`BrandAssetsPage.xaml`)**:
+  - Visual hierarchy cards detailing standard weights and usage roles for:
+    - **Poppins** (Display & Hero • 600, 700, 800)
+    - **Montserrat** (Subtitles & UI • 500, 600, 700)
+    - **Helvetica Neue** (Body & Web • 400, 500, 700)
+    - **Calibri** (Office & Email • 400, 700)
+- **Workstation Asset Deployment Hub (`BrandAssetsPage.xaml`, `PayloadInstallerService.cs`)**:
+  - One-click font registration, vector asset local deployment (`%LOCALAPPDATA%\SuamiSihat\Assets`), and desktop shortcuts creation.
+
+### Integrity
+| File | Details |
+|---|---|
+| `src/SS-CAM/bin/Release/SS-CAM.exe` | AssemblyVersion `4.5.0.0` |
+| `src/SS-CAM/Properties/AssemblyInfo.cs` | AssemblyFileVersion `4.5.0.0` |
+
 ## [4.4.4] - 2026-08-27 (Creative Wellbeing & Biometric Suite Overhaul)
 
 ### Added & Refined — Real-Time Biometric Radar, 30-Day Heatmap & Hydration Tracker
