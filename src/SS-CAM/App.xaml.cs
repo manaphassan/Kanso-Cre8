@@ -62,12 +62,14 @@ namespace SS_CAM
             try
             {
                 string log = string.Format("[{0}] UNHANDLED EXCEPTION:\n{1}\n\n", DateTime.Now, ex.ToString());
-                string logPath = System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "SuamiSihat", "crash_log.txt");
+                string dir = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "SuamiSihat");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                string logPath = System.IO.Path.Combine(dir, "crash_log.txt");
                 File.AppendAllText(logPath, log);
             }
-            catch (Exception innerEx) { System.Diagnostics.Debug.WriteLine(innerEx); }
+            catch (Exception innerEx) { System.Diagnostics.Debug.WriteLine("[App] LogException error: " + innerEx.Message); }
         }
 
         public static void RegisterUserAppPlacement()

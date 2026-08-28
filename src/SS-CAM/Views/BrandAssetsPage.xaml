@@ -51,113 +51,165 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Sub-Brand Action Card Style -->
+        <Style x:Key="SubBrandCardStyle" TargetType="ui:Card">
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+        </Style>
     </Page.Resources>
 
-    <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="24" Background="Transparent" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
+    <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" Padding="28,24,28,28" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
         <StackPanel PreviewMouseWheel="OnScrollViewerPreviewMouseWheel">
-            <!-- 1. Header -->
-            <StackPanel Margin="0,0,0,16">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                    <ui:SymbolIcon Symbol="Color24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ui:TextBlock Text="Brand Assets &amp; Identity Vault" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+            
+            <!-- 1. Header with Brand Identity Badge -->
+            <Grid Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Color24" FontSize="24" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <ui:TextBlock Text="Brand Assets &amp; Identity Vault" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ui:TextBlock Text="Authoritative SuamiSihat&#x2122; color palettes, multi-format design tokens, sub-brand vector marks, and typography hierarchy." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
                 </StackPanel>
-                <ui:TextBlock Text="Official SuamiSihat color palettes, vector logos, typography assets, and design system resources." Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Margin="0,2,0,0"/>
-            </StackPanel>
+                <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="12,6" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="ShieldCheckmark24" FontSize="14" Foreground="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <ui:TextBlock Text="Brand System v3.5.1 (SSoT)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
             <!-- 2. Copy Notification Alert Banner -->
-            <Border x:Name="CopyNotificationBorder" Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrand80}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,20">
+            <Border x:Name="CopyNotificationBorder" Background="{DynamicResource FluentBrandLight}" BorderBrush="{DynamicResource FluentBrand80}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <ui:TextBlock Text="&#xE73E;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ui:TextBlock x:Name="CopyStatusText" Grid.Column="1" Text="Click any color swatch below to inspect values and copy HEX code to clipboard." Foreground="{DynamicResource FluentBrand80}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <ui:TextBlock x:Name="CopyStatusText" Grid.Column="1" Text="Click any color swatch to inspect multi-format values (HEX, RGB, CMYK, RAL, Pantone, Token) or copy directly to clipboard." Foreground="{DynamicResource FluentBrand80}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
 
-            <!-- 3. Minimal 2-Column Main Viewport -->
+            <!-- 3. Two-Column Main Viewport -->
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*"/>
+                    <ColumnDefinition Width="24"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="340"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- LEFT COLUMN: Color Swatch Explorer + Live Inspector Card -->
+                <!-- ========================================================= -->
+                <!-- LEFT COLUMN: Color Swatch Explorer + Master Spec Inspector -->
+                <!-- ========================================================= -->
                 <StackPanel Grid.Column="0">
-                    <!-- Primary Colors Strip -->
+                    
+                    <!-- Primary Colors -->
                     <ui:Card Padding="16" Margin="0,0,0,16">
                         <StackPanel>
-                            <ui:TextBlock Text="Primary Brand Palette" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
-                            <UniformGrid Columns="4">
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|281 C|SS Prussian Blue">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="ColorFill24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Primary Official Palette" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <UniformGrid Columns="3" Rows="2">
+                                <!-- Prussian Blue -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="0,0,4,8" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#022057|2, 32, 87|98, 63, 0, 66|Pantone 281 C|RAL 5013 (Cobalt Blue)|--ss-prussian-blue|SS Prussian Blue|30% Secondary &amp; Foundation Structure (Clinical Authority)">
                                     <StackPanel>
-                                        <Border Height="44" Background="#022057" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#022057" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="Prussian Blue" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#022057" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|287 C|SS Blue">
+                                <!-- SS Blue -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,8" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#043388|4, 51, 136|97, 63, 0, 47|Pantone 287 C|RAL 5002 (Ultramarine Blue)|--ss-blue|SS Blue|Core Corporate Identity &amp; Brand Seal">
                                     <StackPanel>
-                                        <Border Height="44" Background="#043388" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#043388" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="SS Blue" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#043388" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|299 C|Azure">
+                                <!-- Azure -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="4,0,0,8" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#21A1F7|33, 161, 247|87, 35, 0, 3|Pantone 299 C|RAL 5012 (Light Blue)|--ss-azure|Azure (10% Accent)|10% High-Conversion Interactive Accent &amp; Primary Buttons">
                                     <StackPanel>
-                                        <Border Height="44" Background="#21A1F7" CornerRadius="4" Margin="0,0,0,6"/>
-                                        <ui:TextBlock Text="Azure" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <Border Height="38" Background="#21A1F7" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <ui:TextBlock Text="Azure Accent" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#21A1F7" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="4,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|297 C|Malibu">
+                                <!-- Malibu -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#6DC6EC|109, 198, 236|54, 16, 0, 7|Pantone 297 C|RAL 5024 (Pastel Blue)|--ss-malibu|Malibu|Tint Accent, Glows &amp; Light Interactive Washes">
                                     <StackPanel>
-                                        <Border Height="44" Background="#6DC6EC" CornerRadius="4" Margin="0,0,0,6"/>
-                                        <ui:TextBlock Text="Malibu" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <Border Height="38" Background="#6DC6EC" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <ui:TextBlock Text="Malibu Tint" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#6DC6EC" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <!-- Neutral Black -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#1C1C1C|28, 28, 28|0, 0, 0, 89|Pantone Black 6 C|RAL 9005 (Jet Black)|--ss-neutral-black|Neutral Black|Default Text on Light Mode (Carbon Typography)">
+                                    <StackPanel>
+                                        <Border Height="38" Background="#1C1C1C" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <ui:TextBlock Text="Neutral Black" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#1C1C1C" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <!-- Neutral White (Porcelain) -->
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="4,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCFAF6|252, 250, 246|0, 1, 2, 1|Pantone 705 C|RAL 9003 (Signal White)|--ss-neutral-white|Neutral White (Porcelain)|Default Text on Dark Mode &amp; Base Light Canvas Surface">
+                                    <StackPanel>
+                                        <Border Height="38" Background="#FCFAF6" BorderBrush="#D1D5DB" BorderThickness="1" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <ui:TextBlock Text="Porcelain White" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#FCFAF6" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
                             </UniformGrid>
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Secondary Colors Strip -->
+                    <!-- Secondary Warm & Accent Palette -->
                     <ui:Card Padding="16" Margin="0,0,0,16">
                         <StackPanel>
-                            <ui:TextBlock Text="Secondary Accent Palette" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="Sparkle24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Secondary Warm &amp; Vitality Palette" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
                             <UniformGrid Columns="4">
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|4655 C|Lion">
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#BD9A73|189, 154, 115|0, 19, 39, 26|Pantone 4655 C|RAL 1024 (Ochre Yellow)|--ss-lion|Lion Gold|Premium Gold Accent &amp; Clinical Seal Border">
                                     <StackPanel>
-                                        <Border Height="44" Background="#BD9A73" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#BD9A73" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="Lion Gold" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#BD9A73" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|4665 C|Fawn">
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCAC8D|204, 172, 141|0, 16, 31, 20|Pantone 4665 C|RAL 1015 (Light Ivory)|--ss-fawn|Fawn Warm|Subtle Warm Surface &amp; Secondary Badge Tone">
                                     <StackPanel>
-                                        <Border Height="44" Background="#CCAC8D" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#CCAC8D" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="Fawn Warm" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#CCAC8D" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|108 C|Arylide Yellow">
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#E5D15C|229, 209, 92|0, 9, 60, 10|Pantone 108 C|RAL 1018 (Zinc Yellow)|--ss-arylide|Arylide Yellow|Vitality Highlight &amp; Star Rating Fill">
                                     <StackPanel>
-                                        <Border Height="44" Background="#E5D15C" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#E5D15C" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="Arylide Yellow" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#E5D15C" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </ui:Card>
 
-                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="4,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|102 C|Banana Yellow">
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="10" Margin="4,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FCE53D|252, 229, 61|0, 9, 76, 1|Pantone 102 C|RAL 1016 (Sulfur Yellow)|--ss-banana|Banana Yellow|High-Visibility Conversion Badges &amp; Yellow CTA">
                                     <StackPanel>
-                                        <Border Height="44" Background="#FCE53D" CornerRadius="4" Margin="0,0,0,6"/>
+                                        <Border Height="38" Background="#FCE53D" CornerRadius="4" Margin="0,0,0,6"/>
                                         <ui:TextBlock Text="Banana Yellow" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
                                         <ui:TextBlock Text="#FCE53D" FontSize="10" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold" Margin="0,2,0,0"/>
                                     </StackPanel>
@@ -166,11 +218,65 @@
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Neutrals Swathe Ribbon -->
+                    <!-- Foundation & Semantic Status Palette -->
                     <ui:Card Padding="16" Margin="0,0,0,16">
                         <StackPanel>
-                            <ui:TextBlock Text="Neutrals Swathe Ribbon" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
-                            <Border CornerRadius="6" ClipToBounds="True" Height="48">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="Grid24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Foundation Surfaces &amp; Semantic Status" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <UniformGrid Columns="5">
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="8" Margin="0,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#F8FAFC|248, 250, 252|2, 1, 0, 1|Pantone 705 C|RAL 9003 (Signal White)|--f-color-canvas-light|Canvas Light (60%)|60% Light Mode Canvas &amp; Layout Background">
+                                    <StackPanel>
+                                        <Border Height="32" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="4" Margin="0,0,0,4"/>
+                                        <ui:TextBlock Text="Canvas 60%" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#F8FAFC" FontSize="9" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="8" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#090D16|9, 13, 22|59, 41, 0, 91|Pantone Black 7 C|RAL 9017 (Traffic Black)|--f-color-void-dark|Void Dark (60%)|60% Dark Mode Canvas &amp; Deep Void Atmosphere">
+                                    <StackPanel>
+                                        <Border Height="32" Background="#090D16" CornerRadius="4" Margin="0,0,0,4"/>
+                                        <ui:TextBlock Text="Void Dark" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#090D16" FontSize="9" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="8" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#107C10|16, 124, 16|87, 0, 87, 51|Pantone 355 C|RAL 6029 (Mint Green)|--color-brand-success|Semantic Success|Success Feedback, Verified Badges &amp; Positive Status">
+                                    <StackPanel>
+                                        <Border Height="32" Background="#107C10" CornerRadius="4" Margin="0,0,0,4"/>
+                                        <ui:TextBlock Text="Success" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#107C10" FontSize="9" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="8" Margin="2,0,2,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#D83B01|216, 59, 1|0, 73, 100, 15|Pantone 1665 C|RAL 2004 (Pure Orange)|--color-brand-warning|Semantic Warning|Low Inventory, Caution Banners &amp; Prescription Expiry">
+                                    <StackPanel>
+                                        <Border Height="32" Background="#D83B01" CornerRadius="4" Margin="0,0,0,4"/>
+                                        <ui:TextBlock Text="Warning" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#D83B01" FontSize="9" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card Style="{StaticResource SwatchCardStyle}" Padding="8" Margin="2,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#A80000|168, 0, 0|0, 100, 100, 34|Pantone 186 C|RAL 3020 (Traffic Red)|--color-brand-error|Semantic Danger|Critical Clinical Alerts, Destructive CTA &amp; Errors">
+                                    <StackPanel>
+                                        <Border Height="32" Background="#A80000" CornerRadius="4" Margin="0,0,0,4"/>
+                                        <ui:TextBlock Text="Danger" FontWeight="SemiBold" FontSize="10" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <ui:TextBlock Text="#A80000" FontSize="9" Foreground="{DynamicResource FluentBrand80}" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </ui:Card>
+                            </UniformGrid>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <!-- 7-Stop Grayscale Ribbon -->
+                    <ui:Card Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <ui:SymbolIcon Symbol="Filter24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="7-Stop Official Grayscale Ribbon (Click to Copy)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Border CornerRadius="6" ClipToBounds="True" Height="44">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -181,54 +287,71 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Background="#000000" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#000000|0, 0, 0|0, 0, 0, 100|Black C|Black" ToolTip="Black #000000"/>
-                                    <Border Grid.Column="1" Background="#333333" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#333333|51, 51, 51|0, 0, 0, 80|Dark Gray|Grey 90" ToolTip="Grey 90 #333333"/>
-                                    <Border Grid.Column="2" Background="#575756" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#575756|87, 87, 86|0, 0, 1, 66|431 C|Grey 80" ToolTip="Grey 80 #575756"/>
-                                    <Border Grid.Column="3" Background="#666666" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#666666|102, 102, 102|0, 0, 0, 60|430 C|Grey 60" ToolTip="Grey 60 #666666"/>
-                                    <Border Grid.Column="4" Background="#999999" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#999999|153, 153, 153|0, 0, 0, 40|Cool Gray 4 C|Grey 40" ToolTip="Grey 40 #999999"/>
-                                    <Border Grid.Column="5" Background="#CCCCCC" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCCCCC|204, 204, 204|0, 0, 0, 20|Cool Gray 2 C|Grey 20" ToolTip="Grey 20 #CCCCCC"/>
-                                    <Border Grid.Column="6" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FFFFFF|255, 255, 255|0, 0, 0, 0|White|White" ToolTip="White #FFFFFF"/>
+                                    <Border Grid.Column="0" Background="#000000" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#000000|0, 0, 0|0, 0, 0, 100|Pantone Black C|RAL 9005|--neutral-0|Full Black|Pure Black Base (Avoid for body copy)" ToolTip="Full Black #000000"/>
+                                    <Border Grid.Column="1" Background="#3C3C3B" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#3C3C3B|60, 60, 59|0, 0, 2, 76|Pantone 447 C|RAL 7021|--neutral-90|Grey 90|Dark Surface Neutral &amp; High-Contrast Headers" ToolTip="Grey 90 #3C3C3B"/>
+                                    <Border Grid.Column="2" Background="#575756" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#575756|87, 87, 86|0, 0, 1, 66|Pantone 431 C|RAL 7012|--neutral-80|Grey 80|Primary Secondary Text &amp; Framing" ToolTip="Grey 80 #575756"/>
+                                    <Border Grid.Column="3" Background="#666666" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#666666|102, 102, 102|0, 0, 0, 60|Pantone 430 C|RAL 7037|--neutral-60|Grey 60|Mid-tier Structure &amp; Subtle Icons" ToolTip="Grey 60 #666666"/>
+                                    <Border Grid.Column="4" Background="#999999" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#999999|153, 153, 153|0, 0, 0, 40|Pantone Cool Gray 4 C|RAL 7004|--neutral-40|Grey 40|Placeholder Text &amp; Inactive Borders" ToolTip="Grey 40 #999999"/>
+                                    <Border Grid.Column="5" Background="#CCCCCC" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#CCCCCC|204, 204, 204|0, 0, 0, 20|Pantone Cool Gray 2 C|RAL 7035|--neutral-20|Grey 20|Divider Rules &amp; Subtle Strokes" ToolTip="Grey 20 #CCCCCC"/>
+                                    <Border Grid.Column="6" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1,0,0,0" Cursor="Hand" MouseLeftButtonUp="OnSwatchClicked" Tag="#FFFFFF|255, 255, 255|0, 0, 0, 0|Pantone White|RAL 9016|--neutral-100|Pure White|Elevated Container Card Surface" ToolTip="Pure White #FFFFFF"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Live Color Inspector Card -->
-                    <ui:Card Padding="16">
+                    <!-- Live Multi-Format Color Inspector -->
+                    <ui:Card Padding="18">
                         <StackPanel>
-                            <ui:TextBlock Text="Selected Swatch Inspector" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                            <Grid Margin="0,0,0,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Eyedropper24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Master Specification Inspector" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <ui:Button x:Name="BtnCopyHex" Content="Copy HEX" Appearance="Primary" Padding="10,4" FontSize="11" Margin="0,0,6,0" Click="OnCopyHexClicked"/>
+                                    <ui:Button x:Name="BtnCopyToken" Content="Copy Token" Appearance="Secondary" Padding="10,4" FontSize="11" Click="OnCopyTokenClicked"/>
+                                </StackPanel>
+                            </Grid>
+
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="70"/>
-                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="18"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border x:Name="InspectorColorTile" Grid.Column="0" Height="70" Background="#022057" CornerRadius="6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
+                                <!-- Large Swatch Tile Preview -->
+                                <Border x:Name="InspectorColorTile" Grid.Column="0" Height="80" Background="#022057" CornerRadius="8" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
 
+                                <!-- Spec Data Sheet -->
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                    <ui:TextBlock x:Name="InspectorColorName" Text="SS Prussian Blue" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                        <ui:TextBlock Text="HEX Code: " FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                        <ui:TextBlock x:Name="InspectorHexText" Text="#022057" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
-                                    </StackPanel>
-                                    <Grid Margin="0,6,0,0">
+                                    <ui:TextBlock x:Name="InspectorColorName" Text="SS Prussian Blue" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    <ui:TextBlock x:Name="InspectorRoleText" Text="30% Secondary &amp; Foundation Structure (Clinical Authority)" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,8"/>
+
+                                    <Grid Margin="0,2,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
-                                            <ui:TextBlock Text="RGB" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                            <ui:TextBlock x:Name="InspectorRgbText" Text="2, 32, 87" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="HEX / Token" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                            <ui:TextBlock x:Name="InspectorHexText" Text="#022057" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                            <ui:TextBlock x:Name="InspectorTokenText" Text="--ss-prussian-blue" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
-                                            <ui:TextBlock Text="CMYK" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                            <ui:TextBlock x:Name="InspectorCmykText" Text="98, 63, 0, 66" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="RGB / CMYK" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                            <ui:TextBlock x:Name="InspectorRgbText" Text="2, 32, 87" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock x:Name="InspectorCmykText" Text="98, 63, 0, 66" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <ui:TextBlock Text="Pantone" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                            <ui:TextBlock x:Name="InspectorPantoneText" Text="281 C" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text="BAL / RAL &amp; Pantone" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                            <ui:TextBlock x:Name="InspectorBalRalText" Text="RAL 5013 (Cobalt Blue)" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                            <ui:TextBlock x:Name="InspectorPantoneText" Text="Pantone 281 C" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
@@ -237,121 +360,289 @@
                     </ui:Card>
                 </StackPanel>
 
-                <!-- RIGHT COLUMN: Brand Portals + Asset Packages + Workstation Installer -->
+                <!-- ========================================================= -->
+                <!-- RIGHT COLUMN: Logos, Sub-Brands, Typography & Deployment  -->
+                <!-- ========================================================= -->
                 <StackPanel Grid.Column="2">
-                    <!-- Brand Portals Card -->
+
+                    <!-- Logo Vault & Contrast Previewer -->
                     <ui:Card Padding="16" Margin="0,0,0,16">
                         <StackPanel>
-                            <ui:TextBlock Text="Brand Portals &amp; Guidelines" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
-                            
-                            <ui:CardAction Padding="12" Margin="0,0,0,8" Click="OnOpenServiceDashboard">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-                                        <ui:TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                        <ui:TextBlock Text="Service Dashboard" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="12"/>
-                                    </StackPanel>
-                                    <ui:TextBlock Text="suamisihat.myds.me" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold"/>
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Image24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="Master Logo Contrast Previewer" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
-                            </ui:CardAction>
+                                <!-- Background Surface Switcher -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <ui:Button Content="Light #FCFAF6" Padding="6,3" FontSize="10" Margin="0,0,4,0" Appearance="Secondary" Click="OnSelectContrastLight"/>
+                                    <ui:Button Content="Dark #090D16" Padding="6,3" FontSize="10" Margin="0,0,4,0" Appearance="Secondary" Click="OnSelectContrastDark"/>
+                                    <ui:Button Content="Prussian #022057" Padding="6,3" FontSize="10" Appearance="Secondary" Click="OnSelectContrastPrussian"/>
+                                </StackPanel>
+                            </Grid>
 
-                            <ui:CardAction Padding="12" Margin="0,0,0,8" Click="OnOpenInternalAssets">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-                                        <ui:TextBlock Text="&#xE8F4;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                        <ui:TextBlock Text="SS Design System" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="12"/>
+                            <!-- Interactive Stage -->
+                            <Border x:Name="LogoContrastStage" Background="#FCFAF6" CornerRadius="8" Padding="20,16" MinHeight="110" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Standalone S-mark Icon Graphic -->
+                                    <Border Width="48" Height="48" CornerRadius="10" Background="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <ui:TextBlock Text="SS" Foreground="#FFFFFF" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <!-- Wordmark preview -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <ui:TextBlock x:Name="LogoPreviewWordmark" Text="SuamiSihat&#x2122;" FontSize="22" FontWeight="Bold" Foreground="#022057"/>
+                                        <ui:TextBlock x:Name="LogoPreviewSubtext" Text="MEN'S HEALTH &amp; CLINICAL VITALITY" FontSize="10" FontWeight="SemiBold" Foreground="#043388" Margin="0,2,0,0"/>
                                     </StackPanel>
-                                    <ui:TextBlock Text="assets.suamisihat.myds.me" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold"/>
-                                </StackPanel>
-                            </ui:CardAction>
+                                </Grid>
+                            </Border>
 
-                            <ui:CardAction Padding="12" Click="OnOpenPublicAssets">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-                                        <ui:TextBlock Text="&#xF133;" FontFamily="Segoe Fluent Icons" Foreground="{DynamicResource FluentBrand80}" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                        <ui:TextBlock Text="Public Brand Kits" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="12"/>
-                                    </StackPanel>
-                                    <ui:TextBlock Text="suamisihat.com.my/brand-assets" Foreground="{DynamicResource FluentBrand80}" FontSize="11" FontWeight="SemiBold"/>
-                                </StackPanel>
-                            </ui:CardAction>
+                            <!-- Info Bar -->
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,10,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:TextBlock x:Name="LogoContrastInfoText" Text="Lightness Rule (L &#x2265; 50%): Primary Light variant active for porcelain/white canvases." FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                    <ui:Button Grid.Column="1" Content="Open Master Kit" Appearance="Primary" Padding="10,3" FontSize="11" Margin="8,0,0,0" Click="OnOpenMasterLogos"/>
+                                </Grid>
+                            </Border>
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Official Packages Card -->
+                    <!-- 5 Corporate Sub-Brands Hub -->
                     <ui:Card Padding="16" Margin="0,0,0,16">
                         <StackPanel>
-                            <ui:TextBlock Text="Official Packages" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="Layer24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Operating Subsidiaries Hub (5 Sub-Brands)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
 
-                            <!-- Palette Package -->
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <ui:TextBlock Text="Colour Palettes (.afpalette / ASE)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    <ui:TextBlock Text="Affinity &amp; Adobe CC swatches" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                </StackPanel>
-                                <ui:Button Grid.Column="1" Click="OnOpenPalettesFolder" Appearance="Secondary" Width="32" Height="32" Padding="0" ToolTip="Open Palettes Folder">
-                                    <ui:SymbolIcon Symbol="Folder24" FontSize="14"/>
-                                </ui:Button>
-                            </Grid>
+                            <!-- 1. SS Health -->
+                            <ui:Card Style="{StaticResource SubBrandCardStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30" Height="30" Background="#022057" CornerRadius="6" Margin="0,0,10,0">
+                                        <ui:TextBlock Text="SSH" Foreground="#FFFFFF" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="SS Health" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text=" &#x2022; Parent Holding" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Corporate governance, legal &amp; investor relations" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Click="OnOpenSsHealth" Appearance="Secondary" Padding="8,4" FontSize="11" ToolTip="Open SS Health Logo Kit">
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="13"/>
+                                    </ui:Button>
+                                </Grid>
+                            </ui:Card>
 
-                            <!-- Logos Package -->
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <ui:TextBlock Text="Logos &amp; Vectors (SVG / EPS / PNG)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    <ui:TextBlock Text="Master &amp; sub-brand vector logos" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                </StackPanel>
-                                <ui:Button Grid.Column="1" Click="OnOpenLogosFolder" Appearance="Secondary" Width="32" Height="32" Padding="0" ToolTip="Open Logos Package Folder">
-                                    <ui:SymbolIcon Symbol="Folder24" FontSize="14"/>
-                                </ui:Button>
-                            </Grid>
+                            <!-- 2. SS Clinic -->
+                            <ui:Card Style="{StaticResource SubBrandCardStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30" Height="30" Background="#043388" CornerRadius="6" Margin="0,0,10,0">
+                                        <ui:TextBlock Text="SSC" Foreground="#FFFFFF" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="SS Clinic" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text=" &#x2022; Clinical Care" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Medical consultations &amp; evidence-informed care" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Click="OnOpenSsClinic" Appearance="Secondary" Padding="8,4" FontSize="11" ToolTip="Open SS Clinic Logo Kit">
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="13"/>
+                                    </ui:Button>
+                                </Grid>
+                            </ui:Card>
 
-                            <!-- Libraries Package -->
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <ui:TextBlock Text="Asset Libraries (.afassets / CCLibs)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                                    <ui:TextBlock Text="Drag-and-drop component packs" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                </StackPanel>
-                                <ui:Button Grid.Column="1" Click="OnOpenLibrariesFolder" Appearance="Secondary" Width="32" Height="32" Padding="0" ToolTip="Open Libraries Folder">
-                                    <ui:SymbolIcon Symbol="Folder24" FontSize="14"/>
-                                </ui:Button>
-                            </Grid>
+                            <!-- 3. SS Wellness -->
+                            <ui:Card Style="{StaticResource SubBrandCardStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30" Height="30" Background="#21A1F7" CornerRadius="6" Margin="0,0,10,0">
+                                        <ui:TextBlock Text="SSW" Foreground="#FFFFFF" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="SS Wellness" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text=" &#x2022; Holistic Rehab" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Physiotherapy, vitality recovery &amp; lifestyle care" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Click="OnOpenSsWellness" Appearance="Secondary" Padding="8,4" FontSize="11" ToolTip="Open SS Wellness Logo Kit">
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="13"/>
+                                    </ui:Button>
+                                </Grid>
+                            </ui:Card>
+
+                            <!-- 4. SS Ecommerce -->
+                            <ui:Card Style="{StaticResource SubBrandCardStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30" Height="30" Background="#BD9A73" CornerRadius="6" Margin="0,0,10,0">
+                                        <ui:TextBlock Text="SSE" Foreground="#FFFFFF" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="SS Ecommerce" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text=" &#x2022; Digital Store" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Official store vectors, packaging &amp; product kits" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Click="OnOpenSsEcom" Appearance="Secondary" Padding="8,4" FontSize="11" ToolTip="Open SS Ecommerce Logo Kit">
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="13"/>
+                                    </ui:Button>
+                                </Grid>
+                            </ui:Card>
+
+                            <!-- 5. SS Technology -->
+                            <ui:Card Style="{StaticResource SubBrandCardStyle}" Margin="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30" Height="30" Background="#6DC6EC" CornerRadius="6" Margin="0,0,10,0">
+                                        <ui:TextBlock Text="SST" Foreground="#022057" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:TextBlock Text="SS Technology" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            <ui:TextBlock Text=" &#x2022; HealthTech &amp; Apps" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <ui:TextBlock Text="Digital health products, patient portals &amp; EHR apps" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Click="OnOpenSsTech" Appearance="Secondary" Padding="8,4" FontSize="11" ToolTip="Open SS Technology Logo Kit">
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="13"/>
+                                    </ui:Button>
+                                </Grid>
+                            </ui:Card>
                         </StackPanel>
                     </ui:Card>
 
-                    <!-- Workstation Installer Card -->
+                    <!-- Typography Hierarchy Reference -->
+                    <ui:Card Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="TextFont24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Approved Typography Scale (4 Tiers)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <UniformGrid Columns="2">
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,4,8">
+                                    <StackPanel>
+                                        <ui:TextBlock Text="DISPLAY &amp; HERO" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Poppins" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <ui:TextBlock Text="600, 700, 800 &#x2022; Bold landing hero statements" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="4,0,0,8">
+                                    <StackPanel>
+                                        <ui:TextBlock Text="SUBTITLES &amp; UI" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Montserrat" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <ui:TextBlock Text="500, 600, 700 &#x2022; Card labels, badges &amp; UI titles" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,4,0">
+                                    <StackPanel>
+                                        <ui:TextBlock Text="BODY &amp; WEB" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Helvetica Neue" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <ui:TextBlock Text="400, 500, 700 &#x2022; Medical dosage &amp; long-form reading" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="4,0,0,0">
+                                    <StackPanel>
+                                        <ui:TextBlock Text="OFFICE &amp; EMAIL" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Calibri" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,2"/>
+                                        <ui:TextBlock Text="400, 700 &#x2022; Staff documents, Word &amp; spreadsheets" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <!-- Workstation Deployment & Portals -->
                     <ui:Card Padding="16">
                         <StackPanel>
-                            <ui:TextBlock Text="Workstation Installer" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12"/>
-                            <WrapPanel Margin="0,0,0,8">
-                                <ui:Button Click="OnInstallFontsClicked" Appearance="Primary" Width="36" Height="36" Padding="0" Margin="0,0,8,8" ToolTip="Install Brand Fonts into Windows">
-                                    <ui:SymbolIcon Symbol="TextFont24" FontSize="16"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <ui:SymbolIcon Symbol="Desktop24" FontSize="16" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <ui:TextBlock Text="Workstation Deployment &amp; Portals" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Fast Action Toolstrip -->
+                            <WrapPanel Margin="0,0,0,10">
+                                <ui:Button Content="Install Fonts" Click="OnInstallFontsClicked" Appearance="Primary" Margin="0,0,8,8">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="TextFont24" FontSize="14"/>
+                                    </ui:Button.Icon>
                                 </ui:Button>
 
-                                <ui:Button Click="OnDeployAssetsClicked" Appearance="Primary" Width="36" Height="36" Padding="0" Margin="0,0,8,8" ToolTip="Deploy Asset Libraries">
-                                    <ui:SymbolIcon Symbol="Library24" FontSize="16"/>
+                                <ui:Button Content="Deploy Assets" Click="OnDeployAssetsClicked" Appearance="Primary" Margin="0,0,8,8">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="Library24" FontSize="14"/>
+                                    </ui:Button.Icon>
                                 </ui:Button>
 
-                                <ui:Button Click="OnCreateShortcutsClicked" Appearance="Secondary" Width="36" Height="36" Padding="0" Margin="0,0,8,8" ToolTip="Create Desktop Shortcuts">
-                                    <ui:SymbolIcon Symbol="Link24" FontSize="16"/>
+                                <ui:Button Content="Desktop Shortcuts" Click="OnCreateShortcutsClicked" Appearance="Secondary" Margin="0,0,8,8">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="Link24" FontSize="14"/>
+                                    </ui:Button.Icon>
                                 </ui:Button>
 
-                                <ui:Button Click="OnOpenAssetsFolder" Appearance="Secondary" Width="36" Height="36" Padding="0" Margin="0,0,0,8" ToolTip="Open Brand Assets Folder">
-                                    <ui:SymbolIcon Symbol="Folder24" FontSize="16"/>
+                                <ui:Button Content="Open Assets Folder" Click="OnOpenAssetsFolder" Appearance="Secondary" Margin="0,0,0,8">
+                                    <ui:Button.Icon>
+                                        <ui:SymbolIcon Symbol="Folder24" FontSize="14"/>
+                                    </ui:Button.Icon>
                                 </ui:Button>
                             </WrapPanel>
-                            <ui:TextBlock x:Name="PayloadStatusText" Text="" Foreground="{DynamicResource SystemFillColorSuccessBrush}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap"/>
+
+                            <ui:TextBlock x:Name="PayloadStatusText" Text="" Foreground="{DynamicResource SystemFillColorSuccessBrush}" FontSize="11" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                            <!-- Web Links -->
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:Button Grid.Column="0" Content="Dashboard" Margin="0,0,4,0" Appearance="Secondary" HorizontalAlignment="Stretch" Click="OnOpenServiceDashboard"/>
+                                <ui:Button Grid.Column="1" Content="Design System" Margin="2,0,2,0" Appearance="Secondary" HorizontalAlignment="Stretch" Click="OnOpenInternalAssets"/>
+                                <ui:Button Grid.Column="2" Content="Brand Kits" Margin="4,0,0,0" Appearance="Secondary" HorizontalAlignment="Stretch" Click="OnOpenPublicAssets"/>
+                            </Grid>
                         </StackPanel>
                     </ui:Card>
+
                 </StackPanel>
             </Grid>
         </StackPanel>

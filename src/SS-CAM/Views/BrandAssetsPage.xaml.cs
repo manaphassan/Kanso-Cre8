@@ -4,13 +4,22 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using SS_CAM.Services;
 
 namespace SS_CAM.Views
 {
     public partial class BrandAssetsPage : Page
     {
-        private void OnScrollViewerPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private string _currentHex = "#022057";
+        private string _currentToken = "--ss-prussian-blue";
+
+        public BrandAssetsPage()
+        {
+            InitializeComponent();
+        }
+
+        private void OnScrollViewerPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             try
             {
@@ -21,59 +30,208 @@ namespace SS_CAM.Views
                     e.Handled = true;
                 }
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[BrandAssetsPage] OnScrollViewerPreviewMouseWheel: " + ex.Message); }
-        }
-
-        public BrandAssetsPage()
-        {
-            InitializeComponent();
-        }
-
-        private void OnOpenServiceDashboard(object sender, RoutedEventArgs e)
-        {
-            OpenUrl("https://suamisihat.myds.me");
-        }
-
-        private void OnOpenInternalAssets(object sender, RoutedEventArgs e)
-        {
-            OpenUrl("https://assets.suamisihat.myds.me/");
-        }
-
-        private void OnOpenPublicAssets(object sender, RoutedEventArgs e)
-        {
-            OpenUrl("https://suamisihat.com.my/brand-assets");
-        }
-
-        private void OnSwatchClicked(object sender, RoutedEventArgs e)
-        {
-            FrameworkElement element = sender as FrameworkElement;
-            if (element != null && element.Tag != null)
+            catch (Exception ex)
             {
-                string tag = element.Tag.ToString();
-                string[] parts = tag.Split('|');
-                if (parts.Length >= 5)
+                Debug.WriteLine("[BrandAssetsPage] OnScrollViewerPreviewMouseWheel: " + ex.Message);
+            }
+        }
+
+        private void OnSwatchClicked(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                FrameworkElement element = sender as FrameworkElement;
+                if (element != null && element.Tag != null)
                 {
-                    string hex = parts[0];
-                    string rgb = parts[1];
-                    string cmyk = parts[2];
-                    string pantone = parts[3];
-                    string name = parts[4];
-
-                    Clipboard.SetText(hex);
-                    CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | RGB {2}) to clipboard!", name, hex, rgb);
-
-                    try
+                    string tag = element.Tag.ToString();
+                    string[] parts = tag.Split('|');
+                    if (parts.Length >= 8)
                     {
+                        string hex = parts[0];
+                        string rgb = parts[1];
+                        string cmyk = parts[2];
+                        string pantone = parts[3];
+                        string balRal = parts[4];
+                        string tokenName = parts[5];
+                        string colorName = parts[6];
+                        string roleDesc = parts[7];
+
+                        _currentHex = hex;
+                        _currentToken = tokenName;
+
+                        Clipboard.SetText(hex);
+                        CopyStatusText.Text = string.Format("✓ Copied {0} ({1} | {2}) to clipboard!", colorName, hex, tokenName);
+
                         if (InspectorColorTile != null)
-                            InspectorColorTile.Background = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
-                        if (InspectorColorName != null) InspectorColorName.Text = name;
+                        {
+                            InspectorColorTile.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+                        }
+                        if (InspectorColorName != null) InspectorColorName.Text = colorName;
+                        if (InspectorRoleText != null) InspectorRoleText.Text = roleDesc;
                         if (InspectorHexText != null) InspectorHexText.Text = hex;
+                        if (InspectorTokenText != null) InspectorTokenText.Text = tokenName;
                         if (InspectorRgbText != null) InspectorRgbText.Text = rgb;
                         if (InspectorCmykText != null) InspectorCmykText.Text = cmyk;
+                        if (InspectorBalRalText != null) InspectorBalRalText.Text = balRal;
                         if (InspectorPantoneText != null) InspectorPantoneText.Text = pantone;
                     }
-                    catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[BrandAssetsPage] OnSwatchClicked UI update error: " + ex.Message); }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnSwatchClicked error: " + ex.Message);
+            }
+        }
+
+        private void OnCopyHexClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_currentHex))
+                {
+                    Clipboard.SetText(_currentHex);
+                    CopyStatusText.Text = string.Format("✓ Copied HEX value ({0}) to clipboard!", _currentHex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnCopyHexClicked error: " + ex.Message);
+            }
+        }
+
+        private void OnCopyTokenClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(_currentToken))
+                {
+                    Clipboard.SetText(_currentToken);
+                    CopyStatusText.Text = string.Format("✓ Copied Design Token ({0}) to clipboard!", _currentToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnCopyTokenClicked error: " + ex.Message);
+            }
+        }
+
+        private void OnSelectContrastLight(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LogoContrastStage.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FCFAF6"));
+                LogoPreviewWordmark.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#022057"));
+                LogoPreviewSubtext.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#043388"));
+                LogoContrastInfoText.Text = "Lightness Rule (L ≥ 50%): Primary Light variant active for porcelain/white canvases.";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnSelectContrastLight error: " + ex.Message);
+            }
+        }
+
+        private void OnSelectContrastDark(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LogoContrastStage.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#090D16"));
+                LogoPreviewWordmark.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+                LogoPreviewSubtext.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#21A1F7"));
+                LogoContrastInfoText.Text = "Lightness Rule (L < 50%): Primary Dark (White) variant active for deep void canvases.";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnSelectContrastDark error: " + ex.Message);
+            }
+        }
+
+        private void OnSelectContrastPrussian(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LogoContrastStage.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#022057"));
+                LogoPreviewWordmark.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+                LogoPreviewSubtext.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6DC6EC"));
+                LogoContrastInfoText.Text = "Corporate Surface (#022057): Luminous white wordmark & Malibu cyan subtext standard.";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnSelectContrastPrussian error: " + ex.Message);
+            }
+        }
+
+        private void OnOpenMasterLogos(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("00_logo_SuamiSihat");
+        }
+
+        private void OnOpenSsHealth(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("01_logo_ssHealth");
+        }
+
+        private void OnOpenSsClinic(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("02_logo_ssClinic");
+        }
+
+        private void OnOpenSsWellness(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("03_logo_ssWellness");
+        }
+
+        private void OnOpenSsEcom(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("04_logo_ssEcom");
+        }
+
+        private void OnOpenSsTech(object sender, RoutedEventArgs e)
+        {
+            OpenLogoSubFolder("05_logo_ssTech");
+        }
+
+        private void OpenLogoSubFolder(string subFolderName)
+        {
+            try
+            {
+                PayloadInstallerService.DeployBrandAssets();
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string path = Path.Combine(localAppData, "SuamiSihat", "Assets", "Logos", subFolderName);
+
+                if (!Directory.Exists(path))
+                {
+                    string payloadDir = PayloadInstallerService.FindPayloadDirectory();
+                    string payloadSub = !string.IsNullOrEmpty(payloadDir) ? Path.Combine(payloadDir, "Brand Assets", "Logos", subFolderName) : "";
+                    if (Directory.Exists(payloadSub))
+                    {
+                        path = payloadSub;
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                }
+                Process.Start("explorer.exe", path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OpenLogoSubFolder error: " + ex.Message);
+            }
+        }
+
+        private void OnOpenAssetsFolder(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PayloadInstallerService.DeployBrandAssets();
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SuamiSihat", "Assets");
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                Process.Start("explorer.exe", path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OnOpenAssetsFolder error: " + ex.Message);
+                MessageBox.Show(string.Format("Could not open assets folder: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -98,46 +256,19 @@ namespace SS_CAM.Views
             MessageBox.Show(result, "Desktop Shortcuts Created", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void OnOpenPalettesFolder(object sender, RoutedEventArgs e)
+        private void OnOpenServiceDashboard(object sender, RoutedEventArgs e)
         {
-            OpenSubAssetFolder("Colour Palettes");
+            OpenUrl("https://suamisihat.myds.me");
         }
 
-        private void OnOpenLogosFolder(object sender, RoutedEventArgs e)
+        private void OnOpenInternalAssets(object sender, RoutedEventArgs e)
         {
-            OpenSubAssetFolder("Logos");
+            OpenUrl("https://assets.suamisihat.myds.me/");
         }
 
-        private void OnOpenLibrariesFolder(object sender, RoutedEventArgs e)
+        private void OnOpenPublicAssets(object sender, RoutedEventArgs e)
         {
-            OpenSubAssetFolder("Libraries");
-        }
-
-        private void OpenSubAssetFolder(string subName)
-        {
-            try
-            {
-                PayloadInstallerService.DeployBrandAssets();
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SuamiSihat", "Assets", subName);
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                Process.Start("explorer.exe", path);
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
-        }
-
-        private void OnOpenAssetsFolder(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                PayloadInstallerService.DeployBrandAssets();
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SuamiSihat", "Assets");
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                Process.Start("explorer.exe", path);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("Could not open assets folder: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            OpenUrl("https://suamisihat.com.my/brand-assets");
         }
 
         private void OpenUrl(string url)
@@ -150,7 +281,10 @@ namespace SS_CAM.Views
                     UseShellExecute = true
                 });
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[BrandAssetsPage] OpenUrl error: " + ex.Message);
+            }
         }
     }
 }
