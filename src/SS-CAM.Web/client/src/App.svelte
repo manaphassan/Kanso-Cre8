@@ -16,8 +16,17 @@
   import ProfileView from '$lib/views/ProfileView.svelte';
   import LoginView from '$lib/views/LoginView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
+  import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
 
   let showDownloadModal = $state(false);
+  let commandPaletteOpen = $state(false);
+
+  function handleGlobalKeydown(e: KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      commandPaletteOpen = !commandPaletteOpen;
+    }
+  }
 
   onMount(async () => {
     await appState.loadCurrentUser();
@@ -171,6 +180,8 @@
   const isRail = $derived(appState.sidebarRail && appState.sidebarExpanded);
 </script>
 
+<svelte:window onkeydown={handleGlobalKeydown} />
+
 {#if !appState.currentUser}
   <LoginView />
 {:else}
@@ -286,21 +297,13 @@
         </div>
 
         <div class="header-center">
-          <div class="header-search">
+          <button class="header-search-btn" onclick={() => (commandPaletteOpen = true)} aria-label="Open Command Palette (Ctrl K)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="search-ico" aria-hidden="true">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <input
-              class="search-input"
-              type="search"
-              placeholder="Search projects, deliverables, team…"
-              bind:value={appState.globalSearch}
-              aria-label="Global search"
-            />
-            {#if appState.globalSearch}
-              <button class="search-clear" onclick={() => (appState.globalSearch = '')} aria-label="Clear search">×</button>
-            {/if}
-          </div>
+            <span class="search-placeholder">Search projects, colors, team, actions…</span>
+            <kbd class="search-shortcut">Ctrl K</kbd>
+          </button>
         </div>
 
         <div class="header-right">
@@ -438,6 +441,11 @@
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="mobile-overlay" onclick={() => { appState.sidebarExpanded = false; }}></div>
   {/if}
+
+  <CommandPaletteModal
+    bind:open={commandPaletteOpen}
+    onClose={() => (commandPaletteOpen = false)}
+  />
 
   <NotificationDrawer
     bind:open={appState.notificationDrawerOpen}
@@ -817,7 +825,7 @@
     max-width: 280px;
   }
 
-  .header-search {
+  .header-search-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -828,33 +836,34 @@
     width: 100%;
     max-width: 460px;
     height: 36px;
-    transition: border-color .15s, box-shadow .15s;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s ease;
   }
-  .header-search:focus-within {
+  .header-search-btn:hover {
     border-color: var(--brand-accent);
     box-shadow: 0 0 0 3px rgba(33,161,247,.15);
+    background: rgba(255, 255, 255, 0.04);
   }
-  .search-ico   { color: var(--text-tertiary); flex-shrink: 0; }
-  .search-input {
+  .search-ico { color: var(--text-tertiary); flex-shrink: 0; }
+  .search-placeholder {
     flex: 1;
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
-  }
-  .search-input::placeholder { color: var(--text-tertiary); }
-  .search-clear {
-    border: none;
-    background: none;
     color: var(--text-tertiary);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0 2px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .search-clear:hover { color: var(--text-primary); }
+  .search-shortcut {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+    font-family: inherit;
+  }
 
   .icon-btn {
     width: 36px;
