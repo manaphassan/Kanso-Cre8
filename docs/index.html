@@ -100,7 +100,7 @@
       <!-- 3D viewport frame -->
       <div class="hero-viewport tilt-3d reveal" id="hero-viewport-frame">
         <div class="viewport-header">
-          <div class="window-title">SuamiSihat Creative Assets Management — Production Dashboard v4.4.1</div>
+          <div class="window-title">SuamiSihat Creative Assets Management — Production Dashboard v4.5.0</div>
           <div class="window-controls">
             <span class="win-btn min">─</span>
             <span class="win-btn max">▢</span>
@@ -108,7 +108,7 @@
           </div>
         </div>
         <div class="viewport-canvas">
-          <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.4.1 Screenshot" id="main-viewport-img">
+          <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.5.0 Screenshot" id="main-viewport-img">
         </div>
       </div>
 
@@ -378,23 +378,54 @@
           <!-- Tab row styled like reference cl-code-tabs -->
           <div class="showcase-tabs" id="showcase-tabs">
             <button class="tab-btn active" data-target="panel-dashboard" data-title="Centralized Storage &amp; Campaign Analytics" data-sub="Real-time NAS storage probe, active workload metrics, and stale work order alerts.">Dashboard</button>
+            <button class="tab-btn" data-target="panel-assets" data-title="Master Brand System &amp; Multi-Format Color Matrix" data-sub="Official palettes with live HEX/RGB/CMYK/BAL/RAL/Pantone specs, 5 corporate sub-brands hub, and surface contrast tester.">Brand Assets</button>
+            <button class="tab-btn" data-target="panel-wellbeing" data-title="Creative Wellbeing &amp; Biometric Flow Radar" data-sub="Real-time 5-axis biometric radar, 30-day focus heatmap, and animated vector hydration tracker.">Wellbeing Suite</button>
+            <button class="tab-btn" data-target="panel-radio" data-title="Creative Focus Radio &amp; Dynamic Audio Visualizer" data-sub="Official SuamiSihat stream, 69 oscillating Mars backdrop symbols with beat kicks, and curated focus stations.">Radio Studio</button>
+            <button class="tab-btn" data-target="panel-copywriting" data-title="Dedicated Copywriting Studio &amp; Telemetry" data-sub="Write video scripts and hooks directly into 03_COPYWRITING/COPY.md with live telemetry.">Copywriting Studio</button>
             <button class="tab-btn" data-target="panel-workspace" data-title="ClickUp 3.0-Style 2-Column Task Workspace" data-sub="Full-width Markdown brief editor, live GFM rendering, and Right Inspector Panel.">Project Workspace</button>
-            <button class="tab-btn" data-target="panel-copywriting" data-title="Dedicated Copywriting Studio &amp; Telemetry" data-sub="Write video scripts and hooks directly into 03_COPYWRITING/COPY.md.">Copywriting Studio</button>
+            <button class="tab-btn" data-target="panel-creator" data-title="Standardized 5-Folder Project Creator" data-sub="Instant canonical vault hierarchy scaffolding with dynamic project ID auto-calculation.">Project Creator</button>
             <button class="tab-btn" data-target="panel-catalog" data-title="Project Catalog &amp; Workspace Vault" data-sub="Filter active campaigns by subsidiary brand, designer, status, or urgency.">Project Vault</button>
-            <button class="tab-btn" data-target="panel-admin" data-title="Enterprise Staff Directory &amp; Security Audit" data-sub="Provision accounts, configure RBAC, and review tamper-evident audit logs.">Admin &amp; RBAC</button>
-            <button class="tab-btn" data-target="panel-assets" data-title="Minimal Swatch &amp; Brand Inspector" data-sub="Explore official swatches with live HEX/RGB/CMYK/Pantone and QR Code studio.">Brand Assets</button>
             <button class="tab-btn" data-target="panel-tasks" data-title="YAML Frontmatter Kanban Board" data-sub="Kanban columns reading directly from project README frontmatter headers.">Task Manager</button>
-            <button class="tab-btn" data-target="panel-calendar" data-title="7×6 Monthly Campaign Timetable" data-sub="Visual calendar mapping project deadlines, Friday Solat, and day overlays.">Big Calendar</button>
-            <button class="tab-btn" data-target="panel-solat" data-title="JAKIM Waktu Solat Timetable" data-sub="Real-time prayer schedules for 41 Malaysian zones with active countdowns.">Waktu Solat</button>
+            <button class="tab-btn" data-target="panel-calendar" data-title="7×6 Monthly Campaign Timetable" data-sub="Visual calendar mapping project deadlines, Friday Solat, and Malaysia public holidays.">Big Calendar</button>
           </div>
 
           <div class="showcase-stage" style="padding:var(--f-space-5);">
 
             <div class="showcase-panel active" id="panel-dashboard">
               <div class="hotspot-stage-wrapper">
-                <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.0.0" class="showcase-img">
+                <img src="app-dashboard-v4.png" alt="SS-CAM Dashboard v4.5.0" class="showcase-img">
                 <div class="hotspot-pin" style="top:22%;left:25%;" data-tooltip="Storage Telemetry: Live probe of local &amp; NAS disk capacity"></div>
                 <div class="hotspot-pin" style="top:45%;left:65%;" data-tooltip="Workload Breakdown: Sub-brand project volume chart"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-assets">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-brand-assets.png" alt="SS-CAM Brand Assets &amp; Identity Vault" class="showcase-img">
+                <div class="hotspot-pin" style="top:25%;left:35%;" data-tooltip="Multi-Format Matrix: HEX, RGB, CMYK, BAL/RAL Standard, and Pantone PMS"></div>
+                <div class="hotspot-pin" style="top:55%;left:70%;" data-tooltip="5 Corporate Sub-Brands: 1-click local vector asset folder launchers"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-wellbeing">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-wellbeing.png" alt="SS-CAM Creative Wellbeing Suite" class="showcase-img">
+                <div class="hotspot-pin" style="top:35%;left:30%;" data-tooltip="Biometric Radar: Real-time 5-axis creative vitality polygon"></div>
+                <div class="hotspot-pin" style="top:60%;left:75%;" data-tooltip="Hydration Wave: Interactive animated water fill with 1-click cup logging"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-radio">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-radio-v4.png" alt="SS-CAM Focus Radio &amp; Audio Visualizer" class="showcase-img">
+                <div class="hotspot-pin" style="top:30%;left:50%;" data-tooltip="Dynamic Visualizer: Mars symbols oscillate along sinusoidal audio waves with beat pulsing"></div>
+              </div>
+            </div>
+
+            <div class="showcase-panel" id="panel-copywriting">
+              <div class="hotspot-stage-wrapper">
+                <img src="app-copywriting-studio-v4.png" alt="SS-CAM Copywriting Studio" class="showcase-img">
+                <div class="hotspot-pin" style="top:25%;left:40%;" data-tooltip="Live Stats: Real-time word count, characters, and reading time"></div>
               </div>
             </div>
 
@@ -406,10 +437,10 @@
               </div>
             </div>
 
-            <div class="showcase-panel" id="panel-copywriting">
+            <div class="showcase-panel" id="panel-creator">
               <div class="hotspot-stage-wrapper">
-                <img src="app-copywriting-studio-v4.png" alt="SS-CAM Copywriting Studio" class="showcase-img">
-                <div class="hotspot-pin" style="top:25%;left:40%;" data-tooltip="Live Stats: Real-time word count, characters, and reading time"></div>
+                <img src="app-project-creator.png" alt="SS-CAM Standardized Project Creator" class="showcase-img">
+                <div class="hotspot-pin" style="top:30%;left:40%;" data-tooltip="Automated Vault Scaffold: Standardized 5-folder project structure"></div>
               </div>
             </div>
 
@@ -417,20 +448,6 @@
               <div class="hotspot-stage-wrapper">
                 <img src="app-catalog-vault-v4.png" alt="SS-CAM Project Catalog" class="showcase-img">
                 <div class="hotspot-pin" style="top:18%;left:50%;" data-tooltip="Multi-Filter Bar: Filter by brand, status, assignee, and date"></div>
-              </div>
-            </div>
-
-            <div class="showcase-panel" id="panel-admin">
-              <div class="hotspot-stage-wrapper">
-                <img src="app-admin-rbac-v4.png" alt="SS-CAM Admin &amp; RBAC" class="showcase-img">
-                <div class="hotspot-pin" style="top:30%;left:60%;" data-tooltip="RBAC Matrix: Role assignments for Admin, Director, Manager &amp; Designer"></div>
-              </div>
-            </div>
-
-            <div class="showcase-panel" id="panel-assets">
-              <div class="hotspot-stage-wrapper">
-                <img src="app-brand-assets.png" alt="SS-CAM Brand Assets" class="showcase-img">
-                <div class="hotspot-pin" style="top:40%;left:75%;" data-tooltip="Live Swatch Inspector: HEX, RGB, CMYK &amp; Pantone breakdowns"></div>
               </div>
             </div>
 
@@ -445,13 +462,6 @@
               <div class="hotspot-stage-wrapper">
                 <img src="app-big-calendar.png" alt="SS-CAM Big Calendar" class="showcase-img">
                 <div class="hotspot-pin" style="top:30%;left:50%;" data-tooltip="7×6 Timetable: Maps deadlines &amp; Friday Solat markers"></div>
-              </div>
-            </div>
-
-            <div class="showcase-panel" id="panel-solat">
-              <div class="hotspot-stage-wrapper">
-                <img src="app-waktu-solat.png" alt="SS-CAM Waktu Solat" class="showcase-img">
-                <div class="hotspot-pin" style="top:30%;left:40%;" data-tooltip="JAKIM Live API: Real-time prayer timetable for 41 Malaysian zones"></div>
               </div>
             </div>
 
@@ -602,13 +612,13 @@ dotnet run --project src/SS-CAM.Linux -c Release</code></pre>
 
         <div class="cl-card reveal">
           <div class="cl-card-header">
-            <div class="cl-card-title">Technical Specifications — v4.4.1</div>
+            <div class="cl-card-title">Technical Specifications — v4.5.0</div>
             <span class="ss-badge ss-badge-success">Stable Release</span>
           </div>
           <div class="specs-box" style="max-width:100%; margin:0; border:none; border-radius:0; box-shadow:none;">
             <div class="spec-row"><span class="spec-k">Supported Platforms</span><span class="spec-v">Windows 10/11 (x64), Linux (Fedora, Ubuntu, Debian, Arch), Docker / Synology NAS</span></div>
             <div class="spec-row"><span class="spec-k">Core Stack</span><span class="spec-v">C# WPF (.NET Framework 4.8) Desktop + Node.js / Svelte 5 Web Portal</span></div>
-            <div class="spec-row"><span class="spec-k">Packaging</span><span class="spec-v">Portable Single-File Executable (~5.6 MB, Zero Runtime Installation)</span></div>
+            <div class="spec-row"><span class="spec-k">Packaging</span><span class="spec-v">Portable Single-File Executable (~5.4 MB, Zero Runtime Installation)</span></div>
             <div class="spec-row"><span class="spec-k">Design System</span><span class="spec-v">Microsoft Fluent 2 &amp; SuamiSihat™ Official 60:30:10 Design Tokens</span></div>
             <div class="spec-row"><span class="spec-k">Persistence Engine</span><span class="spec-v">Markdown &amp; JSONL as Database (100% Synology NAS Realtime Native)</span></div>
             <div class="spec-row"><span class="spec-k">Network Integration</span><span class="spec-v">Synology Drive / <code>\\SSNAS\Creative-Team</code> realtime filesystem watching</span></div>
@@ -622,13 +632,13 @@ dotnet run --project src/SS-CAM.Linux -c Release</code></pre>
       <section class="cta-section">
         <div class="cta-card reveal">
           <h2 class="cta-title">Upgrade Your Creative Operations.</h2>
-          <p class="cta-sub">Deploy SS-CAM v4.4.1 today — zero installer overhead, 100% data ownership.</p>
+          <p class="cta-sub">Deploy SS-CAM v4.5.0 today — zero installer overhead, 100% data ownership.</p>
           <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.4.1/SS-CAM-v4.4.1.exe" class="btn-hero-primary btn-xl">
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.5.0/SS-CAM-v4.5.0.exe" class="btn-hero-primary btn-xl">
               <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.3rem;"></iconify-icon>
-              Download SS-CAM v4.4.1 (.exe)
+              Download SS-CAM v4.5.0 (.exe)
             </a>
-            <a href="https://github.com/SuamiSihat/ss_cam/releases/tag/v4.4.1" class="btn-hero-secondary btn-xl" target="_blank" rel="noreferrer">
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/tag/v4.5.0" class="btn-hero-secondary btn-xl" target="_blank" rel="noreferrer">
               <iconify-icon icon="fluent:open-24-regular" style="font-size:1.3rem;"></iconify-icon>
               View All Platform Releases
             </a>
