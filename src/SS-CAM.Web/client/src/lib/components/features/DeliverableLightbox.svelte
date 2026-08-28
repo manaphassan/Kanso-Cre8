@@ -2,6 +2,7 @@
   import type { DeliverableItem } from '$lib/types';
   import { appState } from '$lib/stores/appState.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import DeliverableAnnotationCanvas from '$lib/components/features/DeliverableAnnotationCanvas.svelte';
 
   interface Props {
     deliverable: DeliverableItem | null;
@@ -61,17 +62,12 @@
       <!-- Media Viewer Left Pane -->
       <div class="lightbox-media-viewer">
         {#if deliverable.isImage || deliverable.previewType === 'image'}
-          <div class="image-wrapper" class:zoomed={isImageZoomed}>
-            <img
-              src={deliverable.previewUrl}
-              alt={deliverable.filename}
-              onclick={() => (isImageZoomed = !isImageZoomed)}
-              title="Click to toggle zoom"
-            />
-            <button class="zoom-toggle-btn" onclick={() => (isImageZoomed = !isImageZoomed)}>
-              {isImageZoomed ? '🔍 Fit to Screen' : '🔍 100% Zoom'}
-            </button>
-          </div>
+          <DeliverableAnnotationCanvas
+            projectId={deliverable.project?.id || deliverable.projectId || deliverable.project?.jobId || deliverable.projectJobId || ''}
+            deliverableId={deliverable.id || deliverable.filename}
+            mediaUrl={deliverable.previewUrl}
+            altText={deliverable.filename}
+          />
         {:else if deliverable.isVideo || deliverable.previewType === 'video'}
           <div class="video-wrapper">
             <!-- svelte-ignore a11y_media_has_caption -->

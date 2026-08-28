@@ -374,6 +374,18 @@
             ⚠️ Request Revision
           </FluentButton>
 
+          <!-- Open in SS-CAM Desktop App -->
+          <a
+            href={`sscam://open?id=${encodeURIComponent(p.jobId || p.id)}`}
+            class="desktop-open-btn"
+            title="Open this project directly in SS-CAM Windows Desktop application"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"/>
+            </svg>
+            <span>Open in Desktop</span>
+          </a>
+
           <!-- Export Handover ZIP Button -->
           <a
             href={`/api/projects/${encodeURIComponent(p.id)}/export`}
@@ -840,6 +852,26 @@
     border: 1px solid #BFDBFE;
     padding: 3px 8px;
     border-radius: 6px;
+  }
+
+  .desktop-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-card-subtle, #F8FAFC);
+    color: var(--text-primary, #0F172A);
+    border: 1px solid var(--surface-card-border, #CBD5E1);
+    border-radius: var(--radius-sm, 6px);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.14s ease;
+  }
+  .desktop-open-btn:hover {
+    background: var(--brand-tint, #EBF4FE);
+    border-color: var(--brand-accent, #21A1F7);
+    color: var(--text-brand, #043388);
   }
 
   .task-title {

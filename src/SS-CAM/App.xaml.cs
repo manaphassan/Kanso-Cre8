@@ -27,6 +27,7 @@ namespace SS_CAM
 
                     splash.UpdateStatus("Deploying brand assets & fonts...");
                     RegisterUserAppPlacement();
+                    RegisterCustomUriScheme();
 
                     splash.UpdateStatus("Synchronizing NAS preferences...");
                     UserProfileService.LoadProfile();
@@ -123,6 +124,48 @@ namespace SS_CAM
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+        }
+
+        public static void RegisterCustomUriScheme()
+        {
+            try
+            {
+                string currentExe = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                if (string.IsNullOrEmpty(currentExe) || !File.Exists(currentExe)) return;
+
+                using (var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Software\Classes\sscam"))
+                {
+                    if (key != null)
+                    {
+                        key.SetValue("", "URL:SuamiSihat CAM Protocol");
+                        key.SetValue("URL Protocol", "");
+                        using (var defaultIcon = key.CreateSubKey("DefaultIcon"))
+                        {
+                            if (defaultIcon != null) defaultIcon.SetValue("", currentExe + ",1");
+                        }
+                        using (var shell = key.CreateSubKey("shell"))
+                        {
+                            if (shell != null)
+                            {
+                                using (var open = shell.CreateSubKey("open"))
+                                {
+                                    if (open != null)
+                                    {
+                                        using (var command = open.CreateSubKey("command"))
+                                        {
+                                            if (command != null) command.SetValue("", "\"" + currentExe + "\" \"%1\"");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[App] RegisterCustomUriScheme error: " + ex.Message);
+            }
         }
     }
 }

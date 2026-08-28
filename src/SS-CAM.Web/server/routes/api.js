@@ -667,6 +667,88 @@ router.get('/deliverables/download', (req, res) => {
   }
 
   res.download(safePath);
+// ─── COMMENTS & VISUAL FEEDBACK ANNOTATIONS ─────────────────────────
+
+router.get('/projects/:id/comments', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const comments = CommentService.getComments(project ? project.fullPath : null, req.params.id);
+    res.json({ success: true, comments });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/projects/:id/comments', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const comment = CommentService.addComment(project ? project.fullPath : null, req.params.id, {
+      author: req.user.name || req.user.username || 'Reviewer',
+      authorRole: req.user.role || 'User',
+      authorAvatar: req.user.avatarColor || '#0078D4',
+      content: req.body.content || req.body.note || '',
+      deliverableId: req.body.deliverableId || null,
+      annotation: req.body.annotation || null,
+      mentions: req.body.mentions || []
+    });
+
+    SseService.broadcast('project:comment', {
+      projectId: req.params.id,
+      comment
+    });
+
+    res.json({ success: true, comment });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/projects/:id/comments/:commentId/resolve', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const { resolved = true } = req.body;
+    const result = CommentService.resolveComment(
+      project ? project.fullPath : null,
+      req.params.id,
+      req.params.commentId,
+      resolved,
+      req.user.name || 'User',
+      req.user.role || 'User'
+    );
+
+    SseService.broadcast('project:comment_resolved', {
+      projectId: req.params.id,
+      commentId: req.params.commentId,
+      resolved,
+      resolvedBy: req.user.name
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/projects/:id/comments/:commentId', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    const result = CommentService.deleteComment(
+      project ? project.fullPath : null,
+      req.params.id,
+      req.params.commentId,
+      req.user.name || 'User',
+      req.user.role || 'User'
+    );
+
+    SseService.broadcast('project:comment_deleted', {
+      projectId: req.params.id,
+      commentId: req.params.commentId
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // ─── TEAM & WORKLOAD ────────────────────────────────────────────────

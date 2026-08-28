@@ -265,6 +265,31 @@ export class ApiClient {
     });
   }
 
+  // ─── Comments & Visual Annotations ───
+  static getComments(projectId: string): Promise<{ success: boolean; comments: any[] }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`);
+  }
+
+  static addComment(projectId: string, data: { content: string; deliverableId?: string; annotation?: { x: number; y: number; pinNumber?: number; priority?: string }; mentions?: string[] }): Promise<{ success: boolean; comment: any }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  static resolveComment(projectId: string, commentId: string, resolved = true): Promise<{ success: boolean; commentId: string; resolved: boolean }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}/resolve`, {
+      method: 'PUT',
+      body: JSON.stringify({ resolved })
+    });
+  }
+
+  static deleteComment(projectId: string, commentId: string): Promise<{ success: boolean; deleted: boolean }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}`, {
+      method: 'DELETE'
+    });
+  }
+
   // ─── Company & Subsidiary Directory ───
   static getCompanies(): Promise<{ success: boolean; companies: any[] }> {
     return this.request('/companies');

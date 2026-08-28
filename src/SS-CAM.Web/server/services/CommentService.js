@@ -59,6 +59,7 @@ class CommentService {
     authorAvatar = '#043388',
     content = '',
     deliverableId = null,
+    annotation = null,
     mentions = []
   }) {
     if (!content.trim()) {
@@ -74,6 +75,7 @@ class CommentService {
       id: `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       projectId,
       deliverableId: deliverableId || null,
+      annotation: annotation || null,
       author,
       authorRole,
       authorAvatar,

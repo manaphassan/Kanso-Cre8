@@ -238,3 +238,32 @@
   --glass-border: rgba(203, 166, 247, 0.2);
   --glass-blur: blur(14px);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SUBSIDIARY BRAND ACCENT OVERRIDES (Dynamic Scoped Tinting)
+   ══════════════════════════════════════════════════════════════════════════ */
+[data-brand="SSH"] {
+  --brand-primary: #022057;
+  --brand-accent: #043388;
+  --brand-tint: rgba(2, 32, 87, 0.08);
+}
+[data-brand="SSC"] {
+  --brand-primary: #043388;
+  --brand-accent: #106EBE;
+  --brand-tint: rgba(4, 51, 136, 0.08);
+}
+[data-brand="SSW"] {
+  --brand-primary: #0284C7;
+  --brand-accent: #21A1F7;
+  --brand-tint: rgba(33, 161, 247, 0.1);
+}
+[data-brand="SSE"] {
+  --brand-primary: #047857;
+  --brand-accent: #107C41;
+  --brand-tint: rgba(16, 124, 65, 0.1);
+}
+[data-brand="SST"] {
+  --brand-primary: #7C3AED;
+  --brand-accent: #8764B8;
+  --brand-tint: rgba(135, 100, 184, 0.12);
+}
