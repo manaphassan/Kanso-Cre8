@@ -1,4 +1,4 @@
-<Page x:Class="SS_CAM.Views.SettingsPage"
+﻿<Page x:Class="SS_CAM.Views.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -145,56 +145,64 @@
                                      <RowDefinition Height="Auto"/>
                                  </Grid.RowDefinitions>
 
-                                 <!-- Full Name Input -->
-                                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,14">
-                                     <ui:TextBlock Text="Full Name" FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
-                                     <ui:TextBox x:Name="DesignerNameInput" Height="34"/>
-                                 </StackPanel>
+                                  <!-- Full Name Input (read-only: auto-filled from Staff Identity dropdown) -->
+                                  <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,14">
+                                      <ui:TextBlock Text="Full Name" FontSize="12" FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                      <ui:TextBox x:Name="DesignerNameInput" Height="34"
+                                                  IsReadOnly="True" Opacity="0.75"
+                                                  ToolTip="Auto-filled from the Staff Identity dropdown above. Select a staff entry to update."/>
+                                  </StackPanel>
 
-                                 <!-- Staff ID Input -->
-                                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
-                                     <ui:TextBlock Text="Staff ID" FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
-                                     <ui:TextBox x:Name="StaffIdInput" Height="34"/>
-                                 </StackPanel>
+                                  <!-- Staff ID Input (read-only: auto-filled from Staff Identity dropdown) -->
+                                  <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,14">
+                                      <ui:TextBlock Text="Staff ID" FontSize="12" FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                      <ui:TextBox x:Name="StaffIdInput" Height="34"
+                                                  IsReadOnly="True" Opacity="0.75"
+                                                  ToolTip="Auto-filled from the Staff Identity dropdown above. Select a staff entry to update."/>
+                                  </StackPanel>
 
-                                 <!-- Department Input -->
-                                 <StackPanel Grid.Row="1" Grid.Column="0">
-                                     <ui:TextBlock Text="Department / Role" FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
-                                     <ui:TextBox x:Name="DepartmentInput" Height="34"/>
-                                 </StackPanel>
+                                  <!-- Department Input (read-only: auto-filled from Staff Identity dropdown) -->
+                                  <StackPanel Grid.Row="1" Grid.Column="0">
+                                      <ui:TextBlock Text="Department / Role" FontSize="12" FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                      <ui:TextBox x:Name="DepartmentInput" Height="34"
+                                                  IsReadOnly="True" Opacity="0.75"
+                                                  ToolTip="Auto-filled from the Staff Identity dropdown above. Select a staff entry to update."/>
+                                  </StackPanel>
 
-                                 <!-- Email Address Input -->
-                                 <StackPanel Grid.Row="1" Grid.Column="2">
-                                     <ui:TextBlock Text="Email Address" FontSize="12" FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
-                                     <ui:TextBox x:Name="EmailInput" Height="34"/>
-                                 </StackPanel>
+                                  <!-- Email Address Input (read-only: auto-filled from Staff Identity dropdown) -->
+                                  <StackPanel Grid.Row="1" Grid.Column="2">
+                                      <ui:TextBlock Text="Email Address" FontSize="12" FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                      <ui:TextBox x:Name="EmailInput" Height="34"
+                                                  IsReadOnly="True" Opacity="0.75"
+                                                  ToolTip="Auto-filled from the Staff Identity dropdown above. Select a staff entry to update."/>
+                                  </StackPanel>
                              </Grid>
 
-                            <!-- Save action row -->
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <ui:Button Grid.Column="0"
-                                           Appearance="Primary"
+                            <!-- Save action row — full-width button -->
+                            <StackPanel Margin="0,4,0,0">
+                                <ui:Button Appearance="Primary"
                                            Click="OnSaveProfileClicked"
-                                           Width="34" Height="34" Padding="0"
+                                           Height="36" Padding="0,0,0,0"
+                                           HorizontalAlignment="Stretch"
+                                           HorizontalContentAlignment="Center"
                                            ToolTip="Save Designer Profile" Cursor="Hand">
-                                    <ui:SymbolIcon Symbol="Save24"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ui:SymbolIcon Symbol="Save24" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Save Profile" FontSize="13" FontWeight="SemiBold"
+                                                      VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </ui:Button>
                                 <ui:TextBlock x:Name="ProfileSaveStatus"
-                                             Grid.Column="1"
                                              Text=""
                                              Foreground="{DynamicResource SystemFillColorSuccessBrush}"
                                              FontSize="12" FontWeight="SemiBold"
-                                             Margin="12,0,0,0"
-                                             VerticalAlignment="Center"/>
-                            </Grid>
+                                             HorizontalAlignment="Center"
+                                             Margin="0,6,0,0"/>
+                            </StackPanel>
 
                         </StackPanel>
                     </ui:Card>
@@ -226,7 +234,8 @@
                                     <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <ui:TextBox x:Name="WorkspaceRootInput" Height="34"/>
+                                <ui:TextBox x:Name="WorkspaceRootInput" Height="34"
+                                            ToolTip="Must end with \SynologyDrive\Creative-Team (e.g. D:\SynologyDrive\Creative-Team)"/>
                                 <ui:Button Grid.Column="2"
                                            Appearance="Secondary"
                                            Click="OnBrowseWorkspace"
@@ -234,6 +243,36 @@
                                     <ui:SymbolIcon Symbol="Folder24"/>
                                 </ui:Button>
                             </Grid>
+
+                            <!-- Workspace path guidance note -->
+                            <Border Margin="0,10,0,0" Padding="10,8" CornerRadius="6"
+                                    Background="{DynamicResource FluentBrandTint}"
+                                    BorderBrush="{DynamicResource FluentBrand80}"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Info24" FontSize="14"
+                                                   Foreground="{DynamicResource FluentBrand80}"
+                                                   VerticalAlignment="Top"
+                                                   Margin="0,1,8,0"/>
+                                    <StackPanel>
+                                        <ui:TextBlock Text="Required path format:"
+                                                      FontSize="11" FontWeight="SemiBold"
+                                                      Foreground="{DynamicResource FluentBrand80}"
+                                                      Margin="0,0,0,2"/>
+                                        <ui:TextBlock Text="[Drive]:\SynologyDrive\Creative-Team"
+                                                      FontSize="12" FontWeight="Bold"
+                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                      Margin="0,0,0,2"/>
+                                        <ui:TextBlock Text="e.g.  D:\SynologyDrive\Creative-Team  or  Z:\SynologyDrive\Creative-Team"
+                                                      FontSize="11"
+                                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <ui:TextBlock Text="The drive letter can be anything, but the \SynologyDrive\Creative-Team path is mandatory."
+                                                      FontSize="11"
+                                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                      TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ui:Card>
 

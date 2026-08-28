@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -179,38 +179,56 @@ namespace SS_CAM.Services
         {
             try
             {
-                string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string desktop      = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 string shortcutPath = Path.Combine(desktop, "SuamiSihat Creative Assets Management.lnk");
-                string exePath = Process.GetCurrentProcess().MainModule.FileName;
+                string exePath      = Process.GetCurrentProcess().MainModule.FileName;
+                string workingDir   = Path.GetDirectoryName(exePath);
 
-                string psCommand = string.Format(
-                    "$s=(New-Object -COM WScript.Shell).CreateShortcut('{0}');$s.TargetPath='{1}';$s.WorkingDirectory='{2}';$s.Save()",
-                    shortcutPath.Replace("'", "''"),
-                    exePath.Replace("'", "''"),
-                    Path.GetDirectoryName(exePath).Replace("'", "''")
-                );
+                // Create the .lnk entirely in-process via COM dynamic dispatch.
+                // Using Activator avoids spawning a child process (WScript.Shell via PowerShell),
+                // which caused Windows to attach a Mark-of-the-Web zone identifier that
+                // triggers Application Control policy on the resulting .lnk file.
+                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
+                if (shellType == null)
+                    return "WScript.Shell COM object not available on this system.";
 
-                ProcessStartInfo psi = new ProcessStartInfo
+                object shell = Activator.CreateInstance(shellType);
+                try
                 {
-                    FileName = "powershell.exe",
-                    Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -Command \"{0}\"", psCommand),
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+                    object shortcut = shellType.InvokeMember(
+                        "CreateShortcut",
+                        System.Reflection.BindingFlags.InvokeMethod,
+                        null, shell,
+                        new object[] { shortcutPath });
 
-                using (Process p = Process.Start(psi))
+                    Type scType = shortcut.GetType();
+                    scType.InvokeMember("TargetPath",     System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { exePath });
+                    scType.InvokeMember("WorkingDirectory", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { workingDir });
+                    scType.InvokeMember("Description",    System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { "SuamiSihat Creative Assets Management" });
+                    scType.InvokeMember("Save",           System.Reflection.BindingFlags.InvokeMethod, null, shortcut, null);
+                }
+                finally
                 {
-                    p.WaitForExit(3000);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(shell);
                 }
 
-                if (File.Exists(shortcutPath))
-                {
-                    return "Desktop shortcut for SS-CAM created successfully!";
-                }
-                else
-                {
+                if (!File.Exists(shortcutPath))
                     return "Failed to create desktop shortcut. Please check directory permissions.";
+
+                // Strip the Zone.Identifier alternate data stream so that Application Control
+                // policies that inspect MotW zone tags do not block the shortcut.
+                try
+                {
+                    string adsPath = shortcutPath + ":Zone.Identifier";
+                    File.Delete(adsPath);
                 }
+                catch (Exception adsEx)
+                {
+                    // ADS removal failure is non-fatal — the shortcut itself was created.
+                    System.Diagnostics.Debug.WriteLine("[PayloadInstallerService] ADS strip: " + adsEx.Message);
+                }
+
+                return "Desktop shortcut for SS-CAM created successfully!";
             }
             catch (Exception ex)
             {

@@ -84,10 +84,19 @@ namespace SS_CAM.Views
                 DesignerNameInput.Text = selected.Name;
                 StaffIdInput.Text = selected.StaffId;
                 DepartmentInput.Text = selected.Department;
+                EmailInput.Text = string.IsNullOrWhiteSpace(selected.Email) ? "" : selected.Email;
 
                 ProfileHeaderName.Text = selected.Name;
                 ProfileHeaderDept.Text = selected.Department;
                 ProfileHeaderStaffId.Text = string.Format("Staff ID: {0}", selected.StaffId);
+
+                // Update avatar if the staff directory entry carries a photo path
+                if (!string.IsNullOrWhiteSpace(selected.AvatarPath))
+                {
+                    UpdateAvatarPreview(selected.AvatarPath);
+                    if (currentProfile != null)
+                        currentProfile.AvatarPath = selected.AvatarPath;
+                }
             }
         }
 

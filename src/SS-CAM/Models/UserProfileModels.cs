@@ -45,6 +45,8 @@ namespace SS_CAM.Models
         public string Name { get; set; }
         public string Role { get; set; }
         public string Department { get; set; }
+        public string Email { get; set; }
+        public string AvatarPath { get; set; }
         public string DefaultBrand { get; set; }
         public bool Active { get; set; }
 
@@ -62,6 +64,8 @@ namespace SS_CAM.Models
             Name = "";
             Role = "";
             Department = "Creative Production";
+            Email = "";
+            AvatarPath = "";
             DefaultBrand = "SS";
             Active = true;
         }
