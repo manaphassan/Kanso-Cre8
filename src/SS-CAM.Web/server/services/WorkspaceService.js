@@ -591,7 +591,7 @@ class WorkspaceService {
 
     // Sub-brand distribution
     const brandCounts = {};
-    allProjects.forEach(p => {
+    projects.forEach(p => {
       const b = p.brand || 'SS';
       brandCounts[b] = (brandCounts[b] || 0) + 1;
     });

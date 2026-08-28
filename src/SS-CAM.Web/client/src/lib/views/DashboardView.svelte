@@ -19,6 +19,12 @@
     await loadPersonalActivity();
   });
 
+  async function handleTimeRangeChange(range: string) {
+    await projectStore.loadDashboard({ timeRange: range });
+    const label = range === '30d' ? 'Last 30 Days' : range === '90d' ? 'Last 90 Days' : 'All-Time';
+    appState.addToast(`Analytics window updated: ${label}`, 'info');
+  }
+
   async function loadPersonalActivity() {
     isLoadingPersonal = true;
     try {
@@ -125,23 +131,26 @@
       {#if activeLens === 'studio'}
         <div class="time-horizon-switcher" title="Analytics Time Window">
           <button
+            type="button"
             class="horizon-btn"
             class:active={projectStore.dashboardTimeRange === '30d'}
-            onclick={() => projectStore.loadDashboard({ timeRange: '30d' })}
+            onclick={() => handleTimeRangeChange('30d')}
           >
             30D
           </button>
           <button
+            type="button"
             class="horizon-btn"
             class:active={projectStore.dashboardTimeRange === '90d'}
-            onclick={() => projectStore.loadDashboard({ timeRange: '90d' })}
+            onclick={() => handleTimeRangeChange('90d')}
           >
             90D
           </button>
           <button
+            type="button"
             class="horizon-btn"
             class:active={projectStore.dashboardTimeRange === 'all'}
-            onclick={() => projectStore.loadDashboard({ timeRange: 'all' })}
+            onclick={() => handleTimeRangeChange('all')}
           >
             All
           </button>
@@ -664,29 +673,32 @@
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
     border-radius: 8px;
-    padding: 2px;
+    padding: 3px;
     box-shadow: var(--shadow-sm);
+    gap: 3px;
   }
 
   .horizon-btn {
-    padding: 6px 10px;
+    padding: 5px 12px;
     border: none;
     background: transparent;
     border-radius: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.14s;
+    transition: all 0.14s ease;
     font-family: inherit;
   }
   .horizon-btn:hover {
     color: var(--text-primary);
+    background: var(--surface-card-subtle);
   }
   .horizon-btn.active {
-    background: var(--surface-card-subtle, #E2E8F0);
-    color: var(--text-primary);
+    background: var(--brand-primary, #043388);
+    color: #FFFFFF;
     font-weight: 800;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   }
 
   /* Brand Scope Selector */
