@@ -102,6 +102,22 @@
   let staffList = $state<StaffMember[]>([]);
   let isUpdatingManager = $state<boolean>(false);
 
+  // Filter to strictly managerial and leadership roles
+  const managerList = $derived.by(() => {
+    return staffList.filter(staff => {
+      const roleStr = (staff.role || '').toLowerCase();
+      return (
+        roleStr.includes('manager') ||
+        roleStr.includes('director') ||
+        roleStr.includes('admin') ||
+        roleStr.includes('head') ||
+        roleStr.includes('lead') ||
+        roleStr.includes('ceo') ||
+        roleStr.includes('executive')
+      );
+    });
+  });
+
   async function loadStaffList() {
     try {
       const res = await ApiClient.getStaffAccounts();
@@ -604,23 +620,28 @@
                 <div class="prop-group">
                   <span class="prop-label">Reviewer</span>
                   <div class="prop-value user-val-selectable">
-                    <div class="user-avatar mgr-avatar">{p.manager?.substring(0, 2) || 'AD'}</div>
+                    <div class="user-avatar mgr-avatar">
+                      {(p.manager && p.manager !== 'Unassigned' ? p.manager.substring(0, 2) : 'AD').toUpperCase()}
+                    </div>
                     <select
                       class="prop-manager-select"
-                      value={p.manager || 'Harussani'}
+                      value={p.manager || 'Unassigned'}
                       disabled={isUpdatingManager}
                       onchange={(e) => handleManagerChange((e.target as HTMLSelectElement).value)}
                       aria-label="Select Reviewer"
                     >
-                      {#if staffList.length === 0}
-                        <option value={p.manager || 'Harussani'}>{p.manager || 'Harussani'}</option>
+                      <option value="Unassigned">-- Unassigned --</option>
+                      {#if managerList.length === 0}
+                        {#if p.manager && p.manager !== 'Unassigned'}
+                          <option value={p.manager}>{p.manager}</option>
+                        {/if}
                       {:else}
-                        {#each staffList as staff}
-                          <option value={staff.name}>
-                            {staff.name} {staff.role ? `· ${staff.role}` : ''}
+                        {#each managerList as mgr}
+                          <option value={mgr.name}>
+                            {mgr.name} {mgr.role ? `· ${mgr.role}` : ''}
                           </option>
                         {/each}
-                        {#if !staffList.some(s => s.name.toLowerCase() === (p.manager || '').toLowerCase()) && p.manager}
+                        {#if p.manager && p.manager !== 'Unassigned' && !managerList.some(m => m.name.toLowerCase() === p.manager.toLowerCase())}
                           <option value={p.manager}>{p.manager} (Current)</option>
                         {/if}
                       {/if}
@@ -648,7 +669,7 @@
                 <div class="prop-group">
                   <span class="prop-label">Campaign Deadline</span>
                   <div class="prop-value">
-                    <span>📅 {p.deadline || '2026-08-30'}</span>
+                    <span>📅 {p.deadline ? String(p.deadline).split('T')[0] : '2026-08-30'}</span>
                   </div>
                 </div>
 
