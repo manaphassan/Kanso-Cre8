@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { DeliverableItem } from '$lib/types';
   import { appState } from '$lib/stores/appState.svelte';
+  import { projectStore } from '$lib/stores/projectStore.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import DeliverableAnnotationCanvas from '$lib/components/features/DeliverableAnnotationCanvas.svelte';
+  import DeliverableVisualDiffSlider from '$lib/components/features/DeliverableVisualDiffSlider.svelte';
 
   interface Props {
     deliverable: DeliverableItem | null;
@@ -22,6 +24,22 @@
 
   let isSubmitting = $state<boolean>(false);
   let isImageZoomed = $state<boolean>(false);
+  let isDiffMode = $state<boolean>(false);
+
+  // Companion deliverables for this project
+  const companionDeliverables = $derived.by(() => {
+    if (!deliverable) return [];
+    const projId = deliverable.project?.id || deliverable.projectId || deliverable.project?.jobId || deliverable.projectJobId;
+    if (!projId) return [deliverable];
+    return projectStore.deliverables.filter(d => {
+      const pId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;
+      return pId === projId;
+    });
+  });
+
+  const hasCompanionImages = $derived.by(() => {
+    return companionDeliverables.filter(d => d.isImage || d.previewType === 'image').length >= 1;
+  });
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape' && open && onClose) {
@@ -61,13 +79,41 @@
     <div class="lightbox-modal">
       <!-- Media Viewer Left Pane -->
       <div class="lightbox-media-viewer">
-        {#if deliverable.isImage || deliverable.previewType === 'image'}
-          <DeliverableAnnotationCanvas
-            projectId={deliverable.project?.id || deliverable.projectId || deliverable.project?.jobId || deliverable.projectJobId || ''}
-            deliverableId={deliverable.id || deliverable.filename}
-            mediaUrl={deliverable.previewUrl}
-            altText={deliverable.filename}
-          />
+        {#if (deliverable.isImage || deliverable.previewType === 'image') && isDiffMode}
+          <div class="diff-container-pane">
+            <div class="pane-view-toggle">
+              <button class="view-toggle-pill" onclick={() => isDiffMode = false}>
+                <span>📍 Pins & Markup</span>
+              </button>
+              <button class="view-toggle-pill active" onclick={() => isDiffMode = true}>
+                <span>🔍 Version Diff Slider</span>
+              </button>
+            </div>
+            <DeliverableVisualDiffSlider
+              currentDeliverable={deliverable}
+              availableDeliverables={companionDeliverables}
+              onClose={() => isDiffMode = false}
+            />
+          </div>
+        {:else if deliverable.isImage || deliverable.previewType === 'image'}
+          <div class="image-container-pane">
+            {#if hasCompanionImages}
+              <div class="pane-view-toggle">
+                <button class="view-toggle-pill active" onclick={() => isDiffMode = false}>
+                  <span>📍 Pins & Markup</span>
+                </button>
+                <button class="view-toggle-pill" onclick={() => isDiffMode = true}>
+                  <span>🔍 Version Diff Slider</span>
+                </button>
+              </div>
+            {/if}
+            <DeliverableAnnotationCanvas
+              projectId={deliverable.project?.id || deliverable.projectId || deliverable.project?.jobId || deliverable.projectJobId || ''}
+              deliverableId={deliverable.id || deliverable.filename}
+              mediaUrl={deliverable.previewUrl}
+              altText={deliverable.filename}
+            />
+          </div>
         {:else if deliverable.isVideo || deliverable.previewType === 'video'}
           <div class="video-wrapper">
             <!-- svelte-ignore a11y_media_has_caption -->
@@ -212,7 +258,56 @@
     justify-content: center;
     overflow: hidden;
     position: relative;
-    padding: 16px;
+    padding: 0;
+  }
+
+  .image-container-pane,
+  .diff-container-pane {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pane-view-toggle {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    display: flex;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 3px;
+    gap: 3px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .view-toggle-pill {
+    padding: 4px 12px;
+    border-radius: 16px;
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .view-toggle-pill:hover {
+    color: #FFFFFF;
+  }
+
+  .view-toggle-pill.active {
+    background: var(--brand-primary, #043388);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(33, 161, 247, 0.3);
   }
 
   .image-wrapper {

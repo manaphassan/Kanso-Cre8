@@ -172,7 +172,12 @@ namespace SS_CAM.Services
                 changeType = WorkspaceChangeType.ProjectCopywriting;
                 isRelevant = true;
             }
-            else if (fullPath.IndexOf("04_DELIVERABLES", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            else if (string.Equals(fileName, "team-notes.json", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(fileName, "staff-directory.json", StringComparison.OrdinalIgnoreCase) ||
+                     fullPath.IndexOf("05_DELIVERABLES", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     fullPath.IndexOf("04_DELIVERABLES", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     fullPath.IndexOf("04_WORK_IN_PROGRESS", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     fullPath.IndexOf("01_BRIEF_ASSETS", StringComparison.OrdinalIgnoreCase) >= 0 ||
                      fullPath.IndexOf("01_ASSETS", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 changeType = WorkspaceChangeType.ProjectFolderStructure;
