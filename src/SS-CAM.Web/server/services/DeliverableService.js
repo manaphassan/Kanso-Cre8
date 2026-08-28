@@ -12,16 +12,25 @@ class DeliverableService {
       return [];
     }
 
+    // Only scan folders dedicated to output deliverables, production exports, and visual mockups
     const categories = [
-      { names: ['05_DELIVERABLES', '05_Deliverables', '04_Production', 'Production', '4_Production', '04. Production', '04_Final_Exports'], label: 'Final Deliverables & Master Exports', isDeliverable: true },
-      { names: ['04_WORK_IN_PROGRESS', '04_WIP', '02_Artwork_Mockup', 'Artwork Mockup', '2_Artwork_Mockup', '02. Artwork Mockup', 'Mockup', '02_Mockup'], label: 'Work In Progress & Mockups', isDeliverable: true },
-      { names: ['03_COPYWRITING', '03_Copywriting', 'Copywriting'], label: 'Copywriting & Script Documents', isDeliverable: true },
-      { names: ['02_SOURCE_FILES', '02_Source_Files', '01_Artwork_Design', 'Artwork Design', '1_Artwork_Design', '01. Artwork Design', '01_Working_Files'], label: 'Source Working Files', isDeliverable: false },
-      { names: ['01_BRIEF_ASSETS', '01_Brief_Assets', '03_Assets', 'Assets', '3_Assets', '03. Assets', '02_Source_Assets'], label: 'Brief & Supporting Assets', isDeliverable: false },
-      { names: ['Client_Revisions', 'Revisions', '05_Revisions'], label: 'Revision Files', isDeliverable: true }
+      { names: ['05_DELIVERABLES', '05_Deliverables', 'Deliverables', '05. Deliverables', '5_Deliverables', '05_Final_Exports', 'Final_Exports'], label: 'Final Deliverables & Master Exports', isDeliverable: true },
+      { names: ['04_Production', 'Production', '4_Production', '04. Production', '04_Final_Exports', 'Export', 'Exports', 'Final_Exports', '04_Exports', '04_Final'], label: 'Production & Master Exports', isDeliverable: true },
+      { names: ['04_WORK_IN_PROGRESS', '04_WIP', '04. Work In Progress', '02_Artwork_Mockup', 'Artwork Mockup', '2_Artwork_Mockup', '02. Artwork Mockup', 'Mockup', '02_Mockup', '04_Mockup', 'WIP'], label: 'Work In Progress & Visual Mockups', isDeliverable: true },
+      { names: ['Client_Revisions', 'Revisions', '05_Revisions', '04_Revisions'], label: 'Revision Files', isDeliverable: true }
+    ];
+
+    // Supported deliverable media formats
+    const mediaExtensions = [
+      '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.bmp', '.tiff',
+      '.mp4', '.webm', '.mov', '.mkv', '.avi',
+      '.pdf',
+      '.mp3', '.wav', '.ogg', '.m4a'
     ];
 
     const results = [];
+    const WorkspaceService = require('./WorkspaceService');
+    const rootPath = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
 
     for (const cat of categories) {
       let foundDir = null;
@@ -39,11 +48,13 @@ class DeliverableService {
       try {
         const files = fs.readdirSync(foundDir, { withFileTypes: true });
         for (const file of files) {
-          if (file.isDirectory() || file.name.startsWith('.') || file.name.includes('~lock~') || file.name.toLowerCase() === 'thumbs.db') continue;
+          if (file.isDirectory() || file.name.startsWith('.') || file.name.startsWith('~') || file.name.toLowerCase() === 'thumbs.db') continue;
+
+          const ext = path.extname(file.name).toLowerCase();
+          if (!mediaExtensions.includes(ext)) continue;
 
           const filePath = path.join(foundDir, file.name);
           const stats = fs.statSync(filePath);
-          const ext = path.extname(file.name).toLowerCase();
 
           // Infer version from filename (e.g., _v2, _V3, _Final)
           let version = 1;
@@ -56,36 +67,50 @@ class DeliverableService {
 
           // Classify preview type
           let previewType = 'generic';
-          if (['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'].includes(ext)) previewType = 'image';
-          else if (['.mp4', '.webm', '.mov'].includes(ext)) previewType = 'video';
+          if (['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.bmp', '.tiff'].includes(ext)) previewType = 'image';
+          else if (['.mp4', '.webm', '.mov', '.mkv', '.avi'].includes(ext)) previewType = 'video';
           else if (['.pdf'].includes(ext)) previewType = 'pdf';
           else if (['.ogg', '.wav', '.mp3', '.m4a'].includes(ext)) previewType = 'audio';
-          else if (['.afdesign', '.afphoto', '.af', '.psd', '.ai', '.indd'].includes(ext)) previewType = 'design-source';
+
+          let format = ext.replace('.', '').toUpperCase();
+          if (['.jpg', '.jpeg'].includes(ext)) format = 'JPEG';
+          else if (ext === '.png') format = 'PNG';
+          else if (ext === '.webp') format = 'WEBP';
+          else if (ext === '.svg') format = 'SVG';
+          else if (ext === '.mp4') format = 'MP4';
+          else if (ext === '.pdf') format = 'PDF';
 
           // Safe relative path from workspace root
-          const relativePath = path.relative(config.WORKSPACE_ROOT, filePath).replace(/\\/g, '/');
+          const relativePath = path.relative(rootPath, filePath).replace(/\\/g, '/');
+          const encodedId = Buffer.from(relativePath).toString('base64url');
 
           results.push({
-            id: Buffer.from(relativePath).toString('base64url'),
+            id: encodedId,
             filename: file.name,
             folder: matchedName,
             folderLabel: cat.label,
             isDeliverable: cat.isDeliverable,
             extension: ext,
+            ext: ext.replace('.', ''),
+            format,
             previewType,
+            isImage: previewType === 'image',
+            isVideo: previewType === 'video',
+            isPdf: previewType === 'pdf',
+            isAudio: previewType === 'audio',
             sizeBytes: stats.size,
             sizeFormatted: this.formatBytes(stats.size),
             modified: stats.mtime.toISOString(),
             version,
             relativePath,
-            downloadUrl: `/api/deliverables/download?id=${Buffer.from(relativePath).toString('base64url')}`,
+            downloadUrl: `/api/deliverables/download?id=${encodedId}`,
             streamUrl: (previewType === 'video' || previewType === 'audio')
-              ? `/api/deliverables/stream?id=${Buffer.from(relativePath).toString('base64url')}`
+              ? `/api/deliverables/stream?id=${encodedId}`
               : null,
             previewUrl: (previewType === 'video' || previewType === 'audio')
-              ? `/api/deliverables/stream?id=${Buffer.from(relativePath).toString('base64url')}`
+              ? `/api/deliverables/stream?id=${encodedId}`
               : (previewType === 'image' || previewType === 'pdf')
-                ? `/api/deliverables/preview?id=${Buffer.from(relativePath).toString('base64url')}`
+                ? `/api/deliverables/preview?id=${encodedId}`
                 : null
           });
         }
@@ -161,10 +186,12 @@ class DeliverableService {
     if (!encodedId) return null;
     try {
       const relativePath = Buffer.from(encodedId, 'base64url').toString('utf8');
-      const normalizedPath = path.normalize(path.join(config.WORKSPACE_ROOT, relativePath));
+      const WorkspaceService = require('./WorkspaceService');
+      const root = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
+      const normalizedPath = path.normalize(path.join(root, relativePath));
 
-      // Security check: Must start with WORKSPACE_ROOT
-      if (!normalizedPath.startsWith(config.WORKSPACE_ROOT)) {
+      // Security check: Must start with active root or WORKSPACE_ROOT
+      if (!normalizedPath.startsWith(root) && !normalizedPath.startsWith(config.WORKSPACE_ROOT)) {
         console.warn(`[DeliverableService] Path traversal attempt blocked: ${normalizedPath}`);
         return null;
       }

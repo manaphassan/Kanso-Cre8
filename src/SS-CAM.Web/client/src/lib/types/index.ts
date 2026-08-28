@@ -8,7 +8,8 @@ export interface User {
   id: string;
   username: string;
   name: string;
-  role: 'admin' | 'manager' | 'art_director' | 'designer' | 'copywriter' | 'producer';
+  role: string;
+  roles?: string[];
   staffId: string;
   department: string;
   permissions: string[];
@@ -87,6 +88,7 @@ export interface DeliverableItem {
 }
 
 export interface Project {
+  id?: string;
   jobId: string;
   title: string;
   brand: string;
@@ -98,10 +100,15 @@ export interface Project {
   presetType: string;
   created: string;
   deadline?: string;
+  completedAt?: string;
   isOverdue?: boolean;
+  isDueSoon?: boolean;
+  daysRemaining?: number | null;
   tags: string[];
-  folderPath: string;
+  folderPath?: string;
+  fullPath?: string;
   readmeBody?: string;
+  briefMarkdown?: string;
   versionHash?: string;
   creativeDirection?: CreativeDirectionState;
   copywriting?: CopywritingState;
@@ -113,27 +120,84 @@ export interface DashboardKPIs {
   total: number;
   active: number;
   pendingReview: number;
+  pendingApproval?: number;
   revisionRequired: number;
   completed: number;
   overdue: number;
+  dueSoon?: number;
+  highRevisionCount?: number;
 }
 
 export interface DesignerWorkload {
+  designer?: string;
+  staffId?: string;
+  name?: string;
+  role?: string;
+  total?: number;
+  active?: number;
+  inProgress?: number;
+  inReview?: number;
+  revision?: number;
+  completed?: number;
+  overdue?: number;
+  capacityPercent?: number;
+  capacityStatus?: string;
+  capacityColor?: string;
+}
+
+export interface HighRevisionProjectItem {
   id: string;
-  name: string;
-  role: string;
-  activeCount: number;
-  reviewCount: number;
-  doneCount: number;
-  avatar?: string;
+  jobId: string;
+  title: string;
+  designer: string;
+  brand: string;
+  revision: number;
+  status: string;
+  priority: string;
+  deadline?: string;
+}
+
+export interface BrandVelocityItem {
+  brand: string;
+  total: number;
+  active: number;
+  completed: number;
+  avgDays?: number;
+}
+
+export interface CompetencySkillItem {
+  label: string;
+  target: number;
+  actual: number;
+  projectCount?: number;
+}
+
+export interface SlaMetricsData {
+  avgTurnaroundDays?: number | null;
+  medianTurnaroundDays?: number | null;
+  p90TurnaroundDays?: number | null;
+  firstTimeRightPercent?: number | null;
+  avgRevisionCount?: number | null;
+  avgReviewAgeDays?: number;
+  totalCompleted?: number;
+  brandVelocity?: BrandVelocityItem[];
+  competencySkills?: CompetencySkillItem[];
 }
 
 export interface DashboardData {
   kpis: DashboardKPIs;
+  pipeline?: Record<string, number>;
   designerWorkload: DesignerWorkload[];
   brandDistribution: Record<string, number>;
+  typeDistribution?: Record<string, number>;
+  highRevisionProjects?: HighRevisionProjectItem[];
+  slaMetrics?: SlaMetricsData;
   recentProjects: Project[];
-  pendingDeliverables: DeliverableItem[];
+  pendingDeliverables?: DeliverableItem[];
+  activeFilters?: {
+    timeRange: string;
+    brand: string;
+  };
 }
 
 export interface FilterState {
@@ -174,6 +238,7 @@ export interface StaffAccount {
   name: string;
   email?: string;
   role: string;
+  roles?: string[];
   department: string;
   defaultBrand?: string;
   avatarColor?: string;

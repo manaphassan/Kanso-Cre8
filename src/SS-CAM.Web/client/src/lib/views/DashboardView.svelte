@@ -37,18 +37,36 @@
     pendingReview: 0,
     revisionRequired: 0,
     completed: 0,
-    overdue: 0
+    overdue: 0,
+    dueSoon: 0,
+    highRevisionCount: 0
   });
 
   const workloads = $derived(projectStore.dashboardData?.designerWorkload || []);
   const slaData = $derived(projectStore.dashboardData?.slaMetrics || {
-    avgTurnaroundDays: 3.5,
-    firstTimeRightPercent: 85.0,
-    avgRevisionCount: 0.4,
-    brandVelocity: []
+    avgTurnaroundDays: null,
+    medianTurnaroundDays: null,
+    p90TurnaroundDays: null,
+    firstTimeRightPercent: null,
+    avgRevisionCount: null,
+    avgReviewAgeDays: 0,
+    brandVelocity: [],
+    competencySkills: []
   });
 
-  // "My Workspace" Derived Filters
+  const pipeline = $derived(projectStore.dashboardData?.pipeline || {
+    backlog: 0,
+    inProgress: 0,
+    review: 0,
+    revision: 0,
+    approved: 0,
+    done: 0
+  });
+
+  const brandDistribution = $derived(projectStore.dashboardData?.brandDistribution || {});
+  const highRevisionProjects = $derived(projectStore.dashboardData?.highRevisionProjects || []);
+
+  // "My Workspace" Strictly Filtered to Current User
   const currentUserName = $derived(appState.currentUser?.name || '');
   const currentUserStaffId = $derived(appState.currentUser?.staffId || '');
 
@@ -58,7 +76,7 @@
       const d = (p.designer || '').toLowerCase();
       const uName = currentUserName.toLowerCase();
       const sId = currentUserStaffId.toLowerCase();
-      return (uName && d.includes(uName)) || (sId && d.includes(sId)) || p.status === 'revision' || p.status === 'in-progress';
+      return (uName && d.includes(uName)) || (sId && d.includes(sId));
     });
   });
 
@@ -73,6 +91,12 @@
   const myReviewItems = $derived.by(() => {
     return myProjects.filter(p => p.status === 'review');
   });
+
+  const totalBrandAssets = $derived.by(() => {
+    return Object.values(brandDistribution).reduce((sum, count) => sum + count, 0) || 1;
+  });
+
+  const holdingBrands = ['all', 'SSH', 'SSC', 'SSW', 'SSE', 'SST', 'SS'];
 </script>
 
 <div class="dashboard-container">
@@ -90,13 +114,53 @@
       </h1>
       <p class="header-desc">
         {activeLens === 'studio' 
-          ? 'High-level strategic visibility into production throughput, skill competencies, and brand distribution' 
+          ? 'Real-time studio health, production velocity, bottleneck aging, and brand portfolio distribution' 
           : 'Focused view of your active tasks, urgent revision requests, and direct team feedback'}
       </p>
     </div>
 
     <!-- Lens Switcher & Actions -->
     <div class="header-actions">
+      <!-- Time Horizon Slicing for Studio Lens -->
+      {#if activeLens === 'studio'}
+        <div class="time-horizon-switcher" title="Analytics Time Window">
+          <button
+            class="horizon-btn"
+            class:active={projectStore.dashboardTimeRange === '30d'}
+            onclick={() => projectStore.loadDashboard({ timeRange: '30d' })}
+          >
+            30D
+          </button>
+          <button
+            class="horizon-btn"
+            class:active={projectStore.dashboardTimeRange === '90d'}
+            onclick={() => projectStore.loadDashboard({ timeRange: '90d' })}
+          >
+            90D
+          </button>
+          <button
+            class="horizon-btn"
+            class:active={projectStore.dashboardTimeRange === 'all'}
+            onclick={() => projectStore.loadDashboard({ timeRange: 'all' })}
+          >
+            All
+          </button>
+        </div>
+
+        <!-- Brand Filter Dropdown -->
+        <select
+          class="brand-scope-select"
+          value={projectStore.dashboardBrand}
+          onchange={(e) => projectStore.loadDashboard({ brand: (e.target as HTMLSelectElement).value })}
+          title="Filter by Sub-Brand Holding"
+        >
+          <option value="all">All Brands</option>
+          {#each holdingBrands.slice(1) as b}
+            <option value={b}>{b} Holding</option>
+          {/each}
+        </select>
+      {/if}
+
       <div class="lens-switcher">
         <button
           class="lens-btn"
@@ -128,7 +192,7 @@
 
   <!-- ═══════════ STUDIO EXECUTIVE DECK LENS ═══════════ -->
   {#if activeLens === 'studio'}
-    <!-- KPI Summary Bar -->
+    <!-- Top 6-KPI Summary Strip -->
     <div class="kpi-grid">
       <FluentCard hoverLift borderAccent="#21A1F7" onclick={() => appState.navigate('projects')}>
         <div class="kpi-label">Total Vault Assets</div>
@@ -155,13 +219,136 @@
       </FluentCard>
 
       <FluentCard hoverLift borderAccent="#10B981" onclick={() => appState.navigate('projects', { status: 'approved' })}>
-        <div class="kpi-label">Approved & Completed</div>
+        <div class="kpi-label">Approved & Done</div>
         <div class="kpi-value">{kpis.completed}</div>
         <div class="kpi-trend" style="color: #10B981;">Ready for Release</div>
       </FluentCard>
+
+      <FluentCard hoverLift borderAccent={kpis.overdue > 0 ? '#DC2626' : (kpis.dueSoon || 0) > 0 ? '#D97706' : '#64748B'} onclick={() => appState.navigate('projects', { isOverdue: true })}>
+        <div class="kpi-label">Overdue & At-Risk</div>
+        <div class="kpi-value" style="color: {kpis.overdue > 0 ? '#DC2626' : (kpis.dueSoon || 0) > 0 ? '#D97706' : 'var(--text-primary)'}">
+          {kpis.overdue}
+        </div>
+        <div class="kpi-trend" style="color: {kpis.overdue > 0 ? '#DC2626' : '#D97706'};">
+          {#if kpis.overdue > 0}
+            🚨 Immediate Action
+          {:else if (kpis.dueSoon || 0) > 0}
+            ⚠️ {kpis.dueSoon} Due in 48h
+          {:else}
+            ✅ On Track
+          {/if}
+        </div>
+      </FluentCard>
     </div>
 
-    <!-- Two-Column Operational Grid -->
+    <!-- High-Revision Friction Loop Alert (Only shown if friction exists) -->
+    {#if highRevisionProjects.length > 0}
+      <div class="friction-alert-card">
+        <div class="friction-alert-header">
+          <div class="friction-tag">
+            <span class="friction-icon">🔄</span>
+            <strong>CREATIVE FRICTION ALERT ({highRevisionProjects.length})</strong>
+          </div>
+          <span class="friction-desc">Projects with &ge; 2 revision rounds require Art Director brief alignment & feedback intervention</span>
+        </div>
+        <div class="friction-items-grid">
+          {#each highRevisionProjects as hp}
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="friction-item" onclick={() => appState.navigate('project-detail', { id: hp.id })}>
+              <div class="fitem-left">
+                <span class="fitem-id">{hp.jobId}</span>
+                <span class="fitem-title">{hp.title}</span>
+              </div>
+              <div class="fitem-right">
+                <span class="fitem-designer">👤 {hp.designer}</span>
+                <span class="badge-rev-alert">Round {hp.revision}</span>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
+
+    <!-- Creative Pipeline Funnel & Sub-Brand Balance -->
+    <div class="studio-distribution-grid">
+      <!-- Pipeline Progression Funnel -->
+      <FluentCard elevated>
+        <div class="card-section-header">
+          <div>
+            <h2>Creative Pipeline Stage Flow</h2>
+            <p>Real-time lifecycle volume from intake to final archive</p>
+          </div>
+        </div>
+
+        <div class="pipeline-funnel-container">
+          <div class="funnel-step" onclick={() => appState.navigate('projects', { status: 'backlog' })}>
+            <div class="funnel-count">{pipeline.backlog || 0}</div>
+            <div class="funnel-bar bg-backlog"></div>
+            <div class="funnel-label">Backlog</div>
+          </div>
+          <div class="funnel-connector">→</div>
+          <div class="funnel-step" onclick={() => appState.navigate('projects', { status: 'in-progress' })}>
+            <div class="funnel-count text-primary">{pipeline.inProgress || 0}</div>
+            <div class="funnel-bar bg-inprogress"></div>
+            <div class="funnel-label">In Progress</div>
+          </div>
+          <div class="funnel-connector">→</div>
+          <div class="funnel-step" onclick={() => appState.navigate('deliverables')}>
+            <div class="funnel-count text-review">{pipeline.review || 0}</div>
+            <div class="funnel-bar bg-review"></div>
+            <div class="funnel-label">Review</div>
+          </div>
+          <div class="funnel-connector">→</div>
+          <div class="funnel-step" onclick={() => appState.navigate('projects', { status: 'revision' })}>
+            <div class="funnel-count text-revision">{pipeline.revision || 0}</div>
+            <div class="funnel-bar bg-revision"></div>
+            <div class="funnel-label">Revision</div>
+          </div>
+          <div class="funnel-connector">→</div>
+          <div class="funnel-step" onclick={() => appState.navigate('projects', { status: 'approved' })}>
+            <div class="funnel-count text-success">{pipeline.approved || 0}</div>
+            <div class="funnel-bar bg-approved"></div>
+            <div class="funnel-label">Approved</div>
+          </div>
+          <div class="funnel-connector">→</div>
+          <div class="funnel-step" onclick={() => appState.navigate('projects', { status: 'done' })}>
+            <div class="funnel-count text-done">{pipeline.done || 0}</div>
+            <div class="funnel-bar bg-done"></div>
+            <div class="funnel-label">Archived</div>
+          </div>
+        </div>
+      </FluentCard>
+
+      <!-- Sub-Brand Asset Allocation -->
+      <FluentCard elevated>
+        <div class="card-section-header">
+          <div>
+            <h2>Brand Portfolio Allocation</h2>
+            <p>Asset distribution across SuamiSihat holding subsidiaries</p>
+          </div>
+        </div>
+
+        <div class="brand-bar-stack">
+          {#each Object.entries(brandDistribution) as [brand, count]}
+            {@const pct = Math.round((count / totalBrandAssets) * 100)}
+            <div class="brand-row" onclick={() => appState.navigate('projects', { brand })}>
+              <div class="brand-row-header">
+                <span class="brand-badge-pill">{brand}</span>
+                <span class="brand-stats-label">{count} assets ({pct}%)</span>
+              </div>
+              <div class="brand-bar-track">
+                <div class="brand-bar-fill" style="width: {pct}%;"></div>
+              </div>
+            </div>
+          {:else}
+            <div class="empty-state">No brand assets recorded yet.</div>
+          {/each}
+        </div>
+      </FluentCard>
+    </div>
+
+    <!-- Two-Column Operational Grid: Radar & Workload -->
     <div class="analytics-grid">
       <!-- Left Column: Competency Radar -->
       <FluentCard elevated>
@@ -171,7 +358,7 @@
             <p>Multi-dimensional studio balance and design output readiness</p>
           </div>
         </div>
-        <DashboardRadar />
+        <DashboardRadar skills={slaData.competencySkills} />
       </FluentCard>
 
       <!-- Right Column: Designer Workload -->
@@ -179,7 +366,7 @@
         <div class="card-section-header">
           <div>
             <h2>Designer Production Load</h2>
-            <p>Real-time asset distribution across creative staff</p>
+            <p>Real-time asset distribution and capacity across creative staff</p>
           </div>
         </div>
 
@@ -199,7 +386,7 @@
                   <div class="capacity-bar-fill" style="width: {w.capacityPercent || 0}%; background: {w.capacityColor || '#10B981'};"></div>
                 </div>
                 <span class="badge-capacity" style="color: {w.capacityColor || '#10B981'}; border-color: {w.capacityColor || '#10B981'};">
-                  {w.capacityStatus || 'Optimal'}
+                  {w.capacityStatus || 'Optimal Bandwidth'}
                 </span>
               </div>
 
@@ -216,7 +403,7 @@
       </FluentCard>
     </div>
 
-    <!-- Operational SLA & Creative Velocity Section -->
+    <!-- Operational SLA & Creative Velocity 4-Card Grid -->
     <div class="sla-analytics-grid">
       <FluentCard elevated>
         <div class="sla-card-inner">
@@ -225,8 +412,10 @@
           </div>
           <div>
             <div class="sla-meta-label">FIRST-TIME RIGHT RATE</div>
-            <div class="sla-value" style="color: #10B981;">{slaData.firstTimeRightPercent || 85.0}%</div>
-            <div class="sla-desc">Signed off with 0 revision rounds</div>
+            <div class="sla-value" style="color: #10B981;">
+              {slaData.firstTimeRightPercent !== null && slaData.firstTimeRightPercent !== undefined ? `${slaData.firstTimeRightPercent}%` : '—'}
+            </div>
+            <div class="sla-desc">Projects signed off with 0 revisions</div>
           </div>
         </div>
       </FluentCard>
@@ -238,8 +427,17 @@
           </div>
           <div>
             <div class="sla-meta-label">AVG TURNAROUND VELOCITY</div>
-            <div class="sla-value">{slaData.avgTurnaroundDays || 3.5} Days</div>
-            <div class="sla-desc">Brief kickoff to final delivery</div>
+            <div class="sla-value">
+              {slaData.avgTurnaroundDays !== null && slaData.avgTurnaroundDays !== undefined ? `${slaData.avgTurnaroundDays} Days` : '—'}
+            </div>
+            <div class="sla-desc">
+              {#if slaData.medianTurnaroundDays !== null && slaData.medianTurnaroundDays !== undefined}
+                <span class="sla-stat-pill">p50: {slaData.medianTurnaroundDays}d</span>
+                <span class="sla-stat-pill">p90: {slaData.p90TurnaroundDays || slaData.avgTurnaroundDays}d</span>
+              {:else}
+                Brief kickoff to final approval
+              {/if}
+            </div>
           </div>
         </div>
       </FluentCard>
@@ -251,8 +449,25 @@
           </div>
           <div>
             <div class="sla-meta-label">AVG REVISION ROUNDS</div>
-            <div class="sla-value">{slaData.avgRevisionCount || 0.4} Revs</div>
-            <div class="sla-desc">Average iterations per project</div>
+            <div class="sla-value">
+              {slaData.avgRevisionCount !== null && slaData.avgRevisionCount !== undefined ? `${slaData.avgRevisionCount} Revs` : '—'}
+            </div>
+            <div class="sla-desc">Average iterations per completed project</div>
+          </div>
+        </div>
+      </FluentCard>
+
+      <FluentCard elevated>
+        <div class="sla-card-inner">
+          <div class="sla-icon-box" style="background: rgba(147, 51, 234, 0.12); color: #9333EA;">
+            ⏳
+          </div>
+          <div>
+            <div class="sla-meta-label">REVIEW QUEUE AGING</div>
+            <div class="sla-value" style="color: #9333EA;">
+              {slaData.avgReviewAgeDays || 0} Days
+            </div>
+            <div class="sla-desc">Average latency in review before sign-off</div>
           </div>
         </div>
       </FluentCard>
@@ -310,10 +525,10 @@
             </div>
           {:else}
             <div class="project-queue-list">
-              {#each myProjects as proj (proj.id)}
+              {#each myProjects as proj (proj.id || proj.jobId)}
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div class="queue-card" onclick={() => appState.navigate('project-detail', { id: proj.id })}>
+                <div class="queue-card" onclick={() => appState.navigate('project-detail', { id: proj.id || proj.jobId })}>
                   <div class="queue-card-header">
                     <div class="queue-id-tag">{proj.jobId || proj.id}</div>
                     <span class="status-pill status-{proj.status}">{proj.status}</span>
@@ -443,6 +658,55 @@
     flex-wrap: wrap;
   }
 
+  /* Time Horizon Switcher */
+  .time-horizon-switcher {
+    display: flex;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 8px;
+    padding: 2px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .horizon-btn {
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.14s;
+    font-family: inherit;
+  }
+  .horizon-btn:hover {
+    color: var(--text-primary);
+  }
+  .horizon-btn.active {
+    background: var(--surface-card-subtle, #E2E8F0);
+    color: var(--text-primary);
+    font-weight: 800;
+  }
+
+  /* Brand Scope Selector */
+  .brand-scope-select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--surface-card-border);
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    outline: none;
+  }
+  .brand-scope-select:focus {
+    border-color: var(--brand-accent);
+  }
+
   /* Lens Switcher */
   .lens-switcher {
     display: flex;
@@ -489,12 +753,12 @@
   /* Studio Lens KPIs */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 14px;
   }
 
   .kpi-label {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -514,6 +778,225 @@
   }
   .text-accent { color: var(--brand-accent, #21A1F7); }
   .text-primary { color: var(--brand-primary, #043388); }
+  .text-review { color: #D97706; }
+  .text-revision { color: #DC2626; }
+  .text-success { color: #10B981; }
+  .text-done { color: #047857; }
+
+  /* Friction Alert Card */
+  .friction-alert-card {
+    background: #FEF2F2;
+    border: 1px solid #F87171;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .friction-alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .friction-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #991B1B;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+  }
+
+  .friction-desc {
+    font-size: 12px;
+    color: #7F1D1D;
+  }
+
+  .friction-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .friction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #FECACA;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .friction-item:hover {
+    border-color: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .fitem-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .fitem-id {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: #991B1B;
+    background: #FEE2E2;
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  .fitem-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+  }
+
+  .fitem-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .fitem-designer {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .badge-rev-alert {
+    font-size: 10px;
+    font-weight: 800;
+    background: #DC2626;
+    color: #FFFFFF;
+    padding: 2px 6px;
+    border-radius: 9999px;
+  }
+
+  /* Studio Pipeline & Distribution */
+  .studio-distribution-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+  }
+
+  .pipeline-funnel-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 10px 0;
+  }
+
+  .funnel-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 6px 4px;
+    border-radius: 6px;
+    transition: background 0.12s;
+  }
+  .funnel-step:hover {
+    background: var(--surface-card-subtle, #F8FAFC);
+  }
+
+  .funnel-count {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text-primary);
+  }
+
+  .funnel-bar {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+  }
+  .bg-backlog { background: #94A3B8; }
+  .bg-inprogress { background: #0284C7; }
+  .bg-review { background: #D97706; }
+  .bg-revision { background: #DC2626; }
+  .bg-approved { background: #10B981; }
+  .bg-done { background: #047857; }
+
+  .funnel-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .funnel-connector {
+    color: var(--text-tertiary, #CBD5E1);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .brand-bar-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .brand-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.12s;
+  }
+  .brand-row:hover {
+    background: var(--surface-card-subtle, #F8FAFC);
+  }
+
+  .brand-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand-badge-pill {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--brand-primary, #043388);
+  }
+
+  .brand-stats-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .brand-bar-track {
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--surface-card-border, #E2E8F0);
+    overflow: hidden;
+  }
+
+  .brand-bar-fill {
+    height: 100%;
+    background: var(--brand-primary, #043388);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
 
   .analytics-grid {
     display: grid;
@@ -624,31 +1107,30 @@
   /* ═══════════ SLA ANALYTICS GRID STYLES ═══════════ */
   .sla-analytics-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-top: -8px;
   }
 
   .sla-card-inner {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 18px 16px;
+    gap: 14px;
+    padding: 16px 14px;
   }
 
   .sla-icon-box {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     flex-shrink: 0;
   }
 
   .sla-meta-label {
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 800;
     color: var(--text-tertiary, #94A3B8);
     letter-spacing: 0.5px;
@@ -656,14 +1138,29 @@
   }
 
   .sla-value {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 900;
     color: var(--text-primary);
     margin: 2px 0;
   }
 
   .sla-desc {
-    font-size: 11.5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .sla-stat-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--surface-card-subtle, #F1F5F9);
+    border: 1px solid var(--surface-card-border, #E2E8F0);
     color: var(--text-secondary);
   }
 
@@ -761,6 +1258,7 @@
   .status-in-progress { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; }
   .status-review { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
   .status-approved { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+  .status-done { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
 
   .queue-title {
     font-size: 14px;
@@ -823,8 +1321,15 @@
   .empty-workspace-state .empty-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0; }
   .empty-workspace-state .empty-desc { font-size: 12px; color: var(--text-secondary); margin: 0; }
 
+  @media (max-width: 1024px) {
+    .studio-distribution-grid,
+    .sla-analytics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 900px) {
-    .analytics-grid, .my-workspace-grid {
+    .analytics-grid, .my-workspace-grid, .studio-distribution-grid, .sla-analytics-grid {
       grid-template-columns: 1fr;
     }
   }

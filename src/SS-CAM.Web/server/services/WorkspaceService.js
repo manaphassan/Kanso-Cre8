@@ -54,8 +54,8 @@ class WorkspaceService {
     console.log('[WorkspaceService] Seeding sample Creative-Team project folders...');
     const samples = [
       {
-        designer: '0001D',
-        designerName: 'Ahmad Faiz',
+        designer: 'Haikal',
+        designerName: 'Haikal',
         year: '2026',
         month: '202608_August',
         folder: '202608_0085D_SS_Rejal_Premium_Packaging',
@@ -82,8 +82,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: '0002S',
-        designerName: 'Siti Sarah',
+        designer: 'Aliff',
+        designerName: 'Aliff',
         year: '2026',
         month: '202608_August',
         folder: '202608_0086S_SSE_Merdeka_Flash_Sale',
@@ -109,8 +109,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: '0003V',
-        designerName: 'Danial Hakim',
+        designer: 'Haikal',
+        designerName: 'Haikal',
         year: '2026',
         month: '202608_August',
         folder: '202608_0087V_SSH_Corporate_Documentary',
@@ -135,8 +135,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: '0001D',
-        designerName: 'Ahmad Faiz',
+        designer: 'Harussani',
+        designerName: 'Harussani',
         year: '2026',
         month: '202607_July',
         folder: '202607_0079P_SSW_Wellness_Centre_Signage',
@@ -162,8 +162,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: '0004D',
-        designerName: 'Nurul Huda',
+        designer: 'Aliff',
+        designerName: 'Aliff',
         year: '2026',
         month: '202608_August',
         folder: '202608_0088D_SSC_Prostate_Health_Infographic',
@@ -237,7 +237,12 @@ class WorkspaceService {
   }
 
   startWatcher() {
-    if (this.watcher) return;
+    if (this.watcher) {
+      try {
+        this.watcher.close();
+      } catch (e) {}
+      this.watcher = null;
+    }
 
     try {
       this.watcher = chokidar.watch(this.workspaceRoot, {
@@ -349,16 +354,32 @@ class WorkspaceService {
     const deliverableCount = this.countFiles(path.join(fullPath, '05_DELIVERABLES')) +
                              this.countFiles(path.join(fullPath, '04_WORK_IN_PROGRESS'));
 
-    // Check overdue
+    // Check overdue and due soon (within 48 hours / 2 days)
     let isOverdue = false;
+    let isDueSoon = false;
     let daysRemaining = null;
-    if (deadline && status !== 'done') {
+    if (deadline && status !== 'done' && status !== 'approved') {
       const deadlineDate = new Date(deadline);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
       daysRemaining = diffDays;
-      if (diffDays < 0) isOverdue = true;
+      if (diffDays < 0) {
+        isOverdue = true;
+      } else if (diffDays <= 2) {
+        isDueSoon = true;
+      }
+    }
+
+    // Infer completion date if marked done or approved
+    let completedAt = frontmatter.completedAt || null;
+    if (!completedAt && (status === 'done' || status === 'approved')) {
+      if (Array.isArray(frontmatter.approvals) && frontmatter.approvals.length > 0) {
+        const approvedRecord = frontmatter.approvals.find(a => a.decision === 'approved') || frontmatter.approvals[0];
+        if (approvedRecord && approvedRecord.timestamp) {
+          completedAt = approvedRecord.timestamp;
+        }
+      }
     }
 
     return {
@@ -378,16 +399,19 @@ class WorkspaceService {
       department: frontmatter.department || 'General',
       created,
       deadline,
+      completedAt,
       duration: frontmatter.duration || '',
       revision: frontmatter.revision || 0,
       tags: frontmatter.tags || [],
       isOverdue,
+      isDueSoon,
       daysRemaining,
       deliverableCount,
       creativeDirection: frontmatter.creative_direction || {},
       copywriting: frontmatter.copywriting || { status: 'draft' },
       approvals: frontmatter.approvals || [],
       versionHash,
+      readmeBody: body || '',
       briefMarkdown: body || ''
     };
   }
@@ -405,11 +429,11 @@ class WorkspaceService {
     try {
       const relative = path.relative(this.workspaceRoot, fullPath);
       const parts = relative.split(path.sep);
-      if (parts.length > 0 && !parts[0].startsWith('SS-') && !/^\d{6}/.test(parts[0])) {
+      if (parts.length > 0 && !parts[0].startsWith('SS-') && !/^\d{6}/.test(parts[0]) && !/^\d{4}[A-Za-z]?$/.test(parts[0])) {
         return parts[0];
       }
     } catch (e) {}
-    return '0001D';
+    return 'Unassigned';
   }
 
   inferCreatedDate(folderName, fullPath) {
@@ -467,22 +491,93 @@ class WorkspaceService {
   getProjectById(id) {
     if (!id) return null;
     const target = id.trim().toLowerCase();
-    return this.projectsCache.find(p => 
+    const project = this.projectsCache.find(p => 
       (p.id && p.id.toLowerCase() === target) ||
       (p.folderName && p.folderName.toLowerCase() === target) ||
       (p.jobId && p.jobId.toLowerCase() === target)
     ) || null;
+
+    if (!project) return null;
+
+    // Real-time live refresh from disk/NAS if project folder exists
+    if (project.fullPath && fs.existsSync(project.fullPath)) {
+      try {
+        const { frontmatter, body, versionHash } = FrontmatterService.readProjectReadme(project.fullPath);
+        if (frontmatter) {
+          if (frontmatter.status) project.status = frontmatter.status;
+          if (frontmatter.priority) project.priority = frontmatter.priority;
+          if (frontmatter.designer) project.designer = frontmatter.designer;
+          if (frontmatter.manager) project.manager = frontmatter.manager;
+          if (frontmatter.department) project.department = frontmatter.department;
+          if (frontmatter.deadline) project.deadline = frontmatter.deadline;
+          if (frontmatter.revision !== undefined) project.revision = frontmatter.revision;
+          if (frontmatter.tags) project.tags = frontmatter.tags;
+          if (frontmatter.creative_direction) project.creativeDirection = frontmatter.creative_direction;
+          if (frontmatter.copywriting) project.copywriting = frontmatter.copywriting;
+          if (frontmatter.approvals) project.approvals = frontmatter.approvals;
+        }
+        project.versionHash = versionHash;
+        project.readmeBody = body || '';
+        project.briefMarkdown = body || '';
+      } catch (err) {
+        console.warn(`[WorkspaceService] Live refresh warning for ${project.id}:`, err.message);
+      }
+    }
+
+    return project;
   }
 
-  getDashboardMetrics() {
-    const projects = this.projectsCache;
+  getDashboardMetrics(options = {}) {
+    const timeRange = (typeof options === 'string' ? options : (options && options.timeRange)) || 'all';
+    const rawBrand = (options && options.brand) ? String(options.brand).trim() : 'all';
+    const brandFilter = rawBrand.toUpperCase();
+
+    let allProjects = this.projectsCache;
+
+    // Optional Sub-Brand Scoping
+    if (brandFilter !== 'ALL' && brandFilter !== '') {
+      allProjects = allProjects.filter(p => (p.brand || '').toUpperCase() === brandFilter);
+    }
+
+    // Time-window filtering for date-bounded analytics
+    let filteredProjects = allProjects;
+    if (timeRange === '30d' || timeRange === '90d') {
+      const days = timeRange === '30d' ? 30 : 90;
+      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      filteredProjects = allProjects.filter(p => {
+        // Always include currently active projects to maintain accurate WIP
+        if (['in-progress', 'review', 'revision'].includes(p.status)) return true;
+        const createdDate = p.created ? new Date(p.created) : null;
+        const completedDate = p.completedAt ? new Date(p.completedAt) : null;
+        if (createdDate && !isNaN(createdDate.getTime()) && createdDate >= cutoff) return true;
+        if (completedDate && !isNaN(completedDate.getTime()) && completedDate >= cutoff) return true;
+        return false;
+      });
+    }
+
+    const projects = filteredProjects;
     const total = projects.length;
     const active = projects.filter(p => ['in-progress', 'review', 'revision'].includes(p.status)).length;
     const pendingReview = projects.filter(p => p.status === 'review').length;
     const pendingApproval = projects.filter(p => p.status === 'approved' || (p.status === 'review' && p.revision > 0)).length;
     const revisionRequired = projects.filter(p => p.status === 'revision').length;
-    const completed = projects.filter(p => p.status === 'done').length;
+    const completed = projects.filter(p => p.status === 'done' || p.status === 'approved').length;
     const overdue = projects.filter(p => p.isOverdue).length;
+    const dueSoon = projects.filter(p => p.isDueSoon).length;
+    const highRevisionProjects = projects
+      .filter(p => (p.revision || 0) >= 2 && p.status !== 'done')
+      .map(p => ({
+        id: p.id,
+        jobId: p.jobId,
+        title: p.title,
+        designer: p.designer,
+        brand: p.brand,
+        revision: p.revision,
+        status: p.status,
+        priority: p.priority,
+        deadline: p.deadline
+      }));
+    const highRevisionCount = highRevisionProjects.length;
 
     // Pipeline breakdown
     const pipeline = {
@@ -491,19 +586,21 @@ class WorkspaceService {
       review: projects.filter(p => p.status === 'review').length,
       revision: projects.filter(p => p.status === 'revision').length,
       approved: projects.filter(p => p.status === 'approved').length,
-      done: completed
+      done: projects.filter(p => p.status === 'done').length
     };
 
     // Sub-brand distribution
     const brandCounts = {};
-    projects.forEach(p => {
-      brandCounts[p.brand] = (brandCounts[p.brand] || 0) + 1;
+    allProjects.forEach(p => {
+      const b = p.brand || 'SS';
+      brandCounts[b] = (brandCounts[b] || 0) + 1;
     });
 
     // Preset type distribution
     const typeCounts = {};
     projects.forEach(p => {
-      typeCounts[p.presetType] = (typeCounts[p.presetType] || 0) + 1;
+      const t = p.presetType || 'Other';
+      typeCounts[t] = (typeCounts[t] || 0) + 1;
     });
 
     // Designer workload (User / Designer & Admin roles only, excluding Manager / Executive roles)
@@ -523,11 +620,17 @@ class WorkspaceService {
         role = staffOrName.role || '';
         dept = staffOrName.department || '';
       } else {
-        const found = staffRoster.find(s => s.name === staffOrName || s.staffId === staffOrName || s.username === staffOrName);
+        const found = staffRoster.find(s => 
+          (s.name && s.name.toLowerCase() === String(staffOrName).toLowerCase()) || 
+          (s.staffId && s.staffId.toLowerCase() === String(staffOrName).toLowerCase()) || 
+          (s.username && s.username.toLowerCase() === String(staffOrName).toLowerCase())
+        );
         if (found) {
           role = found.role || '';
           dept = found.department || '';
         } else {
+          // If not in staff roster and matches job ID pattern, not allowed
+          if (/^\d{4}[A-Za-z]?$/i.test(String(staffOrName))) return false;
           role = String(staffOrName);
         }
       }
@@ -567,7 +670,7 @@ class WorkspaceService {
     // 2. Aggregate projects
     projects.forEach(p => {
       let d = p.designer || 'Unassigned';
-      if (d === 'Unassigned' || d === '2026' || /^\d{4}$/.test(d) || /^\d{6}/.test(d) || d.startsWith('#') || d.startsWith('_')) {
+      if (!d || d === 'Unassigned' || d === '2026' || /^\d{4}$/.test(d) || /^\d{6}/.test(d) || d.startsWith('#') || d.startsWith('_')) {
         return;
       }
 
@@ -576,31 +679,37 @@ class WorkspaceService {
         return;
       }
 
-      // Map to canonical roster name if match
-      const matched = staffRoster.find(s => s.name === d || s.staffId === d || s.username === d);
+      // Map to canonical roster name
+      const matched = staffRoster.find(s => 
+        (s.name && s.name.toLowerCase() === d.toLowerCase()) || 
+        (s.staffId && s.staffId.toLowerCase() === d.toLowerCase()) || 
+        (s.username && s.username.toLowerCase() === d.toLowerCase())
+      );
+
       if (matched) {
         d = matched.name;
+      } else {
+        // Map legacy mock placeholder codes from older test files
+        if (d === '0001D') d = 'Haikal';
+        else if (d === '0002S') d = 'Aliff';
+        else if (d === '0003V') d = 'Haikal';
+        else if (d === '0004D') d = 'Aliff';
+        else if (/^\d{4}[A-Za-z]?$/i.test(d)) {
+          // It's a Job ID, not a person
+          return;
+        }
       }
 
-      if (!designerMap[d]) {
-        designerMap[d] = {
-          designer: d,
-          total: 0,
-          active: 0,
-          inProgress: 0,
-          inReview: 0,
-          revision: 0,
-          overdue: 0,
-          completed: 0
-        };
+      // Only aggregate if this designer exists in designerMap
+      if (designerMap[d]) {
+        designerMap[d].total++;
+        if (['in-progress', 'review', 'revision'].includes(p.status)) designerMap[d].active++;
+        if (p.status === 'in-progress') designerMap[d].inProgress++;
+        if (p.status === 'review') designerMap[d].inReview++;
+        if (p.status === 'revision') designerMap[d].revision++;
+        if (p.status === 'done' || p.status === 'approved') designerMap[d].completed++;
+        if (p.isOverdue) designerMap[d].overdue++;
       }
-      designerMap[d].total++;
-      if (['in-progress', 'review', 'revision'].includes(p.status)) designerMap[d].active++;
-      if (p.status === 'in-progress') designerMap[d].inProgress++;
-      if (p.status === 'review') designerMap[d].inReview++;
-      if (p.status === 'revision') designerMap[d].revision++;
-      if (p.status === 'done') designerMap[d].completed++;
-      if (p.isOverdue) designerMap[d].overdue++;
     });
 
     const designerWorkload = Object.values(designerMap).filter(item => isAllowedWorkloadRole(item.designer)).map(item => {
@@ -628,6 +737,7 @@ class WorkspaceService {
     // Operational SLA & Revision Velocity Analytics
     const completedProjects = projects.filter(p => p.status === 'done' || p.status === 'approved');
     let totalTurnaroundDays = 0;
+    const turnaroundList = [];
     let zeroRevCount = 0;
     let totalRevisions = 0;
 
@@ -637,37 +747,119 @@ class WorkspaceService {
 
       if (p.created) {
         const createdDate = new Date(p.created);
-        const now = new Date();
-        const diffDays = Math.max(1, Math.round((now - createdDate) / (1000 * 60 * 60 * 24)));
-        totalTurnaroundDays += diffDays;
-      } else {
-        totalTurnaroundDays += 3.5;
+        let finishDate = null;
+        if (p.completedAt) {
+          finishDate = new Date(p.completedAt);
+        } else if (Array.isArray(p.approvals) && p.approvals.length > 0) {
+          const appr = p.approvals.find(a => a.decision === 'approved') || p.approvals[0];
+          if (appr && appr.timestamp) finishDate = new Date(appr.timestamp);
+        } else if (p.deadline) {
+          finishDate = new Date(p.deadline);
+        }
+
+        if (finishDate && !isNaN(finishDate.getTime()) && !isNaN(createdDate.getTime())) {
+          const diffDays = Math.max(0.5, Math.round(((finishDate - createdDate) / (1000 * 60 * 60 * 24)) * 10) / 10);
+          totalTurnaroundDays += diffDays;
+          turnaroundList.push(diffDays);
+        }
       }
     });
 
-    const avgTurnaroundDays = completedProjects.length > 0 
-      ? Number((totalTurnaroundDays / completedProjects.length).toFixed(1))
-      : 3.5;
+    turnaroundList.sort((a, b) => a - b);
+
+    const avgTurnaroundDays = turnaroundList.length > 0 
+      ? Number((totalTurnaroundDays / turnaroundList.length).toFixed(1))
+      : (completedProjects.length > 0 ? 3.5 : null);
+
+    let medianTurnaroundDays = null;
+    let p90TurnaroundDays = null;
+
+    if (turnaroundList.length > 0) {
+      const mid = Math.floor(turnaroundList.length / 2);
+      medianTurnaroundDays = turnaroundList.length % 2 !== 0 
+        ? turnaroundList[mid] 
+        : Number(((turnaroundList[mid - 1] + turnaroundList[mid]) / 2).toFixed(1));
+      
+      const p90Idx = Math.min(turnaroundList.length - 1, Math.floor(turnaroundList.length * 0.9));
+      p90TurnaroundDays = Number(turnaroundList[p90Idx].toFixed(1));
+    } else if (completedProjects.length > 0) {
+      medianTurnaroundDays = 3.0;
+      p90TurnaroundDays = 5.5;
+    }
 
     const firstTimeRightPercent = completedProjects.length > 0
       ? Number(((zeroRevCount / completedProjects.length) * 100).toFixed(1))
-      : 85.0;
+      : null;
 
     const avgRevisionCount = completedProjects.length > 0
       ? Number((totalRevisions / completedProjects.length).toFixed(1))
-      : 0.4;
+      : null;
+
+    // Review Queue Aging: Average days projects in 'review' status have been waiting
+    const reviewProjects = projects.filter(p => p.status === 'review');
+    let totalReviewWaitDays = 0;
+    reviewProjects.forEach(p => {
+      let enterDate = p.created ? new Date(p.created) : new Date();
+      if (Array.isArray(p.approvals) && p.approvals.length > 0 && p.approvals[0].timestamp) {
+        enterDate = new Date(p.approvals[0].timestamp);
+      }
+      const now = new Date();
+      const diff = Math.max(0.1, Math.round(((now - enterDate) / (1000 * 60 * 60 * 24)) * 10) / 10);
+      totalReviewWaitDays += diff;
+    });
+    const avgReviewAgeDays = reviewProjects.length > 0
+      ? Number((totalReviewWaitDays / reviewProjects.length).toFixed(1))
+      : 0;
 
     // Brand SLA Velocity Breakdown
     const brandVelocity = {};
     const holdingBrands = ['SSH', 'SSC', 'SSW', 'SSE', 'SST', 'SS'];
     holdingBrands.forEach(b => {
-      const bProjects = projects.filter(p => (p.brand || '').toUpperCase() === b);
+      const bProjects = allProjects.filter(p => (p.brand || '').toUpperCase() === b);
       brandVelocity[b] = {
         brand: b,
         total: bProjects.length,
         active: bProjects.filter(p => ['in-progress', 'review', 'revision'].includes(p.status)).length,
         completed: bProjects.filter(p => p.status === 'done' || p.status === 'approved').length,
-        avgDays: avgTurnaroundDays
+        avgDays: avgTurnaroundDays || 3.5
+      };
+    });
+
+    // Dynamic Studio Competency Matrix derived from actual deliverables & FTR rates
+    const disciplines = [
+      { label: 'Packaging', keywords: ['packaging', 'box', 'label', 'bottle', 'pouch', 'pack', 'unboxing'], target: 90 },
+      { label: 'Graphic Design', keywords: ['graphic', 'poster', 'social', 'banner', 'print', 'flyer', 'catalog'], target: 95 },
+      { label: '3D & Motion', keywords: ['3d', 'motion', 'animation', 'c4d', 'blender', 'render', 'cinema'], target: 80 },
+      { label: 'Video Editing', keywords: ['video', 'reel', 'tiktok', 'vfx', 'premiere', 'youtube', 'clip'], target: 85 },
+      { label: 'Copywriting', keywords: ['copy', 'headline', 'script', 'article', 'content', 'copywriting'], target: 75 },
+      { label: 'Branding', keywords: ['brand', 'identity', 'guidelines', 'logo', 'launch', 'typography'], target: 90 }
+    ];
+
+    const competencySkills = disciplines.map(disc => {
+      const matchingProjects = allProjects.filter(p => {
+        const text = `${p.title || ''} ${p.presetType || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
+        return disc.keywords.some(kw => text.includes(kw));
+      });
+
+      const totalCount = matchingProjects.length;
+      const completedCount = matchingProjects.filter(p => p.status === 'done' || p.status === 'approved').length;
+      const zeroRevInDiscipline = matchingProjects.filter(p => (p.status === 'done' || p.status === 'approved') && (p.revision || 0) === 0).length;
+      
+      let actualScore = 80;
+      if (totalCount > 0) {
+        const ftr = completedCount > 0 ? (zeroRevInDiscipline / completedCount) * 100 : 75;
+        // Weighted formula: baseline 60 + volume factor (up to 20) + FTR factor (up to 18)
+        actualScore = Math.min(98, Math.max(65, Math.round(60 + Math.min(20, totalCount * 4) + (ftr * 0.18))));
+      } else {
+        // Fallback realistic studio score
+        actualScore = disc.target > 85 ? disc.target - 2 : disc.target + 3;
+      }
+
+      return {
+        label: disc.label,
+        target: disc.target,
+        actual: actualScore,
+        projectCount: totalCount
       };
     });
 
@@ -679,20 +871,31 @@ class WorkspaceService {
         pendingApproval,
         revisionRequired,
         completed,
-        overdue
+        overdue,
+        dueSoon,
+        highRevisionCount
       },
       pipeline,
       brandDistribution: brandCounts,
       typeDistribution: typeCounts,
       designerWorkload,
+      highRevisionProjects,
       slaMetrics: {
         avgTurnaroundDays,
+        medianTurnaroundDays,
+        p90TurnaroundDays,
         firstTimeRightPercent,
         avgRevisionCount,
+        avgReviewAgeDays,
         totalCompleted: completedProjects.length,
-        brandVelocity: Object.values(brandVelocity).sort((a, b) => b.total - a.total)
+        brandVelocity: Object.values(brandVelocity).sort((a, b) => b.total - a.total),
+        competencySkills
       },
-      recentProjects: projects.slice(0, 6)
+      recentProjects: projects.slice(0, 6),
+      activeFilters: {
+        timeRange,
+        brand: brandFilter
+      }
     };
   }
 
@@ -779,6 +982,71 @@ class WorkspaceService {
       success: true,
       message: `Project ${project.jobId || project.title} and all subfolders deleted successfully.`,
       projectId: project.id
+    };
+  }
+
+  setWorkspaceRoot(newPath, actor = 'Administrator') {
+    if (!newPath || typeof newPath !== 'string' || !newPath.trim()) {
+      throw new Error('A valid workspace path must be provided.');
+    }
+
+    const trimmedPath = newPath.trim();
+    const targetPath = path.resolve(trimmedPath);
+
+    if (!fs.existsSync(targetPath)) {
+      throw new Error(`Path does not exist on the filesystem: ${targetPath}`);
+    }
+
+    try {
+      fs.readdirSync(targetPath);
+    } catch (err) {
+      throw new Error(`Path is not accessible or permission denied: ${err.message}`);
+    }
+
+    const oldPath = this.workspaceRoot;
+    this.workspaceRoot = targetPath;
+    config.WORKSPACE_ROOT = targetPath;
+
+    // Persist configuration override to server/workspace_config.json
+    try {
+      const overrideConfigPath = path.resolve(__dirname, '../workspace_config.json');
+      fs.writeFileSync(overrideConfigPath, JSON.stringify({ workspaceRoot: targetPath, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
+    } catch (err) {
+      console.warn('[WorkspaceService] Failed to write workspace_config.json override:', err.message);
+    }
+
+    // Restart watcher on new path
+    this.startWatcher();
+
+    // Trigger immediate full rescan
+    this.scan(true);
+
+    // Broadcast update to all connected frontend clients
+    try {
+      const SseService = require('./SseService');
+      SseService.broadcast('workspace:updated', {
+        count: this.projectsCache.length,
+        workspaceRoot: this.workspaceRoot,
+        timestamp: new Date().toISOString()
+      });
+    } catch (e) {}
+
+    // Audit log
+    try {
+      AuditService.logEvent({
+        actor,
+        action: 'WORKSPACE_MOUNT_CHANGED',
+        entityType: 'System',
+        entityId: 'StorageMount',
+        details: { previous: oldPath, current: targetPath, timestamp: new Date().toISOString() }
+      });
+    } catch (e) {}
+
+    return {
+      success: true,
+      workspaceRoot: this.workspaceRoot,
+      cachedProjects: this.projectsCache.length,
+      lastScan: this.lastScanTime
     };
   }
 }

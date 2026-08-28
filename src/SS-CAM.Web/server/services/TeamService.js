@@ -78,12 +78,23 @@ class TeamService {
     }
 
     const username = (member.username || member.name.toLowerCase().replace(/\s+/g, '')).trim();
+    
+    // Normalize multi-role support (Array or comma-separated string)
+    let roles = ['Designer'];
+    if (Array.isArray(member.roles) && member.roles.length > 0) {
+      roles = member.roles;
+    } else if (typeof member.role === 'string' && member.role.trim()) {
+      roles = member.role.split(',').map(r => r.trim()).filter(Boolean);
+    }
+    const roleString = roles.join(', ') || 'Designer';
+
     const newMember = {
       staffId,
       username,
       name: member.name.trim(),
       email: member.email ? member.email.trim() : `${username}@suamisihat.com`,
-      role: member.role ? member.role.trim() : 'Designer',
+      role: roleString,
+      roles: roles.length > 0 ? roles : ['Designer'],
       department: member.department ? member.department.trim() : 'Creative Production',
       defaultBrand: (member.defaultBrand || 'SS').trim().toUpperCase(),
       avatarColor: member.avatarColor || '#0078D4',
@@ -102,9 +113,23 @@ class TeamService {
       throw new Error(`Staff member '${staffId}' not found.`);
     }
 
+    let updatedRoles = updates.roles;
+    let updatedRole = updates.role;
+
+    if (Array.isArray(updatedRoles) && updatedRoles.length > 0) {
+      updatedRole = updatedRoles.join(', ');
+    } else if (typeof updatedRole === 'string' && updatedRole.trim()) {
+      updatedRoles = updatedRole.split(',').map(r => r.trim()).filter(Boolean);
+    } else if (!updatedRoles && !updatedRole) {
+      updatedRoles = roster[idx].roles || (roster[idx].role ? roster[idx].role.split(',').map(r => r.trim()).filter(Boolean) : ['Designer']);
+      updatedRole = roster[idx].role || 'Designer';
+    }
+
     roster[idx] = {
       ...roster[idx],
       ...updates,
+      role: updatedRole || 'Designer',
+      roles: updatedRoles || ['Designer'],
       staffId: roster[idx].staffId // Preserve immutable Staff ID
     };
 
@@ -126,13 +151,19 @@ class TeamService {
 
   /**
    * Returns list of team members with assigned active workloads and capacity indicators.
-   * Filters strictly to User / Designer & Admin role staff (excluding Managers & Executives).
+   * Filters strictly to Designer, Copywriter & Admin role staff (excluding standalone Managers & Executives).
    */
   static getTeamDirectory() {
-    const isUserOrAdminRole = (member) => {
+    const isCreativeOrAdminRole = (member) => {
       const roleLower = (member.role || '').toLowerCase();
       const deptLower = (member.department || '').toLowerCase();
-      // Exclude Managers, CEOs, Executive Directors, and Sales/Marketing Heads
+
+      // If user has designer, copywriter, art director, or admin roles, include them
+      if (roleLower.includes('designer') || roleLower.includes('copy') || roleLower.includes('art director') || roleLower.includes('admin') || roleLower.includes('multimedia')) {
+        return true;
+      }
+
+      // Exclude standalone Managers, CEOs, Executive Directors, and Sales/Marketing Heads
       if (roleLower.includes('manager') || roleLower.includes('ceo') || roleLower.includes('chief') ||
           roleLower.includes('head of') || roleLower.includes('executive') || roleLower.includes('director of') ||
           deptLower.includes('executive') || deptLower.includes('management') || deptLower.includes('marketing & sales') ||
@@ -144,7 +175,7 @@ class TeamService {
 
     const roster = this.getStaffRoster()
       .filter(m => m.active !== false)
-      .filter(isUserOrAdminRole);
+      .filter(isCreativeOrAdminRole);
 
     const metrics = WorkspaceService.getDashboardMetrics();
     const workloadMap = {};

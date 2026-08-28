@@ -3,16 +3,23 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 
-// Granular RBAC Permissions Map (Canonical Roles: Admin, Manager, User)
+// Granular RBAC Permissions Map (Canonical Roles: Designer, Copywriter, Manager, Admin)
 const ROLE_PERMISSIONS = {
-  admin: [
-    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
-    'brief:view', 'brief:edit',
-    'direction:view', 'direction:edit',
-    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
-    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
-    'team:view', 'team:manage_workload', 'report:view',
-    'admin:users', 'admin:roles', 'admin:system_audit'
+  designer: [
+    'project:view',
+    'brief:view',
+    'direction:view',
+    'copy:view',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment',
+    'team:view'
+  ],
+  copywriter: [
+    'project:view',
+    'brief:view',
+    'direction:view',
+    'copy:view', 'copy:draft', 'copy:submit',
+    'deliverable:view', 'deliverable:comment',
+    'team:view'
   ],
   manager: [
     'project:view', 'project:create', 'project:edit', 'project:assign',
@@ -22,15 +29,57 @@ const ROLE_PERMISSIONS = {
     'deliverable:view', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
     'team:view', 'team:manage_workload', 'report:view'
   ],
+  admin: [
+    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view',
+    'admin:users', 'admin:roles', 'admin:system_audit'
+  ],
+  // Legacy / Title Aliases
   user: [
     'project:view',
     'brief:view',
     'direction:view',
-    'copy:view', 'copy:draft',
+    'copy:view',
     'deliverable:view', 'deliverable:upload', 'deliverable:comment',
     'team:view'
   ],
-  // Aliases for titles
+  Designer: [
+    'project:view',
+    'brief:view',
+    'direction:view',
+    'copy:view',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment',
+    'team:view'
+  ],
+  Copywriter: [
+    'project:view',
+    'brief:view',
+    'direction:view',
+    'copy:view', 'copy:draft', 'copy:submit',
+    'deliverable:view', 'deliverable:comment',
+    'team:view'
+  ],
+  Manager: [
+    'project:view', 'project:create', 'project:edit', 'project:assign',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view'
+  ],
+  Admin: [
+    'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
+    'brief:view', 'brief:edit',
+    'direction:view', 'direction:edit',
+    'copy:view', 'copy:draft', 'copy:review', 'copy:approve',
+    'deliverable:view', 'deliverable:upload', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
+    'team:view', 'team:manage_workload', 'report:view',
+    'admin:users', 'admin:roles', 'admin:system_audit'
+  ],
   Administrator: [
     'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
     'brief:view', 'brief:edit',
@@ -62,32 +111,62 @@ const ROLE_PERMISSIONS = {
     'brief:view',
     'deliverable:view', 'deliverable:comment', 'deliverable:approve', 'deliverable:revision',
     'report:view'
-  ],
-  Designer: [
-    'project:view',
-    'brief:view',
-    'direction:view',
-    'copy:view',
-    'deliverable:view', 'deliverable:upload',
-    'team:view'
-  ],
-  Copywriter: [
-    'project:view',
-    'brief:view',
-    'copy:view', 'copy:draft', 'copy:submit',
-    'deliverable:view', 'deliverable:comment'
   ]
 };
 
+function getUserRoles(user) {
+  if (!user) return ['Designer'];
+  if (Array.isArray(user.roles) && user.roles.length > 0) return user.roles;
+  if (Array.isArray(user.role) && user.role.length > 0) return user.role;
+  if (typeof user.role === 'string' && user.role.trim()) {
+    const split = user.role.split(/[,/]/).map(r => r.trim()).filter(Boolean);
+    if (split.length > 0) return split;
+  }
+  return ['Designer'];
+}
+
+function getUserPermissions(user) {
+  const roles = getUserRoles(user);
+  const permSet = new Set();
+  
+  // Base default view permissions for all staff
+  ['project:view', 'brief:view', 'direction:view', 'copy:view', 'deliverable:view', 'team:view'].forEach(p => permSet.add(p));
+
+  roles.forEach(r => {
+    const raw = r.trim();
+    const low = raw.toLowerCase();
+    
+    // Direct match
+    const perms = ROLE_PERMISSIONS[raw] || ROLE_PERMISSIONS[low] || [];
+    perms.forEach(p => permSet.add(p));
+    
+    // Title / keyword based permission granting for all custom designations
+    if (low.includes('admin')) {
+      (ROLE_PERMISSIONS.admin || []).forEach(p => permSet.add(p));
+    }
+    if (low.includes('director') || low.includes('manager') || low.includes('lead') || low.includes('head') || low.includes('ceo') || low.includes('executive')) {
+      (ROLE_PERMISSIONS.manager || []).forEach(p => permSet.add(p));
+    }
+    if (low.includes('designer')) {
+      (ROLE_PERMISSIONS.designer || []).forEach(p => permSet.add(p));
+    }
+    if (low.includes('copywriter') || low.includes('writer')) {
+      (ROLE_PERMISSIONS.copywriter || []).forEach(p => permSet.add(p));
+    }
+  });
+
+  return Array.from(permSet);
+}
+
 // Initial Users Directory (All User IDs strictly start with SS)
 const SYSTEM_USERS = [
-  { id: 'SS0001', username: 'hasan', name: 'Hasan', email: 'hasan@suamisihat.com', role: 'CEO', staffId: 'SS0001', department: 'Executive Management' },
-  { id: 'SS0071', username: 'gaddafi', name: 'Gaddafi', email: 'gaddafi@suamisihat.com', role: 'CEO', staffId: 'SS0071', department: 'Executive Management' },
-  { id: 'SS0073', username: 'raihan', name: 'Raihan', email: 'raihan.suamisihat@gmail.com', role: 'SalesManager', staffId: 'SS0073', department: 'Marketing & Sales' },
-  { id: 'SS0004', username: 'harussani', name: 'Harussani', email: 'harussani.suamisihat@gmail.com', role: 'Administrator', staffId: 'SS0004', department: 'Creative Production' },
-  { id: 'SS0035', username: 'haikal', name: 'Haikal', email: 'haikal.suamisihat@gmail.com', role: 'Designer', staffId: 'SS0035', department: 'Multimedia & Motion' },
-  { id: 'SS0037', username: 'aliff', name: 'Aliff', email: 'aliffnaz.suamisihat@gmail.com', role: 'Designer', staffId: 'SS0037', department: 'Multimedia & Motion' },
-  { id: 'SS0000', username: 'admin', name: 'System Administrator', email: 'admin@suamisihat.com', role: 'Administrator', staffId: 'SS0000', department: 'IT & Infrastructure' }
+  { id: 'SS0001', username: 'hasan', name: 'Hasan', email: 'hasan@suamisihat.com', role: 'CEO, Manager', roles: ['CEO', 'Manager'], staffId: 'SS0001', department: 'Executive Management' },
+  { id: 'SS0071', username: 'gaddafi', name: 'Gaddafi', email: 'gaddafi@suamisihat.com', role: 'CEO', roles: ['CEO'], staffId: 'SS0071', department: 'Executive Management' },
+  { id: 'SS0073', username: 'raihan', name: 'Raihan', email: 'raihan.suamisihat@gmail.com', role: 'SalesManager', roles: ['SalesManager'], staffId: 'SS0073', department: 'Marketing & Sales' },
+  { id: 'SS0004', username: 'harussani', name: 'Harussani', email: 'harussani.suamisihat@gmail.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'SS0004', department: 'Creative Production' },
+  { id: 'SS0035', username: 'haikal', name: 'Haikal', email: 'haikal.suamisihat@gmail.com', role: 'Designer', roles: ['Designer'], staffId: 'SS0035', department: 'Multimedia & Motion' },
+  { id: 'SS0037', username: 'aliff', name: 'Aliff', email: 'aliffnaz.suamisihat@gmail.com', role: 'Designer', roles: ['Designer'], staffId: 'SS0037', department: 'Multimedia & Motion' },
+  { id: 'SS0000', username: 'admin', name: 'System Administrator', email: 'admin@suamisihat.com', role: 'Administrator', roles: ['Administrator'], staffId: 'SS0000', department: 'IT & Infrastructure' }
 ];
 
 function getPasswordStorePath() {
@@ -140,13 +219,15 @@ function updateUserPassword(username, newPassword) {
 }
 
 function generateToken(user) {
-  const permissions = ROLE_PERMISSIONS[user.role] || [];
+  const roles = getUserRoles(user);
+  const permissions = getUserPermissions(user);
   return jwt.sign(
     {
-      id: user.id,
+      id: user.id || user.staffId,
       username: user.username,
       name: user.name,
-      role: user.role,
+      role: roles.join(', '),
+      roles: roles,
       staffId: user.staffId,
       department: user.department,
       permissions
@@ -178,8 +259,21 @@ function requirePermission(permission) {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized.' });
     }
-    const permissions = req.user.permissions || [];
-    if (!permissions.includes(permission)) {
+    // Dynamic fallback so existing session tokens immediately get proper permissions
+    const permissions = (Array.isArray(req.user.permissions) && req.user.permissions.length > 0)
+      ? req.user.permissions
+      : getUserPermissions(req.user);
+
+    const userRoleStr = (typeof req.user.role === 'string' ? req.user.role : '').toLowerCase();
+    const isAdminOrLead = userRoleStr.includes('admin') || 
+                          userRoleStr.includes('director') || 
+                          userRoleStr.includes('lead') || 
+                          userRoleStr.includes('manager') || 
+                          userRoleStr.includes('head') || 
+                          userRoleStr.includes('ceo') ||
+                          userRoleStr.includes('executive');
+
+    if (!permissions.includes(permission) && !isAdminOrLead) {
       return res.status(403).json({
         error: `Permission Denied. Required: '${permission}'. Your role: '${req.user.role}'`
       });
@@ -191,6 +285,8 @@ function requirePermission(permission) {
 module.exports = {
   SYSTEM_USERS,
   ROLE_PERMISSIONS,
+  getUserRoles,
+  getUserPermissions,
   verifyUserPassword,
   updateUserPassword,
   generateToken,

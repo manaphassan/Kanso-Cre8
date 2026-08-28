@@ -60,6 +60,10 @@ export class ApiClient {
   }
 
   // ─── Authentication ───
+  static getAuthRoster(): Promise<{ success: boolean; staff: Array<{ staffId: string; username: string; name: string; role: string; department?: string; avatarColor?: string }> }> {
+    return this.request('/auth/roster');
+  }
+
   static login(username: string, password = ''): Promise<{ success: boolean; token: string; user: User }> {
     return this.request('/auth/login', {
       method: 'POST',
@@ -83,8 +87,12 @@ export class ApiClient {
   }
 
   // ─── Dashboard ───
-  static getDashboard(): Promise<DashboardData> {
-    return this.request<DashboardData>('/dashboard');
+  static getDashboard(params: { timeRange?: string; brand?: string } = {}): Promise<DashboardData> {
+    const qs = new URLSearchParams();
+    if (params.timeRange && params.timeRange !== 'all') qs.append('timeRange', params.timeRange);
+    if (params.brand && params.brand !== 'all') qs.append('brand', params.brand);
+    const query = qs.toString() ? `?${qs.toString()}` : '';
+    return this.request<DashboardData>(`/dashboard${query}`);
   }
 
   // ─── Projects ───
@@ -173,6 +181,10 @@ export class ApiClient {
       const res = await this.request('/team/roster');
       return { success: true, users: res.roster || [] };
     }
+  }
+
+  static async getStaffAccounts(): Promise<{ success: boolean; users: any[] }> {
+    return this.getUsers();
   }
 
   static async getStaffRoster(): Promise<{ roster: any[]; users?: any[] }> {
@@ -314,6 +326,17 @@ export class ApiClient {
 
   static getSystemStatus(): Promise<any> {
     return this.request('/system/status');
+  }
+
+  static getWorkspaceCandidates(): Promise<{ success: boolean; candidates: Array<{ path: string; accessible: boolean; itemCount: number; isCurrent: boolean }>; current: string }> {
+    return this.request('/system/workspace-candidates');
+  }
+
+  static updateWorkspaceRoot(workspacePath: string): Promise<{ success: boolean; workspaceRoot: string; cachedProjects: number; message: string }> {
+    return this.request('/system/workspace-root', {
+      method: 'POST',
+      body: JSON.stringify({ workspacePath })
+    });
   }
 }
 

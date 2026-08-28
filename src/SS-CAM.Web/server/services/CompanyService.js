@@ -31,7 +31,7 @@ const DEFAULT_COMPANIES = [
   },
   {
     code: 'SSW',
-    name: 'SuamiSihat Ellness Sdn Bhd',
+    name: 'SuamiSihat Wellness Sdn Bhd',
     shortName: 'Wellness & Nutrition',
     regNo: '202401012347 (1550125-Z)',
     address: 'Unit 3A-01, Oval Damansara, 685 Jalan Damansara, 60000 Kuala Lumpur',

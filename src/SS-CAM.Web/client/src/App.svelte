@@ -64,16 +64,27 @@
           projectStore.loadDashboard();
         } else if (appState.currentRoute === 'project-detail' && appState.routeParams.id) {
           projectStore.loadProjectDetail(appState.routeParams.id);
+        } else if (appState.currentRoute === 'deliverables') {
+          projectStore.loadDeliverables();
         }
       } else if (event === 'project:decision') {
         appState.addToast(`${data.reviewer} marked ${data.projectId} as ${(data.decision || '').replace('_', ' ')}`, 'info', 'Decision Updated');
         projectStore.loadProjects();
-        if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
+        if (appState.currentRoute === 'dashboard') {
+          projectStore.loadDashboard();
+        } else if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
           projectStore.loadProjectDetail(data.projectId);
         }
       } else if (event === 'comment:added') {
         if (data.comment?.author !== appState.currentUser?.name) {
           appState.addToast(`${data.comment?.author}: ${data.comment?.content?.substring(0, 40) || ''}...`, 'info', 'New Project Comment');
+        }
+        if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
+          projectStore.loadProjectDetail(data.projectId);
+        }
+      } else if (event === 'comment:resolved') {
+        if (appState.currentRoute === 'project-detail' && appState.routeParams.id === data.projectId) {
+          projectStore.loadProjectDetail(data.projectId);
         }
       }
     });
@@ -85,7 +96,7 @@
 
   const pageConfig: Record<string, { title: string; layout: string; parent?: string }> = {
     dashboard:        { title: 'Dashboard',          layout: 'layout-full' },
-    projects:         { title: 'Project Catalog',    layout: 'layout-page' },
+    projects:         { title: 'Project Manager',    layout: 'layout-fluid' },
     'project-detail': { title: 'Project Workspace',  layout: 'layout-full', parent: 'projects' },
     deliverables:     { title: 'Review Queue',        layout: 'layout-page' },
     team:             { title: 'Team & Workload',     layout: 'layout-page' },
@@ -123,7 +134,7 @@
   const navGroups = [
     { section: 'Management & Visibility', items: [
       { route: 'dashboard',    label: 'Dashboard',          icon: dashIcon },
-      { route: 'projects',     label: 'Project Catalog',    icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+      { route: 'projects',     label: 'Project Manager',    icon: folderIcon, matchRoutes: ['projects','project-detail'] },
       { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
     ]},
     { section: 'Coordination & Studio', items: [
@@ -957,6 +968,17 @@
 
   /* Layout Contracts with Generous Breathing Room */
   .view-pane {
+    min-height: calc(100vh - 56px);
+    box-sizing: border-box;
+  }
+  .view-pane.layout-fluid {
+    padding: 20px 24px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     min-height: calc(100vh - 56px);
     box-sizing: border-box;
   }

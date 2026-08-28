@@ -15,6 +15,9 @@ class ProjectStore {
   isLoading = $state<boolean>(false);
   isSaving = $state<boolean>(false);
 
+  dashboardTimeRange = $state<string>('all');
+  dashboardBrand = $state<string>('all');
+
   activeFilters = $state<FilterState>({
     query: '',
     status: 'all',
@@ -65,10 +68,15 @@ class ProjectStore {
     }
   }
 
-  async loadDashboard() {
+  async loadDashboard(options?: { timeRange?: string; brand?: string }) {
     this.isLoading = true;
+    if (options?.timeRange) this.dashboardTimeRange = options.timeRange;
+    if (options?.brand) this.dashboardBrand = options.brand;
     try {
-      this.dashboardData = await ApiClient.getDashboard();
+      this.dashboardData = await ApiClient.getDashboard({
+        timeRange: this.dashboardTimeRange,
+        brand: this.dashboardBrand
+      });
     } catch (err: any) {
       appState.addToast(`Failed to load dashboard: ${err.message}`, 'error');
     } finally {
@@ -99,6 +107,21 @@ class ProjectStore {
       appState.addToast(`Failed to load deliverables: ${err.message}`, 'error');
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  async updateProjectStatus(projectId: string, newStatus: string) {
+    const project = this.projects.find(p => p.id === projectId || p.jobId === projectId);
+    if (!project) return;
+    const oldStatus = project.status;
+    project.status = newStatus as any;
+    try {
+      await ApiClient.updateProject(project.id, { status: newStatus });
+      appState.addToast(`Project ${project.jobId || project.title} moved to ${newStatus.replace('-', ' ')}`, 'success');
+      await this.loadProjects();
+    } catch (err: any) {
+      project.status = oldStatus;
+      appState.addToast(`Failed to update status: ${err.message}`, 'error');
     }
   }
 

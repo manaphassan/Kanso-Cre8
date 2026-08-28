@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const config = require('../config');
-const { SYSTEM_USERS, ROLE_PERMISSIONS, verifyUserPassword, updateUserPassword, generateToken, authenticateToken, requirePermission } = require('../middleware/auth');
+const { SYSTEM_USERS, ROLE_PERMISSIONS, getUserRoles, getUserPermissions, verifyUserPassword, updateUserPassword, generateToken, authenticateToken, requirePermission } = require('../middleware/auth');
 const WorkspaceService = require('../services/WorkspaceService');
 const FrontmatterService = require('../services/FrontmatterService');
 const DeliverableService = require('../services/DeliverableService');
@@ -24,32 +24,79 @@ router.get('/events', (req, res) => {
 
 // ─── AUTHENTICATION ROUTES ──────────────────────────────────────────
 
+router.get('/auth/roster', (req, res) => {
+  try {
+    const roster = TeamService.getStaffRoster()
+      .filter(u => u.active !== false)
+      .map(u => ({
+        staffId: u.staffId || u.id,
+        username: u.username || (u.name || '').toLowerCase().replace(/\s+/g, ''),
+        name: u.name,
+        role: u.role || 'Designer',
+        department: u.department || 'Creative Production',
+        avatarColor: u.avatarColor || '#0078D4'
+      }))
+      .sort((a, b) => (b.staffId || '').localeCompare(a.staffId || ''));
+    res.json({ success: true, staff: roster });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post('/auth/login', (req, res) => {
   const { username, password } = req.body;
-  const targetUsername = (username || 'hasan').toLowerCase();
-  const user = SYSTEM_USERS.find(u => u.username.toLowerCase() === targetUsername || u.staffId.toLowerCase() === targetUsername);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid username or staff ID.' });
+  
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
   }
 
-  // Verify user password against persistent NAS store or default
-  if (password && !verifyUserPassword(user.username, password)) {
-    return res.status(401).json({ error: 'Invalid password. Please check your password.' });
+  const staffRoster = TeamService.getStaffRoster();
+  const searchKey = username.trim().toLowerCase();
+
+  // Support case-insensitive lookup by username, name, or staffId from live roster
+  let user = staffRoster.find(
+    u => (u.username && u.username.toLowerCase() === searchKey) || 
+         (u.name && u.name.toLowerCase() === searchKey) ||
+         (u.staffId && u.staffId.toLowerCase() === searchKey)
+  );
+
+  // Fallback to SYSTEM_USERS if not in staff directory
+  if (!user) {
+    user = SYSTEM_USERS.find(
+      u => (u.username && u.username.toLowerCase() === searchKey) || 
+           (u.name && u.name.toLowerCase() === searchKey) ||
+           (u.id && u.id.toLowerCase() === searchKey)
+    );
+  }
+
+  if (!user) {
+    return res.status(401).json({ error: 'User not found in staff directory' });
+  }
+
+  if (user.active === false) {
+    return res.status(403).json({ error: 'Account has been suspended' });
+  }
+
+  if (!verifyUserPassword(user.username, password)) {
+    return res.status(401).json({ error: 'Invalid password. Please try again.' });
   }
 
   const token = generateToken(user);
+  const roles = getUserRoles(user);
+  const permissions = getUserPermissions(user);
   res.json({
     success: true,
     token,
     user: {
-      id: user.id,
+      id: user.staffId || user.id,
       username: user.username,
       name: user.name,
-      role: user.role,
+      role: Array.isArray(user.role) ? user.role.join(', ') : (user.role || roles.join(', ')),
+      roles,
       staffId: user.staffId,
       department: user.department,
-      permissions: ROLE_PERMISSIONS[user.role] || []
+      avatarColor: user.avatarColor || '#0078D4',
+      permissions
     }
   });
 });
@@ -91,7 +138,9 @@ router.get('/auth/users', authenticateToken, (req, res) => {
 
 router.get('/dashboard', authenticateToken, (req, res) => {
   try {
-    const data = WorkspaceService.getDashboardMetrics();
+    const timeRange = req.query.timeRange || 'all';
+    const brand = req.query.brand || 'all';
+    const data = WorkspaceService.getDashboardMetrics({ timeRange, brand });
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -261,14 +310,19 @@ router.put('/projects/:id', authenticateToken, requirePermission('project:edit')
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const { frontmatter, status, priority, body, expectedHash } = req.body;
+    const { frontmatter, status, priority, manager, designer, department, brand, deadline, body, expectedHash } = req.body;
     const { frontmatter: existingFm, body: existingBody } = FrontmatterService.readProjectReadme(project.fullPath);
 
     const mergedFm = {
       ...existingFm,
       ...(frontmatter || {}),
       ...(status ? { status } : {}),
-      ...(priority ? { priority } : {})
+      ...(priority ? { priority } : {}),
+      ...(manager !== undefined ? { manager } : {}),
+      ...(designer !== undefined ? { designer } : {}),
+      ...(department !== undefined ? { department } : {}),
+      ...(brand !== undefined ? { brand } : {}),
+      ...(deadline !== undefined ? { deadline } : {})
     };
 
     const result = FrontmatterService.writeProjectReadme(
@@ -305,14 +359,15 @@ router.put('/projects/:id/brief', authenticateToken, requirePermission('brief:ed
     const project = WorkspaceService.getProjectById(req.params.id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
 
-    const { briefMarkdown, expectedHash } = req.body;
+    const briefMarkdown = req.body.briefMarkdown !== undefined ? req.body.briefMarkdown : (req.body.readmeBody !== undefined ? req.body.readmeBody : (req.body.body || ''));
+    const expectedHash = req.body.expectedHash || null;
     const { frontmatter } = FrontmatterService.readProjectReadme(project.fullPath);
 
     const result = FrontmatterService.writeProjectReadme(
       project.fullPath,
       frontmatter,
       briefMarkdown,
-      expectedHash || null
+      expectedHash
     );
 
     AuditService.logEvent({
@@ -440,23 +495,38 @@ router.get('/deliverables', authenticateToken, (req, res) => {
     const reviewQueue = [];
 
     for (const p of allProjects) {
-      if (['review', 'revision', 'in-progress'].includes(p.status)) {
-        const dels = DeliverableService.getProjectDeliverables(p.fullPath);
-        dels.forEach(d => {
-          if (d.isDeliverable) {
-            reviewQueue.push({
-              ...d,
-              projectTitle: p.title,
-              projectJobId: p.jobId,
-              projectBrand: p.brand,
-              projectStatus: p.status,
-              projectDesigner: p.designer,
-              projectPriority: p.priority,
-              projectId: p.id
-            });
-          }
-        });
-      }
+      const dels = DeliverableService.getProjectDeliverables(p.fullPath);
+      dels.forEach(d => {
+        if (d.isDeliverable) {
+          const itemStatus = (p.status === 'done' || p.status === 'approved')
+            ? 'approved'
+            : p.status === 'revision'
+              ? 'revision'
+              : 'pending';
+
+          reviewQueue.push({
+            ...d,
+            status: itemStatus,
+            projectTitle: p.title,
+            projectJobId: p.jobId,
+            projectBrand: p.brand,
+            projectStatus: p.status,
+            projectDesigner: p.designer,
+            projectPriority: p.priority,
+            projectId: p.id,
+            project: {
+              id: p.id,
+              jobId: p.jobId,
+              title: p.title,
+              brand: p.brand,
+              designer: p.designer,
+              status: p.status,
+              priority: p.priority,
+              deadline: p.deadline
+            }
+          });
+        }
+      });
     }
 
     res.json({ total: reviewQueue.length, deliverables: reviewQueue });
@@ -761,6 +831,71 @@ router.get('/system/status', authenticateToken, (req, res) => {
     uptimeSeconds: Math.floor(process.uptime()),
     platform: process.platform
   });
+});
+
+router.get('/system/workspace-candidates', authenticateToken, (req, res) => {
+  const candidates = [
+    'D:\\SynologyDrive\\Creative-Team',
+    'C:\\SynologyDrive\\Creative-Team',
+    'E:\\SynologyDrive\\Creative-Team',
+    path.join(process.env.USERPROFILE || '', 'SynologyDrive', 'Creative-Team'),
+    path.join(process.env.USERPROFILE || '', 'Synology Drive', 'Creative-Team'),
+    '\\\\SSNAS\\Creative-Team',
+    '/volume1/Creative-Team',
+    '/volume2/Creative-Team',
+    path.resolve(__dirname, '../sample-workspace')
+  ];
+
+  const results = candidates.map(p => {
+    let accessible = false;
+    let count = 0;
+    try {
+      if (fs.existsSync(p)) {
+        const items = fs.readdirSync(p);
+        accessible = true;
+        count = items.length;
+      }
+    } catch (e) {
+      accessible = false;
+    }
+    return {
+      path: p,
+      accessible,
+      itemCount: count,
+      isCurrent: path.resolve(p) === path.resolve(config.WORKSPACE_ROOT)
+    };
+  });
+
+  res.json({ success: true, candidates: results, current: config.WORKSPACE_ROOT });
+});
+
+router.post('/system/workspace-root', authenticateToken, (req, res) => {
+  try {
+    const roleLower = (req.user?.role || '').toLowerCase();
+    const permissions = req.user?.permissions || [];
+    const isAuthorized = roleLower.includes('admin') || roleLower.includes('ceo') || roleLower.includes('executive') || permissions.includes('admin:system_audit');
+    if (!isAuthorized) {
+      return res.status(403).json({ error: 'Permission Denied. System Administrator or Executive privileges required.' });
+    }
+
+    const { workspacePath } = req.body;
+    if (!workspacePath || typeof workspacePath !== 'string' || !workspacePath.trim()) {
+      return res.status(400).json({ error: 'Valid workspace path is required.' });
+    }
+
+    const result = WorkspaceService.setWorkspaceRoot(
+      workspacePath,
+      req.user?.name || req.user?.username || 'Administrator'
+    );
+
+    res.json({
+      success: true,
+      message: 'Workspace root mount path updated and rescan initiated successfully.',
+      ...result
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 module.exports = router;

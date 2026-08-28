@@ -62,10 +62,84 @@
   let currentFrontmatter = $state<ProjectFrontmatter>({});
   let projectComments = $state<ProjectComment[]>([]);
   let isLoadingCopy = $state<boolean>(false);
+  let lastLoadedHash = $state<string | null>(null);
 
   const p = $derived(projectStore.selectedProject);
 
+  // Real-time synchronization when SSE or store updates selectedProject
+  $effect(() => {
+    const proj = projectStore.selectedProject;
+    if (proj) {
+      const vHash = `${proj.id || ''}_${proj.versionHash || ''}_${proj.status || ''}_${proj.priority || ''}`;
+      if (vHash !== lastLoadedHash) {
+        lastLoadedHash = vHash;
+        currentReadmeBody = proj.readmeBody || proj.briefMarkdown || '';
+        currentFrontmatter = {
+          status: proj.status,
+          designer: proj.designer,
+          brand: proj.brand,
+          manager: proj.manager,
+          department: proj.department,
+          deadline: proj.deadline,
+          priority: proj.priority,
+          tags: proj.tags || [],
+          creative_direction: proj.creativeDirection || {}
+        };
+        projectComments = (proj as any).comments || [];
+      }
+    }
+  });
+
+  // Staff Roster & Manager Selection
+  interface StaffMember {
+    staffId: string;
+    username: string;
+    name: string;
+    role: string;
+    department?: string;
+    avatarColor?: string;
+  }
+  let staffList = $state<StaffMember[]>([]);
+  let isUpdatingManager = $state<boolean>(false);
+
+  async function loadStaffList() {
+    try {
+      const res = await ApiClient.getStaffAccounts();
+      if (res && res.users) {
+        staffList = res.users;
+      }
+    } catch {
+      try {
+        const res2 = await ApiClient.getStaffRoster();
+        if (res2 && res2.roster) {
+          staffList = res2.roster;
+        }
+      } catch (e) {
+        console.warn('[ProjectDetailView] loadStaffList error:', e);
+      }
+    }
+  }
+
+  async function handleManagerChange(newManager: string) {
+    if (!p || !newManager) return;
+    isUpdatingManager = true;
+    try {
+      await ApiClient.updateProject(p.id, { manager: newManager });
+      currentFrontmatter.manager = newManager;
+      if (projectStore.selectedProject) {
+        projectStore.selectedProject.manager = newManager;
+      }
+      appState.addToast(`Reviewer updated to ${newManager}`, 'success');
+      await projectStore.loadProjectDetail(p.id);
+    } catch (err: any) {
+      appState.addToast(`Failed to update reviewer: ${err.message}`, 'error');
+    } finally {
+      isUpdatingManager = false;
+    }
+  }
+
   onMount(async () => {
+    await loadStaffList();
     const id = projectId || appState.routeParams.id;
     if (id) {
       await loadProject(id);
@@ -75,7 +149,7 @@
   async function loadProject(id: string) {
     await projectStore.loadProjectDetail(id);
     if (projectStore.selectedProject) {
-      currentReadmeBody = projectStore.selectedProject.readmeBody || '';
+      currentReadmeBody = projectStore.selectedProject.readmeBody || projectStore.selectedProject.briefMarkdown || '';
       currentFrontmatter = {
         status: projectStore.selectedProject.status,
         designer: projectStore.selectedProject.designer,
@@ -114,9 +188,17 @@
     if (!p) return;
     try {
       const hash = p.versionHash || null;
-      await ApiClient.updateBrief(p.id, newBody, hash);
+      const res = await ApiClient.updateBrief(p.id, newBody, hash);
       appState.addToast('Creative Brief saved to Synology NAS (README.md)', 'success');
       currentReadmeBody = newBody;
+      if (projectStore.selectedProject) {
+        projectStore.selectedProject.readmeBody = newBody;
+        projectStore.selectedProject.briefMarkdown = newBody;
+        if (res?.versionHash) {
+          projectStore.selectedProject.versionHash = res.versionHash;
+          lastLoadedHash = `${projectStore.selectedProject.id || ''}_${res.versionHash}_${projectStore.selectedProject.status || ''}_${projectStore.selectedProject.priority || ''}`;
+        }
+      }
     } catch (err: any) {
       appState.addToast(`Failed to save brief: ${err.message}`, 'error');
     }
@@ -171,8 +253,30 @@
   }
 
   function openLightbox(d: DeliverableItem) {
-    selectedDeliverable = d;
+    selectedDeliverable = {
+      ...d,
+      project: d.project || {
+        jobId: p?.jobId || p?.id || '',
+        title: p?.title || '',
+        brand: p?.brand || '',
+        designer: p?.designer || '',
+        status: p?.status || '',
+        priority: p?.priority || '',
+        deadline: p?.deadline || ''
+      }
+    };
     lightboxOpen = true;
+  }
+
+  function getCompanyFullName(code?: string): string {
+    if (!code) return 'SuamiSihat Holding Sdn Bhd';
+    const c = code.toUpperCase().trim();
+    if (c === 'SSH' || c === 'SS') return 'SuamiSihat Holding Sdn Bhd';
+    if (c === 'SSC') return 'SuamiSihat Healthcare Sdn Bhd';
+    if (c === 'SSW') return 'SuamiSihat Wellness Sdn Bhd';
+    if (c === 'SSE' || c === 'SSL') return 'SuamiSihat Ecommerce Sdn Bhd';
+    if (c === 'SST') return 'SuamiSihat Technology Sdn Bhd';
+    return `${code} Operating Unit`;
   }
 </script>
 
@@ -354,15 +458,15 @@
             <div class="gallery-header">
               <div class="gallery-title-group">
                 <h3>Production Output Assets</h3>
-                <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> on Synology NAS</span>
+                <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> or <code>04_Production/</code> on Synology NAS</span>
               </div>
             </div>
 
             {#if projectStore.activeDeliverables.length === 0}
               <div class="empty-gallery">
                 <div class="empty-icon">📂</div>
-                <p>No output files found in <code>05_DELIVERABLES</code>.</p>
-                <p class="empty-sub">Export assets from Photoshop, Illustrator, or Blender into the project folder.</p>
+                <p>No output media found in <code>05_DELIVERABLES</code> or <code>04_Production</code>.</p>
+                <p class="empty-sub">Export output media (PNG, JPG, MP4, PDF) from Photoshop, Illustrator, or Blender into the project folder.</p>
               </div>
             {:else}
               <div class="deliverables-grid">
@@ -371,17 +475,33 @@
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <div class="deliverable-card" onclick={() => openLightbox(d)}>
                     <div class="del-preview-box">
-                      {#if d.isImage}
+                      {#if d.isImage || d.previewType === 'image'}
                         <img src={d.previewUrl} alt={d.filename} loading="lazy" />
+                      {:else if d.isVideo || d.previewType === 'video'}
+                        <div class="del-video-thumb">
+                          <!-- svelte-ignore a11y_media_has_caption -->
+                          <video src={d.streamUrl || d.previewUrl} preload="metadata" muted playsinline></video>
+                          <span class="del-play-badge">▶ VIDEO</span>
+                        </div>
+                      {:else if d.isPdf || d.previewType === 'pdf'}
+                        <div class="del-pdf-thumb">
+                          <span class="del-thumb-icon">📄</span>
+                          <span class="del-thumb-text">PDF DOCUMENT</span>
+                        </div>
+                      {:else if d.isAudio || d.previewType === 'audio'}
+                        <div class="del-audio-thumb">
+                          <span class="del-thumb-icon">🎧</span>
+                          <span class="del-thumb-text">AUDIO TRACK</span>
+                        </div>
                       {:else}
-                        <div class="doc-badge">{d.ext.toUpperCase()}</div>
+                        <div class="doc-badge">{d.ext ? d.ext.toUpperCase() : 'FILE'}</div>
                       {/if}
-                      <span class="format-pill">{d.format}</span>
+                      <span class="format-pill">{d.format || (d.ext ? d.ext.toUpperCase() : 'MEDIA')}</span>
                     </div>
                     <div class="del-details">
                       <div class="del-filename" title={d.filename}>{d.filename}</div>
                       <div class="del-meta-row">
-                        <span>{(d.sizeBytes / (1024 * 1024)).toFixed(2)} MB</span>
+                        <span>{d.sizeFormatted || (d.sizeBytes ? ((d.sizeBytes / (1024 * 1024)).toFixed(2) + ' MB') : '0.00 MB')}</span>
                         <span class="status-tag status-{d.status || 'review'}">{d.status || 'review'}</span>
                       </div>
                     </div>
@@ -482,10 +602,29 @@
                 </div>
 
                 <div class="prop-group">
-                  <span class="prop-label">Reviewer (Art Director)</span>
-                  <div class="prop-value user-val">
+                  <span class="prop-label">Reviewer</span>
+                  <div class="prop-value user-val-selectable">
                     <div class="user-avatar mgr-avatar">{p.manager?.substring(0, 2) || 'AD'}</div>
-                    <span class="user-name">{p.manager || 'Harussani'}</span>
+                    <select
+                      class="prop-manager-select"
+                      value={p.manager || 'Harussani'}
+                      disabled={isUpdatingManager}
+                      onchange={(e) => handleManagerChange((e.target as HTMLSelectElement).value)}
+                      aria-label="Select Reviewer"
+                    >
+                      {#if staffList.length === 0}
+                        <option value={p.manager || 'Harussani'}>{p.manager || 'Harussani'}</option>
+                      {:else}
+                        {#each staffList as staff}
+                          <option value={staff.name}>
+                            {staff.name} {staff.role ? `· ${staff.role}` : ''}
+                          </option>
+                        {/each}
+                        {#if !staffList.some(s => s.name.toLowerCase() === (p.manager || '').toLowerCase()) && p.manager}
+                          <option value={p.manager}>{p.manager} (Current)</option>
+                        {/if}
+                      {/if}
+                    </select>
                   </div>
                 </div>
 
@@ -493,7 +632,7 @@
                   <span class="prop-label">Corporate Brand / Subsidiary</span>
                   <div class="prop-value">
                     <span class="brand-chip">{p.brand || 'SS'}</span>
-                    <span class="brand-full">{p.client || 'SuamiSihat Enterprise'}</span>
+                    <span class="brand-full">{getCompanyFullName(p.brand || p.client)}</span>
                   </div>
                 </div>
 
@@ -902,6 +1041,41 @@
   }
   .mgr-avatar { background: #0284C7; }
 
+  .user-val-selectable {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    width: 100%;
+  }
+
+  .prop-manager-select {
+    flex: 1;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-app);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 6px;
+    padding: 5px 8px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.14s ease;
+  }
+  .prop-manager-select:hover:not(:disabled) {
+    border-color: var(--brand-accent, #0078D4);
+    background: var(--surface-card);
+  }
+  .prop-manager-select:focus {
+    border-color: var(--brand-primary, #043388);
+    box-shadow: 0 0 0 2px rgba(4, 51, 136, 0.15);
+  }
+  .prop-manager-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .brand-chip {
     font-weight: 800;
     font-size: 11px;
@@ -1012,6 +1186,54 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+  .deliverable-card:hover .del-preview-box img {
+    transform: scale(1.04);
+  }
+
+  .del-video-thumb,
+  .del-pdf-thumb,
+  .del-audio-thumb {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0B1120;
+    color: #FFFFFF;
+    position: relative;
+  }
+  .del-video-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.75;
+  }
+  .del-play-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
+  }
+  .del-thumb-icon {
+    font-size: 30px;
+    margin-bottom: 2px;
+  }
+  .del-thumb-text {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #94A3B8;
+    letter-spacing: 0.5px;
   }
 
   .doc-badge {

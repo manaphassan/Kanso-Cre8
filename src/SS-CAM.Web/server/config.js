@@ -3,7 +3,13 @@ const fs = require('fs');
 
 const envWorkspace = process.env.WORKSPACE_ROOT;
 const uncNasPath = '\\\\SSNAS\\Creative-Team';
-const localSyncPath = 'E:\\SynologyDrive\\Creative-Team';
+const localSyncCandidates = [
+  'D:\\SynologyDrive\\Creative-Team',
+  'C:\\SynologyDrive\\Creative-Team',
+  'E:\\SynologyDrive\\Creative-Team',
+  path.join(process.env.USERPROFILE || '', 'SynologyDrive', 'Creative-Team'),
+  path.join(process.env.USERPROFILE || '', 'Synology Drive', 'Creative-Team')
+];
 const linuxNasPath = '/volume1/Creative-Team';
 const linuxNasVolume2Path = '/volume2/Creative-Team';
 const fallbackLocalWorkspace = path.resolve(__dirname, '../sample-workspace');
@@ -18,14 +24,32 @@ function isPathAccessible(dirPath) {
   }
 }
 
+const overrideConfigPath = path.resolve(__dirname, 'workspace_config.json');
+let userOverridePath = null;
+if (fs.existsSync(overrideConfigPath)) {
+  try {
+    const raw = JSON.parse(fs.readFileSync(overrideConfigPath, 'utf8'));
+    if (raw && raw.workspaceRoot && isPathAccessible(raw.workspaceRoot)) {
+      userOverridePath = raw.workspaceRoot;
+    }
+  } catch (e) {}
+}
+
 let resolvedWorkspace = fallbackLocalWorkspace;
 
-if (envWorkspace && isPathAccessible(envWorkspace)) {
+if (userOverridePath) {
+  resolvedWorkspace = userOverridePath;
+} else if (envWorkspace && isPathAccessible(envWorkspace)) {
   resolvedWorkspace = envWorkspace;
 } else if (process.platform === 'win32' && isPathAccessible(uncNasPath)) {
   resolvedWorkspace = uncNasPath;
-} else if (process.platform === 'win32' && isPathAccessible(localSyncPath)) {
-  resolvedWorkspace = localSyncPath;
+} else if (process.platform === 'win32') {
+  const foundLocal = localSyncCandidates.find(p => isPathAccessible(p));
+  if (foundLocal) {
+    resolvedWorkspace = foundLocal;
+  } else if (isPathAccessible(fallbackLocalWorkspace)) {
+    resolvedWorkspace = fallbackLocalWorkspace;
+  }
 } else if (isPathAccessible(linuxNasPath)) {
   resolvedWorkspace = linuxNasPath;
 } else if (isPathAccessible(linuxNasVolume2Path)) {

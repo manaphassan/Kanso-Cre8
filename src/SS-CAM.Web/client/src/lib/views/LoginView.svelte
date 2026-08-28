@@ -21,20 +21,21 @@
     { code: 'SST', name: 'SuamiSihat Technology sdn bhd' }
   ]);
 
-  const rawUserProfiles: UserProfile[] = [
-    { username: 'raihan', name: 'Raihan', staffId: 'SS0073', role: 'Sales Manager' },
-    { username: 'gaddafi', name: 'Gaddafi', staffId: 'SS0071', role: 'Executive' },
-    { username: 'aliff', name: 'Aliff', staffId: 'SS0037', role: 'Designer' },
-    { username: 'haikal', name: 'Haikal', staffId: 'SS0035', role: 'Designer' },
+  const defaultStaffList: UserProfile[] = [
     { username: 'harussani', name: 'Harussani', staffId: 'SS0004', role: 'Administrator' },
-    { username: 'ammar', name: 'Ammar', staffId: 'SS0003', role: 'Copywriter' },
-    { username: 'farhan', name: 'Farhan', staffId: 'SS0002', role: 'Lead Designer' },
-    { username: 'hasan', name: 'Hasan', staffId: 'SS0001', role: 'Creative Manager' },
-    { username: 'admin', name: 'Admin', staffId: 'SS0000', role: 'System Admin' }
+    { username: 'haikal', name: 'Haikal', staffId: 'SS0035', role: 'Designer' },
+    { username: 'aliff', name: 'Aliff', staffId: 'SS0037', role: 'Designer' },
+    { username: 'raihan', name: 'Raihan', staffId: 'SS0073', role: 'Sales Manager' },
+    { username: 'hasan', name: 'Hasan', staffId: 'SS0001', role: 'Manager' },
+    { username: 'gaddafi', name: 'Gaddafi', staffId: 'SS0071', role: 'Manager' }
   ];
 
-  // Guaranteed sorted by Staff ID Descending (SS0073 -> SS0071 -> SS0037 -> ... -> SS0000)
-  const sortedUsers = [...rawUserProfiles].sort((a, b) => b.staffId.localeCompare(a.staffId));
+  let staffProfiles = $state<UserProfile[]>(defaultStaffList);
+
+  // Guaranteed sorted by Staff ID Descending (SS0073 -> SS0071 -> SS0037 -> ... -> SS0001)
+  const sortedUsers = $derived.by<UserProfile[]>(() =>
+    [...staffProfiles].sort((a, b) => (b.staffId || '').localeCompare(a.staffId || ''))
+  );
 
   // Remember Me state initialization
   const isRemembered = typeof localStorage !== 'undefined' && localStorage.getItem('ss_cam_remember_me') === 'true';
@@ -42,21 +43,21 @@
 
   // Recent Active Logins (Dynamic, strictly limited to 3)
   function getStoredRecentUsers(): string[] {
-    if (typeof localStorage === 'undefined') return ['hasan', 'raihan', 'gaddafi'];
+    if (typeof localStorage === 'undefined') return ['harussani', 'haikal', 'aliff'];
     try {
       const stored = JSON.parse(localStorage.getItem('ss_cam_recent_users') || '[]');
       if (Array.isArray(stored) && stored.length > 0) {
         return stored.slice(0, 3);
       }
     } catch {}
-    return ['hasan', 'raihan', 'gaddafi'];
+    return ['harussani', 'haikal', 'aliff'];
   }
 
   let recentUsernames = $state<string[]>(getStoredRecentUsers());
   let recentProfiles = $derived.by<UserProfile[]>(() => {
     const list: UserProfile[] = [];
     for (const uName of recentUsernames) {
-      const profile = rawUserProfiles.find((p) => p.username === uName);
+      const profile = staffProfiles.find((p) => p.username === uName || p.staffId === uName);
       if (profile && !list.some((p) => p.username === profile.username)) {
         list.push(profile);
       }
@@ -74,7 +75,7 @@
   });
 
   let rememberMe = $state<boolean>(isRemembered);
-  let username = $state<string>(savedUser || sortedUsers[0]?.username || 'hasan');
+  let username = $state<string>(savedUser || sortedUsers[0]?.username || 'harussani');
   let password = $state<string>('');
   let showPassword = $state<boolean>(false);
   let isLoading = $state<boolean>(false);
@@ -89,6 +90,24 @@
     // Preload brand logo for canvas drawing
     brandLogoImg = new Image();
     brandLogoImg.src = 'brand/ss-logomark-full.png';
+
+    // Fetch live staff roster dynamically from Synology NAS / Server API
+    try {
+      const rosterRes = await ApiClient.getAuthRoster();
+      if (rosterRes && rosterRes.staff && Array.isArray(rosterRes.staff) && rosterRes.staff.length > 0) {
+        staffProfiles = rosterRes.staff.map((s: any) => ({
+          username: s.username,
+          name: s.name,
+          staffId: s.staffId,
+          role: s.role
+        }));
+        if (!savedUser && staffProfiles.length > 0) {
+          username = staffProfiles[0].username;
+        }
+      }
+    } catch (e) {
+      console.warn('[LoginView] Failed to fetch live auth roster, using defaults:', e);
+    }
 
     // Fetch active companies to dynamically set floating brand logos count
     try {

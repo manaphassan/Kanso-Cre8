@@ -10,23 +10,28 @@
   }
 
   let {
-    skills = [
-      { label: 'Packaging', target: 90, actual: 86 },
-      { label: 'Graphic Design', target: 95, actual: 94 },
-      { label: '3D & Motion', target: 80, actual: 78 },
-      { label: 'Video Editing', target: 85, actual: 88 },
-      { label: 'Copywriting', target: 75, actual: 72 },
-      { label: 'Branding', target: 90, actual: 95 }
-    ]
+    skills
   }: Props = $props();
+
+  const defaultSkills: SkillItem[] = [
+    { label: 'Packaging', target: 90, actual: 86 },
+    { label: 'Graphic Design', target: 95, actual: 94 },
+    { label: '3D & Motion', target: 80, actual: 78 },
+    { label: 'Video Editing', target: 85, actual: 88 },
+    { label: 'Copywriting', target: 75, actual: 72 },
+    { label: 'Branding', target: 90, actual: 95 }
+  ];
+
+  const activeSkills = $derived(skills && skills.length > 0 ? skills : defaultSkills);
 
   const cx = 150;
   const cy = 150;
   const maxR = 100;
-  const total = $derived(skills.length);
+  const total = $derived(activeSkills.length);
 
   function getCoords(index: number, value: number): { x: number; y: number } {
-    const angle = (Math.PI * 2 / total) * index - Math.PI / 2;
+    const count = total || 1;
+    const angle = (Math.PI * 2 / count) * index - Math.PI / 2;
     const r = (value / 100) * maxR;
     return {
       x: cx + r * Math.cos(angle),
@@ -35,14 +40,14 @@
   }
 
   let targetPolygon = $derived.by(() => {
-    return skills.map((s, i) => {
+    return activeSkills.map((s, i) => {
       const { x, y } = getCoords(i, s.target);
       return `${x},${y}`;
     }).join(' ');
   });
 
   let actualPolygon = $derived.by(() => {
-    return skills.map((s, i) => {
+    return activeSkills.map((s, i) => {
       const { x, y } = getCoords(i, s.actual);
       return `${x},${y}`;
     }).join(' ');

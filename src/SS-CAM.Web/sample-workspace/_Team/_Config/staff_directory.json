@@ -4,33 +4,46 @@
     "username": "harussani",
     "name": "Harussani",
     "email": "harussani.suamisihat@gmail.com",
-    "role": "Art Director / Administrator",
+    "role": "Admin, Designer",
     "department": "Creative Production",
-    "defaultBrand": "SS",
+    "defaultBrand": "SSH",
     "avatarColor": "#0078D4",
-    "active": true
+    "active": true,
+    "password": "",
+    "roles": [
+      "Admin",
+      "Designer"
+    ]
   },
   {
     "staffId": "SS0035",
     "username": "haikal",
     "name": "Haikal",
     "email": "haikal.suamisihat@gmail.com",
-    "role": "Multimedia Designer",
-    "department": "Multimedia & Motion",
+    "role": "Designer",
+    "department": "Creative Production",
     "defaultBrand": "SS",
     "avatarColor": "#106EBE",
-    "active": true
+    "active": true,
+    "roles": [
+      "Designer"
+    ],
+    "password": ""
   },
   {
     "staffId": "SS0037",
     "username": "aliff",
     "name": "Aliff",
     "email": "aliffnaz.suamisihat@gmail.com",
-    "role": "Multimedia Designer",
-    "department": "Multimedia & Motion",
+    "role": "Designer",
+    "department": "Creative Production",
     "defaultBrand": "SSE",
     "avatarColor": "#7C3AED",
-    "active": true
+    "active": true,
+    "roles": [
+      "Designer"
+    ],
+    "password": ""
   },
   {
     "staffId": "SS0073",
@@ -48,21 +61,23 @@
     "username": "hasan",
     "name": "Hasan",
     "email": "hasan@suamisihat.com",
-    "role": "Chief Executive Officer",
+    "role": "Manager",
     "department": "Executive Management",
-    "defaultBrand": "SS",
+    "defaultBrand": "SSH",
     "avatarColor": "#21A1F7",
-    "active": true
+    "active": true,
+    "password": ""
   },
   {
     "staffId": "SS0071",
     "username": "gaddafi",
     "name": "Gaddafi",
     "email": "gaddafi@suamisihat.com",
-    "role": "Co-Chief Executive Officer",
+    "role": "Manager",
     "department": "Executive Management",
-    "defaultBrand": "SS",
+    "defaultBrand": "SSH",
     "avatarColor": "#059669",
-    "active": true
+    "active": true,
+    "password": ""
   }
 ]

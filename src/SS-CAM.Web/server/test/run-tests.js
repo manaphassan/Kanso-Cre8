@@ -257,6 +257,7 @@ This is the project brief content.
   // ─── TEST 12: TeamService & User Staff Directory Governance ────────
   test('TeamService provisions, updates, and validates staff user accounts', () => {
     const TeamService = require('../services/TeamService');
+    const { getUserRoles, getUserPermissions } = require('../middleware/auth');
     const roster = TeamService.getStaffRoster();
 
     assert.ok(Array.isArray(roster), 'Staff roster must return an array');
@@ -266,7 +267,7 @@ This is the project brief content.
     assert.ok(hasan, 'Hasan (SS0001) must exist');
     assert.ok(hasan.role, 'Hasan must have an assigned role');
 
-    // Test adding and updating a staff user
+    // Test adding and updating a multi-role staff user
     const testStaffId = 'SS9999';
     try {
       TeamService.deleteStaffMember(testStaffId);
@@ -274,19 +275,31 @@ This is the project brief content.
 
     const added = TeamService.addStaffMember({
       staffId: testStaffId,
-      name: 'Test Staff Designer',
-      role: 'Multimedia Designer',
+      name: 'Test Staff Designer & Copywriter',
+      roles: ['Designer', 'Copywriter'],
       department: 'Creative Production',
       defaultBrand: 'SS'
     });
 
     assert.strictEqual(added.staffId, 'SS9999');
-    assert.strictEqual(added.name, 'Test Staff Designer');
+    assert.strictEqual(added.name, 'Test Staff Designer & Copywriter');
+    assert.ok(added.roles.includes('Designer'), 'Must include Designer role');
+    assert.ok(added.roles.includes('Copywriter'), 'Must include Copywriter role');
+
+    // Test permission aggregation across multiple roles
+    const perms = getUserPermissions(added);
+    assert.ok(perms.includes('deliverable:upload'), 'Must contain Designer upload permission');
+    assert.ok(perms.includes('copy:draft'), 'Must contain Copywriter draft permission');
 
     const updated = TeamService.updateStaffMember(testStaffId, {
-      name: 'Test Staff Lead Designer'
+      name: 'Test Staff Lead Designer',
+      roles: ['Designer', 'Manager']
     });
     assert.strictEqual(updated.name, 'Test Staff Lead Designer');
+    assert.ok(updated.roles.includes('Manager'), 'Must update to include Manager role');
+
+    const updatedPerms = getUserPermissions(updated);
+    assert.ok(updatedPerms.includes('team:manage_workload'), 'Must contain Manager workload permission');
 
     // Cleanup
     TeamService.deleteStaffMember(testStaffId);
@@ -383,6 +396,8 @@ This is the project brief content.
 
     const projBefore = WorkspaceService.getProjectById('9999D');
     assert.ok(projBefore, 'Project 9999D must be indexed in workspace');
+    assert.strictEqual(projBefore.readmeBody.includes('# Temp Project'), true, 'readmeBody must be loaded from README.md');
+    assert.strictEqual(projBefore.briefMarkdown.includes('# Temp Project'), true, 'briefMarkdown must be loaded from README.md');
 
     const deleteRes = WorkspaceService.deleteProject('9999D', 'Test Admin', 'Administrator');
     assert.strictEqual(deleteRes.success, true);
@@ -466,7 +481,55 @@ This is the project brief content.
     try { fs.unlinkSync(tempFile); } catch (e) {}
   });
 
-  // ─── TEST 19: Creative Handover Package Export (ZIP + HTML) ─────────
+  // ─── TEST 19: DeliverableService Strict Media Filtering & Previews ──
+  test('DeliverableService strictly indexes output media (PNG, JPG, MP4, PDF) and excludes COPY.md / raw source files', () => {
+    const testDir = path.join(__dirname, 'temp-deliv-test-project');
+    const delivDir = path.join(testDir, '05_DELIVERABLES');
+    const prodDir = path.join(testDir, '04_Production');
+    const copyDir = path.join(testDir, '03_COPYWRITING');
+    const srcDir = path.join(testDir, '02_SOURCE_FILES');
+
+    fs.mkdirSync(delivDir, { recursive: true });
+    fs.mkdirSync(prodDir, { recursive: true });
+    fs.mkdirSync(copyDir, { recursive: true });
+    fs.mkdirSync(srcDir, { recursive: true });
+
+    // Write mixed files
+    fs.writeFileSync(path.join(delivDir, 'master_packaging_v1.png'), 'dummy-png-data');
+    fs.writeFileSync(path.join(delivDir, 'product_catalogue_final.pdf'), 'dummy-pdf-data');
+    fs.writeFileSync(path.join(prodDir, 'social_reel_1080p.mp4'), 'dummy-mp4-data');
+    fs.writeFileSync(path.join(copyDir, 'COPY.md'), '# Copywriting text should be excluded from gallery');
+    fs.writeFileSync(path.join(srcDir, 'packaging_master.afdesign'), 'raw-vector-source-data');
+
+    const deliverables = DeliverableService.getProjectDeliverables(testDir);
+
+    // Assert only media files from deliverables & production folders were indexed
+    assert.strictEqual(deliverables.length, 3, 'Must index exactly 3 media deliverables (png, pdf, mp4)');
+    
+    const filenames = deliverables.map(d => d.filename);
+    assert.ok(filenames.includes('master_packaging_v1.png'), 'Must include PNG export');
+    assert.ok(filenames.includes('product_catalogue_final.pdf'), 'Must include PDF export');
+    assert.ok(filenames.includes('social_reel_1080p.mp4'), 'Must include MP4 video');
+    assert.strictEqual(filenames.includes('COPY.md'), false, 'COPY.md must NEVER be in deliverables gallery');
+    assert.strictEqual(filenames.includes('packaging_master.afdesign'), false, 'Source files must not be in deliverables gallery');
+
+    // Assert preview URLs and flags
+    const pngDel = deliverables.find(d => d.filename === 'master_packaging_v1.png');
+    assert.strictEqual(pngDel.isImage, true);
+    assert.strictEqual(pngDel.format, 'PNG');
+    assert.ok(pngDel.previewUrl.includes('/api/deliverables/preview?id='));
+    assert.ok(pngDel.downloadUrl.includes('/api/deliverables/download?id='));
+
+    const mp4Del = deliverables.find(d => d.filename === 'social_reel_1080p.mp4');
+    assert.strictEqual(mp4Del.isVideo, true);
+    assert.strictEqual(mp4Del.format, 'MP4');
+    assert.ok(mp4Del.streamUrl.includes('/api/deliverables/stream?id='));
+
+    // Cleanup
+    try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+  });
+
+  // ─── TEST 20: Creative Handover Package Export (ZIP + HTML) ─────────
   test('ExportService generates clean ZIP stream and HTML handover summary manifest', (done) => {
     const ExportService = require('../services/ExportService');
     const testDir = path.join(__dirname, 'temp-export-project');
@@ -520,10 +583,54 @@ This is the project brief content.
     });
 
     assert.ok(metrics.slaMetrics, 'Should include slaMetrics');
-    assert.ok(typeof metrics.slaMetrics.avgTurnaroundDays === 'number', 'avgTurnaroundDays should be number');
-    assert.ok(typeof metrics.slaMetrics.firstTimeRightPercent === 'number', 'firstTimeRightPercent should be number');
-    assert.ok(typeof metrics.slaMetrics.avgRevisionCount === 'number', 'avgRevisionCount should be number');
+    assert.ok(typeof metrics.slaMetrics.avgTurnaroundDays === 'number' || metrics.slaMetrics.avgTurnaroundDays === null, 'avgTurnaroundDays should be number or null');
+    assert.ok(typeof metrics.slaMetrics.medianTurnaroundDays === 'number' || metrics.slaMetrics.medianTurnaroundDays === null, 'medianTurnaroundDays should be number or null');
+    assert.ok(typeof metrics.slaMetrics.p90TurnaroundDays === 'number' || metrics.slaMetrics.p90TurnaroundDays === null, 'p90TurnaroundDays should be number or null');
+    assert.ok(typeof metrics.slaMetrics.firstTimeRightPercent === 'number' || metrics.slaMetrics.firstTimeRightPercent === null, 'firstTimeRightPercent should be number or null');
+    assert.ok(typeof metrics.slaMetrics.avgRevisionCount === 'number' || metrics.slaMetrics.avgRevisionCount === null, 'avgRevisionCount should be number or null');
+    assert.ok(typeof metrics.slaMetrics.avgReviewAgeDays === 'number', 'avgReviewAgeDays should be number');
     assert.ok(Array.isArray(metrics.slaMetrics.brandVelocity), 'brandVelocity should be array');
+    assert.ok(Array.isArray(metrics.slaMetrics.competencySkills), 'competencySkills should be array');
+    assert.ok(metrics.slaMetrics.competencySkills.length === 6, 'Should have 6 creative competency disciplines');
+
+    // Test time-range and brand filtering
+    const scoped30d = WorkspaceService.getDashboardMetrics({ timeRange: '30d', brand: 'SS' });
+    assert.strictEqual(scoped30d.activeFilters.timeRange, '30d');
+    assert.strictEqual(scoped30d.activeFilters.brand, 'SS');
+  });
+
+  // ─── TEST 21: Workspace Mount Path Switching & Override Persistence ───
+  test('WorkspaceService dynamically switches workspace root path, restarts watcher, and persists override', () => {
+    const origRoot = WorkspaceService.workspaceRoot;
+    const tempSwitchDir = path.join(__dirname, 'temp-workspace-switch-test');
+    if (!fs.existsSync(tempSwitchDir)) {
+      fs.mkdirSync(tempSwitchDir, { recursive: true });
+    }
+
+    try {
+      const result = WorkspaceService.setWorkspaceRoot(tempSwitchDir, 'TestAdmin');
+      assert.strictEqual(result.success, true, 'Should report success on valid path switch');
+      assert.strictEqual(path.resolve(WorkspaceService.workspaceRoot), path.resolve(tempSwitchDir), 'workspaceRoot must update');
+      
+      // Verify override file was written
+      const overridePath = path.resolve(__dirname, '../workspace_config.json');
+      assert.ok(fs.existsSync(overridePath), 'workspace_config.json must be created');
+      const savedConfig = JSON.parse(fs.readFileSync(overridePath, 'utf8'));
+      assert.strictEqual(path.resolve(savedConfig.workspaceRoot), path.resolve(tempSwitchDir), 'Saved config must match new path');
+
+      // Test invalid path throws error
+      assert.throws(() => {
+        WorkspaceService.setWorkspaceRoot('Z:\\NonExistent\\Drive\\Folder\\12345');
+      }, /does not exist/i, 'Should reject non-existent paths');
+    } finally {
+      // Restore original workspaceRoot
+      WorkspaceService.setWorkspaceRoot(origRoot, 'TestAdmin');
+      try {
+        fs.rmdirSync(tempSwitchDir);
+      } catch (e) {
+        try { fs.rmSync(tempSwitchDir, { recursive: true, force: true }); } catch (e2) {}
+      }
+    }
   });
 
   console.log(`\n========================================================`);

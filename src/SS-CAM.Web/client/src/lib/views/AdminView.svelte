@@ -115,11 +115,18 @@
     );
   });
 
-  function normalizeRole(role: string): 'Admin' | 'Manager' | 'User' {
-    const r = (role || '').toLowerCase();
-    if (r === 'admin' || r.includes('admin') || r.includes('ceo') || r.includes('director')) return 'Admin';
-    if (r === 'manager' || r.includes('manager') || r.includes('lead') || r.includes('head')) return 'Manager';
-    return 'User';
+  function getNormalizedRoles(role: string | string[] | undefined): ('Designer' | 'Copywriter' | 'Manager' | 'Admin')[] {
+    if (!role) return ['Designer'];
+    const raw = Array.isArray(role) ? role : role.split(',').map(r => r.trim()).filter(Boolean);
+    if (raw.length === 0) return ['Designer'];
+    const mapped = raw.map(r => {
+      const low = r.toLowerCase();
+      if (low.includes('admin') || low.includes('ceo') || low.includes('director') || low.includes('administrator')) return 'Admin' as const;
+      if (low.includes('manager') || low.includes('lead') || low.includes('head')) return 'Manager' as const;
+      if (low.includes('copy') || low.includes('writer')) return 'Copywriter' as const;
+      return 'Designer' as const;
+    });
+    return Array.from(new Set(mapped));
   }
 
   const filteredUsers = $derived.by(() => {
@@ -130,7 +137,8 @@
         const match =
           u.name.toLowerCase().includes(q) ||
           u.staffId.toLowerCase().includes(q) ||
-          u.role.toLowerCase().includes(q) ||
+          (u.role && u.role.toLowerCase().includes(q)) ||
+          (u.roles && u.roles.some(r => r.toLowerCase().includes(q))) ||
           u.department.toLowerCase().includes(q) ||
           (u.username && u.username.toLowerCase().includes(q)) ||
           (u.email && u.email.toLowerCase().includes(q));
@@ -144,8 +152,8 @@
 
       // Role filter
       if (userRoleFilter !== 'all') {
-        const nr = normalizeRole(u.role).toLowerCase();
-        if (nr !== userRoleFilter.toLowerCase()) return false;
+        const roles = getNormalizedRoles(u.roles || u.role);
+        if (!roles.map(r => r.toLowerCase()).includes(userRoleFilter.toLowerCase())) return false;
       }
 
       return true;
@@ -182,9 +190,10 @@
 
     const totalUsers = users.length;
     const activeUsers = users.filter(u => u.active !== false).length;
-    const adminsCount = users.filter(u => normalizeRole(u.role) === 'Admin').length;
-    const managersCount = users.filter(u => normalizeRole(u.role) === 'Manager').length;
-    const standardUsersCount = users.filter(u => normalizeRole(u.role) === 'User').length;
+    const adminsCount = users.filter(u => getNormalizedRoles(u.roles || u.role).includes('Admin')).length;
+    const managersCount = users.filter(u => getNormalizedRoles(u.roles || u.role).includes('Manager')).length;
+    const designersCount = users.filter(u => getNormalizedRoles(u.roles || u.role).includes('Designer')).length;
+    const copywritersCount = users.filter(u => getNormalizedRoles(u.roles || u.role).includes('Copywriter')).length;
 
     const totalAuditCount = auditLogs.length;
 
@@ -196,11 +205,13 @@
       activeUsers,
       adminsCount,
       managersCount,
-      standardUsersCount,
+      designersCount,
+      copywritersCount,
       totalAuditCount,
       adminPct: totalUsers > 0 ? Math.round((adminsCount / totalUsers) * 100) : 0,
       managerPct: totalUsers > 0 ? Math.round((managersCount / totalUsers) * 100) : 0,
-      userPct: totalUsers > 0 ? Math.round((standardUsersCount / totalUsers) * 100) : 0
+      designerPct: totalUsers > 0 ? Math.round((designersCount / totalUsers) * 100) : 0,
+      copywriterPct: totalUsers > 0 ? Math.round((copywritersCount / totalUsers) * 100) : 0
     };
   });
 
@@ -235,13 +246,15 @@
   let showUserModal = $state<boolean>(false);
   let isEditingUser = $state<boolean>(false);
   let isSavingUser = $state<boolean>(false);
+  let selectedRoles = $state<string[]>(['Designer']);
 
   let editingUser = $state<Partial<StaffAccount>>({
     staffId: '',
     username: '',
     name: '',
     email: '',
-    role: 'User',
+    role: 'Designer',
+    roles: ['Designer'],
     department: 'Creative Production',
     defaultBrand: 'SSH',
     avatarColor: '#0078D4',
@@ -253,6 +266,52 @@
   let resetTargetUser = $state<StaffAccount | null>(null);
   let resetNewPassword = $state<string>('SuamiSihat123!');
   let isResettingPassword = $state<boolean>(false);
+
+  // Workspace Path Mount Management
+  let showWorkspaceModal = $state<boolean>(false);
+  let newWorkspacePath = $state<string>('');
+  let isUpdatingWorkspace = $state<boolean>(false);
+  let workspaceCandidates = $state<Array<{ path: string; accessible: boolean; itemCount: number; isCurrent: boolean }>>([]);
+  let isLoadingCandidates = $state<boolean>(false);
+
+  async function openWorkspaceModal() {
+    newWorkspacePath = systemStatus?.workspaceRoot || '';
+    showWorkspaceModal = true;
+    isLoadingCandidates = true;
+    try {
+      const res = await ApiClient.getWorkspaceCandidates();
+      if (res && res.candidates) {
+        workspaceCandidates = res.candidates;
+      }
+    } catch (e) {
+      workspaceCandidates = [];
+    } finally {
+      isLoadingCandidates = false;
+    }
+  }
+
+  async function handleUpdateWorkspace() {
+    if (!newWorkspacePath || !newWorkspacePath.trim()) {
+      appState.addToast('Please enter or select a valid workspace path.', 'warning');
+      return;
+    }
+
+    isUpdatingWorkspace = true;
+    try {
+      const res = await ApiClient.updateWorkspaceRoot(newWorkspacePath.trim());
+      if (res.success) {
+        appState.addToast(`Workspace mount updated: ${res.workspaceRoot} (${res.cachedProjects} projects found)`, 'success');
+        showWorkspaceModal = false;
+        await refreshData();
+        await projectStore.loadProjects();
+        await projectStore.loadDashboard();
+      }
+    } catch (err: any) {
+      appState.addToast(`Workspace switch error: ${err.message}`, 'error');
+    } finally {
+      isUpdatingWorkspace = false;
+    }
+  }
 
   onMount(async () => {
     await refreshData();
@@ -352,12 +411,14 @@
   function openCreateUserModal() {
     isEditingUser = false;
     const nextNum = (users.length + 80).toString().padStart(4, '0');
+    selectedRoles = ['Designer'];
     editingUser = {
       staffId: `SS${nextNum}`,
       username: '',
       name: '',
       email: '',
-      role: 'User',
+      role: 'Designer',
+      roles: ['Designer'],
       department: 'Creative Production',
       defaultBrand: 'SSH',
       avatarColor: '#0078D4',
@@ -369,12 +430,30 @@
 
   function openEditUserModal(user: StaffAccount) {
     isEditingUser = true;
+    const roles = getNormalizedRoles(user.roles || user.role);
+    selectedRoles = roles.length > 0 ? roles : ['Designer'];
     editingUser = {
       ...user,
-      role: normalizeRole(user.role),
+      roles: selectedRoles,
+      role: selectedRoles.join(', '),
       password: ''
     };
     showUserModal = true;
+  }
+
+  function toggleRole(roleName: string) {
+    if (selectedRoles.includes(roleName)) {
+      if (selectedRoles.length > 1) {
+        selectedRoles = selectedRoles.filter(r => r !== roleName);
+      } else {
+        appState.addToast('At least one role must be selected.', 'warning');
+        return;
+      }
+    } else {
+      selectedRoles = [...selectedRoles, roleName];
+    }
+    editingUser.roles = selectedRoles;
+    editingUser.role = selectedRoles.join(', ');
   }
 
   async function handleSaveUser() {
@@ -868,7 +947,8 @@
           <div class="rbac-legend">
             <div class="legend-item"><span class="legend-dot dot-admin"></span><b>Admin ({stats.adminsCount})</b> - Full Governance</div>
             <div class="legend-item"><span class="legend-dot dot-manager"></span><b>Manager ({stats.managersCount})</b> - Review & Sign-Off</div>
-            <div class="legend-item"><span class="legend-dot dot-user"></span><b>User ({stats.standardUsersCount})</b> - Production Designer</div>
+            <div class="legend-item"><span class="legend-dot dot-designer"></span><b>Designer ({stats.designersCount})</b> - Creative Production</div>
+            <div class="legend-item"><span class="legend-dot dot-copywriter"></span><b>Copywriter ({stats.copywritersCount})</b> - Script & Copy</div>
           </div>
         </div>
 
@@ -876,7 +956,8 @@
         <div class="distribution-bar-track">
           <div class="bar-segment bar-admin" style="width: {stats.adminPct}%;" title="Admin: {stats.adminsCount} ({stats.adminPct}%)"></div>
           <div class="bar-segment bar-manager" style="width: {stats.managerPct}%;" title="Manager: {stats.managersCount} ({stats.managerPct}%)"></div>
-          <div class="bar-segment bar-user" style="width: {stats.userPct}%;" title="User: {stats.standardUsersCount} ({stats.userPct}%)"></div>
+          <div class="bar-segment bar-designer" style="width: {stats.designerPct}%;" title="Designer: {stats.designersCount} ({stats.designerPct}%)"></div>
+          <div class="bar-segment bar-copywriter" style="width: {stats.copywriterPct}%;" title="Copywriter: {stats.copywritersCount} ({stats.copywriterPct}%)"></div>
         </div>
       </div>
 
@@ -885,7 +966,7 @@
         <div>
           <h2 class="deck-title">Creative Team Staff Roster & Credentials</h2>
           <p class="deck-desc">
-            Manage authenticated user accounts, access levels, departmental affiliations, and security credentials.
+            Manage authenticated user accounts, multi-role assignments, departmental affiliations, and security credentials.
           </p>
         </div>
 
@@ -901,9 +982,10 @@
           <!-- Role Filter -->
           <select class="fluent-select-filter" bind:value={userRoleFilter}>
             <option value="all">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="manager">Manager</option>
-            <option value="user">User</option>
+            <option value="Designer">Designer</option>
+            <option value="Copywriter">Copywriter</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
           </select>
 
           <div class="search-input-wrapper">
@@ -918,7 +1000,7 @@
 
           <FluentButton appearance="primary" onclick={openCreateUserModal}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            <span>Provision User</span>
+            <span>Add Team Member</span>
           </FluentButton>
         </div>
       </div>
@@ -932,7 +1014,7 @@
                 <th style="width: 90px;">Staff ID</th>
                 <th>Personnel Name</th>
                 <th>Username & Email</th>
-                <th style="width: 120px;">Role Tier</th>
+                <th style="min-width: 140px;">Role Tiers</th>
                 <th>Department</th>
                 <th style="width: 90px;">Subsidiary</th>
                 <th style="width: 95px;">Status</th>
@@ -941,7 +1023,7 @@
             </thead>
             <tbody>
               {#each filteredUsers as u}
-                {@const roleLevel = normalizeRole(u.role)}
+                {@const userRoles = getNormalizedRoles(u.roles || u.role)}
                 <tr class="data-row" class:inactive-row={u.active === false}>
                   <td>
                     <span class="staff-id-pill">{u.staffId}</span>
@@ -949,11 +1031,11 @@
                   <td>
                     <div class="user-name-cell">
                       <div class="user-avatar-mini" style="background: {u.avatarColor || '#0078D4'};">
-                        {(u.name || 'U').charAt(0)}
+                        {(u.name || 'D').charAt(0)}
                       </div>
                       <div class="name-details">
                         <b class="user-full-name">{u.name}</b>
-                        {#if u.role && u.role !== roleLevel}
+                        {#if u.role && typeof u.role === 'string'}
                           <span class="custom-title">{u.role}</span>
                         {/if}
                       </div>
@@ -966,9 +1048,13 @@
                     </div>
                   </td>
                   <td>
-                    <span class="role-pill role-{roleLevel.toLowerCase()}">
-                      {roleLevel}
-                    </span>
+                    <div class="roles-pill-stack">
+                      {#each userRoles as r}
+                        <span class="role-pill role-{r.toLowerCase()}">
+                          {r}
+                        </span>
+                      {/each}
+                    </div>
                   </td>
                   <td>
                     <span class="dept-text">{u.department || 'Creative Production'}</span>
@@ -1120,26 +1206,45 @@
       <div class="system-telemetry-grid">
         <!-- Card 1: Workspace & Storage -->
         <FluentCard elevated>
-          <div class="telemetry-card-header">
-            <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: #21A1F7;">
-              📂
+          <div class="telemetry-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: #21A1F7;">
+                📂
+              </div>
+              <div>
+                <h3 class="telemetry-card-title">Synology NAS Storage Mount</h3>
+                <p class="telemetry-card-sub">SMB workspace share connectivity and file sync</p>
+              </div>
             </div>
-            <div>
-              <h3 class="telemetry-card-title">Synology NAS Storage Mount</h3>
-              <p class="telemetry-card-sub">SMB workspace share connectivity and file sync</p>
-            </div>
+            <FluentButton appearance="secondary" onclick={openWorkspaceModal} title="Change Synology NAS Workspace Root Path">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              Change Mount Path
+            </FluentButton>
           </div>
 
           <div class="telemetry-detail-list">
             <div class="telemetry-row">
               <span class="tel-label">Workspace Root Path</span>
-              <code class="tel-code">{systemStatus?.workspaceRoot || '\\\\SSNAS\\Creative-Team'}</code>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <code class="tel-code">{systemStatus?.workspaceRoot || '\\\\SSNAS\\Creative-Team'}</code>
+                <button
+                  type="button"
+                  class="edit-inline-btn"
+                  onclick={openWorkspaceModal}
+                  title="Edit Root Path"
+                  style="background: transparent; border: none; cursor: pointer; color: #0078D4; font-size: 12px; display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-weight: 600;"
+                >
+                  Edit ↗
+                </button>
+              </div>
             </div>
             <div class="telemetry-row">
               <span class="tel-label">Mount Volume Status</span>
               <span class="tel-badge-green">
                 <span class="pulse-dot"></span>
-                <span>Active Mounted (Volume 2 / Synology Drive RW)</span>
+                <span>Active Mounted ({systemStatus?.workspaceExists ? 'Volume 2 / Synology Drive RW' : 'Directory Pending'})</span>
               </span>
             </div>
             <div class="telemetry-row">
@@ -1348,28 +1453,59 @@
   onclose={() => (showUserModal = false)}
 >
   <div class="modal-form-body">
-    <!-- Role Selector Cards -->
+    <!-- Multi-Select Role Selector Cards -->
     <div class="form-group">
-      <label class="field-label">Canonical Role Permission Tier</label>
-      <div class="role-selector-grid">
-        <label class="role-card-radio" class:selected={editingUser.role === 'User'}>
-          <input type="radio" name="userRole" value="User" bind:group={editingUser.role} />
+      <div class="field-header-row">
+        <label class="field-label">Assigned Roles & Access Tiers (Multi-Select)</label>
+        <span class="field-hint">Select all roles applicable to this team member</span>
+      </div>
+      <div class="role-selector-grid role-selector-grid-4">
+        <label class="role-card-checkbox" class:selected={selectedRoles.includes('Designer')}>
+          <input
+            type="checkbox"
+            checked={selectedRoles.includes('Designer')}
+            onchange={() => toggleRole('Designer')}
+            class="role-checkbox"
+          />
           <div class="role-card-info">
-            <span class="role-pill role-user">User</span>
+            <span class="role-pill role-designer">Designer</span>
             <span class="role-card-desc">Production designer, brief & copy view, asset upload</span>
           </div>
         </label>
 
-        <label class="role-card-radio" class:selected={editingUser.role === 'Manager'}>
-          <input type="radio" name="userRole" value="Manager" bind:group={editingUser.role} />
+        <label class="role-card-checkbox" class:selected={selectedRoles.includes('Copywriter')}>
+          <input
+            type="checkbox"
+            checked={selectedRoles.includes('Copywriter')}
+            onchange={() => toggleRole('Copywriter')}
+            class="role-checkbox"
+          />
+          <div class="role-card-info">
+            <span class="role-pill role-copywriter">Copywriter</span>
+            <span class="role-card-desc">Draft, refine, and submit copywriting scripts</span>
+          </div>
+        </label>
+
+        <label class="role-card-checkbox" class:selected={selectedRoles.includes('Manager')}>
+          <input
+            type="checkbox"
+            checked={selectedRoles.includes('Manager')}
+            onchange={() => toggleRole('Manager')}
+            class="role-checkbox"
+          />
           <div class="role-card-info">
             <span class="role-pill role-manager">Manager</span>
             <span class="role-card-desc">Review deliverables, approve/revision sign-off, assign work</span>
           </div>
         </label>
 
-        <label class="role-card-radio" class:selected={editingUser.role === 'Admin'}>
-          <input type="radio" name="userRole" value="Admin" bind:group={editingUser.role} />
+        <label class="role-card-checkbox" class:selected={selectedRoles.includes('Admin')}>
+          <input
+            type="checkbox"
+            checked={selectedRoles.includes('Admin')}
+            onchange={() => toggleRole('Admin')}
+            class="role-checkbox"
+          />
           <div class="role-card-info">
             <span class="role-pill role-admin">Admin</span>
             <span class="role-card-desc">Full corporate governance, roster management, NAS audit</span>
@@ -1549,6 +1685,89 @@
   {#snippet footer()}
     <FluentButton appearance="primary" onclick={() => (showLogDetailModal = false)}>
       Close Inspector
+    </FluentButton>
+  {/snippet}
+</FluentDialog>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: CHANGE SYNOLOGY NAS WORKSPACE ROOT MOUNT                    -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<FluentDialog
+  open={showWorkspaceModal}
+  title="Change Synology NAS Storage Mount Path"
+  onclose={() => (showWorkspaceModal = false)}
+>
+  <div class="modal-form-body">
+    <p style="margin: 0 0 14px 0; font-size: 13px; color: var(--text-secondary, #6B7280); line-height: 1.5;">
+      Specify the local or network share directory path to the active <b>Creative-Team</b> folder. The system will validate filesystem accessibility, bind real-time filesystem watchers, and rescan active production assets.
+    </p>
+
+    {#if isLoadingCandidates}
+      <div style="padding: 16px; font-size: 13px; color: #0284C7; text-align: center; background: rgba(2, 132, 199, 0.08); border-radius: 8px; margin-bottom: 14px;">
+        🔍 Scanning local storage drives and candidate NAS mounts...
+      </div>
+    {:else if workspaceCandidates.length > 0}
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="field-label">Detected / Suggested Mount Paths</label>
+        <div class="candidates-list-scroll" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px; max-height: 220px; overflow-y: auto; padding-right: 4px;">
+          {#each workspaceCandidates as cand}
+            <button
+              type="button"
+              class="workspace-cand-card"
+              class:is-active={cand.isCurrent}
+              class:is-selected={newWorkspacePath === cand.path}
+              onclick={() => (newWorkspacePath = cand.path)}
+            >
+              <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                <span style="font-size: 16px;">{cand.accessible ? '📁' : '⚠️'}</span>
+                <div style="min-width: 0; text-align: left;">
+                  <div style="font-family: monospace; font-size: 12px; font-weight: 600; color: var(--text-primary, #111827); word-break: break-all;">
+                    {cand.path}
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-secondary, #6B7280); margin-top: 2px;">
+                    {#if cand.accessible}
+                      <span style="color: #107C41; font-weight: 600;">✓ Accessible</span> ({cand.itemCount} items detected)
+                    {:else}
+                      <span style="color: #EF4444; font-weight: 500;">✗ Not mounted on this host</span>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+              <div style="flex-shrink: 0; margin-left: 8px;">
+                {#if cand.isCurrent}
+                  <span class="cand-badge current-badge">CURRENT</span>
+                {:else if newWorkspacePath === cand.path}
+                  <span class="cand-badge selected-badge">SELECTED</span>
+                {/if}
+              </div>
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
+
+    <div class="form-group">
+      <label class="field-label">Target Workspace Directory Path</label>
+      <input
+        type="text"
+        class="field-input"
+        bind:value={newWorkspacePath}
+        placeholder="e.g. D:\SynologyDrive\Creative-Team or \\SSNAS\Creative-Team"
+        style="font-family: monospace; font-size: 13px;"
+      />
+    </div>
+  </div>
+
+  {#snippet footer()}
+    <FluentButton appearance="subtle" onclick={() => (showWorkspaceModal = false)}>
+      Cancel
+    </FluentButton>
+    <FluentButton
+      appearance="primary"
+      onclick={handleUpdateWorkspace}
+      disabled={isUpdatingWorkspace}
+    >
+      {isUpdatingWorkspace ? 'Switching Mount & Scanning...' : 'Validate & Switch Mount'}
     </FluentButton>
   {/snippet}
 </FluentDialog>
@@ -2125,7 +2344,9 @@
   }
   .dot-admin { background: #EF4444; }
   .dot-manager { background: #D97706; }
-  .dot-user { background: #21A1F7; }
+  .dot-designer { background: #0078D4; }
+  .dot-copywriter { background: #7C3AED; }
+  .dot-user { background: #0078D4; }
 
   .distribution-bar-track {
     height: 10px;
@@ -2142,7 +2363,9 @@
   }
   .bar-admin { background: #EF4444; }
   .bar-manager { background: #D97706; }
-  .bar-user { background: #21A1F7; }
+  .bar-designer { background: #0078D4; }
+  .bar-copywriter { background: #7C3AED; }
+  .bar-user { background: #0078D4; }
 
   /* ─── Fluent Data Table ─── */
   .table-container-card {
@@ -2338,17 +2561,28 @@
     color: var(--text-secondary);
   }
 
+  .roles-pill-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
   .role-pill {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 800;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 4px;
     text-transform: uppercase;
     display: inline-block;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
   }
   .role-admin { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
   .role-manager { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-  .role-user { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; font-weight: 700; }
+  .role-designer { background: #EBF4FE; color: #0078D4; border: 1px solid #BFDBFE; font-weight: 700; }
+  .role-copywriter { background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-weight: 700; }
+  .role-user { background: #EBF4FE; color: #0078D4; border: 1px solid #BFDBFE; font-weight: 700; }
 
   .dept-text { font-size: 12px; color: var(--text-secondary); }
   .brand-tag {
@@ -2657,27 +2891,56 @@
   }
 
   /* Role Selection Cards */
+  .field-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .field-hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: normal;
+  }
+
   .role-selector-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
-  .role-card-radio {
+  .role-card-checkbox {
     border: 1px solid var(--surface-card-border);
     border-radius: 8px;
-    padding: 10px;
+    padding: 10px 12px;
     background: var(--surface-card);
     cursor: pointer;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
     transition: all 0.15s;
+    user-select: none;
   }
 
-  .role-card-radio.selected {
+  .role-card-checkbox:hover {
     border-color: var(--brand-accent, #21A1F7);
-    background: rgba(33, 161, 247, 0.06);
+    background: var(--surface-card-subtle);
+  }
+
+  .role-card-checkbox.selected {
+    border-color: var(--brand-accent, #21A1F7);
+    background: rgba(33, 161, 247, 0.08);
+    box-shadow: 0 0 0 1px rgba(33, 161, 247, 0.25);
+  }
+
+  .role-checkbox {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--brand-accent, #21A1F7);
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
   .role-card-info {
@@ -2687,7 +2950,7 @@
   }
 
   .role-card-desc {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--text-secondary);
     line-height: 1.3;
   }
@@ -2726,6 +2989,44 @@
   .empty-icon { font-size: 36px; margin-bottom: 8px; }
   .empty-state-banner h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0; }
   .empty-state-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+  /* Workspace Candidates Selector */
+  .workspace-cand-card {
+    transition: all 0.15s ease;
+    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--surface-card, #FFFFFF);
+  }
+  .workspace-cand-card:hover {
+    border-color: #0078D4 !important;
+    background: rgba(0, 120, 212, 0.04) !important;
+  }
+  .workspace-cand-card.is-selected {
+    border-color: #0078D4 !important;
+    background: rgba(0, 120, 212, 0.08) !important;
+  }
+  .workspace-cand-card.is-active {
+    border-left: 3px solid #107C41;
+  }
+
+  .cand-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.5px;
+  }
+  .current-badge {
+    background: rgba(2, 132, 199, 0.15);
+    color: #0284C7;
+  }
+  .selected-badge {
+    background: #0078D4;
+    color: #FFFFFF;
+  }
+
+  .edit-inline-btn:hover {
+    background: rgba(0, 120, 212, 0.1) !important;
+  }
 
   @media (max-width: 900px) {
     .system-telemetry-grid {

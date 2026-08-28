@@ -17,6 +17,28 @@
     { id: 'catppuccin', name: 'Catppuccin (Mocha Dark)', desc: 'Soothing Mocha Dark Palette with Mauve Accents', preview: '#1E1E2E' }
   ];
 
+  type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
+  let defaultProjectView = $state<ViewMode>(
+    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards'
+  );
+
+  const viewModesList: { id: ViewMode; name: string; desc: string; icon: string }[] = [
+    { id: 'cards', name: 'Cards Grid', desc: 'Visual card overview with priority & deadline indicators', icon: '📋' },
+    { id: 'kanban', name: 'Kanban Board', desc: '5-column drag-and-drop production pipeline', icon: '📊' },
+    { id: 'gantt', name: 'Gantt Timeline', desc: 'Interactive schedule timeline with start & due duration bars', icon: '📈' },
+    { id: 'calendar', name: 'Production Calendar', desc: 'Monthly deliverable due dates on calendar days', icon: '📅' },
+    { id: 'table', name: 'Data Table', desc: 'High-density sortable tabular grid for studio oversight', icon: '📑' }
+  ];
+
+  function setDefaultProjectView(mode: ViewMode) {
+    defaultProjectView = mode;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('ss_cam_default_project_view', mode);
+      localStorage.setItem('ss_cam_project_view', mode);
+    }
+    appState.addToast(`Default Project Manager view set to ${mode.toUpperCase()}`, 'success');
+  }
+
   async function handlePasswordChange() {
     if (!newPassword || newPassword !== confirmPassword) {
       appState.addToast('Passwords do not match or are empty', 'error');
@@ -41,12 +63,39 @@
 <div class="profile-view-container">
   <div class="view-header">
     <div>
-      <h1 class="view-title">User Profile & Theme Preferences</h1>
-      <p class="view-subtitle">Manage personal session, visual Fluent 2 themes, and account security</p>
+      <h1 class="view-title">User Profile & Preferences</h1>
+      <p class="view-subtitle">Manage personal workspace defaults, visual Fluent 2 themes, and account security</p>
     </div>
   </div>
 
   <div class="profile-grid">
+    <!-- Project Manager Default View Selector -->
+    <FluentCard elevated>
+      <h3>Project Manager Default View</h3>
+      <p style="margin-bottom: 14px;">Select which workspace layout opens automatically when navigating to Project Manager.</p>
+
+      <div class="theme-options">
+        {#each viewModesList as v}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div
+            class="theme-card"
+            class:active={defaultProjectView === v.id}
+            onclick={() => setDefaultProjectView(v.id)}
+          >
+            <div class="view-mode-icon-swatch">{v.icon}</div>
+            <div class="theme-info">
+              <div class="theme-name">{v.name}</div>
+              <div class="theme-desc">{v.desc}</div>
+            </div>
+            {#if defaultProjectView === v.id}
+              <span class="active-tag">Default</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </FluentCard>
+
     <!-- Theme Selector Card -->
     <FluentCard elevated>
       <h3>Fluent 2 Visual Theme Profile</h3>
@@ -168,6 +217,18 @@
     height: 32px;
     border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .view-mode-icon-swatch {
+    font-size: 20px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 6px;
   }
 
   .theme-info {

@@ -54,6 +54,7 @@ class ApprovalService {
       ...frontmatter,
       status: newStatus,
       revision: newRevision,
+      ...(decision === 'approved' ? { completedAt: new Date().toISOString() } : {}),
       approvals
     };
 
