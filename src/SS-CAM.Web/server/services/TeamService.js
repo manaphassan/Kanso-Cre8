@@ -97,6 +97,7 @@ class TeamService {
       roles: roles.length > 0 ? roles : ['Designer'],
       department: member.department ? member.department.trim() : 'Creative Production',
       defaultBrand: (member.defaultBrand || 'SS').trim().toUpperCase(),
+      avatar: member.avatar || '',
       avatarColor: member.avatarColor || '#0078D4',
       active: member.active !== false
     };

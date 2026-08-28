@@ -117,7 +117,7 @@
       role = appState.currentUser.role || 'Designer';
       email = appState.currentUser.email || '';
       defaultBrand = appState.currentUser.defaultBrand || 'SS';
-      avatar = appState.currentUser.avatar || '';
+      avatar = appState.currentUser.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${staffId}`) || localStorage.getItem('ss_cam_user_avatar') || '') : '');
       avatarColor = appState.currentUser.avatarColor || '#0078D4';
     }
   }
@@ -224,28 +224,44 @@
   async function handleProfileSave() {
     isSavingProfile = true;
     try {
-      const res = await ApiClient.updateProfile({
-        staffId: staffId.trim() || appState.currentUser?.staffId || '',
+      const targetStaffId = staffId.trim() || appState.currentUser?.staffId || 'SS0004';
+      const savePayload = {
+        staffId: targetStaffId,
         name: fullName.trim(),
         email: email.trim(),
         department: department.trim(),
         avatar: avatar || '',
         avatarColor: avatarColor || '#0078D4',
         defaultBrand: defaultBrand || 'SS'
-      });
+      };
 
-      if (res && res.user) {
-        if (appState.currentUser) {
-          appState.currentUser.name = res.user.name;
-          appState.currentUser.email = res.user.email;
-          appState.currentUser.department = res.user.department;
-          appState.currentUser.avatar = res.user.avatar;
-          appState.currentUser.avatarColor = res.user.avatarColor;
-          appState.currentUser.defaultBrand = res.user.defaultBrand;
+      const res = await ApiClient.updateProfile(savePayload);
+
+      // Persist to local storage cache immediately for instant recovery
+      if (typeof localStorage !== 'undefined') {
+        if (avatar) {
+          localStorage.setItem(`ss_cam_avatar_${targetStaffId}`, avatar);
+          localStorage.setItem('ss_cam_user_avatar', avatar);
+        } else {
+          localStorage.removeItem(`ss_cam_avatar_${targetStaffId}`);
+          localStorage.removeItem('ss_cam_user_avatar');
         }
       }
 
-      appState.addToast('Designer profile saved and synchronized with Synology NAS directory.', 'success', 'Profile Updated');
+      if (appState.currentUser) {
+        appState.currentUser = {
+          ...appState.currentUser,
+          name: fullName.trim(),
+          email: email.trim(),
+          department: department.trim(),
+          avatar: avatar || '',
+          avatarColor: avatarColor || '#0078D4',
+          defaultBrand: defaultBrand || 'SS',
+          ...(res && res.user ? res.user : {})
+        };
+      }
+
+      appState.addToast('Designer profile and avatar photo saved and synchronized with Synology NAS.', 'success', 'Profile Updated');
     } catch (err: any) {
       appState.addToast(`Failed to save profile: ${err.message}`, 'error');
     } finally {

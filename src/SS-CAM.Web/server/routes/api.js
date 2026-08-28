@@ -95,7 +95,10 @@ router.post('/auth/login', (req, res) => {
       roles,
       staffId: user.staffId,
       department: user.department,
+      email: user.email || '',
+      avatar: user.avatar || user.avatarUrl || '',
       avatarColor: user.avatarColor || '#0078D4',
+      defaultBrand: user.defaultBrand || 'SS',
       permissions
     }
   });
