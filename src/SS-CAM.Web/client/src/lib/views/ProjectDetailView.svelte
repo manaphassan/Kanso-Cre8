@@ -10,6 +10,7 @@
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
+  import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
 
   interface Props {
     projectId?: string;
@@ -23,6 +24,7 @@
   let inspectorTab = $state<'properties' | 'discussion'>('properties');
   let inspectorOpen = $state<boolean>(true);
   let showIngesterModal = $state<boolean>(false);
+  let showShareModal = $state<boolean>(false);
 
   // Deliverables & Lightbox
   let selectedDeliverable = $state<DeliverableItem | null>(null);
@@ -397,6 +399,18 @@
               <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
             </svg>
             <span>Ingest Assets</span>
+          </button>
+
+          <!-- Client Share Link Button -->
+          <button
+            class="share-link-btn"
+            onclick={() => (showShareModal = true)}
+            title="Generate secure tokenized client review link for external approval"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+            </svg>
+            <span>Share Link</span>
           </button>
 
           <!-- Export Handover ZIP Button -->
@@ -803,6 +817,13 @@
       projectId={p?.id}
       projectTitle={p?.title}
     />
+
+    <!-- Share Link Modal -->
+    <ShareLinkModal
+      bind:open={showShareModal}
+      projectId={p?.id}
+      projectTitle={p?.title}
+    />
   {/if}
 </div>
 
@@ -923,6 +944,25 @@
   }
   .ingest-vault-btn:hover {
     background: #21A1F7;
+    color: #0F172A;
+  }
+
+  .share-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .share-link-btn:hover {
+    background: #10B981;
     color: #0F172A;
   }
 

@@ -15,6 +15,7 @@ const CompanyService = require('../services/CompanyService');
 const CommentService = require('../services/CommentService');
 const SseService = require('../services/SseService');
 const ExportService = require('../services/ExportService');
+const ShareService = require('../services/ShareService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -384,6 +385,134 @@ router.post('/projects/:id/ingest', authenticateToken, (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── SHARE & PUBLIC CLIENT REVIEW ROUTES ────────────────────────────
+
+router.post('/share/generate', authenticateToken, (req, res) => {
+  try {
+    const { projectId, deliverableId, expiresInDays, permissions, note } = req.body;
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required.' });
+    }
+    const createdBy = req.user ? req.user.name : 'Staff';
+    const tokenRecord = ShareService.createShareToken({
+      projectId,
+      deliverableId,
+      createdBy,
+      expiresInDays: expiresInDays !== undefined ? expiresInDays : 14,
+      permissions: permissions || 'review_approve',
+      note: note || ''
+    });
+    res.status(201).json({ success: true, share: tokenRecord });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/share/list/:projectId', authenticateToken, (req, res) => {
+  try {
+    const links = ShareService.getProjectShareLinks(req.params.projectId);
+    res.json({ success: true, links });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/share/:token', authenticateToken, (req, res) => {
+  try {
+    const revoked = ShareService.revokeToken(req.params.token);
+    res.json({ success: revoked });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── PUBLIC / GUEST REVIEW ENDPOINTS (NO AUTH REQUIRED) ─────────────
+
+router.get('/public/review/:token', (req, res) => {
+  try {
+    const data = ShareService.validateToken(req.params.token);
+    if (!data) {
+      return res.status(404).json({ error: 'Review link is invalid or has expired.' });
+    }
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/public/review/:token/decision', (req, res) => {
+  try {
+    const data = ShareService.validateToken(req.params.token);
+    if (!data) {
+      return res.status(404).json({ error: 'Review link is invalid or has expired.' });
+    }
+    if (data.shareInfo.permissions === 'view_only') {
+      return res.status(403).json({ error: 'This share link is view-only.' });
+    }
+
+    const { decision, reviewerName, reviewerOrg, comment = '', deliverableId = null } = req.body;
+    if (!decision || !['approved', 'revision_requested', 'rejected'].includes(decision)) {
+      return res.status(400).json({ error: 'Valid decision (approved, revision_requested, rejected) is required.' });
+    }
+
+    const reviewer = (reviewerName && reviewerName.trim()) 
+      ? `${reviewerName.trim()}${reviewerOrg ? ` (${reviewerOrg.trim()})` : ''}` 
+      : 'External Reviewer';
+
+    ApprovalService.processDecision({
+      projectId: data.project.id,
+      decision,
+      reviewer,
+      role: 'Client Reviewer',
+      comment: comment.trim(),
+      deliverableId
+    });
+
+    // Notify clients via SSE
+    SseService.broadcast('project:decision', {
+      projectId: data.project.id,
+      decision,
+      reviewer,
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({ success: true, message: `Decision recorded: ${decision}`, reviewer });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/public/review/:token/comments', (req, res) => {
+  try {
+    const data = ShareService.validateToken(req.params.token);
+    if (!data) {
+      return res.status(404).json({ error: 'Review link is invalid or has expired.' });
+    }
+
+    const project = WorkspaceService.getProjectById(data.project.id);
+    const { content, reviewerName, reviewerOrg, deliverableId, pinX, pinY } = req.body;
+
+    const author = (reviewerName && reviewerName.trim()) 
+      ? `${reviewerName.trim()}${reviewerOrg ? ` (${reviewerOrg.trim()})` : ''}` 
+      : 'Guest Reviewer';
+
+    const comment = CommentService.addComment(project ? project.fullPath : null, data.project.id, {
+      author,
+      authorRole: 'Client Reviewer',
+      authorAvatar: '#10B981',
+      content,
+      deliverableId,
+      pinX,
+      pinY
+    });
+
+    SseService.broadcast('comment:added', { projectId: data.project.id, comment });
+    res.status(201).json({ success: true, comment });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 

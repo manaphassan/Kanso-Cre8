@@ -681,6 +681,89 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 23: Tokenized ShareService for Client Reviews ─────────────
+  test('ShareService generates, validates, and revokes client review tokens', () => {
+    const ShareService = require('../services/ShareService');
+    const testDir = path.join(__dirname, 'temp-share-workspace');
+    const projectDir = path.join(testDir, '2026', '202608_August', '202608_0088S_SS_Share_Test');
+    fs.mkdirSync(projectDir, { recursive: true });
+    fs.writeFileSync(path.join(projectDir, 'README.md'), '---\nstatus: in-progress\ntitle: Share Test Project\nbrand: SSH\n---\n# Share Test\n', 'utf8');
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+    WorkspaceService.scan(true);
+
+    try {
+      // 1. Create a 7-day token
+      const shareRecord = ShareService.createShareToken({
+        projectId: '0088S',
+        createdBy: 'Senior Designer',
+        expiresInDays: 7,
+        permissions: 'review_approve',
+        note: 'Director signoff'
+      });
+
+      assert.ok(shareRecord.token, 'Token string must be generated');
+      assert.strictEqual(shareRecord.jobId, '0088S');
+      assert.strictEqual(shareRecord.permissions, 'review_approve');
+      assert.strictEqual(shareRecord.active, true);
+
+      // 2. Validate token
+      const validated = ShareService.validateToken(shareRecord.token);
+      assert.ok(validated, 'Validated result must not be null');
+      assert.strictEqual(validated.project.jobId, '0088S');
+      assert.strictEqual(validated.shareInfo.permissions, 'review_approve');
+
+      // 3. Revoke token
+      const revoked = ShareService.revokeToken(shareRecord.token);
+      assert.strictEqual(revoked, true);
+      assert.strictEqual(ShareService.validateToken(shareRecord.token), null, 'Revoked token must not validate');
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      WorkspaceService.scan(true);
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 24: DeliverableService Rich DAM Metadata Indexing ─────────
+  test('DeliverableService extracts mediaClass, aspectRatioEstimate, and sizeTier', () => {
+    const testDir = path.join(__dirname, 'temp-dam-workspace');
+    const projectDir = path.join(testDir, '2026', '202608_August', '202608_0077D_SS_DAM_Test');
+    const delivDir = path.join(projectDir, '05_DELIVERABLES');
+    fs.mkdirSync(delivDir, { recursive: true });
+
+    fs.writeFileSync(path.join(projectDir, 'README.md'), '---\nstatus: in-progress\n---\n# DAM Test\n', 'utf8');
+    fs.writeFileSync(path.join(delivDir, 'Hero_Banner_16x9_v1.png'), 'DUMMY_IMAGE_DATA_BYTES', 'utf8');
+    fs.writeFileSync(path.join(delivDir, 'Promo_Story_9x16_Final.mp4'), 'DUMMY_VIDEO_DATA_BYTES', 'utf8');
+    fs.writeFileSync(path.join(delivDir, 'Brochure_Print.pdf'), 'DUMMY_PDF_DATA_BYTES', 'utf8');
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const deliverables = DeliverableService.getProjectDeliverables(projectDir);
+      assert.strictEqual(deliverables.length, 3, 'Must index all 3 deliverable files');
+
+      const banner = deliverables.find(d => d.filename.includes('16x9'));
+      assert.ok(banner, '16x9 banner must exist');
+      assert.strictEqual(banner.mediaClass, 'raster_image');
+      assert.strictEqual(banner.aspectRatioEstimate, '16:9');
+      assert.strictEqual(banner.sizeTier, 'small');
+
+      const video = deliverables.find(d => d.filename.includes('9x16'));
+      assert.ok(video, '9x16 video must exist');
+      assert.strictEqual(video.mediaClass, 'video_master');
+      assert.strictEqual(video.aspectRatioEstimate, '9:16');
+
+      const pdf = deliverables.find(d => d.filename.includes('Brochure'));
+      assert.ok(pdf, 'PDF must exist');
+      assert.strictEqual(pdf.mediaClass, 'print_pdf');
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

@@ -15,6 +15,7 @@
   import AdminView from '$lib/views/AdminView.svelte';
   import ProfileView from '$lib/views/ProfileView.svelte';
   import LoginView from '$lib/views/LoginView.svelte';
+  import ClientReviewView from '$lib/views/ClientReviewView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
 
@@ -29,10 +30,12 @@
   }
 
   onMount(async () => {
-    await appState.loadCurrentUser();
-
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
+      if (hash.startsWith('review') || window.location.search.includes('token=')) {
+        appState.currentRoute = 'review';
+        return;
+      }
       if (!hash) { appState.currentRoute = 'dashboard'; return; }
       const parts = hash.split('/');
       const route = parts[0];
@@ -43,6 +46,10 @@
 
     window.addEventListener('hashchange', handleRouteFromHash);
     handleRouteFromHash();
+
+    if (appState.currentRoute !== 'review') {
+      await appState.loadCurrentUser();
+    }
     window.addEventListener('auth:required', () => appState.navigate('login'));
 
     window.addEventListener('click', (e) => {
@@ -182,7 +189,9 @@
 
 <svelte:window onkeydown={handleGlobalKeydown} />
 
-{#if !appState.currentUser}
+{#if appState.currentRoute === 'review'}
+  <ClientReviewView />
+{:else if !appState.currentUser}
   <LoginView />
 {:else}
   <div

@@ -84,6 +84,27 @@ class DeliverableService {
           const relativePath = path.relative(rootPath, filePath).replace(/\\/g, '/');
           const encodedId = Buffer.from(relativePath).toString('base64url');
 
+          // Classify media class and aspect ratio hints for DAM filtering
+          let mediaClass = 'raster_image';
+          if (['.mp4', '.webm', '.mov', '.mkv', '.avi'].includes(ext)) mediaClass = 'video_master';
+          else if (['.pdf'].includes(ext)) mediaClass = 'print_pdf';
+          else if (['.svg', '.ai', '.eps'].includes(ext)) mediaClass = 'vector_graphics';
+          else if (['.ogg', '.wav', '.mp3', '.m4a'].includes(ext)) mediaClass = 'audio_track';
+
+          // Aspect ratio estimate from filename hints
+          let aspectRatioEstimate = 'standard';
+          const lowerName = file.name.toLowerCase();
+          if (/1x1|square|feed|box/i.test(lowerName)) aspectRatioEstimate = '1:1';
+          else if (/9x16|story|reel|tiktok|vertical|status/i.test(lowerName)) aspectRatioEstimate = '9:16';
+          else if (/16x9|landscape|youtube|display|banner|wide/i.test(lowerName)) aspectRatioEstimate = '16:9';
+          else if (/4x5|portrait/i.test(lowerName)) aspectRatioEstimate = '4:5';
+
+          // File size tier
+          let sizeTier = 'small';
+          if (stats.size > 100 * 1024 * 1024) sizeTier = 'master';
+          else if (stats.size > 25 * 1024 * 1024) sizeTier = 'large';
+          else if (stats.size > 2 * 1024 * 1024) sizeTier = 'medium';
+
           results.push({
             id: encodedId,
             filename: file.name,
@@ -94,6 +115,9 @@ class DeliverableService {
             ext: ext.replace('.', ''),
             format,
             previewType,
+            mediaClass,
+            aspectRatioEstimate,
+            sizeTier,
             isImage: previewType === 'image',
             isVideo: previewType === 'video',
             isPdf: previewType === 'pdf',

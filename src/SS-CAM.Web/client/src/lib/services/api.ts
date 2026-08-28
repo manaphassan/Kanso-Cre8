@@ -408,6 +408,42 @@ export class ApiClient {
       body: JSON.stringify({ workspacePath })
     });
   }
+
+  // ─── Share & Public Review ───
+  static generateShareLink(payload: { projectId: string; deliverableId?: string | null; expiresInDays?: number; permissions?: string; note?: string }): Promise<{ success: boolean; share: any }> {
+    return this.request('/share/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static getProjectShareLinks(projectId: string): Promise<{ success: boolean; links: any[] }> {
+    return this.request(`/share/list/${encodeURIComponent(projectId)}`);
+  }
+
+  static revokeShareLink(token: string): Promise<{ success: boolean }> {
+    return this.request(`/share/${encodeURIComponent(token)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static getPublicReview(token: string): Promise<any> {
+    return this.request(`/public/review/${encodeURIComponent(token)}`);
+  }
+
+  static submitPublicDecision(token: string, payload: { decision: string; reviewerName: string; reviewerOrg?: string; comment?: string; deliverableId?: string | null }): Promise<any> {
+    return this.request(`/public/review/${encodeURIComponent(token)}/decision`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static submitPublicComment(token: string, payload: { content: string; reviewerName: string; reviewerOrg?: string; deliverableId?: string | null; pinX?: number; pinY?: number }): Promise<any> {
+    return this.request(`/public/review/${encodeURIComponent(token)}/comments`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 

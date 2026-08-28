@@ -9,14 +9,27 @@
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
+  import BatchResizerModal from '$lib/components/features/BatchResizerModal.svelte';
+  import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
 
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
   let showIngesterModal = $state<boolean>(false);
   let ingestTargetProject = $state<any>(null);
+
+  // Modals for Resizer & Share Links
+  let showResizerModal = $state<boolean>(false);
+  let resizerTargetDeliverable = $state<DeliverableItem | null>(null);
+  let showShareModal = $state<boolean>(false);
+  let shareTargetProject = $state<any>(null);
+
+  // DAM Filters & View Mode
   let filterStatus = $state<string>('all');
   let searchQuery = $state<string>('');
   let filterBrand = $state<string>('all');
+  let filterMediaClass = $state<string>('all');
+  let filterAspectRatio = $state<string>('all');
+  let viewMode = $state<'grid' | 'table'>('grid');
 
   onMount(async () => {
     await projectStore.loadDeliverables();
@@ -27,6 +40,21 @@
     lightboxOpen = true;
   }
 
+  function openResizer(d: DeliverableItem) {
+    resizerTargetDeliverable = d;
+    showResizerModal = true;
+  }
+
+  function openShare(d: DeliverableItem) {
+    const projId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;
+    const project = projectStore.projects.find(p => p.id === projId || p.jobId === projId) || {
+      id: projId,
+      title: d.project?.title || d.projectTitle || 'Creative Deliverables'
+    };
+    shareTargetProject = project;
+    showShareModal = true;
+  }
+
   const filteredDeliverables = $derived(
     projectStore.deliverables.filter(d => {
       const status = d.status || 'pending';
@@ -35,9 +63,13 @@
       const projTitle = d.project?.title || d.projectTitle || '';
       const jobId = d.project?.jobId || d.projectJobId || '';
       const designer = d.project?.designer || d.projectDesigner || '';
+      const mediaClass = d.mediaClass || (d.isVideo ? 'video_master' : d.isPdf ? 'print_pdf' : 'raster_image');
+      const ratio = d.aspectRatioEstimate || 'standard';
 
       if (filterStatus !== 'all' && status !== filterStatus) return false;
       if (filterBrand !== 'all' && brand !== filterBrand) return false;
+      if (filterMediaClass !== 'all' && mediaClass !== filterMediaClass) return false;
+      if (filterAspectRatio !== 'all' && ratio !== filterAspectRatio) return false;
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -132,16 +164,41 @@
     </div>
 
     <div class="filter-group">
+      <!-- Media Class Filter -->
+      <select bind:value={filterMediaClass} class="brand-select">
+        <option value="all">📁 All Media Formats</option>
+        <option value="raster_image">🖼️ Images (PNG, JPG, WebP)</option>
+        <option value="video_master">🎬 Master Videos (MP4, MOV)</option>
+        <option value="print_pdf">📄 Print &amp; PDF Exports</option>
+        <option value="vector_graphics">📐 Vectors &amp; AI (SVG, AI)</option>
+      </select>
+
+      <!-- Aspect Ratio Filter -->
+      <select bind:value={filterAspectRatio} class="brand-select">
+        <option value="all">📐 All Aspect Ratios</option>
+        <option value="1:1">1:1 Square (Feed)</option>
+        <option value="9:16">9:16 Vertical (Story / Reel)</option>
+        <option value="16:9">16:9 Landscape (YouTube)</option>
+        <option value="4:5">4:5 Portrait (Meta)</option>
+      </select>
+
+      <!-- Brand Filter -->
       <select bind:value={filterBrand} class="brand-select">
         <option value="all">All Brands ({availableBrands.length})</option>
         {#each availableBrands as b}
           <option value={b}>{b} Holding</option>
         {/each}
       </select>
+
+      <!-- View Mode Toggle -->
+      <div class="view-mode-toggle">
+        <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">🔲</button>
+        <button class="mode-btn {viewMode === 'table' ? 'active' : ''}" onclick={() => viewMode = 'table'} title="Metadata Table View">📋</button>
+      </div>
     </div>
   </div>
 
-  <!-- Main Deliverables Grid -->
+  <!-- Main Deliverables Content -->
   {#if projectStore.isLoading}
     <div class="state-card">
       <div class="spinner-large"></div>
@@ -153,11 +210,11 @@
       <div class="empty-icon">📂</div>
       <p class="state-title">No deliverables match the active filter</p>
       <p class="state-desc">Try clearing your search query or selecting "All Deliverables".</p>
-      <FluentButton appearance="secondary" size="sm" onclick={() => { filterStatus = 'all'; searchQuery = ''; filterBrand = 'all'; }}>
+      <FluentButton appearance="secondary" size="sm" onclick={() => { filterStatus = 'all'; searchQuery = ''; filterBrand = 'all'; filterMediaClass = 'all'; filterAspectRatio = 'all'; }}>
         Reset Filters
       </FluentButton>
     </div>
-  {:else}
+  {:else if viewMode === 'grid'}
     <div class="deliverables-grid">
       {#each filteredDeliverables as d}
         <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -187,6 +244,10 @@
               <span class="preview-status-tag status-{(d.status || 'pending')}">
                 {(d.status || 'pending').toUpperCase()}
               </span>
+
+              {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
+                <span class="ratio-pill">{d.aspectRatioEstimate}</span>
+              {/if}
             </div>
 
             <!-- Card Body -->
@@ -206,10 +267,19 @@
                 <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
               </div>
 
+              <!-- Action Bar -->
               <div class="del-actions" onclick={(e) => e.stopPropagation()}>
                 <FluentButton appearance="secondary" size="xs" onclick={() => openLightbox(d)}>
-                  Inspect & Sign-Off
+                  Inspect
                 </FluentButton>
+                {#if d.isImage || d.previewType === 'image'}
+                  <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
+                    📐
+                  </button>
+                {/if}
+                <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
+                  🔗
+                </button>
                 {#if d.downloadUrl}
                   <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download Output File">
                     ⬇
@@ -220,6 +290,63 @@
           </FluentCard>
         </div>
       {/each}
+    </div>
+  {:else}
+    <!-- Compact Metadata Table Mode -->
+    <div class="dam-table-card">
+      <table class="dam-table">
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Filename</th>
+            <th>Project / Job ID</th>
+            <th>Format</th>
+            <th>Aspect Ratio</th>
+            <th>Size</th>
+            <th>Status</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each filteredDeliverables as d}
+            <tr onclick={() => openLightbox(d)} class="table-row-clickable">
+              <td class="table-thumb-col">
+                {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
+                  <img src={d.previewUrl} alt={d.filename} class="table-thumb" />
+                {:else if d.isVideo}
+                  <span class="table-icon-pill">🎬 Video</span>
+                {:else if d.isPdf}
+                  <span class="table-icon-pill">📄 PDF</span>
+                {:else}
+                  <span class="table-icon-pill">📁 File</span>
+                {/if}
+              </td>
+              <td><span class="table-filename">{d.filename}</span></td>
+              <td>
+                <div class="table-proj-info">
+                  <span class="job-id-sm">{d.project?.jobId || d.projectJobId || 'JOB'}</span>
+                  <span class="proj-title-sm">{d.project?.title || d.projectTitle || ''}</span>
+                </div>
+              </td>
+              <td><span class="format-badge">{d.format || d.ext}</span></td>
+              <td><span class="ratio-badge">{d.aspectRatioEstimate || 'Auto'}</span></td>
+              <td><span class="size-text">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span></td>
+              <td><span class="status-badge status-{(d.status || 'pending')}">{(d.status || 'pending').toUpperCase()}</span></td>
+              <td style="text-align:right;" onclick={(e) => e.stopPropagation()}>
+                <div class="table-actions">
+                  {#if d.isImage || d.previewType === 'image'}
+                    <button class="tool-icon-btn" title="Social Resizer" onclick={() => openResizer(d)}>📐</button>
+                  {/if}
+                  <button class="tool-icon-btn" title="Share Link" onclick={() => openShare(d)}>🔗</button>
+                  {#if d.downloadUrl}
+                    <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download">⬇</a>
+                  {/if}
+                </div>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
   {/if}
 
@@ -252,6 +379,20 @@
     projectId={ingestTargetProject?.id}
     projectTitle={ingestTargetProject?.title}
     onSuccess={() => projectStore.loadDeliverables()}
+  />
+
+  <!-- Batch Resizer Modal -->
+  <BatchResizerModal
+    bind:open={showResizerModal}
+    deliverable={resizerTargetDeliverable}
+    projectTitle={resizerTargetDeliverable?.project?.title || resizerTargetDeliverable?.projectTitle}
+  />
+
+  <!-- Share Link Modal -->
+  <ShareLinkModal
+    bind:open={showShareModal}
+    projectId={shareTargetProject?.id}
+    projectTitle={shareTargetProject?.title}
   />
 </div>
 
@@ -595,17 +736,138 @@
     margin-bottom: 12px;
   }
 
-  .spinner-large {
-    width: 32px;
-    height: 32px;
-    border: 3px solid var(--surface-card-border);
-    border-top-color: var(--brand-accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 8px;
+  .tool-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--surface-card-subtle, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--surface-card-border, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    color: #FFF;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s ease;
+  }
+  .tool-icon-btn:hover {
+    background: rgba(33, 161, 247, 0.2);
+    border-color: #38BDF8;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  .view-mode-toggle {
+    display: flex;
+    background: var(--surface-card, #0F172A);
+    border: 1px solid var(--surface-card-border, rgba(255, 255, 255, 0.15));
+    border-radius: 6px;
+    overflow: hidden;
   }
+  .mode-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    color: #94A3B8;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .mode-btn.active {
+    background: #043388;
+    color: #FFF;
+  }
+
+  .ratio-pill {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #38BDF8;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    font-family: monospace;
+  }
+
+  /* DAM Table */
+  .dam-table-card {
+    background: #0F172A;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+
+  .dam-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .dam-table th {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94A3B8;
+  }
+
+  .dam-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #CBD5E1;
+  }
+
+  .table-row-clickable {
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .table-row-clickable:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .table-thumb-col { width: 50px; }
+  .table-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .table-icon-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  .table-filename { font-weight: 700; color: #FFF; }
+  .table-proj-info { display: flex; flex-direction: column; gap: 2px; }
+  .job-id-sm { font-size: 11px; font-weight: 800; color: #38BDF8; font-family: monospace; }
+  .proj-title-sm { font-size: 11px; color: #94A3B8; }
+
+  .format-badge, .ratio-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    font-family: monospace;
+  }
+  .ratio-badge { color: #38BDF8; }
+
+  .status-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .status-badge.status-pending { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }
+  .status-badge.status-revision { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
+  .status-badge.status-approved { background: rgba(16, 185, 129, 0.2); color: #10B981; }
+
+  .table-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
 </style>
