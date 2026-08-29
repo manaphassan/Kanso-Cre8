@@ -1367,6 +1367,11 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
       message: 'Workspace root mount path updated and rescan initiated successfully.',
       ...result
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── QUICK NOTES (DESKTOP & MOBILE BI-DIRECTIONAL SYNC) ─────────────
 
 function getNotesDir() {

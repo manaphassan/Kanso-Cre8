@@ -78,29 +78,30 @@
   const currentUserStaffId = $derived(appState.currentUser?.staffId || '');
 
   const myProjects = $derived.by(() => {
-    if (!projectStore.projects) return [];
+    if (!projectStore.projects || !Array.isArray(projectStore.projects)) return [];
     return projectStore.projects.filter(p => {
+      if (!p) return false;
       const d = (p.designer || '').toLowerCase();
-      const uName = currentUserName.toLowerCase();
-      const sId = currentUserStaffId.toLowerCase();
+      const uName = (currentUserName || '').toLowerCase();
+      const sId = (currentUserStaffId || '').toLowerCase();
       return (uName && d.includes(uName)) || (sId && d.includes(sId));
     });
   });
 
   const myRevisionItems = $derived.by(() => {
-    return myProjects.filter(p => p.status === 'revision');
+    return myProjects.filter(p => p && p.status === 'revision');
   });
 
   const myActiveItems = $derived.by(() => {
-    return myProjects.filter(p => p.status === 'in-progress');
+    return myProjects.filter(p => p && p.status === 'in-progress');
   });
 
   const myReviewItems = $derived.by(() => {
-    return myProjects.filter(p => p.status === 'review');
+    return myProjects.filter(p => p && p.status === 'review');
   });
 
   const totalBrandAssets = $derived.by(() => {
-    return Object.values(brandDistribution).reduce((sum, count) => sum + count, 0) || 1;
+    return Object.values(brandDistribution || {}).reduce((sum, count) => sum + (count || 0), 0) || 1;
   });
 
   const holdingBrands = ['all', 'SSH', 'SSC', 'SSW', 'SSE', 'SST', 'SS'];
