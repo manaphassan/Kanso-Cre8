@@ -2,9 +2,16 @@
 
 All notable SS-CAM changes are documented here.
 
-## [4.5.0] - 2026-08-28 (Master Brand System Integration & Brand Assets Vault Modernization)
+## [4.5.0] - 2026-08-29 (Master Brand System Integration, Web Portal Zero-Emoji Overhaul & Brand Assets Vault Modernization)
 
-### Added & Refined — Master Brand System v3.5.1, Multi-Format Color Matrix, 5 Sub-Brands Hub & Surface Contrast Tester
+### Added & Refined — Master Brand System v3.5.1, Web Portal Zero-Emoji Overhaul, Multi-Format Color Matrix & 5 Sub-Brands Hub
+- **Web Portal Brand System & Zero-Emoji Modernization (`SS-CAM.Web`)**:
+  - Full eradication of informal/playful raw Unicode emojis across all **10 views** and all **11 modals/drawers**.
+  - Built canonical [`FluentIcons.svelte`](file:///d:/HaNa_Innovation/ss_cam/src/SS-CAM.Web/client/src/lib/components/ui/FluentIcons.svelte) providing 45+ type-safe Microsoft Fluent 2 SVG icons styled in the official SuamiSihat brand palette.
+  - Complete modernization of `DashboardView`, `ProjectsView`, `ProjectDetailView`, `DeliverablesView`, `CopyStudioView`, `TeamView`, `ProfileView`, `AdminView`, `LoginView`, and `ClientReviewView`.
+  - Upgraded all 11 modals: `CreativeAiAssistantModal`, `ProjectVersionTimelineModal`, `PreflightValidatorModal`, `BatchResizerModal`, `DeliverableLightbox`, `DeliverableAnnotationCanvas`, `DeliverableVisualDiffSlider`, `ShareLinkModal`, `VaultIngesterModal`, `CommandPaletteModal`, and `NotificationDrawer`.
+- **Creative AI Assistant Key Persistence (`CreativeAiAssistantModal.svelte`, `GeminiService.js`)**:
+  - Implemented resilient dual-layer API key persistence: saving instantly to backend `ai-config.json` while simultaneously mirroring to browser `localStorage` as client-side fallback.
 - **Master Brand System Architecture Alignment (`BrandAssetsPage.xaml`, `BrandAssetsPage.xaml.cs`)**:
   - Full synchronization with the authoritative [SuamiSihat™ Master Brand System Guide](https://assets.suamisihat.myds.me/brand-system/).
   - Implemented the Two-Layer System Architecture: SuamiSihat Identity Visual Layer combined with Fluent 2 Dynamic Interaction Logic.
