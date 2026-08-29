@@ -799,6 +799,85 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 26: SnapshotService Creative Version Timeline & Rollback ──
+  test('SnapshotService captures versioned milestones and restores project state', () => {
+    const SnapshotService = require('../services/SnapshotService');
+    const testDir = path.join(__dirname, 'temp-snapshot-workspace');
+    const projDir = path.join(testDir, '2026', '202608_August', '202608_0088D_SS_Snapshot_Test');
+    const copyDir = path.join(projDir, '03_COPYWRITING');
+    fs.mkdirSync(copyDir, { recursive: true });
+
+    // Initial state: Rev 1
+    fs.writeFileSync(path.join(projDir, 'README.md'), '---\nrevision: 1\nstatus: in-progress\n---\n# Rev 1 Initial\n', 'utf8');
+    fs.writeFileSync(path.join(copyDir, 'COPY.md'), '# Initial Draft Headline\nBody copy v1', 'utf8');
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Capture snapshot of Rev 1
+      const snap1 = SnapshotService.createSnapshot(projDir, 'MANUAL_MILESTONE', 'Designer Ali', 'First draft completed');
+      assert.ok(snap1 && snap1.id, 'Snapshot must be created with ID');
+      assert.strictEqual(snap1.revision, 1);
+
+      // 2. Modify files (simulate Rev 2)
+      fs.writeFileSync(path.join(projDir, 'README.md'), '---\nrevision: 2\nstatus: in-progress\n---\n# Rev 2 Changed\n', 'utf8');
+      fs.writeFileSync(path.join(copyDir, 'COPY.md'), '# Altered Bad Headline\nCorrupted text', 'utf8');
+
+      // 3. Capture snapshot of Rev 2
+      const snap2 = SnapshotService.createSnapshot(projDir, 'CLIENT_REVISION', 'Client User', 'Client feedback logged');
+      assert.strictEqual(snap2.revision, 2);
+
+      const list = SnapshotService.getSnapshots(projDir);
+      assert.strictEqual(list.length, 2, 'Must list 2 snapshots');
+
+      // 4. Rollback to snap1
+      const rollbackResult = SnapshotService.rollback(projDir, snap1.id, 'Art Director');
+      assert.strictEqual(rollbackResult.success, true);
+
+      // Verify files were restored
+      const restoredCopy = fs.readFileSync(path.join(copyDir, 'COPY.md'), 'utf8');
+      assert.ok(restoredCopy.includes('Initial Draft Headline'), 'COPY.md must be restored to Rev 1');
+      assert.ok(!restoredCopy.includes('Altered Bad Headline'), 'Altered text must be gone');
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 27: WebhookService Studio Notifications ───────────────────
+  test('WebhookService manages webhooks and handles Discord/Slack payloads', async () => {
+    const WebhookService = require('../services/WebhookService');
+    const testDir = path.join(__dirname, 'temp-webhook-workspace');
+    fs.mkdirSync(testDir, { recursive: true });
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Add Webhook
+      const hook = WebhookService.addWebhook({
+        name: 'Discord Creative Alerts',
+        url: 'https://discord.com/api/webhooks/mock/123',
+        serviceType: 'discord',
+        events: ['all']
+      });
+      assert.ok(hook && hook.id, 'Webhook must be registered with ID');
+
+      const list = WebhookService.getWebhooks();
+      assert.strictEqual(list.length, 1);
+      assert.strictEqual(list[0].name, 'Discord Creative Alerts');
+
+      // 2. Delete Webhook
+      const deleted = WebhookService.deleteWebhook(hook.id);
+      assert.strictEqual(deleted, true);
+      assert.strictEqual(WebhookService.getWebhooks().length, 0);
+    } finally {
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

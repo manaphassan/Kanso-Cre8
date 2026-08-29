@@ -8,11 +8,20 @@
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
 
-  type ActiveTab = 'companies' | 'users' | 'audit' | 'system';
+  type ActiveTab = 'companies' | 'users' | 'audit' | 'system' | 'webhooks';
   type ViewMode = 'cards' | 'table';
 
   let activeTab = $state<ActiveTab>('companies');
   let companyViewMode = $state<ViewMode>('cards');
+
+  // Webhook Integrations States
+  let webhooks = $state<any[]>([]);
+  let newHookName = $state<string>('');
+  let newHookUrl = $state<string>('');
+  let newHookType = $state<string>('discord');
+  let newHookEvents = $state<string[]>(['all']);
+  let isAddingHook = $state<boolean>(false);
+  let isTestingHook = $state<string | null>(null);
 
   // Default Subsidiaries List Seed
   const DEFAULT_COMPANIES_FALLBACK: Company[] = [
@@ -320,11 +329,12 @@
   async function refreshData() {
     isLoading = true;
     try {
-      const [companiesRes, usersRes, logsRes, statusRes] = await Promise.all([
+      const [companiesRes, usersRes, logsRes, statusRes, webhooksRes] = await Promise.all([
         ApiClient.getCompanies().catch(() => ({ success: true, companies: [] })),
         ApiClient.getStaffRoster().catch(() => ({ roster: [] })),
         ApiClient.getAuditLogs({ limit: '100' }).catch(() => ({ logs: [] })),
-        ApiClient.getSystemStatus().catch(() => ({}))
+        ApiClient.getSystemStatus().catch(() => ({})),
+        ApiClient.getWebhooks().catch(() => ({ success: true, webhooks: [] }))
       ]);
       
       const loadedCompanies = companiesRes.companies || [];
@@ -332,6 +342,7 @@
       users = usersRes.roster || (usersRes as any).users || [];
       auditLogs = logsRes.logs || [];
       systemStatus = statusRes || {};
+      webhooks = (webhooksRes as any).webhooks || [];
       lastRefreshed = new Date();
     } catch (err: any) {
       companies = DEFAULT_COMPANIES_FALLBACK;
@@ -584,6 +595,61 @@
     if (a.includes('PROVISION') || a.includes('SAVED') || a.includes('CREATE') || a.includes('APPROV')) return 'success';
     return 'info';
   }
+
+  // ─── WEBHOOK HANDLERS ───
+  async function handleAddWebhook() {
+    if (!newHookUrl.trim()) {
+      appState.addToast('Please enter a valid webhook URL.', 'warning');
+      return;
+    }
+
+    isAddingHook = true;
+    try {
+      await ApiClient.addWebhook({
+        name: newHookName.trim() || 'Studio Alert Bot',
+        url: newHookUrl.trim(),
+        serviceType: newHookType,
+        events: newHookEvents
+      });
+      appState.addToast('Webhook registered successfully!', 'success');
+      newHookName = '';
+      newHookUrl = '';
+      const res = await ApiClient.getWebhooks();
+      webhooks = res.webhooks || [];
+    } catch (err: any) {
+      appState.addToast(`Failed to add webhook: ${err.message}`, 'error');
+    } finally {
+      isAddingHook = false;
+    }
+  }
+
+  async function handleDeleteWebhook(id: string) {
+    if (!confirm('Are you sure you want to remove this webhook?')) return;
+    try {
+      await ApiClient.deleteWebhook(id);
+      appState.addToast('Webhook removed.', 'info');
+      const res = await ApiClient.getWebhooks();
+      webhooks = res.webhooks || [];
+    } catch (err: any) {
+      appState.addToast(`Failed to delete webhook: ${err.message}`, 'error');
+    }
+  }
+
+  async function handleTestWebhook(hook: any) {
+    isTestingHook = hook.id;
+    try {
+      const res = await ApiClient.testWebhook({ url: hook.url, serviceType: hook.serviceType });
+      if (res.success) {
+        appState.addToast(`Test ping dispatched to ${hook.name}!`, 'success');
+      }
+      const hookList = await ApiClient.getWebhooks();
+      webhooks = hookList.webhooks || [];
+    } catch (err: any) {
+      appState.addToast(`Webhook ping failed: ${err.message}`, 'error');
+    } finally {
+      isTestingHook = null;
+    }
+  }
 </script>
 
 <div class="admin-view-container">
@@ -710,6 +776,16 @@
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
       <span>Synology Runtime Telemetry</span>
+    </button>
+
+    <button
+      class="seg-tab-btn"
+      class:active={activeTab === 'webhooks'}
+      onclick={() => (activeTab = 'webhooks')}
+    >
+      <span style="font-size: 14px;">🔔</span>
+      <span>Webhooks &amp; Alerts</span>
+      <span class="tab-count-pill">{webhooks.length}</span>
     </button>
   </div>
 
@@ -1316,6 +1392,92 @@
           </div>
         </div>
       </FluentCard>
+    </div>
+  {/if}
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 5: STUDIO WEBHOOKS & NOTIFICATION ALERTS                      -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  {#if activeTab === 'webhooks'}
+    <div class="tab-pane-content">
+      <!-- Top Action Deck -->
+      <div class="deck-action-bar">
+        <div>
+          <h2 class="deck-title">Studio Notification Webhooks &amp; Bot Alert Gateways</h2>
+          <p class="deck-desc">
+            Broadcast real-time deliverable approvals, client revision requests, and deadline alerts directly to Discord channels, Slack, Telegram, or WhatsApp bots.
+          </p>
+        </div>
+      </div>
+
+      <!-- Register New Webhook Card -->
+      <FluentCard elevated style="margin-bottom: 20px;">
+        <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 800;">➕ Register New Studio Webhook</h3>
+        <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr auto; gap: 12px; align-items: flex-end;">
+          <div>
+            <label class="field-label" for="new-webhook-name">Bot / Channel Name</label>
+            <input id="new-webhook-name" type="text" class="field-input" placeholder="e.g. Creative Discord #alerts" bind:value={newHookName} />
+          </div>
+          <div>
+            <label class="field-label" for="new-webhook-url">Target Webhook URL</label>
+            <input id="new-webhook-url" type="url" class="field-input" placeholder="https://discord.com/api/webhooks/..." bind:value={newHookUrl} />
+          </div>
+          <div>
+            <label class="field-label" for="new-webhook-type">Service Type</label>
+            <select id="new-webhook-type" class="field-input" bind:value={newHookType}>
+              <option value="discord">Discord Webhook</option>
+              <option value="slack">Slack Incoming Webhook</option>
+              <option value="telegram">Telegram Bot</option>
+              <option value="generic">Generic / WhatsApp Gateway</option>
+            </select>
+          </div>
+          <FluentButton appearance="primary" loading={isAddingHook} onclick={handleAddWebhook}>
+            Register Webhook
+          </FluentButton>
+        </div>
+      </FluentCard>
+
+      <!-- Active Webhooks List -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        {#if webhooks.length === 0}
+          <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+            <span style="font-size: 32px; display: block; margin-bottom: 6px;">🔔</span>
+            <span style="font-weight: 700; color: #FFF;">No Webhooks Configured</span>
+            <p style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Register a Discord or Slack webhook above to receive live notifications on team deliverables and client sign-offs.</p>
+          </div>
+        {:else}
+          {#each webhooks as hook}
+            <FluentCard hoverLift padding="16px">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 24px;">{hook.serviceType === 'discord' ? '🎮' : hook.serviceType === 'slack' ? '💬' : '🔔'}</span>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 800; font-size: 14px; color: #FFF;">{hook.name}</span>
+                      <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; background: #043388; color: #FFF; padding: 2px 6px; border-radius: 4px;">{hook.serviceType}</span>
+                      <span style="font-size: 10px; color: {hook.lastStatus === 200 ? '#10B981' : '#F59E0B'}; font-weight: 700;">
+                        ● {hook.lastStatus === 200 ? 'Active & Healthy' : 'Ready'}
+                      </span>
+                    </div>
+                    <span style="font-size: 11px; color: #64748B; font-family: monospace; display: block; margin-top: 2px;">
+                      {hook.url.length > 50 ? hook.url.substring(0, 47) + '...' : hook.url}
+                    </span>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                  <FluentButton appearance="secondary" size="xs" loading={isTestingHook === hook.id} onclick={() => handleTestWebhook(hook)}>
+                    🔔 Test Ping
+                  </FluentButton>
+                  <FluentButton appearance="danger" size="xs" onclick={() => handleDeleteWebhook(hook.id)}>
+                    🗑 Remove
+                  </FluentButton>
+                </div>
+              </div>
+            </FluentCard>
+          {/each}
+        {/if}
+      </div>
     </div>
   {/if}
 </div>

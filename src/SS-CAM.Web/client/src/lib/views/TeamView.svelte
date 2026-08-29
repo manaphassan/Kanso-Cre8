@@ -18,6 +18,45 @@
   let selectedCapacity = $state<string>('all');
   let sortBy = $state<'hierarchy' | 'name' | 'workload-desc' | 'workload-asc'>('hierarchy');
 
+  // Workload Rebalancing Modal States
+  let showReassignModal = $state<boolean>(false);
+  let reassignProjectData = $state<any>(null);
+  let reassignCurrentDesigner = $state<string>('');
+  let reassignTargetDesigner = $state<string>('');
+  let reassignReason = $state<string>('');
+  let isReassigning = $state<boolean>(false);
+
+  function openReassignDialog(proj: any, currentDesigner: string) {
+    reassignProjectData = proj;
+    reassignCurrentDesigner = currentDesigner;
+    reassignTargetDesigner = '';
+    reassignReason = 'Workload load balancing';
+    showReassignModal = true;
+  }
+
+  async function handleConfirmReassign() {
+    if (!reassignProjectData || !reassignTargetDesigner) {
+      appState.addToast('Please select a target designer to reassign to.', 'warning');
+      return;
+    }
+
+    isReassigning = true;
+    try {
+      await ApiClient.reassignProject(reassignProjectData.id, {
+        newDesigner: reassignTargetDesigner,
+        reason: reassignReason
+      });
+      appState.addToast(`Project ${reassignProjectData.jobId || ''} reassigned to ${reassignTargetDesigner}!`, 'success');
+      showReassignModal = false;
+      await loadTeam(true);
+      await projectStore.loadProjects();
+    } catch (err: any) {
+      appState.addToast(`Reassignment failed: ${err.message}`, 'error');
+    } finally {
+      isReassigning = false;
+    }
+  }
+
   async function loadTeam(silent = false) {
     if (!silent) isLoading = true;
     else isRefreshing = true;
@@ -567,19 +606,29 @@
 
               <div class="projects-chip-list">
                 {#each member.assignedProjects as proj}
-                  <a
-                    href="#project-detail/{proj.id}"
-                    class="project-preview-chip"
-                    title="{proj.jobId}: {proj.title} · {proj.presetType || 'Graphic'} ({proj.slaDays || 3}d SLA)"
-                  >
-                    <span class="chip-brand">[{proj.brand}]</span>
-                    <span class="chip-job">{proj.jobId}</span>
-                    <span class="chip-title">{proj.title}</span>
-                    {#if proj.shortLabel || proj.slaDays}
-                      <span class="chip-sla" title="Category SLA: {proj.slaDays || 3} days target">{proj.shortLabel || 'Graphic'} · {proj.slaDays || 3}d</span>
-                    {/if}
-                    <span class="chip-status status-{proj.status}">{proj.status}</span>
-                  </a>
+                  <div class="project-chip-row">
+                    <a
+                      href="#project-detail/{proj.id}"
+                      class="project-preview-chip"
+                      title="{proj.jobId}: {proj.title} · {proj.presetType || 'Graphic'} ({proj.slaDays || 3}d SLA)"
+                    >
+                      <span class="chip-brand">[{proj.brand}]</span>
+                      <span class="chip-job">{proj.jobId}</span>
+                      <span class="chip-title">{proj.title}</span>
+                      {#if proj.shortLabel || proj.slaDays}
+                        <span class="chip-sla" title="Category SLA: {proj.slaDays || 3} days target">{proj.shortLabel || 'Graphic'} · {proj.slaDays || 3}d</span>
+                      {/if}
+                      <span class="chip-status status-{proj.status}">{proj.status}</span>
+                    </a>
+                    <button
+                      type="button"
+                      class="rebalance-chip-btn"
+                      title="Reassign / Rebalance this project to another designer"
+                      onclick={() => openReassignDialog(proj, member.name)}
+                    >
+                      ⚡
+                    </button>
+                  </div>
                 {/each}
               </div>
             </div>
@@ -618,6 +667,57 @@
           </div>
         </FluentCard>
       {/each}
+    </div>
+  {/if}
+
+  <!-- ═══ 1-CLICK WORKLOAD REASSIGNMENT MODAL ═══════════════════ -->
+  {#if showReassignModal && reassignProjectData}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="reassign-backdrop" onclick={(e) => { if (e.target === e.currentTarget) showReassignModal = false; }}>
+      <div class="reassign-modal">
+        <div class="reassign-header">
+          <div class="header-left">
+            <span class="reassign-icon">⚡</span>
+            <div>
+              <h2 class="modal-title">1-Click Workload Rebalancer</h2>
+              <p class="modal-sub">Transfer project <b>{reassignProjectData.jobId || reassignProjectData.title}</b> to another designer.</p>
+            </div>
+          </div>
+          <button class="close-btn" onclick={() => (showReassignModal = false)}>✕</button>
+        </div>
+
+        <div class="reassign-body">
+          <div class="reassign-field">
+            <label class="field-label" for="current-designer-input">Current Lead Designer</label>
+            <input id="current-designer-input" type="text" class="field-input" disabled value={reassignCurrentDesigner} />
+          </div>
+
+          <div class="reassign-field">
+            <label class="field-label" for="target-designer-select">Transfer / Reassign To Designer</label>
+            <select id="target-designer-select" class="field-select" bind:value={reassignTargetDesigner}>
+              <option value="">-- Select Designer --</option>
+              {#each teamMembers.filter(m => m.name !== reassignCurrentDesigner) as m}
+                <option value={m.name}>
+                  {m.name} ({m.role || 'Designer'}) · {m.workload?.active || 0} active ({m.capacityStatus || 'Optimal'})
+                </option>
+              {/each}
+            </select>
+          </div>
+
+          <div class="reassign-field">
+            <label class="field-label" for="reassign-reason-input">Reason / Studio Rebalance Note</label>
+            <input id="reassign-reason-input" type="text" class="field-input" placeholder="e.g. SLA turnaround priority balancing" bind:value={reassignReason} />
+          </div>
+        </div>
+
+        <div class="reassign-footer">
+          <FluentButton appearance="subtle" onclick={() => (showReassignModal = false)}>Cancel</FluentButton>
+          <FluentButton appearance="primary" loading={isReassigning} onclick={handleConfirmReassign}>
+            ⚡ Confirm Reassignment
+          </FluentButton>
+        </div>
+      </div>
     </div>
   {/if}
 </div>
@@ -1386,4 +1486,95 @@
   .empty-icon { font-size: 36px; }
   .empty-title { font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 0; }
   .empty-desc { font-size: 13px; color: var(--text-secondary); margin: 0 0 8px 0; max-width: 400px; }
+
+  /* ═══ REBALANCE CHIPS & MODAL STYLES ═════════════════════════ */
+  .project-chip-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .rebalance-chip-btn {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #F59E0B;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+  .rebalance-chip-btn:hover {
+    background: #F59E0B;
+    color: #0F172A;
+  }
+
+  .reassign-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1970;
+    padding: 20px;
+  }
+
+  .reassign-modal {
+    width: 95%;
+    max-width: 520px;
+    background: #0F172A;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  }
+
+  .reassign-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.98);
+  }
+  .reassign-icon { font-size: 22px; }
+
+  .reassign-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .reassign-field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
+  .field-input, .field-select {
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #FFF;
+    font-size: 13px;
+    outline: none;
+  }
+  .field-input:focus, .field-select:focus { border-color: #38BDF8; }
+
+  .reassign-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 17, 33, 0.98);
+  }
 </style>

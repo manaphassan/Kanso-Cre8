@@ -17,6 +17,8 @@ const SseService = require('../services/SseService');
 const ExportService = require('../services/ExportService');
 const ShareService = require('../services/ShareService');
 const GeminiService = require('../services/GeminiService');
+const SnapshotService = require('../services/SnapshotService');
+const WebhookService = require('../services/WebhookService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -575,6 +577,149 @@ router.post('/ai/format-prompt', authenticateToken, (req, res) => {
     const { brand, title, audience, goal } = req.body;
     const formatted = GeminiService.formatUltraWebPrompt({ brand, title, audience, goal });
     res.json({ success: true, prompt: formatted });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ─── PROJECT SNAPSHOTS & VERSION ROLLBACK ROUTES ────────────────────
+
+router.get('/projects/:id/snapshots', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const snapshots = SnapshotService.getSnapshots(project.fullPath);
+    res.json({ success: true, snapshots });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/projects/:id/snapshot', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const { trigger, note } = req.body;
+    const actor = req.user ? req.user.name : 'Designer';
+    const snapshot = SnapshotService.createSnapshot(project.fullPath, trigger || 'MANUAL_MILESTONE', actor, note);
+    res.status(201).json({ success: true, snapshot });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/projects/:id/rollback', authenticateToken, requirePermission('project:edit'), (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const { snapshotId } = req.body;
+    if (!snapshotId) return res.status(400).json({ error: 'snapshotId is required' });
+    const actor = req.user ? req.user.name : 'Lead Designer';
+    const result = SnapshotService.rollback(project.fullPath, snapshotId, actor);
+    
+    // Dispatch webhook alert
+    WebhookService.dispatch('PROJECT_ROLLBACK', {
+      projectId: project.id,
+      jobId: project.jobId,
+      projectTitle: project.title,
+      actor,
+      snapshotId,
+      brand: project.brand
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── 1-CLICK PROJECT REASSIGNMENT (RADAR WORKLOAD) ───────────────────
+
+router.post('/projects/:id/reassign', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const { newDesigner, reason = '' } = req.body;
+    if (!newDesigner) return res.status(400).json({ error: 'newDesigner name is required' });
+
+    const actor = req.user ? req.user.name : 'Studio Lead';
+    const oldDesigner = project.designer || 'Unassigned';
+
+    const { frontmatter, body } = FrontmatterService.readProjectReadme(project.fullPath);
+    const updatedFm = { ...frontmatter, designer: newDesigner.trim() };
+    FrontmatterService.writeProjectReadme(project.fullPath, updatedFm, body);
+
+    AuditService.logEvent({
+      actor,
+      role: req.user ? req.user.role : 'Manager',
+      action: 'PROJECT_REASSIGNED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id,
+      details: {
+        projectId: project.id,
+        oldDesigner,
+        newDesigner: newDesigner.trim(),
+        reason
+      }
+    });
+
+    SseService.broadcast('project:updated', {
+      projectId: project.id,
+      action: 'reassigned',
+      designer: newDesigner.trim(),
+      actor
+    });
+
+    WebhookService.dispatch('PROJECT_REASSIGNED', {
+      jobId: project.jobId,
+      projectTitle: project.title,
+      actor,
+      brand: project.brand,
+      message: `Project reassigned from ${oldDesigner} to ${newDesigner.trim()}`
+    });
+
+    res.json({ success: true, designer: newDesigner.trim(), message: `Project reassigned to ${newDesigner.trim()}` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── STUDIO WEBHOOK INTEGRATIONS (DISCORD / SLACK / TELEGRAM) ────────
+
+router.get('/webhooks', authenticateToken, (req, res) => {
+  try {
+    const hooks = WebhookService.getWebhooks();
+    res.json({ success: true, webhooks: hooks });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/webhooks', authenticateToken, (req, res) => {
+  try {
+    const { name, url, serviceType, events, active } = req.body;
+    const hook = WebhookService.addWebhook({ name, url, serviceType, events, active });
+    res.status(201).json({ success: true, webhook: hook });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/webhooks/:id', authenticateToken, (req, res) => {
+  try {
+    const ok = WebhookService.deleteWebhook(req.params.id);
+    res.json({ success: ok });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/webhooks/test', authenticateToken, async (req, res) => {
+  try {
+    const { url, serviceType } = req.body;
+    const result = await WebhookService.testPing(url, serviceType);
+    res.json({ success: true, result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

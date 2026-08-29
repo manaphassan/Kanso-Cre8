@@ -11,17 +11,20 @@
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import BatchResizerModal from '$lib/components/features/BatchResizerModal.svelte';
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
+  import PreflightValidatorModal from '$lib/components/features/PreflightValidatorModal.svelte';
 
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
   let showIngesterModal = $state<boolean>(false);
   let ingestTargetProject = $state<any>(null);
 
-  // Modals for Resizer & Share Links
+  // Modals for Resizer, Share Links, & Preflight
   let showResizerModal = $state<boolean>(false);
   let resizerTargetDeliverable = $state<DeliverableItem | null>(null);
   let showShareModal = $state<boolean>(false);
   let shareTargetProject = $state<any>(null);
+  let showPreflightModal = $state<boolean>(false);
+  let preflightTargetDeliverable = $state<DeliverableItem | null>(null);
 
   // DAM Filters & View Mode
   let filterStatus = $state<string>('all');
@@ -53,6 +56,11 @@
     };
     shareTargetProject = project;
     showShareModal = true;
+  }
+
+  function openPreflight(d: DeliverableItem) {
+    preflightTargetDeliverable = d;
+    showPreflightModal = true;
   }
 
   const filteredDeliverables = $derived(
@@ -276,6 +284,9 @@
                   <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
                     📐
                   </button>
+                  <button class="tool-icon-btn" title="Print &amp; POSM Preflight Validator (DPI, Bleed &amp; CMYK)" onclick={() => openPreflight(d)}>
+                    🖨️
+                  </button>
                 {/if}
                 <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
                   🔗
@@ -336,6 +347,7 @@
                 <div class="table-actions">
                   {#if d.isImage || d.previewType === 'image'}
                     <button class="tool-icon-btn" title="Social Resizer" onclick={() => openResizer(d)}>📐</button>
+                    <button class="tool-icon-btn" title="Print Preflight" onclick={() => openPreflight(d)}>🖨️</button>
                   {/if}
                   <button class="tool-icon-btn" title="Share Link" onclick={() => openShare(d)}>🔗</button>
                   {#if d.downloadUrl}
@@ -393,6 +405,13 @@
     bind:open={showShareModal}
     projectId={shareTargetProject?.id}
     projectTitle={shareTargetProject?.title}
+  />
+
+  <!-- Print Preflight Validator Modal -->
+  <PreflightValidatorModal
+    bind:open={showPreflightModal}
+    deliverable={preflightTargetDeliverable}
+    projectTitle={preflightTargetDeliverable?.project?.title || preflightTargetDeliverable?.projectTitle}
   />
 </div>
 

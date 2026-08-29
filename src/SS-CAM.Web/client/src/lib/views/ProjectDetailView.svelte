@@ -11,6 +11,7 @@
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
+  import ProjectVersionTimelineModal from '$lib/components/features/ProjectVersionTimelineModal.svelte';
 
   interface Props {
     projectId?: string;
@@ -25,6 +26,7 @@
   let inspectorOpen = $state<boolean>(true);
   let showIngesterModal = $state<boolean>(false);
   let showShareModal = $state<boolean>(false);
+  let showTimelineModal = $state<boolean>(false);
 
   // Deliverables & Lightbox
   let selectedDeliverable = $state<DeliverableItem | null>(null);
@@ -411,6 +413,18 @@
               <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
             </svg>
             <span>Share Link</span>
+          </button>
+
+          <!-- Version Timeline & Rollback Button -->
+          <button
+            class="timeline-btn"
+            onclick={() => (showTimelineModal = true)}
+            title="View revision milestones and rollback COPY.md or project state"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+            </svg>
+            <span>Timeline &amp; Rollback</span>
           </button>
 
           <!-- Export Handover ZIP Button -->
@@ -824,6 +838,16 @@
       projectId={p?.id}
       projectTitle={p?.title}
     />
+
+    <!-- Version Timeline Modal -->
+    <ProjectVersionTimelineModal
+      bind:open={showTimelineModal}
+      projectId={p?.id}
+      projectTitle={p?.title}
+      onRollbackSuccess={() => {
+        if (projectId) projectStore.loadProjectById(projectId);
+      }}
+    />
   {/if}
 </div>
 
@@ -964,6 +988,25 @@
   .share-link-btn:hover {
     background: #10B981;
     color: #0F172A;
+  }
+
+  .timeline-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(139, 92, 246, 0.15);
+    color: #A78BFA;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .timeline-btn:hover {
+    background: #8B5CF6;
+    color: #FFFFFF;
   }
 
   .export-handover-btn {

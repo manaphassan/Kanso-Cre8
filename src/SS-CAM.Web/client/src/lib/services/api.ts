@@ -484,6 +484,58 @@ export class ApiClient {
       body: JSON.stringify(payload)
     });
   }
+
+  // ─── Project Snapshots & Version Timeline ───
+  static getProjectSnapshots(projectId: string): Promise<{ success: boolean; snapshots: any[] }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/snapshots`);
+  }
+
+  static createProjectSnapshot(projectId: string, payload: { trigger?: string; note?: string }): Promise<{ success: boolean; snapshot: any }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/snapshot`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static rollbackProject(projectId: string, snapshotId: string): Promise<{ success: boolean; restoredSnapshot: any; message: string }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/rollback`, {
+      method: 'POST',
+      body: JSON.stringify({ snapshotId })
+    });
+  }
+
+  // ─── Workload Reassign ───
+  static reassignProject(projectId: string, payload: { newDesigner: string; reason?: string }): Promise<{ success: boolean; designer: string; message: string }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/reassign`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  // ─── Webhooks ───
+  static getWebhooks(): Promise<{ success: boolean; webhooks: any[] }> {
+    return this.request('/webhooks');
+  }
+
+  static addWebhook(payload: { name: string; url: string; serviceType?: string; events?: string[]; active?: boolean }): Promise<{ success: boolean; webhook: any }> {
+    return this.request('/webhooks', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static deleteWebhook(id: string): Promise<{ success: boolean }> {
+    return this.request(`/webhooks/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static testWebhook(payload: { url: string; serviceType?: string }): Promise<{ success: boolean; result: any }> {
+    return this.request('/webhooks/test', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 
