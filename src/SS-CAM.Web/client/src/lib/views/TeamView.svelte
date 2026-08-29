@@ -494,14 +494,20 @@
         {@const w = member.workload || { total: 0, active: 0, inProgress: 0, inReview: 0, revision: 0, overdue: 0, completed: 0, capacityPercent: 0 }}
         {@const roles = parseRoles(member.role, member.roles)}
         {@const avatarBg = member.avatarColor || '#0078D4'}
+        {@const memberAvatar = member.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${member.staffId}`) || (appState.currentUser?.staffId === member.staffId ? (appState.currentUser.avatar || '') : '')) : '')}
 
         <FluentCard hoverLift padding="20px">
           <!-- Card Header & Identity -->
           <div class="member-card-header">
             <div class="avatar-wrap">
               <div class="member-avatar" style="background: {avatarBg};">
-                {#if member.avatar}
-                  <img src={member.avatar} alt={member.name} class="avatar-photo" />
+                {#if memberAvatar}
+                  <img
+                    src={memberAvatar}
+                    alt={member.name}
+                    class="avatar-photo"
+                    onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
+                  />
                 {:else}
                   {(member.name || 'U').charAt(0).toUpperCase()}
                 {/if}

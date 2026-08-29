@@ -145,6 +145,10 @@
     ) || null;
   });
 
+  const designerAvatarSrc = $derived.by(() => {
+    return designerInfo?.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${designerInfo?.staffId}`) || (appState.currentUser?.staffId === designerInfo?.staffId ? (appState.currentUser.avatar || '') : '')) : '');
+  });
+
   const managerInfo = $derived.by(() => {
     const key = (selectedManager || (p ? p.manager : '') || '').toLowerCase();
     if (!key || key === 'unassigned') return null;
@@ -153,6 +157,10 @@
       (s.username && s.username.toLowerCase() === key) ||
       (s.staffId && s.staffId.toLowerCase() === key)
     ) || null;
+  });
+
+  const managerAvatarSrc = $derived.by(() => {
+    return managerInfo?.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${managerInfo?.staffId}`) || (appState.currentUser?.staffId === managerInfo?.staffId ? (appState.currentUser.avatar || '') : '')) : '');
   });
 
   $effect(() => {
@@ -706,8 +714,13 @@
                   <span class="prop-label">Assignee (Designer)</span>
                   <div class="prop-value user-val">
                     <div class="user-avatar" style="background: {designerInfo?.avatarColor || 'var(--brand-primary, #043388)'};">
-                      {#if designerInfo?.avatar}
-                        <img src={designerInfo.avatar} alt={p.designerName || p.designer} class="avatar-photo" />
+                      {#if designerAvatarSrc}
+                        <img
+                          src={designerAvatarSrc}
+                          alt={p.designerName || p.designer}
+                          class="avatar-photo"
+                          onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
+                        />
                       {:else}
                         {getInitials(p.designerName || p.designer || 'DS')}
                       {/if}
@@ -720,8 +733,13 @@
                   <span class="prop-label">Reviewer</span>
                   <div class="prop-value user-val-selectable">
                     <div class="user-avatar mgr-avatar" style="background: {managerInfo?.avatarColor || '#0284C7'};">
-                      {#if managerInfo?.avatar}
-                        <img src={managerInfo.avatar} alt={selectedManager} class="avatar-photo" />
+                      {#if managerAvatarSrc}
+                        <img
+                          src={managerAvatarSrc}
+                          alt={selectedManager}
+                          class="avatar-photo"
+                          onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
+                        />
                       {:else}
                         {getInitials(selectedManager && selectedManager !== 'Unassigned' ? selectedManager : 'AD')}
                       {/if}

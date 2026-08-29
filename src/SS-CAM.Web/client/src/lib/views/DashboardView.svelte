@@ -385,11 +385,17 @@
 
         <div class="workload-list">
           {#each workloads as w}
+            {@const wAvatar = w.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${w.staffId}`) || (appState.currentUser?.name === w.designer || appState.currentUser?.staffId === w.staffId ? (appState.currentUser.avatar || '') : '')) : '')}
             <div class="workload-row">
               <div class="workload-user">
                 <div class="avatar-chip" style="background: {w.avatarColor || 'var(--brand-primary, #043388)'};">
-                  {#if w.avatar}
-                    <img src={w.avatar} alt={w.designer} class="avatar-photo" />
+                  {#if wAvatar}
+                    <img
+                      src={wAvatar}
+                      alt={w.designer}
+                      class="avatar-photo"
+                      onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
+                    />
                   {:else}
                     {(w.designer || 'D').charAt(0).toUpperCase()}
                   {/if}
