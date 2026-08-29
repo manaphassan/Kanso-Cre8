@@ -494,7 +494,16 @@
         {@const w = member.workload || { total: 0, active: 0, inProgress: 0, inReview: 0, revision: 0, overdue: 0, completed: 0, capacityPercent: 0 }}
         {@const roles = parseRoles(member.role, member.roles)}
         {@const avatarBg = member.avatarColor || '#0078D4'}
-        {@const memberAvatar = member.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${member.staffId}`) || (appState.currentUser?.staffId === member.staffId ? (appState.currentUser.avatar || '') : '')) : '')}
+        {@const isCurrentUser = Boolean(appState.currentUser && (
+          (member.staffId && appState.currentUser.staffId && member.staffId.toLowerCase() === appState.currentUser.staffId.toLowerCase()) ||
+          (member.username && appState.currentUser.username && member.username.toLowerCase() === appState.currentUser.username.toLowerCase()) ||
+          (member.name && appState.currentUser.name && member.name.toLowerCase() === appState.currentUser.name.toLowerCase())
+        ))}
+        {@const memberAvatar = member.avatar || (typeof localStorage !== 'undefined' ? (
+          (member.staffId ? localStorage.getItem(`ss_cam_avatar_${member.staffId}`) : null) ||
+          (member.username ? localStorage.getItem(`ss_cam_avatar_${member.username}`) : null) ||
+          (isCurrentUser ? (appState.currentUser?.avatar || localStorage.getItem('ss_cam_user_avatar') || '') : '')
+        ) : '')}
 
         <FluentCard hoverLift padding="20px">
           <!-- Card Header & Identity -->

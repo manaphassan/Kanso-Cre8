@@ -385,7 +385,17 @@
 
         <div class="workload-list">
           {#each workloads as w}
-            {@const wAvatar = w.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${w.staffId}`) || (appState.currentUser?.name === w.designer || appState.currentUser?.staffId === w.staffId ? (appState.currentUser.avatar || '') : '')) : '')}
+            {@const isCurrentDesigner = Boolean(appState.currentUser && (
+              (w.staffId && appState.currentUser.staffId && w.staffId.toLowerCase() === appState.currentUser.staffId.toLowerCase()) ||
+              (w.designer && appState.currentUser.name && w.designer.toLowerCase() === appState.currentUser.name.toLowerCase()) ||
+              (w.name && appState.currentUser.name && w.name.toLowerCase() === appState.currentUser.name.toLowerCase()) ||
+              (w.designer && appState.currentUser.username && w.designer.toLowerCase() === appState.currentUser.username.toLowerCase())
+            ))}
+            {@const wAvatar = w.avatar || (typeof localStorage !== 'undefined' ? (
+              (w.staffId ? localStorage.getItem(`ss_cam_avatar_${w.staffId}`) : null) ||
+              (w.designer ? localStorage.getItem(`ss_cam_avatar_${w.designer}`) : null) ||
+              (isCurrentDesigner ? (appState.currentUser?.avatar || localStorage.getItem('ss_cam_user_avatar') || '') : '')
+            ) : '')}
             <div class="workload-row">
               <div class="workload-user">
                 <div class="avatar-chip" style="background: {w.avatarColor || 'var(--brand-primary, #043388)'};">
@@ -397,7 +407,7 @@
                       onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
                     />
                   {:else}
-                    {(w.designer || 'D').charAt(0).toUpperCase()}
+                    {(w.name || w.designer || 'D').charAt(0).toUpperCase()}
                   {/if}
                 </div>
                 <div class="user-info-col">

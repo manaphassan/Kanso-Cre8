@@ -26,13 +26,20 @@ const candidates = [
 const clientPath = candidates.find(p => fs.existsSync(path.join(p, 'index.html'))) || path.resolve(__dirname, '../client');
 console.log(`[Static] Serving client assets from: ${clientPath}`);
 
-app.use(express.static(clientPath));
+app.use(express.static(clientPath, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 
 // SPA fallback
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.sendFile(path.join(clientPath, 'index.html'));
 });
 
