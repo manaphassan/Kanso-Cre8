@@ -78,7 +78,7 @@ fun SettingsProfileScreen(
             .padding(horizontal = 22.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Editorial Header Bar (PROFILE • 01)
+        // 1. Editorial Header Bar (SETTINGS & PROFILE • v4.5.1)
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -89,18 +89,25 @@ fun SettingsProfileScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "PROFILE",
+                        text = "SETTINGS & PROFILE",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.8.sp,
                         color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF1E293B)
                     )
-                    Text(
-                        text = designerStaffId.takeLast(2).ifBlank { "01" },
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF1E293B)
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = colors.primary.copy(alpha = 0.12f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = "v4.5.1",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.primary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
                 HorizontalDivider(
                     thickness = 0.8.dp,
@@ -669,6 +676,33 @@ fun SettingsProfileScreen(
 
                             HorizontalDivider(color = colors.border)
 
+                            // Application Version & Environment
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text("Application Version", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                                    Text("Production Release • Build 451", fontSize = 10.sp, color = colors.textSecondary)
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = colors.primary.copy(alpha = 0.12f),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
+                                ) {
+                                    Text(
+                                        text = "v4.5.1",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colors.primary,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    )
+                                }
+                            }
+
+                            HorizontalDivider(color = colors.border)
+
                             // Sign Out / Switch Account Action Button
                             Button(
                                 onClick = {
@@ -709,13 +743,20 @@ fun SettingsProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    "SS-CAM Studio Identity • $designerStaffId",
+                    "SS-CAM Studio Companion • v4.5.1 (Build 451)",
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     color = if (colors.isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                )
+                Text(
+                    "SuamiSihat Creative Operations • $designerStaffId",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (colors.isDark) Color(0xFF475569) else Color(0xFFCBD5E1)
                 )
             }
         }
