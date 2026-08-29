@@ -2,6 +2,11 @@ package com.suamisihat.sscam.data.models
 
 import com.google.gson.annotations.SerializedName
 
+data class ProjectsResponse(
+    @SerializedName("total") val total: Int = 0,
+    @SerializedName("projects") val projects: List<ProjectItem> = emptyList()
+)
+
 data class ProjectItem(
     @SerializedName("id") val id: String,
     @SerializedName("title") val title: String,

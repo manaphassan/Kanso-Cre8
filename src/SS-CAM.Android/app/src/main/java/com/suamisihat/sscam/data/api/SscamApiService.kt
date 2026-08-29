@@ -1,5 +1,6 @@
 package com.suamisihat.sscam.data.api
 
+import com.google.gson.annotations.SerializedName
 import com.suamisihat.sscam.data.models.DashboardSummary
 import com.suamisihat.sscam.data.models.DecisionRequest
 import com.suamisihat.sscam.data.models.DeliverableItem
@@ -9,14 +10,20 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
+data class LoginRequest(@SerializedName("username") val username: String)
+data class LoginResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("token") val token: String? = null,
+    @SerializedName("error") val error: String? = null
+)
+
 interface SscamApiService {
+
+    @POST("api/auth/login")
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
     @GET("api/dashboard")
     suspend fun getDashboardSummary(): Response<DashboardSummary>
@@ -25,7 +32,7 @@ interface SscamApiService {
     suspend fun getProjects(
         @Query("brand") brand: String? = null,
         @Query("status") status: String? = null
-    ): Response<List<ProjectItem>>
+    ): Response<com.suamisihat.sscam.data.models.ProjectsResponse>
 
     @GET("api/deliverables")
     suspend fun getDeliverables(
@@ -39,7 +46,7 @@ interface SscamApiService {
     ): Response<Unit>
 
     companion object {
-        private const val DEFAULT_BASE_URL = "https://creative.suamisihat.myds.me/"
+        const val DEFAULT_BASE_URL = "https://creative.suamisihat.myds.me/"
 
         fun create(baseUrl: String = DEFAULT_BASE_URL, authToken: String? = null): SscamApiService {
             val logging = HttpLoggingInterceptor().apply {
