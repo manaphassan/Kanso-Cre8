@@ -62,7 +62,7 @@
     {/each}
 
     <!-- Radial Axis Spoke Lines -->
-    {#each skills as _, i}
+    {#each activeSkills as _, i}
       {@const { x, y } = getCoords(i, 100)}
       <line x1={cx} y1={cy} x2={x} y2={y} stroke="var(--surface-card-border)" stroke-width="1" />
     {/each}
@@ -74,7 +74,7 @@
     <polygon points={actualPolygon} fill="rgba(16, 185, 129, 0.25)" stroke="#10B981" stroke-width="2" />
 
     <!-- Skill Data Points & Labels -->
-    {#each skills as s, i}
+    {#each activeSkills as s, i}
       {@const act = getCoords(i, s.actual)}
       {@const lbl = getCoords(i, 118)}
       <circle cx={act.x} cy={act.y} r="3.5" fill="#10B981" />
