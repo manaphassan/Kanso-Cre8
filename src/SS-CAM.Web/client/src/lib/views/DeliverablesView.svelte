@@ -30,10 +30,27 @@
   // DAM Filters & View Mode
   let filterStatus = $state<string>('all');
   let searchQuery = $state<string>('');
+  let rawSearchInput = $state<string>('');
+  let searchDebounceTimer: any = null;
   let filterBrand = $state<string>('all');
   let filterMediaClass = $state<string>('all');
   let filterAspectRatio = $state<string>('all');
   let viewMode = $state<'grid' | 'table'>('grid');
+
+  function handleSearchChange(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    rawSearchInput = val;
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      searchQuery = val;
+    }, 120);
+  }
+
+  function handleClearSearch() {
+    rawSearchInput = '';
+    searchQuery = '';
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  }
 
   onMount(async () => {
     await projectStore.loadDeliverables();
@@ -165,10 +182,11 @@
       <input
         type="text"
         placeholder="Filter deliverables by filename, job ID, designer..."
-        bind:value={searchQuery}
+        value={rawSearchInput}
+        oninput={handleSearchChange}
       />
-      {#if searchQuery}
-        <button class="clear-search" onclick={() => searchQuery = ''}>✕</button>
+      {#if rawSearchInput}
+        <button class="clear-search" onclick={handleClearSearch}>✕</button>
       {/if}
     </div>
 

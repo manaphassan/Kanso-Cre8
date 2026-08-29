@@ -4,7 +4,20 @@ const path = require('path');
 const config = require('./config');
 const apiRoutes = require('./routes/api');
 
+const compression = require('compression');
+
 const app = express();
+
+// High-performance gzip/deflate response compression
+app.use(compression({
+  threshold: 1024, // Compress responses larger than 1KB
+  filter: (req, res) => {
+    if (req.headers.accept && req.headers.accept.includes('text/event-stream')) {
+      return false; // Never compress SSE stream
+    }
+    return compression.filter(req, res);
+  }
+}));
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -27,9 +40,15 @@ const clientPath = candidates.find(p => fs.existsSync(path.join(p, 'index.html')
 console.log(`[Static] Serving client assets from: ${clientPath}`);
 
 app.use(express.static(clientPath, {
+  maxAge: '1y',
+  immutable: true,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) {
+    // HTML must NEVER be cached so users always receive latest code
+    if (filePath.endsWith('.html') || filePath.endsWith('sw.js')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else if (filePath.includes('/assets/') || filePath.includes('\\assets\\')) {
+      // Hashed assets from Vite can be cached permanently
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }
 }));

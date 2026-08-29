@@ -160,6 +160,13 @@ class DeliverableService {
     const ext = path.extname(filePath).toLowerCase();
 
     const mimeTypes = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.webp': 'image/webp',
+      '.gif': 'image/gif',
+      '.svg': 'image/svg+xml',
+      '.pdf': 'application/pdf',
       '.mp4': 'video/mp4',
       '.webm': 'video/webm',
       '.mov': 'video/quicktime',
@@ -170,6 +177,19 @@ class DeliverableService {
       '.m4a': 'audio/mp4'
     };
     const contentType = mimeTypes[ext] || 'application/octet-stream';
+    const etag = `W/"${stat.mtimeMs.toString(36)}-${stat.size.toString(36)}"`;
+    const lastModified = stat.mtime.toUTCString();
+
+    if (typeof res.setHeader === 'function') {
+      res.setHeader('ETag', etag);
+      res.setHeader('Last-Modified', lastModified);
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600');
+    }
+
+    // Conditional HTTP 304 Not Modified for non-range requests
+    if (!range && req && req.headers && (req.headers['if-none-match'] === etag || req.headers['if-modified-since'] === lastModified)) {
+      return res.status(304).end();
+    }
 
     if (range) {
       const parts = range.replace(/bytes=/, "").split("-");
@@ -177,7 +197,10 @@ class DeliverableService {
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
       if (start >= fileSize || end >= fileSize) {
-        res.status(416).setHeader('Content-Range', `bytes */${fileSize}`);
+        if (typeof res.setHeader === 'function') {
+          res.setHeader('Content-Range', `bytes */${fileSize}`);
+        }
+        res.status(416);
         return res.end();
       }
 

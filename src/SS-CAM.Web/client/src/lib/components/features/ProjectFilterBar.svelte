@@ -2,7 +2,7 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import FluentPill from '$lib/components/ui/FluentPill.svelte';
 
-  const brands = ['all', 'SS', 'SSE', 'SSH'];
+  const brands = ['all', 'SS', 'SSH', 'SSC', 'SSW', 'SSE', 'SST'];
   const statuses = [
     { id: 'all', label: 'All Statuses' },
     { id: 'review', label: 'Review Queue' },
@@ -12,6 +12,24 @@
     { id: 'backlog', label: 'Backlog' },
     { id: 'on-hold', label: 'On Hold' }
   ];
+
+  let searchQuery = $state(projectStore.activeFilters.query || '');
+  let debounceTimeout: any = null;
+
+  function handleSearchInput(e: Event) {
+    const val = (e.target as HTMLInputElement).value;
+    searchQuery = val;
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      projectStore.setFilter('query', val);
+    }, 120);
+  }
+
+  function handleClearSearch() {
+    searchQuery = '';
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    projectStore.setFilter('query', '');
+  }
 </script>
 
 <div class="filter-bar">
@@ -21,10 +39,11 @@
     <input
       type="text"
       placeholder="Search projects by ID, title, designer or tags..."
-      bind:value={projectStore.activeFilters.query}
+      value={searchQuery}
+      oninput={handleSearchInput}
     />
-    {#if projectStore.activeFilters.query}
-      <button class="clear-search-btn" onclick={() => projectStore.setFilter('query', '')}>✕</button>
+    {#if searchQuery}
+      <button class="clear-search-btn" onclick={handleClearSearch}>✕</button>
     {/if}
   </div>
 

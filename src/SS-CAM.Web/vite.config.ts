@@ -15,7 +15,23 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    target: 'es2022'
+    target: 'es2022',
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          const normalized = id.replace(/\\/g, '/');
+          if (normalized.includes('/node_modules/mermaid/')) {
+            return 'vendor-mermaid';
+          }
+          if (normalized.includes('/node_modules/marked/') || normalized.includes('/node_modules/dompurify/')) {
+            return 'vendor-markdown';
+          }
+          if (normalized.includes('/node_modules/svelte/') || normalized.includes('/node_modules/@sveltejs/')) {
+            return 'vendor-svelte';
+          }
+        }
+      }
+    }
   },
   server: {
     port: 5173,
