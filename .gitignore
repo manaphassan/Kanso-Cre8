@@ -47,5 +47,7 @@ node_modules/
 # ── Android build caches & capture ─────────────────────────────
 .gradle/
 **/.gradle/
+local.properties
+**/local.properties
 screenshot.png
 
