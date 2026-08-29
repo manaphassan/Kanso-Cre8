@@ -1,11 +1,20 @@
 package com.suamisihat.sscam.ui.screens
 
+import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -14,173 +23,703 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.suamisihat.sscam.data.api.CreateNoteRequest
+import com.suamisihat.sscam.data.api.NoteItemDto
+import com.suamisihat.sscam.data.api.SscamApiService
+import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-data class QuickNote(
+data class StudioNote(
     val id: String,
-    val category: String,
     val title: String,
     val body: String,
-    val timeAgo: String,
-    val tagColor: Color
+    val priority: String = "normal",
+    val isPinned: Boolean = false,
+    val dateText: String = "",
+    val modified: Long = 0L
 )
+
+object QuickNotesCache {
+    private const val PREFS_NAME = "sscam_quick_notes_cache"
+    private const val KEY_CACHED_NOTES = "cached_notes_json"
+
+    val DEFAULT_NOTES = listOf(
+        StudioNote(
+            id = "note_dieline_specs",
+            title = "Packaging Dieline Specs",
+            body = "Confirming 350gsm art card with gold foil stamping for Rejal Madu Tualang box. All vector assets mapped to NAS _Team/_Config/Notes.",
+            priority = "high",
+            isPinned = true,
+            dateText = "29 Aug 2026, 23:20",
+            modified = System.currentTimeMillis()
+        ),
+        StudioNote(
+            id = "note_social_hooks",
+            title = "Merdeka Promo Video Hooks",
+            body = "Hook 1: 'Rahsia tenaga lelaki perkasa warisan nenek moyang'\nHook 2: 'Promo Merdeka 50% jimat khas untuk 100 terawal'",
+            priority = "medium",
+            isPinned = false,
+            dateText = "29 Aug 2026, 21:15",
+            modified = System.currentTimeMillis() - 7200000
+        )
+    )
+
+    fun getCachedNotes(context: Context): List<StudioNote> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_CACHED_NOTES, null)
+        if (json == null) {
+            saveCachedNotes(context, DEFAULT_NOTES)
+            return DEFAULT_NOTES
+        }
+        return try {
+            val type = object : TypeToken<List<StudioNote>>() {}.type
+            Gson().fromJson(json, type) ?: DEFAULT_NOTES
+        } catch (e: Exception) {
+            DEFAULT_NOTES
+        }
+    }
+
+    fun saveCachedNotes(context: Context, notes: List<StudioNote>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = Gson().toJson(notes)
+        prefs.edit().putString(KEY_CACHED_NOTES, json).apply()
+    }
+}
 
 @Composable
 fun QuickNotesScreen() {
+    QuickNotesContentView()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun QuickNotesContentView() {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val colors = LocalSscamColors.current
+    val scope = rememberCoroutineScope()
 
-    var newNoteText by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("💡 Hooks") }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedFilter by remember { mutableStateOf("All") } // All, Pinned, High, Medium, Normal
+    var isAddNoteOpen by remember { mutableStateOf(false) }
+    var editingNote by remember { mutableStateOf<StudioNote?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    var syncStatusText by remember { mutableStateOf("SYNCHRONIZED") }
 
-    val initialNotes = remember {
-        mutableStateListOf(
-            QuickNote("1", "💡 Hooks", "TikTok Hook Formula: Reverse Psychology", "Jangan beli produk ini kalau korang taknak tenaga berpanjangan sampai malam...", "10m ago", SshWarmGold),
-            QuickNote("2", "🎨 Visuals", "SSH Merdeka Packaging Glow", "Gunakan pantulan gold foil di tepi kotaknya supaya nampak lebih eksklusif semasa unboxing video.", "1h ago", SshAzure),
-            QuickNote("3", "⚡ Urgent", "Video Export Ratio Checklist", "Pastikan TikTok & Reels export strictly 1080x1920 9:16 safe zone 250px bottom margin.", "3h ago", Color(0xFFEF4444)),
-            QuickNote("4", "📝 Notes", "Meeting Takeaways with Marketing Lead", "Fokus bulan 9 adalah kempen Hari Malaysia. Semua asset mesti siap sebelum 5 Sept.", "Yesterday", Color(0xFF10B981))
-        )
+    val notes = remember { mutableStateListOf<StudioNote>() }
+
+    // Load initial cached notes
+    LaunchedEffect(Unit) {
+        val cached = QuickNotesCache.getCachedNotes(context)
+        if (cached.isNotEmpty()) {
+            notes.clear()
+            notes.addAll(cached)
+        }
+
+        // Fetch live notes from SS-CAM API / NAS
+        isLoading = true
+        try {
+            val api = SscamApiService.create()
+            val res = withContext(Dispatchers.IO) { api.getNotes() }
+            if (res.isSuccessful && res.body()?.success == true) {
+                val liveDtos = res.body()?.notes ?: emptyList()
+                val liveNotes = liveDtos.map { dto ->
+                    StudioNote(
+                        id = dto.id,
+                        title = dto.title,
+                        body = dto.body,
+                        priority = dto.priority,
+                        isPinned = dto.isPinned,
+                        dateText = dto.dateText,
+                        modified = dto.modified
+                    )
+                }
+                notes.clear()
+                notes.addAll(liveNotes)
+                QuickNotesCache.saveCachedNotes(context, liveNotes)
+                syncStatusText = "LIVE NAS SYNC"
+            } else {
+                syncStatusText = "OFFLINE CACHED"
+            }
+        } catch (e: Exception) {
+            syncStatusText = "OFFLINE CACHED"
+        } finally {
+            isLoading = false
+        }
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Fast Note Input Card
-        item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = DarkSurfaceCard),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text("QUICK SCRATCHPAD", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SshAzure)
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    TextField(
-                        value = newNoteText,
-                        onValueChange = { newNoteText = it },
-                        placeholder = { Text("Tulis idea hook, formula, atau nota pantas...", fontSize = 13.sp, color = TextMuted) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = DarkBackground,
-                            unfocusedContainerColor = DarkBackground,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        maxLines = 3
+    fun syncNoteToServer(note: StudioNote) {
+        scope.launch(Dispatchers.IO) {
+            try {
+                val api = SscamApiService.create()
+                api.createNote(
+                    CreateNoteRequest(
+                        id = note.id,
+                        title = note.title,
+                        body = note.body,
+                        isPinned = note.isPinned,
+                        priority = note.priority
                     )
+                )
+            } catch (e: Exception) { }
+        }
+    }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+    fun deleteNoteFromServer(noteId: String) {
+        scope.launch(Dispatchers.IO) {
+            try {
+                val api = SscamApiService.create()
+                api.deleteNote(noteId)
+            } catch (e: Exception) { }
+        }
+    }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf("💡 Hooks", "🎨 Visuals", "📝 Notes").forEach { cat ->
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(if (selectedCategory == cat) SshAzure else DarkBorder)
-                                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(cat, fontSize = 11.sp, color = if (selectedCategory == cat) Color.White else TextSecondary)
-                                }
-                            }
+    val filterOptions = listOf("All", "Pinned", "High", "Medium", "Normal")
+
+    val filteredNotes = notes.filter { note ->
+        val matchesFilter = when (selectedFilter) {
+            "All" -> true
+            "Pinned" -> note.isPinned
+            "High" -> note.priority.equals("high", ignoreCase = true)
+            "Medium" -> note.priority.equals("medium", ignoreCase = true)
+            "Normal" -> note.priority.equals("normal", ignoreCase = true)
+            else -> true
+        }
+        val matchesSearch = searchQuery.isBlank() ||
+                note.title.contains(searchQuery, ignoreCase = true) ||
+                note.body.contains(searchQuery, ignoreCase = true)
+        matchesFilter && matchesSearch
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            // 1. Tactile Header (Desktop Synced Studio Notes)
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.EditNote,
+                                contentDescription = null,
+                                tint = if (colors.isMonochrome) Color(0xFF18181B) else colors.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "QUICK NOTES",
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textPrimary,
+                                letterSpacing = 1.sp
+                            )
                         }
+                        Text(
+                            text = "Personal scratchpad synced with SS-CAM Desktop & Synology NAS",
+                            fontSize = 11.sp,
+                            color = colors.textSecondary
+                        )
+                    }
 
-                        Button(
-                            onClick = {
-                                if (newNoteText.isNotBlank()) {
-                                    initialNotes.add(
-                                        0,
-                                        QuickNote(
-                                            id = System.currentTimeMillis().toString(),
-                                            category = selectedCategory,
-                                            title = selectedCategory,
-                                            body = newNoteText,
-                                            timeAgo = "Just now",
-                                            tagColor = if (selectedCategory.contains("Hook")) SshWarmGold else SshAzure
-                                        )
-                                    )
-                                    newNoteText = ""
-                                    Toast.makeText(context, "Nota disimpan!", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = SshAzure),
-                            shape = RoundedCornerShape(6.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    // Sync Status Badge
+                    Surface(
+                        color = if (colors.isMonochrome) Color(0xFFE4E4E7) else if (syncStatusText.contains("LIVE")) SshSuccessGreen.copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Simpan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = syncStatusText,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706)
+                            )
                         }
                     }
                 }
             }
-        }
 
-        // Saved Notes Header
-        item {
-            Text("SAVED IDEAS & HOOKS (${initialNotes.size})", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextMuted)
-        }
-
-        // Note Cards
-        items(initialNotes) { note ->
-            Card(
-                colors = CardDefaults.cardColors(containerColor = DarkSurfaceCard),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+            // 2. Search & New Note Action Bar
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Search Input
+                    Surface(
+                        color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(42.dp)
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(note.tagColor.copy(alpha = 0.2f))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .fillMaxSize()
+                                .padding(horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(note.category, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = note.tagColor)
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = null,
+                                tint = colors.textMuted,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            BasicTextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                singleLine = true,
+                                textStyle = TextStyle(
+                                    fontSize = 12.sp,
+                                    color = colors.textPrimary
+                                ),
+                                cursorBrush = SolidColor(colors.primary),
+                                modifier = Modifier.fillMaxWidth(),
+                                decorationBox = { innerTextField ->
+                                    if (searchQuery.isEmpty()) {
+                                        Text(
+                                            "Search notes, specs & ideas...",
+                                            fontSize = 12.sp,
+                                            color = colors.textMuted
+                                        )
+                                    }
+                                    innerTextField()
+                                }
+                            )
                         }
-                        Text(note.timeAgo, fontSize = 11.sp, color = TextMuted)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(note.body, fontSize = 13.sp, color = TextPrimary, lineHeight = 18.sp)
-                    Spacer(modifier = Modifier.height(10.dp))
+                    // Tactile Create Button
+                    TactileButton(
+                        onClick = {
+                            editingNote = null
+                            isAddNoteOpen = true
+                        },
+                        icon = Icons.Default.Add,
+                        text = "New Note",
+                        height = 42.dp
+                    )
+                }
+            }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        OutlinedButton(
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(note.body))
-                                Toast.makeText(context, "Disalin ke papan keratan!", Toast.LENGTH_SHORT).show()
-                            },
-                            shape = RoundedCornerShape(6.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+            // 3. Filter Pill Selector
+            item {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 2.dp)
+                ) {
+                    items(filterOptions) { filter ->
+                        val isSelected = selectedFilter == filter
+                        Surface(
+                            color = if (isSelected) (if (colors.isMonochrome) Color(0xFF18181B) else colors.primary) else colors.surface,
+                            shape = RoundedCornerShape(16.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) Color.Transparent else colors.border),
+                            modifier = Modifier.clickable { selectedFilter = filter }
                         ) {
-                            Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp), tint = SshAzure)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Salin", fontSize = 11.sp, color = SshAzure)
+                            Text(
+                                text = filter,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) Color.White else colors.textPrimary,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
                         }
+                    }
+                }
+            }
+
+            // 4. Notes List (Empty State or Tactile Note Cards)
+            if (filteredNotes.isEmpty()) {
+                item {
+                    TactileCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.StickyNote2,
+                                contentDescription = null,
+                                tint = colors.textMuted,
+                                modifier = Modifier.size(36.dp)
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                "No Quick Notes Created Yet",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textPrimary
+                            )
+                            Text(
+                                "Capture creative thoughts, copy hooks, and fast reminders here. Synced with Desktop.",
+                                fontSize = 11.sp,
+                                color = colors.textSecondary,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(filteredNotes, key = { it.id }) { note ->
+                    TactileNoteCard(
+                        note = note,
+                        onPinToggle = {
+                            val updated = note.copy(isPinned = !note.isPinned)
+                            val idx = notes.indexOfFirst { it.id == note.id }
+                            if (idx >= 0) notes[idx] = updated
+                            QuickNotesCache.saveCachedNotes(context, notes)
+                            syncNoteToServer(updated)
+                        },
+                        onEdit = {
+                            editingNote = note
+                            isAddNoteOpen = true
+                        },
+                        onDelete = {
+                            notes.removeAll { it.id == note.id }
+                            QuickNotesCache.saveCachedNotes(context, notes)
+                            deleteNoteFromServer(note.id)
+                            Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show()
+                        },
+                        onCopy = {
+                            clipboardManager.setText(AnnotatedString("${note.title}\n\n${note.body}"))
+                            Toast.makeText(context, "Copied note to clipboard", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    // Add / Edit Note Bottom Sheet
+    if (isAddNoteOpen) {
+        var noteTitle by remember { mutableStateOf(editingNote?.title ?: "") }
+        var noteBody by remember { mutableStateOf(editingNote?.body ?: "") }
+        var notePriority by remember { mutableStateOf(editingNote?.priority ?: "normal") }
+        var isPinned by remember { mutableStateOf(editingNote?.isPinned ?: false) }
+
+        val scrollState = androidx.compose.foundation.rememberScrollState()
+        ModalBottomSheet(
+            onDismissRequest = { isAddNoteOpen = false },
+            containerColor = colors.card,
+            dragHandle = { BottomSheetDefaults.DragHandle() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (editingNote != null) "Edit Studio Note" else "New Studio Note",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { isPinned = !isPinned }) {
+                            Icon(
+                                Icons.Default.PushPin,
+                                contentDescription = "Pin Note",
+                                tint = if (isPinned) (if (colors.isMonochrome) Color(0xFF18181B) else SshWarmGoldBright) else colors.textMuted
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                if (noteTitle.isNotBlank()) {
+                                    val noteId = editingNote?.id ?: "note_${System.currentTimeMillis()}"
+                                    val newNote = StudioNote(
+                                        id = noteId,
+                                        title = noteTitle.trim(),
+                                        body = noteBody.trim(),
+                                        priority = notePriority,
+                                        isPinned = isPinned,
+                                        dateText = "Just now",
+                                        modified = System.currentTimeMillis()
+                                    )
+                                    val idx = notes.indexOfFirst { it.id == noteId }
+                                    if (idx >= 0) notes[idx] = newNote else notes.add(0, newNote)
+                                    QuickNotesCache.saveCachedNotes(context, notes)
+                                    syncNoteToServer(newNote)
+                                    isAddNoteOpen = false
+                                    Toast.makeText(context, "Note saved & synced to NAS", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Default.Check, contentDescription = "Save Note", tint = SshSuccessGreen)
+                        }
+                        IconButton(onClick = { isAddNoteOpen = false }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = colors.textMuted)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Title Input
+                OutlinedTextField(
+                    value = noteTitle,
+                    onValueChange = { noteTitle = it },
+                    label = { Text("Note Title", fontSize = 12.sp) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colors.primary,
+                        unfocusedBorderColor = colors.border
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Priority Selector Pills
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Priority:", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+                    listOf("normal" to "Normal", "medium" to "Medium", "high" to "High").forEach { (pKey, pLabel) ->
+                        val isSel = notePriority.equals(pKey, ignoreCase = true)
+                        val pColor = when (pKey) {
+                            "high" -> Color(0xFFDC2626)
+                            "medium" -> Color(0xFFD97706)
+                            else -> colors.primary
+                        }
+                        Surface(
+                            color = if (isSel) pColor else colors.surface,
+                            shape = RoundedCornerShape(8.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSel) Color.Transparent else colors.border),
+                            modifier = Modifier.clickable { notePriority = pKey }
+                        ) {
+                            Text(
+                                text = pLabel,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSel) Color.White else colors.textPrimary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Body Markdown Text Area
+                OutlinedTextField(
+                    value = noteBody,
+                    onValueChange = { noteBody = it },
+                    label = { Text("Markdown Body / Specifications", fontSize = 12.sp) },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colors.primary,
+                        unfocusedBorderColor = colors.border
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Save Tactile Button
+                TactileButton(
+                    onClick = {
+                        if (noteTitle.isNotBlank()) {
+                            val noteId = editingNote?.id ?: "note_${System.currentTimeMillis()}"
+                            val newNote = StudioNote(
+                                id = noteId,
+                                title = noteTitle.trim(),
+                                body = noteBody.trim(),
+                                priority = notePriority,
+                                isPinned = isPinned,
+                                dateText = "Just now",
+                                modified = System.currentTimeMillis()
+                            )
+                            val idx = notes.indexOfFirst { it.id == noteId }
+                            if (idx >= 0) notes[idx] = newNote else notes.add(0, newNote)
+                            QuickNotesCache.saveCachedNotes(context, notes)
+                            syncNoteToServer(newNote)
+                            isAddNoteOpen = false
+                            Toast.makeText(context, "Note saved & synced to NAS", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    text = if (editingNote != null) "UPDATE & SYNC NOTE" else "SAVE & SYNC TO DESKTOP",
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+/**
+ * Tactile Stationery Note Card Component
+ */
+@Composable
+fun TactileNoteCard(
+    note: StudioNote,
+    onPinToggle: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onCopy: () -> Unit
+) {
+    val colors = LocalSscamColors.current
+    val prioColor = when (note.priority.lowercase()) {
+        "high" -> Color(0xFFDC2626)
+        "medium" -> Color(0xFFD97706)
+        else -> if (colors.isMonochrome) Color(0xFF18181B) else colors.primary
+    }
+
+    TactileCard(
+        showCornerScrews = false,
+        cornerRadius = 14.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Top Bar: Pin Badge, Title, Priority Stamp & Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (note.isPinned) {
+                        Surface(
+                            color = if (colors.isMonochrome) Color(0xFF18181B) else SshWarmGoldBright,
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier.padding(end = 6.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.PushPin,
+                                contentDescription = "Pinned",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    .padding(2.dp)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = note.title,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary,
+                        maxLines = 1
+                    )
+                }
+
+                // Priority Stamp Badge
+                Surface(
+                    color = prioColor.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(4.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, prioColor.copy(alpha = 0.4f))
+                ) {
+                    Text(
+                        text = " ${note.priority.uppercase()} ",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = prioColor
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Body Markdown Text
+            Text(
+                text = note.body,
+                fontSize = 11.5.sp,
+                color = colors.textSecondary,
+                lineHeight = 16.sp,
+                maxLines = 4
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Footer: Timestamp + Quick Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = note.dateText.ifEmpty { "Synced" },
+                    fontSize = 9.5.sp,
+                    color = colors.textMuted
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(onClick = onCopy, modifier = Modifier.size(26.dp)) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = colors.textMuted, modifier = Modifier.size(14.dp))
+                    }
+                    IconButton(onClick = onPinToggle, modifier = Modifier.size(26.dp)) {
+                        Icon(
+                            imageVector = if (note.isPinned) Icons.Default.PushPin else Icons.Default.VerticalAlignTop,
+                            contentDescription = "Pin",
+                            tint = if (note.isPinned) SshWarmGoldBright else colors.textMuted,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    IconButton(onClick = onEdit, modifier = Modifier.size(26.dp)) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.textMuted, modifier = Modifier.size(14.dp))
+                    }
+                    IconButton(onClick = onDelete, modifier = Modifier.size(26.dp)) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = colors.textMuted, modifier = Modifier.size(14.dp))
                     }
                 }
             }

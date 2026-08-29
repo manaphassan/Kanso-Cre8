@@ -442,6 +442,70 @@
           {/if}
         </section>
       </div>
+
+      <!-- ═══ MOBILE BOTTOM NAVIGATION DOCK (<768px) ═════════════════ -->
+      <nav class="mobile-bottom-dock" aria-label="Mobile Navigation">
+        <a
+          href="#dashboard"
+          class="dock-link"
+          class:active={appState.currentRoute === 'dashboard'}
+          aria-label="Dashboard"
+        >
+          <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            {@html dashIcon}
+          </svg>
+          <span class="dock-text">Deck</span>
+        </a>
+        <a
+          href="#projects"
+          class="dock-link"
+          class:active={appState.currentRoute === 'projects' || appState.currentRoute === 'project-detail'}
+          aria-label="Projects"
+        >
+          <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            {@html folderIcon}
+          </svg>
+          <span class="dock-text">Projects</span>
+        </a>
+        <a
+          href="#deliverables"
+          class="dock-link"
+          class:active={appState.currentRoute === 'deliverables'}
+          aria-label="Review Queue"
+        >
+          <div class="dock-icon-wrap">
+            <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              {@html reviewIcon}
+            </svg>
+            {#if projectStore.pendingReviewCount > 0}
+              <span class="dock-badge">{projectStore.pendingReviewCount}</span>
+            {/if}
+          </div>
+          <span class="dock-text">Review</span>
+        </a>
+        <a
+          href="#team"
+          class="dock-link"
+          class:active={appState.currentRoute === 'team'}
+          aria-label="Team Workload"
+        >
+          <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            {@html teamIcon}
+          </svg>
+          <span class="dock-text">Team</span>
+        </a>
+        <button
+          type="button"
+          class="dock-link dock-btn"
+          onclick={() => { appState.sidebarExpanded = !appState.sidebarExpanded; }}
+          aria-label="Toggle Full Menu"
+        >
+          <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+          <span class="dock-text">Menu</span>
+        </button>
+      </nav>
     </div>
   </div>
 
@@ -1142,10 +1206,84 @@
     .app-shell:not(.sidebar-hidden) .app-sidebar { transform: translateX(0); }
     .mobile-overlay  { display: block; }
     .vault-link      { display: none; }
-    .bc-current      { max-width: 140px; }
-    .view-pane.layout-page   { padding: 16px 18px; }
-    .view-pane.layout-full   { padding: 16px 18px; }
-    .view-pane.layout-narrow { padding: 16px 18px; }
+    .mobile-bottom-dock {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mobile-bottom-dock {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: var(--bg-sidebar);
+      border-top: 1px solid var(--sidebar-border);
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 4px calc(env(safe-area-inset-bottom, 0px) + 2px) 4px;
+      z-index: 900;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+    }
+    .dock-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      flex: 1;
+      padding: 6px 2px;
+      color: var(--sidebar-text-muted);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      transition: color 0.15s, background 0.15s;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .dock-link.active {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .dock-link.active .dock-icon {
+      color: var(--brand-accent);
+    }
+    .dock-icon {
+      width: 20px;
+      height: 20px;
+    }
+    .dock-icon-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+    .dock-badge {
+      position: absolute;
+      top: -4px;
+      right: -8px;
+      background: var(--color-danger);
+      color: #FFFFFF;
+      font-size: 9px;
+      font-weight: 800;
+      min-width: 15px;
+      height: 15px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+    }
+    .dock-text {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .page-body {
+      padding-bottom: 64px;
+    }
   }
 
   @media (max-width: 600px) {

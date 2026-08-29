@@ -32,7 +32,7 @@
   "author": "SuamiSihat Creative Team",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/dompurify": "^3.0.5",
     "concurrently": "^10.0.5",
     "dompurify": "^3.4.13",
@@ -43,6 +43,6 @@
     "svelte-spa-router": "^5.1.1",
     "tslib": "^2.8.1",
     "typescript": "^5.7.3",
-    "vite": "^8.2.1"
+    "vite": "^5.4.21"
   }
 }

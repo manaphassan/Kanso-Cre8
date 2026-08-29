@@ -35,7 +35,7 @@
                     <!-- Metric 3: Burnout Risk Index -->
                     <StackPanel HorizontalAlignment="Center">
                         <ui:TextBlock Text="BURNOUT RISK INDEX" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="10" FontWeight="Bold"/>
-                        <ui:TextBlock x:Name="TxtMetricBurnout" Text="Balanced" FontSize="20" FontWeight="Bold" Foreground="#EAB308" Margin="0,4,0,0"/>
+                        <ui:TextBlock x:Name="TxtMetricBurnout" Text="Balanced" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorCautionBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Metric 4: Flow Harmonic State -->
@@ -107,7 +107,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Drop24" FontSize="18" Foreground="#0284C7" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ui:SymbolIcon Symbol="Drop24" FontSize="18" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                                     <ui:TextBlock Text="Water Hydration Tracker" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                 </StackPanel>
                                 <ui:TextBlock x:Name="TxtWaterPct" Grid.Column="1" Text="0 mL (0%)" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource FluentBrand80}" VerticalAlignment="Center"/>
@@ -121,7 +121,7 @@
                             <!-- Vector Water Container with Animated Wave -->
                             <Border Height="64" CornerRadius="8" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" ClipToBounds="True" Margin="0,0,0,12">
                                 <Canvas x:Name="WaterCanvas" Height="64" VerticalAlignment="Bottom">
-                                    <Path x:Name="WaterWavePath" Fill="#38BDF8" Opacity="0.85"/>
+                                    <Path x:Name="WaterWavePath" Fill="{DynamicResource FluentBrandTint}" Opacity="0.85"/>
                                 </Canvas>
                             </Border>
 
@@ -199,10 +199,10 @@
                                 </StackPanel>
 
                                 <!-- Live Telemetry Status Badge -->
-                                <Border Grid.Column="1" Background="#1010B981" BorderBrush="#10B981" BorderThickness="1" CornerRadius="10" Padding="8,3" VerticalAlignment="Center" Margin="6,0,0,0">
+                                <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource SystemFillColorSuccessBrush}" BorderThickness="1" CornerRadius="10" Padding="8,3" VerticalAlignment="Center" Margin="6,0,0,0">
                                     <StackPanel Orientation="Horizontal">
-                                        <Ellipse Width="6" Height="6" Fill="#10B981" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="LIVE TELEMETRY" FontSize="9" FontWeight="Bold" Foreground="#10B981" VerticalAlignment="Center"/>
+                                        <Ellipse Width="6" Height="6" Fill="{DynamicResource SystemFillColorSuccessBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="LIVE TELEMETRY" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -223,13 +223,13 @@
                                 <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8,6" Margin="4,0,0,4">
                                     <StackPanel>
                                         <ui:TextBlock Text="VITALITY INDEX" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                        <ui:TextBlock x:Name="TxtTelemetryVitality" Text="0 mL (0% Goal)" FontSize="11" FontWeight="SemiBold" Foreground="#0284C7" Margin="0,2,0,0"/>
+                                        <ui:TextBlock x:Name="TxtTelemetryVitality" Text="0 mL (0% Goal)" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8,6" Margin="0,4,4,0">
                                     <StackPanel>
                                         <ui:TextBlock Text="RECOVERY SCORE" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                                        <ui:TextBlock x:Name="TxtTelemetryRest" Text="0 Breaks taken" FontSize="11" FontWeight="SemiBold" Foreground="#8B5CF6" Margin="0,2,0,0"/>
+                                        <ui:TextBlock x:Name="TxtTelemetryRest" Text="0 Breaks taken" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrand80}" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="8,6" Margin="4,4,0,0">
@@ -241,9 +241,9 @@
                             </UniformGrid>
 
                             <!-- Mental Health Specialist Insight / Prescription Box -->
-                            <Border x:Name="BorderPrescription" Background="#120284C7" BorderBrush="#0284C7" BorderThickness="1" CornerRadius="6" Padding="10,8">
+                            <Border x:Name="BorderPrescription" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource FluentBrand80}" BorderThickness="1" CornerRadius="6" Padding="10,8">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Lightbulb24" FontSize="14" Foreground="#0284C7" Margin="0,0,8,0" VerticalAlignment="Top"/>
+                                    <ui:SymbolIcon Symbol="Lightbulb24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,8,0" VerticalAlignment="Top"/>
                                     <ui:TextBlock x:Name="TxtFatigueRec" Text="Workstation active. Start a focus timer or hydrate to calibrate your flow state." FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                                 </StackPanel>
                             </Border>
@@ -337,7 +337,7 @@
 
                                 <ui:Button Appearance="Secondary" Click="OnAddWater250_Click" Height="34" Margin="3,0,0,4" Padding="6,0" Cursor="Hand" ToolTip="Directly expands Energy vertex">
                                     <StackPanel Orientation="Horizontal">
-                                        <ui:SymbolIcon Symbol="Drop24" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center" Foreground="#0284C7"/>
+                                        <ui:SymbolIcon Symbol="Drop24" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center" Foreground="{DynamicResource FluentBrand80}"/>
                                         <ui:TextBlock Text="+250 mL Hydrate" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
@@ -382,7 +382,7 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="12,6" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Fire24" FontSize="14" Foreground="#F97316" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:SymbolIcon Symbol="Fire24" FontSize="14" Foreground="{DynamicResource SystemFillColorCautionBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
                                     <ui:TextBlock x:Name="TxtStreakCount" Text="Active Streak: 0 Days" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Border>

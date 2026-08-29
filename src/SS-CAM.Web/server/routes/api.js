@@ -1367,9 +1367,124 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
       message: 'Workspace root mount path updated and rescan initiated successfully.',
       ...result
     });
+// ─── QUICK NOTES (DESKTOP & MOBILE BI-DIRECTIONAL SYNC) ─────────────
+
+function getNotesDir() {
+  const primary = path.join(config.WORKSPACE_ROOT, '_Team', '_Config', 'Notes');
+  if (fs.existsSync(primary)) return primary;
+  try {
+    fs.mkdirSync(primary, { recursive: true });
+    return primary;
+  } catch (e) {
+    const fallback = path.resolve(__dirname, '../sample-workspace/_Team/_Config/Notes');
+    fs.mkdirSync(fallback, { recursive: true });
+    return fallback;
+  }
+}
+
+function parseNoteMarkdown(content, filename, stat) {
+  let isPinned = false;
+  let priority = 'normal';
+  let body = content;
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+  if (match) {
+    const yaml = match[1];
+    body = match[2];
+    if (/pinned:\s*true/i.test(yaml)) isPinned = true;
+    const prioMatch = yaml.match(/priority:\s*(high|medium|normal)/i);
+    if (prioMatch) priority = prioMatch[1].toLowerCase();
+  }
+  const lines = body.split(/\r?\n/);
+  let title = path.basename(filename, '.md');
+  for (const l of lines) {
+    const trimmed = l.trim();
+    if (trimmed.startsWith('# ')) {
+      title = trimmed.replace(/^#+\s*/, '');
+      break;
+    } else if (trimmed && !trimmed.startsWith('_') && !trimmed.startsWith('*')) {
+      title = trimmed;
+      break;
+    }
+  }
+  return {
+    id: path.basename(filename, '.md'),
+    filename,
+    title,
+    body: body.trim(),
+    isPinned,
+    priority,
+    modified: stat.mtimeMs,
+    dateText: new Date(stat.mtimeMs).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+}
+
+router.get('/notes', (req, res) => {
+  try {
+    const dir = getNotesDir();
+    if (!fs.existsSync(dir)) {
+      return res.json({ success: true, notes: [] });
+    }
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+    const notes = [];
+    for (const f of files) {
+      try {
+        const filePath = path.join(dir, f);
+        const stat = fs.statSync(filePath);
+        const content = fs.readFileSync(filePath, 'utf8');
+        notes.push(parseNoteMarkdown(content, f, stat));
+      } catch (err) {}
+    }
+
+    notes.sort((a, b) => {
+      if (a.isPinned !== b.isPinned) return b.isPinned ? 1 : -1;
+      const prioOrder = { high: 2, medium: 1, normal: 0 };
+      const diffPrio = (prioOrder[b.priority] || 0) - (prioOrder[a.priority] || 0);
+      if (diffPrio !== 0) return diffPrio;
+      return b.modified - a.modified;
+    });
+
+    res.json({ success: true, notes });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/notes', (req, res) => {
+  try {
+    const { id, title, body, isPinned = false, priority = 'normal' } = req.body;
+    const dir = getNotesDir();
+    const noteId = id || new Date().toISOString().replace(/[-:T]/g, '').slice(0, 15);
+    const filename = `${noteId}.md`;
+    const filePath = path.join(dir, filename);
+
+    const cleanTitle = (title || 'Untitled Note').trim();
+    const cleanBody = (body || '').trim();
+    const frontmatter = `---\npinned: ${isPinned ? 'true' : 'false'}\npriority: ${priority.toLowerCase()}\n---\n`;
+    const fullContent = `${frontmatter}# ${cleanTitle}\n\n${cleanBody}\n`;
+
+    fs.writeFileSync(filePath, fullContent, 'utf8');
+    const stat = fs.statSync(filePath);
+    const savedNote = parseNoteMarkdown(fullContent, filename, stat);
+
+    res.json({ success: true, note: savedNote });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/notes/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const dir = getNotesDir();
+    const filePath = path.join(dir, `${id}.md`);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    res.json({ success: true, id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 module.exports = router;
+
