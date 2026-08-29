@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { DeliverableItem } from '$lib/types';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     currentDeliverable: DeliverableItem;
@@ -121,7 +122,7 @@
   }
 
   function handlePanMouseDown(e: MouseEvent) {
-    if (zoomLevel <= 1 || isDraggingSlider) return;
+    if (zoomLevel <= 1 || e.button !== 0 || isDraggingSlider) return;
     isPanning = true;
     startMouseX = e.clientX - panX;
     startMouseY = e.clientY - panY;
@@ -166,32 +167,32 @@
         onclick={() => activeMode = 'split'}
         title="Curtain Split Slider"
       >
-        <span class="btn-icon">↔️</span>
-        <span>Split Scrub</span>
+        <FluentIcons name="diff" size={13} />
+        <span style="margin-left: 5px;">Split Scrub</span>
       </button>
       <button 
         class="mode-btn {activeMode === 'onion' ? 'active' : ''}" 
         onclick={() => activeMode = 'onion'}
         title="Onion Skin Opacity Blend"
       >
-        <span class="btn-icon">👁️</span>
-        <span>Onion Skin</span>
+        <FluentIcons name="eye" size={13} />
+        <span style="margin-left: 5px;">Onion Skin</span>
       </button>
       <button 
         class="mode-btn {activeMode === 'side-by-side' ? 'active' : ''}" 
         onclick={() => activeMode = 'side-by-side'}
         title="Side-by-Side Synchronized Dual View"
       >
-        <span class="btn-icon">♊</span>
-        <span>Side-by-Side</span>
+        <FluentIcons name="grid" size={13} />
+        <span style="margin-left: 5px;">Side-by-Side</span>
       </button>
       <button 
         class="mode-btn {activeMode === 'difference' ? 'active' : ''}" 
         onclick={() => activeMode = 'difference'}
         title="Pixel Difference (Invert Highlight)"
       >
-        <span class="btn-icon">⚡</span>
-        <span>Pixel Diff</span>
+        <FluentIcons name="bolt" size={13} />
+        <span style="margin-left: 5px;">Pixel Diff</span>
       </button>
     </div>
 
@@ -203,7 +204,10 @@
       <button class="zoom-btn" onclick={() => setZoom(2)} class:active={zoomLevel === 2}>200%</button>
       <button class="zoom-btn" onclick={() => setZoom(3)} class:active={zoomLevel === 3}>300%</button>
       {#if zoomLevel > 1}
-        <button class="reset-btn" onclick={resetZoom} title="Reset Pan & Zoom">↺ Reset</button>
+        <button class="reset-btn" onclick={resetZoom} title="Reset Pan & Zoom">
+          <FluentIcons name="history" size={11} />
+          <span style="margin-left: 4px;">Reset</span>
+        </button>
       {/if}
     </div>
   </div>
@@ -227,7 +231,9 @@
         </select>
       </div>
 
-      <div class="version-swap-icon">➔</div>
+      <div class="version-swap-icon">
+        <FluentIcons name="arrowRight" size={14} />
+      </div>
 
       <div class="version-col after-col">
         <span class="version-tag tag-after">AFTER (Compare)</span>
@@ -285,8 +291,8 @@
   >
     {#if !beforeDeliverable}
       <div class="no-companion-state">
-        <span class="empty-icon">📂</span>
-        <p>No companion deliverable selected for comparison.</p>
+        <FluentIcons name="folder" size={32} color="rgba(255,255,255,0.2)" />
+        <p style="margin-top: 10px;">No companion deliverable selected for comparison.</p>
         <span class="empty-sub">Please select a base image from the dropdown above.</span>
       </div>
     {:else}

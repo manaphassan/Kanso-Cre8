@@ -3,6 +3,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import type { DeliverableItem } from '$lib/types';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -25,15 +26,15 @@
     height: number;
     ratio: string;
     platform: string;
-    icon: string;
+    icon: IconName;
     selected: boolean;
   };
 
   let presets = $state<AspectRatioPreset[]>([
-    { id: '1x1', label: '1:1 Square', width: 1080, height: 1080, ratio: '1:1', platform: 'Instagram / FB Feed', icon: '🔲', selected: true },
-    { id: '9x16', label: '9:16 Vertical Story / Reel', width: 1080, height: 1920, ratio: '9:16', platform: 'TikTok / Reels / Stories', icon: '📱', selected: true },
-    { id: '16x9', label: '16:9 Landscape Video', width: 1920, height: 1080, ratio: '16:9', platform: 'YouTube / Display Banner', icon: '🖥️', selected: true },
-    { id: '4x5', label: '4:5 Portrait Post', width: 1080, height: 1350, ratio: '4:5', platform: 'Meta Mobile Feed Ad', icon: '📄', selected: true }
+    { id: '1x1', label: '1:1 Square', width: 1080, height: 1080, ratio: '1:1', platform: 'Instagram / FB Feed', icon: 'grid', selected: true },
+    { id: '9x16', label: '9:16 Vertical Story / Reel', width: 1080, height: 1920, ratio: '9:16', platform: 'TikTok / Reels / Stories', icon: 'image', selected: true },
+    { id: '16x9', label: '16:9 Landscape Video', width: 1920, height: 1080, ratio: '16:9', platform: 'YouTube / Display Banner', icon: 'video', selected: true },
+    { id: '4x5', label: '4:5 Portrait Post', width: 1080, height: 1350, ratio: '4:5', platform: 'Meta Mobile Feed Ad', icon: 'file', selected: true }
   ]);
 
   type FillMode = 'ambient_blur' | 'solid_color' | 'center_crop';
@@ -44,118 +45,103 @@
   let activePreviewTab = $state<string>('1x1');
 
   $effect(() => {
-    if (open && deliverable && deliverable.url) {
+    const src = deliverable?.previewUrl || deliverable?.url;
+    if (open && deliverable && src) {
       generateAllPreviews();
     }
   });
 
-  async function generateCanvas(targetW: number, targetH: number): Promise<string> {
-    return new Promise((resolve) => {
+  async function generateAllPreviews() {
+    const src = deliverable?.previewUrl || deliverable?.url;
+    if (!src) return;
+    for (const preset of presets) {
+      try {
+        const dataUrl = await renderPresetCanvas(preset, src, fillMode, solidColor);
+        renderedPreviews[preset.id] = dataUrl;
+      } catch (err: any) {
+        console.warn(`[BatchResizer] Failed to render preset ${preset.id}:`, err.message);
+      }
+    }
+  }
+
+  function renderPresetCanvas(preset: AspectRatioPreset, imgUrl: string, mode: FillMode, color: string): Promise<string> {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = targetW;
-        canvas.height = targetH;
+        canvas.width = preset.width;
+        canvas.height = preset.height;
         const ctx = canvas.getContext('2d');
-        if (!ctx) return resolve('');
+        if (!ctx) return reject(new Error('Canvas 2D context unavailable'));
 
-        if (fillMode === 'ambient_blur') {
-          // 1. Draw scaled blurred background
+        const targetW = preset.width;
+        const targetH = preset.height;
+        const srcW = img.naturalWidth;
+        const srcH = img.naturalHeight;
+
+        if (mode === 'ambient_blur') {
           ctx.save();
-          ctx.filter = 'blur(40px) brightness(0.65)';
-          const scale = Math.max(targetW / img.width, targetH / img.height) * 1.2;
-          const bgW = img.width * scale;
-          const bgH = img.height * scale;
+          ctx.filter = 'blur(45px) brightness(0.65)';
+          const scaleBg = Math.max(targetW / srcW, targetH / srcH) * 1.3;
+          const bgW = srcW * scaleBg;
+          const bgH = srcH * scaleBg;
           ctx.drawImage(img, (targetW - bgW) / 2, (targetH - bgH) / 2, bgW, bgH);
           ctx.restore();
 
-          // 2. Draw centered foreground with subtle shadow
-          const containScale = Math.min(targetW / img.width, targetH / img.height) * 0.92;
-          const fgW = img.width * containScale;
-          const fgH = img.height * containScale;
-          const fgX = (targetW - fgW) / 2;
-          const fgY = (targetH - fgH) / 2;
-
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-          ctx.shadowBlur = 30;
-          ctx.shadowOffsetY = 10;
-          ctx.drawImage(img, fgX, fgY, fgW, fgH);
-
-        } else if (fillMode === 'solid_color') {
-          // 1. Draw solid background
-          ctx.fillStyle = solidColor;
+          const scaleFg = Math.min(targetW / srcW, targetH / srcH);
+          const fgW = srcW * scaleFg;
+          const fgH = srcH * scaleFg;
+          ctx.drawImage(img, (targetW - fgW) / 2, (targetH - fgH) / 2, fgW, fgH);
+        } else if (mode === 'solid_color') {
+          ctx.fillStyle = color;
           ctx.fillRect(0, 0, targetW, targetH);
 
-          // 2. Draw centered foreground
-          const containScale = Math.min(targetW / img.width, targetH / img.height) * 0.92;
-          const fgW = img.width * containScale;
-          const fgH = img.height * containScale;
-          const fgX = (targetW - fgW) / 2;
-          const fgY = (targetH - fgH) / 2;
-
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-          ctx.shadowBlur = 24;
-          ctx.shadowOffsetY = 8;
-          ctx.drawImage(img, fgX, fgY, fgW, fgH);
-
-        } else if (fillMode === 'center_crop') {
-          // Center crop to fill entire canvas
-          const coverScale = Math.max(targetW / img.width, targetH / img.height);
-          const coverW = img.width * coverScale;
-          const coverH = img.height * coverScale;
-          const coverX = (targetW - coverW) / 2;
-          const coverY = (targetH - coverH) / 2;
-          ctx.drawImage(img, coverX, coverY, coverW, coverH);
+          const scale = Math.min(targetW / srcW, targetH / srcH);
+          const drawW = srcW * scale;
+          const drawH = srcH * scale;
+          ctx.drawImage(img, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
+        } else if (mode === 'center_crop') {
+          const scale = Math.max(targetW / srcW, targetH / srcH);
+          const drawW = srcW * scale;
+          const drawH = srcH * scale;
+          ctx.drawImage(img, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
         }
 
-        resolve(canvas.toDataURL('image/png'));
+        resolve(canvas.toDataURL('image/png', 0.95));
       };
-      img.onerror = () => resolve('');
-      img.src = deliverable?.url || '';
+      img.onerror = () => reject(new Error('Image failed to load for rendering'));
+      img.src = imgUrl;
     });
-  }
-
-  async function generateAllPreviews() {
-    if (!deliverable) return;
-    const results: Record<string, string> = {};
-    for (const p of presets) {
-      results[p.id] = await generateCanvas(p.width, p.height);
-    }
-    renderedPreviews = results;
   }
 
   function downloadSingle(presetId: string) {
     const dataUrl = renderedPreviews[presetId];
-    if (!dataUrl) return;
-    const baseName = (deliverable?.filename || 'Deliverable').replace(/\.[^/.]+$/, '');
+    if (!dataUrl || !deliverable) return;
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = `${baseName}_${presetId}.png`;
+    a.download = `${deliverable.filename.replace(/\.[^/.]+$/, '')}_${presetId}.png`;
     a.click();
-    appState.addToast(`Downloaded ${presetId} format`, 'success');
+    appState.addToast(`Downloaded ${presetId} format!`, 'success');
   }
 
   async function downloadBatchZip() {
+    const selectedPresets = presets.filter(p => p.selected && renderedPreviews[p.id]);
+    if (selectedPresets.length === 0) {
+      appState.addToast('Please select at least one format preset', 'warning');
+      return;
+    }
+
     isGeneratingZip = true;
     try {
-      // Dynamically import JSZip or create individual downloads
-      const baseName = (deliverable?.filename || 'Deliverable').replace(/\.[^/.]+$/, '');
-      const selectedPresets = presets.filter(p => p.selected);
-
-      for (const p of selectedPresets) {
-        const dataUrl = renderedPreviews[p.id] || (await generateCanvas(p.width, p.height));
-        if (dataUrl) {
-          const a = document.createElement('a');
-          a.href = dataUrl;
-          a.download = `${baseName}_SocialPack_${p.id}.png`;
-          a.click();
-          await new Promise(r => setTimeout(r, 250)); // stagger downloads
-        }
+      for (const preset of selectedPresets) {
+        downloadSingle(preset.id);
+        await new Promise(r => setTimeout(r, 150));
       }
-      appState.addToast(`Social Pack downloaded (${selectedPresets.length} formats)`, 'success');
+      appState.addToast('Batch social package exported!', 'success');
+      closeModal();
     } catch (err: any) {
-      appState.addToast(`Export failed: ${err.message}`, 'error');
+      appState.addToast(`Export error: ${err.message}`, 'error');
     } finally {
       isGeneratingZip = false;
     }
@@ -175,13 +161,17 @@
       <!-- Header -->
       <div class="resizer-header">
         <div class="header-left">
-          <span class="resizer-icon">📐</span>
+          <div class="resizer-icon-badge">
+            <FluentIcons name="vector" size={20} color="#00CFFF" />
+          </div>
           <div>
             <h2 class="modal-title">Smart Social Aspect Ratio Resizer</h2>
             <p class="modal-sub">Generate social-ready multi-format packs (1:1, 9:16, 16:9, 4:5) with ambient blur or brand containment.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal}>✕</button>
+        <button class="close-btn" onclick={closeModal} title="Close Modal">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
 
       <!-- Body Grid -->
@@ -189,13 +179,16 @@
         <!-- Controls Column -->
         <div class="controls-col">
           <div class="control-card">
-            <label class="control-label">1. Canvas Fill Mode</label>
+            <div class="control-label">1. Canvas Fill Mode</div>
             <div class="fill-mode-grid">
               <button 
                 class="fill-option-btn {fillMode === 'ambient_blur' ? 'active' : ''}"
                 onclick={() => { fillMode = 'ambient_blur'; generateAllPreviews(); }}
               >
-                <span class="fill-title">✨ Ambient Blur</span>
+                <div class="fill-title">
+                  <FluentIcons name="sparkles" size={13} />
+                  <span style="margin-left: 6px;">Ambient Blur</span>
+                </div>
                 <span class="fill-desc">Smart blurred edge expansion</span>
               </button>
 
@@ -203,7 +196,10 @@
                 class="fill-option-btn {fillMode === 'solid_color' ? 'active' : ''}"
                 onclick={() => { fillMode = 'solid_color'; generateAllPreviews(); }}
               >
-                <span class="fill-title">🎨 Brand Solid Canvas</span>
+                <div class="fill-title">
+                  <FluentIcons name="colorPalette" size={13} />
+                  <span style="margin-left: 6px;">Brand Solid Canvas</span>
+                </div>
                 <span class="fill-desc">Contained with brand color fill</span>
               </button>
 
@@ -211,14 +207,17 @@
                 class="fill-option-btn {fillMode === 'center_crop' ? 'active' : ''}"
                 onclick={() => { fillMode = 'center_crop'; generateAllPreviews(); }}
               >
-                <span class="fill-title">✂️ Center Crop</span>
+                <div class="fill-title">
+                  <FluentIcons name="grid" size={13} />
+                  <span style="margin-left: 6px;">Center Crop</span>
+                </div>
                 <span class="fill-desc">Full bleed focus crop</span>
               </button>
             </div>
 
             {#if fillMode === 'solid_color'}
               <div class="color-palette-row">
-                <label class="control-label" style="margin-bottom:0;">Brand Palette:</label>
+                <span class="control-label" style="margin-bottom:0;">Brand Palette:</span>
                 <button class="swatch-btn" style="background:#043388;" onclick={() => { solidColor = '#043388'; generateAllPreviews(); }} title="SS Prussian Blue"></button>
                 <button class="swatch-btn" style="background:#D4AF37;" onclick={() => { solidColor = '#D4AF37'; generateAllPreviews(); }} title="SSH Royal Gold"></button>
                 <button class="swatch-btn" style="background:#10B981;" onclick={() => { solidColor = '#10B981'; generateAllPreviews(); }} title="SSC Emerald"></button>
@@ -229,7 +228,7 @@
 
           <!-- Format Selector Matrix -->
           <div class="control-card">
-            <label class="control-label">2. Target Aspect Ratios</label>
+            <div class="control-label">2. Target Aspect Ratios</div>
             <div class="presets-list">
               {#each presets as p}
                 <div class="preset-item {activePreviewTab === p.id ? 'active-tab' : ''}">
@@ -237,7 +236,9 @@
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <div class="preset-info" onclick={() => activePreviewTab = p.id}>
-                    <span class="preset-icon">{p.icon}</span>
+                    <span class="preset-icon">
+                      <FluentIcons name={p.icon} size={16} />
+                    </span>
                     <div>
                       <div class="preset-label-row">
                         <span class="preset-label">{p.label}</span>
@@ -246,7 +247,9 @@
                       <span class="platform-meta">{p.platform}</span>
                     </div>
                   </div>
-                  <button class="single-dl-btn" title="Download this format" onclick={() => downloadSingle(p.id)}>⬇</button>
+                  <button class="single-dl-btn" title="Download this format" onclick={() => downloadSingle(p.id)}>
+                    <FluentIcons name="download" size={12} />
+                  </button>
                 </div>
               {/each}
             </div>
@@ -261,7 +264,8 @@
                 class="stage-tab {activePreviewTab === p.id ? 'active' : ''}" 
                 onclick={() => activePreviewTab = p.id}
               >
-                <span>{p.icon} {p.ratio}</span>
+                <FluentIcons name={p.icon} size={12} />
+                <span style="margin-left: 5px;">{p.ratio}</span>
               </button>
             {/each}
           </div>
@@ -286,7 +290,8 @@
             loading={isGeneratingZip} 
             onclick={downloadBatchZip}
           >
-            📦 Download Selected Social Pack (PNGs)
+            <FluentIcons name="download" size={14} />
+            <span style="margin-left: 6px;">Download Selected Social Pack</span>
           </FluentButton>
         </div>
       </div>

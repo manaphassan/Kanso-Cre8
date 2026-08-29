@@ -6,6 +6,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import CreativeAiAssistantModal from '$lib/components/features/CreativeAiAssistantModal.svelte';
 
   let selectedProject = $state<any>(null);
@@ -73,13 +74,13 @@
 
   function insertSnippet(type: 'hook' | 'problem' | 'solution' | 'disclaimer' | 'cta') {
     if (type === 'hook') {
-      draftHeadline = '🔥 3 Tanda Tenaga Lelaki Merosot & Rawatan Pantas';
+      draftHeadline = '3 Tanda Tenaga Lelaki Merosot & Rawatan Pantas';
     } else if (type === 'problem') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '⚠️ Ramai lelaki abaikan simptom awal seperti cepat letih, hilang fokus, dan prestasi menurun akibat tekanan kerja.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Ramai lelaki abaikan simptom awal seperti cepat letih, hilang fokus, dan prestasi menurun akibat tekanan kerja.';
     } else if (type === 'solution') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '💡 Formula klinikal SuamiSihat dirumus khas dengan herba gred-A untuk menyokong kecergasan optimum secara 100% semulajadi.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Formula klinikal SuamiSihat dirumus khas dengan herba gred-A untuk menyokong kecergasan optimum secara 100% semulajadi.';
     } else if (type === 'disclaimer') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '📋 *Penafian*: Hasil rawatan mungkin berbeza mengikut individu. Disahkan bebas bahan kimia terlarang.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '*Penafian*: Hasil rawatan mungkin berbeza mengikut individu. Disahkan bebas bahan kimia terlarang.';
     } else if (type === 'cta') {
       draftCta = 'Tempah Sesi Konsultasi Percuma';
     }
@@ -128,35 +129,44 @@
       <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and Synology NAS <code>COPY.md</code> sync.</p>
     </div>
     <button class="ai-launch-btn" onclick={() => showAiModal = true}>
-      ✨ Gemini Creative AI
+      <FluentIcons name="sparkles" size={14} color="#D4AF37" />
+      <span style="margin-left: 5px;">Gemini Creative AI</span>
     </button>
   </div>
 
   <!-- Social Ad SLA Platform Limits Bar -->
   <div class="platform-gauges-grid">
     <div class="gauge-card">
-      <div class="gauge-icon">🎵</div>
+      <div class="gauge-icon">
+        <FluentIcons name="video" size={20} color="#00CFFF" />
+      </div>
       <div class="gauge-info">
         <div class="gauge-name">TikTok Ads Hook</div>
         <div class="gauge-meta">Max <b>100 chars</b> (0–3s visual cutoff)</div>
       </div>
     </div>
     <div class="gauge-card">
-      <div class="gauge-icon">📱</div>
+      <div class="gauge-icon">
+        <FluentIcons name="desktop" size={20} color="#21A1F7" />
+      </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Ad Headline</div>
         <div class="gauge-meta">Max <b>40 chars</b> before truncation</div>
       </div>
     </div>
     <div class="gauge-card">
-      <div class="gauge-icon">📄</div>
+      <div class="gauge-icon">
+        <FluentIcons name="file" size={20} color="#38BDF8" />
+      </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Primary Copy</div>
         <div class="gauge-meta">Optimal <b>125 chars</b> before "...See more"</div>
       </div>
     </div>
     <div class="gauge-card">
-      <div class="gauge-icon">🛍️</div>
+      <div class="gauge-icon">
+        <FluentIcons name="sparkles" size={20} color="#10B981" />
+      </div>
       <div class="gauge-info">
         <div class="gauge-name">Shopee / Lazada Title</div>
         <div class="gauge-meta">Max <b>120 chars</b> marketplace index</div>
@@ -168,18 +178,21 @@
   <FluentCard padding="14px 18px">
     <div class="deck-wrapper">
       <div class="deck-left">
-        <span class="badge-framework">⚡ FRAMEWORKS</span>
+        <span class="badge-framework">FRAMEWORKS</span>
         <span class="deck-title">Quick Ad Copy Frameworks:</span>
       </div>
       <div class="deck-actions">
         <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('tiktok')}>
-          🎵 TikTok Hook Script
+          <FluentIcons name="video" size={13} />
+          <span style="margin-left: 4px;">TikTok Hook Script</span>
         </FluentButton>
         <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('facebook')}>
-          📘 Facebook Problem/Solution
+          <FluentIcons name="edit" size={13} />
+          <span style="margin-left: 4px;">Facebook Problem/Solution</span>
         </FluentButton>
         <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('packaging')}>
-          🌿 Packaging Benefit Claims
+          <FluentIcons name="file" size={13} />
+          <span style="margin-left: 4px;">Packaging Benefit Claims</span>
         </FluentButton>
       </div>
     </div>
@@ -228,7 +241,8 @@
 
         <div class="copy-card-footer">
           <FluentButton appearance="primary" size="sm" onclick={() => openCopyEditor(p)}>
-            ✍️ Edit Copy &amp; Live Preview
+            <FluentIcons name="edit" size={13} />
+            <span style="margin-left: 5px;">Edit Copy &amp; Live Preview</span>
           </FluentButton>
         </div>
       </FluentCard>
@@ -249,7 +263,10 @@
             <h2 class="modal-title">{selectedProject.title}</h2>
           </div>
           <div class="modal-header-right">
-            <button class="close-modal-btn" onclick={closeCopyEditor}>✕ Close</button>
+            <button class="close-modal-btn" onclick={closeCopyEditor} aria-label="Close modal">
+              <FluentIcons name="close" size={14} />
+              <span style="margin-left: 4px;">Close</span>
+            </button>
           </div>
         </div>
 
@@ -258,14 +275,18 @@
           <!-- LEFT PANE: Editor & Snippet Matrix -->
           <div class="editor-left-pane">
             <div class="pane-headline">
-              <span class="pane-title">📝 COPYWRITING EDITOR</span>
+              <FluentIcons name="edit" size={14} />
+              <span class="pane-title" style="margin-left: 5px;">COPYWRITING EDITOR</span>
               <span class="pane-sub">Writes to <code>03_COPYWRITING/COPY.md</code></span>
             </div>
 
             <!-- Quick Snippet Inserters -->
             <div class="snippet-drawer">
               <span class="snippet-label">Quick Snippets:</span>
-              <button class="snippet-btn ai-snippet-btn" onclick={() => showAiModal = true}>✨ Gemini AI Generator</button>
+              <button class="snippet-btn ai-snippet-btn" onclick={() => showAiModal = true}>
+                <FluentIcons name="sparkles" size={12} color="#D4AF37" />
+                <span style="margin-left: 3px;">Gemini AI Generator</span>
+              </button>
               <button class="snippet-btn" onclick={() => insertSnippet('hook')}>+ Viral Hook</button>
               <button class="snippet-btn" onclick={() => insertSnippet('problem')}>+ Agitation</button>
               <button class="snippet-btn" onclick={() => insertSnippet('solution')}>+ Solution</button>
@@ -338,19 +359,22 @@
                 class="mockup-tab {activeMockupTab === 'whatsapp' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'whatsapp'}
               >
-                <span>💬 WhatsApp Bubble</span>
+                <FluentIcons name="chat" size={14} />
+                <span style="margin-left: 5px;">WhatsApp Bubble</span>
               </button>
               <button 
                 class="mockup-tab {activeMockupTab === 'meta' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'meta'}
               >
-                <span>📱 Meta Feed Ad</span>
+                <FluentIcons name="desktop" size={14} />
+                <span style="margin-left: 5px;">Meta Feed Ad</span>
               </button>
               <button 
                 class="mockup-tab {activeMockupTab === 'tiktok' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'tiktok'}
               >
-                <span>🎵 TikTok 9:16</span>
+                <FluentIcons name="video" size={14} />
+                <span style="margin-left: 5px;">TikTok 9:16</span>
               </button>
             </div>
 
@@ -376,7 +400,7 @@
                       </div>
                       {#if draftCta}
                         <div class="wa-cta-box">
-                          👉 <b>{draftCta}</b>
+                          <b>{draftCta}</b>
                         </div>
                       {/if}
                       <div class="wa-meta">
@@ -394,7 +418,7 @@
                     <div class="meta-page-avatar">SS</div>
                     <div class="meta-page-info">
                       <div class="meta-page-name">SuamiSihat Care</div>
-                      <div class="meta-ad-label">Sponsored · 🌐</div>
+                      <div class="meta-ad-label">Sponsored</div>
                     </div>
                     <button class="meta-more-btn">•••</button>
                   </div>
@@ -410,8 +434,8 @@
 
                   <div class="meta-media-preview">
                     <div class="meta-media-placeholder">
-                      <span class="media-icon">🖼️</span>
-                      <span>Campaign Creative Proof</span>
+                      <FluentIcons name="image" size={28} color="rgba(255,255,255,0.3)" />
+                      <span style="margin-top: 4px;">Campaign Creative Proof</span>
                     </div>
                   </div>
 
@@ -431,11 +455,10 @@
                     <!-- Right Actions Sidebar -->
                     <div class="tiktok-sidebar">
                       <div class="tt-avatar">SS</div>
-                      <div class="tt-action"><span>❤️</span><small>42.8K</small></div>
-                      <div class="tt-action"><span>💬</span><small>1.2K</small></div>
-                      <div class="tt-action"><span>🔖</span><small>3.4K</small></div>
-                      <div class="tt-action"><span>↗️</span><small>Share</small></div>
-                      <div class="tt-music-disc">🎵</div>
+                      <div class="tt-action"><FluentIcons name="checkCircle" size={18} color="#EF4444" /><small>42.8K</small></div>
+                      <div class="tt-action"><FluentIcons name="chat" size={18} /><small>1.2K</small></div>
+                      <div class="tt-action"><FluentIcons name="link" size={18} /><small>3.4K</small></div>
+                      <div class="tt-action"><FluentIcons name="externalLink" size={18} /><small>Share</small></div>
                     </div>
 
                     <!-- Bottom Caption -->
@@ -445,11 +468,12 @@
                         {draftHeadline ? draftHeadline : (draftBodyCopy ? draftBodyCopy.substring(0, 100) : 'TikTok hook caption overlay (0-3s visual limit)...')}
                       </div>
                       <div class="tt-music-track">
-                        <span>🎶 Original Sound - SuamiSihat Creative</span>
+                        <span>Original Sound - SuamiSihat Creative</span>
                       </div>
                       {#if draftCta}
                         <div class="tt-cta-pill">
-                          <span>🔗 {draftCta}</span>
+                          <FluentIcons name="link" size={11} />
+                          <span style="margin-left: 4px;">{draftCta}</span>
                         </div>
                       {/if}
                     </div>
@@ -466,7 +490,8 @@
             Cancel
           </FluentButton>
           <FluentButton appearance="primary" loading={isSavingCopy} onclick={handleSaveCopy}>
-            💾 Save COPY.md to Synology Vault
+            <FluentIcons name="save" size={14} />
+            <span style="margin-left: 5px;">Save COPY.md to Synology Vault</span>
           </FluentButton>
         </div>
       </div>

@@ -6,6 +6,7 @@
   import type { TeamMember } from '$lib/types';
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   let teamMembers = $state<TeamMember[]>([]);
   let isLoading = $state<boolean>(true);
@@ -474,7 +475,9 @@
   {:else if filteredTeam.length === 0}
     <FluentCard padding="48px">
       <div class="empty-state">
-        <div class="empty-icon">👥</div>
+        <div class="empty-icon">
+          <FluentIcons name="user" size={40} color="rgba(255,255,255,0.3)" />
+        </div>
         <h3 class="empty-title">No team members match your criteria</h3>
         <p class="empty-desc">Try clearing your search query or selecting "All" departments and statuses.</p>
         <FluentButton
@@ -626,7 +629,7 @@
                       title="Reassign / Rebalance this project to another designer"
                       onclick={() => openReassignDialog(proj, member.name)}
                     >
-                      ⚡
+                      <FluentIcons name="sparkles" size={12} color="#D4AF37" />
                     </button>
                   </div>
                 {/each}
@@ -649,7 +652,7 @@
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
               </svg>
-              View in Project Manager ↗
+              View in Project Manager
             </button>
 
             {#if member.email}
@@ -678,13 +681,17 @@
       <div class="reassign-modal">
         <div class="reassign-header">
           <div class="header-left">
-            <span class="reassign-icon">⚡</span>
+            <div class="reassign-icon">
+              <FluentIcons name="sparkles" size={18} color="#D4AF37" />
+            </div>
             <div>
               <h2 class="modal-title">1-Click Workload Rebalancer</h2>
               <p class="modal-sub">Transfer project <b>{reassignProjectData.jobId || reassignProjectData.title}</b> to another designer.</p>
             </div>
           </div>
-          <button class="close-btn" onclick={() => (showReassignModal = false)}>✕</button>
+          <button class="close-btn" onclick={() => (showReassignModal = false)} aria-label="Close">
+            <FluentIcons name="close" size={14} />
+          </button>
         </div>
 
         <div class="reassign-body">
@@ -714,7 +721,8 @@
         <div class="reassign-footer">
           <FluentButton appearance="subtle" onclick={() => (showReassignModal = false)}>Cancel</FluentButton>
           <FluentButton appearance="primary" loading={isReassigning} onclick={handleConfirmReassign}>
-            ⚡ Confirm Reassignment
+            <FluentIcons name="sparkles" size={13} />
+            <span style="margin-left: 5px;">Confirm Reassignment</span>
           </FluentButton>
         </div>
       </div>

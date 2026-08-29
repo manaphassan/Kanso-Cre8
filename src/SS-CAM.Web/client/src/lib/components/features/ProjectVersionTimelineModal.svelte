@@ -3,6 +3,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface ProjectSnapshot {
     id: string;
@@ -73,10 +74,12 @@
     }
   }
 
-  async function handleRollback(snap: any) {
-    if (!confirm(`Are you sure you want to rollback to Revision ${snap.revision} (${new Date(snap.timestamp).toLocaleString()})?\n\nThis will restore README.md and COPY.md to this snapshot state. A safety backup will be created automatically.`)) {
-      return;
-    }
+  async function handleRollback(snap: ProjectSnapshot) {
+    if (!projectId || !snap.id) return;
+    const confirmed = confirm(
+      `Are you sure you want to rollback to Rev ${snap.revision || 'selected'} (${snap.id})?\n\nA backup copy of current files will be created automatically.`
+    );
+    if (!confirmed) return;
 
     isRollingBack = snap.id;
     try {
@@ -105,13 +108,17 @@
       <!-- Header -->
       <div class="timeline-header">
         <div class="header-left">
-          <span class="timeline-icon">📜</span>
+          <div class="timeline-icon-badge">
+            <FluentIcons name="timeline" size={20} color="#00CFFF" />
+          </div>
           <div>
             <h2 class="modal-title">Creative Version Timeline &amp; Rollback</h2>
             <p class="modal-sub">Audit-backed revision milestones for <b>{projectTitle || projectId}</b>.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal}>✕</button>
+        <button class="close-btn" onclick={closeModal} title="Close Modal">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
 
       <!-- Body -->
@@ -125,7 +132,8 @@
             bind:value={customNote}
           />
           <FluentButton appearance="primary" size="sm" loading={isCapturing} onclick={handleCreateSnapshot}>
-            📸 Capture Snapshot Now
+            <FluentIcons name="camera" size={14} />
+            <span style="margin-left: 6px;">Capture Snapshot</span>
           </FluentButton>
         </div>
 
@@ -135,8 +143,8 @@
             <div class="loading-box">Loading revision timeline...</div>
           {:else if snapshots.length === 0}
             <div class="empty-box">
-              <span class="empty-icon">🌳</span>
-              <p>No historical snapshots captured yet.</p>
+              <FluentIcons name="timeline" size={36} color="rgba(255,255,255,0.2)" />
+              <p style="margin-top: 10px;">No historical snapshots captured yet.</p>
               <span class="empty-sub">Snapshots are automatically created during client reviews, decisions, and manual saves.</span>
             </div>
           {:else}
@@ -165,8 +173,14 @@
                     <div class="milestone-note">"{snap.note || 'Milestone checkpoint'}"</div>
 
                     <div class="milestone-meta-row">
-                      <span class="actor-tag">👤 {snap.actor || 'Designer'}</span>
-                      <span class="trigger-tag">⚡ {snap.trigger || 'SNAPSHOT'}</span>
+                      <span class="actor-tag">
+                        <FluentIcons name="user" size={12} />
+                        <span style="margin-left: 4px;">{snap.actor || 'Designer'}</span>
+                      </span>
+                      <span class="trigger-tag">
+                        <FluentIcons name="bolt" size={12} />
+                        <span style="margin-left: 4px;">{snap.trigger || 'SNAPSHOT'}</span>
+                      </span>
                       <span class="snap-id-tag">{snap.id}</span>
                     </div>
 
@@ -177,7 +191,8 @@
                           disabled={isRollingBack === snap.id}
                           onclick={() => handleRollback(snap)}
                         >
-                          {isRollingBack === snap.id ? 'Restoring...' : '🔄 Rollback to this Revision'}
+                          <FluentIcons name="history" size={13} />
+                          <span style="margin-left: 6px;">{isRollingBack === snap.id ? 'Restoring...' : 'Rollback to this Revision'}</span>
                         </button>
                       </div>
                     {/if}
@@ -191,7 +206,10 @@
 
       <!-- Footer -->
       <div class="timeline-footer">
-        <span class="security-tip">🔒 Pre-rollback safety backups are created automatically prior to any restoration.</span>
+        <span class="security-tip">
+          <FluentIcons name="lock" size={12} color="#00CFFF" />
+          <span style="margin-left: 6px;">Pre-rollback safety backups are created automatically prior to any restoration.</span>
+        </span>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
       </div>
     </div>

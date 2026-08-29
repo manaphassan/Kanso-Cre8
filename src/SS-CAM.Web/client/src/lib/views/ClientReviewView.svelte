@@ -4,6 +4,7 @@
   import type { DeliverableItem } from '$lib/types';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   let token = $state<string>('');
   let isLoading = $state<boolean>(true);
@@ -111,7 +112,13 @@
       </div>
       {#if reviewData?.shareInfo}
         <div class="header-perm-pill {reviewData.shareInfo.permissions}">
-          {reviewData.shareInfo.permissions === 'review_approve' ? '✓ Formal Approval Enabled' : '👁️ View-Only Preview'}
+          {#if reviewData.shareInfo.permissions === 'review_approve'}
+            <FluentIcons name="checkCircle" size={13} color="#10B981" />
+            <span style="margin-left: 5px;">Formal Approval Enabled</span>
+          {:else}
+            <FluentIcons name="search" size={13} />
+            <span style="margin-left: 5px;">View-Only Preview</span>
+          {/if}
         </div>
       {/if}
     </div>
@@ -128,7 +135,9 @@
 
     {:else if errorMsg}
       <div class="state-card error-card">
-        <span class="state-icon">⚠️</span>
+        <div class="state-icon">
+          <FluentIcons name="warning" size={32} color="#F59E0B" />
+        </div>
         <h2>Review Link Expired or Invalid</h2>
         <p>{errorMsg}</p>
         <span class="error-hint">Please contact your SuamiSihat Creative Account Lead to request a new review link.</span>
@@ -136,7 +145,13 @@
 
     {:else if submittedResult}
       <div class="state-card success-card">
-        <span class="state-icon">{submittedResult.decision === 'approved' ? '✅' : '⚠️'}</span>
+        <div class="state-icon">
+          <FluentIcons
+            name={submittedResult.decision === 'approved' ? 'checkCircle' : 'warning'}
+            size={36}
+            color={submittedResult.decision === 'approved' ? '#10B981' : '#F59E0B'}
+          />
+        </div>
         <h2>Decision Recorded Successfully</h2>
         <p>
           Thank you, <b>{submittedResult.reviewer}</b>. Your feedback has been logged in the SuamiSihat master audit ledger.
@@ -180,18 +195,30 @@
                   <img src={d.url} alt={d.filename} class="thumb-img" />
                 {:else if d.isVideo}
                   <video src={d.url} class="thumb-video" preload="metadata" muted></video>
-                  <span class="play-badge">▶ Video</span>
+                  <span class="play-badge">
+                    <FluentIcons name="video" size={11} />
+                    <span style="margin-left: 3px;">VIDEO</span>
+                  </span>
                 {:else if d.isPdf}
-                  <div class="pdf-thumb-box">📄 PDF Export</div>
+                  <div class="pdf-thumb-box">
+                    <FluentIcons name="file" size={24} color="#EF4444" />
+                    <span style="margin-top: 4px;">PDF Export</span>
+                  </div>
                 {:else}
-                  <div class="pdf-thumb-box">📁 Master Asset</div>
+                  <div class="pdf-thumb-box">
+                    <FluentIcons name="folder" size={24} color="#21A1F7" />
+                    <span style="margin-top: 4px;">Master Asset</span>
+                  </div>
                 {/if}
               </div>
               <div class="card-info">
                 <span class="card-filename">{d.filename}</span>
                 <div class="card-sub-row">
                   <span class="card-folder">{d.folder}</span>
-                  <span class="inspect-tag">Inspect 🔍</span>
+                  <span class="inspect-tag">
+                    <FluentIcons name="search" size={10} />
+                    <span style="margin-left: 3px;">Inspect</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -203,7 +230,9 @@
       {#if reviewData.shareInfo.permissions === 'review_approve'}
         <section class="decision-deck">
           <div class="deck-header">
-            <span class="deck-icon">✍️</span>
+            <div class="deck-icon">
+              <FluentIcons name="edit" size={18} color="#21A1F7" />
+            </div>
             <div>
               <h3 class="deck-title">Client Sign-Off &amp; Decision</h3>
               <p class="deck-sub">Enter your details to formally approve or request design revisions.</p>
@@ -229,10 +258,12 @@
 
           <div class="decision-action-buttons">
             <FluentButton appearance="secondary" size="lg" loading={isSubmitting} onclick={() => handleDecision('revision_requested')}>
-              ⚠️ Request Revisions
+              <FluentIcons name="warning" size={14} color="#F59E0B" />
+              <span style="margin-left: 6px;">Request Revisions</span>
             </FluentButton>
             <FluentButton appearance="primary" size="lg" loading={isSubmitting} onclick={() => handleDecision('approved')}>
-              ✅ Approve &amp; Sign-Off Deliverables
+              <FluentIcons name="checkCircle" size={14} color="#10B981" />
+              <span style="margin-left: 6px;">Approve &amp; Sign-Off Deliverables</span>
             </FluentButton>
           </div>
         </section>

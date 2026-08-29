@@ -3,6 +3,7 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { ApiClient } from '$lib/services/api';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -37,11 +38,11 @@
   let fileInputRef: HTMLInputElement | null = $state(null);
 
   const CANONICAL_FOLDERS = [
-    { id: '01_BRIEF_ASSETS', label: '01_BRIEF_ASSETS (Briefs & Guidelines)', icon: '📋' },
-    { id: '02_SOURCE_FILES', label: '02_SOURCE_FILES (PSD, AI, Raw Assets)', icon: '🎨' },
-    { id: '03_COPYWRITING', label: '03_COPYWRITING (Scripts & Copy.md)', icon: '✍️' },
-    { id: '04_WORK_IN_PROGRESS', label: '04_WORK_IN_PROGRESS (WIP Drafts)', icon: '🚧' },
-    { id: '05_DELIVERABLES', label: '05_DELIVERABLES (Final Exports & Renders)', icon: '🚀' },
+    { id: '01_BRIEF_ASSETS', label: '01_BRIEF_ASSETS (Briefs & Guidelines)' },
+    { id: '02_SOURCE_FILES', label: '02_SOURCE_FILES (PSD, AI, Raw Assets)' },
+    { id: '03_COPYWRITING', label: '03_COPYWRITING (Scripts & Copy.md)' },
+    { id: '04_WORK_IN_PROGRESS', label: '04_WORK_IN_PROGRESS (WIP Drafts)' },
+    { id: '05_DELIVERABLES', label: '05_DELIVERABLES (Final Exports & Renders)' },
   ];
 
   function detectCanonicalFolder(filename: string): StagedFile['targetFolder'] {
@@ -180,14 +181,18 @@
       <!-- Modal Header -->
       <div class="ingester-header">
         <div class="header-left">
-          <span class="ingest-icon">📥</span>
+          <div class="ingest-icon-badge">
+            <FluentIcons name="upload" size={20} color="#00CFFF" />
+          </div>
           <div>
             <h2 class="modal-title">Drag &amp; Drop Vault Ingester</h2>
             <p class="modal-sub">Auto-routes incoming creative assets into canonical folders on Synology NAS (<code>{projectId || 'Project'}</code>).</p>
           </div>
         </div>
         {#if !isIngesting}
-          <button class="close-btn" onclick={closeModal}>✕</button>
+          <button class="close-btn" onclick={closeModal} title="Close Modal">
+            <FluentIcons name="close" size={16} />
+          </button>
         {/if}
       </div>
 
@@ -208,8 +213,8 @@
           onchange={(e) => handleFilesAdded((e.target as HTMLInputElement).files)} 
         />
         <div class="dropzone-content">
-          <span class="drop-icon">🚀</span>
-          <div class="drop-text">
+          <FluentIcons name="upload" size={36} color="#38BDF8" />
+          <div class="drop-text" style="margin-top: 10px;">
             <b>Drag and drop files here</b> or <span class="browse-link">browse workstation</span>
           </div>
           <span class="drop-hint">Auto-sorts <code>.ai/.psd</code> to <b>02_SOURCE</b>, <code>.mp4/.png</code> to <b>05_DELIVERABLES</b>, and briefs to <b>01_BRIEF</b>.</span>
@@ -234,14 +239,16 @@
 
                 <!-- Auto-routed Folder Selector -->
                 <div class="folder-select-col">
-                  <span class="arrow-indicator">➔</span>
+                  <span class="arrow-indicator">
+                    <FluentIcons name="arrowRight" size={13} />
+                  </span>
                   <select 
                     class="folder-dropdown" 
                     bind:value={item.targetFolder}
                     disabled={isIngesting || item.status === 'done'}
                   >
                     {#each CANONICAL_FOLDERS as folder}
-                      <option value={folder.id}>{folder.icon} {folder.label}</option>
+                      <option value={folder.id}>{folder.label}</option>
                     {/each}
                   </select>
                 </div>
@@ -249,13 +256,15 @@
                 <!-- Status / Action -->
                 <div class="status-col">
                   {#if item.status === 'pending'}
-                    <button class="remove-btn" onclick={() => removeStagedFile(item.id)} disabled={isIngesting}>✕</button>
+                    <button class="remove-btn" onclick={() => removeStagedFile(item.id)} disabled={isIngesting} title="Remove File">
+                      <FluentIcons name="close" size={13} />
+                    </button>
                   {:else if item.status === 'uploading'}
                     <span class="status-badge uploading">Syncing...</span>
                   {:else if item.status === 'done'}
-                    <span class="status-badge done">✓ Stored</span>
+                    <span class="status-badge done">Stored</span>
                   {:else if item.status === 'error'}
-                    <span class="status-badge error" title={item.errorMessage}>✕ Error</span>
+                    <span class="status-badge error" title={item.errorMessage}>Error</span>
                   {/if}
                 </div>
               </div>
@@ -283,7 +292,8 @@
             loading={isIngesting} 
             onclick={startBatchIngestion}
           >
-            ⚡ Ingest &amp; Auto-Sort ({stagedFiles.length} files)
+            <FluentIcons name="upload" size={14} />
+            <span style="margin-left: 6px;">Ingest &amp; Auto-Sort ({stagedFiles.length} files)</span>
           </FluentButton>
         </div>
       </div>

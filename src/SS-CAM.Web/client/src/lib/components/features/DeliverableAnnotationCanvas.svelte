@@ -3,6 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface AnnotationItem {
     id: string;
@@ -195,11 +196,11 @@
         type="button"
         class="mode-toggle-btn"
         class:active={isAnnotateMode}
-        onclick={() => (isAnnotateMode = !isAnnotateMode)}
-        title="Toggle Pinpoint Annotation Mode"
+        onclick={toggleAnnotateMode}
+        disabled={readOnly}
       >
-        <span class="btn-icon">📍</span>
-        <span>{isAnnotateMode ? 'Annotation Mode: ON' : 'Drop Feedback Pin'}</span>
+        <FluentIcons name="pin" size={14} />
+        <span style="margin-left: 6px;">{isAnnotateMode ? 'Annotation Mode: Active' : 'Drop Feedback Pin'}</span>
       </button>
 
       {#if annotations.length > 0}
@@ -220,7 +221,8 @@
         onclick={() => (isZoomed = !isZoomed)}
         title="Toggle Fit / 100% Zoom"
       >
-        {isZoomed ? '🔍 Fit' : '🔍 100%'}
+        <FluentIcons name="search" size={12} />
+        <span style="margin-left: 5px;">{isZoomed ? 'Fit Screen' : '100% Zoom'}</span>
       </button>
     </div>
   </div>
@@ -295,7 +297,8 @@
                   class:is-resolved={pin.resolved}
                   onclick={(e) => toggleResolvePin(pin, e)}
                 >
-                  {pin.resolved ? '↩ Reopen' : '✓ Mark Resolved'}
+                  <FluentIcons name={pin.resolved ? 'history' : 'checkCircle'} size={12} />
+                  <span style="margin-left: 4px;">{pin.resolved ? 'Reopen' : 'Mark Resolved'}</span>
                 </button>
 
                 <button
@@ -304,7 +307,7 @@
                   onclick={(e) => deletePin(pin.id, e)}
                   title="Delete this pin"
                 >
-                  🗑️
+                  <FluentIcons name="delete" size={13} />
                 </button>
               </div>
             </div>
@@ -326,7 +329,9 @@
           <div class="pin-composer-card">
             <div class="composer-header">
               <span class="composer-title">Add Feedback Pin #{pendingPin.pinNumber}</span>
-              <button type="button" class="close-composer-btn" onclick={cancelPendingPin}>✕</button>
+              <button type="button" class="close-composer-btn" onclick={cancelPendingPin} title="Cancel">
+                <FluentIcons name="close" size={14} />
+              </button>
             </div>
 
             <textarea
@@ -350,9 +355,7 @@
               </div>
 
               <div class="composer-btn-row">
-                <FluentButton appearance="subtle" size="sm" onclick={cancelPendingPin}>
-                  Cancel
-                </FluentButton>
+                <FluentButton appearance="subtle" size="sm" onclick={cancelPendingPin}>Cancel</FluentButton>
                 <FluentButton
                   appearance="primary"
                   size="sm"
@@ -360,7 +363,7 @@
                   disabled={!newPinContent.trim()}
                   onclick={savePendingPin}
                 >
-                  Post Pin
+                  Save Pin
                 </FluentButton>
               </div>
             </div>

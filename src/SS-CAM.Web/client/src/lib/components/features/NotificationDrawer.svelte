@@ -3,6 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
   import type { ActivityNotification } from '$lib/types';
+  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -66,14 +67,25 @@
     }
   }
 
-  function getTypeIcon(type: string) {
+  function getIconName(type: string): IconName {
     switch (type) {
-      case 'mention': return '💬';
-      case 'comment': return '💭';
-      case 'revision': return '🔴';
-      case 'approval': return '🟢';
-      case 'system': return '⚙️';
-      default: return '🔔';
+      case 'mention': return 'chat';
+      case 'comment': return 'comment';
+      case 'revision': return 'warning';
+      case 'approval': return 'checkCircle';
+      case 'system': return 'settings';
+      default: return 'bell';
+    }
+  }
+
+  function getIconColor(type: string): string {
+    switch (type) {
+      case 'mention': return '#00CFFF';
+      case 'comment': return '#38BDF8';
+      case 'revision': return '#F59E0B';
+      case 'approval': return '#10B981';
+      case 'system': return '#A78BFA';
+      default: return '#94A3B8';
     }
   }
 </script>
@@ -86,10 +98,8 @@
   <aside class="notification-drawer" role="dialog" aria-label="Activity Notifications">
     <div class="drawer-header">
       <div class="header-left">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-        </svg>
-        <h3 class="drawer-title">Activity & Notifications</h3>
+        <FluentIcons name="bell" size={18} color="#00CFFF" />
+        <h3 class="drawer-title">Activity &amp; Notifications</h3>
         {#if appState.notificationCount > 0}
           <span class="unread-pill">{appState.notificationCount} new</span>
         {/if}
@@ -99,7 +109,9 @@
         {#if notifications.some(n => n.unread)}
           <button class="text-btn" onclick={markAllRead}>Mark all read</button>
         {/if}
-        <button class="close-btn" onclick={onclose} aria-label="Close drawer">✕</button>
+        <button class="close-btn" onclick={onclose} aria-label="Close drawer" title="Close drawer">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
     </div>
 
@@ -108,7 +120,9 @@
         <div class="loading-state">Syncing live activity feed…</div>
       {:else if notifications.length === 0}
         <div class="empty-state">
-          <div class="empty-icon">✨</div>
+          <div class="empty-icon-box">
+            <FluentIcons name="checkCircle" size={32} color="#10B981" />
+          </div>
           <p class="empty-title">All caught up</p>
           <p class="empty-desc">No new mentions, approval milestones, or revision alerts at this time.</p>
         </div>
@@ -125,7 +139,9 @@
               tabindex="0"
             >
               <div class="notif-icon-col">
-                <span class="type-icon">{getTypeIcon(notif.type)}</span>
+                <span class="type-icon">
+                  <FluentIcons name={getIconName(notif.type)} size={15} color={getIconColor(notif.type)} />
+                </span>
                 {#if notif.unread}
                   <span class="unread-dot"></span>
                 {/if}

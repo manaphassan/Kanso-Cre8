@@ -12,6 +12,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
 
@@ -191,7 +192,9 @@
     </div>
   {:else if projectStore.filteredProjects.length === 0}
     <div class="empty-box">
-      <div class="empty-emoji">📁</div>
+      <div class="empty-emoji">
+        <FluentIcons name="folder" size={40} color="rgba(255,255,255,0.3)" />
+      </div>
       <h3>No projects found</h3>
       <p>No creative production records match the current filter selection.</p>
     </div>
@@ -240,7 +243,7 @@
                       handleDeleteRequest(p);
                     }}
                   >
-                    🗑
+                    <FluentIcons name="delete" size={13} />
                   </button>
                 {/if}
               </div>
@@ -291,7 +294,10 @@
   >
     <div class="delete-dialog-body">
       <div class="delete-warning-banner">
-        <div class="warning-title">⚠️ Irreversible Filesystem Operation</div>
+        <div class="warning-title">
+          <FluentIcons name="warning" size={16} color="#EF4444" />
+          <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
+        </div>
         <p class="warning-text">
           This will permanently delete the project directory and <strong>all 5 subfolders</strong> on Synology NAS:
         </p>

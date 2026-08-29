@@ -3,6 +3,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -71,59 +72,86 @@
   }
 
   async function handleGenerateHooks() {
+    if (!productInput.trim()) {
+      appState.addToast('Please enter a product or campaign topic', 'warning');
+      return;
+    }
     isGenerating = true;
+    generatedOutput = '';
     try {
       const res = await ApiClient.generateAiHooks({
         brand: selectedBrand,
-        product: productInput || 'Health Formulation',
+        product: productInput,
         audience: audienceInput,
         angle: angleInput,
         language: languageInput
       });
       generatedOutput = res.hooks;
-      appState.addToast('Generated 5 viral hooks with Gemini!', 'success');
+      appState.addToast('Viral hooks composed!', 'success');
     } catch (err: any) {
-      appState.addToast(`AI Error: ${err.message}`, 'error');
-      if (err.message.includes('not configured')) activeTab = 'settings';
+      if (!aiStatus.configured) {
+        activeTab = 'settings';
+        appState.addToast('Please configure your Google AI Studio API key first', 'info');
+      } else {
+        appState.addToast(`Generation failed: ${err.message}`, 'error');
+      }
     } finally {
       isGenerating = false;
     }
   }
 
   async function handleGenerateScript() {
+    if (!productInput.trim()) {
+      appState.addToast('Please enter a product or campaign topic', 'warning');
+      return;
+    }
     isGenerating = true;
+    generatedOutput = '';
     try {
       const res = await ApiClient.generateAiScript({
         brand: selectedBrand,
-        product: productInput || 'Health Formulation',
+        product: productInput,
         hook: selectedHookInput,
         platform: platformInput,
         language: languageInput
       });
       generatedOutput = res.script;
-      appState.addToast(`Generated ${platformInput} script!`, 'success');
+      appState.addToast('Advertising script generated!', 'success');
     } catch (err: any) {
-      appState.addToast(`AI Error: ${err.message}`, 'error');
-      if (err.message.includes('not configured')) activeTab = 'settings';
+      if (!aiStatus.configured) {
+        activeTab = 'settings';
+        appState.addToast('Please configure your Google AI Studio API key first', 'info');
+      } else {
+        appState.addToast(`Generation failed: ${err.message}`, 'error');
+      }
     } finally {
       isGenerating = false;
     }
   }
 
   async function handleGenerateImagePrompts() {
+    if (!productInput.trim()) {
+      appState.addToast('Please enter a product name for image prompts', 'warning');
+      return;
+    }
     isGenerating = true;
+    generatedOutput = '';
     try {
       const res = await ApiClient.generateAiImagePrompts({
-        product: productInput || 'Premium Product Packaging',
+        product: productInput,
         style: imageStyle,
         environment: imageEnv,
         brandColors: imageColors
       });
       generatedOutput = res.prompts;
-      appState.addToast('Generated 4 Midjourney/Imagen prompts!', 'success');
+      appState.addToast('Commercial photography prompts generated!', 'success');
     } catch (err: any) {
-      appState.addToast(`AI Error: ${err.message}`, 'error');
-      if (err.message.includes('not configured')) activeTab = 'settings';
+      if (!aiStatus.configured) {
+        activeTab = 'settings';
+        appState.addToast('Please configure your Google AI Studio API key first', 'info');
+      } else {
+        appState.addToast(`Generation failed: ${err.message}`, 'error');
+      }
     } finally {
       isGenerating = false;
     }
@@ -133,13 +161,13 @@
     try {
       const res = await ApiClient.formatUltraPrompt({
         brand: selectedBrand,
-        title: productInput || 'SuamiSihat Campaign',
+        title: productInput || projectTitle || 'SuamiSihat Creative Campaign',
         audience: audienceInput,
-        goal: 'High CTR Direct-Response Ad Script & WhatsApp Closers'
+        goal: 'High-conversion direct response marketing asset generation'
       });
       generatedOutput = res.prompt;
     } catch (err: any) {
-      appState.addToast(`Error: ${err.message}`, 'error');
+      console.warn('[FormatUltraPrompt] Error:', err.message);
     }
   }
 
@@ -156,7 +184,7 @@
   function handleInsertIntoCopy() {
     if (!generatedOutput) return;
     if (onInsertCopy) {
-      onInsertCopy(`\n\n## 🤖 Gemini AI Generated Content\n\n${generatedOutput}\n`);
+      onInsertCopy(`\n\n## Gemini AI Generated Content\n\n${generatedOutput}\n`);
       appState.addToast('Inserted into COPY.md editor!', 'success');
       closeModal();
     }
@@ -191,34 +219,46 @@
       <!-- Header -->
       <div class="ai-header">
         <div class="header-left">
-          <span class="ai-icon">✨</span>
+          <div class="ai-icon-badge">
+            <FluentIcons name="sparkles" size={20} color="#00CFFF" />
+          </div>
           <div>
             <div class="title-row">
               <h2 class="modal-title">SuamiSihat Creative AI Studio</h2>
-              <span class="model-badge">{aiStatus.configured ? aiStatus.preferredModel : 'API Key Required'}</span>
+              <span class="model-badge {aiStatus.configured ? 'ready' : 'required'}">
+                <span class="status-dot"></span>
+                {aiStatus.configured ? aiStatus.preferredModel : 'API Key Required'}
+              </span>
             </div>
             <p class="modal-sub">Direct Gemini 1.5 Pro / Flash generator &amp; Gemini Ultra prompt packager.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal}>✕</button>
+        <button class="close-btn" onclick={closeModal} title="Close Modal">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="ai-tabs-bar">
         <button class="tab-btn {activeTab === 'hooks' ? 'active' : ''}" onclick={() => activeTab = 'hooks'}>
-          🎣 Viral Hooks
+          <FluentIcons name="bolt" size={14} />
+          <span>Viral Hooks</span>
         </button>
         <button class="tab-btn {activeTab === 'scripts' ? 'active' : ''}" onclick={() => activeTab = 'scripts'}>
-          📝 Ad Scripts
+          <FluentIcons name="file" size={14} />
+          <span>Ad Scripts</span>
         </button>
         <button class="tab-btn {activeTab === 'image_prompts' ? 'active' : ''}" onclick={() => activeTab = 'image_prompts'}>
-          🎨 3D &amp; Photo Prompts
+          <FluentIcons name="image" size={14} />
+          <span>3D &amp; Photo Prompts</span>
         </button>
         <button class="tab-btn {activeTab === 'ultra_prompt' ? 'active' : ''}" onclick={() => { activeTab = 'ultra_prompt'; handleFormatUltraPrompt(); }}>
-          🚀 Gemini Ultra Web
+          <FluentIcons name="rocket" size={14} />
+          <span>Gemini Ultra Web</span>
         </button>
         <button class="tab-btn {activeTab === 'settings' ? 'active' : ''}" onclick={() => activeTab = 'settings'}>
-          ⚙️ AI Setup
+          <FluentIcons name="settings" size={14} />
+          <span>AI Configuration</span>
         </button>
       </div>
 
@@ -230,7 +270,7 @@
             <h3 class="card-title">Google AI Studio API Configuration</h3>
             <p class="card-sub">
               Get your free Google AI Studio API key at 
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" class="link-highlight">aistudio.google.com/app/apikey ↗</a> 
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" class="link-highlight">aistudio.google.com/app/apikey ↗</a> 
               (100% Free tier: up to 1,500 requests/day).
             </p>
 
@@ -255,7 +295,8 @@
 
             <div class="settings-actions">
               <FluentButton appearance="primary" loading={isSavingSettings} onclick={saveAiSettings}>
-                💾 Save API Configuration
+                <FluentIcons name="save" size={14} />
+                <span style="margin-left: 6px;">Save Configuration</span>
               </FluentButton>
             </div>
           </div>
@@ -301,16 +342,17 @@
                   <div class="field-col">
                     <label class="field-label" for="angle-select">Core Copy Angle</label>
                     <select id="angle-select" class="form-select" bind:value={angleInput}>
-                      <option value="Pain Point & Agitation">⚡ Pain Point &amp; Agitation (Fatigue, Stress, Stamina)</option>
-                      <option value="Curiosity & Pattern Interrupt">💥 Curiosity &amp; Pattern Interrupt ("Kenapa 90% Lelaki...")</option>
-                      <option value="Social Proof & Transformation">🏆 Social Proof &amp; Testimonial Transformation</option>
-                      <option value="Urgency & Limited Promo">⏰ Urgency &amp; Limited Ramadan/Year-End Special</option>
+                      <option value="Pain Point & Agitation">Pain Point &amp; Agitation (Fatigue, Stress, Stamina)</option>
+                      <option value="Curiosity & Pattern Interrupt">Curiosity &amp; Pattern Interrupt ("Kenapa 90% Lelaki...")</option>
+                      <option value="Social Proof & Transformation">Social Proof &amp; Testimonial Transformation</option>
+                      <option value="Urgency & Limited Promo">Urgency &amp; Limited Ramadan/Year-End Special</option>
                     </select>
                   </div>
 
                   <div class="btn-block">
                     <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateHooks}>
-                      ⚡ Generate 5 Viral Hooks
+                      <FluentIcons name="bolt" size={14} />
+                      <span style="margin-left: 6px;">Generate 5 Viral Hooks</span>
                     </FluentButton>
                   </div>
 
@@ -326,7 +368,8 @@
 
                   <div class="btn-block">
                     <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateScript}>
-                      ⚡ Generate Complete Ad Script
+                      <FluentIcons name="file" size={14} />
+                      <span style="margin-left: 6px;">Generate Complete Ad Script</span>
                     </FluentButton>
                   </div>
 
@@ -343,18 +386,20 @@
 
                   <div class="btn-block">
                     <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateImagePrompts}>
-                      🎨 Generate Midjourney/Imagen Prompts
+                      <FluentIcons name="image" size={14} />
+                      <span style="margin-left: 6px;">Generate Photography Prompts</span>
                     </FluentButton>
                   </div>
 
                 {:else if activeTab === 'ultra_prompt'}
                   <div class="ultra-info-box">
-                    <span class="info-title">💡 How to use with Gemini Ultra:</span>
+                    <span class="info-title">How to use with Gemini Ultra:</span>
                     <p class="info-desc">Click "Copy Full Prompt" below, open your Gemini Ultra web session, and paste. It includes full SuamiSihat brand guidelines.</p>
                   </div>
                   <div class="btn-block">
-                    <a href="https://gemini.google.com" target="_blank" class="gemini-web-link">
-                      🌐 Open Gemini Ultra Web ↗
+                    <a href="https://gemini.google.com" target="_blank" rel="noreferrer" class="gemini-web-link">
+                      <FluentIcons name="externalLink" size={14} />
+                      <span style="margin-left: 6px;">Open Gemini Ultra Web</span>
                     </a>
                   </div>
                 {/if}
@@ -367,9 +412,15 @@
                 <span class="out-label">AI Studio Output</span>
                 {#if generatedOutput}
                   <div class="out-actions">
-                    <button class="out-action-btn" onclick={copyOutput}>📋 Copy</button>
+                    <button class="out-action-btn" onclick={copyOutput}>
+                      <FluentIcons name="copy" size={13} />
+                      <span style="margin-left: 4px;">Copy</span>
+                    </button>
                     {#if onInsertCopy}
-                      <button class="out-action-btn insert-btn" onclick={handleInsertIntoCopy}>✍️ Insert to COPY.md</button>
+                      <button class="out-action-btn insert-btn" onclick={handleInsertIntoCopy}>
+                        <FluentIcons name="edit" size={13} />
+                        <span style="margin-left: 4px;">Insert to COPY.md</span>
+                      </button>
                     {/if}
                   </div>
                 {/if}
@@ -383,7 +434,7 @@
                   </div>
                 {:else if !generatedOutput}
                   <div class="output-empty">
-                    <span class="empty-sparkle">✨</span>
+                    <FluentIcons name="sparkles" size={32} color="rgba(255,255,255,0.2)" />
                     <p>Select your parameters and click generate to compose studio-grade copy and prompts.</p>
                   </div>
                 {:else}

@@ -7,6 +7,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import BatchResizerModal from '$lib/components/features/BatchResizerModal.svelte';
@@ -174,16 +175,16 @@
     <div class="filter-group">
       <!-- Media Class Filter -->
       <select bind:value={filterMediaClass} class="brand-select">
-        <option value="all">📁 All Media Formats</option>
-        <option value="raster_image">🖼️ Images (PNG, JPG, WebP)</option>
-        <option value="video_master">🎬 Master Videos (MP4, MOV)</option>
-        <option value="print_pdf">📄 Print &amp; PDF Exports</option>
-        <option value="vector_graphics">📐 Vectors &amp; AI (SVG, AI)</option>
+        <option value="all">All Media Formats</option>
+        <option value="raster_image">Images (PNG, JPG, WebP)</option>
+        <option value="video_master">Master Videos (MP4, MOV)</option>
+        <option value="print_pdf">Print &amp; PDF Exports</option>
+        <option value="vector_graphics">Vectors &amp; AI (SVG, AI)</option>
       </select>
 
       <!-- Aspect Ratio Filter -->
       <select bind:value={filterAspectRatio} class="brand-select">
-        <option value="all">📐 All Aspect Ratios</option>
+        <option value="all">All Aspect Ratios</option>
         <option value="1:1">1:1 Square (Feed)</option>
         <option value="9:16">9:16 Vertical (Story / Reel)</option>
         <option value="16:9">16:9 Landscape (YouTube)</option>
@@ -200,8 +201,12 @@
 
       <!-- View Mode Toggle -->
       <div class="view-mode-toggle">
-        <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">🔲</button>
-        <button class="mode-btn {viewMode === 'table' ? 'active' : ''}" onclick={() => viewMode = 'table'} title="Metadata Table View">📋</button>
+        <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">
+          <FluentIcons name="grid" size={14} />
+        </button>
+        <button class="mode-btn {viewMode === 'table' ? 'active' : ''}" onclick={() => viewMode = 'table'} title="Metadata Table View">
+          <FluentIcons name="table" size={14} />
+        </button>
       </div>
     </div>
   </div>
@@ -215,7 +220,9 @@
     </div>
   {:else if filteredDeliverables.length === 0}
     <div class="state-card empty-state">
-      <div class="empty-icon">📂</div>
+      <div class="empty-icon-box">
+        <FluentIcons name="folder" size={36} color="rgba(255,255,255,0.2)" />
+      </div>
       <p class="state-title">No deliverables match the active filter</p>
       <p class="state-desc">Try clearing your search query or selecting "All Deliverables".</p>
       <FluentButton appearance="secondary" size="sm" onclick={() => { filterStatus = 'all'; searchQuery = ''; filterBrand = 'all'; filterMediaClass = 'all'; filterAspectRatio = 'all'; }}>
@@ -241,9 +248,15 @@
                   }}
                 />
               {:else if d.isVideo || d.previewType === 'video'}
-                <div class="media-badge-icon video-icon">🎬 VIDEO</div>
+                <div class="media-badge-icon video-icon">
+                  <FluentIcons name="video" size={14} />
+                  <span style="margin-left: 4px;">VIDEO</span>
+                </div>
               {:else if d.isPdf || d.previewType === 'pdf'}
-                <div class="media-badge-icon pdf-icon">📄 PDF</div>
+                <div class="media-badge-icon pdf-icon">
+                  <FluentIcons name="file" size={14} color="#EF4444" />
+                  <span style="margin-left: 4px;">PDF</span>
+                </div>
               {:else}
                 <div class="doc-icon">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</div>
               {/if}
@@ -271,7 +284,10 @@
               </p>
 
               <div class="del-meta-row">
-                <span class="meta-designer">👤 {d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+                <span class="meta-designer">
+                  <FluentIcons name="user" size={11} />
+                  <span style="margin-left: 4px;">{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+                </span>
                 <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
               </div>
 
@@ -282,18 +298,18 @@
                 </FluentButton>
                 {#if d.isImage || d.previewType === 'image'}
                   <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
-                    📐
+                    <FluentIcons name="vector" size={13} />
                   </button>
                   <button class="tool-icon-btn" title="Print &amp; POSM Preflight Validator (DPI, Bleed &amp; CMYK)" onclick={() => openPreflight(d)}>
-                    🖨️
+                    <FluentIcons name="printer" size={13} />
                   </button>
                 {/if}
                 <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
-                  🔗
+                  <FluentIcons name="link" size={13} />
                 </button>
                 {#if d.downloadUrl}
                   <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download Output File">
-                    ⬇
+                    <FluentIcons name="download" size={13} />
                   </a>
                 {/if}
               </div>
@@ -325,11 +341,20 @@
                 {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
                   <img src={d.previewUrl} alt={d.filename} class="table-thumb" />
                 {:else if d.isVideo}
-                  <span class="table-icon-pill">🎬 Video</span>
+                  <span class="table-icon-pill">
+                    <FluentIcons name="video" size={12} />
+                    <span style="margin-left: 3px;">Video</span>
+                  </span>
                 {:else if d.isPdf}
-                  <span class="table-icon-pill">📄 PDF</span>
+                  <span class="table-icon-pill">
+                    <FluentIcons name="file" size={12} color="#EF4444" />
+                    <span style="margin-left: 3px;">PDF</span>
+                  </span>
                 {:else}
-                  <span class="table-icon-pill">📁 File</span>
+                  <span class="table-icon-pill">
+                    <FluentIcons name="folder" size={12} />
+                    <span style="margin-left: 3px;">File</span>
+                  </span>
                 {/if}
               </td>
               <td><span class="table-filename">{d.filename}</span></td>
@@ -346,12 +371,20 @@
               <td style="text-align:right;" onclick={(e) => e.stopPropagation()}>
                 <div class="table-actions">
                   {#if d.isImage || d.previewType === 'image'}
-                    <button class="tool-icon-btn" title="Social Resizer" onclick={() => openResizer(d)}>📐</button>
-                    <button class="tool-icon-btn" title="Print Preflight" onclick={() => openPreflight(d)}>🖨️</button>
+                    <button class="tool-icon-btn" title="Social Resizer" onclick={() => openResizer(d)}>
+                      <FluentIcons name="vector" size={13} />
+                    </button>
+                    <button class="tool-icon-btn" title="Print Preflight" onclick={() => openPreflight(d)}>
+                      <FluentIcons name="printer" size={13} />
+                    </button>
                   {/if}
-                  <button class="tool-icon-btn" title="Share Link" onclick={() => openShare(d)}>🔗</button>
+                  <button class="tool-icon-btn" title="Share Link" onclick={() => openShare(d)}>
+                    <FluentIcons name="link" size={13} />
+                  </button>
                   {#if d.downloadUrl}
-                    <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download">⬇</a>
+                    <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download">
+                      <FluentIcons name="download" size={13} />
+                    </a>
                   {/if}
                 </div>
               </td>

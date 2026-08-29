@@ -5,6 +5,7 @@
   import { ApiClient } from '$lib/services/api';
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import DashboardRadar from '$lib/components/features/DashboardRadar.svelte';
   import type { Project, ActivityNotification } from '$lib/types';
 
@@ -234,17 +235,17 @@
       </FluentCard>
 
       <FluentCard hoverLift borderAccent={kpis.overdue > 0 ? '#DC2626' : (kpis.dueSoon || 0) > 0 ? '#D97706' : '#64748B'} onclick={() => appState.navigate('projects', { isOverdue: true })}>
-        <div class="kpi-label">Overdue & At-Risk</div>
+        <div class="kpi-label">Overdue &amp; At-Risk</div>
         <div class="kpi-value" style="color: {kpis.overdue > 0 ? '#DC2626' : (kpis.dueSoon || 0) > 0 ? '#D97706' : 'var(--text-primary)'}">
           {kpis.overdue}
         </div>
         <div class="kpi-trend" style="color: {kpis.overdue > 0 ? '#DC2626' : '#D97706'};">
           {#if kpis.overdue > 0}
-            🚨 Immediate Action
+            Immediate Action Required
           {:else if (kpis.dueSoon || 0) > 0}
-            ⚠️ {kpis.dueSoon} Due in 48h
+            {kpis.dueSoon} Due in 48h
           {:else}
-            ✅ On Track
+            On Track
           {/if}
         </div>
       </FluentCard>
@@ -255,10 +256,10 @@
       <div class="friction-alert-card">
         <div class="friction-alert-header">
           <div class="friction-tag">
-            <span class="friction-icon">🔄</span>
-            <strong>CREATIVE FRICTION ALERT ({highRevisionProjects.length})</strong>
+            <FluentIcons name="warning" size={16} color="#F59E0B" />
+            <strong style="margin-left: 6px;">CREATIVE FRICTION ALERT ({highRevisionProjects.length})</strong>
           </div>
-          <span class="friction-desc">Projects with &ge; 2 revision rounds require Art Director brief alignment & feedback intervention</span>
+          <span class="friction-desc">Projects with &ge; 2 revision rounds require Art Director brief alignment &amp; feedback intervention</span>
         </div>
         <div class="friction-items-grid">
           {#each highRevisionProjects as hp}
@@ -270,7 +271,10 @@
                 <span class="fitem-title">{hp.title}</span>
               </div>
               <div class="fitem-right">
-                <span class="fitem-designer">👤 {hp.designer}</span>
+                <span class="fitem-designer">
+                  <FluentIcons name="user" size={11} />
+                  <span style="margin-left: 4px;">{hp.designer}</span>
+                </span>
                 <span class="badge-rev-alert">Round {hp.revision}</span>
               </div>
             </div>
@@ -417,7 +421,7 @@
       <FluentCard elevated>
         <div class="sla-card-inner">
           <div class="sla-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">
-            🎯
+            <FluentIcons name="checkCircle" size={20} color="#10B981" />
           </div>
           <div>
             <div class="sla-meta-label">FIRST-TIME RIGHT RATE</div>
@@ -432,7 +436,7 @@
       <FluentCard elevated>
         <div class="sla-card-inner">
           <div class="sla-icon-box" style="background: rgba(4, 51, 136, 0.12); color: var(--brand-primary, #043388);">
-            ⚡
+            <FluentIcons name="bolt" size={20} color="#00CFFF" />
           </div>
           <div>
             <div class="sla-meta-label">AVG TURNAROUND VELOCITY</div>
@@ -454,7 +458,7 @@
       <FluentCard elevated>
         <div class="sla-card-inner">
           <div class="sla-icon-box" style="background: rgba(217, 119, 6, 0.12); color: #D97706;">
-            🔄
+            <FluentIcons name="history" size={20} color="#D97706" />
           </div>
           <div>
             <div class="sla-meta-label">AVG REVISION ROUNDS</div>
@@ -469,7 +473,7 @@
       <FluentCard elevated>
         <div class="sla-card-inner">
           <div class="sla-icon-box" style="background: rgba(147, 51, 234, 0.12); color: #9333EA;">
-            ⏳
+            <FluentIcons name="calendar" size={20} color="#9333EA" />
           </div>
           <div>
             <div class="sla-meta-label">REVIEW QUEUE AGING</div>
@@ -488,7 +492,9 @@
     <div class="personal-kpi-grid">
       <div class="personal-kpi-card highlight-revision">
         <div class="pkpi-meta">
-          <span class="pkpi-icon">🔴</span>
+          <span class="pkpi-icon">
+            <FluentIcons name="warning" size={16} color="#EF4444" />
+          </span>
           <span class="pkpi-title">Revisions Requiring Action</span>
         </div>
         <div class="pkpi-count">{myRevisionItems.length}</div>
@@ -497,7 +503,9 @@
 
       <div class="personal-kpi-card highlight-active">
         <div class="pkpi-meta">
-          <span class="pkpi-icon">⚡</span>
+          <span class="pkpi-icon">
+            <FluentIcons name="bolt" size={16} color="#00CFFF" />
+          </span>
           <span class="pkpi-title">In Production</span>
         </div>
         <div class="pkpi-count">{myActiveItems.length}</div>
@@ -506,7 +514,9 @@
 
       <div class="personal-kpi-card highlight-review">
         <div class="pkpi-meta">
-          <span class="pkpi-icon">⏳</span>
+          <span class="pkpi-icon">
+            <FluentIcons name="calendar" size={16} color="#F59E0B" />
+          </span>
           <span class="pkpi-title">Under Review</span>
         </div>
         <div class="pkpi-count">{myReviewItems.length}</div>
@@ -528,7 +538,9 @@
 
           {#if myProjects.length === 0}
             <div class="empty-workspace-state">
-              <div class="empty-icon">☕</div>
+              <div class="empty-icon-box">
+                <FluentIcons name="checkCircle" size={36} color="#10B981" />
+              </div>
               <p class="empty-title">All tasks cleared</p>
               <p class="empty-desc">You have no active projects or pending revisions assigned right now.</p>
             </div>
@@ -545,7 +557,10 @@
                   <h4 class="queue-title">{proj.title}</h4>
                   <div class="queue-footer">
                     <span class="queue-brand">Brand: {proj.brand || 'SS'}</span>
-                    <span class="queue-deadline">📅 {proj.deadline || 'No deadline'}</span>
+                    <span class="queue-deadline">
+                      <FluentIcons name="calendar" size={11} />
+                      <span style="margin-left: 3px;">{proj.deadline || 'No deadline'}</span>
+                    </span>
                     <span class="queue-action-link">Open Workspace →</span>
                   </div>
                 </div>
@@ -560,14 +575,16 @@
         <FluentCard elevated>
           <div class="card-section-header">
             <div>
-              <h2>Mentions & Discussion Feed</h2>
+              <h2>Mentions &amp; Discussion Feed</h2>
               <p>Recent collaboration notes directed to you</p>
             </div>
           </div>
 
           {#if myNotifications.length === 0}
             <div class="empty-workspace-state">
-              <div class="empty-icon">💬</div>
+              <div class="empty-icon-box">
+                <FluentIcons name="chat" size={36} color="rgba(255,255,255,0.2)" />
+              </div>
               <p class="empty-title">No recent mentions</p>
               <p class="empty-desc">Team comments mentioning you will appear here.</p>
             </div>

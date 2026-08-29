@@ -7,6 +7,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
@@ -273,7 +274,7 @@
         comment: decision === 'approved' ? 'Formal manager approval via portal.' : 'Revisions requested on creative deliverables.'
       });
       appState.addToast(
-        decision === 'approved' ? '✅ Project Approved & Signed Off!' : '⚠️ Revision Requested recorded in audit log',
+        decision === 'approved' ? 'Project Approved & Signed Off' : 'Revision Requested recorded in audit log',
         decision === 'approved' ? 'success' : 'warning'
       );
       await loadProject(p.id);
@@ -351,12 +352,12 @@
               value={currentFrontmatter.status || 'review'}
               onchange={(e) => updateStatus((e.target as HTMLSelectElement).value)}
             >
-              <option value="backlog">⚪ Backlog</option>
-              <option value="in-progress">🔵 In Progress</option>
-              <option value="review">🟡 In Review</option>
-              <option value="revision">🔴 Revision Required</option>
-              <option value="approved">🟢 Approved</option>
-              <option value="done">🟣 Completed</option>
+              <option value="backlog">Backlog</option>
+              <option value="in-progress">In Progress</option>
+              <option value="review">In Review</option>
+              <option value="revision">Revision Required</option>
+              <option value="approved">Approved</option>
+              <option value="done">Completed</option>
             </select>
           </div>
 
@@ -367,7 +368,8 @@
             loading={isSubmittingDecision}
             onclick={() => handleQuickDecision('approved')}
           >
-            ✓ Sign-Off
+            <FluentIcons name="checkCircle" size={13} />
+            <span style="margin-left: 5px;">Sign-Off</span>
           </FluentButton>
 
           <FluentButton
@@ -376,7 +378,8 @@
             loading={isSubmittingDecision}
             onclick={() => handleQuickDecision('revision_requested')}
           >
-            ⚠️ Request Revision
+            <FluentIcons name="warning" size={13} color="#F59E0B" />
+            <span style="margin-left: 5px;">Request Revision</span>
           </FluentButton>
 
           <!-- Open in SS-CAM Desktop App -->
@@ -385,9 +388,7 @@
             class="desktop-open-btn"
             title="Open this project directly in SS-CAM Windows Desktop application"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"/>
-            </svg>
+            <FluentIcons name="desktop" size={14} />
             <span>Open in Desktop</span>
           </a>
 
@@ -397,9 +398,7 @@
             onclick={() => (showIngesterModal = true)}
             title="Drag and drop raw files or deliverables to auto-sort into NAS vault"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-            </svg>
+            <FluentIcons name="upload" size={14} />
             <span>Ingest Assets</span>
           </button>
 
@@ -409,9 +408,7 @@
             onclick={() => (showShareModal = true)}
             title="Generate secure tokenized client review link for external approval"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
-            </svg>
+            <FluentIcons name="link" size={14} />
             <span>Share Link</span>
           </button>
 
@@ -421,9 +418,7 @@
             onclick={() => (showTimelineModal = true)}
             title="View revision milestones and rollback COPY.md or project state"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
-            </svg>
+            <FluentIcons name="timeline" size={14} />
             <span>Timeline &amp; Rollback</span>
           </button>
 
@@ -434,9 +429,7 @@
             class="export-handover-btn"
             title="Download client-ready creative handover ZIP with HTML summary sheet"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-            </svg>
+            <FluentIcons name="download" size={14} />
             <span>Export Handover (ZIP)</span>
           </a>
 
@@ -448,7 +441,8 @@
               onclick={() => (showDeleteModal = true)}
               title="Delete Project and all Subfolders from NAS"
             >
-              🗑 Delete Project
+              <FluentIcons name="delete" size={13} />
+              <span style="margin-left: 5px;">Delete Project</span>
             </FluentButton>
           {/if}
 
@@ -544,7 +538,9 @@
 
             {#if projectStore.activeDeliverables.length === 0}
               <div class="empty-gallery">
-                <div class="empty-icon">📂</div>
+                <div class="empty-icon-box">
+                  <FluentIcons name="folder" size={36} color="rgba(255,255,255,0.2)" />
+                </div>
                 <p>No output media found in <code>05_DELIVERABLES</code> or <code>04_Production</code>.</p>
                 <p class="empty-sub">Export output media (PNG, JPG, MP4, PDF) from Photoshop, Illustrator, or Blender into the project folder.</p>
               </div>
@@ -561,16 +557,19 @@
                         <div class="del-video-thumb">
                           <!-- svelte-ignore a11y_media_has_caption -->
                           <video src={d.streamUrl || d.previewUrl} preload="metadata" muted playsinline></video>
-                          <span class="del-play-badge">▶ VIDEO</span>
+                          <span class="del-play-badge">
+                            <FluentIcons name="video" size={12} />
+                            <span style="margin-left: 4px;">VIDEO</span>
+                          </span>
                         </div>
                       {:else if d.isPdf || d.previewType === 'pdf'}
                         <div class="del-pdf-thumb">
-                          <span class="del-thumb-icon">📄</span>
+                          <FluentIcons name="file" size={24} color="#EF4444" />
                           <span class="del-thumb-text">PDF DOCUMENT</span>
                         </div>
                       {:else if d.isAudio || d.previewType === 'audio'}
                         <div class="del-audio-thumb">
-                          <span class="del-thumb-icon">🎧</span>
+                          <FluentIcons name="video" size={24} color="#8B5CF6" />
                           <span class="del-thumb-text">AUDIO TRACK</span>
                         </div>
                       {:else}
@@ -594,7 +593,7 @@
           <!-- Creative Direction Panel -->
           <FluentCard elevated>
             <div class="form-section-header">
-              <h3>Creative & Visual Direction Matrix</h3>
+              <h3>Creative &amp; Visual Direction Matrix</h3>
               <p>Core visual tone, typography mood, and brand guidelines for designers.</p>
             </div>
 
@@ -620,7 +619,7 @@
               </div>
 
               <div class="form-field full-width">
-                <label class="form-label">Target Audience Demographics & Psychology</label>
+                <label class="form-label">Target Audience Demographics &amp; Psychology</label>
                 <textarea
                   class="form-textarea"
                   rows="3"
@@ -733,20 +732,22 @@
                 <div class="prop-group">
                   <span class="prop-label">Campaign Deadline</span>
                   <div class="prop-value">
-                    <span>📅 {p.deadline ? String(p.deadline).split('T')[0] : '2026-08-30'}</span>
+                    <FluentIcons name="calendar" size={13} />
+                    <span style="margin-left: 6px;">{p.deadline ? String(p.deadline).split('T')[0] : '2026-08-30'}</span>
                   </div>
                 </div>
 
                 <div class="prop-group">
                   <span class="prop-label">Deliverables Storage</span>
                   <div class="prop-value">
-                    <span>📁 <code>{projectStore.activeDeliverables.length} files</code></span>
+                    <FluentIcons name="folder" size={13} />
+                    <code style="margin-left: 6px;">{projectStore.activeDeliverables.length} files</code>
                   </div>
                 </div>
 
                 <!-- Approval Trail Summary -->
                 <div class="approvals-mini-section">
-                  <span class="prop-label">Recent Approvals & Sign-Offs</span>
+                  <span class="prop-label">Recent Approvals &amp; Sign-Offs</span>
                   {#if p.approvals && p.approvals.length > 0}
                     <div class="mini-app-list">
                       {#each p.approvals.slice(0, 3) as a}
@@ -806,7 +807,10 @@
     >
       <div class="delete-dialog-body">
         <div class="delete-warning-banner">
-          <div class="warning-title">⚠️ Irreversible Filesystem Operation</div>
+          <div class="warning-title">
+            <FluentIcons name="warning" size={16} color="#EF4444" />
+            <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
+          </div>
           <p class="warning-text">
             This will permanently delete the project folder and <strong>all 5 subdirectories</strong> on Synology NAS storage:
           </p>

@@ -3,6 +3,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -117,13 +118,17 @@
       <!-- Header -->
       <div class="share-header">
         <div class="header-left">
-          <span class="share-icon">🔗</span>
+          <div class="share-icon-badge">
+            <FluentIcons name="link" size={20} color="#00CFFF" />
+          </div>
           <div>
             <h2 class="modal-title">Client Review &amp; Share Links</h2>
             <p class="modal-sub">Generate secure, password-free review links for external directors or stakeholders.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal}>✕</button>
+        <button class="close-btn" onclick={closeModal} title="Close Modal">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
 
       <div class="share-body">
@@ -143,8 +148,8 @@
             <div class="form-field">
               <label class="field-label" for="perm-select">Guest Permissions</label>
               <select id="perm-select" class="form-select" bind:value={permissions}>
-                <option value="review_approve">✓ Review, Drop Pins &amp; Sign-Off</option>
-                <option value="view_only">👁️ View Only (Read-Only Preview)</option>
+                <option value="review_approve">Review, Drop Pins &amp; Sign-Off</option>
+                <option value="view_only">View Only (Read-Only Preview)</option>
               </select>
             </div>
           </div>
@@ -162,7 +167,8 @@
 
           <div class="form-actions">
             <FluentButton appearance="primary" loading={isGenerating} onclick={handleCreateLink}>
-              ✨ Generate Client Review Link
+              <FluentIcons name="link" size={14} />
+              <span style="margin-left: 6px;">Generate Client Review Link</span>
             </FluentButton>
           </div>
         </div>
@@ -171,7 +177,10 @@
         {#if generatedShare}
           <div class="generated-box">
             <div class="gen-header">
-              <span class="gen-badge">⚡ LINK ACTIVE</span>
+              <span class="gen-badge">
+                <span class="status-dot"></span>
+                LINK ACTIVE
+              </span>
               <span class="gen-exp">
                 {generatedShare.expiresAt ? `Expires: ${new Date(generatedShare.expiresAt).toLocaleDateString()}` : 'No Expiry'}
               </span>
@@ -180,16 +189,19 @@
             <div class="link-url-row">
               <input type="text" readonly class="url-input" value={getShareUrl(generatedShare.token)} />
               <button class="copy-btn" onclick={() => copyShareUrl(generatedShare.token)}>
-                📋 Copy Link
+                <FluentIcons name="copy" size={13} />
+                <span style="margin-left: 5px;">Copy Link</span>
               </button>
             </div>
 
             <div class="share-quick-btns">
               <button class="whatsapp-btn" onclick={() => shareViaWhatsApp(generatedShare.token)}>
-                💬 Share via WhatsApp
+                <FluentIcons name="chat" size={13} />
+                <span style="margin-left: 5px;">Share via WhatsApp</span>
               </button>
-              <a href={getShareUrl(generatedShare.token)} target="_blank" class="preview-btn">
-                👁️ Test Client View ↗
+              <a href={getShareUrl(generatedShare.token)} target="_blank" rel="noreferrer" class="preview-btn">
+                <FluentIcons name="externalLink" size={13} />
+                <span style="margin-left: 5px;">Test Client View</span>
               </a>
             </div>
           </div>
@@ -210,15 +222,22 @@
                     <div class="link-meta-row">
                       <span class="perm-pill {link.permissions}">{link.permissions === 'review_approve' ? 'Sign-Off Allowed' : 'View Only'}</span>
                       <span class="created-meta">Created by {link.createdBy} on {new Date(link.createdAt).toLocaleDateString()}</span>
-                      <span class="access-count">👁️ {link.accessCount || 0} views</span>
+                      <span class="access-count">
+                        <FluentIcons name="eye" size={11} />
+                        <span style="margin-left: 3px;">{link.accessCount || 0} views</span>
+                      </span>
                     </div>
                     {#if link.note}
                       <div class="link-note">"{link.note}"</div>
                     {/if}
                   </div>
                   <div class="link-actions">
-                    <button class="icon-action-btn" title="Copy Link" onclick={() => copyShareUrl(link.token)}>📋</button>
-                    <button class="icon-action-btn" title="Share WhatsApp" onclick={() => shareViaWhatsApp(link.token)}>💬</button>
+                    <button class="icon-action-btn" title="Copy Link" onclick={() => copyShareUrl(link.token)}>
+                      <FluentIcons name="copy" size={13} />
+                    </button>
+                    <button class="icon-action-btn" title="Share WhatsApp" onclick={() => shareViaWhatsApp(link.token)}>
+                      <FluentIcons name="chat" size={13} />
+                    </button>
                     <button class="revoke-btn" onclick={() => handleRevoke(link.token)}>Revoke</button>
                   </div>
                 </div>
@@ -229,7 +248,10 @@
       </div>
 
       <div class="share-footer">
-        <span class="security-tip">🔒 Cryptographic tokenized access — zero credentials leaked.</span>
+        <span class="security-tip">
+          <FluentIcons name="lock" size={12} color="#00CFFF" />
+          <span style="margin-left: 6px;">Cryptographic tokenized access — zero credentials leaked.</span>
+        </span>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
       </div>
     </div>

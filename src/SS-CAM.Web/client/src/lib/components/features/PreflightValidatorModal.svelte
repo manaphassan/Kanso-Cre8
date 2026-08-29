@@ -1,40 +1,28 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
-  import type { DeliverableItem } from '$lib/types';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import type { DeliverableItem } from '$lib/types';
 
   interface Props {
     open?: boolean;
     deliverable?: DeliverableItem | null;
-    projectTitle?: string;
     onClose?: () => void;
   }
 
   let {
     open = $bindable(false),
     deliverable = null,
-    projectTitle = '',
     onClose
   }: Props = $props();
 
-  type PrintPreset = {
-    id: string;
-    name: string;
-    widthInches: number;
-    heightInches: number;
-    widthCm: number;
-    heightCm: number;
-    category: string;
-    recommendedDpi: number;
-  };
-
-  const PRESETS: PrintPreset[] = [
-    { id: 'bunting_2x5', name: 'Bunting 2x5 ft (Standard Event)', widthInches: 24, heightInches: 60, widthCm: 60.96, heightCm: 152.4, category: 'POSM / Event', recommendedDpi: 150 },
-    { id: 'banner_8x4', name: 'Banner 8x4 ft (Stage / Outdoor)', widthInches: 96, heightInches: 48, widthCm: 243.84, heightCm: 121.92, category: 'POSM / Billboard', recommendedDpi: 100 },
-    { id: 'poster_a3', name: 'Poster A3 (Commercial Store Display)', widthInches: 11.69, heightInches: 16.54, widthCm: 29.7, heightCm: 42.0, category: 'Retail POSM', recommendedDpi: 300 },
-    { id: 'flyer_a4', name: 'Flyer A4 (Direct Marketing Insert)', widthInches: 8.27, heightInches: 11.69, widthCm: 21.0, heightCm: 29.7, category: 'Print Marketing', recommendedDpi: 300 },
-    { id: 'box_packaging', name: 'Box Packaging Die-Line (Medium Jar)', widthInches: 6.0, heightInches: 8.0, widthCm: 15.24, heightCm: 20.32, category: 'Packaging', recommendedDpi: 300 },
+  // Malaysian Standard Physical Print & POSM Specifications
+  const PRESETS = [
+    { id: 'bunting_2x5', name: 'Bunting (2×5 ft)', widthCm: 60.96, heightCm: 152.4, category: 'Event & Retail POSM', recommendedDpi: 300 },
+    { id: 'banner_8x4', name: 'Banner (8×4 ft)', widthCm: 243.84, heightCm: 121.92, category: 'Outdoor Signage', recommendedDpi: 150 },
+    { id: 'poster_a3', name: 'Poster A3', widthCm: 29.7, heightCm: 42.0, category: 'Indoor Print', recommendedDpi: 300 },
+    { id: 'flyer_a4', name: 'Flyer A4', widthCm: 21.0, heightCm: 29.7, category: 'Marketing Collateral', recommendedDpi: 300 },
+    { id: 'packaging_box', name: 'Packaging Box Die-line', widthCm: 35.0, heightCm: 25.0, category: 'Product Packaging', recommendedDpi: 300 }
   ];
 
   let selectedPresetId = $state<string>('bunting_2x5');
@@ -69,74 +57,71 @@
 
   const selectedPreset = $derived(PRESETS.find(p => p.id === selectedPresetId) || PRESETS[0]);
 
+  // DPI calculation: (pixels / (cm / 2.54))
   const preflightMetrics = $derived.by(() => {
     if (!imgNaturalWidth || !imgNaturalHeight) {
-      return { dpiW: 0, dpiH: 0, avgDpi: 0, status: 'unknown', ratioDiff: 0 };
+      return { dpiW: 0, dpiH: 0, avgDpi: 0, status: 'unknown', ratioDiff: '0.0' };
     }
+    const targetWInches = selectedPreset.widthCm / 2.54;
+    const targetHInches = selectedPreset.heightCm / 2.54;
 
-    const dpiW = Math.round(imgNaturalWidth / selectedPreset.widthInches);
-    const dpiH = Math.round(imgNaturalHeight / selectedPreset.heightInches);
+    const dpiW = Math.round(imgNaturalWidth / targetWInches);
+    const dpiH = Math.round(imgNaturalHeight / targetHInches);
     const avgDpi = Math.min(dpiW, dpiH);
 
-    const imgRatio = imgNaturalWidth / imgNaturalHeight;
-    const printRatio = selectedPreset.widthInches / selectedPreset.heightInches;
-    const ratioDiff = Math.abs((imgRatio - printRatio) / printRatio) * 100;
+    const assetRatio = imgNaturalWidth / imgNaturalHeight;
+    const targetRatio = selectedPreset.widthCm / selectedPreset.heightCm;
+    const ratioDiff = (Math.abs(assetRatio - targetRatio) / targetRatio * 100).toFixed(1);
 
-    let status = 'critical';
-    if (avgDpi >= selectedPreset.recommendedDpi) {
-      status = 'optimal';
-    } else if (avgDpi >= selectedPreset.recommendedDpi * 0.65) {
-      status = 'warning';
-    }
+    let status = 'optimal';
+    if (avgDpi < 150) status = 'critical';
+    else if (avgDpi < selectedPreset.recommendedDpi) status = 'warning';
 
-    return { dpiW, dpiH, avgDpi, status, ratioDiff: ratioDiff.toFixed(1) };
+    return { dpiW, dpiH, avgDpi, status, ratioDiff };
   });
 
   function downloadReport() {
-    const reportHtml = `<!DOCTYPE html>
+    if (!deliverable) return;
+    const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>SS-CAM Preflight Quality Report - ${deliverable?.filename}</title>
+  <meta charset="utf-8">
+  <title>Preflight Certificate — ${deliverable.filename}</title>
   <style>
-    body { font-family: sans-serif; padding: 30px; background: #0F172A; color: #FFF; line-height: 1.6; }
-    .card { background: #1E293B; border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto; border: 1px solid #334155; }
-    h1 { font-size: 20px; color: #38BDF8; margin-bottom: 4px; }
-    .status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; }
-    .status-optimal { background: #065F46; color: #34D399; }
-    .status-warning { background: #78350F; color: #FBBF24; }
-    .status-critical { background: #7F1D1D; color: #F87171; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    td { padding: 8px 0; border-bottom: 1px solid #334155; }
-    td:last-child { text-align: right; font-weight: bold; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0D1117; color: #F0F6FC; padding: 30px; }
+    .card { background: #161B22; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto; }
+    h1 { font-size: 20px; color: #38BDF8; margin-top: 0; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+    .badge-optimal { background: rgba(16,185,129,0.2); color: #10B981; }
+    .badge-warning { background: rgba(245,158,11,0.2); color: #F59E0B; }
+    .badge-critical { background: rgba(239,68,68,0.2); color: #EF4444; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
+    .label { color: #8B949E; }
+    .footer { margin-top: 20px; font-size: 11px; color: #484F58; text-align: center; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🖨️ SuamiSihat CAM Preflight Certification</h1>
-    <p style="color:#94A3B8; font-size:12px;">Quality Gate for Physical Print & POSM Fabrication</p>
-    <div class="status status-${preflightMetrics.status}">
-      ${preflightMetrics.status === 'optimal' ? '✅ PASS - OPTIMAL PRINT QUALITY' : preflightMetrics.status === 'warning' ? '⚠️ PASS WITH WARNING - MARGINAL DPI' : '❌ CRITICAL - LOW RESOLUTION'}
-    </div>
-    <table>
-      <tr><td>File Name</td><td>${deliverable?.filename}</td></tr>
-      <tr><td>Target Print Size</td><td>${selectedPreset.name} (${selectedPreset.widthCm} × ${selectedPreset.heightCm} cm)</td></tr>
-      <tr><td>Source Resolution</td><td>${imgNaturalWidth} × ${imgNaturalHeight} px</td></tr>
-      <tr><td>Calculated Effective DPI</td><td>${preflightMetrics.avgDpi} DPI (Target: ${selectedPreset.recommendedDpi} DPI)</td></tr>
-      <tr><td>Aspect Ratio Match</td><td>${parseFloat(preflightMetrics.ratioDiff) < 2 ? '✓ Perfect Match' : `⚠️ ${preflightMetrics.ratioDiff}% deviation`}</td></tr>
-      <tr><td>Recommended Bleed</td><td>3.0 mm (Standard offset bleed)</td></tr>
-      <tr><td>Timestamp</td><td>${new Date().toLocaleString()}</td></tr>
-    </table>
+    <h1>SuamiSihat Print Preflight Certificate</h1>
+    <p>Asset: <b>${deliverable.filename}</b></p>
+    <div class="row"><span class="label">Target Preset:</span><span>${selectedPreset.name} (${selectedPreset.widthCm}×${selectedPreset.heightCm} cm)</span></div>
+    <div class="row"><span class="label">Pixel Dimensions:</span><span>${imgNaturalWidth} × ${imgNaturalHeight} px</span></div>
+    <div class="row"><span class="label">Calculated DPI:</span><span><b>${preflightMetrics.avgDpi} DPI</b> (Recommended: ${selectedPreset.recommendedDpi} DPI)</span></div>
+    <div class="row"><span class="label">Aspect Ratio Fit:</span><span>Deviation ${preflightMetrics.ratioDiff}%</span></div>
+    <div class="row"><span class="label">Verdict:</span><span class="badge badge-${preflightMetrics.status}">${preflightMetrics.status.toUpperCase()}</span></div>
+    <div class="footer">Generated on ${new Date().toLocaleString()} · SuamiSihat Creative Studio Production Engine</div>
   </div>
 </body>
 </html>`;
 
-    const blob = new Blob([reportHtml], { type: 'text/html' });
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `Preflight_Report_${deliverable?.filename || 'Asset'}.html`;
+    a.href = url;
+    a.download = `Preflight_${deliverable.filename.replace(/\.[^/.]+$/, "")}.html`;
     a.click();
-    appState.addToast('Preflight Quality Report downloaded!', 'success');
+    URL.revokeObjectURL(url);
+    appState.addToast('Preflight certificate downloaded!', 'success');
   }
 
   function closeModal() {
@@ -145,7 +130,7 @@
   }
 </script>
 
-{#if open}
+{#if open && deliverable}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="preflight-backdrop" onclick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
@@ -153,13 +138,17 @@
       <!-- Header -->
       <div class="preflight-header">
         <div class="header-left">
-          <span class="preflight-icon">🖨️</span>
+          <div class="preflight-icon-badge">
+            <FluentIcons name="printer" size={20} color="#00CFFF" />
+          </div>
           <div>
             <h2 class="modal-title">Production Print &amp; POSM Preflight Validator</h2>
             <p class="modal-sub">DPI resolution check, physical dimension fit, and color space guard.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal}>✕</button>
+        <button class="close-btn" onclick={closeModal} title="Close Modal">
+          <FluentIcons name="close" size={16} />
+        </button>
       </div>
 
       <!-- Body -->
@@ -183,11 +172,11 @@
             <span class="metric-hint">
               Target: <b>{selectedPreset.recommendedDpi} DPI</b> · 
               {#if preflightMetrics.status === 'optimal'}
-                <span class="text-green">✓ Crystal Sharp Print</span>
+                <span class="text-green">Crystal Sharp Print</span>
               {:else if preflightMetrics.status === 'warning'}
-                <span class="text-amber">⚠️ Acceptable for Distant Viewing</span>
+                <span class="text-amber">Acceptable for Distant Viewing</span>
               {:else}
-                <span class="text-red">❌ Low Resolution Pixelation Risk</span>
+                <span class="text-red">Low Resolution Pixelation Risk</span>
               {/if}
             </span>
           </div>
@@ -199,9 +188,9 @@
             <span class="metric-hint">
               Aspect Ratio Deviation: <b>{preflightMetrics.ratioDiff}%</b>
               {#if parseFloat(preflightMetrics.ratioDiff) <= 1.5}
-                <span class="text-green"> (✓ Perfect Fit)</span>
+                <span class="text-green"> (Optimal Dimension Fit)</span>
               {:else}
-                <span class="text-amber"> (⚠️ Crop Adjustment Required)</span>
+                <span class="text-amber"> (Crop Adjustment Required)</span>
               {/if}
             </span>
           </div>
@@ -212,7 +201,13 @@
           <h3 class="checklist-title">Vendor Fabrication Preflight Checklist</h3>
           <div class="checks-list">
             <div class="check-item">
-              <span class="check-icon">{preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? '✅' : '⚠️'}</span>
+              <span class="check-icon">
+                <FluentIcons 
+                  name={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? 'checkCircle' : 'warning'} 
+                  size={16} 
+                  color={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? '#10B981' : '#F59E0B'} 
+                />
+              </span>
               <div>
                 <span class="check-name">DPI Resolution Threshold</span>
                 <span class="check-sub">Evaluated against {selectedPreset.name} physical size.</span>
@@ -220,7 +215,9 @@
             </div>
 
             <div class="check-item">
-              <span class="check-icon">🎨</span>
+              <span class="check-icon">
+                <FluentIcons name="colorPalette" size={16} color="#00CFFF" />
+              </span>
               <div>
                 <span class="check-name">Color Profile Recommendation</span>
                 <span class="check-sub">Ensure CMYK / FOGRA39 profile is embedded for offset press &amp; packaging vendors.</span>
@@ -228,7 +225,9 @@
             </div>
 
             <div class="check-item">
-              <span class="check-icon">✂️</span>
+              <span class="check-icon">
+                <FluentIcons name="vector" size={16} color="#A78BFA" />
+              </span>
               <div>
                 <span class="check-name">Standard Bleed Safety Margin</span>
                 <span class="check-sub">Maintain at least 3.0 mm exterior bleed and 5.0 mm safe text margin.</span>
@@ -241,7 +240,8 @@
       <!-- Footer -->
       <div class="preflight-footer">
         <button class="report-dl-btn" onclick={downloadReport}>
-          📄 Download Preflight Certificate (HTML)
+          <FluentIcons name="download" size={14} />
+          <span style="margin-left: 6px;">Download Preflight Certificate</span>
         </button>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
       </div>

@@ -3,6 +3,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { ApiClient } from '$lib/services/api';
+  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
 
   interface Props {
     open?: boolean;
@@ -31,18 +32,27 @@
     { type: 'token', name: 'Card Surface Glass', code: '#0F172A', brand: 'CARD', description: 'Elevated Fluent 2 container surface' },
   ];
 
+  interface QuickAction {
+    type: 'action';
+    id: string;
+    label: string;
+    icon: IconName;
+    category: string;
+    execute: () => void;
+  }
+
   // Quick Action Commands
-  const QUICK_ACTIONS = [
-    { type: 'action', id: 'nav-ai', label: 'Open Creative AI Studio (Gemini Assistant)', icon: '✨', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
-    { type: 'action', id: 'nav-dashboard', label: 'Go to Dashboard', icon: '📊', category: 'Navigation', execute: () => appState.navigate('dashboard') },
-    { type: 'action', id: 'nav-projects', label: 'Open Project Manager', icon: '📂', category: 'Navigation', execute: () => appState.navigate('projects') },
-    { type: 'action', id: 'nav-review', label: 'Go to Review Queue', icon: '✅', category: 'Navigation', execute: () => appState.navigate('deliverables') },
-    { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: '👥', category: 'Navigation', execute: () => appState.navigate('team') },
-    { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: '✍️', category: 'Navigation', execute: () => appState.navigate('copy-studio') },
-    { type: 'action', id: 'nav-admin', label: 'Open Studio Administration', icon: '⚙️', category: 'Governance', execute: () => appState.navigate('admin') },
-    { type: 'action', id: 'act-theme', label: 'Toggle Theme (Falconia / Metamorphosis)', icon: '🌓', category: 'System', execute: () => toggleTheme() },
-    { type: 'action', id: 'act-rescan', label: 'Rescan Synology NAS Vault', icon: '🔄', category: 'System', execute: () => rescanVault() },
-    { type: 'action', id: 'act-download', label: 'Download SS-CAM Desktop App', icon: '🖥️', category: 'Ecosystem', execute: () => window.open('https://suamisihat.github.io/ss_cam/', '_blank') },
+  const QUICK_ACTIONS: QuickAction[] = [
+    { type: 'action', id: 'nav-ai', label: 'Open Creative AI Studio (Gemini Assistant)', icon: 'sparkles', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
+    { type: 'action', id: 'nav-dashboard', label: 'Go to Dashboard', icon: 'dashboard', category: 'Navigation', execute: () => appState.navigate('dashboard') },
+    { type: 'action', id: 'nav-projects', label: 'Open Project Manager', icon: 'folder', category: 'Navigation', execute: () => appState.navigate('projects') },
+    { type: 'action', id: 'nav-review', label: 'Go to Review Queue', icon: 'checkCircle', category: 'Navigation', execute: () => appState.navigate('deliverables') },
+    { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Navigation', execute: () => appState.navigate('team') },
+    { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: 'edit', category: 'Navigation', execute: () => appState.navigate('copy-studio') },
+    { type: 'action', id: 'nav-admin', label: 'Open Studio Administration', icon: 'settings', category: 'Governance', execute: () => appState.navigate('admin') },
+    { type: 'action', id: 'act-theme', label: 'Toggle Theme (Falconia / Metamorphosis)', icon: 'colorPalette', category: 'System', execute: () => toggleTheme() },
+    { type: 'action', id: 'act-rescan', label: 'Rescan Synology NAS Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
+    { type: 'action', id: 'act-download', label: 'Download SS-CAM Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://suamisihat.github.io/ss_cam/', '_blank') },
   ];
 
   function toggleTheme() {
@@ -68,7 +78,7 @@
       const text = `${p.jobId || ''} ${p.title || ''} ${p.designer || ''} ${p.brand || ''} ${(p.tags || []).join(' ')} ${p.status || ''}`.toLowerCase();
       return text.includes(q);
     }).slice(0, 5).map(p => ({
-      type: 'project',
+      type: 'project' as const,
       id: p.id,
       jobId: p.jobId || p.id,
       title: p.title || 'Untitled Project',
@@ -162,9 +172,7 @@
     <div class="palette-modal">
       <!-- Search Input Bar -->
       <div class="palette-search-header">
-        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
+        <FluentIcons name="search" size={18} color="#94A3B8" />
         <input 
           bind:this={inputRef}
           type="text" 
@@ -173,7 +181,9 @@
           bind:value={query}
         />
         {#if query}
-          <button class="clear-btn" onclick={() => query = ''}>✕</button>
+          <button class="clear-btn" onclick={() => query = ''} title="Clear query">
+            <FluentIcons name="close" size={14} />
+          </button>
         {/if}
         <span class="esc-badge" onclick={closeModal}>ESC</span>
       </div>
@@ -182,8 +192,8 @@
       <div class="palette-body">
         {#if searchResults.length === 0}
           <div class="palette-empty">
-            <span class="empty-emoji">🔍</span>
-            <p>No matching projects, tokens, or actions found for "{query}"</p>
+            <FluentIcons name="search" size={36} color="rgba(255,255,255,0.2)" />
+            <p style="margin-top: 10px;">No matching projects, tokens, or actions found for "{query}"</p>
             <span class="empty-hint">Try searching by Job ID (e.g. <code>0085D</code>), brand (<code>SSH</code>), or command (<code>review</code>).</span>
           </div>
         {:else}
@@ -197,7 +207,9 @@
                 onmouseenter={() => selectedIndex = index}
               >
                 {#if item.type === 'project'}
-                  <div class="result-icon icon-project">📂</div>
+                  <div class="result-icon icon-project">
+                    <FluentIcons name="folder" size={16} />
+                  </div>
                   <div class="result-info">
                     <div class="result-title-row">
                       <span class="badge-brand">{item.brand}</span>
@@ -210,7 +222,10 @@
                       <span class="status-pill status-{item.status}">{item.status}</span>
                     </div>
                   </div>
-                  <span class="action-shortcut">Open Project ➔</span>
+                  <span class="action-shortcut">
+                    <span>Open Project</span>
+                    <FluentIcons name="arrowRight" size={11} />
+                  </span>
 
                 {:else if item.type === 'token'}
                   <div class="color-swatch-box" style="background: {item.code};"></div>
@@ -221,17 +236,24 @@
                     </div>
                     <div class="result-sub">{item.description}</div>
                   </div>
-                  <span class="action-shortcut">Copy Hex 📋</span>
+                  <span class="action-shortcut">
+                    <span>Copy Hex</span>
+                    <FluentIcons name="copy" size={11} />
+                  </span>
 
                 {:else if item.type === 'action'}
-                  <div class="result-icon icon-action">{item.icon}</div>
+                  <div class="result-icon icon-action">
+                    <FluentIcons name={item.icon} size={16} />
+                  </div>
                   <div class="result-info">
                     <div class="result-title-row">
                       <span class="item-title">{item.label}</span>
                     </div>
                     <div class="result-sub">{item.category}</div>
                   </div>
-                  <span class="action-shortcut">Execute ↵</span>
+                  <span class="action-shortcut">
+                    <span>Execute</span>
+                  </span>
                 {/if}
               </div>
             {/each}

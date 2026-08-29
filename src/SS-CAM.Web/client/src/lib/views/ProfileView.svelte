@@ -6,6 +6,7 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentInput from '$lib/components/ui/FluentInput.svelte';
+  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
 
   // Profile fields
   let fullName = $state<string>('');
@@ -89,12 +90,12 @@
     (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards'
   );
 
-  const viewModesList: { id: ViewMode; name: string; desc: string; icon: string }[] = [
-    { id: 'cards', name: 'Cards Grid', desc: 'Visual card overview with priority & deadline indicators', icon: '📋' },
-    { id: 'kanban', name: 'Kanban Board', desc: '6-column drag-and-drop production pipeline', icon: '📊' },
-    { id: 'gantt', name: 'Gantt Timeline', desc: 'Interactive schedule timeline with start & due duration bars', icon: '📈' },
-    { id: 'calendar', name: 'Production Calendar', desc: 'Monthly deliverable due dates on calendar days', icon: '📅' },
-    { id: 'table', name: 'Data Table', desc: 'High-density sortable tabular grid for studio oversight', icon: '📑' }
+  const viewModesList: { id: ViewMode; name: string; desc: string; icon: IconName }[] = [
+    { id: 'cards', name: 'Cards Grid', desc: 'Visual card overview with priority & deadline indicators', icon: 'grid' },
+    { id: 'kanban', name: 'Kanban Board', desc: '6-column drag-and-drop production pipeline', icon: 'folder' },
+    { id: 'gantt', name: 'Gantt Timeline', desc: 'Interactive schedule timeline with start & due duration bars', icon: 'timeline' },
+    { id: 'calendar', name: 'Production Calendar', desc: 'Monthly deliverable due dates on calendar days', icon: 'calendar' },
+    { id: 'table', name: 'Data Table', desc: 'High-density sortable tabular grid for studio oversight', icon: 'table' }
   ];
 
   onMount(async () => {
@@ -316,7 +317,9 @@
       <!-- Designer Profile Card -->
       <FluentCard elevated padding="20px">
         <div class="card-section-header">
-          <div class="section-icon-badge">👤</div>
+          <div class="section-icon-badge">
+            <FluentIcons name="user" size={16} color="#21A1F7" />
+          </div>
           <div>
             <h3 class="card-title">Designer Profile</h3>
             <p class="card-desc">Your identity across SS-CAM Web Portal &amp; Desktop App</p>
@@ -339,7 +342,7 @@
               onclick={triggerPhotoUpload}
               title="Upload / Change Profile Picture"
             >
-              📷
+              <FluentIcons name="image" size={14} color="#FFFFFF" />
             </button>
             <input
               type="file"
@@ -457,7 +460,8 @@
             loading={isSavingProfile}
             onclick={handleProfileSave}
           >
-            💾 Save Profile
+            <FluentIcons name="save" size={14} />
+            <span style="margin-left: 5px;">Save Profile</span>
           </FluentButton>
         </div>
       </FluentCard>
@@ -465,7 +469,9 @@
       <!-- Account Security & Password Card -->
       <FluentCard elevated padding="20px">
         <div class="card-section-header">
-          <div class="section-icon-badge">🔒</div>
+          <div class="section-icon-badge">
+            <FluentIcons name="lock" size={16} color="#21A1F7" />
+          </div>
           <div>
             <h3 class="card-title">Account Security &amp; Password</h3>
             <p class="card-desc">Logged in as <b>{appState.currentUser?.name || 'User'}</b> ({appState.currentUser?.role || ''})</p>
@@ -516,7 +522,9 @@
       <!-- Theme Selector Card -->
       <FluentCard elevated padding="20px">
         <div class="card-section-header">
-          <div class="section-icon-badge">🎨</div>
+          <div class="section-icon-badge">
+            <FluentIcons name="colorPalette" size={16} color="#A78BFA" />
+          </div>
           <div>
             <h3 class="card-title">Fluent 2 Visual Theme Profile</h3>
             <p class="card-desc">Select the visual hierarchy and color mode for this browser session.</p>
@@ -548,7 +556,9 @@
       <!-- Project Manager Default View Selector -->
       <FluentCard elevated padding="20px">
         <div class="card-section-header">
-          <div class="section-icon-badge">📋</div>
+          <div class="section-icon-badge">
+            <FluentIcons name="dashboard" size={16} color="#00CFFF" />
+          </div>
           <div>
             <h3 class="card-title">Project Manager Default View</h3>
             <p class="card-desc">Select which workspace layout opens automatically when navigating to Project Manager.</p>
@@ -564,7 +574,9 @@
               class:active={defaultProjectView === v.id}
               onclick={() => setDefaultProjectView(v.id)}
             >
-              <div class="view-mode-icon-swatch">{v.icon}</div>
+              <div class="view-mode-icon-swatch">
+                <FluentIcons name={v.icon} size={18} color="#21A1F7" />
+              </div>
               <div class="theme-info">
                 <div class="theme-name">{v.name}</div>
                 <div class="theme-desc">{v.desc}</div>
