@@ -1,8 +1,9 @@
 # ── Build outputs ──────────────────────────────────────────────
-src/SS-CAM/bin/
-src/SS-CAM/obj/
-/bin/
-/obj/
+[Bb]in/
+[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
+**/build/
 /dist/
 *.pdb
 *.user
