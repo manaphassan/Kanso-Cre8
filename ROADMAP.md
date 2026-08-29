@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-08-28.
+> **Living document.** Updated with every release. Last updated: 2026-08-30.
 
 ---
 
@@ -41,6 +41,7 @@
 | **v4.4.3** | 2026-08-27 | **Radio Visualizer Overhaul & Station Upgrades**: Dynamic real-time playback gating for 69 Mars symbols & 6 SuamiSihat logomarks, song wavelength sinusoidal vertical oscillation & beat kick pulsing across all visualizer modes, curated Nightwave Plaza & SomaFM Groove Salad stations, Malaysia holidays calendar integration |
 | **v4.4.4** | 2026-08-27 | **Creative Wellbeing & Biometric Suite Overhaul**: Real-time 5-axis biometric spider radar, dynamic 30-day focus intensity heatmap, interactive vector water hydration tracker with sinusoidal waves, and burnout risk analytics |
 | **v4.5.0** | 2026-08-28 | **Master Brand System v3.5.1 Integration & Brand Assets Vault Modernization**: Full alignment with official SuamiSihat Master Brand System Guide, Multi-Format Color Matrix (BAL/RAL standard, CIE-Lab, Pantone, CSS tokens), 5 Corporate Sub-Brands Hub with 1-click folder launchers, interactive Surface Contrast Previewer ($L \ge 50\%$ rule), 4-tier typography scale reference |
+| **v4.5.1** | 2026-08-30 | **Major Stable Release — Cross-Platform Ecosystem Synchronization & Companion Harmonization**: Windows Desktop Client v4.5.1 (single-file executable, UTF-8 BOM, 100% theme-adaptive DynamicResource tokens), Web Management Portal Svelte 5 / Node.js 20 (zero-emoji Fluent 2 design, desktop mobile dock layout fix, 28/28 passed test suite), Android Companion App (Compose UI, Studio Lounge, and live NAS sync) |
 
 ---
 
