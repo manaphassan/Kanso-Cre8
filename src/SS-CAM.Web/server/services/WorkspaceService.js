@@ -726,8 +726,17 @@ class WorkspaceService {
         capacityColor = '#F59E0B';
       }
 
+      const matched = staffRoster.find(s => 
+        (s.staffId && s.staffId === item.staffId) || 
+        (s.name && s.name.toLowerCase() === (item.designer || '').toLowerCase()) ||
+        (s.username && s.username.toLowerCase() === (item.designer || '').toLowerCase())
+      );
+
       return {
         ...item,
+        name: matched ? matched.name : item.designer,
+        avatar: matched ? (matched.avatar || '') : '',
+        avatarColor: matched ? (matched.avatarColor || '#0078D4') : '#0078D4',
         capacityPercent,
         capacityStatus,
         capacityColor

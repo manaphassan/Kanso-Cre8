@@ -500,7 +500,11 @@
           <div class="member-card-header">
             <div class="avatar-wrap">
               <div class="member-avatar" style="background: {avatarBg};">
-                {(member.name || 'U').charAt(0).toUpperCase()}
+                {#if member.avatar}
+                  <img src={member.avatar} alt={member.name} class="avatar-photo" />
+                {:else}
+                  {(member.name || 'U').charAt(0).toUpperCase()}
+                {/if}
               </div>
               <span
                 class="online-dot"
@@ -1076,6 +1080,16 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .member-avatar img.avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
   }
 
   .online-dot {

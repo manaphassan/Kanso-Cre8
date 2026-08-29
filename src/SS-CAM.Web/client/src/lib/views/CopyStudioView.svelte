@@ -29,6 +29,24 @@
     ecommerce: { name: 'Shopee / Lazada Title', maxChars: 120, optimal: 90, desc: 'Search-indexed marketplace title' }
   };
 
+  const brandConfig = $derived.by(() => {
+    const code = (selectedProject?.brand || 'SS').toUpperCase();
+    switch (code) {
+      case 'SSH':
+        return { code: 'SSH', name: 'SuamiSihat Health', initial: 'SSH', color: '#022057', handle: 'suamisihathealth' };
+      case 'SSC':
+        return { code: 'SSC', name: 'SuamiSihat Clinic', initial: 'SSC', color: '#043388', handle: 'suamisihatclinic' };
+      case 'SSW':
+        return { code: 'SSW', name: 'SuamiSihat Wellness', initial: 'SSW', color: '#21A1F7', handle: 'suamisihatwellness' };
+      case 'SSE':
+        return { code: 'SSE', name: 'SuamiSihat Ecommerce', initial: 'SSE', color: '#BD9A73', handle: 'suamisihatecom' };
+      case 'SST':
+        return { code: 'SST', name: 'SuamiSihat Technology', initial: 'SST', color: '#107C10', handle: 'suamisihattech' };
+      default:
+        return { code: 'SS', name: 'SuamiSihat Official', initial: 'SS', color: '#043388', handle: 'suamisihat.official' };
+    }
+  });
+
   onMount(async () => {
     await projectStore.loadProjects();
   });
@@ -383,9 +401,9 @@
               {#if activeMockupTab === 'whatsapp'}
                 <div class="whatsapp-mockup-wrapper">
                   <div class="whatsapp-header">
-                    <div class="wa-avatar">SS</div>
+                    <div class="wa-avatar" style="background: {brandConfig.color};">{brandConfig.initial}</div>
                     <div class="wa-user">
-                      <div class="wa-name">SuamiSihat Official</div>
+                      <div class="wa-name">{brandConfig.name}</div>
                       <div class="wa-status">Online</div>
                     </div>
                   </div>
@@ -415,9 +433,9 @@
               {:else if activeMockupTab === 'meta'}
                 <div class="meta-mockup-wrapper">
                   <div class="meta-card-header">
-                    <div class="meta-page-avatar">SS</div>
+                    <div class="meta-page-avatar" style="background: {brandConfig.color};">{brandConfig.initial}</div>
                     <div class="meta-page-info">
-                      <div class="meta-page-name">SuamiSihat Care</div>
+                      <div class="meta-page-name">{brandConfig.name}</div>
                       <div class="meta-ad-label">Sponsored</div>
                     </div>
                     <button class="meta-more-btn">•••</button>
@@ -454,7 +472,7 @@
                   <div class="tiktok-overlay">
                     <!-- Right Actions Sidebar -->
                     <div class="tiktok-sidebar">
-                      <div class="tt-avatar">SS</div>
+                      <div class="tt-avatar" style="background: {brandConfig.color};">{brandConfig.initial}</div>
                       <div class="tt-action"><FluentIcons name="checkCircle" size={18} color="#EF4444" /><small>42.8K</small></div>
                       <div class="tt-action"><FluentIcons name="chat" size={18} /><small>1.2K</small></div>
                       <div class="tt-action"><FluentIcons name="link" size={18} /><small>3.4K</small></div>
@@ -463,12 +481,12 @@
 
                     <!-- Bottom Caption -->
                     <div class="tiktok-bottom">
-                      <div class="tt-username">@suamisihat.official</div>
+                      <div class="tt-username">@{brandConfig.handle}</div>
                       <div class="tt-caption">
                         {draftHeadline ? draftHeadline : (draftBodyCopy ? draftBodyCopy.substring(0, 100) : 'TikTok hook caption overlay (0-3s visual limit)...')}
                       </div>
                       <div class="tt-music-track">
-                        <span>Original Sound - SuamiSihat Creative</span>
+                        <span>Original Sound - {brandConfig.name}</span>
                       </div>
                       {#if draftCta}
                         <div class="tt-cta-pill">

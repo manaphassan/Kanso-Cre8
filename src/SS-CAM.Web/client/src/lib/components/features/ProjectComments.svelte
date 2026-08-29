@@ -21,8 +21,8 @@
   let isSubmitting = $state<boolean>(false);
   let isLoading = $state<boolean>(false);
 
-  // Mention dropdown
-  let teamMembers = $state<Array<{ username: string; name: string; role: string; staffId: string }>>([]);
+  // Mention dropdown & roster profiles
+  let teamMembers = $state<Array<{ username: string; name: string; role: string; staffId: string; avatar?: string; avatarColor?: string }>>([]);
   let showMentionDropdown = $state<boolean>(false);
   let mentionQuery = $state<string>('');
   let mentionCursorPos = $state<number>(0);
@@ -42,7 +42,9 @@
           username: u.username,
           name: u.name,
           role: u.role,
-          staffId: u.staffId
+          staffId: u.staffId,
+          avatar: u.avatar || '',
+          avatarColor: u.avatarColor || '#0078D4'
         }));
       }
     } catch (e) {
@@ -247,9 +249,17 @@
     {:else}
       <div class="comments-list">
         {#each filteredComments as comment (comment.id)}
+          {@const authorMember = teamMembers.find(m => (m.name && m.name.toLowerCase() === (comment.author || '').toLowerCase()) || (m.username && m.username.toLowerCase() === (comment.author || '').toLowerCase()) || (m.staffId && m.staffId.toLowerCase() === (comment.author || '').toLowerCase()))}
+          {@const isPhoto = comment.authorAvatar && (comment.authorAvatar.startsWith('data:') || comment.authorAvatar.startsWith('http') || comment.authorAvatar.startsWith('/'))}
+          {@const avatarSrc = isPhoto ? comment.authorAvatar : (authorMember?.avatar || '')}
+          {@const avatarBg = (!isPhoto && comment.authorAvatar) ? comment.authorAvatar : (authorMember?.avatarColor || '#043388')}
           <div class="comment-card" class:is-resolved={comment.resolved}>
-            <div class="comment-avatar" style="background: {comment.authorAvatar || '#043388'};">
-              {getInitials(comment.author)}
+            <div class="comment-avatar" style="background: {avatarBg};">
+              {#if avatarSrc}
+                <img src={avatarSrc} alt={comment.author} class="avatar-photo" />
+              {:else}
+                {getInitials(comment.author)}
+              {/if}
             </div>
 
             <div class="comment-content-wrap">
@@ -338,7 +348,13 @@
           <div class="mention-dropdown-title">Team Members</div>
           {#each matchingMentions as member}
             <button class="mention-item" onclick={() => insertMention(member.username)}>
-              <div class="mention-avatar">{getInitials(member.name)}</div>
+              <div class="mention-avatar" style="background: {member.avatarColor || '#043388'};">
+                {#if member.avatar}
+                  <img src={member.avatar} alt={member.name} class="avatar-photo" />
+                {:else}
+                  {getInitials(member.name)}
+                {/if}
+              </div>
               <div class="mention-info">
                 <span class="m-name">{member.name}</span>
                 <span class="m-username">@{member.username} · {member.role}</span>
@@ -528,6 +544,15 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+  .comment-avatar img.avatar-photo,
+  .mention-avatar img.avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
   }
 
   .comment-content-wrap {
@@ -764,6 +789,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
   }
 
   .mention-info {

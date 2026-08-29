@@ -103,11 +103,20 @@
     name: string;
     role: string;
     department?: string;
+    avatar?: string;
     avatarColor?: string;
   }
   let staffList = $state<StaffMember[]>([]);
   let isUpdatingManager = $state<boolean>(false);
   let selectedManager = $state<string>('Unassigned');
+
+  function getInitials(name?: string): string {
+    if (!name) return 'DS';
+    const trimmed = name.trim();
+    const parts = trimmed.split(/\s+/);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return trimmed.substring(0, 2).toUpperCase();
+  }
 
   // Filter to strictly managerial and leadership roles
   const managerList = $derived.by(() => {
@@ -123,6 +132,27 @@
         roleStr.includes('executive')
       );
     });
+  });
+
+  const designerInfo = $derived.by(() => {
+    if (!p) return null;
+    const key = (p.designer || p.designerName || '').toLowerCase();
+    if (!key || key === 'unassigned') return null;
+    return staffList.find(s => 
+      (s.username && s.username.toLowerCase() === key) ||
+      (s.name && s.name.toLowerCase() === key) ||
+      (s.staffId && s.staffId.toLowerCase() === key)
+    ) || null;
+  });
+
+  const managerInfo = $derived.by(() => {
+    const key = (selectedManager || (p ? p.manager : '') || '').toLowerCase();
+    if (!key || key === 'unassigned') return null;
+    return staffList.find(s => 
+      (s.name && s.name.toLowerCase() === key) ||
+      (s.username && s.username.toLowerCase() === key) ||
+      (s.staffId && s.staffId.toLowerCase() === key)
+    ) || null;
   });
 
   $effect(() => {
@@ -675,16 +705,26 @@
                 <div class="prop-group">
                   <span class="prop-label">Assignee (Designer)</span>
                   <div class="prop-value user-val">
-                    <div class="user-avatar">{p.designer?.substring(0, 2) || 'DS'}</div>
-                    <span class="user-name">{p.designerName || p.designer || 'Unassigned'}</span>
+                    <div class="user-avatar" style="background: {designerInfo?.avatarColor || 'var(--brand-primary, #043388)'};">
+                      {#if designerInfo?.avatar}
+                        <img src={designerInfo.avatar} alt={p.designerName || p.designer} class="avatar-photo" />
+                      {:else}
+                        {getInitials(p.designerName || p.designer || 'DS')}
+                      {/if}
+                    </div>
+                    <span class="user-name">{designerInfo?.name || p.designerName || p.designer || 'Unassigned'}</span>
                   </div>
                 </div>
 
                 <div class="prop-group">
                   <span class="prop-label">Reviewer</span>
                   <div class="prop-value user-val-selectable">
-                    <div class="user-avatar mgr-avatar">
-                      {(selectedManager && selectedManager !== 'Unassigned' ? selectedManager.substring(0, 2) : 'AD').toUpperCase()}
+                    <div class="user-avatar mgr-avatar" style="background: {managerInfo?.avatarColor || '#0284C7'};">
+                      {#if managerInfo?.avatar}
+                        <img src={managerInfo.avatar} alt={selectedManager} class="avatar-photo" />
+                      {:else}
+                        {getInitials(selectedManager && selectedManager !== 'Unassigned' ? selectedManager : 'AD')}
+                      {/if}
                     </div>
                     <select
                       class="prop-manager-select"
@@ -1228,6 +1268,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .user-avatar img.avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
   }
   .mgr-avatar { background: #0284C7; }
 

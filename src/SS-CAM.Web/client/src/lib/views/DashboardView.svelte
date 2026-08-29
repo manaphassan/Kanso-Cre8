@@ -387,10 +387,16 @@
           {#each workloads as w}
             <div class="workload-row">
               <div class="workload-user">
-                <div class="avatar-chip">{(w.designer || 'D').charAt(0)}</div>
+                <div class="avatar-chip" style="background: {w.avatarColor || 'var(--brand-primary, #043388)'};">
+                  {#if w.avatar}
+                    <img src={w.avatar} alt={w.designer} class="avatar-photo" />
+                  {:else}
+                    {(w.designer || 'D').charAt(0).toUpperCase()}
+                  {/if}
+                </div>
                 <div class="user-info-col">
-                  <div class="user-name">{w.designer || 'Unassigned'}</div>
-                  <div class="user-role">{w.total || 0} Total Projects</div>
+                  <div class="user-name">{w.name || w.designer || 'Unassigned'}</div>
+                  <div class="user-role">{w.staffId ? `${w.staffId} · ` : ''}{w.total || 0} Total Projects</div>
                 </div>
               </div>
 
@@ -1077,6 +1083,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .avatar-chip img.avatar-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
   }
 
   .user-info-col {

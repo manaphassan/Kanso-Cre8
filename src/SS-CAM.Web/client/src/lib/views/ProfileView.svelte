@@ -262,6 +262,10 @@
         };
       }
 
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('team:updated', { detail: { updatedStaffId: targetStaffId } }));
+      }
+
       appState.addToast('Designer profile and avatar photo saved and synchronized with Synology NAS.', 'success', 'Profile Updated');
     } catch (err: any) {
       appState.addToast(`Failed to save profile: ${err.message}`, 'error');
