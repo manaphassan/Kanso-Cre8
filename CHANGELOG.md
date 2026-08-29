@@ -2,6 +2,24 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.5.1] - 2026-08-30 (Cross-Platform Ecosystem Synchronization & Companion Harmonization)
+
+### Synchronized & Unified — Desktop Client, Web Portal Manager Cockpit & Android Companion
+- **Cross-Platform Architecture Alignment**:
+  - **SS-CAM Desktop Client (WPF)**: Authoring Engine for canonical project creation, folder scaffolding, PSD/AI/AE/CapCut dielines, and local filesystem watchers.
+  - **SS-CAM.Web Management Portal (Svelte 5)**: Governance Cockpit for reviews, annotations, 1-Click Approve / Request Revision, and production ZIP exports.
+  - **SS-CAM.Android Companion App (Compose)**: Mobile studio companion strictly for managing existing project statuses, live `README.md` editing, Quick Notes scratchpad, and Studio Lounge (Pomodoro, Waktu Solat, Lo-Fi Radio).
+- **Desktop Dynamic Token Compliance**:
+  - Refactored `WellbeingPage.xaml` to 100% theme-adaptive DynamicResource tokens.
+  - Enforced UTF-8 BOM encoding across all high-byte XAML and C# files.
+  - Configured 64-bit MSBuild path resolution for Windows 11 Smart App Control.
+- **Web Portal Manager Review & Client Build**:
+  - ESM Vite 5 bundling configured with `vite.config.mjs` and clean production build (`dist/index.html`).
+  - Passed full 28-test backend unit and integration test suite.
+- **Android Companion App**:
+  - Null-safe `ManageProjectBottomSheet.kt` with live NAS status syncing and deliverables queue.
+  - Standardized bottom navigation (`Overview`, `Tasks`, `Studio`, `Lounge`).
+
 ## [4.5.0] - 2026-08-29 (Master Brand System Integration, Web Portal Zero-Emoji Overhaul & Brand Assets Vault Modernization)
 
 ### Added & Refined — Master Brand System v3.5.1, Web Portal Zero-Emoji Overhaul, Multi-Format Color Matrix & 5 Sub-Brands Hub
