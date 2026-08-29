@@ -44,3 +44,8 @@ node_modules/
 **/.package-lock.json
 .vite/
 
+# ── Android build caches & capture ─────────────────────────────
+.gradle/
+**/.gradle/
+screenshot.png
+
