@@ -74,7 +74,8 @@ Write-Host "------------------------------------------------------------" -Foreg
 Write-Host "cd $NasDockerDir" -ForegroundColor White
 Write-Host "if [ ! -d .git ]; then git init && git remote add origin https://github.com/SuamiSihat/ss_cam.git; fi" -ForegroundColor White
 Write-Host "git fetch origin && git checkout -f -B SS-Master origin/SS-Master" -ForegroundColor White
-Write-Host "sudo docker-compose restart" -ForegroundColor White
+Write-Host "if [ -d 'src/SS-CAM.Web' ]; then cp -rf src/SS-CAM.Web/* .; fi" -ForegroundColor White
+Write-Host "sudo docker restart ss-cam-web-portal || sudo docker-compose restart" -ForegroundColor White
 Write-Host "------------------------------------------------------------" -ForegroundColor DarkGray
 
 Write-Host "`n============================================================" -ForegroundColor Cyan
