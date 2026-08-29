@@ -247,13 +247,13 @@
         <div class="nav-spacer"></div>
 
         {#if !isRail}
-          <div class="desktop-banner">
+          <div class="desktop-banner desktop-app-banner">
             <div class="banner-row">
-              <span class="banner-pill">Desktop Client</span>
+              <span class="banner-pill">Desktop Client &amp; Apps</span>
               <span class="banner-ver">v4.5.0</span>
             </div>
-            <div class="banner-title">SS-CAM Desktop</div>
-            <p class="banner-desc">Native Windows & Linux apps for creative workstations.</p>
+            <div class="banner-title">SS-CAM Native Apps</div>
+            <p class="banner-desc">Native Windows (WPF), Linux (Fedora), and Android companion clients.</p>
             <a
               href="https://suamisihat.github.io/ss_cam/"
               class="banner-btn"
@@ -263,7 +263,7 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
               </svg>
-              Download App ↗
+              Downloads &amp; Docs ↗
             </a>
           </div>
         {:else}

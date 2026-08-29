@@ -81,12 +81,14 @@
 
 ---
 
-## 🐧 Planned — v4.3.0: Cross-Platform Linux & Multi-Workspace (Target: Q1 2027)
+## 📱 & 🐧 Planned — v4.6.0: Multi-Platform Ecosystem Alignment (Target: Q4 2026 / Q1 2027)
 
-| Feature | Description |
-|---------|-------------|
-| **Avalonia UI Linux v4.x Port** | Complete feature parity for Fedora/Ubuntu workstations with Fluent 2 styling and .NET 8 LTS |
-| **Multi-Workspace NAS Switching** | Fast switching between business unit shares (`Creative-Team`, `Video-Production`, `Marketing-Assets`) |
+| Feature / Component | Target Stack | Description |
+|---|---|---|
+| **Linux Fedora Native Client (`src/SS-CAM.Linux`)** | C# / Avalonia UI 12.1 (.NET 8/10 LTS) | Complete feature parity for Fedora/Ubuntu workstations with Fluent 2 styling, local `~/SynologyDrive/` workspace integration, and native Skia desktop rendering. |
+| **Android Native Client (`src/SS-CAM.Android`)** | Kotlin + Jetpack Compose | Native mobile companion for creative leads & reviewers: instant deliverable review, 1-tap approvals/revisions, push notifications, task tracking, and brand color palette picker. |
+| **Web Portal Admin & Control Console (`src/SS-CAM.Web`)** | Svelte 5 + Node.js Express (Docker) | Central administration hub: corporate holding switcher (SSH, SSC, SSW, SSE, SST), user provisioning, immutable audit log explorer, webhook dispatch, and remote API gateway. |
+| **Multi-Workspace NAS Switching** | Cross-Platform | Fast switching between business unit shares (`Creative-Team`, `Video-Production`, `Marketing-Assets`). |
 
 ---
 
@@ -96,7 +98,7 @@
 |------|------|
 | **Asset Revision Snapshots** | Visual diff timeline and rollback engine for `.afdesign` and `.psd` binaries |
 | **AI Creative Assistant** | Local/Offline LLM integration for generating ad hooks, drafting campaign briefs, and translating copy |
-| **Mobile Companion PWA** | Responsive touch-first web app for creative directors to review and sign-off deliverables on tablets/phones |
+| **Real-time Live Sync Hub** | High-throughput bi-directional synchronization bridge between native clients and NAS storage |
 
 ---
 
