@@ -27,14 +27,14 @@ SS-CAM eliminates project disorganization, scattered copywriting drafts, inconsi
 
 ## 📥 Multi-Platform Deployment Options
 
-SS-CAM provides 4 deployment targets to support diverse creative studio environments:
+SS-CAM provides a comprehensive multi-client ecosystem to support diverse creative studio environments:
 
-| Target Platform | Package / Variant | Deployment Command | Release Asset / Path |
+| Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File** | No install required. Run portable executable: <br> `.\SS-CAM-v4.5.0.exe` | [Download SS-CAM-v4.5.0.exe](https://github.com/SuamiSihat/ss_cam/releases/download/v4.5.0/SS-CAM-v4.5.0.exe) |
-| 🐧 **Linux (Fedora, Ubuntu, Debian, Pop!_OS)** | **One-Line Terminal Installer** | Automatic build, install to `/opt/ss-cam`, and application menu integration: <br> `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | [install-linux.sh](https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh) |
-| 🐧 **Linux Desktop (.NET)** | **Cross-Platform Source** | Compile and execute Avalonia desktop client: <br> `dotnet run --project src/SS-CAM.Linux -c Release` | Source in `src/SS-CAM.Linux` |
-| 🌐 **Web Management Portal** | **Docker Web Container** | Deploy on Synology NAS / Linux Server: <br> `cd src/SS-CAM.Web && docker compose up -d` | Live at `https://creative.suamisihat.myds.me` |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: <br> `.\SS-CAM-v4.5.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Direct Synology Drive I/O. |
+| 🐧 **Linux Desktop (Fedora)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Compile & run: <br> `dotnet run --project src/SS-CAM.Linux -c Release` | **Fedora Workstation Client**: Native Skia desktop rendering, direct `~/SynologyDrive/` I/O. |
+| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Install Android package (Kotlin + Compose) | **Mobile Review & Approvals**: 1-tap deliverable approvals, push alerts, task board, brand color picker. |
+| 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: <br> `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
 
 ---
 
@@ -105,19 +105,23 @@ SS-CAM adheres to the **Microsoft Fluent 2** design language and the **SuamiSiha
 ---
 
 ## 🏗️ Technical Architecture
-
+ 
 ```text
 ┌───────────────────────────────────────────────────────────────────────────────────┐
 │                                 SS-CAM ECOSYSTEM                                  │
-├────────────────────────────────────────┬──────────────────────────────────────────┤
-│ 🖥️ WINDOWS & LINUX DESKTOP APPS        │ 🌐 SYNOLOGY NAS WEB PORTAL               │
-│ • C# WPF (.NET Framework 4.8)          │ • Svelte 5 (Runes) + TypeScript          │
-│ • Avalonia UI (.NET 8.0 Linux)         │ • Node.js 20 Express + WebSocket         │
-│ • WPF-UI (Fluent 2 Controls)           │ • Vite 6 Production Bundle               │
-│ • DPAPI Local Hardware Encryption      │ • Docker Compose Multi-Container         │
-└────────────────────────────────────────┴──────────────────────────────────────────┘
-                                         │
-                                         ▼
+├─────────────────────────┬─────────────────────────┬───────────────────────────────┤
+│ 🖥️ WINDOWS WORKSTATION   │ 🐧 FEDORA WORKSTATION   │ 📱 ANDROID MOBILE COMPANION   │
+│ • C# WPF (.NET 4.8)     │ • Avalonia UI (.NET 8)  │ • Kotlin + Jetpack Compose    │
+│ • WPF-UI (Fluent 2)     │ • Native Skia Engine    │ • Coil / Hardware Bitmaps     │
+│ • Direct Local SSD I/O  │ • Local ~/SynologyDrive │ • Instant Push Alerts & Diff  │
+├─────────────────────────┴─────────────────────────┴───────────────────────────────┤
+│                          🌐 SYNOLOGY NAS ADMIN WEB PORTAL                         │
+│                          • Svelte 5 (Runes) + TypeScript                          │
+│                          • Node.js 20 Express + WebSocket + REST/SSE API          │
+│                          • Central Administration, Holdings Switcher & Audit Logs │
+└─────────────────────────────────────────┬─────────────────────────────────────────┘
+                                          │
+                                          ▼
 ┌───────────────────────────────────────────────────────────────────────────────────┐
 │ 📂 SYNOLOGY NAS FILE SYSTEM (Markdown-as-Database Storage)                        │
 │ • Canonical 5-Folder Hierarchy: \\SSNAS\Creative-Team\[YYYY]\[Month]\[Project]    │
