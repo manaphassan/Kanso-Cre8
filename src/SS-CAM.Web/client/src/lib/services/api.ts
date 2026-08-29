@@ -102,18 +102,6 @@ export class ApiClient {
     }
   }
 
-  static getStaffRoster(): Promise<{ success: boolean; roster: Array<{ staffId: string; username: string; name: string; role: string; department?: string; email?: string; avatar?: string; avatarColor?: string; defaultBrand?: string }> }> {
-    return this.request('/team/roster');
-  }
-
-  static getUsers(): Promise<{ users: User[] }> {
-    return this.request('/auth/users');
-  }
-
-  static getCompanies(): Promise<{ success: boolean; companies: Array<{ code: string; name: string; shortName?: string; color?: string; status?: string; isParent?: boolean }> }> {
-    return this.request('/companies');
-  }
-
   // ─── Dashboard ───
   static getDashboard(params: { timeRange?: string; brand?: string } = {}): Promise<DashboardData> {
     const qs = new URLSearchParams();
@@ -315,31 +303,6 @@ export class ApiClient {
 
   static deleteCompany(code: string): Promise<{ success: boolean; deletedCode: string }> {
     return this.request(`/companies/${encodeURIComponent(code)}`, {
-      method: 'DELETE'
-    });
-  }
-
-  // ─── Project Comments & Collaboration ───
-  static getComments(projectId: string): Promise<{ comments: any[] }> {
-    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`);
-  }
-
-  static addComment(projectId: string, content: string, deliverableId?: string | null, mentions: string[] = []): Promise<{ success: boolean; comment: any }> {
-    return this.request(`/projects/${encodeURIComponent(projectId)}/comments`, {
-      method: 'POST',
-      body: JSON.stringify({ content, deliverableId, mentions })
-    });
-  }
-
-  static resolveComment(projectId: string, commentId: string, resolved: boolean = true): Promise<{ success: boolean; commentId: string; resolved: boolean }> {
-    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}/resolve`, {
-      method: 'PATCH',
-      body: JSON.stringify({ resolved })
-    });
-  }
-
-  static deleteComment(projectId: string, commentId: string): Promise<{ success: boolean; commentId: string }> {
-    return this.request(`/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}`, {
       method: 'DELETE'
     });
   }

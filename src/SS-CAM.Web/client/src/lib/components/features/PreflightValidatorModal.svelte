@@ -49,7 +49,8 @@
   });
 
   function inspectImage() {
-    if (!deliverable || !deliverable.url) return;
+    const src = deliverable?.previewUrl || deliverable?.url;
+    if (!src) return;
     isInspecting = true;
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -63,7 +64,7 @@
       imgNaturalHeight = 1080;
       isInspecting = false;
     };
-    img.src = deliverable.url || '';
+    img.src = src;
   }
 
   const selectedPreset = $derived(PRESETS.find(p => p.id === selectedPresetId) || PRESETS[0]);

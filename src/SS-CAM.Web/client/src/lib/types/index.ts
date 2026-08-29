@@ -77,12 +77,25 @@ export interface DeliverableItem {
   sizeBytes: number;
   modified: string;
   previewUrl: string;
+  url?: string;
+  downloadUrl?: string;
+  format?: string;
+  mediaClass?: string;
+  aspectRatioEstimate?: string;
+  sizeTier?: string;
+  previewType?: string;
+  projectId?: string;
+  projectTitle?: string;
+  projectBrand?: string;
+  projectJobId?: string;
+  projectDesigner?: string;
   isImage: boolean;
   isVideo: boolean;
   isPdf: boolean;
   status: 'pending' | 'approved' | 'revision';
   revisionCount: number;
   project?: {
+    id?: string;
     jobId: string;
     title: string;
     brand: string;

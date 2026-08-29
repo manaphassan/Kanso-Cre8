@@ -4,6 +4,16 @@
   import { ApiClient } from '$lib/services/api';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
 
+  interface ProjectSnapshot {
+    id: string;
+    timestamp: string;
+    trigger: string;
+    actor: string;
+    revision: number;
+    status: string;
+    note: string;
+  }
+
   interface Props {
     open?: boolean;
     projectId?: string;
@@ -20,7 +30,7 @@
     onRollbackSuccess
   }: Props = $props();
 
-  let snapshots = $state<any[]>([]);
+  let snapshots = $state<ProjectSnapshot[]>([]);
   let isLoading = $state<boolean>(false);
   let isRollingBack = $state<string | null>(null);
   let isCapturing = $state<boolean>(false);
