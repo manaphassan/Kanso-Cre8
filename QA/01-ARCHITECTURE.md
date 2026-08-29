@@ -27,7 +27,7 @@ SS-Brand-Assets/
 │       ├── client/                     # Admin Web Console (Svelte 5 Runes + Vite)
 │       ├── server/                     # Express REST/SSE API, JWT Auth, File Watchers
 │       └── Dockerfile                  # Synology NAS Docker deployment container
-├── dist/                               # Built single-file EXEs (SS-CAM-v4.5.0.exe)
+├── dist/                               # Built single-file EXEs (SS-CAM-v4.5.1.exe)
 ├── docs/                               # GitHub Pages landing site
 ├── QA/                                 # Quality assurance audit records
 └── .agents/                            # Agent governance, skills & wiki

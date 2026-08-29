@@ -1,27 +1,32 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v4.5.0 Stable Release
+## Status: PASS — v4.5.1 Major Stable Release
 
-**QA Date**: 2026-08-29  
-**Configuration**: Release (MSBuild 4.8 / .NET Framework 4.8)  
+**QA Date**: 2026-08-30  
+**Configuration**: Release (MSBuild 4.8 / .NET Framework 4.8 / Svelte 5 / Compose)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**  
 **Smoke & Web Test Suite**: **PASS — 28 passed, 0 failed (100%)**
+**Android Build**: **BUILD SUCCESSFUL (assembleDebug)**
 
 ---
 
 ### Build & Code Quality Status
-- Desktop Release build: **PASS** (`SS-CAM.exe` compiled cleanly in `bin/Release/SS-CAM.exe`)
+- Desktop Release build: **PASS** (`dist/SS-CAM-v4.5.1.exe` compiled cleanly)
 - Web Production build: **PASS** (`npm run build:client` completed cleanly with Vite/Svelte 5)
+- Android Debug build: **PASS** (`gradlew assembleDebug` passed in 31s)
 - Source Guardian: **PASS** (9 passed / 0 warned / 0 failed)
 - Test Suite: **PASS** (28 passed / 0 failed across frontmatter, SLA, audit, SSE, API, security)
 - Brand System & Fluent 2 Icons: **PASS** (0 Unicode emojis, 45+ type-safe Fluent 2 SVG icons)
 
 ---
 
-### Resolved Issues (v4.0.0 – v4.5.0)
+### Resolved Issues (v4.0.0 – v4.5.1)
 
 | ID | Severity | Description | Resolution | Status |
 |---|---|---|---|---|
+| DOCK-01 | P0 | Mobile bottom navigation dock appearing as purple blocks on desktop web portal | Added default `display: none;` on `.mobile-bottom-dock` outside media queries and scoped fixed icon constraints | **Resolved** |
+| THM-01 | P0 | Invalid theme string persistence in localStorage fallback | Added static validation array in `appState.svelte.ts` rejecting corrupted themes | **Resolved** |
+| AND-01 | P0 | Android companion bottom sheet state null safety | Added robust null checks and live Synology NAS sync handlers in `ManageProjectBottomSheet.kt` | **Resolved** |
 | UI-01 | P0 | Web Portal Brand System & Zero-Emoji Modernization | Built canonical `FluentIcons.svelte` with 45+ Fluent 2 icons, overhauled all 10 views and 11 modals | **Resolved** |
 | AI-01 | P0 | Gemini API Key Storage Dual-Persistence | Implemented dual-layer persistence (`ai-config.json` + `localStorage`) with instant save feedback | **Resolved** |
 | RAD-02 | P0 | Radio Hero Background Animation Overhaul | Unified 69 Mars symbols & 6 logomarks across all visualizer modes with song wavelength oscillation and kick pulses | **Resolved** |
