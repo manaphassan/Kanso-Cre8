@@ -1,9 +1,14 @@
 package com.suamisihat.sscam.ui.screens
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,7 +18,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,111 +31,718 @@ import com.suamisihat.sscam.data.models.ProjectItem
 import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
 
+data class QuickStatItem(
+    val title: String,
+    val count: String,
+    val icon: ImageVector,
+    val iconBg: Color
+)
+
+data class TodayTaskItem(
+    val title: String,
+    val brand: String,
+    val progressText: String,
+    val progressVal: Float,
+    val dateText: String,
+    val durationText: String,
+    val nasUrl: String,
+    val bannerGradient: List<Color>
+)
+
 @Composable
 fun DashboardCompanionScreen(
     projects: List<ProjectItem>,
     syncMessage: String,
     isLiveSync: Boolean,
-    onNavigateTab: (String) -> Unit = {}
+    onNavigateDestination: (String, Int) -> Unit = { _, _ -> },
+    onSignOff: (ProjectItem) -> Unit = {}
 ) {
-    val inReviewCount = projects.count { it.status.equals("in_review", ignoreCase = true) }.toString()
-    val inProgressCount = projects.count { it.status.equals("in_progress", ignoreCase = true) }.toString()
-    val doneCount = projects.count { it.status.equals("done", ignoreCase = true) }.let { if (it > 0) it.toString() else "1" }
+    val colors = LocalSscamColors.current
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedTimeframe by remember { mutableStateOf("Weekly") }
+    var isTimeframeMenuExpanded by remember { mutableStateOf(false) }
 
-    val sshCount = "${projects.count { it.brand.contains("SSH", ignoreCase = true) }} active campaigns"
-    val sscCount = "${projects.count { it.brand.contains("SSC", ignoreCase = true) }} active campaigns"
-    val sswCount = "${projects.count { it.brand.contains("SSW", ignoreCase = true) }} active campaigns"
+    val filteredProjects = remember(projects, searchQuery) {
+        if (searchQuery.isBlank()) projects
+        else projects.filter {
+            (it.title?.contains(searchQuery, ignoreCase = true) == true) ||
+            (it.brand?.contains(searchQuery, ignoreCase = true) == true) ||
+            (it.designer?.contains(searchQuery, ignoreCase = true) == true) ||
+            (it.client?.contains(searchQuery, ignoreCase = true) == true) ||
+            (it.status?.contains(searchQuery, ignoreCase = true) == true)
+        }
+    }
+
+    val stuckCount = remember(filteredProjects, selectedTimeframe) {
+        filteredProjects.count { it.normalizedStatus.equals("stuck", true) || it.priority.equals("urgent", true) }
+    }
+    val inProgressCount = remember(filteredProjects, selectedTimeframe) {
+        filteredProjects.count { it.normalizedStatus.equals("in_progress", true) || it.normalizedStatus.equals("queued", true) }
+    }
+    val inReviewCount = remember(filteredProjects, selectedTimeframe) {
+        filteredProjects.count { it.normalizedStatus.equals("in_review", true) || it.normalizedStatus.equals("revision", true) }
+    }
+    val doneCount = remember(filteredProjects, selectedTimeframe) {
+        filteredProjects.count { it.normalizedStatus.equals("done", true) }
+    }
+    val activeBrandsCount = remember(filteredProjects) {
+        filteredProjects.mapNotNull { it.brand?.uppercase() }.distinct().count()
+    }
+    val nasAssetsCount = remember(filteredProjects) {
+        filteredProjects.sumOf { it.deliverableCount }
+    }
+
+    val quickStats = listOf(
+        QuickStatItem("Active Tasks", String.format("%02d tasks", filteredProjects.size), Icons.Default.Description, Color(0xFFEFF6FF)),
+        QuickStatItem("Due Projects", String.format("%02d projects", inProgressCount + inReviewCount), Icons.Default.HourglassBottom, Color(0xFFFEF3C7)),
+        QuickStatItem("Active Brands", String.format("%02d brands", activeBrandsCount), Icons.Default.Storefront, Color(0xFFF3E8FF)),
+        QuickStatItem("NAS Assets", String.format("%02d files", nasAssetsCount), Icons.Default.FolderZip, Color(0xFFECFDF5))
+    )
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Station Hero Card
+        // 1. Search Bar (Full Width)
         item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = SshRoyalBlue),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.fillMaxWidth()
+            Surface(
+                color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                shape = RoundedCornerShape(20.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = colors.textMuted,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterStart
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (searchQuery.isEmpty()) {
+                            Text(
+                                text = "Search projects, deliverables, or brand codes...",
+                                fontSize = 13.sp,
+                                color = colors.textMuted
+                            )
+                        }
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            textStyle = androidx.compose.ui.text.TextStyle(
+                                fontSize = 13.sp,
+                                color = colors.textPrimary,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            cursorBrush = androidx.compose.ui.graphics.SolidColor(colors.primary),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    if (searchQuery.isNotEmpty()) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Clear Search",
+                            tint = colors.textMuted,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickable { searchQuery = "" }
+                        )
+                    }
+                }
+            }
+        }
+
+        // 2. 4 Quick Stat Summary Cards
+        item {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(quickStats) { stat ->
+                    Surface(
+                        color = colors.card,
+                        shape = RoundedCornerShape(16.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                        modifier = Modifier
+                            .width(135.dp)
+                            .height(105.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(12.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isLiveSync) SshSuccessGreen else SshWarmGold)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("SYNOLOGY NAS CENTRAL SYNC", color = SshAzure, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else if (colors.isDark) colors.surface else stat.iconBg),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    stat.icon,
+                                    contentDescription = null,
+                                    tint = if (colors.isMonochrome) Color(0xFF18181B) else if (colors.isDark) colors.primary else Color(0xFF0F172A),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+
+                            Column {
+                                Text(
+                                    text = stat.title,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = colors.textPrimary
+                                )
+                                Text(
+                                    text = stat.count,
+                                    fontSize = 10.sp,
+                                    color = colors.textSecondary
+                                )
+                            }
                         }
-                        Text(if (isLiveSync) "LIVE" else "SYNCED", color = if (isLiveSync) SshSuccessGreen else SshWarmGold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text("SuamiSihat Creative Operations", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(syncMessage, color = Color(0xFFE2E8F0), fontSize = 12.sp)
                 }
             }
         }
 
-        // Companion Quick Action Shortcuts
+        // 3. Productivity KPIs Ring Donut Chart Section
         item {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CompanionActionTile("🕌 Solat", "Asar: 4:32 PM", Color(0xFF064E3B), Modifier.weight(1f)) {
-                    onNavigateTab("Solat")
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Productivity Overview",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+
+                    Box {
+                        Surface(
+                            color = colors.surface,
+                            shape = RoundedCornerShape(8.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                            modifier = Modifier.clickable { isTimeframeMenuExpanded = true }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = selectedTimeframe,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colors.textPrimary
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Change Timeframe",
+                                    tint = colors.textSecondary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                        }
+
+                        DropdownMenu(
+                            expanded = isTimeframeMenuExpanded,
+                            onDismissRequest = { isTimeframeMenuExpanded = false }
+                        ) {
+                            listOf("Weekly", "Monthly", "Today", "All Time").forEach { tf ->
+                                DropdownMenuItem(
+                                    text = { Text(tf, fontSize = 12.sp, fontWeight = if (selectedTimeframe == tf) FontWeight.Bold else FontWeight.Normal) },
+                                    onClick = {
+                                        selectedTimeframe = tf
+                                        isTimeframeMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
-                CompanionActionTile("🌿 Focus", "25m Pomodoro", Color(0xFF1E3A8A), Modifier.weight(1f)) {
-                    onNavigateTab("Wellbeing")
-                }
-                CompanionActionTile("📻 Radio", "Lofi Beats", Color(0xFF4C1D95), Modifier.weight(1f)) {
-                    onNavigateTab("Radio")
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // KPI Card Container
+                Surface(
+                    color = colors.card,
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Left: Donut Ring Chart with Center Tooltip
+                        Box(
+                            modifier = Modifier.size(150.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Canvas(modifier = Modifier.size(140.dp)) {
+                                val strokeWidth = 14.dp.toPx()
+                                val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                                val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
+
+                                val totalKpi = stuckCount + inProgressCount + inReviewCount + doneCount
+                                if (totalKpi == 0) {
+                                    drawArc(
+                                        color = if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                        startAngle = 0f,
+                                        sweepAngle = 360f,
+                                        useCenter = false,
+                                        topLeft = topLeft,
+                                        size = arcSize,
+                                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                                    )
+                                } else {
+                                    val stuckSweep = (stuckCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (stuckCount > 0) 30f else 0f)
+                                    val inProgressSweep = (inProgressCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (inProgressCount > 0) 30f else 0f)
+                                    val inReviewSweep = (inReviewCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (inReviewCount > 0) 30f else 0f)
+                                    val doneSweep = (360f - stuckSweep - inProgressSweep - inReviewSweep).coerceAtLeast(if (doneCount > 0) 30f else 0f)
+
+                                    val segments = if (colors.isMonochrome) {
+                                        listOf(
+                                            Pair(Color(0xFFE4E4E7), stuckSweep),
+                                            Pair(Color(0xFFA1A1AA), inProgressSweep),
+                                            Pair(Color(0xFF52525B), inReviewSweep),
+                                            Pair(Color(0xFF18181B), doneSweep)
+                                        )
+                                    } else {
+                                        listOf(
+                                            Pair(Color(0xFFF87171), stuckSweep),
+                                            Pair(Color(0xFFFBBF24), inProgressSweep),
+                                            Pair(Color(0xFF38BDF8), inReviewSweep),
+                                            Pair(Color(0xFF4ADE80), doneSweep)
+                                        )
+                                    }
+
+                                    var startAngle = -90f
+                                    segments.forEach { (color, sweep) ->
+                                        if (sweep > 0) {
+                                            drawArc(
+                                                color = color,
+                                                startAngle = startAngle,
+                                                sweepAngle = (sweep - 4f).coerceAtLeast(6f),
+                                                useCenter = false,
+                                                topLeft = topLeft,
+                                                size = arcSize,
+                                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                                            )
+                                            startAngle += sweep
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Floating Center Tooltip Pill
+                            Surface(
+                                color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A),
+                                shape = RoundedCornerShape(8.dp),
+                                shadowElevation = 4.dp,
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Task Status",
+                                        fontSize = 8.sp,
+                                        color = if (colors.isMonochrome) Color(0xFFD4D4D8) else Color(0xFF94A3B8),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(5.dp)
+                                                .clip(CircleShape)
+                                                .background(if (colors.isMonochrome) Color.White else (if (doneCount > 0) Color(0xFF4ADE80) else Color(0xFF38BDF8)))
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = if (doneCount > 0) "$doneCount Done" else "${projects.size} Tasks",
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Right: KPI Breakdown List
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.padding(start = 12.dp)
+                        ) {
+                            val (stuckCol, inProgCol, inRevCol, doneCol) = if (colors.isMonochrome) {
+                                listOf(Color(0xFFE4E4E7), Color(0xFFA1A1AA), Color(0xFF52525B), Color(0xFF18181B))
+                            } else {
+                                listOf(Color(0xFFF87171), Color(0xFFFBBF24), Color(0xFF38BDF8), Color(0xFF4ADE80))
+                            }
+                            KpiBreakdownRow(color = stuckCol, label = "Stuck", count = String.format("%02d", stuckCount))
+                            KpiBreakdownRow(color = inProgCol, label = "In Progress", count = String.format("%02d", inProgressCount))
+                            KpiBreakdownRow(color = inRevCol, label = "In Review", count = String.format("%02d", inReviewCount))
+                            KpiBreakdownRow(color = doneCol, label = "Done", count = String.format("%02d", doneCount))
+                        }
+                    }
                 }
             }
         }
 
-        // Quick Stats
+        // 4. Deliverables Queue Section (Horizontal Card Carousel with NAS Images)
         item {
-            Text("QUICK STATS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextMuted)
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                StatCard("In Review", inReviewCount, SshWarmGold, Modifier.weight(1f))
-                StatCard("In Progress", inProgressCount, SshAzure, Modifier.weight(1f))
-                StatCard("Done (Week)", doneCount, SshSuccessGreen, Modifier.weight(1f))
-            }
-        }
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Deliverables Queue",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
 
-        // Active Holding Brands
-        item {
-            Text("ACTIVE HOLDING BRANDS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextMuted)
-            Spacer(modifier = Modifier.height(4.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                HoldingBrandTile("SuamiSihat Holding (SSH)", sshCount, SshPrussianBlue)
-                HoldingBrandTile("SuamiSihat Care (SSC)", sscCount, SshRoyalBlue)
-                HoldingBrandTile("SuamiSihat Wellness (SSW)", sswCount, Color(0xFF0F766E))
+                    Text(
+                        text = "See all",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.primary,
+                        modifier = Modifier.clickable { onNavigateDestination("Tasks", 0) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                val displayTasks = remember(filteredProjects) {
+                    filteredProjects.map { p ->
+                        val progressVal = when (p.normalizedStatus) {
+                            "done" -> 1.0f
+                            "in_review" -> 0.85f
+                            "in_progress" -> 0.50f
+                            "stuck" -> 0.25f
+                            else -> 0.35f
+                        }
+                        val progressText = "${(progressVal * 100).toInt()}%"
+                        val bannerGrad = when (p.brand.uppercase()) {
+                            "SSH", "SS" -> listOf(Color(0xFF0F172A), Color(0xFF0284C7), Color(0xFF0369A1))
+                            "SSE" -> listOf(Color(0xFF064E3B), Color(0xFF059669), Color(0xFF10B981))
+                            "SSW" -> listOf(Color(0xFF831843), Color(0xFFDB2777), Color(0xFFF472B6))
+                            "SSP" -> listOf(Color(0xFF4C1D95), Color(0xFF7C3AED), Color(0xFF8B5CF6))
+                            else -> listOf(Color(0xFF1E293B), Color(0xFF475569), Color(0xFF64748B))
+                        }
+                        val nasUrl = ""
+
+                        TodayTaskItem(
+                            title = p.title,
+                            brand = p.brand,
+                            progressText = progressText,
+                            progressVal = progressVal,
+                            dateText = if (p.normalizedStatus == "done") "Completed" else "In Sprint",
+                            durationText = if (p.priority.equals("urgent", true) || p.priority.equals("high", true)) "High Priority" else "Standard",
+                            nasUrl = nasUrl,
+                            bannerGradient = bannerGrad
+                        )
+                    }
+                }
+
+                if (displayTasks.isEmpty()) {
+                    FluentCard(
+                        cornerRadius = 16.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.FolderOpen,
+                                contentDescription = null,
+                                tint = colors.textMuted,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "All Deliverables Up to Date",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textPrimary
+                            )
+                            Text(
+                                text = "Synced with Synology NAS storage. Production deliverables will populate here when projects are active.",
+                                fontSize = 11.sp,
+                                color = colors.textSecondary,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(displayTasks) { task ->
+                        val taskBannerGrad = if (colors.isMonochrome) {
+                            listOf(Color(0xFFE4E4E7), Color(0xFFD4D4D8), Color(0xFFA1A1AA))
+                        } else {
+                            task.bannerGradient
+                        }
+                        val grayscaleFilter = if (colors.isMonochrome) {
+                            androidx.compose.ui.graphics.ColorFilter.colorMatrix(
+                                androidx.compose.ui.graphics.ColorMatrix().apply { setToSaturation(0f) }
+                            )
+                        } else null
+
+                        Surface(
+                            color = colors.card,
+                            shape = RoundedCornerShape(16.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                            modifier = Modifier
+                                .width(260.dp)
+                                .clickable { onNavigateDestination("Tasks", 0) }
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                // Card Header: NAS Image or Gradient Banner with tags
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(110.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(
+                                            androidx.compose.ui.graphics.Brush.linearGradient(taskBannerGrad)
+                                        )
+                                ) {
+                                    coil.compose.AsyncImage(
+                                        model = task.nasUrl,
+                                        contentDescription = "NAS Deliverable Render",
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                                        colorFilter = grayscaleFilter,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    // Subsidiary Tag Pill over NAS image
+                                    Surface(
+                                        color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.75f),
+                                        shape = RoundedCornerShape(6.dp),
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .align(Alignment.TopStart)
+                                    ) {
+                                        Text(
+                                            text = task.brand,
+                                            color = Color.White,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+
+                                    // NAS Sync Badge
+                                    Surface(
+                                        color = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen.copy(alpha = 0.9f),
+                                        shape = RoundedCornerShape(6.dp),
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .align(Alignment.TopEnd)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(Icons.Default.CloudDone, contentDescription = null, tint = Color.White, modifier = Modifier.size(10.dp))
+                                            Spacer(modifier = Modifier.width(3.dp))
+                                            Text("NAS", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                        }
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Text(
+                                    text = task.title,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = colors.textPrimary,
+                                    lineHeight = 17.sp,
+                                    maxLines = 2
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                // Date & Duration Meta
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            Icons.Default.CalendarToday,
+                                            contentDescription = null,
+                                            tint = colors.textMuted,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = task.dateText,
+                                            fontSize = 10.sp,
+                                            color = colors.textSecondary
+                                        )
+                                    }
+
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            Icons.Default.Schedule,
+                                            contentDescription = null,
+                                            tint = colors.textMuted,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = task.durationText,
+                                            fontSize = 10.sp,
+                                            color = colors.textSecondary
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                // Linear Progress Bar
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (task.progressVal >= 1f) "Completed" else "On Progress",
+                                        fontSize = 10.sp,
+                                        color = colors.textSecondary,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = task.progressText,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(5.dp))
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(if (colors.isMonochrome) Color(0xFFE4E4E7) else if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(task.progressVal)
+                                            .fillMaxHeight()
+                                            .clip(RoundedCornerShape(3.dp))
+                                            .background(if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24))
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                // Footer: File stats & Stacked Avatars
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.FolderOpen, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
+                                            Spacer(modifier = Modifier.width(2.dp))
+                                            Text("02", fontSize = 10.sp, color = colors.textMuted)
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.Tag, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
+                                            Spacer(modifier = Modifier.width(2.dp))
+                                            Text("12", fontSize = 10.sp, color = colors.textMuted)
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.Brush, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
+                                            Spacer(modifier = Modifier.width(2.dp))
+                                            Text("03", fontSize = 10.sp, color = colors.textMuted)
+                                        }
+                                    }
+
+                                    // Stacked Team Avatars
+                                    AvatarStack(listOf("H", "A", "S"))
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
+}
 
 @Composable
-fun CompanionActionTile(title: String, subtitle: String, bg: Color, modifier: Modifier, onClick: () -> Unit) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = bg),
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier.clickable { onClick() }
+fun KpiBreakdownRow(
+    color: Color,
+    label: String,
+    count: String
+) {
+    val colors = LocalSscamColors.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.width(130.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(subtitle, fontSize = 10.sp, color = Color(0xFFE2E8F0))
-        }
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(color)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = colors.textSecondary,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "($count)",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = colors.textPrimary
+        )
     }
 }
