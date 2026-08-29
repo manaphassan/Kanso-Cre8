@@ -8,7 +8,12 @@ class AppStateStore {
   currentUser = $state<User | null>(null);
   currentRoute = $state<string>('dashboard');
   routeParams = $state<Record<string, any>>({});
-  theme = $state<ThemeName>((localStorage.getItem('ss_cam_theme') as ThemeName) || 'falconia');
+  private static readonly VALID_THEMES: ThemeName[] = ['falconia', 'metamorphosis', 'catppuccin'];
+  private static getStoredTheme(): ThemeName {
+    const stored = localStorage.getItem('ss_cam_theme') as ThemeName;
+    return AppStateStore.VALID_THEMES.includes(stored) ? stored : 'falconia';
+  }
+  theme = $state<ThemeName>(AppStateStore.getStoredTheme());
   sidebarExpanded = $state<boolean>(true);
   sidebarRail = $state<boolean>(false); // icon-only rail mode
   toasts = $state<ToastMessage[]>([]);

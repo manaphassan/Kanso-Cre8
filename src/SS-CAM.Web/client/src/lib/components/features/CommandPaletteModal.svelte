@@ -57,9 +57,12 @@
 
   function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'falconia';
-    const next = current === 'falconia' ? 'metamorphosis' : current === 'metamorphosis' ? 'default' : 'falconia';
+    const validThemes = ['falconia', 'metamorphosis', 'catppuccin'] as const;
+    const idx = validThemes.indexOf(current as any);
+    const next = validThemes[(idx + 1) % validThemes.length];
     document.documentElement.setAttribute('data-theme', next);
-    appState.addToast(`Theme switched to ${next.toUpperCase()}`, 'info');
+    appState.setTheme(next as any);
+    appState.addToast(`Theme switched to ${next.charAt(0).toUpperCase() + next.slice(1)}`, 'info');
   }
 
   function rescanVault() {

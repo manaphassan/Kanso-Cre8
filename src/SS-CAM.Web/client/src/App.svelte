@@ -1178,6 +1178,15 @@
     margin: 0 auto;
   }
 
+  /* Mobile bottom dock - strictly hidden on desktop */
+  .mobile-bottom-dock {
+    display: none;
+  }
+  .dock-icon {
+    width: 20px;
+    height: 20px;
+  }
+
   /* Mobile overlay */
   .mobile-overlay {
     display: none;
