@@ -176,65 +176,64 @@ fun DashboardCompanionScreen(
             }
         }
 
-        // 2. 4 Quick Stat Summary Cards (Interactive Filtering)
+        // 2. 2x2 Bento KPI Grid (Zero-Scroll Instant Telemetry)
         item {
-            LazyRow(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(quickStats) { stat ->
-                    val isSelected = activeQuickStatFilter == stat.title
-                    Surface(
-                        color = if (isSelected) (if (colors.isDark) colors.surface else Color(0xFFEFF6FF)) else colors.card,
-                        shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(
-                            if (isSelected) 1.8.dp else 1.dp,
-                            if (isSelected) colors.primary else colors.border
-                        ),
-                        modifier = Modifier
-                            .width(135.dp)
-                            .height(105.dp)
-                            .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                activeQuickStatFilter = if (activeQuickStatFilter == stat.title) "All" else stat.title
-                            }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(12.dp),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                .size(32.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else if (colors.isDark) colors.surface else stat.iconBg),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    stat.icon,
-                                    contentDescription = null,
-                                    tint = if (colors.isMonochrome) Color(0xFF18181B) else if (colors.isDark) colors.primary else Color(0xFF0F172A),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-
-                            Column {
-                                Text(
-                                    text = stat.title,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) colors.primary else colors.textPrimary
-                                )
-                                Text(
-                                    text = stat.count,
-                                    fontSize = 10.sp,
-                                    color = colors.textSecondary
-                                )
-                            }
+                // Top Row: Active Tasks + Due Projects
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    BentoStatCard(
+                        stat = quickStats[0],
+                        isSelected = activeQuickStatFilter == quickStats[0].title,
+                        colors = colors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            activeQuickStatFilter = if (activeQuickStatFilter == quickStats[0].title) "All" else quickStats[0].title
                         }
-                    }
+                    )
+                    BentoStatCard(
+                        stat = quickStats[1],
+                        isSelected = activeQuickStatFilter == quickStats[1].title,
+                        colors = colors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            activeQuickStatFilter = if (activeQuickStatFilter == quickStats[1].title) "All" else quickStats[1].title
+                        }
+                    )
+                }
+
+                // Bottom Row: Active Brands + NAS Assets
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    BentoStatCard(
+                        stat = quickStats[2],
+                        isSelected = activeQuickStatFilter == quickStats[2].title,
+                        colors = colors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            activeQuickStatFilter = if (activeQuickStatFilter == quickStats[2].title) "All" else quickStats[2].title
+                        }
+                    )
+                    BentoStatCard(
+                        stat = quickStats[3],
+                        isSelected = activeQuickStatFilter == quickStats[3].title,
+                        colors = colors,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            activeQuickStatFilter = if (activeQuickStatFilter == quickStats[3].title) "All" else quickStats[3].title
+                        }
+                    )
                 }
             }
         }
@@ -800,5 +799,65 @@ fun KpiBreakdownRow(
             fontWeight = FontWeight.SemiBold,
             color = colors.textSecondary
         )
+    }
+}
+
+@Composable
+fun BentoStatCard(
+    stat: QuickStatItem,
+    isSelected: Boolean,
+    colors: SscamColors,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        color = if (isSelected) (if (colors.isDark) colors.surface else Color(0xFFEFF6FF)) else colors.card,
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            if (isSelected) 1.8.dp else 1.dp,
+            if (isSelected) colors.primary else colors.border
+        ),
+        modifier = modifier
+            .height(72.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else if (colors.isDark) colors.surface else stat.iconBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    stat.icon,
+                    contentDescription = null,
+                    tint = if (colors.isMonochrome) Color(0xFF18181B) else if (colors.isDark) colors.primary else Color(0xFF0F172A),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stat.count,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = if (isSelected) colors.primary else colors.textPrimary
+                )
+                Text(
+                    text = stat.title,
+                    fontSize = 10.5.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.textSecondary
+                )
+            }
+        }
     }
 }

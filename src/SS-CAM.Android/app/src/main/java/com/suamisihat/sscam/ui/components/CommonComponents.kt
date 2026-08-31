@@ -400,93 +400,117 @@ fun ReferenceStyleDeliverableCard(
         onClick = onCardClick,
         colors = CardDefaults.cardColors(containerColor = colors.card),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, colors.border),
+        border = BorderStroke(1.dp, if (safePriority.lowercase() == "urgent") priorityDotColor.copy(alpha = 0.45f) else colors.border),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Top Row: Priority Pill + Link Icon
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else priorityDotColor.copy(alpha = 0.15f))
-                        .border(0.5.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else priorityDotColor.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                        .padding(horizontal = 8.dp, vertical = 3.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(priorityDotColor)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        priorityLabel,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (colors.isMonochrome) Color(0xFF18181B) else priorityDotColor
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SubBrandBadge(safeBrand)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = onCardClick,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowOutward,
-                            contentDescription = "Open Project Details",
-                            tint = colors.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Middle: Task Title
-            Text(
-                safeTitle,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary,
-                lineHeight = 20.sp
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        ) {
+            // Left Severity Accent Indicator Strip
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(4.5.dp)
+                    .background(priorityDotColor)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Bottom Row: Time / Deadline + Avatar Stack + Sign-Off Action
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(14.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("⏰ Due: $safeDeadline", fontSize = 11.sp, color = colors.textSecondary)
+                // Top Row: Priority Pill + Sub-Brand + Action Link
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else priorityDotColor.copy(alpha = 0.15f))
+                            .border(0.5.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else priorityDotColor.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(priorityDotColor)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            priorityLabel,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (colors.isMonochrome) Color(0xFF18181B) else priorityDotColor
+                        )
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SubBrandBadge(safeBrand)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = onCardClick,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.ArrowOutward,
+                                contentDescription = "Open Project Details",
+                                tint = colors.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Middle: Task Title
+                Text(
+                    safeTitle,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary,
+                    lineHeight = 20.sp
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Bottom Row: Time / Deadline + Avatar Stack + Sign-Off Action
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val initials = safeDesigner.take(1).uppercase().ifBlank { "S" }
-                    AvatarStack(listOf(initials))
-                    Button(
-                        onClick = onSignOff,
-                        colors = ButtonDefaults.buttonColors(containerColor = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
-                        modifier = Modifier.height(28.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        val isUrgent = safePriority.lowercase() == "urgent"
+                        Text(
+                            "⏰ Due: $safeDeadline",
+                            fontSize = 11.sp,
+                            fontWeight = if (isUrgent) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isUrgent && !colors.isMonochrome) Color(0xFFEF4444) else colors.textSecondary
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text("✓ Sign-Off", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        val initials = safeDesigner.take(1).uppercase().ifBlank { "S" }
+                        AvatarStack(listOf(initials))
+                        Button(
+                            onClick = onSignOff,
+                            colors = ButtonDefaults.buttonColors(containerColor = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                            modifier = Modifier.height(28.dp)
+                        ) {
+                            Text("✓ Sign-Off", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        }
                     }
                 }
             }
