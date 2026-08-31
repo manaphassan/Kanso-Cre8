@@ -41,14 +41,11 @@ data class QuickStatItem(
 )
 
 data class TodayTaskItem(
-    val title: String,
-    val brand: String,
+    val project: ProjectItem,
     val progressText: String,
     val progressVal: Float,
-    val dateText: String,
-    val durationText: String,
-    val nasUrl: String,
-    val bannerGradient: List<Color>
+    val bannerGradient: List<Color>,
+    val subBrandFullName: String
 )
 
 @Composable
@@ -461,7 +458,7 @@ fun DashboardCompanionScreen(
                             "in_review" -> 0.85f
                             "in_progress" -> 0.50f
                             "stuck" -> 0.25f
-                            else -> 0.35f
+                            else -> 0.15f
                         }
                         val progressText = "${(progressVal * 100).toInt()}%"
                         val bannerGrad = when (p.safeBrand.uppercase()) {
@@ -469,19 +466,26 @@ fun DashboardCompanionScreen(
                             "SSE" -> listOf(Color(0xFF064E3B), Color(0xFF059669), Color(0xFF10B981))
                             "SSW" -> listOf(Color(0xFF831843), Color(0xFFDB2777), Color(0xFFF472B6))
                             "SSP" -> listOf(Color(0xFF4C1D95), Color(0xFF7C3AED), Color(0xFF8B5CF6))
+                            "SST" -> listOf(Color(0xFF1E1B4B), Color(0xFF4338CA), Color(0xFF6366F1))
+                            "SSC" -> listOf(Color(0xFF3B0764), Color(0xFF9333EA), Color(0xFFA855F7))
                             else -> listOf(Color(0xFF1E293B), Color(0xFF475569), Color(0xFF64748B))
                         }
-                        val nasUrl = ""
+                        val subBrandFull = when (p.safeBrand.uppercase()) {
+                            "SSH", "SS" -> "SUAMISIHAT HERO"
+                            "SSE" -> "SUAMISIHAT E-COMMERCE"
+                            "SSW" -> "SUAMISIHAT WELLNESS"
+                            "SSP" -> "SUAMISIHAT PHARMA"
+                            "SST" -> "SUAMISIHAT TECH"
+                            "SSC" -> "SUAMISIHAT CREATIVE"
+                            else -> p.safeBrand.uppercase()
+                        }
 
                         TodayTaskItem(
-                            title = p.safeTitle,
-                            brand = p.safeBrand,
+                            project = p,
                             progressText = progressText,
                             progressVal = progressVal,
-                            dateText = if (p.normalizedStatus == "done") "Completed" else "In Sprint",
-                            durationText = if (p.safePriority.equals("urgent", true) || p.safePriority.equals("high", true)) "High Priority" else "Standard",
-                            nasUrl = nasUrl,
-                            bannerGradient = bannerGrad
+                            bannerGradient = bannerGrad,
+                            subBrandFullName = subBrandFull
                         )
                     }
                 }
@@ -524,46 +528,31 @@ fun DashboardCompanionScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(displayTasks) { task ->
-                        val taskBannerGrad = if (colors.isMonochrome) {
-                            listOf(Color(0xFFE4E4E7), Color(0xFFD4D4D8), Color(0xFFA1A1AA))
-                        } else {
-                            task.bannerGradient
-                        }
-                        val grayscaleFilter = if (colors.isMonochrome) {
-                            androidx.compose.ui.graphics.ColorFilter.colorMatrix(
-                                androidx.compose.ui.graphics.ColorMatrix().apply { setToSaturation(0f) }
-                            )
-                        } else null
+                            val taskBannerGrad = if (colors.isMonochrome) {
+                                listOf(Color(0xFFE4E4E7), Color(0xFFD4D4D8), Color(0xFFA1A1AA))
+                            } else {
+                                task.bannerGradient
+                            }
 
-                        Surface(
-                            color = colors.card,
-                            shape = RoundedCornerShape(16.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
-                            modifier = Modifier
-                                .width(260.dp)
-                                .clickable { onNavigateDestination("Tasks", 0) }
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                // Card Header: NAS Image or Gradient Banner with tags
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(110.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(
-                                            androidx.compose.ui.graphics.Brush.linearGradient(taskBannerGrad)
-                                        )
-                                ) {
-                                    if (task.nasUrl.isNotBlank()) {
-                                        coil.compose.AsyncImage(
-                                            model = task.nasUrl,
-                                            contentDescription = "NAS Deliverable Render",
-                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                                            colorFilter = grayscaleFilter,
-                                            modifier = Modifier.fillMaxSize()
-                                        )
-                                    } else {
-                                        // Luxury Brand Fallback Art Tile
+                            Surface(
+                                color = colors.card,
+                                shape = RoundedCornerShape(16.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                                modifier = Modifier
+                                    .width(260.dp)
+                                    .clickable { onNavigateDestination("Tasks", 0) }
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    // Card Header: Brand Gradient Art Tile with live tags
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(110.dp)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(
+                                                androidx.compose.ui.graphics.Brush.linearGradient(taskBannerGrad)
+                                            )
+                                    ) {
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxSize()
@@ -575,14 +564,14 @@ fun DashboardCompanionScreen(
                                                 verticalArrangement = Arrangement.Center
                                             ) {
                                                 Text(
-                                                    text = task.brand,
+                                                    text = task.project.safeBrand,
                                                     fontSize = 24.sp,
                                                     fontWeight = FontWeight.Black,
                                                     color = Color.White.copy(alpha = 0.28f),
                                                     letterSpacing = 2.sp
                                                 )
                                                 Text(
-                                                    text = if (task.brand == "SSE") "E-COMMERCE PRODUCTION" else "CREATIVE SUITE",
+                                                    text = task.subBrandFullName,
                                                     fontSize = 7.5.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color.White.copy(alpha = 0.45f),
@@ -590,164 +579,170 @@ fun DashboardCompanionScreen(
                                                 )
                                             }
                                         }
-                                    }
 
-                                    // Subsidiary Tag Pill over NAS image
-                                    Surface(
-                                        color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.82f),
-                                        shape = RoundedCornerShape(6.dp),
-                                        modifier = Modifier
-                                            .padding(8.dp)
-                                            .align(Alignment.TopStart)
-                                    ) {
-                                        Text(
-                                            text = task.brand,
-                                            color = Color.White,
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                        )
-                                    }
-
-                                    // NAS Sync Badge & Format Pill
-                                    Surface(
-                                        color = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen.copy(alpha = 0.92f),
-                                        shape = RoundedCornerShape(6.dp),
-                                        modifier = Modifier
-                                            .padding(8.dp)
-                                            .align(Alignment.TopEnd)
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                            verticalAlignment = Alignment.CenterVertically
+                                        // Subsidiary Tag Pill
+                                        Surface(
+                                            color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.82f),
+                                            shape = RoundedCornerShape(6.dp),
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .align(Alignment.TopStart)
                                         ) {
-                                            Icon(Icons.Default.CloudDone, contentDescription = null, tint = Color.White, modifier = Modifier.size(10.dp))
-                                            Spacer(modifier = Modifier.width(3.dp))
-                                            Text("NAS 4K", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                            Text(
+                                                text = task.project.safeBrand,
+                                                color = Color.White,
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            )
+                                        }
+
+                                        // Live NAS Deliverables Status Badge
+                                        Surface(
+                                            color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.project.safeDeliverableCount > 0) SshSuccessGreen.copy(alpha = 0.92f) else Color(0xFF475569).copy(alpha = 0.92f),
+                                            shape = RoundedCornerShape(6.dp),
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .align(Alignment.TopEnd)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    if (task.project.safeDeliverableCount > 0) Icons.Default.CloudDone else Icons.Default.CloudQueue,
+                                                    contentDescription = null,
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(10.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(3.dp))
+                                                Text(
+                                                    if (task.project.safeDeliverableCount > 0) "${task.project.safeDeliverableCount} Files" else "Pending",
+                                                    fontSize = 8.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.White
+                                                )
+                                            }
                                         }
                                     }
-                                }
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                    Spacer(modifier = Modifier.height(10.dp))
 
-                                Text(
-                                    text = task.title,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = colors.textPrimary,
-                                    lineHeight = 17.sp,
-                                    maxLines = 2
-                                )
-
-                                Spacer(modifier = Modifier.height(6.dp))
-
-                                // Date & Duration Meta
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            Icons.Default.CalendarToday,
-                                            contentDescription = null,
-                                            tint = colors.textMuted,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = task.dateText,
-                                            fontSize = 10.sp,
-                                            color = colors.textSecondary
-                                        )
-                                    }
-
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            Icons.Default.Schedule,
-                                            contentDescription = null,
-                                            tint = colors.textMuted,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = task.durationText,
-                                            fontSize = 10.sp,
-                                            color = colors.textSecondary
-                                        )
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                // Linear Progress Bar
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
                                     Text(
-                                        text = if (task.progressVal >= 1f) "Completed" else "On Progress",
-                                        fontSize = 10.sp,
-                                        color = colors.textSecondary,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        text = task.progressText,
-                                        fontSize = 11.sp,
+                                        text = task.project.safeTitle,
+                                        fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24)
+                                        color = colors.textPrimary,
+                                        lineHeight = 17.sp,
+                                        maxLines = 2
                                     )
-                                }
 
-                                Spacer(modifier = Modifier.height(5.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
 
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(6.dp)
-                                        .clip(RoundedCornerShape(3.dp))
-                                        .background(if (colors.isMonochrome) Color(0xFFE4E4E7) else if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth(task.progressVal)
-                                            .fillMaxHeight()
-                                            .clip(RoundedCornerShape(3.dp))
-                                            .background(if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24))
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                // Footer: File stats & Stacked Avatars
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
+                                    // Dynamic Date & Priority Meta
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Default.FolderOpen, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
-                                            Spacer(modifier = Modifier.width(2.dp))
-                                            Text("02", fontSize = 10.sp, color = colors.textMuted)
+                                            Icon(
+                                                Icons.Default.CalendarToday,
+                                                contentDescription = null,
+                                                tint = colors.textMuted,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "Due ${task.project.formattedDeadline}",
+                                                fontSize = 10.sp,
+                                                color = colors.textSecondary
+                                            )
                                         }
+
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Default.Tag, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
-                                            Spacer(modifier = Modifier.width(2.dp))
-                                            Text("12", fontSize = 10.sp, color = colors.textMuted)
-                                        }
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Default.Brush, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
-                                            Spacer(modifier = Modifier.width(2.dp))
-                                            Text("03", fontSize = 10.sp, color = colors.textMuted)
+                                            Icon(
+                                                Icons.Default.Schedule,
+                                                contentDescription = null,
+                                                tint = colors.textMuted,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "${task.project.safePriority.replaceFirstChar { it.uppercase() }} Priority",
+                                                fontSize = 10.sp,
+                                                color = colors.textSecondary
+                                            )
                                         }
                                     }
 
-                                    // Stacked Team Avatars
-                                    AvatarStack(listOf("H", "A", "S"))
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    // Dynamic Linear Progress Bar
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = task.project.normalizedStatus.replace("_", " ").replaceFirstChar { it.uppercase() },
+                                            fontSize = 10.sp,
+                                            color = colors.textSecondary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = task.progressText,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(5.dp))
+
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .clip(RoundedCornerShape(3.dp))
+                                            .background(if (colors.isMonochrome) Color(0xFFE4E4E7) else if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth(task.progressVal)
+                                                .fillMaxHeight()
+                                                .clip(RoundedCornerShape(3.dp))
+                                                .background(if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24))
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    // Dynamic Footer: Real Assets Count & Real Designer Avatar
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(Icons.Default.FolderOpen, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
+                                                Spacer(modifier = Modifier.width(3.dp))
+                                                Text("${task.project.safeDeliverableCount} files", fontSize = 10.sp, color = colors.textMuted)
+                                            }
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(Icons.Default.History, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
+                                                Spacer(modifier = Modifier.width(3.dp))
+                                                Text("r${task.project.revision ?: 0}", fontSize = 10.sp, color = colors.textMuted)
+                                            }
+                                        }
+
+                                        // Dynamic Designer Avatar
+                                        val designerInitial = task.project.safeDesigner.take(1).uppercase().ifBlank { "S" }
+                                        AvatarStack(listOf(designerInitial))
+                                    }
                                 }
                             }
                         }
@@ -756,7 +751,6 @@ fun DashboardCompanionScreen(
             }
         }
     }
-}
 }
 
 @Composable
