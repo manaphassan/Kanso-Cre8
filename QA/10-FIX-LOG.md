@@ -1,5 +1,16 @@
 # SS-CAM FIX LOG
 
+## v4.6.0 — 2026-09-01 (Android Native Companion Modernization & Live Stream Metadata Engine)
+- **Assembly Version**: `4.6.0.0` / Android `versionCode = 460`, `versionName = "4.6.0"`
+- **Live Stream Radio Metadata Engine**: Implemented `LiveStreamMetadataFetcher` for AzuraCast API, Laut.fm, Plaza One, SomaFM, and universal ICY header byte chunk parsing (`icy-metaint`) with real-time station track titles on `TopAppBar` equalizer pill and cassette deck.
+- **Ss-Hero Animated Splash Screen**: Implemented dynamic particle wave canvas backdrop with ambient glow, vector SuamiSihat logomark, and Biometric PIN lock gateway.
+- **Interactive Fluent Markdown Viewer**: Implemented high-performance Markdown parser in Compose supporting interactive task checkbox state toggling and direct disk/memory persistence.
+- **Standby Desk Companion Mode**: Full-screen OLED black standby clock with focus sprint timer, focus progress rings, and landscape/portrait orientation adaptation.
+- **Material You Monochromatic Iconography**: Added adaptive launcher icons and monochrome drawables for Android 13+.
+- **Source Guardian & Quality Suite**: 9/9 checks passed (Encoding, Fluent 2, Data Safety, Thread Safety).
+
+---
+
 ## v4.5.1 — 2026-08-30 (Cross-Platform Ecosystem Synchronization & Major Stable Release)
 - **Assembly Version**: `4.5.1.0`
 - **Windows Desktop Client**: Compiled single-file portable executable (`dist/SS-CAM-v4.5.1.exe`), 100% theme-adaptive DynamicResource tokens in `WellbeingPage.xaml`, and UTF-8 BOM compliance.

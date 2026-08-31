@@ -366,35 +366,42 @@ fun CapsuleDayPickerStrip(
  */
 @Composable
 fun ReferenceStyleDeliverableCard(
-    title: String,
-    brand: String,
-    designer: String,
-    deadline: String,
-    status: String,
-    priority: String,
+    title: String?,
+    brand: String?,
+    designer: String?,
+    deadline: String?,
+    status: String?,
+    priority: String?,
     onSignOff: () -> Unit = {},
     onCardClick: () -> Unit = {}
 ) {
+    val safeTitle = title.orEmpty().ifBlank { "Untitled Deliverable" }
+    val safeBrand = brand.orEmpty().ifBlank { "SSH" }
+    val safeDesigner = designer.orEmpty().ifBlank { "Designer" }
+    val safeDeadline = deadline.orEmpty().ifBlank { "TBD" }
+    val safePriority = priority.orEmpty().ifBlank { "standard" }
+
     val colors = LocalSscamColors.current
     val (priorityDotColor, priorityLabel) = if (colors.isMonochrome) {
-        when (priority.lowercase()) {
+        when (safePriority.lowercase()) {
             "urgent" -> Color(0xFF18181B) to "Urgent Priority"
             "high" -> Color(0xFF52525B) to "High Priority"
             else -> Color(0xFF71717A) to "Standard Review"
         }
     } else {
-        when (priority.lowercase()) {
+        when (safePriority.lowercase()) {
             "urgent" -> Color(0xFFEF4444) to "Urgent Priority"
             "high" -> Color(0xFFF97316) to "High Priority"
             else -> SshWarmGoldBright to "Standard Review"
         }
     }
 
-    FluentCard(
-        cornerRadius = 16.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCardClick() }
+    Card(
+        onClick = onCardClick,
+        colors = CardDefaults.cardColors(containerColor = colors.card),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, colors.border),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Top Row: Priority Pill + Link Icon
@@ -427,14 +434,19 @@ fun ReferenceStyleDeliverableCard(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    SubBrandBadge(brand)
+                    SubBrandBadge(safeBrand)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        Icons.Default.ArrowOutward,
-                        contentDescription = "Open",
-                        tint = colors.textMuted,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    IconButton(
+                        onClick = onCardClick,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowOutward,
+                            contentDescription = "Open Project Details",
+                            tint = colors.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
@@ -442,7 +454,7 @@ fun ReferenceStyleDeliverableCard(
 
             // Middle: Task Title
             Text(
-                title,
+                safeTitle,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary,
@@ -458,14 +470,15 @@ fun ReferenceStyleDeliverableCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("⏰ Due: $deadline", fontSize = 11.sp, color = colors.textSecondary)
+                    Text("⏰ Due: $safeDeadline", fontSize = 11.sp, color = colors.textSecondary)
                 }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    AvatarStack(listOf(designer.take(1).uppercase()))
+                    val initials = safeDesigner.take(1).uppercase().ifBlank { "S" }
+                    AvatarStack(listOf(initials))
                     Button(
                         onClick = onSignOff,
                         colors = ButtonDefaults.buttonColors(containerColor = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen),
@@ -482,11 +495,12 @@ fun ReferenceStyleDeliverableCard(
 }
 
 @Composable
-fun SubBrandBadge(brand: String, modifier: Modifier = Modifier) {
+fun SubBrandBadge(brand: String?, modifier: Modifier = Modifier) {
     val colors = LocalSscamColors.current
-    val upper = brand.uppercase()
+    val safeBrand = brand.orEmpty()
+    val upper = safeBrand.uppercase()
     val (bg, fg, label) = if (colors.isMonochrome) {
-        Triple(Color(0xFF18181B), Color.White, if (brand.isNotBlank()) upper else "SS")
+        Triple(Color(0xFF18181B), Color.White, if (safeBrand.isNotBlank()) upper else "SS")
     } else {
         when {
             upper.contains("SSH") -> Triple(BrandSshPrimary, BrandSshAccent, "SSH")
@@ -494,7 +508,7 @@ fun SubBrandBadge(brand: String, modifier: Modifier = Modifier) {
             upper.contains("SSW") -> Triple(BrandSswPrimary.copy(alpha = 0.2f), BrandSswAccent, "SSW")
             upper.contains("SSE") -> Triple(BrandSsePrimary.copy(alpha = 0.2f), BrandSseAccent, "SSE")
             upper.contains("SST") -> Triple(BrandSstPrimary.copy(alpha = 0.2f), BrandSstAccent, "SST")
-            else -> Triple(SshRoyalBlue.copy(alpha = 0.2f), SshAzureLight, if (brand.isNotBlank()) upper else "SS")
+            else -> Triple(SshRoyalBlue.copy(alpha = 0.2f), SshAzureLight, if (safeBrand.isNotBlank()) upper else "SS")
         }
     }
 
@@ -1097,8 +1111,8 @@ fun TactileButton(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .fillMaxHeight()
+                .padding(horizontal = 14.dp),
             contentAlignment = Alignment.Center
         ) {
             Row(

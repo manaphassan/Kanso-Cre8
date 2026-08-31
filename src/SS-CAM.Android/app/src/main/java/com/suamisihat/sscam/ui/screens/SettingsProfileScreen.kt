@@ -63,7 +63,7 @@ fun SettingsProfileScreen(
                 val base64Data = url.substringAfter(",")
                 val decodedBytes = android.util.Base64.decode(base64Data, android.util.Base64.DEFAULT)
                 android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 url
             }
         } else {
@@ -229,8 +229,9 @@ fun SettingsProfileScreen(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier.padding(start = 12.dp, top = 4.dp)
                 ) {
+                    val singleDigitId = designerStaffId.filter { it.isDigit() }.trimStart('0').ifEmpty { "4" }
                     Text(
-                        text = designerStaffId.takeLast(2).ifBlank { "01" },
+                        text = singleDigitId,
                         fontSize = 72.sp,
                         fontWeight = FontWeight.Light,
                         color = colors.textPrimary,
@@ -355,7 +356,7 @@ fun SettingsProfileScreen(
                             color = if (colors.isMonochrome) Color(0xFF52525B) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF475569)
                         )
                         Text(
-                            text = "01",
+                            text = "1",
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (colors.isMonochrome) Color(0xFF52525B) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF475569)
@@ -586,7 +587,7 @@ fun SettingsProfileScreen(
                                         .clickable {
                                             try {
                                                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
-                                            } catch (e: Exception) {}
+                                            } catch (_: Exception) {}
                                             onThemeSelected(mode)
                                             Toast.makeText(context, "${mode.title} theme activated", Toast.LENGTH_SHORT).show()
                                         }
@@ -706,7 +707,7 @@ fun SettingsProfileScreen(
                             // Sign Out / Switch Account Action Button
                             Button(
                                 onClick = {
-                                    try { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress) } catch (e: Exception) {}
+                                    try { haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress) } catch (_: Exception) {}
                                     onSignOut()
                                 },
                                 shape = RoundedCornerShape(10.dp),

@@ -130,7 +130,8 @@ object SolatZonePreferences {
 
 @Composable
 fun WellbeingHubScreen(
-    initialSubTab: Int = 0
+    initialSubTab: Int = 0,
+    onLaunchDeskMode: () -> Unit = {}
 ) {
     val colors = LocalSscamColors.current
     var selectedTab by remember { mutableStateOf(initialSubTab.coerceIn(0, 2)) }
@@ -149,10 +150,10 @@ fun WellbeingHubScreen(
         )
 
         when (selectedTab) {
-            0 -> WellbeingFocusContentView()
+            0 -> WellbeingFocusContentView(onLaunchDeskMode = onLaunchDeskMode)
             1 -> SolatContentView()
             2 -> StudioRadioContentView()
-            else -> WellbeingFocusContentView()
+            else -> WellbeingFocusContentView(onLaunchDeskMode = onLaunchDeskMode)
         }
     }
 }
@@ -161,7 +162,9 @@ fun WellbeingHubScreen(
  * Focus Workstation: Analog Mechanical Pomodoro Deck, Tactile Hydration Reservoir, and Mindset Wheel
  */
 @Composable
-fun WellbeingFocusContentView() {
+fun WellbeingFocusContentView(
+    onLaunchDeskMode: () -> Unit = {}
+) {
     val colors = LocalSscamColors.current
     var waterGlasses by remember { mutableStateOf(5) }
     var isPomodoroRunning by remember { mutableStateOf(false) }
@@ -416,6 +419,46 @@ fun WellbeingFocusContentView() {
                                     color = colors.textPrimary
                                 )
                             }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Desk Standby Mode Fullscreen Launcher
+                    Surface(
+                        color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                        shape = RoundedCornerShape(10.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else Color(0xFF38BDF8).copy(alpha = 0.4f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onLaunchDeskMode() }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Devices,
+                                    contentDescription = null,
+                                    tint = if (colors.isMonochrome) Color(0xFF18181B) else SshAzure,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Launch Desk Standby Mode",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colors.textPrimary
+                                )
+                            }
+                            Text(
+                                text = "OLED Clock & Sprint ↗",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (colors.isMonochrome) Color(0xFF52525B) else SshAzure
+                            )
                         }
                     }
                 }

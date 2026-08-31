@@ -10,7 +10,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
-data class LoginRequest(@SerializedName("username") val username: String)
+data class LoginRequest(
+    @SerializedName("username") val username: String,
+    @SerializedName("password") val password: String? = null
+)
 data class LoginResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("token") val token: String? = null,

@@ -27,11 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.suamisihat.sscam.data.api.LoginRequest
 import com.suamisihat.sscam.data.api.SscamApiService
+import com.suamisihat.sscam.data.sync.SyncQueueManager
 import com.suamisihat.sscam.data.models.CreateProjectRequest
 import com.suamisihat.sscam.data.models.DecisionRequest
 import com.suamisihat.sscam.data.models.NotificationItem
@@ -44,20 +47,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : ComponentActivity() {
+class MainActivity : androidx.fragment.app.FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize high-priority deliverable, solat and studio notification channels
+        com.suamisihat.sscam.service.SscamNotificationService.initNotificationChannels(this)
+
         setContent {
             val context = LocalContext.current
             var currentTheme by remember { mutableStateOf(ThemePreferences.getSavedTheme(context)) }
+            var showSplash by remember { mutableStateOf(true) }
+
             SscamTheme(themeMode = currentTheme) {
-                CompanionAppScreen(
-                    currentTheme = currentTheme,
-                    onThemeChange = {
-                        currentTheme = it
-                        ThemePreferences.saveTheme(context, it)
-                    }
-                )
+                if (showSplash) {
+                    SsHeroSplashScreen(
+                        onSplashFinished = { showSplash = false }
+                    )
+                } else {
+                    CompanionAppScreen(
+                        currentTheme = currentTheme,
+                        onThemeChange = {
+                            currentTheme = it
+                            ThemePreferences.saveTheme(context, it)
+                        }
+                    )
+                }
             }
         }
     }
@@ -117,6 +131,7 @@ fun CompanionAppScreen(
 ) {
     val context = LocalContext.current
     val colors = LocalSscamColors.current
+    val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
     var isLoggedIn by remember { mutableStateOf(AuthPreferences.isLoggedIn(context)) }
@@ -127,6 +142,8 @@ fun CompanionAppScreen(
     var selectedScreen by remember { mutableStateOf(CompanionScreen.Dashboard) }
     var isSettingsOpen by remember { mutableStateOf(false) }
     var isNotificationsOpen by remember { mutableStateOf(false) }
+    var isNowPlayingSheetOpen by remember { mutableStateOf(false) }
+    var isDeskModeActive by remember { mutableStateOf(false) }
 
     var teamSubTab by remember { mutableStateOf(0) }
     var wellbeingSubTab by remember { mutableStateOf(0) }
@@ -135,7 +152,16 @@ fun CompanionAppScreen(
     var syncMessage by remember { mutableStateOf("Connecting to Synology NAS...") }
     var isLoading by remember { mutableStateOf(true) }
 
-    var projects by remember { mutableStateOf<List<ProjectItem>>(emptyList()) }
+    var projects by remember {
+        mutableStateOf<List<ProjectItem>>(
+            listOf(
+                ProjectItem(id = "202608_0001D", title = "Rejal Madu Tualang", brand = "SSE", status = "done", designer = "Harussani", client = "Internal", deadline = "2026-08-30", priority = "medium", deliverableCount = 3),
+                ProjectItem(id = "202608_0002P", title = "Menss Care Cream", brand = "SSE", status = "in_progress", designer = "Harussani", client = "Internal", deadline = "2026-08-26", priority = "high", deliverableCount = 2),
+                ProjectItem(id = "202608_0003S", title = "PROMO MALAYSIA MERDEKA", brand = "SSE", status = "in_review", designer = "Harussani", client = "Marketing", deadline = "2026-08-28", priority = "urgent", deliverableCount = 5),
+                ProjectItem(id = "202608_0004P", title = "Pertabi Jersey", brand = "SS", status = "in_progress", designer = "Harussani", client = "Sports", deadline = "2026-08-28", priority = "urgent", deliverableCount = 1)
+            )
+        )
+    }
     var staffList by remember { mutableStateOf<List<StaffMember>>(emptyList()) }
     var authToken by remember { mutableStateOf<String?>(AuthPreferences.getSavedToken(context)) }
 
@@ -158,10 +184,10 @@ fun CompanionAppScreen(
                     val token = if (loginRes.isSuccessful) loginRes.body()?.token else null
                     authToken = token
 
-                    val authApi = SscamApiService.create(authToken = token)
-                    val projRes = authApi.getProjects()
-                    val teamRes = authApi.getTeam()
-                    val notifRes = try { authApi.getNotifications() } catch (e: Exception) { null }
+                    val api = SscamApiService.create(authToken = token)
+                    val projRes = api.getProjects()
+                    val teamRes = api.getTeam()
+                    val notifRes = try { api.getNotifications() } catch (e: Exception) { null }
 
                     val fetchedProjects = if (projRes.isSuccessful && projRes.body() != null) {
                         projRes.body()!!.projects
@@ -228,26 +254,53 @@ fun CompanionAppScreen(
             "SSW" -> "SuamiSihat Wellness"
             "SSE" -> "SuamiSihat Enterprise"
             "SST" -> "SuamiSihat Tech"
-            else -> "SuamiSihat HQ"
+            else -> "SuamiSihat"
         }
     }
 
     val currentLogoRes = remember(userSubsidiary, colors.isDark) {
         when (userSubsidiary.uppercase()) {
-            "SSH" -> if (colors.isDark) R.drawable.logo_ssh_dark else R.drawable.logo_ssh_light
+            "SSH", "SS" -> if (colors.isDark) R.drawable.logo_ssh_dark else R.drawable.logo_ssh_light
             "SSC" -> if (colors.isDark) R.drawable.logo_ssc_dark else R.drawable.logo_ssc_light
             "SSW" -> if (colors.isDark) R.drawable.logo_ssw_dark else R.drawable.logo_ssw_light
             "SSE" -> if (colors.isDark) R.drawable.logo_sse_dark else R.drawable.logo_sse_light
             "SST" -> if (colors.isDark) R.drawable.logo_sst_dark else R.drawable.logo_sst_light
-            else -> R.drawable.logo_ss_brand
+            else -> if (colors.isDark) R.drawable.logo_ssh_dark else R.drawable.logo_ssh_light
         }
     }
-    if (!isLoggedIn) {
+
+    if (isDeskModeActive) {
+        // High-legibility Swiss Desk Companion OLED Standby Mode
+        DeskCompanionMode(
+            activeProjects = projects,
+            onExit = { isDeskModeActive = false }
+        )
+    } else if (!isLoggedIn) {
         LoginScreen(
             staffList = staffList,
             initialUsername = activeUsername,
             isLoading = isAuthenticating,
             errorMessage = loginErrorMessage,
+            onBiometricLogin = {
+                val activity = context as? androidx.fragment.app.FragmentActivity
+                if (activity != null && com.suamisihat.sscam.util.BiometricAuthManager.isBiometricAvailable(context)) {
+                    com.suamisihat.sscam.util.BiometricAuthManager.promptBiometric(
+                        activity = activity,
+                        onSuccess = {
+                            val savedUser = AuthPreferences.getSavedUsername(context).ifEmpty { "harussani" }
+                            activeUsername = savedUser
+                            isLoggedIn = true
+                            refreshLiveData()
+                            Toast.makeText(context, "Biometric authenticated: Welcome back, $savedUser!", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = { err ->
+                            Toast.makeText(context, err, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    Toast.makeText(context, "Biometric hardware not available or not enrolled", Toast.LENGTH_SHORT).show()
+                }
+            },
             onLogin = { username, password, rememberMe ->
                 coroutineScope.launch {
                     isAuthenticating = true
@@ -255,18 +308,19 @@ fun CompanionAppScreen(
                     try {
                         withContext(Dispatchers.IO) {
                             val api = SscamApiService.create()
-                            val res = api.login(LoginRequest(username))
-                            if (res.isSuccessful && res.body()?.success == true) {
-                                val token = res.body()?.token
+                            val res = api.login(LoginRequest(username = username, password = password))
+                            if (res.isSuccessful && res.body() != null) {
+                                val body = res.body()!!
+                                val token = body.token
                                 withContext(Dispatchers.Main) {
-                                    authToken = token
                                     activeUsername = username
+                                    authToken = token
                                     isLoggedIn = true
                                     if (rememberMe) {
                                         AuthPreferences.saveAuth(context, username, token, true)
                                     }
                                     refreshLiveData()
-                                    Toast.makeText(context, "Welcome, $username!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Authenticated with Synology NAS", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
@@ -313,88 +367,71 @@ fun CompanionAppScreen(
                                 )
                             }
                         } else {
-                            // Actual Official SuamiSihat Logo automatically based on User Config from Web
+                            // Official SuamiSihat Dual-S Logomark (Theme Adaptive)
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(vertical = 2.dp)
                             ) {
                                 androidx.compose.foundation.Image(
-                                    painter = androidx.compose.ui.res.painterResource(id = currentLogoRes),
-                                    contentDescription = "SuamiSihat $userSubsidiary Logo",
+                                    painter = androidx.compose.ui.res.painterResource(
+                                        id = if (colors.isDark) R.drawable.ic_suamisihat_mark_dark else R.drawable.ic_suamisihat_mark_light
+                                    ),
+                                    contentDescription = "SuamiSihat Logomark",
                                     colorFilter = if (colors.isMonochrome) androidx.compose.ui.graphics.ColorFilter.colorMatrix(androidx.compose.ui.graphics.ColorMatrix().apply { setToSaturation(0f) }) else null,
                                     modifier = Modifier
-                                        .height(28.dp)
-                                        .wrapContentWidth(),
-                                    contentScale = androidx.compose.ui.layout.ContentScale.Fit
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                // Live NAS Status Indicator Dot
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(if (colors.isMonochrome) Color(0xFF18181B) else if (isLiveSync) SshSuccessGreen else colors.accent)
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                // Header: Now Playing Radio (if active) OR User Subsidiary Company
-                                if (StudioRadioManager.isPlaying) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                        modifier = Modifier.clickable(
+                                        .size(30.dp)
+                                        .clickable(
                                             interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                             indication = null
                                         ) {
-                                            selectedScreen = CompanionScreen.Wellbeing
-                                            wellbeingSubTab = 2 // Radio tab
-                                        }
-                                    ) {
-                                        Icon(
-                                            Icons.Default.GraphicEq,
-                                            contentDescription = "Now Playing Radio",
-                                            tint = if (colors.isDark) SshWarmGoldBright else SshAzure,
-                                            modifier = Modifier.size(15.dp)
-                                        )
-                                        Text(
-                                            text = StudioRadioManager.getCurrentStationName(),
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (colors.isDark) SshWarmGoldBright else SshAzure,
-                                            maxLines = 1,
-                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                            modifier = Modifier.widthIn(max = 140.dp)
-                                        )
-                                    }
-                                } else {
+                                            selectedScreen = CompanionScreen.Dashboard
+                                            isSettingsOpen = false
+                                        },
+                                    contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                                )
+
+                                // Header: Now Playing Radio (if active) OR Official Brand Title
+                                if (StudioRadioManager.isPlaying) {
                                     Surface(
-                                        color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
-                                        shape = RoundedCornerShape(12.dp),
-                                        border = BorderStroke(1.dp, colors.border)
+                                        onClick = { isNowPlayingSheetOpen = true },
+                                        shape = RoundedCornerShape(14.dp),
+                                        color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFEFF6FF),
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            1.dp,
+                                            if (colors.isDark) SshWarmGoldBright.copy(alpha = 0.5f) else SshAzure.copy(alpha = 0.5f)
+                                        ),
+                                        modifier = Modifier.padding(start = 8.dp)
                                     ) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                                         ) {
-                                            Icon(
-                                                Icons.Default.Storefront,
-                                                contentDescription = null,
-                                                tint = colors.textSecondary,
-                                                modifier = Modifier.size(12.dp)
+                                            AnimatedEqualizerBars(
+                                                isAnimating = true,
+                                                color = if (colors.isDark) SshWarmGoldBright else SshAzure
                                             )
                                             Text(
-                                                text = userSubsidiaryName,
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = colors.textPrimary,
+                                                text = StudioRadioManager.currentTrackTitle,
+                                                fontSize = 11.5.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (colors.isDark) SshWarmGoldBright else SshAzure,
                                                 maxLines = 1,
                                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                                modifier = Modifier.widthIn(max = 115.dp)
+                                                modifier = Modifier.widthIn(max = 180.dp)
                                             )
                                         }
                                     }
+                                } else {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "SuamiSihat",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colors.textPrimary,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
                                 }
                             }
                         }
@@ -416,18 +453,6 @@ fun CompanionAppScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.padding(end = 12.dp)
                         ) {
-                            // Refresh Live NAS button
-                            IconButton(
-                                onClick = { refreshLiveData() },
-                                modifier = Modifier.size(36.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Refresh,
-                                    contentDescription = "Refresh Live NAS",
-                                    tint = if (colors.isMonochrome) colors.textPrimary else if (isLoading) colors.primary else colors.textSecondary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
 
                             // Notification Bell with Badge
                             Box(
@@ -537,6 +562,7 @@ fun CompanionAppScreen(
                                         modifier = Modifier
                                             .clip(CircleShape)
                                             .clickable {
+                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                                 isSettingsOpen = false
                                                 selectedScreen = screen
                                             }
@@ -572,82 +598,118 @@ fun CompanionAppScreen(
                         }
                     )
                 } else {
-                    when (selectedScreen) {
-                        CompanionScreen.Dashboard -> DashboardCompanionScreen(
-                            projects = projects,
-                            syncMessage = syncMessage,
-                            isLiveSync = isLiveSync,
-                            onNavigateDestination = { destination, subTab ->
-                                when (destination) {
-                                    "Tasks" -> {
-                                        selectedScreen = CompanionScreen.Tasks
+                    FluentPullToRefresh(
+                        isRefreshing = isLoading,
+                        onRefresh = { refreshLiveData() }
+                    ) {
+                        when (selectedScreen) {
+                            CompanionScreen.Dashboard -> DashboardCompanionScreen(
+                                projects = projects,
+                                syncMessage = syncMessage,
+                                isLiveSync = isLiveSync,
+                                onNavigateDestination = { destination, subTab ->
+                                    when (destination) {
+                                        "Tasks" -> {
+                                            selectedScreen = CompanionScreen.Tasks
+                                        }
+                                        "Team" -> {
+                                            teamSubTab = subTab
+                                            selectedScreen = CompanionScreen.Team
+                                        }
+                                        "Wellbeing" -> {
+                                            wellbeingSubTab = subTab
+                                            selectedScreen = CompanionScreen.Wellbeing
+                                        }
                                     }
-                                    "Team" -> {
-                                        teamSubTab = subTab
-                                        selectedScreen = CompanionScreen.Team
+                                },
+                                onSignOff = { item ->
+                                    // Optimistic local state update (0ms instant response)
+                                    projects = projects.map {
+                                        if (it.id == item.id) it.copy(status = "done") else it
                                     }
-                                    "Wellbeing" -> {
-                                        wellbeingSubTab = subTab
-                                        selectedScreen = CompanionScreen.Wellbeing
-                                    }
-                                }
-                            },
-                            onSignOff = { item ->
-                                coroutineScope.launch {
-                                    try {
-                                        val api = SscamApiService.create(authToken = authToken)
-                                        api.submitDecision(item.id, DecisionRequest("approved", "1-tap companion signoff", activeUsername))
-                                        Toast.makeText(context, "Signed off ${item.title}!", Toast.LENGTH_SHORT).show()
-                                        refreshLiveData()
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, "Sign-off recorded: ${item.title}", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        )
-                        CompanionScreen.Tasks -> TaskManagerScreen(
-                            projects = projects,
-                            onSignOff = { item ->
-                                coroutineScope.launch {
-                                    try {
-                                        val api = SscamApiService.create(authToken = authToken)
-                                        api.submitDecision(item.id, DecisionRequest("approved", "1-tap companion signoff", activeUsername))
-                                        Toast.makeText(context, "Signed off ${item.title}!", Toast.LENGTH_SHORT).show()
-                                        refreshLiveData()
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, "Sign-off recorded: ${item.title}", Toast.LENGTH_SHORT).show()
+                                    coroutineScope.launch {
+                                        val req = DecisionRequest("approved", "1-tap companion signoff", activeUsername)
+                                        try {
+                                            val api = SscamApiService.create(authToken = authToken)
+                                            api.submitDecision(item.id, req)
+                                            Toast.makeText(context, "Signed off ${item.title}!", Toast.LENGTH_SHORT).show()
+                                            refreshLiveData()
+                                        } catch (e: Exception) {
+                                            SyncQueueManager.queueDecision(context, item.id, req)
+                                            Toast.makeText(context, "Queued offline: Sign-off recorded for ${item.title}", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
-                            },
-                            onRevise = { item ->
-                                coroutineScope.launch {
-                                    try {
-                                        val api = SscamApiService.create(authToken = authToken)
-                                        api.submitDecision(item.id, DecisionRequest("revision_requested", "Companion revision request", activeUsername))
-                                        Toast.makeText(context, "Revision requested for ${item.title}", Toast.LENGTH_SHORT).show()
-                                        refreshLiveData()
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, "Revision requested for ${item.title}", Toast.LENGTH_SHORT).show()
+                            )
+                            CompanionScreen.Tasks -> TaskManagerScreen(
+                                projects = projects,
+                                onSignOff = { item ->
+                                    // Optimistic local state update (0ms instant response)
+                                    projects = projects.map {
+                                        if (it.id == item.id) it.copy(status = "done") else it
                                     }
-                                }
-                            },
-                            onCreateNewTask = { title, desc, brand, priority ->
-                                coroutineScope.launch {
-                                    try {
-                                        val api = SscamApiService.create(authToken = authToken)
-                                        val res = api.createProject(
-                                            CreateProjectRequest(
-                                                title = title,
-                                                brand = brand,
-                                                designer = currentUserProfile?.name ?: "Harussani",
-                                                priority = priority,
-                                                department = "Creative Production",
-                                                deadline = "2026-09-15"
+                                    coroutineScope.launch {
+                                        val req = DecisionRequest("approved", "1-tap companion signoff", activeUsername)
+                                        try {
+                                            val api = SscamApiService.create(authToken = authToken)
+                                            api.submitDecision(item.id, req)
+                                            Toast.makeText(context, "Signed off ${item.title}!", Toast.LENGTH_SHORT).show()
+                                            refreshLiveData()
+                                        } catch (e: Exception) {
+                                            SyncQueueManager.queueDecision(context, item.id, req)
+                                            Toast.makeText(context, "Queued offline: Sign-off recorded for ${item.title}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                onRevise = { item ->
+                                    // Optimistic local state update
+                                    projects = projects.map {
+                                        if (it.id == item.id) it.copy(status = "revision_requested") else it
+                                    }
+                                    coroutineScope.launch {
+                                        val req = DecisionRequest("revision_requested", "Companion revision request", activeUsername)
+                                        try {
+                                            val api = SscamApiService.create(authToken = authToken)
+                                            api.submitDecision(item.id, req)
+                                            Toast.makeText(context, "Revision requested for ${item.title}", Toast.LENGTH_SHORT).show()
+                                            refreshLiveData()
+                                        } catch (e: Exception) {
+                                            SyncQueueManager.queueDecision(context, item.id, req)
+                                            Toast.makeText(context, "Queued offline: Revision requested for ${item.title}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                onCreateNewTask = { title, desc, brand, priority ->
+                                    coroutineScope.launch {
+                                        try {
+                                            val api = SscamApiService.create(authToken = authToken)
+                                            val res = api.createProject(
+                                                CreateProjectRequest(
+                                                    title = title,
+                                                    brand = brand,
+                                                    designer = currentUserProfile?.name ?: "Harussani",
+                                                    priority = priority,
+                                                    department = "Creative Production",
+                                                    deadline = "2026-09-15"
+                                                )
                                             )
-                                        )
-                                        if (res.isSuccessful && res.body() != null) {
-                                            projects = listOf(res.body()!!) + projects
-                                        } else {
+                                            if (res.isSuccessful && res.body() != null) {
+                                                projects = listOf(res.body()!!) + projects
+                                            } else {
+                                                val newProj = ProjectItem(
+                                                    id = "proj_" + System.currentTimeMillis(),
+                                                    title = title,
+                                                    brand = brand,
+                                                    status = "in_progress",
+                                                    priority = priority,
+                                                    designer = currentUserProfile?.name ?: "Harussani",
+                                                    deadline = "2026-09-15T00:00:00.000Z"
+                                                )
+                                                projects = listOf(newProj) + projects
+                                            }
+                                            Toast.makeText(context, "Created deliverable: $title", Toast.LENGTH_SHORT).show()
+                                            refreshLiveData()
+                                        } catch (e: Exception) {
                                             val newProj = ProjectItem(
                                                 id = "proj_" + System.currentTimeMillis(),
                                                 title = title,
@@ -658,32 +720,20 @@ fun CompanionAppScreen(
                                                 deadline = "2026-09-15T00:00:00.000Z"
                                             )
                                             projects = listOf(newProj) + projects
+                                            Toast.makeText(context, "Offline Task Created: $title", Toast.LENGTH_SHORT).show()
                                         }
-                                        Toast.makeText(context, "Created deliverable: $title", Toast.LENGTH_SHORT).show()
-                                        refreshLiveData()
-                                    } catch (e: Exception) {
-                                        val newProj = ProjectItem(
-                                            id = "proj_" + System.currentTimeMillis(),
-                                            title = title,
-                                            brand = brand,
-                                            status = "in_progress",
-                                            priority = priority,
-                                            designer = currentUserProfile?.name ?: "Harussani",
-                                            deadline = "2026-09-15T00:00:00.000Z"
-                                        )
-                                        projects = listOf(newProj) + projects
-                                        Toast.makeText(context, "Offline Task Created: $title", Toast.LENGTH_SHORT).show()
                                     }
                                 }
-                            }
-                        )
-                        CompanionScreen.Team -> TeamHubScreen(
-                            staffList = staffList,
-                            initialSubTab = teamSubTab
-                        )
-                        CompanionScreen.Wellbeing -> WellbeingHubScreen(
-                            initialSubTab = wellbeingSubTab
-                        )
+                            )
+                            CompanionScreen.Team -> TeamHubScreen(
+                                staffList = staffList,
+                                initialSubTab = teamSubTab
+                            )
+                            CompanionScreen.Wellbeing -> WellbeingHubScreen(
+                                initialSubTab = wellbeingSubTab,
+                                onLaunchDeskMode = { isDeskModeActive = true }
+                            )
+                        }
                     }
                 }
 
@@ -704,6 +754,18 @@ fun CompanionAppScreen(
                         onMarkAllAsRead = {
                             notifications = notifications.map { it.copy(read = true) }
                             Toast.makeText(context, "All notifications marked as read", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+
+                // Now Playing Radio Bottom Sheet & Station Playlist
+                if (isNowPlayingSheetOpen) {
+                    NowPlayingRadioBottomSheet(
+                        onDismiss = { isNowPlayingSheetOpen = false },
+                        onOpenFullRadio = {
+                            isNowPlayingSheetOpen = false
+                            selectedScreen = CompanionScreen.Wellbeing
+                            wellbeingSubTab = 2 // Radio tab
                         }
                     )
                 }

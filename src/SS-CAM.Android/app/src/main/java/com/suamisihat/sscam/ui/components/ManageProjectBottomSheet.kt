@@ -4,10 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.*
@@ -35,11 +35,12 @@ fun ManageProjectBottomSheet(
     var selectedTab by remember { mutableStateOf(0) } // 0: Overview & Status, 1: Project README, 2: Deliverables
     val drawerTabs = listOf("STATUS & INFO", "README.MD", "DELIVERABLES")
 
-    val safeTitle = project.title.ifBlank { "Untitled Project" }
-    val safeBrand = project.brand.ifBlank { "SSH" }
-    val safeDesigner = project.designer.ifBlank { "Unassigned" }
-    val safeClient = project.client.ifBlank { "Internal" }
-    val safePriority = project.priority.ifBlank { "standard" }
+    val safeTitle = project.safeTitle
+    val safeBrand = project.safeBrand
+    val safeDesigner = project.safeDesigner
+    val safeClient = project.safeClient
+    val safePriority = project.safePriority
+    val safeDeliverables = project.safeDeliverableCount
 
     var currentStatus by remember { mutableStateOf(project.normalizedStatus) }
     var readmeText by remember {
@@ -73,7 +74,7 @@ fun ManageProjectBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = colors.card,
-        dragHandle = null,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
         Column(
@@ -145,56 +146,56 @@ fun ManageProjectBottomSheet(
             when (selectedTab) {
                 0 -> {
                     // TAB 0: Status Progression & Project Info
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         // 1. Status Switcher Section
-                        item {
-                            Text(
-                                text = "PROJECT STATUS LIFECYCLE",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = colors.textSecondary,
-                                letterSpacing = 1.sp
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                availableStatuses.forEach { (statusKey, label, color) ->
-                                    val isSelected = currentStatus == statusKey
-                                    Surface(
-                                        color = if (isSelected) color.copy(alpha = 0.15f) else colors.surface,
-                                        shape = RoundedCornerShape(12.dp),
-                                        border = androidx.compose.foundation.BorderStroke(
-                                            if (isSelected) 1.5.dp else 1.dp,
-                                            if (isSelected) color else colors.border
-                                        ),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable { currentStatus = statusKey }
+                        Text(
+                            text = "PROJECT STATUS LIFECYCLE",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textSecondary,
+                            letterSpacing = 1.sp
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            availableStatuses.forEach { (statusKey, label, color) ->
+                                val isSelected = currentStatus == statusKey
+                                Surface(
+                                    color = if (isSelected) color.copy(alpha = 0.15f) else colors.surface,
+                                    shape = RoundedCornerShape(12.dp),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        if (isSelected) 1.5.dp else 1.dp,
+                                        if (isSelected) color else colors.border
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { currentStatus = statusKey }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(10.dp)
-                                                        .clip(CircleShape)
-                                                        .background(color)
-                                                )
-                                                Text(
-                                                    text = label,
-                                                    fontSize = 13.sp,
-                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                                    color = if (isSelected) colors.textPrimary else colors.textSecondary
-                                                )
-                                            }
-                                            if (isSelected) {
-                                                Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = color, modifier = Modifier.size(18.dp))
-                                            }
+                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(10.dp)
+                                                    .clip(CircleShape)
+                                                    .background(color)
+                                            )
+                                            Text(
+                                                text = label,
+                                                fontSize = 13.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                                color = if (isSelected) colors.textPrimary else colors.textSecondary
+                                            )
+                                        }
+                                        if (isSelected) {
+                                            Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = color, modifier = Modifier.size(18.dp))
                                         }
                                     }
                                 }
@@ -202,72 +203,124 @@ fun ManageProjectBottomSheet(
                         }
 
                         // 2. Project Metadata Summary
-                        item {
-                            Surface(
-                                color = colors.surface,
-                                shape = RoundedCornerShape(14.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text(text = "PROJECT METADATA", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text(text = "Brand Code:", fontSize = 12.sp, color = colors.textSecondary)
-                                        Text(text = safeBrand, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = colors.primary)
-                                    }
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text(text = "Lead Designer:", fontSize = 12.sp, color = colors.textSecondary)
-                                        Text(text = safeDesigner, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
-                                    }
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text(text = "Client Org:", fontSize = 12.sp, color = colors.textSecondary)
-                                        Text(text = safeClient, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
-                                    }
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text(text = "Production Deliverables:", fontSize = 12.sp, color = colors.textSecondary)
-                                        Text(text = "${project.deliverableCount} files in NAS storage", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
-                                    }
+                        Surface(
+                            color = colors.surface,
+                            shape = RoundedCornerShape(14.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(text = "PROJECT METADATA", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(text = "Brand Code:", fontSize = 12.sp, color = colors.textSecondary)
+                                    Text(text = safeBrand, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = colors.primary)
+                                }
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(text = "Lead Designer:", fontSize = 12.sp, color = colors.textSecondary)
+                                    Text(text = safeDesigner, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                                }
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(text = "Client Org:", fontSize = 12.sp, color = colors.textSecondary)
+                                    Text(text = safeClient, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                                }
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text(text = "Production Deliverables:", fontSize = 12.sp, color = colors.textSecondary)
+                                    Text(text = "$safeDeliverables files in NAS storage", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
                                 }
                             }
                         }
                     }
                 }
                 1 -> {
-                    // TAB 1: Live Project README.md Editor
+                    // TAB 1: Live Project README.md (Full Markdown Render & Interactive Checklist)
+                    var isEditRawMode by remember { mutableStateOf(false) }
+
                     Column(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Text(
-                            text = "CANONICAL PROJECT README.MD",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.textSecondary,
-                            letterSpacing = 1.sp
-                        )
-                        Surface(
-                            color = colors.surface,
-                            shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            androidx.compose.foundation.text.BasicTextField(
-                                value = readmeText,
-                                onValueChange = { readmeText = it },
-                                textStyle = androidx.compose.ui.text.TextStyle(
-                                    fontSize = 12.sp,
-                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                                    color = colors.textPrimary
+                            Text(
+                                text = "CANONICAL PROJECT README.MD",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textSecondary,
+                                letterSpacing = 1.sp
+                            )
+
+                            // Mode toggle pill (PREVIEW / EDIT RAW)
+                            Surface(
+                                color = if (isEditRawMode) colors.primary.copy(alpha = 0.15f) else colors.surface,
+                                shape = RoundedCornerShape(8.dp),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp,
+                                    if (isEditRawMode) colors.primary else colors.border
                                 ),
+                                modifier = Modifier.clickable { isEditRawMode = !isEditRawMode }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isEditRawMode) Icons.Default.Visibility else Icons.Default.Edit,
+                                        contentDescription = null,
+                                        tint = colors.primary,
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Text(
+                                        text = if (isEditRawMode) "PREVIEW" else "EDIT RAW",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colors.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        if (isEditRawMode) {
+                            Surface(
+                                color = colors.surface,
+                                shape = RoundedCornerShape(12.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(12.dp)
+                                    .fillMaxWidth()
+                                    .heightIn(min = 240.dp, max = 360.dp)
+                            ) {
+                                androidx.compose.foundation.text.BasicTextField(
+                                    value = readmeText,
+                                    onValueChange = { readmeText = it },
+                                    textStyle = androidx.compose.ui.text.TextStyle(
+                                        fontSize = 12.sp,
+                                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                        color = colors.textPrimary,
+                                        lineHeight = 16.sp
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(12.dp)
+                                )
+                            }
+                        } else {
+                            // Full Rich Markdown Document Viewer
+                            FluentMarkdownViewer(
+                                markdownText = readmeText,
+                                onMarkdownChange = { updated ->
+                                    readmeText = updated
+                                }
                             )
                         }
+
                         Text(
-                            text = "💡 Changes made here sync directly with the Synology NAS project README.md and Desktop client.",
+                            text = "💡 Interactive markdown syncs directly with Synology NAS and Desktop client.",
                             fontSize = 11.sp,
                             color = colors.textSecondary
                         )
@@ -275,25 +328,26 @@ fun ManageProjectBottomSheet(
                 }
                 2 -> {
                     // TAB 2: Deliverable Assets & Upload Preview
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        item {
-                            Text(
-                                text = "PRODUCTION DELIVERABLES (${project.deliverableCount})",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = colors.textSecondary,
-                                letterSpacing = 1.sp
-                            )
-                        }
+                        Text(
+                            text = "PRODUCTION DELIVERABLES ($safeDeliverables)",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textSecondary,
+                            letterSpacing = 1.sp
+                        )
 
-                        items(listOf(
+                        listOf(
                             Triple("KeyVisual_Final_Poster.png", "3.4 MB • 1080x1350 • NAS Rendered", SshSuccessGreen),
                             Triple("Video_Hook_Variation_01.mp4", "18.2 MB • 1080x1920 • 9:16", Color(0xFFFBBF24)),
                             Triple("Ad_Carousel_Dieline_Pack.zip", "42.1 MB • AI / PSD Production", SshAzure)
-                        )) { (filename, meta, statusColor) ->
+                        ).forEach { (filename, meta, statusColor) ->
                             Surface(
                                 color = colors.surface,
                                 shape = RoundedCornerShape(12.dp),
@@ -330,30 +384,28 @@ fun ManageProjectBottomSheet(
                             }
                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Surface(
-                                color = colors.surface,
-                                shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.5f)),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { /* Upload trigger */ }
+                        // Add Deliverable Button
+                        Surface(
+                            color = colors.surface,
+                            shape = RoundedCornerShape(12.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { /* upload simulation */ }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Row(
-                                    modifier = Modifier.padding(14.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(Icons.Default.CloudUpload, contentDescription = "Upload", tint = colors.primary, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Upload Mobile Render to 03_EXPORTS/",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = colors.primary
-                                    )
-                                }
+                                Icon(Icons.Default.UploadFile, contentDescription = "Add Deliverable", tint = colors.primary, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Upload Deliverable from Phone",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colors.primary
+                                )
                             }
                         }
                     }

@@ -4,9 +4,9 @@
 
 Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
 
-[![Latest Release](https://img.shields.io/badge/release-v4.5.1--stable-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.5.1)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
-[![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0-purple?style=flat-square)](https://dotnet.microsoft.com)
+[![Latest Release](https://img.shields.io/badge/release-v4.6.0--stable-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.0)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
+[![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0%20%7C%20Compose-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
 [![Design System](https://img.shields.io/badge/design-Fluent%202%20%2F%2060%3A30%3A10-0078D4?style=flat-square)](https://fluent2.microsoft.design)
 [![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
@@ -27,9 +27,9 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.5.1.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Direct Synology Drive I/O. |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Direct Synology Drive I/O. |
 | 🐧 **Linux Desktop (Fedora)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Compile & run: `dotnet run --project src/SS-CAM.Linux -c Release` | **Fedora Workstation Client**: Native Skia desktop rendering, direct `~/SynologyDrive/` I/O. |
-| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Install Android package (Kotlin + Compose) | **Mobile Review & Approvals**: 1-tap deliverable approvals, push alerts, task board, brand color picker. |
+| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Install Android package (Kotlin + Compose) | **Mobile Review & Approvals**: 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts, brand color picker. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
 
 ---

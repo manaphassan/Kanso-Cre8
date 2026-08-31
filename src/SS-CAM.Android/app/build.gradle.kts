@@ -12,8 +12,8 @@ android {
         applicationId = "com.suamisihat.sscam"
         minSdk = 26
         targetSdk = 35
-        versionCode = 451
-        versionName = "4.5.1"
+        versionCode = 460
+        versionName = "4.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,4 +60,8 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // Biometric Authentication & AppCompat
+    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha05")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 }

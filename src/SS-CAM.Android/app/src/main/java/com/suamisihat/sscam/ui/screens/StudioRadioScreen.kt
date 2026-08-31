@@ -43,6 +43,17 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+import java.io.BufferedInputStream
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import org.json.JSONObject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+
 /**
  * Radio Preferences for Persisting Favorites and Last Station (Desktop Client Parity)
  */
@@ -80,23 +91,192 @@ object RadioPreferences {
 }
 
 /**
+ * Live Radio Metadata Service
+ * Fetches real-time broadcast track titles and artists from AzuraCast, Laut.fm,
+ * SomaFM, Plaza One, and universal ICY stream metadata.
+ */
+object LiveStreamMetadataFetcher {
+    private fun fetchJson(urlString: String, timeoutMs: Int = 4000): String? {
+        return try {
+            val url = URL(urlString)
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = timeoutMs
+                readTimeout = timeoutMs
+                setRequestProperty("User-Agent", "SS-CAM-Android/2.0")
+                instanceFollowRedirects = true
+            }
+            conn.connect()
+            if (conn.responseCode in 200..299) {
+                val reader = BufferedReader(InputStreamReader(conn.inputStream, Charsets.UTF_8))
+                val sb = StringBuilder()
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    sb.append(line)
+                }
+                reader.close()
+                conn.disconnect()
+                sb.toString()
+            } else {
+                conn.disconnect()
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun fetchLiveTrackTitle(station: CassetteRadioStation): String? = withContext(Dispatchers.IO) {
+        // 1. AzuraCast API (Official SuamiSihat Radio)
+        if (station.id == "preset_suamisihat") {
+            try {
+                val jsonStr = fetchJson("https://dj.suamisihat.myds.me/api/nowplaying/suamisihat-radio")
+                if (!jsonStr.isNullOrBlank()) {
+                    val json = JSONObject(jsonStr)
+                    val nowPlaying = json.optJSONObject("now_playing")
+                    val song = nowPlaying?.optJSONObject("song")
+                    if (song != null) {
+                        val title = song.optString("title").trim()
+                        val artist = song.optString("artist").trim()
+                        val text = song.optString("text").trim()
+                        if (title.isNotBlank() && artist.isNotBlank()) {
+                            return@withContext "$artist — $title"
+                        } else if (text.isNotBlank()) {
+                            return@withContext text
+                        }
+                    }
+                }
+            } catch (e: Exception) { }
+        }
+
+        // 2. Laut.fm API (AnimeFM & Chillhop Lounge)
+        if (station.id == "preset_animefm" || station.id == "preset_chillhop") {
+            val stationSlug = if (station.id == "preset_animefm") "animefm" else "lofi"
+            try {
+                val jsonStr = fetchJson("https://api.laut.fm/station/$stationSlug/current_song")
+                if (!jsonStr.isNullOrBlank()) {
+                    val json = JSONObject(jsonStr)
+                    val title = json.optString("title").trim()
+                    val artistObj = json.optJSONObject("artist")
+                    val artistName = artistObj?.optString("name")?.trim() ?: ""
+                    if (title.isNotBlank()) {
+                        return@withContext if (artistName.isNotBlank()) "$artistName — $title" else title
+                    }
+                }
+            } catch (e: Exception) { }
+        }
+
+        // 3. Nightwave Plaza API
+        if (station.id == "preset_nightwave") {
+            try {
+                val jsonStr = fetchJson("https://api.plaza.one/status")
+                if (!jsonStr.isNullOrBlank()) {
+                    val json = JSONObject(jsonStr)
+                    val song = json.optJSONObject("song")
+                    if (song != null) {
+                        val title = song.optString("title").trim()
+                        val artist = song.optString("artist").trim()
+                        if (title.isNotBlank()) {
+                            return@withContext if (artist.isNotBlank()) "$artist — $title" else title
+                        }
+                    }
+                }
+            } catch (e: Exception) { }
+        }
+
+        // 4. SomaFM API (Groove Salad)
+        if (station.id == "preset_groovesalad") {
+            try {
+                val jsonStr = fetchJson("https://somafm.com/songs/groovesalad.json")
+                if (!jsonStr.isNullOrBlank()) {
+                    val json = JSONObject(jsonStr)
+                    val songs = json.optJSONArray("songs")
+                    if (songs != null && songs.length() > 0) {
+                        val firstSong = songs.getJSONObject(0)
+                        val title = firstSong.optString("title").trim()
+                        val artist = firstSong.optString("artist").trim()
+                        if (title.isNotBlank()) {
+                            return@withContext if (artist.isNotBlank()) "$artist — $title" else title
+                        }
+                    }
+                }
+            } catch (e: Exception) { }
+        }
+
+        // 5. Universal ICY Stream Metadata Extraction (Initial D, Lo-Fi Focus, Smooth Jazz, BFM 89.9, etc.)
+        try {
+            val url = URL(station.streamUrl)
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                setRequestProperty("Icy-MetaData", "1")
+                setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SS-CAM/2.0")
+                connectTimeout = 4000
+                readTimeout = 6000
+                instanceFollowRedirects = true
+            }
+            conn.connect()
+            val metaInt = conn.getHeaderField("icy-metaint")?.toIntOrNull() ?: 0
+            if (metaInt > 0) {
+                val stream = BufferedInputStream(conn.inputStream)
+                var skipped = 0L
+                while (skipped < metaInt) {
+                    val n = stream.skip(metaInt - skipped)
+                    if (n <= 0) {
+                        if (stream.read() == -1) break
+                        skipped += 1
+                    } else {
+                        skipped += n
+                    }
+                }
+                val lengthByte = stream.read()
+                if (lengthByte > 0) {
+                    val metaLength = lengthByte * 16
+                    val metaBytes = ByteArray(metaLength)
+                    var readCount = 0
+                    while (readCount < metaLength) {
+                        val count = stream.read(metaBytes, readCount, metaLength - readCount)
+                        if (count <= 0) break
+                        readCount += count
+                    }
+                    val metaStr = String(metaBytes, 0, readCount, Charsets.UTF_8).trimEnd('\u0000')
+                    val match = Regex("""StreamTitle='([^']*)';""").find(metaStr)
+                    val rawTitle = match?.groupValues?.getOrNull(1)?.trim()
+                    conn.disconnect()
+                    if (!rawTitle.isNullOrBlank() && !rawTitle.equals("unknown", ignoreCase = true)) {
+                        return@withContext rawTitle
+                    }
+                }
+                conn.disconnect()
+            }
+        } catch (e: Exception) { }
+
+        return@withContext null
+    }
+}
+
+/**
  * Singleton Audio Streaming Engine for SS-CAM Lo-Fi & Broadcast Radio
- * Keeps audio playing reliably in the background across screens and tabs.
+ * Keeps audio playing reliably in the background across screens and tabs with real-time live metadata.
  */
 object StudioRadioManager {
     private var mediaPlayer: MediaPlayer? = null
+    private var metadataJob: Job? = null
     var isPlaying by mutableStateOf(false)
     var isBuffering by mutableStateOf(false)
     var currentStationId by mutableStateOf("preset_suamisihat")
+    var currentTrackTitle by mutableStateOf("SuamiSihat — Irama kasih")
+    var liveStationTracks = mutableStateMapOf<String, String>()
     var volume by mutableStateOf(0.85f)
     var statusText by mutableStateOf("STANDBY")
 
     fun play(station: CassetteRadioStation, context: Context? = null) {
         currentStationId = station.id
+        currentTrackTitle = liveStationTracks[station.id] ?: station.defaultTrackTitle
         isPlaying = true
         isBuffering = true
         statusText = "BUFFERING..."
         context?.let { RadioPreferences.saveLastStation(it, station.id) }
+
+        // Start real-time metadata poller
+        startMetadataPolling(station)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -142,6 +322,49 @@ object StudioRadioManager {
         }
     }
 
+    private fun startMetadataPolling(station: CassetteRadioStation) {
+        metadataJob?.cancel()
+        metadataJob = CoroutineScope(Dispatchers.IO).launch {
+            // Immediate live fetch
+            val initialTitle = LiveStreamMetadataFetcher.fetchLiveTrackTitle(station)
+            if (!initialTitle.isNullOrBlank()) {
+                withContext(Dispatchers.Main) {
+                    currentTrackTitle = initialTitle
+                    liveStationTracks[station.id] = initialTitle
+                }
+            }
+
+            // Periodic live metadata poll every 8 seconds
+            while (isActive && isPlaying) {
+                delay(8000)
+                if (!isActive || !isPlaying) break
+                val liveTitle = LiveStreamMetadataFetcher.fetchLiveTrackTitle(station)
+                if (!liveTitle.isNullOrBlank()) {
+                    withContext(Dispatchers.Main) {
+                        currentTrackTitle = liveTitle
+                        liveStationTracks[station.id] = liveTitle
+                    }
+                }
+            }
+        }
+    }
+
+    fun fetchAllStationsMetadata() {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (st in ALL_CASSETTE_STATIONS) {
+                val title = LiveStreamMetadataFetcher.fetchLiveTrackTitle(st)
+                if (!title.isNullOrBlank()) {
+                    withContext(Dispatchers.Main) {
+                        liveStationTracks[st.id] = title
+                        if (currentStationId == st.id && isPlaying) {
+                            currentTrackTitle = title
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun togglePlayPause(station: CassetteRadioStation, context: Context? = null) {
         if (isPlaying) {
             pause()
@@ -151,6 +374,7 @@ object StudioRadioManager {
                     mediaPlayer?.start()
                     isPlaying = true
                     statusText = "LIVE ${station.bitRate}"
+                    startMetadataPolling(station)
                 } catch (e: Exception) {
                     play(station, context)
                 }
@@ -162,6 +386,8 @@ object StudioRadioManager {
 
     fun pause() {
         try {
+            metadataJob?.cancel()
+            metadataJob = null
             mediaPlayer?.let {
                 if (it.isPlaying) {
                     it.pause()
@@ -174,6 +400,8 @@ object StudioRadioManager {
 
     fun stop() {
         try {
+            metadataJob?.cancel()
+            metadataJob = null
             mediaPlayer?.let {
                 if (it.isPlaying) it.stop()
                 it.release()
@@ -211,7 +439,9 @@ data class CassetteRadioStation(
     val icon: ImageVector,
     val description: String,
     val metaInfo: String,
-    val bitRate: String = "320 kbps"
+    val bitRate: String = "320 kbps",
+    val defaultTrackTitle: String = "Live Broadcast Track",
+    val sampleTracks: List<String> = emptyList()
 )
 
 val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
@@ -224,7 +454,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFF8FAFC),
         icon = Icons.Default.Radio,
         description = "Official SuamiSihat Radio — health, wellness & lifestyle broadcasting 24/7.",
-        metaInfo = "2026-08 • 320 kbps • Malaysia / Official HQ"
+        metaInfo = "2026-08 • 320 kbps • Malaysia / Official HQ",
+        defaultTrackTitle = "SuamiSihat — Creative Flow & Morning Health",
+        sampleTracks = listOf("SuamiSihat — Creative Flow & Morning Health", "SS Audio — Vitality & Design Focus", "SuamiSihat Studio — Ambient Chillwave")
     ),
     CassetteRadioStation(
         id = "preset_animefm",
@@ -235,7 +467,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFFFF1F2),
         icon = Icons.Default.Tv,
         description = "24/7 Anime OSTs, BABYMETAL, J-Rock, and high-energy Japanese anime soundtrack.",
-        metaInfo = "2026-08 • 192 kbps • Tokyo / AnimeFM"
+        metaInfo = "2026-08 • 192 kbps • Tokyo / AnimeFM",
+        defaultTrackTitle = "BABYMETAL — Gimme Chocolate!!",
+        sampleTracks = listOf("BABYMETAL — Gimme Chocolate!!", "LiSA — Gurenge (Demon Slayer)", "YOASOBI — Idol (Oshi no Ko)", "Ado — New Genesis")
     ),
     CassetteRadioStation(
         id = "preset_initiald",
@@ -246,7 +480,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFFEE2E2),
         icon = Icons.Default.Speed,
         description = "24/7 Initial D & Eurobeat high-energy workstation radio for rapid sprint design.",
-        metaInfo = "2026-08 • 320 kbps • Eurobeat / High Tempo"
+        metaInfo = "2026-08 • 320 kbps • Eurobeat / High Tempo",
+        defaultTrackTitle = "Dave Rodgers — Running in the 90s",
+        sampleTracks = listOf("Dave Rodgers — Running in the 90s", "Manuel — Gas Gas Gas", "Dave Rodgers — Deja Vu", "Niko — Night of Fire")
     ),
     CassetteRadioStation(
         id = "preset_lofifocus",
@@ -257,7 +493,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFFEF3C7),
         icon = Icons.Default.Headphones,
         description = "Chillhop lo-fi beats to relax and code/design to in uninterrupted flow.",
-        metaInfo = "2026-08 • 128 kbps • Chillhop / Deep Work"
+        metaInfo = "2026-08 • 128 kbps • Chillhop / Deep Work",
+        defaultTrackTitle = "Lofi Girl — Late Night Study Beats",
+        sampleTracks = listOf("Lofi Girl — Late Night Study Beats", "Kudasai — The Girl I Haven't Met", "Jinsang — Affection")
     ),
     CassetteRadioStation(
         id = "preset_chillhop",
@@ -268,7 +506,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFF3E8FF),
         icon = Icons.Default.Coffee,
         description = "Smooth lo-fi chillhop background tracks crafted for designers and editors.",
-        metaInfo = "2026-08 • 192 kbps • Laut.fm / Study Beats"
+        metaInfo = "2026-08 • 192 kbps • Laut.fm / Study Beats",
+        defaultTrackTitle = "Chillhop Essentials — Sunset Solitude",
+        sampleTracks = listOf("Chillhop Essentials — Sunset Solitude", "Nujabes — Feather (Instrumental)", "Saib — Sakura Trees")
     ),
     CassetteRadioStation(
         id = "preset_nightwave",
@@ -279,7 +519,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFE2E8F0),
         icon = Icons.Default.GraphicEq,
         description = "24/7 Aesthetic Vaporwave & Synthwave soundtrack for late-night designing.",
-        metaInfo = "2026-08 • 320 kbps • Tokyo / Aesthetic Synth"
+        metaInfo = "2026-08 • 320 kbps • Tokyo / Aesthetic Synth",
+        defaultTrackTitle = "Saint Pepsi — Enjoy Yourself (Vaporwave)",
+        sampleTracks = listOf("Saint Pepsi — Enjoy Yourself (Vaporwave)", "Macintosh Plus — Floral Shoppe", "Vektroid — Neo Tokyo")
     ),
     CassetteRadioStation(
         id = "preset_groovesalad",
@@ -290,7 +532,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFD1FAE5),
         icon = Icons.Default.Spa,
         description = "A nicely chilled plate of ambient/downtempo beats and grooves for creative flow.",
-        metaInfo = "2026-08 • 256 kbps • San Francisco / SomaFM"
+        metaInfo = "2026-08 • 256 kbps • San Francisco / SomaFM",
+        defaultTrackTitle = "SomaFM — Deep Ambient Space Groove",
+        sampleTracks = listOf("SomaFM — Deep Ambient Space Groove", "Carbon Based Lifeforms — Euphotic", "Solar Fields — Sol")
     ),
     CassetteRadioStation(
         id = "preset_smoothjazz",
@@ -301,7 +545,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFFEF3C7),
         icon = Icons.Default.MusicNote,
         description = "Smooth instrumental acoustic and piano jazz for deep creative concentration.",
-        metaInfo = "2026-08 • 256 kbps • Smooth Jazz / Focus"
+        metaInfo = "2026-08 • 256 kbps • Smooth Jazz / Focus",
+        defaultTrackTitle = "Miles Davis — Blue in Green (Acoustic)",
+        sampleTracks = listOf("Miles Davis — Blue in Green (Acoustic)", "Bill Evans Trio — Autumn Leaves", "Dave Brubeck — Take Five")
     ),
     CassetteRadioStation(
         id = "preset_bfm899",
@@ -312,7 +558,9 @@ val ALL_CASSETTE_STATIONS: List<CassetteRadioStation> = listOf(
         labelColor = Color(0xFFCCFBF1),
         icon = Icons.Default.Mic,
         description = "Malaysia's premier business, economy and corporate current affairs radio station.",
-        metaInfo = "2026-08 • 128 kbps • Kuala Lumpur / BFM"
+        metaInfo = "2026-08 • 128 kbps • Kuala Lumpur / BFM",
+        defaultTrackTitle = "BFM 89.9 — Morning Run & Market Pulse",
+        sampleTracks = listOf("BFM 89.9 — Morning Run & Market Pulse", "The Breakfast Grille — Live Interview", "Current Affairs & Tech Trends")
     )
 )
 
@@ -325,6 +573,11 @@ fun StudioRadioScreen() {
 fun StudioRadioContentView() {
     val colors = LocalSscamColors.current
     val context = LocalContext.current
+
+    // Sync real-time live metadata across all station presets
+    LaunchedEffect(Unit) {
+        StudioRadioManager.fetchAllStationsMetadata()
+    }
 
     var favoriteStationIds by remember { mutableStateOf(RadioPreferences.getFavorites(context)) }
     var selectedFilter by remember { mutableStateOf(0) } // 0 = All, 1 = Favorites
@@ -1040,7 +1293,38 @@ fun TactileCassettePlayerDeck(
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Live Broadcast Track Title Pill
+            Surface(
+                color = if (colors.isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC),
+                shape = RoundedCornerShape(8.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.MusicNote,
+                        contentDescription = null,
+                        tint = if (isPlaying) (if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFFEA580C)) else colors.textMuted,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = StudioRadioManager.currentTrackTitle,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.textPrimary,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Animated Equalizer Visualizer Spectrum
             AnimatedSpectrumVisualizer(

@@ -169,7 +169,7 @@ fun TaskManagerScreen(
                     item {
                         FluentSectionHeader(
                             title = "Task Queue",
-                            trailingText = "${filteredProjects.size} Tasks"
+                            trailingText = "${filteredProjects.size} tasks"
                         )
                     }
 
@@ -212,14 +212,14 @@ fun TaskManagerScreen(
                             }
                         }
                     } else {
-                        items(filteredProjects, key = { it.id }) { project ->
+                        items(filteredProjects) { project ->
                             ReferenceStyleDeliverableCard(
-                                title = project.title,
-                                brand = project.brand,
-                                designer = project.designer,
-                                deadline = project.deadline,
+                                title = project.safeTitle,
+                                brand = project.safeBrand,
+                                designer = project.safeDesigner,
+                                deadline = project.formattedDeadline,
                                 status = project.status,
-                                priority = project.priority,
+                                priority = project.safePriority,
                                 onSignOff = { onSignOff(project) },
                                 onCardClick = { selectedProjectForManage = project }
                             )
@@ -314,14 +314,14 @@ fun OrbixTaskCalendarTimelineView(
                     }
                 }
                 val offset = if (idx % 2 == 1) 0.35f else 0f
-                val initials = if (!p.designer.isNullOrBlank()) {
-                    listOf(p.designer.take(1).uppercase())
+                val initials = if (p.safeDesigner.isNotBlank()) {
+                    listOf(p.safeDesigner.take(1).uppercase())
                 } else listOf("H", "A", "S")
 
                 ScheduledCalendarTask(
                     id = p.id,
-                    title = p.title,
-                    durationText = if (p.priority.equals("urgent", true)) "01.00 hr • Urgent" else "02.30 hrs",
+                    title = p.safeTitle,
+                    durationText = if (p.safePriority.equals("urgent", true)) "01.00 hr • Urgent" else "02.30 hrs",
                     progressPercent = progressVal,
                     progressStatusText = when (p.normalizedStatus) {
                         "done" -> "Completed 100%"

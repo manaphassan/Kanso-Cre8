@@ -8,23 +8,41 @@ data class ProjectsResponse(
 )
 
 data class ProjectItem(
-    @SerializedName("id") val id: String,
-    @SerializedName("title") val title: String,
-    @SerializedName("brand") val brand: String = "SuamiSihat",
-    @SerializedName("status") val status: String = "backlog",
-    @SerializedName("designer") val designer: String = "",
-    @SerializedName("client") val client: String = "",
-    @SerializedName("deadline") val deadline: String = "",
-    @SerializedName("created") val created: String = "",
-    @SerializedName("priority") val priority: String = "medium",
-    @SerializedName("revision") val revision: Int = 0,
-    @SerializedName("tags") val tags: List<String> = emptyList(),
-    @SerializedName("deliverableCount") val deliverableCount: Int = 0,
-    @SerializedName("presetType") val presetType: String = "",
-    @SerializedName("mediaClass") val mediaClass: String = "image"
+    @SerializedName("id") val id: String = "",
+    @SerializedName("title") val title: String? = "Untitled Project",
+    @SerializedName("brand") val brand: String? = "SuamiSihat",
+    @SerializedName("status") val status: String? = "backlog",
+    @SerializedName("designer") val designer: String? = "",
+    @SerializedName("client") val client: String? = "",
+    @SerializedName("deadline") val deadline: String? = "",
+    @SerializedName("created") val created: String? = "",
+    @SerializedName("priority") val priority: String? = "medium",
+    @SerializedName("revision") val revision: Int? = 0,
+    @SerializedName("tags") val tags: List<String>? = emptyList(),
+    @SerializedName("deliverableCount") val deliverableCount: Int? = 0,
+    @SerializedName("presetType") val presetType: String? = "",
+    @SerializedName("mediaClass") val mediaClass: String? = "image"
 ) {
+    val safeTitle: String
+        get() = title.orEmpty().ifBlank { "Untitled Project" }
+
+    val safeBrand: String
+        get() = brand.orEmpty().ifBlank { "SSH" }
+
+    val safeDesigner: String
+        get() = designer.orEmpty().ifBlank { "Unassigned" }
+
+    val safeClient: String
+        get() = client.orEmpty().ifBlank { "Internal" }
+
+    val safePriority: String
+        get() = priority.orEmpty().ifBlank { "standard" }
+
+    val safeDeliverableCount: Int
+        get() = deliverableCount ?: 0
+
     val normalizedStatus: String
-        get() = when (status.lowercase().trim()) {
+        get() = when (status?.lowercase()?.trim()) {
             "review", "in_review", "in-review" -> "in_review"
             "in_progress", "in-progress", "inprogress" -> "in_progress"
             "revision", "revision_requested" -> "revision"
@@ -34,10 +52,11 @@ data class ProjectItem(
 
     val formattedDeadline: String
         get() {
-            if (deadline.isBlank()) return "TBD"
+            val d = deadline.orEmpty()
+            if (d.isBlank()) return "TBD"
             return try {
-                if (deadline.contains("T")) {
-                    val datePart = deadline.substringBefore("T")
+                if (d.contains("T")) {
+                    val datePart = d.substringBefore("T")
                     val parts = datePart.split("-")
                     if (parts.size == 3) {
                         val year = parts[0]
@@ -50,9 +69,9 @@ data class ProjectItem(
                         val day = parts[2]
                         "$day $month $year"
                     } else datePart
-                } else deadline
+                } else d
             } catch (e: Exception) {
-                deadline
+                d
             }
         }
 }

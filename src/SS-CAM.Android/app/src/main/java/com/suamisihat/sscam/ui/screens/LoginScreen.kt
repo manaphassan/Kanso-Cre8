@@ -58,7 +58,8 @@ fun LoginScreen(
     initialUsername: String = "harussani",
     isLoading: Boolean = false,
     errorMessage: String? = null,
-    onLogin: (username: String, password: String, rememberMe: Boolean) -> Unit
+    onLogin: (username: String, password: String, rememberMe: Boolean) -> Unit,
+    onBiometricLogin: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     val scrollState = rememberScrollState()
@@ -738,6 +739,39 @@ fun LoginScreen(
                                 modifier = Modifier.size(16.dp)
                             )
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Biometric Hardware Unlock Button
+                    OutlinedButton(
+                        onClick = {
+                            try { haptic.performHapticFeedback(HapticFeedbackType.LongPress) } catch (e: Exception) {}
+                            onBiometricLogin()
+                        },
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(14.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f)),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF38BDF8)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Fingerprint,
+                            contentDescription = "Biometric Unlock",
+                            tint = Color(0xFF38BDF8),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Unlock with Biometrics (Touch / Face)",
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFE2E8F0)
+                        )
                     }
                 }
             }
