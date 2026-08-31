@@ -768,6 +768,25 @@ namespace SS_CAM.Views
                 return;
             }
 
+            // Run Preflight safety check before export
+            try
+            {
+                PreflightReport preflight = await PreflightValidatorService.RunPreflightAuditAsync(selectedItem.FullPath);
+                if (preflight.FailCount > 0)
+                {
+                    string msg = string.Format("⚠️ Preflight Quality Notice: Project '{0}' has {1} structural/metadata issue(s).\n\nProceed with packaging anyway?",
+                        preflight.ProjectName, preflight.FailCount);
+                    if (MessageBox.Show(msg, "Preflight Notice", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                    {
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] Preflight export check error: " + ex.Message);
+            }
+
             Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog
             {
                 Title = "Export Creative Handover Package (ZIP)",
@@ -807,6 +826,66 @@ namespace SS_CAM.Views
                 {
                     MessageBox.Show(string.Format("Export failed: {0}", ex.Message), "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        private async void OnPreflightAuditClicked(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem == null || !Directory.Exists(selectedItem.FullPath))
+            {
+                MessageBox.Show("Select a valid project folder first.", "No Project Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                PreflightReport report = await PreflightValidatorService.RunPreflightAuditAsync(selectedItem.FullPath);
+                if (report.IsPass && report.WarnCount == 0)
+                {
+                    MessageBox.Show(
+                        string.Format("✅ All {0} Preflight Checks Passed!\n\n• 5-Folder structure verified\n• Project brief README.md compliant\n• 03_COPYWRITING script active\n• Production deliverables verified\n• Asset naming standards met\n\nProject '{1}' is ready for client handover!",
+                            report.Checks.Count, report.ProjectName),
+                        "Preflight Audit — 100% Compliant",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(string.Format("Preflight Audit for '{0}': {1} Passed, {2} Warnings, {3} Failed\n",
+                        report.ProjectName, report.PassCount, report.WarnCount, report.FailCount));
+
+                    foreach (var check in report.Checks)
+                    {
+                        string icon = check.Status == PreflightStatus.Pass ? "✅" : (check.Status == PreflightStatus.Warn ? "⚠️" : "❌");
+                        sb.AppendLine(string.Format("{0} [{1}] {2}: {3}", icon, check.Category, check.Title, check.Details));
+                    }
+
+                    if (report.FailCount > 0 || report.WarnCount > 0)
+                    {
+                        sb.AppendLine("\nWould you like SS-CAM to automatically scaffold missing standard 5-folders, README.md frontmatter, and standard COPY.md script now?");
+
+                        if (MessageBox.Show(sb.ToString(), "Preflight Quality Audit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            bool success = await PreflightValidatorService.AutoFixProjectAsync(selectedItem.FullPath);
+                            if (success)
+                            {
+                                NotificationService.ShowSuccess("Preflight Auto-Fix Complete", "Scaffolded missing folders and standard templates.");
+                                UpdateInspectorUI();
+                                LoadProjectImages();
+                            }
+                            else
+                            {
+                                NotificationService.ShowError("Auto-Fix Failed", "Could not create missing files/folders. Check disk permissions.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SearchCopyPage] PreflightAudit error: " + ex.Message);
+                MessageBox.Show(string.Format("Preflight audit error: {0}", ex.Message), "Preflight Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
