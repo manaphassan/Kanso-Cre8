@@ -116,6 +116,47 @@ object AuthPreferences {
     }
 }
 
+object ProjectCacheManager {
+    private const val PREFS_NAME = "sscam_data_cache"
+    private const val KEY_PROJECTS_JSON = "cached_projects_json"
+    private const val KEY_STAFF_JSON = "cached_staff_json"
+    private val gson = com.google.gson.Gson()
+
+    fun getCachedProjects(context: android.content.Context): List<ProjectItem> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_PROJECTS_JSON, null) ?: return emptyList()
+        return try {
+            val type = object : com.google.gson.reflect.TypeToken<List<ProjectItem>>() {}.type
+            gson.fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun saveProjects(context: android.content.Context, projects: List<ProjectItem>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = gson.toJson(projects)
+        prefs.edit().putString(KEY_PROJECTS_JSON, json).apply()
+    }
+
+    fun getCachedStaff(context: android.content.Context): List<StaffMember> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_STAFF_JSON, null) ?: return emptyList()
+        return try {
+            val type = object : com.google.gson.reflect.TypeToken<List<StaffMember>>() {}.type
+            gson.fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun saveStaff(context: android.content.Context, staff: List<StaffMember>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = gson.toJson(staff)
+        prefs.edit().putString(KEY_STAFF_JSON, json).apply()
+    }
+}
+
 enum class CompanionScreen(val title: String, val icon: ImageVector) {
     Dashboard("Overview", Icons.Default.Home),
     Tasks("Tasks", Icons.AutoMirrored.Filled.Assignment),
@@ -153,16 +194,11 @@ fun CompanionAppScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     var projects by remember {
-        mutableStateOf<List<ProjectItem>>(
-            listOf(
-                ProjectItem(id = "202608_0001D", title = "Rejal Madu Tualang", brand = "SSE", status = "done", designer = "Harussani", client = "Internal", deadline = "2026-08-30", priority = "medium", deliverableCount = 3),
-                ProjectItem(id = "202608_0002P", title = "Menss Care Cream", brand = "SSE", status = "in_progress", designer = "Harussani", client = "Internal", deadline = "2026-08-26", priority = "high", deliverableCount = 2),
-                ProjectItem(id = "202608_0003S", title = "PROMO MALAYSIA MERDEKA", brand = "SSE", status = "in_review", designer = "Harussani", client = "Marketing", deadline = "2026-08-28", priority = "urgent", deliverableCount = 5),
-                ProjectItem(id = "202608_0004P", title = "Pertabi Jersey", brand = "SS", status = "in_progress", designer = "Harussani", client = "Sports", deadline = "2026-08-28", priority = "urgent", deliverableCount = 1)
-            )
-        )
+        mutableStateOf<List<ProjectItem>>(ProjectCacheManager.getCachedProjects(context))
     }
-    var staffList by remember { mutableStateOf<List<StaffMember>>(emptyList()) }
+    var staffList by remember {
+        mutableStateOf<List<StaffMember>>(ProjectCacheManager.getCachedStaff(context))
+    }
     var authToken by remember { mutableStateOf<String?>(AuthPreferences.getSavedToken(context)) }
 
     var notifications by remember {
@@ -203,8 +239,14 @@ fun CompanionAppScreen(
 
                     withContext(Dispatchers.Main) {
                         if (fetchedProjects.isNotEmpty() || fetchedStaff.isNotEmpty()) {
-                            projects = fetchedProjects
-                            staffList = fetchedStaff
+                            if (fetchedProjects.isNotEmpty()) {
+                                projects = fetchedProjects
+                                ProjectCacheManager.saveProjects(context, fetchedProjects)
+                            }
+                            if (fetchedStaff.isNotEmpty()) {
+                                staffList = fetchedStaff
+                                ProjectCacheManager.saveStaff(context, fetchedStaff)
+                            }
                             if (fetchedNotifs != null) {
                                 notifications = fetchedNotifs
                             }
