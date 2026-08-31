@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,9 +60,11 @@ fun DashboardCompanionScreen(
     onSignOff: (ProjectItem) -> Unit = {}
 ) {
     val colors = LocalSscamColors.current
+    val haptic = LocalHapticFeedback.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedTimeframe by remember { mutableStateOf("Weekly") }
     var isTimeframeMenuExpanded by remember { mutableStateOf(false) }
+    var activeQuickStatFilter by remember { mutableStateOf("All") }
 
     val filteredProjects = remember(projects, searchQuery) {
         if (searchQuery.isBlank()) projects
@@ -73,30 +77,36 @@ fun DashboardCompanionScreen(
         }
     }
 
-    val stuckCount = remember(filteredProjects, selectedTimeframe) {
-        filteredProjects.count { it.normalizedStatus.equals("stuck", true) || it.priority.equals("urgent", true) }
+    val doneCount = remember(filteredProjects) {
+        filteredProjects.count { it.normalizedStatus.equals("done", true) || it.normalizedStatus.equals("completed", true) }
     }
-    val inProgressCount = remember(filteredProjects, selectedTimeframe) {
-        filteredProjects.count { it.normalizedStatus.equals("in_progress", true) || it.normalizedStatus.equals("queued", true) }
+    val inReviewCount = remember(filteredProjects) {
+        filteredProjects.count { (it.normalizedStatus.equals("in_review", true) || it.normalizedStatus.equals("revision", true)) && !(it.normalizedStatus.equals("done", true) || it.normalizedStatus.equals("completed", true)) }
     }
-    val inReviewCount = remember(filteredProjects, selectedTimeframe) {
-        filteredProjects.count { it.normalizedStatus.equals("in_review", true) || it.normalizedStatus.equals("revision", true) }
+    val stuckCount = remember(filteredProjects) {
+        filteredProjects.count { it.normalizedStatus.equals("stuck", true) }
     }
-    val doneCount = remember(filteredProjects, selectedTimeframe) {
-        filteredProjects.count { it.normalizedStatus.equals("done", true) }
+    val inProgressCount = remember(filteredProjects) {
+        filteredProjects.count { 
+            !it.normalizedStatus.equals("done", true) && 
+            !it.normalizedStatus.equals("completed", true) &&
+            !it.normalizedStatus.equals("in_review", true) && 
+            !it.normalizedStatus.equals("revision", true) &&
+            !it.normalizedStatus.equals("stuck", true)
+        }
     }
     val activeBrandsCount = remember(filteredProjects) {
-        filteredProjects.mapNotNull { it.brand?.uppercase() }.distinct().count()
+        filteredProjects.map { it.safeBrand.uppercase() }.distinct().count()
     }
     val nasAssetsCount = remember(filteredProjects) {
-        filteredProjects.sumOf { it.deliverableCount }
+        filteredProjects.sumOf { it.safeDeliverableCount }
     }
 
     val quickStats = listOf(
-        QuickStatItem("Active Tasks", String.format("%02d tasks", filteredProjects.size), Icons.Default.Description, Color(0xFFEFF6FF)),
-        QuickStatItem("Due Projects", String.format("%02d projects", inProgressCount + inReviewCount), Icons.Default.HourglassBottom, Color(0xFFFEF3C7)),
-        QuickStatItem("Active Brands", String.format("%02d brands", activeBrandsCount), Icons.Default.Storefront, Color(0xFFF3E8FF)),
-        QuickStatItem("NAS Assets", String.format("%02d files", nasAssetsCount), Icons.Default.FolderZip, Color(0xFFECFDF5))
+        QuickStatItem("Active Tasks", "${filteredProjects.size} tasks", Icons.Default.Description, Color(0xFFEFF6FF)),
+        QuickStatItem("Due Projects", "${inProgressCount + inReviewCount} projects", Icons.Default.HourglassBottom, Color(0xFFFEF3C7)),
+        QuickStatItem("Active Brands", "$activeBrandsCount brands", Icons.Default.Storefront, Color(0xFFF3E8FF)),
+        QuickStatItem("NAS Assets", "$nasAssetsCount files", Icons.Default.FolderZip, Color(0xFFECFDF5))
     )
 
     LazyColumn(
@@ -166,20 +176,28 @@ fun DashboardCompanionScreen(
             }
         }
 
-        // 2. 4 Quick Stat Summary Cards
+        // 2. 4 Quick Stat Summary Cards (Interactive Filtering)
         item {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(quickStats) { stat ->
+                    val isSelected = activeQuickStatFilter == stat.title
                     Surface(
-                        color = colors.card,
+                        color = if (isSelected) (if (colors.isDark) colors.surface else Color(0xFFEFF6FF)) else colors.card,
                         shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                        border = androidx.compose.foundation.BorderStroke(
+                            if (isSelected) 1.8.dp else 1.dp,
+                            if (isSelected) colors.primary else colors.border
+                        ),
                         modifier = Modifier
                             .width(135.dp)
                             .height(105.dp)
+                            .clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                activeQuickStatFilter = if (activeQuickStatFilter == stat.title) "All" else stat.title
+                            }
                     ) {
                         Column(
                             modifier = Modifier
@@ -207,7 +225,7 @@ fun DashboardCompanionScreen(
                                     text = stat.title,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = colors.textPrimary
+                                    color = if (isSelected) colors.primary else colors.textPrimary
                                 )
                                 Text(
                                     text = stat.count,
@@ -289,6 +307,9 @@ fun DashboardCompanionScreen(
                     border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    val totalKpi = stuckCount + inProgressCount + inReviewCount + doneCount
+                    val completionPct = if (totalKpi > 0) ((doneCount.toFloat() / totalKpi) * 100).toInt() else 0
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -296,32 +317,32 @@ fun DashboardCompanionScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Left: Donut Ring Chart with Center Tooltip
+                        // Left: Elevated Donut Ring Chart with Center Typography
                         Box(
-                            modifier = Modifier.size(150.dp),
+                            modifier = Modifier.size(140.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Canvas(modifier = Modifier.size(140.dp)) {
-                                val strokeWidth = 14.dp.toPx()
+                            Canvas(modifier = Modifier.size(130.dp)) {
+                                val strokeWidth = 12.dp.toPx()
                                 val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
                                 val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
 
-                                val totalKpi = stuckCount + inProgressCount + inReviewCount + doneCount
-                                if (totalKpi == 0) {
-                                    drawArc(
-                                        color = if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0),
-                                        startAngle = 0f,
-                                        sweepAngle = 360f,
-                                        useCenter = false,
-                                        topLeft = topLeft,
-                                        size = arcSize,
-                                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                                    )
-                                } else {
-                                    val stuckSweep = (stuckCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (stuckCount > 0) 30f else 0f)
-                                    val inProgressSweep = (inProgressCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (inProgressCount > 0) 30f else 0f)
-                                    val inReviewSweep = (inReviewCount.toFloat() / totalKpi * 360f).coerceAtLeast(if (inReviewCount > 0) 30f else 0f)
-                                    val doneSweep = (360f - stuckSweep - inProgressSweep - inReviewSweep).coerceAtLeast(if (doneCount > 0) 30f else 0f)
+                                // Base track
+                                drawArc(
+                                    color = if (colors.isDark) Color(0xFF334155) else Color(0xFFF1F5F9),
+                                    startAngle = 0f,
+                                    sweepAngle = 360f,
+                                    useCenter = false,
+                                    topLeft = topLeft,
+                                    size = arcSize,
+                                    style = Stroke(width = strokeWidth)
+                                )
+
+                                if (totalKpi > 0) {
+                                    val stuckSweep = (stuckCount.toFloat() / totalKpi * 360f)
+                                    val inProgressSweep = (inProgressCount.toFloat() / totalKpi * 360f)
+                                    val inReviewSweep = (inReviewCount.toFloat() / totalKpi * 360f)
+                                    val doneSweep = (doneCount.toFloat() / totalKpi * 360f)
 
                                     val segments = if (colors.isMonochrome) {
                                         listOf(
@@ -340,12 +361,15 @@ fun DashboardCompanionScreen(
                                     }
 
                                     var startAngle = -90f
+                                    val activeCount = listOf(stuckCount, inProgressCount, inReviewCount, doneCount).count { it > 0 }
+
                                     segments.forEach { (color, sweep) ->
-                                        if (sweep > 0) {
+                                        if (sweep > 0f) {
+                                            val effectiveSweep = if (activeCount > 1) (sweep - 4f).coerceAtLeast(3f) else sweep
                                             drawArc(
                                                 color = color,
                                                 startAngle = startAngle,
-                                                sweepAngle = (sweep - 4f).coerceAtLeast(6f),
+                                                sweepAngle = effectiveSweep,
                                                 useCenter = false,
                                                 topLeft = topLeft,
                                                 size = arcSize,
@@ -357,45 +381,30 @@ fun DashboardCompanionScreen(
                                 }
                             }
 
-                            // Floating Center Tooltip Pill
-                            Surface(
-                                color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A),
-                                shape = RoundedCornerShape(8.dp),
-                                shadowElevation = 4.dp,
-                                modifier = Modifier.padding(4.dp)
+                            // Clean Center Typography Lockup (Fluent 2 Style)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Task Status",
-                                        fontSize = 8.sp,
-                                        color = if (colors.isMonochrome) Color(0xFFD4D4D8) else Color(0xFF94A3B8),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(5.dp)
-                                                .clip(CircleShape)
-                                                .background(if (colors.isMonochrome) Color.White else (if (doneCount > 0) Color(0xFF4ADE80) else Color(0xFF38BDF8)))
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = if (doneCount > 0) "$doneCount Done" else "${projects.size} Tasks",
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = if (totalKpi > 0) "$completionPct%" else "0%",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = colors.textPrimary,
+                                    letterSpacing = (-0.5).sp
+                                )
+                                Text(
+                                    text = if (doneCount > 0) "$doneCount/$totalKpi Done" else "$totalKpi tasks",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colors.textSecondary
+                                )
                             }
                         }
 
                         // Right: KPI Breakdown List
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.padding(start = 12.dp)
                         ) {
                             val (stuckCol, inProgCol, inRevCol, doneCol) = if (colors.isMonochrome) {
@@ -403,10 +412,10 @@ fun DashboardCompanionScreen(
                             } else {
                                 listOf(Color(0xFFF87171), Color(0xFFFBBF24), Color(0xFF38BDF8), Color(0xFF4ADE80))
                             }
-                            KpiBreakdownRow(color = stuckCol, label = "Stuck", count = String.format("%02d", stuckCount))
-                            KpiBreakdownRow(color = inProgCol, label = "In Progress", count = String.format("%02d", inProgressCount))
-                            KpiBreakdownRow(color = inRevCol, label = "In Review", count = String.format("%02d", inReviewCount))
-                            KpiBreakdownRow(color = doneCol, label = "Done", count = String.format("%02d", doneCount))
+                            KpiBreakdownRow(color = stuckCol, label = "Stuck", count = stuckCount, total = totalKpi)
+                            KpiBreakdownRow(color = inProgCol, label = "In Progress", count = inProgressCount, total = totalKpi)
+                            KpiBreakdownRow(color = inRevCol, label = "In Review", count = inReviewCount, total = totalKpi)
+                            KpiBreakdownRow(color = doneCol, label = "Done", count = doneCount, total = totalKpi)
                         }
                     }
                 }
@@ -439,8 +448,15 @@ fun DashboardCompanionScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                val displayTasks = remember(filteredProjects) {
-                    filteredProjects.map { p ->
+                val displayTasks = remember(filteredProjects, activeQuickStatFilter) {
+                    val baseList = when (activeQuickStatFilter) {
+                        "Active Tasks" -> filteredProjects.filter { !it.normalizedStatus.equals("done", true) && !it.normalizedStatus.equals("completed", true) }
+                        "Due Projects" -> filteredProjects.filter { it.safePriority.equals("urgent", true) || it.safePriority.equals("high", true) || it.normalizedStatus.equals("in_review", true) }
+                        "Active Brands" -> filteredProjects.sortedBy { it.safeBrand }
+                        "NAS Assets" -> filteredProjects.filter { it.safeDeliverableCount > 0 }
+                        else -> filteredProjects
+                    }
+                    baseList.map { p ->
                         val progressVal = when (p.normalizedStatus) {
                             "done" -> 1.0f
                             "in_review" -> 0.85f
@@ -449,7 +465,7 @@ fun DashboardCompanionScreen(
                             else -> 0.35f
                         }
                         val progressText = "${(progressVal * 100).toInt()}%"
-                        val bannerGrad = when (p.brand.uppercase()) {
+                        val bannerGrad = when (p.safeBrand.uppercase()) {
                             "SSH", "SS" -> listOf(Color(0xFF0F172A), Color(0xFF0284C7), Color(0xFF0369A1))
                             "SSE" -> listOf(Color(0xFF064E3B), Color(0xFF059669), Color(0xFF10B981))
                             "SSW" -> listOf(Color(0xFF831843), Color(0xFFDB2777), Color(0xFFF472B6))
@@ -459,12 +475,12 @@ fun DashboardCompanionScreen(
                         val nasUrl = ""
 
                         TodayTaskItem(
-                            title = p.title,
-                            brand = p.brand,
+                            title = p.safeTitle,
+                            brand = p.safeBrand,
                             progressText = progressText,
                             progressVal = progressVal,
                             dateText = if (p.normalizedStatus == "done") "Completed" else "In Sprint",
-                            durationText = if (p.priority.equals("urgent", true) || p.priority.equals("high", true)) "High Priority" else "Standard",
+                            durationText = if (p.safePriority.equals("urgent", true) || p.safePriority.equals("high", true)) "High Priority" else "Standard",
                             nasUrl = nasUrl,
                             bannerGradient = bannerGrad
                         )
@@ -539,16 +555,47 @@ fun DashboardCompanionScreen(
                                             androidx.compose.ui.graphics.Brush.linearGradient(taskBannerGrad)
                                         )
                                 ) {
-                                    coil.compose.AsyncImage(
-                                        model = task.nasUrl,
-                                        contentDescription = "NAS Deliverable Render",
-                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                                        colorFilter = grayscaleFilter,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
+                                    if (task.nasUrl.isNotBlank()) {
+                                        coil.compose.AsyncImage(
+                                            model = task.nasUrl,
+                                            contentDescription = "NAS Deliverable Render",
+                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                                            colorFilter = grayscaleFilter,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    } else {
+                                        // Luxury Brand Fallback Art Tile
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(10.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = task.brand,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Black,
+                                                    color = Color.White.copy(alpha = 0.28f),
+                                                    letterSpacing = 2.sp
+                                                )
+                                                Text(
+                                                    text = if (task.brand == "SSE") "E-COMMERCE PRODUCTION" else "CREATIVE SUITE",
+                                                    fontSize = 7.5.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.White.copy(alpha = 0.45f),
+                                                    letterSpacing = 1.2.sp
+                                                )
+                                            }
+                                        }
+                                    }
+
                                     // Subsidiary Tag Pill over NAS image
                                     Surface(
-                                        color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.75f),
+                                        color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.82f),
                                         shape = RoundedCornerShape(6.dp),
                                         modifier = Modifier
                                             .padding(8.dp)
@@ -563,9 +610,9 @@ fun DashboardCompanionScreen(
                                         )
                                     }
 
-                                    // NAS Sync Badge
+                                    // NAS Sync Badge & Format Pill
                                     Surface(
-                                        color = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen.copy(alpha = 0.9f),
+                                        color = if (colors.isMonochrome) Color(0xFF18181B) else SshSuccessGreen.copy(alpha = 0.92f),
                                         shape = RoundedCornerShape(6.dp),
                                         modifier = Modifier
                                             .padding(8.dp)
@@ -577,7 +624,7 @@ fun DashboardCompanionScreen(
                                         ) {
                                             Icon(Icons.Default.CloudDone, contentDescription = null, tint = Color.White, modifier = Modifier.size(10.dp))
                                             Spacer(modifier = Modifier.width(3.dp))
-                                            Text("NAS", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                            Text("NAS 4K", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
                                         }
                                     }
                                 }
@@ -717,17 +764,19 @@ fun DashboardCompanionScreen(
 fun KpiBreakdownRow(
     color: Color,
     label: String,
-    count: String
+    count: Int,
+    total: Int = 0
 ) {
     val colors = LocalSscamColors.current
+    val pct = if (total > 0) ((count.toFloat() / total) * 100).toInt() else 0
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.width(130.dp)
+        modifier = Modifier.width(145.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(10.dp)
-                .clip(RoundedCornerShape(3.dp))
+                .size(9.dp)
+                .clip(CircleShape)
                 .background(color)
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -743,6 +792,13 @@ fun KpiBreakdownRow(
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             color = colors.textPrimary
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = "$pct%",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colors.textSecondary
         )
     }
 }

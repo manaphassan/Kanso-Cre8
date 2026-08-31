@@ -30,6 +30,7 @@ TestWorkspace/
 
 # ── Editor & OS ────────────────────────────────────────────────
 .vs/
+.vscode/
 *.suo
 Thumbs.db
 desktop.ini

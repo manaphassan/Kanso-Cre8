@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -138,20 +139,22 @@ fun QuickNotesContentView() {
             val res = withContext(Dispatchers.IO) { api.getNotes() }
             if (res.isSuccessful && res.body()?.success == true) {
                 val liveDtos = res.body()?.notes ?: emptyList()
-                val liveNotes = liveDtos.map { dto ->
-                    StudioNote(
-                        id = dto.id,
-                        title = dto.title,
-                        body = dto.body,
-                        priority = dto.priority,
-                        isPinned = dto.isPinned,
-                        dateText = dto.dateText,
-                        modified = dto.modified
-                    )
+                if (liveDtos.isNotEmpty()) {
+                    val liveNotes = liveDtos.map { dto ->
+                        StudioNote(
+                            id = dto.id,
+                            title = dto.title,
+                            body = dto.body,
+                            priority = dto.priority,
+                            isPinned = dto.isPinned,
+                            dateText = dto.dateText,
+                            modified = dto.modified
+                        )
+                    }
+                    notes.clear()
+                    notes.addAll(liveNotes)
+                    QuickNotesCache.saveCachedNotes(context, liveNotes)
                 }
-                notes.clear()
-                notes.addAll(liveNotes)
-                QuickNotesCache.saveCachedNotes(context, liveNotes)
                 syncStatusText = "LIVE NAS SYNC"
             } else {
                 syncStatusText = "OFFLINE CACHED"
@@ -208,101 +211,38 @@ fun QuickNotesContentView() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // 1. Tactile Header (Desktop Synced Studio Notes)
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.EditNote,
-                                contentDescription = null,
-                                tint = if (colors.isMonochrome) Color(0xFF18181B) else colors.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "QUICK NOTES",
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = colors.textPrimary,
-                                letterSpacing = 1.sp
-                            )
-                        }
-                        Text(
-                            text = "Personal scratchpad synced with SS-CAM Desktop & Synology NAS",
-                            fontSize = 11.sp,
-                            color = colors.textSecondary
-                        )
-                    }
-
-                    // Sync Status Badge
-                    Surface(
-                        color = if (colors.isMonochrome) Color(0xFFE4E4E7) else if (syncStatusText.contains("LIVE")) SshSuccessGreen.copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(12.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = syncStatusText,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706)
-                            )
-                        }
-                    }
-                }
-            }
-
-            // 2. Search & New Note Action Bar
+            // 1. Sleek Search & New Note Action Row
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Search Input
                     Surface(
                         color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
                         modifier = Modifier
                             .weight(1f)
-                            .height(42.dp)
+                            .height(38.dp)
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 12.dp),
+                                .padding(horizontal = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = null,
                                 tint = colors.textMuted,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(15.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             BasicTextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
@@ -316,8 +256,8 @@ fun QuickNotesContentView() {
                                 decorationBox = { innerTextField ->
                                     if (searchQuery.isEmpty()) {
                                         Text(
-                                            "Search notes, specs & ideas...",
-                                            fontSize = 12.sp,
+                                            "Search notes, specs...",
+                                            fontSize = 11.5.sp,
                                             color = colors.textMuted
                                         )
                                     }
@@ -327,7 +267,7 @@ fun QuickNotesContentView() {
                         }
                     }
 
-                    // Tactile Create Button
+                    // Compact New Note Button
                     TactileButton(
                         onClick = {
                             editingNote = null
@@ -335,69 +275,102 @@ fun QuickNotesContentView() {
                         },
                         icon = Icons.Default.Add,
                         text = "New Note",
-                        height = 42.dp
+                        height = 38.dp
                     )
                 }
             }
 
-            // 3. Filter Pill Selector
+            // 2. Filter Pills + Live Sync Status Row
             item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 2.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(filterOptions) { filter ->
-                        val isSelected = selectedFilter == filter
-                        Surface(
-                            color = if (isSelected) (if (colors.isMonochrome) Color(0xFF18181B) else colors.primary) else colors.surface,
-                            shape = RoundedCornerShape(16.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) Color.Transparent else colors.border),
-                            modifier = Modifier.clickable { selectedFilter = filter }
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.weight(1f, fill = false)
+                    ) {
+                        items(filterOptions) { filter ->
+                            val isSelected = selectedFilter == filter
+                            Surface(
+                                color = if (isSelected) (if (colors.isMonochrome) Color(0xFF18181B) else colors.primary) else colors.surface,
+                                shape = RoundedCornerShape(12.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) Color.Transparent else colors.border),
+                                modifier = Modifier.clickable { selectedFilter = filter }
+                            ) {
+                                Text(
+                                    text = filter,
+                                    fontSize = 10.5.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Color.White else colors.textPrimary,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Compact Live Sync Indicator
+                    Surface(
+                        color = if (colors.isMonochrome) Color(0xFFE4E4E7) else if (syncStatusText.contains("LIVE")) SshSuccessGreen.copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(10.dp),
+                        border = androidx.compose.foundation.BorderStroke(0.8.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .clip(CircleShape)
+                                    .background(if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706))
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = filter,
-                                fontSize = 11.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else colors.textPrimary,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                text = if (syncStatusText.contains("LIVE")) "LIVE NAS" else "OFFLINE",
+                                fontSize = 8.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (syncStatusText.contains("LIVE")) SshSuccessGreen else Color(0xFFD97706)
                             )
                         }
                     }
                 }
             }
 
-            // 4. Notes List (Empty State or Tactile Note Cards)
+            // 3. Notes List (Empty State or Tactile Note Cards)
             if (filteredNotes.isEmpty()) {
                 item {
                     TactileCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 24.dp)
+                            .padding(top = 8.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(24.dp),
+                                .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                Icons.Default.StickyNote2,
+                                Icons.AutoMirrored.Filled.StickyNote2,
                                 contentDescription = null,
                                 tint = colors.textMuted,
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(28.dp)
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                "No Quick Notes Created Yet",
-                                fontSize = 14.sp,
+                                "No Quick Notes",
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = colors.textPrimary
                             )
                             Text(
-                                "Capture creative thoughts, copy hooks, and fast reminders here. Synced with Desktop.",
+                                "Tap '+ New Note' to capture specs, hooks & reminders synced with NAS.",
                                 fontSize = 11.sp,
                                 color = colors.textSecondary,
-                                modifier = Modifier.padding(top = 4.dp)
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.padding(top = 2.dp)
                             )
                         }
                     }

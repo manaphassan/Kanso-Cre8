@@ -44,14 +44,14 @@ fun TeamHubScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         // Trapezoid Folder Tabs
         FolderTabNavigation(
             options = listOf("ROSTER", "QUICK NOTES"),
             selectedIndex = selectedTab,
             onOptionSelected = { selectedTab = it },
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         when (selectedTab) {
