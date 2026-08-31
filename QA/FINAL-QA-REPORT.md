@@ -1,22 +1,23 @@
 # SS-CAM FINAL QA REPORT
 
-## Status: PASS — v4.6.0 Release
+## Status: PASS — v4.6.0 Beta Release
 
 **QA Date**: 2026-09-01  
 **Configuration**: Release (MSBuild 4.8 / .NET Framework 4.8 / Svelte 5 / Android Compose)  
 **Source Guardian**: **PASS — 9 checks passed, 0 warned, 0 failed**  
 **Smoke & Web Test Suite**: **PASS — 28 passed, 0 failed (100%)**
-**Android Build**: **BUILD SUCCESSFUL (assembleDebug in 50s)**
+**Android Build**: **BUILD SUCCESSFUL (assembleRelease & assembleDebug)**
 
 ---
 
 ### Build & Code Quality Status
 - Desktop Release build: **PASS** (`dist/SS-CAM-v4.6.0.exe` compiled cleanly)
 - Web Production build: **PASS** (`npm run build:client` completed cleanly with Vite/Svelte 5)
-- Android Debug build: **PASS** (`gradlew assembleDebug` passed in 50s)
+- Android Release & Debug builds: **PASS** (`gradlew assembleRelease assembleDebug` passed)
 - Source Guardian: **PASS** (9 passed / 0 warned / 0 failed)
 - Test Suite: **PASS** (28 passed / 0 failed across frontmatter, SLA, audit, SSE, API, security)
 - Brand System & Fluent 2 Icons: **PASS** (0 Unicode emojis, 45+ type-safe Fluent 2 SVG icons)
+- Physical Device Verification: **PASS** (Wireless installation and execution on physical TECNO KL8)
 
 ---
 

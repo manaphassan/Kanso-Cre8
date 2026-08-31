@@ -2,17 +2,26 @@
 
 All notable SS-CAM changes are documented here.
 
-## [4.6.0] - 2026-09-01 (Android Native Companion Modernization, Live ICY Stream Metadata Engine & Desk Companion Standby Mode)
+## [4.6.0] - 2026-09-01 (Beta Release — Preflight Quality Auditor, Android Bento Telemetry, Persistent Caching, Live Radio Metadata & Desk Standby Mode)
 
-### Added & Refined — Android Studio Companion Modernization, Live Real-Time Radio Metadata & Desk Standby Mode
+### Added & Refined — Desktop Preflight Quality Auditor, Android 2×2 Bento Telemetry, Persistent Caching & Live Radio Metadata Engine
+- **Desktop Preflight Quality Audit & Auto-Scaffold Engine (`PreflightValidatorService.cs`, `SearchCopyPage.xaml`)**:
+  - Automated 5-folder vault hierarchy audit, YAML frontmatter completeness checks, `03_COPYWRITING/COPY.md` script length validation, deliverable file inspection, and canonical asset naming enforcement.
+  - 1-Click Auto-Fix action button to instantly scaffold missing project subfolders, `README.md`, and `COPY.md` prior to ZIP handover packaging.
+- **Android 2×2 Bento KPI Telemetry & Zero-Scroll Dashboard (`DashboardCompanionScreen.kt`)**:
+  - Replaced horizontal scroll row with a structured 2×2 Bento Grid (`Active Tasks`, `Due Projects`, `Active Brands`, `NAS Assets`).
+  - Interactive touch filtering with instant count telemetry and left severity accent indicator strips (Crimson, Amber, Gold, Green) on Task Review cards.
+- **Android Persistent Local Caching & Dynamic Live Data Flow (`ProjectCacheManager`, `MainActivity.kt`)**:
+  - Local JSON serialization in `SharedPreferences` enabling instant 0ms offline launch without dummy placeholder data.
+  - Fully dynamic Deliverables Queue card bindings (file counts, revision levels, designer avatar stacks, and subsidiary brand tag pills).
 - **Real-Time Live Radio Metadata & Broadcasting Engine (`LiveStreamMetadataFetcher`, `StudioRadioManager`)**:
   - Direct live API integration with **SuamiSihat AzuraCast** (`https://dj.suamisihat.myds.me/api/nowplaying/suamisihat-radio`) resolving live artist, track title, and album metadata on-air.
   - Integration with **Laut.fm** (`animefm`, `lofi`), **Nightwave Plaza** (`https://api.plaza.one/status`), and **SomaFM Groove Salad** (`https://somafm.com/songs/groovesalad.json`).
   - Universal ICY stream metadata extractor (`Icy-MetaData: 1`) reading chunked byte intervals for any Shoutcast / Icecast AAC/MP3 radio stream.
   - Reactive `TopAppBar` live track pill with animated equalizer bars, tactile mechanical cassette deck track title ribbon, and **Now Playing Bottom Sheet** live station playlist.
 - **Interactive Ss-Hero Background Banner (`SsHeroSplashScreen.kt`)**:
-  - Implemented dynamic interactive particle wave mesh background canvas with ambient glow, floating geometry, and SuamiSihat brand symbols.
-  - Added smooth transition into Biometric PIN authentication and Studio dashboard.
+  - Dynamic interactive particle wave mesh background canvas with ambient glow, floating geometry, and SuamiSihat brand symbols.
+  - Smooth transition into Biometric PIN authentication and Studio dashboard.
 - **Interactive Markdown Viewer & Task Checklists (`FluentMarkdownViewer.kt`)**:
   - High-performance Jetpack Compose markdown renderer supporting live checkbox toggling with automatic underlying markdown persistence.
   - Live split raw edit tab, formatted headings, tables, blockquotes, and code snippets for project briefs and `README.md` files.
