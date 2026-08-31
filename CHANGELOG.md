@@ -2,6 +2,27 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.6.0] - 2026-09-01 (Android Native Companion Modernization, Live ICY Stream Metadata Engine & Desk Companion Standby Mode)
+
+### Added & Refined — Android Studio Companion Modernization, Live Real-Time Radio Metadata & Desk Standby Mode
+- **Real-Time Live Radio Metadata & Broadcasting Engine (`LiveStreamMetadataFetcher`, `StudioRadioManager`)**:
+  - Direct live API integration with **SuamiSihat AzuraCast** (`https://dj.suamisihat.myds.me/api/nowplaying/suamisihat-radio`) resolving live artist, track title, and album metadata on-air.
+  - Integration with **Laut.fm** (`animefm`, `lofi`), **Nightwave Plaza** (`https://api.plaza.one/status`), and **SomaFM Groove Salad** (`https://somafm.com/songs/groovesalad.json`).
+  - Universal ICY stream metadata extractor (`Icy-MetaData: 1`) reading chunked byte intervals for any Shoutcast / Icecast AAC/MP3 radio stream.
+  - Reactive `TopAppBar` live track pill with animated equalizer bars, tactile mechanical cassette deck track title ribbon, and **Now Playing Bottom Sheet** live station playlist.
+- **Interactive Ss-Hero Background Banner (`SsHeroSplashScreen.kt`)**:
+  - Implemented dynamic interactive particle wave mesh background canvas with ambient glow, floating geometry, and SuamiSihat brand symbols.
+  - Added smooth transition into Biometric PIN authentication and Studio dashboard.
+- **Interactive Markdown Viewer & Task Checklists (`FluentMarkdownViewer.kt`)**:
+  - High-performance Jetpack Compose markdown renderer supporting live checkbox toggling with automatic underlying markdown persistence.
+  - Live split raw edit tab, formatted headings, tables, blockquotes, and code snippets for project briefs and `README.md` files.
+- **Standby Desk Companion Mode (`DeskCompanionMode.kt`)**:
+  - Added full-screen OLED pitch-black standby desk clock with live Pomodoro sprint timer, focus progress rings, and orientation-adaptive landscape/portrait layouts.
+- **Fluent Pull-to-Refresh & Haptics (`FluentPullToRefresh.kt`)**:
+  - Integrated smooth overscroll pull-to-refresh with tactile haptic feedback across Tasks, Studio, and Lounge screens.
+- **Adaptive Monochromatic Iconography (`ic_launcher_monochrome.xml`, `ic_suamisihat_mark_*.xml`)**:
+  - Full Android 13+ Material You themed app icon support with vector SuamiSihat logomarks.
+
 ## [4.5.1] - 2026-08-30 (Cross-Platform Ecosystem Synchronization & Companion Harmonization)
 
 ### Synchronized & Unified — Desktop Client, Web Portal Manager Cockpit & Android Companion
