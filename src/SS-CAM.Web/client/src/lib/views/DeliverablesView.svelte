@@ -125,7 +125,7 @@
         <span class="header-meta">{projectStore.deliverables.length} Master Outputs</span>
       </div>
       <h1 class="view-title">Deliverables &amp; Assets</h1>
-      <p class="view-subtitle">Inspect, approve, and download production-ready creative deliverables in real time.</p>
+      <p class="view-subtitle">Inspect, approve, and manage creative outputs across campaign projects in real time.</p>
     </div>
 
     <div class="header-actions">
@@ -137,7 +137,11 @@
           showIngesterModal = true; 
         }}
       >
-        <FluentIcons name="upload" size={13} />
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
         <span style="margin-left: 5px;">Ingest Deliverables</span>
       </FluentButton>
 
@@ -153,22 +157,22 @@
   <!-- Summary KPI Bar -->
   <div class="deliverable-kpi-bar">
     <button class="kpi-pill {filterStatus === 'all' ? 'active' : ''}" onclick={() => filterStatus = 'all'}>
-      <span class="kpi-label">All Deliverables</span>
+      <span class="kpi-label">All</span>
       <span class="kpi-count">{projectStore.deliverables.length}</span>
     </button>
     <button class="kpi-pill pill-pending {filterStatus === 'pending' ? 'active' : ''}" onclick={() => filterStatus = 'pending'}>
       <span class="status-dot dot-pending"></span>
-      <span class="kpi-label">Pending Sign-off</span>
+      <span class="kpi-label">Pending</span>
       <span class="kpi-count">{pendingCount}</span>
     </button>
     <button class="kpi-pill pill-revision {filterStatus === 'revision' ? 'active' : ''}" onclick={() => filterStatus = 'revision'}>
       <span class="status-dot dot-revision"></span>
-      <span class="kpi-label">Revision Required</span>
+      <span class="kpi-label">Revision</span>
       <span class="kpi-count">{revisionCount}</span>
     </button>
     <button class="kpi-pill pill-approved {filterStatus === 'approved' ? 'active' : ''}" onclick={() => filterStatus = 'approved'}>
       <span class="status-dot dot-approved"></span>
-      <span class="kpi-label">Approved &amp; Released</span>
+      <span class="kpi-label">Approved</span>
       <span class="kpi-count">{approvedCount}</span>
     </button>
   </div>
@@ -182,7 +186,7 @@
       </svg>
       <input
         type="text"
-        placeholder="Search deliverables by name, job ID, designer..."
+        placeholder="Filter deliverables by filename, job ID, designer..."
         value={rawSearchInput}
         oninput={handleSearchChange}
       />
@@ -195,7 +199,7 @@
       <!-- Media Class Filter -->
       <select bind:value={filterMediaClass} class="clean-select" aria-label="Filter Media Class">
         <option value="all">Format: All</option>
-        <option value="raster_image">Images (PNG, JPG, WebP)</option>
+        <option value="raster_image">Images (PNG, JPG)</option>
         <option value="video_master">Videos (MP4, MOV)</option>
         <option value="print_pdf">PDF / Print</option>
         <option value="vector_graphics">Vectors (SVG, AI)</option>
@@ -204,8 +208,8 @@
       <!-- Aspect Ratio Filter -->
       <select bind:value={filterAspectRatio} class="clean-select" aria-label="Filter Aspect Ratio">
         <option value="all">Ratio: All</option>
-        <option value="1:1">1:1 Square (Feed)</option>
-        <option value="9:16">9:16 Vertical (Reels)</option>
+        <option value="1:1">1:1 Square</option>
+        <option value="9:16">9:16 Vertical</option>
         <option value="16:9">16:9 Landscape</option>
         <option value="4:5">4:5 Portrait</option>
       </select>
@@ -267,18 +271,31 @@
                   }}
                 />
               {:else if d.isVideo || d.previewType === 'video'}
-                <div class="media-placeholder video-bg">
-                  <FluentIcons name="video" size={24} />
-                  <span class="media-type-label">VIDEO</span>
+                <div class="doc-sheet video-sheet">
+                  <div class="sheet-icon-circle video-circle">
+                    <FluentIcons name="video" size={20} />
+                  </div>
+                  <span class="sheet-type-tag">VIDEO MASTER</span>
                 </div>
               {:else if d.isPdf || d.previewType === 'pdf'}
-                <div class="media-placeholder pdf-bg">
-                  <FluentIcons name="file" size={24} color="#EF4444" />
-                  <span class="media-type-label">PDF</span>
+                <div class="doc-sheet pdf-sheet">
+                  <div class="sheet-icon-circle pdf-circle">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <span class="sheet-type-tag">PDF DOCUMENT</span>
                 </div>
               {:else}
-                <div class="media-placeholder file-bg">
-                  <span class="media-type-label">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
+                <div class="doc-sheet generic-sheet">
+                  <div class="sheet-icon-circle generic-circle">
+                    <FluentIcons name="file" size={20} />
+                  </div>
+                  <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
                 </div>
               {/if}
 
@@ -319,25 +336,28 @@
 
               <!-- Quick Action Bar -->
               <div class="del-actions" onclick={(e) => e.stopPropagation()}>
-                <button class="action-btn-pill" onclick={() => openLightbox(d)}>
-                  <FluentIcons name="open" size={12} />
+                <button class="action-btn-pill" onclick={() => openLightbox(d)} title="Open Fullscreen Inspector">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                   <span>Inspect</span>
                 </button>
 
                 <div class="action-icons-right">
                   {#if d.isImage || d.previewType === 'image'}
-                    <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
+                    <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
                       <FluentIcons name="vector" size={12} />
                     </button>
-                    <button class="tool-icon-btn" title="Print &amp; POSM Preflight Validator (DPI, Bleed &amp; CMYK)" onclick={() => openPreflight(d)}>
+                    <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
                       <FluentIcons name="printer" size={12} />
                     </button>
                   {/if}
-                  <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
+                  <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
                     <FluentIcons name="link" size={12} />
                   </button>
                   {#if d.downloadUrl}
-                    <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Output File">
+                    <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
                       <FluentIcons name="download" size={12} />
                     </a>
                   {/if}
@@ -677,8 +697,8 @@
   /* Grid & Cards */
   .deliverables-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
   }
 
   .del-card-wrapper {
@@ -688,31 +708,31 @@
   .del-card {
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
-    border-radius: 12px;
-    padding: 12px;
-    transition: all 0.16s ease;
-    box-shadow: var(--shadow-sm);
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
     height: 100%;
   }
   .del-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--brand-accent);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: var(--brand-accent, #0078D4);
   }
 
   .del-preview-box {
-    height: 180px;
-    background: #040812;
+    height: 145px;
+    background: var(--surface-card-subtle, #F8FAFC);
     border-radius: 8px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 8px;
+    border: 1px solid var(--surface-card-border);
   }
 
   .del-preview-box img {
@@ -722,42 +742,77 @@
     transition: transform 0.25s ease;
   }
   .del-card:hover .del-preview-box img {
-    transform: scale(1.03);
+    transform: scale(1.04);
   }
 
-  .media-placeholder {
+  .doc-sheet {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     width: 100%;
     height: 100%;
+    transition: all 0.2s ease;
   }
-  .video-bg { background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); color: #A78BFA; }
-  .pdf-bg { background: linear-gradient(135deg, #450A0A 0%, #7F1D1D 100%); color: #FCA5A5; }
-  .file-bg { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #94A3B8; }
+  .pdf-sheet {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.12) 100%);
+  }
+  .video-sheet {
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.05) 0%, rgba(124, 58, 237, 0.12) 100%);
+  }
+  .generic-sheet {
+    background: linear-gradient(180deg, rgba(100, 116, 139, 0.05) 0%, rgba(100, 116, 139, 0.12) 100%);
+  }
 
-  .media-type-label {
-    font-size: 11px;
+  .sheet-icon-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease;
+  }
+  .del-card:hover .sheet-icon-circle {
+    transform: scale(1.08) translateY(-2px);
+  }
+  .pdf-circle {
+    background: #DC2626;
+    color: #FFFFFF;
+  }
+  .video-circle {
+    background: #7C3AED;
+    color: #FFFFFF;
+  }
+  .generic-circle {
+    background: #475569;
+    color: #FFFFFF;
+  }
+
+  .sheet-type-tag {
+    font-size: 10px;
     font-weight: 800;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
   }
 
   .preview-status-badge {
     position: absolute;
-    top: 8px;
-    left: 8px;
-    font-size: 10.5px;
+    top: 6px;
+    left: 6px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: 20px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px);
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   }
 
   .preview-status-badge .badge-dot {
@@ -767,28 +822,28 @@
     background: currentColor;
   }
 
-  .status-approved { background: rgba(16, 185, 129, 0.9); color: #FFFFFF; }
-  .status-revision { background: rgba(239, 68, 68, 0.9); color: #FFFFFF; }
-  .status-pending { background: rgba(245, 158, 11, 0.9); color: #FFFFFF; }
+  .status-approved { background: rgba(16, 185, 129, 0.92); color: #FFFFFF; }
+  .status-revision { background: rgba(239, 68, 68, 0.92); color: #FFFFFF; }
+  .status-pending { background: rgba(245, 158, 11, 0.92); color: #FFFFFF; }
 
   .format-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 10px;
+    top: 6px;
+    right: 6px;
+    font-size: 9.5px;
     font-weight: 800;
-    padding: 2px 7px;
+    padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.7);
     color: #F8FAFC;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(8px);
   }
 
   .del-body {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     flex: 1;
   }
 
@@ -825,23 +880,23 @@
   }
 
   .del-title {
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 2px 0;
+    margin: 1px 0;
   }
 
   .del-footer-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--text-tertiary);
     font-weight: 500;
-    padding: 4px 0 8px 0;
+    padding: 3px 0 6px 0;
   }
 
   .meta-designer {
@@ -854,7 +909,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 8px;
+    padding-top: 6px;
     border-top: 1px solid var(--surface-card-border);
     margin-top: auto;
   }
@@ -863,9 +918,9 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 3px 9px;
+    padding: 3px 8px;
     border-radius: 6px;
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--brand-primary, #0078D4);
     background: var(--brand-tint, rgba(0, 120, 212, 0.08));
@@ -892,16 +947,16 @@
     justify-content: center;
     background: var(--surface-card-subtle);
     border: 1px solid var(--surface-card-border);
-    border-radius: 6px;
+    border-radius: 5px;
     color: var(--text-secondary);
     cursor: pointer;
     text-decoration: none;
     transition: all 0.12s;
   }
   .tool-icon-btn:hover {
-    background: var(--surface-card-hover);
-    color: var(--brand-accent);
-    border-color: var(--brand-accent);
+    background: var(--surface-card-hover, rgba(0, 120, 212, 0.1));
+    color: var(--brand-primary, #0078D4);
+    border-color: var(--brand-accent, #0078D4);
   }
 
   /* State Cards */
