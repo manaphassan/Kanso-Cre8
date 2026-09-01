@@ -71,7 +71,11 @@
   });
 
   const brandDistribution = $derived(projectStore.dashboardData?.brandDistribution || {});
-  const highRevisionProjects = $derived(projectStore.dashboardData?.highRevisionProjects || []);
+  const highRevisionProjects = $derived(
+    (projectStore.dashboardData?.highRevisionProjects || []).filter(
+      p => p && !['done', 'approved', 'completed', 'on-hold'].includes(p.status)
+    )
+  );
 
   // "My Workspace" Strictly Filtered to Current User
   const currentUserName = $derived(appState.currentUser?.name || '');

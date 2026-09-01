@@ -593,7 +593,7 @@ class WorkspaceService {
     const overdue = projects.filter(p => p.isOverdue).length;
     const dueSoon = projects.filter(p => p.isDueSoon).length;
     const highRevisionProjects = projects
-      .filter(p => (p.revision || 0) >= 2 && p.status !== 'done')
+      .filter(p => (p.revision || 0) >= 2 && !['done', 'approved', 'completed', 'on-hold'].includes(p.status))
       .map(p => ({
         id: p.id,
         jobId: p.jobId,
