@@ -81,3 +81,18 @@ powershell -ExecutionPolicy Bypass `
 | **Health Declaration** | `Not a health app` (Creative asset management) |
 | **Target Audience** | `18 and over` |
 | **Privacy Policy URL** | `https://suamisihat.clinic/privacy-policy/` |
+
+---
+
+## 5. Google Play Closed Testing — Tester Join Links
+
+Testers can join the **SS-CAM Android Companion** Closed Testing track via:
+
+| Platform | Link |
+|---|---|
+| **Android (Google Play)** | https://play.google.com/store/apps/details?id=com.suamisihat.creative |
+| **Web Opt-In Page** | https://play.google.com/apps/testing/com.suamisihat.creative |
+
+> **Note:** Testers must have a Google account and be invited to the testing
+> programme. The web opt-in link allows testers to join without a device
+> present. Once joined, updates are delivered automatically via Google Play.
