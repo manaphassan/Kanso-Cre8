@@ -36,9 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.suamisihat.sscam.AuthPreferences
 import com.suamisihat.sscam.data.api.CreateNoteRequest
 import com.suamisihat.sscam.data.api.NoteItemDto
 import com.suamisihat.sscam.data.api.SscamApiService
+import com.suamisihat.sscam.data.sync.SyncQueueManager
 import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
 import kotlinx.coroutines.Dispatchers
@@ -59,21 +61,6 @@ object QuickNotesCache {
     private const val PREFS_NAME = "sscam_quick_notes_cache"
     private const val KEY_CACHED_NOTES = "cached_notes_json"
 
-    val DEFAULT_NOTES = listOf(
-        StudioNote(
-            id = "note_dieline_specs",
-            title = "Packaging Dieline Specs",
-            body = "Confirming 350gsm art card with gold foil stamping for Rejal Madu Tualang box. All vector assets mapped to NAS _Team/_Config/Notes.",
-            priority = "high",
-            isPinned = true,
-            dateText = "29 Aug 2026, 23:20",
-            modified = System.currentTimeMillis()
-        ),
-        StudioNote(
-            id = "note_social_hooks",
-            title = "Merdeka Promo Video Hooks",
-            body = "Hook 1: 'Rahsia tenaga lelaki perkasa warisan nenek moyang'\nHook 2: 'Promo Merdeka 50% jimat khas untuk 100 terawal'",
-            priority = "medium",
     fun getCachedNotes(context: Context): List<StudioNote> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val json = prefs.getString(KEY_CACHED_NOTES, null) ?: return emptyList()
