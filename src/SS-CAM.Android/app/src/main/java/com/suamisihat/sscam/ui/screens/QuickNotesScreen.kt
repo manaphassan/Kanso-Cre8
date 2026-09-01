@@ -74,24 +74,14 @@ object QuickNotesCache {
             title = "Merdeka Promo Video Hooks",
             body = "Hook 1: 'Rahsia tenaga lelaki perkasa warisan nenek moyang'\nHook 2: 'Promo Merdeka 50% jimat khas untuk 100 terawal'",
             priority = "medium",
-            isPinned = false,
-            dateText = "29 Aug 2026, 21:15",
-            modified = System.currentTimeMillis() - 7200000
-        )
-    )
-
     fun getCachedNotes(context: Context): List<StudioNote> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val json = prefs.getString(KEY_CACHED_NOTES, null)
-        if (json == null) {
-            saveCachedNotes(context, DEFAULT_NOTES)
-            return DEFAULT_NOTES
-        }
+        val json = prefs.getString(KEY_CACHED_NOTES, null) ?: return emptyList()
+        val type = object : TypeToken<List<StudioNote>>() {}.type
         return try {
-            val type = object : TypeToken<List<StudioNote>>() {}.type
-            Gson().fromJson(json, type) ?: DEFAULT_NOTES
+            Gson().fromJson(json, type) ?: emptyList()
         } catch (e: Exception) {
-            DEFAULT_NOTES
+            emptyList()
         }
     }
 
@@ -124,18 +114,11 @@ fun QuickNotesContentView() {
 
     val notes = remember { mutableStateListOf<StudioNote>() }
 
-    // Load initial cached notes
-    LaunchedEffect(Unit) {
-        val cached = QuickNotesCache.getCachedNotes(context)
-        if (cached.isNotEmpty()) {
-            notes.clear()
-            notes.addAll(cached)
-        }
-
-        // Fetch live notes from SS-CAM API / NAS
-        isLoading = true
+    suspend fun fetchLiveNotes() {
         try {
             val api = SscamApiService.create()
+            SyncQueueManager.flushQueue(context, api)
+
             val res = withContext(Dispatchers.IO) { api.getNotes() }
             if (res.isSuccessful && res.body()?.success == true) {
                 val liveDtos = res.body()?.notes ?: emptyList()
@@ -161,25 +144,47 @@ fun QuickNotesContentView() {
             }
         } catch (e: Exception) {
             syncStatusText = "OFFLINE CACHED"
-        } finally {
-            isLoading = false
+        }
+    }
+
+    // Load initial cached notes and poll for live updates
+    LaunchedEffect(Unit) {
+        val cached = QuickNotesCache.getCachedNotes(context)
+        if (cached.isNotEmpty()) {
+            notes.clear()
+            notes.addAll(cached)
+        }
+
+        isLoading = true
+        fetchLiveNotes()
+        isLoading = false
+
+        while (true) {
+            kotlinx.coroutines.delay(20_000)
+            fetchLiveNotes()
         }
     }
 
     fun syncNoteToServer(note: StudioNote) {
+        val currentUsername = AuthPreferences.getSavedUsername(context)
         scope.launch(Dispatchers.IO) {
+            val noteReq = CreateNoteRequest(
+                id = note.id,
+                title = note.title,
+                body = note.body,
+                isPinned = note.isPinned,
+                priority = note.priority,
+                user = currentUsername
+            )
             try {
                 val api = SscamApiService.create()
-                api.createNote(
-                    CreateNoteRequest(
-                        id = note.id,
-                        title = note.title,
-                        body = note.body,
-                        isPinned = note.isPinned,
-                        priority = note.priority
-                    )
-                )
-            } catch (e: Exception) { }
+                val res = api.createNote(noteReq)
+                if (!res.isSuccessful) {
+                    SyncQueueManager.queueCreateNote(context, noteReq)
+                }
+            } catch (e: Exception) {
+                SyncQueueManager.queueCreateNote(context, noteReq)
+            }
         }
     }
 
@@ -187,8 +192,13 @@ fun QuickNotesContentView() {
         scope.launch(Dispatchers.IO) {
             try {
                 val api = SscamApiService.create()
-                api.deleteNote(noteId)
-            } catch (e: Exception) { }
+                val res = api.deleteNote(noteId)
+                if (!res.isSuccessful) {
+                    SyncQueueManager.queueDeleteNote(context, noteId)
+                }
+            } catch (e: Exception) {
+                SyncQueueManager.queueDeleteNote(context, noteId)
+            }
         }
     }
 
