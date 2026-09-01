@@ -527,11 +527,13 @@
               <iconify-icon icon="fluent:terminal-24-regular" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
               <div>
                 <h3 class="fedora-card-title">Linux Native Desktop Client</h3>
-                <p class="fedora-card-sub">Fedora · Ubuntu · Debian · Pop!_OS · Arch · Manjaro</p>
+                <p class="fedora-card-sub">Fedora &middot; Ubuntu &middot; Debian &middot; Pop!_OS &middot; Arch &middot; Manjaro &middot; openSUSE</p>
               </div>
             </div>
             <p style="font-size:.875rem; color:var(--color-neutral-fg-2); margin-bottom:12px; line-height:1.6;">
-              Standalone native Avalonia GUI desktop app with full Fluent 2 parity: 4 Bento KPIs, live WhatsApp &amp; Meta Ad copy preview, 5-folder project vault generator, and interactive terminal wizard.
+              Full v4.6.0 feature parity with the Windows desktop. All 14 modules: Dashboard &middot; Project Creator &middot;
+              Search &amp; Copy &middot; Copywriting &middot; Brand Assets &middot; Task Manager &middot; Big Calendar &middot; Quick Notes &middot;
+              Creative Wellbeing &middot; Waktu Solat &middot; Focus Radio (mpv) &middot; QR Code Studio &middot; Workstation Health &middot; Settings.
             </p>
             <div class="code-terminal-box" style="margin-bottom:12px;">
               <div class="terminal-bar">
@@ -539,16 +541,20 @@
                 <span class="t-title">Interactive CLI Installer Wizard</span>
               </div>
               <button class="cl-copy-btn" data-copy-target="code-linux">Copy</button>
-              <pre class="code-block" id="code-linux"><code><span class="c-comment"># Interactive wizard with custom paths, desktop menu &amp; uninstaller:</span>
+              <pre class="code-block" id="code-linux"><code><span class="c-comment"># Interactive wizard: choose install mode, path, desktop shortcut &amp; more:</span>
+bash &lt;(curl -fsSL https://raw.githubusercontent.com/SuamiSihat/\
+ss_cam/SS-Master/installer/install-linux.sh)
+
+<span class="c-comment"># Unattended / silent mode (accept all defaults):</span>
 curl -fsSL https://raw.githubusercontent.com/SuamiSihat/\
-ss_cam/SS-Master/installer/install-linux.sh | sudo bash
+ss_cam/SS-Master/installer/install-linux.sh | sudo bash -s -- --yes
 
 <span class="c-comment"># Launch from terminal or Applications menu:</span>
 ss-cam</code></pre>
             </div>
             <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.6.0/SS-CAM-v4.6.0-linux-x64.tar.gz" class="btn-download-card" style="background:#1E293B; border:1px solid rgba(255,255,255,0.15);">
               <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
-              Download Linux Tarball (.tar.gz • 39.9 MB)
+              Download Linux Tarball (.tar.gz &bull; 95.8 MB &bull; self-contained)
             </a>
           </div>
 
@@ -588,13 +594,15 @@ docker compose up -d --build
             <div class="code-terminal-box">
               <div class="terminal-bar">
                 <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-                <span class="t-title">dotnet — developer</span>
+                <span class="t-title">dotnet &mdash; developer build</span>
               </div>
               <button class="cl-copy-btn" data-copy-target="code-dotnet">Copy</button>
-              <pre class="code-block" id="code-dotnet"><code><span class="c-comment"># Build &amp; run Avalonia desktop client</span>
+              <pre class="code-block" id="code-dotnet"><code><span class="c-comment"># Requires .NET SDK 10 — Build &amp; run Avalonia desktop client</span>
 git clone https://github.com/SuamiSihat/ss_cam.git
 cd ss_cam
-dotnet run --project src/SS-CAM.Linux -c Release</code></pre>
+dotnet publish src/SS-CAM.Linux -c Release -r linux-x64 \
+  --self-contained true -p:PublishSingleFile=true
+./src/SS-CAM.Linux/bin/Release/net10.0/linux-x64/SS-CAM.Linux</code></pre>
             </div>
           </div>
 
