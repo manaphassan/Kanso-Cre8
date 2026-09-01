@@ -1,5 +1,18 @@
 # SS-CAM FIX LOG
 
+## v4.6.0-linux — 2026-09-02 (Linux Port — Full Feature Parity with Windows v4.6.0)
+- **Scope**: Complete rebuild of SS-CAM.Linux (Avalonia 11 / .NET 10) to match all 14 pages and backend logic of Windows WPF v4.6.0.
+- **Architecture**: Replaced StackPanel-based navigation with ContentControl + NavigateTo(key) pattern. Single MainViewModel drives all 15 views.
+- **Services added**: `RadioStreamService` (mpv subprocess), `PrayerTimeService` (JAKIM waktusolat.app API), `QuickNoteService` (JSON persistence), `WorkstationHealthService` (/proc + df + which), `WorkspaceService`.
+- **Models added**: `ProjectStatusItem`, `QuickNoteItem`, `RadioStationItem`, `SoftwareCheckItem`, `CalendarModels` (CalendarDay, CalendarWeekRow), `PrayerTimeRow`.
+- **Views created**: All 15 page AXAML + code-behind files covering the full 14-module sidebar.
+- **MainViewModel**: Complete rewrite — 19 RelayCommands, async clock task, prayer time row builder, calendar month navigation, NAS status check, QR generation via BitmapByteQRCode, workstation health async rescan.
+- **MainWindow**: Rebuilt 14-item sidebar in 4 groups (Creative Workspace / Task & Planning / Studio Tools / System), footer status bar with NAS indicator + radio mini-player + live clock.
+- **Build**: 0 errors, 0 warnings after resolving CS1503, CS0103, CS1061, AVLN2000 (×2), AVLN5001 (×3), MVVMTK0034 (×2), CS0618.
+- **QA Baseline**: Source Guardian 9/9 PASS. Linux coverage check: 23/23 PASS.
+
+---
+
 ## v4.6.0 — 2026-09-01 (Beta Release — Preflight Quality Auditor, Android Bento Telemetry, Persistent Caching, Live Radio Streaming & Desk Standby Mode)
 - **Assembly Version**: `4.6.0.0` / Android `versionCode = 460`, `versionName = "4.6.0"`
 - **Desktop Preflight Quality Auditor (`PreflightValidatorService.cs`)**: Automated 5-folder vault hierarchy audit, YAML frontmatter validation, `COPY.md` script length checks, deliverable file inspection, and canonical asset naming validation with 1-Click Auto-Fix scaffolding.

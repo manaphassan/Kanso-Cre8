@@ -1,0 +1,96 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             xmlns:models="using:SS_CAM.Linux.Models"
+             x:Class="SS_CAM.Linux.Views.Pages.WorkstationHealthView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="20">
+
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Workstation &amp; Software Health Diagnostics" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <TextBlock Text="Linux system telemetry, disk performance, and creative software installation integrity."
+                               FontSize="13" Foreground="#94A3B8"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="↻ Rescan" VerticalAlignment="Top"
+                        Command="{Binding RescanWorkstationCommand}"
+                        Background="#1E293B" Foreground="#38BDF8" CornerRadius="7" Padding="14,8"/>
+            </Grid>
+
+            <!-- KPI Cards -->
+            <Grid ColumnDefinitions="*,12,*,12,*,12,*">
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="LINUX DISTRO" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
+                        <TextBlock Text="{Binding WsDistro}" FontSize="14" FontWeight="Bold" Foreground="#38BDF8" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="CPU" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
+                        <TextBlock Text="{Binding WsCpuCores}" FontSize="28" FontWeight="Bold" Foreground="#A78BFA"/>
+                        <TextBlock Text="Logical cores" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="4" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="RAM AVAILABLE" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
+                        <TextBlock Text="{Binding WsRamAvailable}" FontSize="22" FontWeight="Bold" Foreground="#34D399"/>
+                        <TextBlock Text="{Binding WsRamTotal}" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="6" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="DISK FREE (/)" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
+                        <TextBlock Text="{Binding WsDiskFree}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B"/>
+                        <TextBlock Text="{Binding WsDiskTotal}" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- System Info Table -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="System Information" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <Grid ColumnDefinitions="180,*" RowDefinitions="Auto,Auto,Auto,Auto" HorizontalAlignment="Stretch">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Linux Kernel" FontSize="12" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding WsKernel}" FontSize="12" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="CPU Model" FontSize="12" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding WsCpuName}" FontSize="12" Foreground="#CBD5E1" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="RAM Total" FontSize="12" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WsRamTotal}" FontSize="12" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Disk Total" FontSize="12" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding WsDiskTotal}" FontSize="12" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Software Check Grid -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Creative Software &amp; Tools" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <TextBlock Grid.Column="1" Text="{Binding WsSoftwareInstalledLabel}" FontSize="12" Foreground="#64748B" VerticalAlignment="Center"/>
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding SoftwareChecks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:SoftwareCheckItem">
+                                <Grid ColumnDefinitions="Auto,*,*" Margin="0,0,0,8">
+                                    <TextBlock Grid.Column="0" Text="{Binding StatusIcon}" FontSize="16"
+                                               Foreground="{Binding StatusColor}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Version}" FontSize="11" Foreground="#64748B"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
