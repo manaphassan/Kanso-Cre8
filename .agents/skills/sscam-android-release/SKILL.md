@@ -35,7 +35,7 @@ Run the automated release script:
 powershell -ExecutionPolicy Bypass -File .\.agents\skills\sscam-android-release\scripts\build-android-release.ps1
 ```
 
-### Optional Parameters:
+### Optional Parameters
 
 - `-BumpVersion`: Automatically increments `versionCode` by 1 before building (default: `$true`).
 - `-VersionName <String>`: Override `versionName` (e.g. `-VersionName "4.6.1"`).
