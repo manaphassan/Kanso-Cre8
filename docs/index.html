@@ -507,36 +507,49 @@
               </div>
             </div>
             <p style="font-size:.875rem; color:var(--color-neutral-fg-2); margin-bottom:14px; line-height:1.6;">
-              Mobile studio companion with 2×2 Bento KPI telemetry, live ICY radio metadata streaming, OLED desk standby clock, and 1-tap deliverable approvals.
+              Mobile studio companion with official vector branding, 2×2 Bento KPI telemetry, live ICY radio streaming, OLED desk standby clock, and 1-tap deliverable approvals.
             </p>
-            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.6.0/SS-CAM-v4.6.0-android-debug.apk" class="btn-download-card" style="background:var(--ss-emerald, #059669);">
-              <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
-              Download Android APK
-            </a>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.6.0/SS-CAM-v4.6.0-android-release.apk" class="btn-download-card" style="background:var(--ss-emerald, #059669); flex:1; min-width:180px;">
+                <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
+                Download Release APK
+              </a>
+              <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.6.0/SS-CAM-v4.6.0-android-debug.apk" class="btn-download-card" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); flex:1; min-width:180px;">
+                <iconify-icon icon="fluent:bug-24-regular" style="font-size:1.1rem;"></iconify-icon>
+                Debug APK
+              </a>
+            </div>
           </div>
 
-          <!-- Linux 1-Command -->
+          <!-- Linux Native Desktop App -->
           <div class="fedora-card reveal">
             <div class="fedora-card-header">
               <iconify-icon icon="fluent:terminal-24-regular" style="font-size:1.8rem; color:#51A2DA;"></iconify-icon>
               <div>
-                <h3 class="fedora-card-title">Linux 1-Command Installer</h3>
+                <h3 class="fedora-card-title">Linux Native Desktop Client</h3>
                 <p class="fedora-card-sub">Fedora · Ubuntu · Debian · Pop!_OS · Arch</p>
               </div>
             </div>
-            <div class="code-terminal-box">
+            <p style="font-size:.875rem; color:var(--color-neutral-fg-2); margin-bottom:12px; line-height:1.6;">
+              Standalone native Avalonia GUI desktop app with Skia rendering, GNOME/KDE Applications menu integration, and direct Synology Drive I/O.
+            </p>
+            <div class="code-terminal-box" style="margin-bottom:12px;">
               <div class="terminal-bar">
                 <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
-                <span class="t-title">bash — linux@workstation</span>
+                <span class="t-title">1-command terminal installer</span>
               </div>
               <button class="cl-copy-btn" data-copy-target="code-linux">Copy</button>
-              <pre class="code-block" id="code-linux"><code><span class="c-comment"># Install to /opt/ss-cam in one command</span>
+              <pre class="code-block" id="code-linux"><code><span class="c-comment"># Auto-downloads pre-compiled app to /opt/ss-cam</span>
 curl -fsSL https://raw.githubusercontent.com/SuamiSihat/\
 ss_cam/SS-Master/installer/install-linux.sh | sudo bash
 
 <span class="c-comment"># Launch from terminal or Applications menu:</span>
 ss-cam</code></pre>
             </div>
+            <a href="https://github.com/SuamiSihat/ss_cam/releases/download/v4.6.0/SS-CAM-v4.6.0-linux-x64.tar.gz" class="btn-download-card" style="background:#1E293B; border:1px solid rgba(255,255,255,0.15);">
+              <iconify-icon icon="fluent:arrow-download-24-regular" style="font-size:1.1rem;"></iconify-icon>
+              Download Linux Tarball (.tar.gz • 39.9 MB)
+            </a>
           </div>
 
           <!-- Docker Web Portal -->
