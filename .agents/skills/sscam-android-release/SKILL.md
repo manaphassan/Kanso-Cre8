@@ -1,13 +1,17 @@
 ---
 name: sscam-android-release
 description: >
-  Automates building, version-bumping, cryptographic signing, and packaging of the SS-CAM Android Companion App (AAB/APK) for Google Play Console and internal testing distribution.
-  Triggers: "build android", "release android", "android release", "build aab", "publish playstore", "publish android", "package android", "android bundle".
+  Automates building, version-bumping, cryptographic signing, and packaging
+  of the SS-CAM Android Companion App (AAB/APK) for Google Play Console.
+  Triggers: "build android", "release android", "android release", "build aab",
+  "publish playstore", "publish android", "package android", "android bundle".
 ---
 
 # SS-CAM Android Release Skill (`sscam-android-release`)
 
-This skill automates the complete build, signing, and release pipeline for the **SS-CAM Android Companion App** (`src/SS-CAM.Android`), compiling an optimized Android App Bundle (`.aab`) ready for Google Play Console distribution.
+This skill automates the complete build, signing, and release pipeline
+for the **SS-CAM Android Companion App** (`src/SS-CAM.Android`), compiling
+an optimized Android App Bundle (`.aab`) ready for Google Play Console.
 
 ---
 
@@ -15,15 +19,19 @@ This skill automates the complete build, signing, and release pipeline for the *
 
 1. **Environment Auto-Configuration**:
    - Locates or sets `JAVA_HOME` (Microsoft OpenJDK 17 LTS).
-   - Locates Android SDK (`%LOCALAPPDATA%\Android\Sdk` Platform 35) and auto-configures `local.properties`.
+   - Locates Android SDK (`%LOCALAPPDATA%\Android\Sdk` Platform 35)
+     and auto-configures `local.properties`.
 2. **Version Bumping**:
-   - Automatically increments `versionCode` in `app/build.gradle.kts` to prevent Google Play duplicate version code errors.
+   - Automatically increments `versionCode` in `app/build.gradle.kts`
+     to prevent Google Play duplicate version code errors.
    - Synchronizes `versionName` with project release milestones.
 3. **Cryptographic Release Signing**:
-   - Signs the `.aab` using the official 2048-bit RSA upload key (`sscam-release.jks`).
+   - Signs the `.aab` using the official 2048-bit RSA upload key
+     (`sscam-release.jks`).
    - Verifies bundle signature integrity with `jarsigner`.
 4. **Google Play Console Release Notes Generator**:
-   - Generates character-counted, XML-tagged `<en-GB>` and `<ms-MY>` release notes under Google Play's 500-character limit.
+   - Generates character-counted, XML-tagged `<en-GB>` and `<ms-MY>`
+     release notes under Google Play's 500-character limit.
 
 ---
 
@@ -32,18 +40,20 @@ This skill automates the complete build, signing, and release pipeline for the *
 Run the automated release script:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\.agents\skills\sscam-android-release\scripts\build-android-release.ps1
+powershell -ExecutionPolicy Bypass `
+  -File .\.agents\skills\sscam-android-release\scripts\build-android-release.ps1
 ```
 
 ### Optional Parameters
 
-- `-BumpVersion`: Automatically increments `versionCode` by 1 before building (default: `$true`).
-- `-VersionName <String>`: Override `versionName` (e.g. `-VersionName "4.6.1"`).
-- `-BuildApk`: Also outputs an unsigned/signed standalone APK in addition to the `.aab` bundle.
+- `-BumpVersion`: Increments `versionCode` by 1 (default: `$true`).
+- `-VersionName <String>`: Override `versionName` (e.g. `"4.6.1"`).
+- `-BuildApk`: Also outputs a standalone APK in addition to `.aab`.
 
 ```powershell
 # Example: Bump version code and build both AAB and APK
-.\.agents\skills\sscam-android-release\scripts\build-android-release.ps1 -BumpVersion -BuildApk
+.\.agents\skills\sscam-android-release\scripts\build-android-release.ps1 `
+  -BumpVersion -BuildApk
 ```
 
 ---
