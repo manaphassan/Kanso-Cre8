@@ -143,13 +143,22 @@ This is the project brief content.
 
   // ─── TEST 6: Approval Decision Lifecycle ────────────────────────────
   test('ApprovalService increments revision round and updates frontmatter on revision request', () => {
-    const projects = WorkspaceService.getAllProjects();
-    if (projects.length > 0) {
-      const target = projects[0];
-      const initialRev = target.revision || 0;
+    const testDir = path.join(__dirname, 'temp-approval-workspace');
+    const projectDir = path.join(testDir, '2026', '202608_August', '202608_9998A_SS_Temp_Approval_Test');
+    fs.mkdirSync(projectDir, { recursive: true });
 
+    const initialFm = { status: 'review', designer: 'Harussani', revision: 1, approvals: [] };
+    const initialBody = '# Sandbox Approval Test Project\n\nBrief content.';
+    FrontmatterService.writeProjectReadme(projectDir, initialFm, initialBody);
+
+    const origRoot = WorkspaceService.workspaceRoot;
+    WorkspaceService.workspaceRoot = testDir;
+    WorkspaceService.isScanning = false;
+    WorkspaceService.scan(true);
+
+    try {
       const result = ApprovalService.processDecision({
-        projectId: target.id,
+        projectId: '9998A',
         decision: 'revision_requested',
         reviewer: 'QA Lead',
         role: 'CreativeManager',
@@ -157,10 +166,16 @@ This is the project brief content.
       });
 
       assert.ok(result.success);
+      assert.ok(result.project);
       assert.strictEqual(result.project.status, 'revision');
-      assert.strictEqual(result.project.revision, initialRev + 1);
+      assert.strictEqual(result.project.revision, 2);
       assert.ok(result.project.approvals.length > 0);
       assert.strictEqual(result.project.approvals[0].decision, 'revision_requested');
+    } finally {
+      // Restore workspaceRoot and clean up
+      WorkspaceService.workspaceRoot = origRoot;
+      WorkspaceService.scan(true);
+      fs.rmSync(testDir, { recursive: true, force: true });
     }
   });
 
