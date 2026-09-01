@@ -203,8 +203,15 @@ HELP
     if [ "$EUID" -ne 0 ]; then
         if command -v sudo &>/dev/null && [ $IS_INTERACTIVE -eq 1 ]; then
             echo -e "${C_YELLOW}[*] Root required — requesting sudo...${C_RESET}"
-            # Re-exec self as root, forwarding all original args
-            exec sudo bash "$0" "$@"
+            # If running via pipe/process substitution, download to temporary file for clean sudo re-exec
+            if [ ! -f "$0" ] || [[ "$0" =~ ^/dev/fd ]] || [ "$0" = "bash" ] || [ "$0" = "sh" ]; then
+                local TMP_RUNNER="/tmp/ss-cam-install.sh"
+                curl -fsSL "https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/install.sh" -o "$TMP_RUNNER" 2>/dev/null || true
+                chmod +x "$TMP_RUNNER" 2>/dev/null || true
+                exec sudo bash "$TMP_RUNNER" "$@"
+            else
+                exec sudo bash "$0" "$@"
+            fi
         else
             echo -e "${C_RED}[-] Error: Run with sudo: ${C_BOLD}sudo bash install-linux.sh${C_RESET}"
             return 1
