@@ -256,15 +256,18 @@ namespace SS_CAM.Linux.ViewModels
             string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             SynologyDrivePath = Path.Combine(home, "SynologyDrive", "Creative-Team");
 
-            // Setup radio stations
+            // Setup radio stations (Latest Official SS-CAM Desktop v4.6.0 Presets)
             RadioStations = new ObservableCollection<RadioStationItem>
             {
-                new() { Name = "BFM 89.9 (Business & News)", StreamUrl = "https://stream.bfm.my/bfm.mp3", Genre = "News & Analysis", Bitrate = "128 kbps" },
-                new() { Name = "Hitz FM (Top 40 Hits)", StreamUrl = "https://stream.hitz.com.my/hitz.mp3", Genre = "Top 40 Pop", Bitrate = "128 kbps" },
-                new() { Name = "Era FM (Muzik Hit Terbaik)", StreamUrl = "https://stream.era.je/era.mp3", Genre = "Malay Pop & Hits", Bitrate = "128 kbps" },
-                new() { Name = "Fly FM (Today's Hottest Music)", StreamUrl = "https://stream.flyfm.audio/flyfm.mp3", Genre = "Modern Pop", Bitrate = "128 kbps" },
-                new() { Name = "Nightwave Plaza (Lo-Fi Vaporwave)", StreamUrl = "https://radio.plaza.one/mp3", Genre = "Vaporwave & Ambient", Bitrate = "128 kbps" },
-                new() { Name = "SomaFM (Groove Salad Chill)", StreamUrl = "https://ice1.somafm.com/groovesalad-128-mp3", Genre = "Downtempo Chill", Bitrate = "128 kbps" }
+                new() { Name = "SuamiSihat Radio", StreamUrl = "https://dj.suamisihat.myds.me/listen/suamisihat-radio/radio.mp3", Genre = "Health / Lifestyle (Official)", AccentColor = "#043388", Bitrate = "192 kbps" },
+                new() { Name = "Initial D World Radio Broadcast", StreamUrl = "http://165.227.19.100:9001/listen.aac", Genre = "Eurobeat / High Energy", AccentColor = "#DC2626", Bitrate = "128 kbps" },
+                new() { Name = "BABYMETAL & J-Rock Radio", StreamUrl = "https://animefm.stream.laut.fm/animefm", Genre = "J-Rock / Kawaii Metal", AccentColor = "#E11D48", Bitrate = "128 kbps" },
+                new() { Name = "BFM 89.9 The Business Station", StreamUrl = "https://stream.rcs.revma.com/s91qy9p0zs3vv", Genre = "News, Business & Interviews", AccentColor = "#F59E0B", Bitrate = "128 kbps" },
+                new() { Name = "Lo-Fi Focus Beats (BigFM)", StreamUrl = "https://stream.bigfm.de/lofifocus/mp3-128/radiobrowser", Genre = "Lo-Fi & Study Beats", AccentColor = "#8B5CF6", Bitrate = "128 kbps" },
+                new() { Name = "Nightwave Plaza (Vaporwave)", StreamUrl = "https://radio.plaza.one/mp3", Genre = "Synthwave / Vaporwave", AccentColor = "#EC4899", Bitrate = "128 kbps" },
+                new() { Name = "SomaFM: Groove Salad", StreamUrl = "https://ice6.somafm.com/groovesalad-256-mp3", Genre = "Downtempo & Ambient Chill", AccentColor = "#10B981", Bitrate = "256 kbps" },
+                new() { Name = "Chillhop Lounge", StreamUrl = "https://stream.laut.fm/lofi", Genre = "Smooth Lo-Fi Chillhop", AccentColor = "#06B6D4", Bitrate = "128 kbps" },
+                new() { Name = "Smooth Jazz Workstation", StreamUrl = "https://0nlineradio.radioho.st/0r-jazz?ref=radio-browser", Genre = "Instrumental Jazz", AccentColor = "#D97706", Bitrate = "128 kbps" }
             };
             SelectedStation = RadioStations[0];
 
