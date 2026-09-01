@@ -21,6 +21,7 @@
 
   let showDownloadModal = $state(false);
   let commandPaletteOpen = $state(false);
+  let serverVersion = $state('4.6.0');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -51,6 +52,15 @@
       await appState.loadCurrentUser();
     }
     window.addEventListener('auth:required', () => appState.navigate('login'));
+
+    // Fetch live server version for sidebar badge
+    try {
+      const statusRes = await fetch('/api/status');
+      if (statusRes.ok) {
+        const statusData = await statusRes.json();
+        if (statusData?.version) serverVersion = statusData.version;
+      }
+    } catch { /* non-critical */ }
 
     window.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -250,7 +260,7 @@
           <div class="desktop-banner desktop-app-banner">
             <div class="banner-row">
               <span class="banner-pill">Desktop Client &amp; Apps</span>
-              <span class="banner-ver">v4.5.1</span>
+              <span class="banner-ver">v{serverVersion}</span>
             </div>
             <div class="banner-title">SS-CAM Native Apps</div>
             <p class="banner-desc">Native Windows (WPF), Linux (Fedora), and Android companion clients.</p>
@@ -527,7 +537,7 @@
 
   <FluentDialog
     bind:open={showDownloadModal}
-    title="Download SS-CAM Clients (v4.5.1)"
+    title="Download SS-CAM Clients (v{serverVersion})"
     onClose={() => (showDownloadModal = false)}
   >
     <div class="download-modal-content">

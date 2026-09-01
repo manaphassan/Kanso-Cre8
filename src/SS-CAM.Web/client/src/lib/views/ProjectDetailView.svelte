@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
@@ -216,6 +216,12 @@
     loadStaffList();
   });
 
+  onDestroy(() => {
+    // Guard: if the component unmounts mid-load (e.g. user navigates away),
+    // ensure loadingDetail is reset so the next visit starts clean.
+    projectStore.loadingDetail = false;
+  });
+
   $effect(() => {
     const id = targetId;
     if (id && id !== lastLoadedId) {
@@ -225,7 +231,20 @@
   });
 
   async function loadProject(id: string) {
-    await projectStore.loadProjectDetail(id);
+    const TIMEOUT_MS = 15000;
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Project load timed out after 15s. The NAS may be slow — please try again.')), TIMEOUT_MS)
+    );
+    try {
+      await Promise.race([projectStore.loadProjectDetail(id), timeoutPromise]);
+    } catch (err: any) {
+      // loadProjectDetail already handles its own errors via toast.
+      // Timeout errors need explicit cleanup.
+      if (err.message?.includes('timed out')) {
+        projectStore.loadingDetail = false;
+        appState.addToast(err.message, 'error');
+      }
+    }
     if (projectStore.selectedProject) {
       currentReadmeBody = projectStore.selectedProject.readmeBody || projectStore.selectedProject.briefMarkdown || '';
       currentFrontmatter = {
