@@ -124,14 +124,25 @@ if ($firstLine -match '\((.*?)\)') {
 if (-not $headline) { $headline = "Release $tag" }
 $releaseTitle = "SS-CAM $tag - $headline"
 
-# Look for executable asset in dist\
+# Collect all release assets across ecosystem
+$assetsToUpload = @()
+
+# 1. Windows Desktop Executable
 $exeAsset = Join-Path $repoRoot "dist\SS-CAM-$tag.exe"
-if (-not (Test-Path $exeAsset)) {
-    $exeAsset = Join-Path $repoRoot "dist\SS-CAM-$Version.exe"
-}
-if (-not (Test-Path $exeAsset)) {
-    $exeAsset = Join-Path $repoRoot "src\SS-CAM\bin\Release\SS-CAM.exe"
-}
+if (-not (Test-Path $exeAsset)) { $exeAsset = Join-Path $repoRoot "dist\SS-CAM-$Version.exe" }
+if (-not (Test-Path $exeAsset)) { $exeAsset = Join-Path $repoRoot "src\SS-CAM\bin\Release\SS-CAM.exe" }
+if (Test-Path $exeAsset) { $assetsToUpload += $exeAsset }
+
+# 2. Linux Native Desktop Package
+$linuxTarVersion = Join-Path $repoRoot "dist\SS-CAM-$tag-linux-x64.tar.gz"
+$linuxTarGeneric = Join-Path $repoRoot "dist\ss-cam-linux-x64.tar.gz"
+if (Test-Path $linuxTarVersion) { $assetsToUpload += $linuxTarVersion }
+if (Test-Path $linuxTarGeneric) { $assetsToUpload += $linuxTarGeneric }
+
+# 3. Android Companion Package
+$apkAsset = Join-Path $repoRoot "dist\SS-CAM-$tag-android-release.apk"
+if (-not (Test-Path $apkAsset)) { $apkAsset = Join-Path $repoRoot "dist\SS-CAM-$Version-android-release.apk" }
+if (Test-Path $apkAsset) { $assetsToUpload += $apkAsset }
 
 if (-not $DryRun) {
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
@@ -149,13 +160,13 @@ if (-not $DryRun) {
                 --title $releaseTitle `
                 --notes-file $notesFile `
                 --latest
-            if (Test-Path $exeAsset) {
-                gh release upload $tag $exeAsset --repo SuamiSihat/ss_cam --clobber
+            if ($assetsToUpload.Count -gt 0) {
+                gh release upload $tag @assetsToUpload --repo SuamiSihat/ss_cam --clobber
             }
         } else {
             # Create new release
-            if (Test-Path $exeAsset) {
-                gh release create $tag $exeAsset --repo SuamiSihat/ss_cam `
+            if ($assetsToUpload.Count -gt 0) {
+                gh release create $tag @assetsToUpload --repo SuamiSihat/ss_cam `
                     --title $releaseTitle `
                     --notes-file $notesFile `
                     --latest
