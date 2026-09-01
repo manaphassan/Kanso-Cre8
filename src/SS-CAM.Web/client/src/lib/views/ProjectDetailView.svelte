@@ -13,6 +13,7 @@
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
   import ProjectVersionTimelineModal from '$lib/components/features/ProjectVersionTimelineModal.svelte';
+  import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
 
   interface Props {
     projectId?: string;
