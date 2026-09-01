@@ -27,6 +27,16 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string _selectedNavTab = "Dashboard";
 
+    public bool IsDashboardVisible => SelectedNavTab == "Dashboard";
+    public bool IsProjectCreatorVisible => SelectedNavTab == "Project Creator";
+    public bool IsTaskManagerVisible => SelectedNavTab == "Task Manager";
+    public bool IsCopywritingVisible => SelectedNavTab == "Copywriting";
+    public bool IsBrandAssetsVisible => SelectedNavTab == "Brand Assets";
+    public bool IsDeliverablesVisible => SelectedNavTab == "Deliverables";
+    public bool IsFocusRadioVisible => SelectedNavTab == "Focus Radio";
+    public bool IsWellbeingVisible => SelectedNavTab == "Wellbeing";
+    public bool IsSettingsVisible => SelectedNavTab == "Settings";
+
     [ObservableProperty]
     private string _statusMessage = "Synology Drive workspace integration active.";
 
@@ -94,6 +104,9 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<string> _availablePriorities = new() { "low", "medium", "high", "urgent" };
+
+    [ObservableProperty]
+    private ObservableCollection<string> _availableStarterCanvases = new() { "afdesign", "psd", "ai", "none" };
 
     // ─── COPYWRITING STUDIO PROPERTIES ──────────────────────────────────────
     [ObservableProperty]
@@ -165,6 +178,19 @@ public partial class MainViewModel : ViewModelBase
         _workspaceService = new WorkspaceService();
         _synologyDrivePath = _workspaceService.WorkspaceRoot;
         LoadProjects();
+    }
+
+    partial void OnSelectedNavTabChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsDashboardVisible));
+        OnPropertyChanged(nameof(IsProjectCreatorVisible));
+        OnPropertyChanged(nameof(IsTaskManagerVisible));
+        OnPropertyChanged(nameof(IsCopywritingVisible));
+        OnPropertyChanged(nameof(IsBrandAssetsVisible));
+        OnPropertyChanged(nameof(IsDeliverablesVisible));
+        OnPropertyChanged(nameof(IsFocusRadioVisible));
+        OnPropertyChanged(nameof(IsWellbeingVisible));
+        OnPropertyChanged(nameof(IsSettingsVisible));
     }
 
     [RelayCommand]
@@ -432,21 +458,5 @@ public partial class MainViewModel : ViewModelBase
         {
             StatusMessage = $"Failed to create desktop shortcut: {ex.Message}";
         }
-    }
-}
-
-public class RadioStationItem
-{
-    public string Name { get; set; }
-    public string StreamUrl { get; set; }
-    public string Genre { get; set; }
-    public string AccentColor { get; set; }
-
-    public RadioStationItem(string name, string streamUrl, string genre, string accentColor)
-    {
-        Name = name;
-        StreamUrl = streamUrl;
-        Genre = genre;
-        AccentColor = accentColor;
     }
 }
