@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,19 +7,30 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.1" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    <!-- Core Avalonia -->
+    <PackageReference Include="Avalonia"                      Version="12.1.1" />
+    <PackageReference Include="Avalonia.Desktop"              Version="12.1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent"        Version="12.1.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter"          Version="12.1.1" />
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+      <PrivateAssets  Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+
+    <!-- MVVM -->
+    <PackageReference Include="CommunityToolkit.Mvvm"         Version="8.4.2" />
+
+    <!-- QR Code — pure C#, zero native deps, works on all platforms -->
+    <PackageReference Include="QRCoder"                       Version="1.6.0" />
+
+    <!-- YAML frontmatter parsing (project vault metadata, COPY.md headers) -->
+    <PackageReference Include="YamlDotNet"                    Version="16.3.0" />
+
+    <!-- JSON storage (quick notes, settings persistence) -->
+    <PackageReference Include="Newtonsoft.Json"               Version="13.0.3" />
   </ItemGroup>
 </Project>

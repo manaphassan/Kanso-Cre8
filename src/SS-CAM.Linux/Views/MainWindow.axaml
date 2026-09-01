@@ -40,24 +40,27 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Status Pills + Actions -->
+                <!-- Right: Status Pills + Rescan -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                     <Border Background="#022057" CornerRadius="12" Padding="12,5"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <Ellipse Width="8" Height="8" Fill="#38BDF8"/>
-                            <TextBlock Text="Linux Client Active" Foreground="#BAE6FD" FontSize="11" FontWeight="SemiBold"/>
+                            <TextBlock Text="Linux Client" Foreground="#BAE6FD" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>
                     <Border Background="#064E3B" CornerRadius="12" Padding="12,5"
                             BorderBrush="#047857" BorderThickness="1">
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <Ellipse Width="8" Height="8" Fill="#34D399"/>
-                            <TextBlock Text="Synology Drive Active" Foreground="#A7F3D0" FontSize="11" FontWeight="SemiBold"/>
+                            <Ellipse Width="8" Height="8" Fill="{Binding NasStatusColor}"/>
+                            <TextBlock Text="{Binding NasStatusText}" Foreground="#A7F3D0" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>
                     <Button Content="🔄 Rescan Vault" Command="{Binding LoadProjectsCommand}"
                             Background="#1E293B" Foreground="#F8FAFC" FontSize="12" FontWeight="SemiBold"
+                            CornerRadius="6" Padding="12,6" BorderBrush="#334155" BorderThickness="1"/>
+                    <Button Content="🔌 NAS Check" Command="{Binding CheckNasStatusCommand}"
+                            Background="#1E293B" Foreground="#94A3B8" FontSize="12"
                             CornerRadius="6" Padding="12,6" BorderBrush="#334155" BorderThickness="1"/>
                 </StackPanel>
             </Grid>
@@ -66,93 +69,164 @@
         <!-- ══════════════════════════════════════════════════════════════════
              2. MAIN BODY: Sidebar + ContentControl page host
              ══════════════════════════════════════════════════════════════════ -->
-        <Grid Grid.Row="1" ColumnDefinitions="240, *">
+        <Grid Grid.Row="1" ColumnDefinitions="220, *">
 
             <!-- ── SIDEBAR ── -->
             <Border Grid.Column="0" Background="#0A0F1D"
-                    BorderBrush="#1E293B" BorderThickness="0,0,1,0" Padding="10,14">
-                <ScrollViewer>
-                    <StackPanel Spacing="3">
+                    BorderBrush="#1E293B" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="*, Auto">
 
-                        <!-- SECTION 1: CREATIVE WORKSPACE -->
-                        <TextBlock Text="CREATIVE WORKSPACE"
-                                   FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,4,0,6"/>
+                    <!-- Scrollable nav items -->
+                    <ScrollViewer Grid.Row="0" Padding="10,14,10,6">
+                        <StackPanel Spacing="2">
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Dashboard"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgDashboard}" Foreground="{Binding NavFgDashboard}"
-                                CornerRadius="6">
-                            <TextBlock Text="📊 Dashboard" FontSize="13" FontWeight="SemiBold"/>
-                        </Button>
+                            <!-- ─ SECTION 1: CREATIVE WORKSPACE ─ -->
+                            <TextBlock Text="CREATIVE WORKSPACE"
+                                       FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,4,0,6"/>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgProjectCreator}" Foreground="{Binding NavFgProjectCreator}"
-                                CornerRadius="6">
-                            <TextBlock Text="📁 Project Creator" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Dashboard"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgDashboard}" Foreground="{Binding NavFgDashboard}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📊  Dashboard" FontSize="13" FontWeight="{Binding NavFgDashboard, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Task Manager"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgTaskManager}" Foreground="{Binding NavFgTaskManager}"
-                                CornerRadius="6">
-                            <TextBlock Text="📋 Task Manager" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgProjectCreator}" Foreground="{Binding NavFgProjectCreator}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📁  Project Creator" FontSize="13"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Copywriting"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgCopywriting}" Foreground="{Binding NavFgCopywriting}"
-                                CornerRadius="6">
-                            <TextBlock Text="✍️ Copywriting Studio" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Search &amp; Copy"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgSearchCopy}" Foreground="{Binding NavFgSearchCopy}"
+                                    CornerRadius="7">
+                                <TextBlock Text="🔍  Search &amp; Copy" FontSize="13"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Brand Assets"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgBrandAssets}" Foreground="{Binding NavFgBrandAssets}"
-                                CornerRadius="6">
-                            <TextBlock Text="🎨 Brand Assets Vault" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Copywriting"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgCopywriting}" Foreground="{Binding NavFgCopywriting}"
+                                    CornerRadius="7">
+                                <TextBlock Text="✍️  Copywriting Studio" FontSize="13"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Deliverables"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgDeliverables}" Foreground="{Binding NavFgDeliverables}"
-                                CornerRadius="6">
-                            <TextBlock Text="📦 Deliverables &amp; DAM" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Brand Assets"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgBrandAssets}" Foreground="{Binding NavFgBrandAssets}"
+                                    CornerRadius="7">
+                                <TextBlock Text="🎨  Brand Assets" FontSize="13"/>
+                            </Button>
 
-                        <!-- SECTION 2: STUDIO TOOLS -->
-                        <Border Height="1" Background="#1E293B" Margin="8,10,8,10"/>
-                        <TextBlock Text="STUDIO TOOLS"
-                                   FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
+                            <!-- ─ SECTION 2: TASK &amp; PLANNING ─ -->
+                            <Border Height="1" Background="#1E293B" Margin="6,8,6,8"/>
+                            <TextBlock Text="TASK &amp; PLANNING"
+                                       FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Focus Radio"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgFocusRadio}" Foreground="{Binding NavFgFocusRadio}"
-                                CornerRadius="6">
-                            <TextBlock Text="📻 Focus Radio Player" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Task Manager"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgTaskManager}" Foreground="{Binding NavFgTaskManager}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📋  Task Manager" FontSize="13"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Wellbeing"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgWellbeing}" Foreground="{Binding NavFgWellbeing}"
-                                CornerRadius="6">
-                            <TextBlock Text="🧘 Wellbeing &amp; Solat" FontSize="13"/>
-                        </Button>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Big Calendar"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgCalendar}" Foreground="{Binding NavFgCalendar}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📅  Big Calendar" FontSize="13"/>
+                            </Button>
 
-                        <!-- SECTION 3: SYSTEM & SETTINGS -->
-                        <Border Height="1" Background="#1E293B" Margin="8,10,8,10"/>
-                        <TextBlock Text="SYSTEM &amp; SETTINGS"
-                                   FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Quick Notes"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgQuickNote}" Foreground="{Binding NavFgQuickNote}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📝  Quick Notes" FontSize="13"/>
+                            </Button>
 
-                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Settings"
-                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                Background="{Binding NavBgSettings}" Foreground="{Binding NavFgSettings}"
-                                CornerRadius="6">
-                            <TextBlock Text="⚙️ Settings &amp; Vault" FontSize="13"/>
-                        </Button>
+                            <!-- ─ SECTION 3: STUDIO TOOLS ─ -->
+                            <Border Height="1" Background="#1E293B" Margin="6,8,6,8"/>
+                            <TextBlock Text="STUDIO TOOLS"
+                                       FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
 
-                    </StackPanel>
-                </ScrollViewer>
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Wellbeing"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgWellbeing}" Foreground="{Binding NavFgWellbeing}"
+                                    CornerRadius="7">
+                                <TextBlock Text="🧘  Creative Wellbeing" FontSize="13"/>
+                            </Button>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Waktu Solat"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgWaktuSolat}" Foreground="{Binding NavFgWaktuSolat}"
+                                    CornerRadius="7">
+                                <TextBlock Text="🕌  Waktu Solat" FontSize="13"/>
+                            </Button>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Radio Player"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgRadio}" Foreground="{Binding NavFgRadio}"
+                                    CornerRadius="7">
+                                <TextBlock Text="📻  Radio Player" FontSize="13"/>
+                            </Button>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="QR Code"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgQrCode}" Foreground="{Binding NavFgQrCode}"
+                                    CornerRadius="7">
+                                <TextBlock Text="⬛  QR Code Studio" FontSize="13"/>
+                            </Button>
+
+                            <!-- ─ SECTION 4: SYSTEM ─ -->
+                            <Border Height="1" Background="#1E293B" Margin="6,8,6,8"/>
+                            <TextBlock Text="SYSTEM"
+                                       FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Workstation Health"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgWorkstation}" Foreground="{Binding NavFgWorkstation}"
+                                    CornerRadius="7">
+                                <TextBlock Text="💻  Workstation Health" FontSize="13"/>
+                            </Button>
+
+                            <Border Height="1" Background="#1E293B" Margin="6,4,6,4"/>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Settings"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgSettings}" Foreground="{Binding NavFgSettings}"
+                                    CornerRadius="7">
+                                <TextBlock Text="⚙️  Settings &amp; Profile" FontSize="13"/>
+                            </Button>
+
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- ── SIDEBAR FOOTER STATUS ROW ── -->
+                    <Border Grid.Row="1" Background="#070B14"
+                            BorderBrush="#1E293B" BorderThickness="0,1,0,0" Padding="14,10">
+                        <StackPanel Spacing="8">
+
+                            <!-- NAS status -->
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Ellipse Width="8" Height="8" Fill="{Binding NasStatusColor}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding NasStatusText}" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+
+                            <!-- Focus timer -->
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="⏱" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding FocusTimerText}" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+
+                            <!-- Active theme -->
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="🎨" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ActiveThemeText}" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Border>
 
             <!-- ── CONTENT AREA: single ContentControl host ── -->
@@ -166,22 +240,26 @@
         <Border Grid.Row="2" Background="#070B14"
                 BorderBrush="#1E293B" BorderThickness="0,1,0,0" Padding="18,8">
             <Grid ColumnDefinitions="Auto, *, Auto, Auto">
+                <!-- Status message -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Ellipse Width="8" Height="8" Fill="#10B981"/>
                     <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#CBD5E1"/>
                 </StackPanel>
 
+                <!-- Radio mini-player -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10"
                             VerticalAlignment="Center" Margin="0,0,24,0">
                     <TextBlock Text="📻" FontSize="12" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding CurrentStationName}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
-                    <Button Content="▶ / ⏸" Command="{Binding ToggleRadioCommand}"
-                            Background="#1E293B" Foreground="#38BDF8" FontSize="10" Padding="6,3" CornerRadius="4"/>
+                    <Button Content="{Binding RadioPlayIcon}" Command="{Binding ToggleRadioCommand}"
+                            Background="#022057" Foreground="#38BDF8" FontSize="13" FontWeight="Bold"
+                            Padding="8,3" CornerRadius="4" Width="32"/>
                 </StackPanel>
 
+                <!-- Time + Version -->
                 <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding CurrentTimeString}" FontSize="12" FontWeight="SemiBold" Foreground="#38BDF8"/>
-                    <TextBlock Text="{Binding AppVersion}" FontSize="12" Foreground="#64748B"/>
+                    <TextBlock Text="{Binding CurrentTimeString}" FontSize="12" FontWeight="Bold" Foreground="#38BDF8"/>
+                    <TextBlock Text="{Binding AppVersion}" FontSize="12" Foreground="#475569"/>
                 </StackPanel>
             </Grid>
         </Border>
