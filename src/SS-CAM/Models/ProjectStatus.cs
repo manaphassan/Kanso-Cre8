@@ -136,11 +136,29 @@ namespace SS_CAM.Models
             }
         }
 
+        private bool IsCompletedStatus
+        {
+            get
+            {
+                string s = (Status ?? "").ToLowerInvariant();
+                return s == "done" || s == "approved" || s == "completed";
+            }
+        }
+
         public string DeadlineDisplay
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(Deadline)) return "";
+                if (IsCompletedStatus)
+                {
+                    DateTime dtCompleted;
+                    if (DateTime.TryParse(Deadline, out dtCompleted))
+                    {
+                        return dtCompleted.ToString("yyyy-MM-dd");
+                    }
+                    return Deadline;
+                }
                 DateTime dt;
                 if (DateTime.TryParse(Deadline, out dt))
                 {
@@ -157,6 +175,7 @@ namespace SS_CAM.Models
         {
             get
             {
+                if (IsCompletedStatus) return false;
                 if (string.IsNullOrWhiteSpace(Deadline)) return false;
                 DateTime dt;
                 if (DateTime.TryParse(Deadline, out dt))
@@ -191,6 +210,7 @@ namespace SS_CAM.Models
             get
             {
                 if (string.IsNullOrWhiteSpace(Deadline)) return "#64748B";
+                if (IsCompletedStatus) return "#10B981"; // Emerald green for finished projects
                 DateTime dt;
                 if (DateTime.TryParse(Deadline, out dt))
                 {

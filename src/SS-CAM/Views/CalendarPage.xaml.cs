@@ -261,7 +261,8 @@ namespace SS_CAM.Views
                         {
                             deadlinesThisMonth++;
                         }
-                        if (dtDeadline < DateTime.Today && (p.Status ?? "").ToLowerInvariant() != "done")
+                        string st = (p.Status ?? "").ToLowerInvariant();
+                        if (dtDeadline < DateTime.Today && st != "done" && st != "approved" && st != "completed")
                         {
                             overdueCount++;
                         }
