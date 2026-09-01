@@ -878,6 +878,51 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 28: Quick Notes Multi-User Isolation & Sync ────────────────
+  test('Quick Notes discovers Notes and user-scoped Notes_* directories with UTF-8 BOM safety', async () => {
+    const config = require('../config');
+    const testDir = path.join(__dirname, 'temp-notes-workspace');
+    const notesTeamDir = path.join(testDir, '_Team', '_Config', 'Notes');
+    const notesBrandDir = path.join(testDir, '_Team', '_Config', 'Notes_brand');
+    fs.mkdirSync(notesTeamDir, { recursive: true });
+    fs.mkdirSync(notesBrandDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testDir;
+
+    try {
+      // 1. Write team note and user-scoped note with UTF-8 BOM
+      fs.writeFileSync(path.join(notesTeamDir, 'team_note.md'), '---\npriority: high\n---\n# Team Overview\n\nAll designers briefing.');
+      fs.writeFileSync(path.join(notesBrandDir, 'brand_note.md'), '\uFEFF---\npinned: true\n---\n# Madu Tualang Specs\n\n17x target sales.');
+
+      // 2. Query routes/api notes functions
+      const express = require('express');
+      const request = require('supertest');
+      const app = express();
+      app.use(express.json());
+      app.use('/api', require('../routes/api'));
+
+      const res = await request(app).get('/api/notes');
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(res.body.success, true);
+      assert.strictEqual(res.body.notes.length, 2);
+
+      const brandNote = res.body.notes.find(n => n.id === 'brand_note');
+      assert.ok(brandNote, 'Brand note must be discovered from Notes_brand');
+      assert.strictEqual(brandNote.title, 'Madu Tualang Specs');
+      assert.strictEqual(brandNote.isPinned, true);
+      assert.strictEqual(brandNote.owner, 'brand');
+
+      const teamNote = res.body.notes.find(n => n.id === 'team_note');
+      assert.ok(teamNote, 'Team note must be discovered from Notes');
+      assert.strictEqual(teamNote.title, 'Team Overview');
+      assert.strictEqual(teamNote.owner, 'team');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

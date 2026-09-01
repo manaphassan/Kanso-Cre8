@@ -1374,24 +1374,70 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
 
 // ─── QUICK NOTES (DESKTOP & MOBILE BI-DIRECTIONAL SYNC) ─────────────
 
-function getNotesDir() {
-  const primary = path.join(config.WORKSPACE_ROOT, '_Team', '_Config', 'Notes');
-  if (fs.existsSync(primary)) return primary;
-  try {
-    fs.mkdirSync(primary, { recursive: true });
-    return primary;
-  } catch (e) {
-    const fallback = path.resolve(__dirname, '../sample-workspace/_Team/_Config/Notes');
-    fs.mkdirSync(fallback, { recursive: true });
-    return fallback;
+function getAllNotesDirs(targetUser = null) {
+  const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+  const dirs = [];
+  
+  if (fs.existsSync(configDir)) {
+    try {
+      const entries = fs.readdirSync(configDir, { withFileTypes: true });
+      for (const ent of entries) {
+        if (ent.isDirectory() && (ent.name === 'Notes' || ent.name.startsWith('Notes_'))) {
+          const fullPath = path.join(configDir, ent.name);
+          const owner = ent.name === 'Notes' ? 'team' : ent.name.replace('Notes_', '');
+          dirs.push({ path: fullPath, folderName: ent.name, owner });
+        }
+      }
+    } catch (e) {}
   }
+
+  // Ensure default Notes dir exists if no directories found
+  if (dirs.length === 0) {
+    const primary = path.join(configDir, 'Notes');
+    try {
+      fs.mkdirSync(primary, { recursive: true });
+      dirs.push({ path: primary, folderName: 'Notes', owner: 'team' });
+    } catch (e) {
+      const fallback = path.resolve(__dirname, '../sample-workspace/_Team/_Config/Notes');
+      fs.mkdirSync(fallback, { recursive: true });
+      dirs.push({ path: fallback, folderName: 'Notes', owner: 'team' });
+    }
+  }
+
+  if (targetUser) {
+    const userClean = String(targetUser).toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const userSpecificDir = path.join(configDir, `Notes_${userClean}`);
+    if (!dirs.some(d => d.path === userSpecificDir) && fs.existsSync(userSpecificDir)) {
+      dirs.unshift({ path: userSpecificDir, folderName: `Notes_${userClean}`, owner: userClean });
+    }
+  }
+
+  return dirs;
 }
 
-function parseNoteMarkdown(content, filename, stat) {
+function getTargetWriteDir(targetUser = null) {
+  const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+  if (targetUser) {
+    const userClean = String(targetUser).toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const userDir = path.join(configDir, `Notes_${userClean}`);
+    if (!fs.existsSync(userDir)) {
+      try { fs.mkdirSync(userDir, { recursive: true }); } catch (e) {}
+    }
+    if (fs.existsSync(userDir)) return { path: userDir, owner: userClean };
+  }
+
+  // Default to first existing user folder (e.g. Notes_brand) or root Notes
+  const allDirs = getAllNotesDirs();
+  const userFolder = allDirs.find(d => d.owner !== 'team') || allDirs[0];
+  return userFolder || { path: path.join(configDir, 'Notes'), owner: 'team' };
+}
+
+function parseNoteMarkdown(content, filename, stat, owner = 'team') {
   let isPinned = false;
   let priority = 'normal';
-  let body = content;
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+  const cleanContent = (content || '').replace(/^\uFEFF/, '');
+  let body = cleanContent;
+  const match = cleanContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (match) {
     const yaml = match[1];
     body = match[2];
@@ -1402,7 +1448,7 @@ function parseNoteMarkdown(content, filename, stat) {
   const lines = body.split(/\r?\n/);
   let title = path.basename(filename, '.md');
   for (const l of lines) {
-    const trimmed = l.trim();
+    const trimmed = l.trim().replace(/^\uFEFF/, '');
     if (trimmed.startsWith('# ')) {
       title = trimmed.replace(/^#+\s*/, '');
       break;
@@ -1418,6 +1464,7 @@ function parseNoteMarkdown(content, filename, stat) {
     body: body.trim(),
     isPinned,
     priority,
+    owner,
     modified: stat.mtimeMs,
     dateText: new Date(stat.mtimeMs).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   };
@@ -1425,19 +1472,34 @@ function parseNoteMarkdown(content, filename, stat) {
 
 router.get('/notes', (req, res) => {
   try {
-    const dir = getNotesDir();
-    if (!fs.existsSync(dir)) {
-      return res.json({ success: true, notes: [] });
-    }
-    const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
-    const notes = [];
-    for (const f of files) {
+    const requestedUser = req.query.user || (req.user && req.user.username);
+    const dirs = getAllNotesDirs(requestedUser);
+    const notesMap = new Map();
+
+    for (const dirObj of dirs) {
+      if (!fs.existsSync(dirObj.path)) continue;
       try {
-        const filePath = path.join(dir, f);
-        const stat = fs.statSync(filePath);
-        const content = fs.readFileSync(filePath, 'utf8');
-        notes.push(parseNoteMarkdown(content, f, stat));
+        const files = fs.readdirSync(dirObj.path).filter(f => f.endsWith('.md'));
+        for (const f of files) {
+          try {
+            const filePath = path.join(dirObj.path, f);
+            const stat = fs.statSync(filePath);
+            const content = fs.readFileSync(filePath, 'utf8');
+            const note = parseNoteMarkdown(content, f, stat, dirObj.owner);
+            // If duplicate note ID across folders, keep newest
+            if (!notesMap.has(note.id) || notesMap.get(note.id).modified < note.modified) {
+              notesMap.set(note.id, note);
+            }
+          } catch (err) {}
+        }
       } catch (err) {}
+    }
+
+    let notes = Array.from(notesMap.values());
+
+    if (requestedUser && req.query.scope === 'user-only') {
+      const userClean = String(requestedUser).toLowerCase();
+      notes = notes.filter(n => n.owner === userClean || n.owner === 'team');
     }
 
     notes.sort((a, b) => {
@@ -1456,11 +1518,12 @@ router.get('/notes', (req, res) => {
 
 router.post('/notes', (req, res) => {
   try {
-    const { id, title, body, isPinned = false, priority = 'normal' } = req.body;
-    const dir = getNotesDir();
+    const { id, title, body, isPinned = false, priority = 'normal', user } = req.body;
+    const targetUser = user || (req.user && req.user.username);
+    const target = getTargetWriteDir(targetUser);
     const noteId = id || new Date().toISOString().replace(/[-:T]/g, '').slice(0, 15);
     const filename = `${noteId}.md`;
-    const filePath = path.join(dir, filename);
+    const filePath = path.join(target.path, filename);
 
     const cleanTitle = (title || 'Untitled Note').trim();
     const cleanBody = (body || '').trim();
@@ -1469,7 +1532,7 @@ router.post('/notes', (req, res) => {
 
     fs.writeFileSync(filePath, fullContent, 'utf8');
     const stat = fs.statSync(filePath);
-    const savedNote = parseNoteMarkdown(fullContent, filename, stat);
+    const savedNote = parseNoteMarkdown(fullContent, filename, stat, target.owner);
 
     res.json({ success: true, note: savedNote });
   } catch (err) {
@@ -1480,12 +1543,20 @@ router.post('/notes', (req, res) => {
 router.delete('/notes/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const dir = getNotesDir();
-    const filePath = path.join(dir, `${id}.md`);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    const dirs = getAllNotesDirs();
+    let deleted = false;
+
+    for (const dirObj of dirs) {
+      const filePath = path.join(dirObj.path, `${id}.md`);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          deleted = true;
+        } catch (e) {}
+      }
     }
-    res.json({ success: true, id });
+
+    res.json({ success: true, id, deleted });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
