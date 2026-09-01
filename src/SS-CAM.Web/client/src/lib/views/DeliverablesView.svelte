@@ -122,10 +122,10 @@
     <div class="header-left">
       <div class="header-tag">
         <span class="badge-accent">Synology Vault</span>
-        <span class="header-meta">{projectStore.deliverables.length} Total Master Outputs</span>
+        <span class="header-meta">{projectStore.deliverables.length} Master Outputs</span>
       </div>
-      <h1 class="view-title">Deliverables & Review Queue</h1>
-      <p class="view-subtitle">Inspect, approve, and manage creative outputs across campaign projects in real time</p>
+      <h1 class="view-title">Deliverables &amp; Assets</h1>
+      <p class="view-subtitle">Inspect, approve, and download production-ready creative deliverables in real time.</p>
     </div>
 
     <div class="header-actions">
@@ -137,17 +137,15 @@
           showIngesterModal = true; 
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-        </svg>
-        <span>Ingest Deliverables</span>
+        <FluentIcons name="upload" size={13} />
+        <span style="margin-left: 5px;">Ingest Deliverables</span>
       </FluentButton>
 
       <FluentButton appearance="secondary" size="sm" onclick={() => projectStore.loadDeliverables()}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
         </svg>
-        <span>Refresh Queue</span>
+        <span style="margin-left: 5px;">Refresh</span>
       </FluentButton>
     </div>
   </div>
@@ -159,15 +157,18 @@
       <span class="kpi-count">{projectStore.deliverables.length}</span>
     </button>
     <button class="kpi-pill pill-pending {filterStatus === 'pending' ? 'active' : ''}" onclick={() => filterStatus = 'pending'}>
+      <span class="status-dot dot-pending"></span>
       <span class="kpi-label">Pending Sign-off</span>
       <span class="kpi-count">{pendingCount}</span>
     </button>
     <button class="kpi-pill pill-revision {filterStatus === 'revision' ? 'active' : ''}" onclick={() => filterStatus = 'revision'}>
+      <span class="status-dot dot-revision"></span>
       <span class="kpi-label">Revision Required</span>
       <span class="kpi-count">{revisionCount}</span>
     </button>
     <button class="kpi-pill pill-approved {filterStatus === 'approved' ? 'active' : ''}" onclick={() => filterStatus = 'approved'}>
-      <span class="kpi-label">Approved & Released</span>
+      <span class="status-dot dot-approved"></span>
+      <span class="kpi-label">Approved &amp; Released</span>
       <span class="kpi-count">{approvedCount}</span>
     </button>
   </div>
@@ -175,55 +176,55 @@
   <!-- Filter & Search Toolbar -->
   <div class="deliverable-toolbar">
     <div class="search-box">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
       <input
         type="text"
-        placeholder="Filter deliverables by filename, job ID, designer..."
+        placeholder="Search deliverables by name, job ID, designer..."
         value={rawSearchInput}
         oninput={handleSearchChange}
       />
       {#if rawSearchInput}
-        <button class="clear-search" onclick={handleClearSearch}>✕</button>
+        <button class="clear-search" onclick={handleClearSearch} title="Clear search">✕</button>
       {/if}
     </div>
 
     <div class="filter-group">
       <!-- Media Class Filter -->
-      <select bind:value={filterMediaClass} class="brand-select">
-        <option value="all">All Media Formats</option>
+      <select bind:value={filterMediaClass} class="clean-select" aria-label="Filter Media Class">
+        <option value="all">Format: All</option>
         <option value="raster_image">Images (PNG, JPG, WebP)</option>
-        <option value="video_master">Master Videos (MP4, MOV)</option>
-        <option value="print_pdf">Print &amp; PDF Exports</option>
-        <option value="vector_graphics">Vectors &amp; AI (SVG, AI)</option>
+        <option value="video_master">Videos (MP4, MOV)</option>
+        <option value="print_pdf">PDF / Print</option>
+        <option value="vector_graphics">Vectors (SVG, AI)</option>
       </select>
 
       <!-- Aspect Ratio Filter -->
-      <select bind:value={filterAspectRatio} class="brand-select">
-        <option value="all">All Aspect Ratios</option>
+      <select bind:value={filterAspectRatio} class="clean-select" aria-label="Filter Aspect Ratio">
+        <option value="all">Ratio: All</option>
         <option value="1:1">1:1 Square (Feed)</option>
-        <option value="9:16">9:16 Vertical (Story / Reel)</option>
-        <option value="16:9">16:9 Landscape (YouTube)</option>
-        <option value="4:5">4:5 Portrait (Meta)</option>
+        <option value="9:16">9:16 Vertical (Reels)</option>
+        <option value="16:9">16:9 Landscape</option>
+        <option value="4:5">4:5 Portrait</option>
       </select>
 
       <!-- Brand Filter -->
-      <select bind:value={filterBrand} class="brand-select">
-        <option value="all">All Brands ({availableBrands.length})</option>
+      <select bind:value={filterBrand} class="clean-select" aria-label="Filter Brand">
+        <option value="all">Brand: All ({availableBrands.length})</option>
         {#each availableBrands as b}
-          <option value={b}>{b} Holding</option>
+          <option value={b}>{b}</option>
         {/each}
       </select>
 
       <!-- View Mode Toggle -->
       <div class="view-mode-toggle">
         <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">
-          <FluentIcons name="grid" size={14} />
+          <FluentIcons name="grid" size={13} />
         </button>
         <button class="mode-btn {viewMode === 'table' ? 'active' : ''}" onclick={() => viewMode = 'table'} title="Metadata Table View">
-          <FluentIcons name="table" size={14} />
+          <FluentIcons name="table" size={13} />
         </button>
       </div>
     </div>
@@ -253,7 +254,7 @@
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
-          <FluentCard hoverLift padding="12px" class="del-card">
+          <div class="del-card">
             <!-- Preview Box -->
             <div class="del-preview-box">
               {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
@@ -266,73 +267,84 @@
                   }}
                 />
               {:else if d.isVideo || d.previewType === 'video'}
-                <div class="media-badge-icon video-icon">
-                  <FluentIcons name="video" size={14} />
-                  <span style="margin-left: 4px;">VIDEO</span>
+                <div class="media-placeholder video-bg">
+                  <FluentIcons name="video" size={24} />
+                  <span class="media-type-label">VIDEO</span>
                 </div>
               {:else if d.isPdf || d.previewType === 'pdf'}
-                <div class="media-badge-icon pdf-icon">
-                  <FluentIcons name="file" size={14} color="#EF4444" />
-                  <span style="margin-left: 4px;">PDF</span>
+                <div class="media-placeholder pdf-bg">
+                  <FluentIcons name="file" size={24} color="#EF4444" />
+                  <span class="media-type-label">PDF</span>
                 </div>
               {:else}
-                <div class="doc-icon">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</div>
+                <div class="media-placeholder file-bg">
+                  <span class="media-type-label">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
+                </div>
               {/if}
 
-              <!-- Status Tag Overlay -->
-              <span class="preview-status-tag status-{(d.status || 'pending')}">
-                {(d.status || 'pending').toUpperCase()}
+              <!-- Status Tag Overlay Top Left -->
+              <span class="preview-status-badge status-{(d.status || 'pending')}">
+                <span class="badge-dot"></span>
+                {(d.status || 'pending')}
               </span>
 
-              {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
-                <span class="ratio-pill">{d.aspectRatioEstimate}</span>
-              {/if}
+              <!-- Format / Ratio Badge Top Right -->
+              <span class="format-badge">
+                {d.format || (d.ext ? d.ext.toUpperCase().replace('.', '') : 'ASSET')}
+                {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
+                  · {d.aspectRatioEstimate}
+                {/if}
+              </span>
             </div>
 
             <!-- Card Body -->
             <div class="del-body">
-              <div class="del-top">
-                <span class="job-id">{d.project?.jobId || d.projectJobId || 'JOB'}</span>
-                <span class="brand-pill">{d.project?.brand || d.projectBrand || 'SS'}</span>
+              <div class="del-top-meta">
+                <span class="job-tag">{d.project?.jobId || d.projectJobId || '0000'}</span>
+                <span class="brand-tag">{d.project?.brand || d.projectBrand || 'SS'}</span>
+                <span class="proj-title-trunc" title={d.project?.title || d.projectTitle || ''}>
+                  {d.project?.title || d.projectTitle || 'Creative Asset'}
+                </span>
               </div>
 
               <h3 class="del-title" title={d.filename}>{d.filename}</h3>
-              <p class="del-proj-name" title={d.project?.title || d.projectTitle || 'Unknown Project'}>
-                {d.project?.title || d.projectTitle || 'Unknown Project'}
-              </p>
 
-              <div class="del-meta-row">
+              <div class="del-footer-row">
                 <span class="meta-designer">
                   <FluentIcons name="user" size={11} />
-                  <span style="margin-left: 4px;">{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+                  <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
                 </span>
                 <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
               </div>
 
-              <!-- Action Bar -->
+              <!-- Quick Action Bar -->
               <div class="del-actions" onclick={(e) => e.stopPropagation()}>
-                <FluentButton appearance="secondary" size="xs" onclick={() => openLightbox(d)}>
-                  Inspect
-                </FluentButton>
-                {#if d.isImage || d.previewType === 'image'}
-                  <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
-                    <FluentIcons name="vector" size={13} />
-                  </button>
-                  <button class="tool-icon-btn" title="Print &amp; POSM Preflight Validator (DPI, Bleed &amp; CMYK)" onclick={() => openPreflight(d)}>
-                    <FluentIcons name="printer" size={13} />
-                  </button>
-                {/if}
-                <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
-                  <FluentIcons name="link" size={13} />
+                <button class="action-btn-pill" onclick={() => openLightbox(d)}>
+                  <FluentIcons name="open" size={12} />
+                  <span>Inspect</span>
                 </button>
-                {#if d.downloadUrl}
-                  <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download Output File">
-                    <FluentIcons name="download" size={13} />
-                  </a>
-                {/if}
+
+                <div class="action-icons-right">
+                  {#if d.isImage || d.previewType === 'image'}
+                    <button class="tool-icon-btn" title="Smart Social Resizer (1:1, 9:16, 16:9, 4:5)" onclick={() => openResizer(d)}>
+                      <FluentIcons name="vector" size={12} />
+                    </button>
+                    <button class="tool-icon-btn" title="Print &amp; POSM Preflight Validator (DPI, Bleed &amp; CMYK)" onclick={() => openPreflight(d)}>
+                      <FluentIcons name="printer" size={12} />
+                    </button>
+                  {/if}
+                  <button class="tool-icon-btn" title="Generate Client Review Link" onclick={() => openShare(d)}>
+                    <FluentIcons name="link" size={12} />
+                  </button>
+                  {#if d.downloadUrl}
+                    <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Output File">
+                      <FluentIcons name="download" size={12} />
+                    </a>
+                  {/if}
+                </div>
               </div>
             </div>
-          </FluentCard>
+          </div>
         </div>
       {/each}
     </div>
@@ -524,78 +536,73 @@
   .deliverable-kpi-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
 
   .kpi-pill {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
+    gap: 8px;
+    padding: 6px 14px;
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--text-secondary);
     transition: all 0.15s ease;
   }
 
   .kpi-pill:hover {
-    background: var(--surface-card-hover);
-    border-color: var(--brand-accent);
+    background: var(--surface-card-subtle, #F8FAFC);
+    border-color: var(--brand-accent, #0078D4);
     color: var(--text-primary);
   }
 
   .kpi-pill.active {
-    background: rgba(33, 161, 247, 0.12);
-    border-color: var(--brand-accent);
-    color: var(--brand-accent);
+    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    border-color: var(--brand-accent, #0078D4);
+    color: var(--brand-primary, #0078D4);
   }
 
   .kpi-count {
     background: var(--surface-card-subtle);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11.5px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 11px;
     font-weight: 700;
   }
 
-  .kpi-pill.pill-pending.active {
-    background: rgba(217, 119, 6, 0.12);
-    border-color: #D97706;
-    color: #D97706;
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
   }
-  .kpi-pill.pill-revision.active {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: #EF4444;
-    color: #EF4444;
-  }
-  .kpi-pill.pill-approved.active {
-    background: rgba(16, 185, 129, 0.12);
-    border-color: #10B981;
-    color: #10B981;
-  }
+  .dot-pending { background: #F59E0B; }
+  .dot-revision { background: #EF4444; }
+  .dot-approved { background: #10B981; }
 
   /* Toolbar */
   .deliverable-toolbar {
     display: flex;
     align-items: center;
-    gap: 14px;
+    justify-content: space-between;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
   .search-box {
     flex: 1;
-    min-width: 260px;
+    min-width: 240px;
     display: flex;
     align-items: center;
     gap: 8px;
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
-    padding: 8px 14px;
+    border-radius: 8px;
+    padding: 7px 12px;
     color: var(--text-secondary);
   }
 
@@ -605,7 +612,7 @@
     border: none;
     outline: none;
     color: var(--text-primary);
-    font-size: 13.5px;
+    font-size: 13px;
   }
 
   .clear-search {
@@ -613,42 +620,98 @@
     border: none;
     color: var(--text-tertiary);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
   }
 
-  .brand-select {
-    padding: 8px 14px;
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .clean-select {
+    padding: 6px 12px;
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
+    border-radius: 8px;
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     outline: none;
     cursor: pointer;
+    transition: all 0.12s;
+  }
+  .clean-select:hover {
+    border-color: var(--brand-accent);
+  }
+
+  .view-mode-toggle {
+    display: flex;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 2px;
+  }
+
+  .mode-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .mode-btn:hover { color: var(--text-primary); }
+  .mode-btn.active {
+    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
+    color: var(--brand-primary, #0078D4);
   }
 
   /* Grid & Cards */
   .deliverables-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 16px;
   }
 
   .del-card-wrapper {
     cursor: pointer;
   }
 
+  .del-card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.16s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .del-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-accent);
+  }
+
   .del-preview-box {
     height: 180px;
-    background: #000000;
-    border-radius: var(--radius-md);
+    background: #040812;
+    border-radius: 8px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -656,119 +719,186 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.25s ease;
+  }
+  .del-card:hover .del-preview-box img {
+    transform: scale(1.03);
   }
 
-  .doc-icon, .media-badge-icon {
-    font-size: 16px;
-    font-weight: 800;
-    color: #FFFFFF;
-    background: var(--brand-primary);
-    padding: 12px 24px;
-    border-radius: 8px;
-    letter-spacing: 1px;
+  .media-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
   }
+  .video-bg { background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); color: #A78BFA; }
+  .pdf-bg { background: linear-gradient(135deg, #450A0A 0%, #7F1D1D 100%); color: #FCA5A5; }
+  .file-bg { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #94A3B8; }
 
-  .video-icon { background: #7C3AED; }
-  .pdf-icon { background: #DC2626; }
-
-  .preview-status-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 10.5px;
+  .media-type-label {
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.5px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    backdrop-filter: blur(8px);
   }
 
-  .status-approved { background: rgba(16, 185, 129, 0.85); color: #FFFFFF; }
-  .status-revision { background: rgba(239, 68, 68, 0.85); color: #FFFFFF; }
-  .status-pending { background: rgba(217, 119, 6, 0.85); color: #FFFFFF; }
+  .preview-status-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .preview-status-badge .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .status-approved { background: rgba(16, 185, 129, 0.9); color: #FFFFFF; }
+  .status-revision { background: rgba(239, 68, 68, 0.9); color: #FFFFFF; }
+  .status-pending { background: rgba(245, 158, 11, 0.9); color: #FFFFFF; }
+
+  .format-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #F8FAFC;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+  }
 
   .del-body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
   }
 
-  .del-top {
+  .del-top-meta {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-  }
-
-  .job-id {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--brand-accent);
-  }
-
-  .brand-pill {
+    gap: 6px;
     font-size: 11px;
+  }
+
+  .job-tag {
+    font-family: var(--font-mono, monospace);
     font-weight: 700;
-    padding: 2px 7px;
+    color: var(--brand-accent, #0078D4);
+    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    padding: 1px 5px;
     border-radius: 4px;
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
+  }
+
+  .brand-tag {
+    font-weight: 700;
     color: var(--text-secondary);
+    background: var(--surface-card-subtle);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .proj-title-trunc {
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
   }
 
   .del-title {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 2px 0 0 0;
+    margin: 2px 0;
   }
 
-  .del-proj-name {
-    font-size: 12px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 6px;
-  }
-
-  .del-meta-row {
+  .del-footer-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 11.5px;
     color: var(--text-tertiary);
-    font-weight: 600;
-    padding: 6px 0;
-    border-top: 1px solid var(--surface-card-border);
+    font-weight: 500;
+    padding: 4px 0 8px 0;
+  }
+
+  .meta-designer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .del-actions {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     padding-top: 8px;
+    border-top: 1px solid var(--surface-card-border);
+    margin-top: auto;
   }
 
-  .download-link {
+  .action-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--brand-primary, #0078D4);
+    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    border: 1px solid rgba(0, 120, 212, 0.2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .action-btn-pill:hover {
+    background: var(--brand-primary, #0078D4);
+    color: #FFFFFF;
+  }
+
+  .action-icons-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tool-icon-btn {
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
     background: var(--surface-card-subtle);
     border: 1px solid var(--surface-card-border);
     border-radius: 6px;
     color: var(--text-secondary);
+    cursor: pointer;
     text-decoration: none;
-    font-size: 12px;
-    transition: all 0.15s ease;
+    transition: all 0.12s;
   }
-
-  .download-link:hover {
+  .tool-icon-btn:hover {
     background: var(--surface-card-hover);
     color: var(--brand-accent);
     border-color: var(--brand-accent);
