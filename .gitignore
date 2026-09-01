@@ -45,6 +45,12 @@ node_modules/
 **/.package-lock.json
 .vite/
 
+# ── Web Portal environment-specific server config ─────────────────
+# These files contain machine-local paths (Windows UNC vs Linux container mount)
+# and must NOT be committed or deployed — managed per-environment on the NAS directly.
+src/SS-CAM.Web/server/workspace_config.json
+src/SS-CAM.Web/server/ai-config.json
+
 # ── Android build caches & capture ─────────────────────────────
 .gradle/
 **/.gradle/
