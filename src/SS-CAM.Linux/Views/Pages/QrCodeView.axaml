@@ -4,105 +4,58 @@
              x:Class="SS_CAM.Linux.Views.Pages.QrCodeView"
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
-        <StackPanel Spacing="20">
-
+        <StackPanel Spacing="24">
             <!-- Header -->
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="QR Code Studio &amp; Generator" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                    <TextBlock Text="Create high-resolution QR codes for print collaterals, digital campaigns, and client links."
-                               FontSize="13" Foreground="#94A3B8"/>
+            <StackPanel Spacing="4">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="⬛" FontSize="24" VerticalAlignment="Center"/>
+                    <TextBlock Text="QR Code Generator Studio" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="↺ Reset Options" VerticalAlignment="Top"
-                        Command="{Binding ResetQrCommand}"
-                        Background="#1E293B" Foreground="#94A3B8" CornerRadius="7" Padding="14,8"/>
-            </Grid>
+                <TextBlock Text="Generate high-resolution vector QR codes for product packaging, campaign URLs, and WhatsApp broadcast links." Foreground="#94A3B8" FontSize="13"/>
+            </StackPanel>
 
-            <!-- Main 2-column layout -->
-            <Grid ColumnDefinitions="*,20,380">
-
-                <!-- Left: Controls -->
-                <StackPanel Grid.Column="0" Spacing="14">
-
-                    <!-- URL Input -->
-                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                        <StackPanel Spacing="12">
-                            <TextBlock Text="📎 Content" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="URL / Text" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                <TextBox Text="{Binding QrUrl}" PlaceholderText="https://creative.suamisihat.myds.me"
-                                         Background="#1E293B" Foreground="#F8FAFC" BorderBrush="#334155"
-                                         CornerRadius="7" Padding="12,10"/>
-                            </StackPanel>
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Error Correction Level" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                <ComboBox ItemsSource="{Binding QrEcLevels}" SelectedItem="{Binding QrEcLevel}"
-                                          Background="#1E293B" Foreground="#F8FAFC" HorizontalAlignment="Stretch"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Size & Colors -->
-                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                        <StackPanel Spacing="12">
-                            <TextBlock Text="🎨 Appearance" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
-                            <Grid ColumnDefinitions="*,16,*">
-                                <StackPanel Grid.Column="0" Spacing="6">
-                                    <TextBlock Text="Output Size" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                    <ComboBox ItemsSource="{Binding QrSizes}" SelectedItem="{Binding QrSize}"
-                                              Background="#1E293B" Foreground="#F8FAFC" HorizontalAlignment="Stretch"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Spacing="6">
-                                    <TextBlock Text="Quiet Zone" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                    <ComboBox ItemsSource="{Binding QrMarginOptions}" SelectedItem="{Binding QrMargin}"
-                                              Background="#1E293B" Foreground="#F8FAFC" HorizontalAlignment="Stretch"/>
-                                </StackPanel>
-                            </Grid>
-                            <Grid ColumnDefinitions="*,16,*">
-                                <StackPanel Grid.Column="0" Spacing="6">
-                                    <TextBlock Text="Foreground Color" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                    <TextBox Text="{Binding QrForeground}" Background="#1E293B" Foreground="#F8FAFC"
-                                             BorderBrush="#334155" CornerRadius="7" Padding="12,8"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Spacing="6">
-                                    <TextBlock Text="Background Color" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                                    <TextBox Text="{Binding QrBackground}" Background="#1E293B" Foreground="#F8FAFC"
-                                             BorderBrush="#334155" CornerRadius="7" Padding="12,8"/>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-
-                <!-- Right: Live Preview & Save -->
-                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+            <Grid ColumnDefinitions="1.2*, 24, *">
+                <!-- Left: Form -->
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
                     <StackPanel Spacing="16">
-                        <TextBlock Text="🔍 Live Preview" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Target URL / Text Content" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <TextBox Text="{Binding QrText}" PlaceholderText="https://suamisihat.com.my" Height="38"/>
+                        </StackPanel>
 
-                        <!-- QR Image Preview -->
-                        <Border Background="#FFFFFF" CornerRadius="8" Padding="16"
-                                HorizontalAlignment="Center" Width="280" Height="280">
-                            <Image Source="{Binding QrPreviewBitmap}" Width="248" Height="248"
-                                   Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
-                        <TextBlock Text="{Binding QrPreviewLabel}" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center"/>
-
-                        <!-- Generate & Save buttons -->
-                        <Button Content="🔄 Generate QR Code" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                                Command="{Binding GenerateQrCommand}"
-                                Background="#1E4D7B" Foreground="#38BDF8" CornerRadius="8" Padding="0,12"
-                                FontWeight="SemiBold"/>
-                        <Grid ColumnDefinitions="*,8,*">
-                            <Button Grid.Column="0" Content="💾 Save PNG" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                                    Command="{Binding SaveQrPngCommand}"
-                                    Background="#064E3B" Foreground="#34D399" CornerRadius="7" Padding="0,10"
-                                    FontWeight="SemiBold"/>
-                            <Button Grid.Column="2" Content="📋 Copy" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                                    Command="{Binding CopyQrCommand}"
-                                    Background="#1E293B" Foreground="#94A3B8" CornerRadius="7" Padding="0,10"
-                                    FontWeight="SemiBold"/>
+                        <Grid ColumnDefinitions="*, 12, *">
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="Foreground Color (HEX)" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBox Text="{Binding QrFgColor}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <TextBlock Text="Background Color (HEX)" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBox Text="{Binding QrBgColor}"/>
+                            </StackPanel>
                         </Grid>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding QrPixelsPerModule, StringFormat='Resolution Scale: {0}x'}" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <Slider Value="{Binding QrPixelsPerModule}" Minimum="5" Maximum="30"/>
+                        </StackPanel>
+
+                        <Button Command="{Binding GenerateQrCommand}" Background="#043388" Foreground="White" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="8" Padding="16,12" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="⚡" FontSize="14"/>
+                                <TextBlock Text="Generate QR Code" FontSize="13" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right: Preview -->
+                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="24" HorizontalAlignment="Center">
+                    <StackPanel Spacing="16" HorizontalAlignment="Center">
+                        <TextBlock Text="Live Preview" FontSize="13" FontWeight="Bold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <Border Background="White" Padding="16" CornerRadius="8" HorizontalAlignment="Center">
+                            <Image Source="{Binding QrBitmap}" Width="220" Height="220"/>
+                        </Border>
+                        <TextBlock Text="{Binding QrStatusText}" FontSize="12" Foreground="#38BDF8" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </Grid>

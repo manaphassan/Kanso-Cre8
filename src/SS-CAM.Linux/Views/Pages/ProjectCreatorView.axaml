@@ -4,78 +4,180 @@
              x:Class="SS_CAM.Linux.Views.Pages.ProjectCreatorView"
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
-        <StackPanel Spacing="24">
-            <!-- Page Header -->
+        <StackPanel Spacing="20">
+            <!-- Header -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Project Creator" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                <TextBlock Text="Scaffold a standardized 5-folder project vault directly on Synology Drive." FontSize="13" Foreground="#94A3B8"/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="📁" FontSize="24" VerticalAlignment="Center"/>
+                    <TextBlock Text="Standardized Project Creator" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Generate standardized Post Haste 5-folder structures, canvas presets, creative briefs, and project metadata." Foreground="#94A3B8" FontSize="13"/>
             </StackPanel>
 
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="24">
-                <StackPanel Spacing="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Create Standardized Project Vault" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <TextBlock Text="Scaffolds the 5 canonical subfolders and YAML frontmatter directly in Synology Drive." FontSize="13" Foreground="#94A3B8"/>
-                    </StackPanel>
+            <!-- 2-Column Split Viewport -->
+            <Grid ColumnDefinitions="1.2*, 24, *">
+                <!-- Left Column: Configuration Forms -->
+                <StackPanel Grid.Column="0" Spacing="16">
+                    <!-- 1. Project Identity -->
+                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18">
+                        <StackPanel Spacing="14">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="📝" FontSize="14" Foreground="#38BDF8"/>
+                                <TextBlock Text="01. Project Identity &amp; ID Suffix" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            </StackPanel>
 
-                    <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" Margin="0,10,0,0">
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12" Spacing="4">
-                            <TextBlock Text="Brand Holding Entity *" FontSize="12" Foreground="#94A3B8"/>
-                            <ComboBox ItemsSource="{Binding AvailableBrands}" SelectedItem="{Binding NewProjectBrand}"
-                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                            <Grid ColumnDefinitions="*, 10, *, 10, *">
+                                <StackPanel Grid.Column="0" Spacing="6">
+                                    <TextBlock Text="Year" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <ComboBox ItemsSource="{Binding Years}" SelectedItem="{Binding SelectedYear}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="6">
+                                    <TextBlock Text="Sub-Brand" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <ComboBox ItemsSource="{Binding SubBrands}" SelectedItem="{Binding SelectedSubBrand}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="4" Spacing="6">
+                                    <TextBlock Text="Project ID Suffix" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <TextBox Text="{Binding ProjectIdSuffix}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Project Title / Campaign Descriptor" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBox Text="{Binding ProjectTitle}"/>
+                            </StackPanel>
+
+                            <!-- Integrated Markdown Brief Editor -->
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Creative Brief / Script Notes" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="6">
+                                    <StackPanel>
+                                        <!-- Toolbar -->
+                                        <Border Background="#0F172A" BorderBrush="#334155" BorderThickness="0,0,0,1" Padding="6,4">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <Button Content="B" Command="{Binding InsertMarkdownCommand}" CommandParameter="**bold**" FontWeight="Bold" Padding="8,2" Background="Transparent" Foreground="#38BDF8"/>
+                                                <Button Content="I" Command="{Binding InsertMarkdownCommand}" CommandParameter="*italic*" FontStyle="Italic" Padding="8,2" Background="Transparent" Foreground="#F8FAFC"/>
+                                                <Button Content="&lt;/&gt;" Command="{Binding InsertMarkdownCommand}" CommandParameter="`code`" FontFamily="Consolas" Padding="8,2" Background="Transparent" Foreground="#F8FAFC"/>
+                                                <Border Width="1" Background="#334155" Height="16" Margin="4,0"/>
+                                                <Button Content="H2" Command="{Binding InsertMarkdownCommand}" CommandParameter="&#10;## Heading 2&#10;" FontWeight="SemiBold" Padding="8,2" Background="Transparent" Foreground="#F8FAFC"/>
+                                                <Button Content="* List" Command="{Binding InsertMarkdownCommand}" CommandParameter="&#10;- Item&#10;" Padding="8,2" Background="Transparent" Foreground="#F8FAFC"/>
+                                                <Button Content="— HR" Command="{Binding InsertMarkdownCommand}" CommandParameter="&#10;---&#10;" Padding="8,2" Background="Transparent" Foreground="#F8FAFC"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <TextBox Text="{Binding ProjectBriefMarkdown}" AcceptsReturn="True" Height="120" BorderThickness="0" Background="Transparent" Padding="8"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
+                    </Border>
 
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,12" Spacing="4">
-                            <TextBlock Text="Lead Designer *" FontSize="12" Foreground="#94A3B8"/>
-                            <ComboBox ItemsSource="{Binding AvailableDesigners}" SelectedItem="{Binding NewProjectDesigner}"
-                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                    <!-- 2. Preset & Canvas Template -->
+                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18">
+                        <StackPanel Spacing="14">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="🎨" FontSize="14" Foreground="#38BDF8"/>
+                                <TextBlock Text="02. Preset &amp; Starter Canvas Template" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            </StackPanel>
+
+                            <Grid ColumnDefinitions="*, 12, *">
+                                <StackPanel Grid.Column="0" Spacing="6">
+                                    <TextBlock Text="Category Preset" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <ComboBox ItemsSource="{Binding CategoryPresets}" SelectedItem="{Binding SelectedCategoryPreset}" HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="6">
+                                    <TextBlock Text="Designer Assignment" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <ComboBox ItemsSource="{Binding Designers}" SelectedItem="{Binding SelectedDesigner}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Dynamic SLA Turnaround Badge -->
+                            <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="6" Padding="12,8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⏱" FontSize="13"/>
+                                    <TextBlock Text="{Binding SlaDeadlineDisplay}" FontSize="12" FontWeight="Bold" Foreground="#A7F3D0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Visual Platform Cards Row -->
+                            <TextBlock Text="Target Platform Canvas Presets" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <Grid ColumnDefinitions="*, *, *, *">
+                                <Button Grid.Column="0" Command="{Binding SelectPlatformCommand}" CommandParameter="WordPress"
+                                        Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,4,0" HorizontalAlignment="Stretch">
+                                    <StackPanel HorizontalAlignment="Center" Spacing="3">
+                                        <TextBlock Text="🌐" FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="WordPress" FontWeight="Bold" FontSize="11" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="1920×1080" FontSize="9.5" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Grid.Column="1" Command="{Binding SelectPlatformCommand}" CommandParameter="1:1"
+                                        Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="2,0,2,0" HorizontalAlignment="Stretch">
+                                    <StackPanel HorizontalAlignment="Center" Spacing="3">
+                                        <TextBlock Text="📱" FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="1:1 Social" FontWeight="Bold" FontSize="11" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="1080×1080" FontSize="9.5" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Grid.Column="2" Command="{Binding SelectPlatformCommand}" CommandParameter="9:16"
+                                        Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="2,0,2,0" HorizontalAlignment="Stretch">
+                                    <StackPanel HorizontalAlignment="Center" Spacing="3">
+                                        <TextBlock Text="🎬" FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="9:16 Reels" FontWeight="Bold" FontSize="11" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="1080×1920" FontSize="9.5" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Grid.Column="3" Command="{Binding SelectPlatformCommand}" CommandParameter="PrintA4"
+                                        Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="4,0,0,0" HorizontalAlignment="Stretch">
+                                    <StackPanel HorizontalAlignment="Center" Spacing="3">
+                                        <TextBlock Text="🖨️" FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Print A4" FontWeight="Bold" FontSize="11" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="300 DPI CMYK" FontSize="9.5" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
                         </StackPanel>
-
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12" Spacing="4">
-                            <TextBlock Text="Project Title / Campaign Name *" FontSize="12" Foreground="#94A3B8"/>
-                            <TextBox Text="{Binding NewProjectTitle}" PlaceholderText="e.g. Ramadhan Mega Campaign 2026 Promo Video"
-                                     Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12" Spacing="4">
-                            <TextBlock Text="Client / Entity" FontSize="12" Foreground="#94A3B8"/>
-                            <TextBox Text="{Binding NewProjectClient}" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,12" Spacing="4">
-                            <TextBlock Text="Deadline" FontSize="12" Foreground="#94A3B8"/>
-                            <TextBox Text="{Binding NewProjectDeadline}" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,12,0" Spacing="4">
-                            <TextBlock Text="Priority Level" FontSize="12" Foreground="#94A3B8"/>
-                            <ComboBox ItemsSource="{Binding AvailablePriorities}" SelectedItem="{Binding NewProjectPriority}"
-                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3" Grid.Column="1" Margin="12,0,0,0" Spacing="4">
-                            <TextBlock Text="Starter Canvas Type" FontSize="12" Foreground="#94A3B8"/>
-                            <ComboBox ItemsSource="{Binding AvailableStarterCanvases}" SelectedItem="{Binding NewProjectStarterCanvas}"
-                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Button Content="🚀 Create Project Vault on Synology NAS" Command="{Binding CreateProjectCommand}"
-                            Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" CornerRadius="6" Padding="20,12" HorizontalAlignment="Right"/>
+                    </Border>
                 </StackPanel>
-            </Border>
 
-            <!-- Vault Structure Info -->
-            <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="20">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="📁 Generated Vault Structure" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
-                    <TextBlock Text="01_BRIEF_ASSETS  →  Client brief, moodboards, reference images" FontSize="12" Foreground="#94A3B8"/>
-                    <TextBlock Text="02_SOURCE_FILES  →  Affinity Designer, Photoshop, Illustrator files" FontSize="12" Foreground="#94A3B8"/>
-                    <TextBlock Text="03_COPYWRITING   →  COPY.md script, captions, hashtags" FontSize="12" Foreground="#94A3B8"/>
-                    <TextBlock Text="04_WORK_IN_PROGRESS  →  WIP renders, revision exports" FontSize="12" Foreground="#94A3B8"/>
-                    <TextBlock Text="05_DELIVERABLES  →  Final approved exports ready for publish" FontSize="12" Foreground="#94A3B8"/>
+                <!-- Right Column: Live Previews & 1-Click Generation -->
+                <StackPanel Grid.Column="2" Spacing="16">
+                    <!-- Live Target Path Preview -->
+                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Target Directory Structure (5-Folder SSoT)" FontSize="13" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <Border Background="#090D16" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{Binding PreviewFolderPath}" Foreground="#38BDF8" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap"/>
+                                    <TextBlock Text="  ├── 01_BRIEFS/ (COPY.md)" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Text="  ├── 02_RAW_ASSETS/" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Text="  ├── 03_WORKING_FILES/" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Text="  ├── 04_EXPORTS/" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Text="  ├── 05_DELIVERABLES/" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Text="  └── project.yaml" Foreground="#64748B" FontFamily="Consolas" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Auto-Generated project.yaml Frontmatter" FontSize="12" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <Border Background="#090D16" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="10">
+                                <TextBlock Text="{Binding PreviewYamlFrontmatter}" FontFamily="Consolas" FontSize="11" Foreground="#94A3B8"/>
+                            </Border>
+
+                            <Button Command="{Binding GenerateProjectCommand}"
+                                    Background="#043388" Foreground="#FFFFFF" BorderBrush="#21A1F7" BorderThickness="1"
+                                    CornerRadius="8" Padding="16,14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <TextBlock Text="⚡" FontSize="16"/>
+                                    <TextBlock Text="Generate Standardized 5-Folder Structure" FontSize="13" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
-            </Border>
+            </Grid>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -4,8 +4,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,1021 +15,1135 @@ using SS_CAM.Linux.Models;
 using SS_CAM.Linux.Services;
 using SS_CAM.Linux.Views.Pages;
 
-namespace SS_CAM.Linux.ViewModels;
-
-// ─── Prayer time row model ───────────────────────────────────────────────────
-public class PrayerTimeRow
+namespace SS_CAM.Linux.ViewModels
 {
-    public string Icon        { get; set; } = "🕌";
-    public string Name        { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string TimeStr     { get; set; } = "--:--";
-    public bool   IsNext      { get; set; }
-    public string TimeFg      => IsNext ? "#38BDF8" : "#F8FAFC";
-    public string RowBg       => IsNext ? "#022057" : "#0F172A";
-    public string BadgeBg     => "#1E4D7B";
-}
-
-public partial class MainViewModel : ViewModelBase
-{
-    // ─── Services ────────────────────────────────────────────────────────────
-    private readonly WorkspaceService        _workspaceService;
-    private readonly RadioStreamService      _radioService;
-    private readonly PrayerTimeService       _prayerService;
-    private readonly QuickNoteService        _noteService;
-    private readonly WorkstationHealthService _wsService;
-
-    // Page cache — created once, reused on re-navigation
-    private readonly Dictionary<string, Control> _pageCache = new();
-
-    // ─── App core ────────────────────────────────────────────────────────────
-    [ObservableProperty] private string _appName    = "SuamiSihat™ SS-CAM";
-    [ObservableProperty] private string _appVersion = "v4.6.0-linux";
-    [ObservableProperty] private string _synologyDrivePath;
-    [ObservableProperty] private string _selectedNavTab = "Dashboard";
-    [ObservableProperty] private Control? _currentPage;
-    [ObservableProperty] private string _statusMessage = "Synology Drive workspace integration active.";
-    [ObservableProperty] private string _currentTimeString = DateTime.Now.ToString("HH:mm:ss");
-
-    // ─── Sidebar active-state constants ──────────────────────────────────────
-    private const string ActiveBg   = "#1E3A5F";
-    private const string ActiveFg   = "#38BDF8";
-    private const string InactiveFg = "#CBD5E1";
-
-    // All 14 nav item active checks
-    public bool IsDashboardActive       => SelectedNavTab == "Dashboard";
-    public bool IsProjectCreatorActive  => SelectedNavTab == "Project Creator";
-    public bool IsSearchCopyActive      => SelectedNavTab == "Search & Copy";
-    public bool IsCopywritingActive     => SelectedNavTab == "Copywriting";
-    public bool IsBrandAssetsActive     => SelectedNavTab == "Brand Assets";
-    public bool IsTaskManagerActive     => SelectedNavTab == "Task Manager";
-    public bool IsCalendarActive        => SelectedNavTab == "Big Calendar";
-    public bool IsQuickNoteActive       => SelectedNavTab == "Quick Notes";
-    public bool IsWellbeingActive       => SelectedNavTab == "Wellbeing";
-    public bool IsWaktuSolatActive      => SelectedNavTab == "Waktu Solat";
-    public bool IsRadioActive           => SelectedNavTab == "Radio Player";
-    public bool IsQrCodeActive          => SelectedNavTab == "QR Code";
-    public bool IsWorkstationActive     => SelectedNavTab == "Workstation Health";
-    public bool IsSettingsActive        => SelectedNavTab == "Settings";
-
-    // Nav background helpers
-    public string NavBgDashboard      => IsDashboardActive      ? ActiveBg : "Transparent";
-    public string NavBgProjectCreator => IsProjectCreatorActive  ? ActiveBg : "Transparent";
-    public string NavBgSearchCopy     => IsSearchCopyActive      ? ActiveBg : "Transparent";
-    public string NavBgCopywriting    => IsCopywritingActive     ? ActiveBg : "Transparent";
-    public string NavBgBrandAssets    => IsBrandAssetsActive     ? ActiveBg : "Transparent";
-    public string NavBgTaskManager    => IsTaskManagerActive     ? ActiveBg : "Transparent";
-    public string NavBgCalendar       => IsCalendarActive        ? ActiveBg : "Transparent";
-    public string NavBgQuickNote      => IsQuickNoteActive       ? ActiveBg : "Transparent";
-    public string NavBgWellbeing      => IsWellbeingActive       ? ActiveBg : "Transparent";
-    public string NavBgWaktuSolat     => IsWaktuSolatActive      ? ActiveBg : "Transparent";
-    public string NavBgRadio          => IsRadioActive           ? ActiveBg : "Transparent";
-    public string NavBgQrCode         => IsQrCodeActive          ? ActiveBg : "Transparent";
-    public string NavBgWorkstation    => IsWorkstationActive     ? ActiveBg : "Transparent";
-    public string NavBgSettings       => IsSettingsActive        ? ActiveBg : "Transparent";
-
-    // Nav foreground helpers
-    public string NavFgDashboard      => IsDashboardActive      ? ActiveFg : InactiveFg;
-    public string NavFgProjectCreator => IsProjectCreatorActive  ? ActiveFg : InactiveFg;
-    public string NavFgSearchCopy     => IsSearchCopyActive      ? ActiveFg : InactiveFg;
-    public string NavFgCopywriting    => IsCopywritingActive     ? ActiveFg : InactiveFg;
-    public string NavFgBrandAssets    => IsBrandAssetsActive     ? ActiveFg : InactiveFg;
-    public string NavFgTaskManager    => IsTaskManagerActive     ? ActiveFg : InactiveFg;
-    public string NavFgCalendar       => IsCalendarActive        ? ActiveFg : InactiveFg;
-    public string NavFgQuickNote      => IsQuickNoteActive       ? ActiveFg : InactiveFg;
-    public string NavFgWellbeing      => IsWellbeingActive       ? ActiveFg : InactiveFg;
-    public string NavFgWaktuSolat     => IsWaktuSolatActive      ? ActiveFg : InactiveFg;
-    public string NavFgRadio          => IsRadioActive           ? ActiveFg : InactiveFg;
-    public string NavFgQrCode         => IsQrCodeActive          ? ActiveFg : InactiveFg;
-    public string NavFgWorkstation    => IsWorkstationActive     ? ActiveFg : InactiveFg;
-    public string NavFgSettings       => IsSettingsActive        ? ActiveFg : InactiveFg;
-
-    // ─── Sidebar footer status ───────────────────────────────────────────────
-    [ObservableProperty] private string _nasStatusText  = "SSNAS Offline";
-    [ObservableProperty] private string _nasStatusColor = "#94A3B8";
-    [ObservableProperty] private string _focusTimerText = "Focus Timer: Ready";
-    [ObservableProperty] private string _activeThemeText = "Theme: Metamorphosis";
-
-    // ─── Dashboard KPIs ──────────────────────────────────────────────────────
-    [ObservableProperty] private string _metricTotalProjects   = "0";
-    [ObservableProperty] private string _metricActiveWip       = "0";
-    [ObservableProperty] private string _metricLatestProject   = "—";
-    [ObservableProperty] private string _metricFileSize        = "0 MB";
-    [ObservableProperty] private string _metricThisMonth       = "0";
-    [ObservableProperty] private string _metricMonthComparison = "▲ +0% vs last month";
-    [ObservableProperty] private string _metricTeamOutput      = "0";
-    [ObservableProperty] private string _metricWorkspacePath   = string.Empty;
-
-    // ─── Project collections ─────────────────────────────────────────────────
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _projects       = new();
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _filteredProjects = new();
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _backlogProjects = new();
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _inProgressProjects = new();
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _inReviewProjects = new();
-    [ObservableProperty] private ObservableCollection<ProjectStatusItem> _doneProjects   = new();
-
-    [ObservableProperty] private int _projectCount   = 0;
-    [ObservableProperty] private int _backlogCount   = 0;
-    [ObservableProperty] private int _inProgressCount = 0;
-    [ObservableProperty] private int _inReviewCount  = 0;
-    [ObservableProperty] private int _doneCount      = 0;
-
-    // Selected project for Search & Copy inspector
-    [ObservableProperty] private ProjectStatusItem? _selectedProject;
-
-    // Search & filter
-    [ObservableProperty] private string _searchQuery     = string.Empty;
-    [ObservableProperty] private string _filterDesigner  = "All Designers";
-    [ObservableProperty] private string _filterBrand     = "All Brands";
-
-    // ─── Project Creator ─────────────────────────────────────────────────────
-    [ObservableProperty] private string _newProjectBrand         = "SSH";
-    [ObservableProperty] private string _newProjectTitle         = string.Empty;
-    [ObservableProperty] private string _newProjectDesigner      = "harussani";
-    [ObservableProperty] private string _newProjectClient        = "SuamiSihat Holding";
-    [ObservableProperty] private string _newProjectPriority      = "medium";
-    [ObservableProperty] private string _newProjectDeadline      = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd");
-    [ObservableProperty] private string _newProjectStarterCanvas = "afdesign";
-    [ObservableProperty] private string _folderPreview           = string.Empty;
-
-    [ObservableProperty] private ObservableCollection<string> _availableBrands     = new() { "SSH", "SSC", "SSW", "SSE", "SST" };
-    [ObservableProperty] private ObservableCollection<string> _availableDesigners  = new() { "harussani", "haikal", "hasan", "farid", "azlan", "unassigned" };
-    [ObservableProperty] private ObservableCollection<string> _availablePriorities = new() { "low", "medium", "high", "urgent" };
-    [ObservableProperty] private ObservableCollection<string> _availableStarterCanvases = new() { "afdesign", "psd", "ai", "none" };
-
-    // ─── Copywriting Studio ──────────────────────────────────────────────────
-    [ObservableProperty] private ProjectStatusItem? _selectedCopyProject;
-    [ObservableProperty] private string _activeCopyContent    = string.Empty;
-    [ObservableProperty] private int    _copyWordCount        = 0;
-    [ObservableProperty] private int    _copyCharCount        = 0;
-    [ObservableProperty] private string _copyReadingTime      = "0 sec";
-    [ObservableProperty] private string _whatsAppPreviewText  = "Your live WhatsApp message preview will appear here...";
-    [ObservableProperty] private string _metaAdPreviewText    = "Your live ad copy preview will appear here...";
-
-    // ─── Calendar ────────────────────────────────────────────────────────────
-    [ObservableProperty] private int    _deadlinesThisMonth = 0;
-    [ObservableProperty] private int    _startedThisMonth   = 0;
-    [ObservableProperty] private int    _overdueCount       = 0;
-    [ObservableProperty] private string _calendarMonthLabel = DateTime.Now.ToString("MMMM yyyy");
-    [ObservableProperty] private ObservableCollection<CalendarWeekRow> _calendarWeeks = new();
-    private DateTime _calendarMonth = new(DateTime.Now.Year, DateTime.Now.Month, 1);
-
-    // ─── Quick Notes ─────────────────────────────────────────────────────────
-    [ObservableProperty] private ObservableCollection<QuickNoteItem> _noteItems = new();
-    [ObservableProperty] private QuickNoteItem? _selectedNoteItem;
-    [ObservableProperty] private string _selectedNoteTitle   = string.Empty;
-    [ObservableProperty] private string _selectedNoteContent = string.Empty;
-    [ObservableProperty] private string _noteWordCount       = "0 words";
-    [ObservableProperty] private string _noteSaveStatus      = "Autosaved";
-    [ObservableProperty] private string _noteCountLabel      = "0 notes";
-
-    // ─── Radio ───────────────────────────────────────────────────────────────
-    [ObservableProperty] private bool   _isRadioPlaying     = false;
-    [ObservableProperty] private string _currentStationName = "BFM 89.9 (The Business Station)";
-    [ObservableProperty] private string _currentStationUrl  = "https://stream.bfm.my/";
-    [ObservableProperty] private string _radioPlayIcon       = "▶";
-    [ObservableProperty] private bool   _mpvAvailable       = false;
-
-    [ObservableProperty]
-    private ObservableCollection<RadioStationItem> _radioStations = new()
+    public partial class MainViewModel : ObservableObject
     {
-        new RadioStationItem("BFM 89.9 — Business & News",     "https://stream.bfm.my/",                      "News & Economics",   "#21A1F7"),
-        new RadioStationItem("Hitz FM — Top 40 Hits",           "https://hitz.astro.com.my/",                  "Top 40 Pop",         "#EF4444"),
-        new RadioStationItem("Era FM — Muzik Hit Terbaik",      "https://era.astro.com.my/",                   "Malay Pop & Hits",   "#F59E0B"),
-        new RadioStationItem("Nightwave Plaza — Lo-Fi Beats",   "https://plaza.one/mp3",                       "Vaporwave & Ambient","#8B5CF6"),
-        new RadioStationItem("SomaFM — Groove Salad",           "https://ice1.somafm.com/groovesalad-128-mp3", "Downtempo Chill",    "#10B981"),
-        new RadioStationItem("SuamiSihat Radio — SS Official",  "https://radio.suamisihat.myds.me/stream",     "Brand Station",      "#38BDF8"),
-    };
+        // ── Navigation & Page Routing ──────────────────────────────────────────
+        [ObservableProperty] private object? _currentPage;
+        [ObservableProperty] private string _currentTabName = "Dashboard";
+        [ObservableProperty] private string _appName = "SuamiSihat™ SS-CAM";
+        [ObservableProperty] private string _appVersion = "v4.6.0-linux";
+        [ObservableProperty] private string _statusMessage = "Ready.";
+        [ObservableProperty] private string _currentTimeString = "";
+        [ObservableProperty] private string _focusTimerText = "25:00 Focus";
+        [ObservableProperty] private string _activeThemeText = "SS Default";
+        [ObservableProperty] private string _nasStatusText = "Synology Drive Active";
+        [ObservableProperty] private string _nasStatusColor = "#10B981";
 
-    // ─── Waktu Solat ─────────────────────────────────────────────────────────
-    [ObservableProperty] private string _gregorianDate      = DateTime.Now.ToString("dddd, d MMMM yyyy");
-    [ObservableProperty] private string _hijriDate          = "Loading...";
-    [ObservableProperty] private string _liveClockTime      = DateTime.Now.ToString("HH:mm:ss");
-    [ObservableProperty] private string _liveClockDate      = DateTime.Now.ToString("ddd, d MMM");
-    [ObservableProperty] private string _nextPrayerName     = "—";
-    [ObservableProperty] private string _nextPrayerTime     = "--:--";
-    [ObservableProperty] private string _nextPrayerCountdown = "Fetching...";
-    [ObservableProperty] private string _qiblaDirection     = "295.4°";
-    [ObservableProperty] private string _dailyHadith        = "\"Sesungguhnya amalan itu bergantung kepada niat, dan setiap orang mendapat balasan mengikut apa yang diniatkan.\"";
-    [ObservableProperty] private string _dailyHadithSource  = "— Hadis Riwayat Bukhari & Muslim (No. 1)";
-    [ObservableProperty] private ObservableCollection<PrayerTimeRow> _prayerTimeRows = new();
-    [ObservableProperty] private ObservableCollection<string> _solatZones = new()
-    {
-        "WLY01", "SGR01", "PHG01", "KDH01", "KTN01", "TRG01",
-        "PRK01", "NSN01", "MLK01", "JHR01", "PNG01", "SBH01", "SWK01"
-    };
-    [ObservableProperty] private string _selectedSolatZone = "WLY01";
+        // Navigation Highlight Colors
+        [ObservableProperty] private string _navBgDashboard = "#043388";
+        [ObservableProperty] private string _navFgDashboard = "#FFFFFF";
+        [ObservableProperty] private string _navBgProjectCreator = "Transparent";
+        [ObservableProperty] private string _navFgProjectCreator = "#94A3B8";
+        [ObservableProperty] private string _navBgSearchCopy = "Transparent";
+        [ObservableProperty] private string _navFgSearchCopy = "#94A3B8";
+        [ObservableProperty] private string _navBgCopywriting = "Transparent";
+        [ObservableProperty] private string _navFgCopywriting = "#94A3B8";
+        [ObservableProperty] private string _navBgBrandAssets = "Transparent";
+        [ObservableProperty] private string _navFgBrandAssets = "#94A3B8";
+        [ObservableProperty] private string _navBgDeliverables = "Transparent";
+        [ObservableProperty] private string _navFgDeliverables = "#94A3B8";
+        [ObservableProperty] private string _navBgTaskManager = "Transparent";
+        [ObservableProperty] private string _navFgTaskManager = "#94A3B8";
+        [ObservableProperty] private string _navBgCalendar = "Transparent";
+        [ObservableProperty] private string _navFgCalendar = "#94A3B8";
+        [ObservableProperty] private string _navBgQuickNote = "Transparent";
+        [ObservableProperty] private string _navFgQuickNote = "#94A3B8";
+        [ObservableProperty] private string _navBgWellbeing = "Transparent";
+        [ObservableProperty] private string _navFgWellbeing = "#94A3B8";
+        [ObservableProperty] private string _navBgWaktuSolat = "Transparent";
+        [ObservableProperty] private string _navFgWaktuSolat = "#94A3B8";
+        [ObservableProperty] private string _navBgRadio = "Transparent";
+        [ObservableProperty] private string _navFgRadio = "#94A3B8";
+        [ObservableProperty] private string _navBgQrCode = "Transparent";
+        [ObservableProperty] private string _navFgQrCode = "#94A3B8";
+        [ObservableProperty] private string _navBgWorkstation = "Transparent";
+        [ObservableProperty] private string _navFgWorkstation = "#94A3B8";
+        [ObservableProperty] private string _navBgSettings = "Transparent";
+        [ObservableProperty] private string _navFgSettings = "#94A3B8";
 
-    // ─── Wellbeing ───────────────────────────────────────────────────────────
-    [ObservableProperty] private string _breathingPhase     = "Inhale (4s)";
-    [ObservableProperty] private int    _waterGlasses       = 4;
-    [ObservableProperty] private string _pomodoroStatus     = "Ready";
-    [ObservableProperty] private string _pomodoroTime       = "25:00";
-    [ObservableProperty] private bool   _isPomodoroRunning  = false;
+        // ══════════════════════════════════════════════════════════════════════
+        // 1. DASHBOARD TELEMETRY & KPIS
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private int _totalProjects = 0;
+        [ObservableProperty] private int _activeWipProjects = 0;
+        [ObservableProperty] private string _latestProjectName = "-";
+        [ObservableProperty] private string _totalStorageSize = "0 MB";
+        [ObservableProperty] private int _thisMonthOutput = 0;
+        [ObservableProperty] private string _monthComparisonText = "+0% vs last month";
+        [ObservableProperty] private string _largestProjectSize = "0 MB";
+        [ObservableProperty] private string _largestProjectName = "None";
+        [ObservableProperty] private int _staleProjectsCount = 0;
+        [ObservableProperty] private string _creativeTeamFlowText = "0 Designers, 0 Projects";
+        [ObservableProperty] private ObservableCollection<DesignerFolderItem> _recentProjects = new();
+        [ObservableProperty] private ObservableCollection<DesignerCapacityItem> _designerCapacities = new();
 
-    // ─── QR Code Studio ──────────────────────────────────────────────────────
-    [ObservableProperty] private string  _qrUrl         = "https://creative.suamisihat.myds.me";
-    [ObservableProperty] private string  _qrEcLevel     = "M";
-    [ObservableProperty] private string  _qrSize        = "512 × 512";
-    [ObservableProperty] private string  _qrMargin      = "4";
-    [ObservableProperty] private string  _qrForeground  = "#000000";
-    [ObservableProperty] private string  _qrBackground  = "#FFFFFF";
-    [ObservableProperty] private string  _qrPreviewLabel = "Enter a URL and click Generate";
-    [ObservableProperty] private Bitmap? _qrPreviewBitmap;
+        // ══════════════════════════════════════════════════════════════════════
+        // 2. STANDARDIZED PROJECT CREATOR
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<string> _years = new() { "2026", "2025", "2027" };
+        [ObservableProperty] private string _selectedYear = "2026";
+        [ObservableProperty] private ObservableCollection<string> _subBrands = new(CategoryPresetService.GetSubBrands());
+        [ObservableProperty] private string _selectedSubBrand = "SSH - SuamiSihat Holding";
+        [ObservableProperty] private string _projectIdSuffix = "0001D";
+        [ObservableProperty] private string _projectTitle = "Brand Awareness Campaign";
+        [ObservableProperty] private string _projectBriefMarkdown = "";
+        [ObservableProperty] private ObservableCollection<CategoryPreset> _categoryPresets = new(CategoryPresetService.GetDefaultPresets());
+        [ObservableProperty] private CategoryPreset? _selectedCategoryPreset;
+        [ObservableProperty] private ObservableCollection<CanvasPlatformPreset> _platformPresets = new(CategoryPresetService.GetPlatformPresets());
+        [ObservableProperty] private CanvasPlatformPreset? _selectedPlatformPreset;
+        [ObservableProperty] private int _slaTargetDays = 3;
+        [ObservableProperty] private string _slaDeadlineDisplay = "Target Due Date: 3 Days";
+        [ObservableProperty] private string _previewFolderPath = "";
+        [ObservableProperty] private string _previewCopyMarkdown = "";
+        [ObservableProperty] private string _previewYamlFrontmatter = "";
+        [ObservableProperty] private ObservableCollection<string> _designers = new(CategoryPresetService.GetDesigners());
+        [ObservableProperty] private string _selectedDesigner = "Harussani";
 
-    [ObservableProperty] private ObservableCollection<string> _qrEcLevels      = new() { "L", "M", "Q", "H" };
-    [ObservableProperty] private ObservableCollection<string> _qrSizes         = new() { "256 × 256", "512 × 512", "1024 × 1024", "2048 × 2048" };
-    [ObservableProperty] private ObservableCollection<string> _qrMarginOptions = new() { "0", "2", "4", "8" };
+        // ══════════════════════════════════════════════════════════════════════
+        // 3. COPYWRITING STUDIO & PREVIEWS
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _workspaceProjects = new();
+        [ObservableProperty] private ProjectStatusItem? _selectedCopyProject;
+        [ObservableProperty] private string _copyContent = "";
+        [ObservableProperty] private string _copyFilePath = "No project selected";
+        [ObservableProperty] private string _copySaveStatus = "Ready";
+        [ObservableProperty] private int _copyWordCount = 0;
+        [ObservableProperty] private double _copyReadTimeMinutes = 0;
+        [ObservableProperty] private int _copyEmojiCount = 0;
+        [ObservableProperty] private string _metaAdHeadline = "";
+        [ObservableProperty] private string _metaAdPrimaryText = "";
+        [ObservableProperty] private string _metaAdCta = "Order Now";
+        [ObservableProperty] private string _whatsAppPreviewText = "";
 
-    // ─── Workstation Health ──────────────────────────────────────────────────
-    [ObservableProperty] private string _wsDistro        = "Loading...";
-    [ObservableProperty] private string _wsCpuCores      = "?";
-    [ObservableProperty] private string _wsCpuName       = "...";
-    [ObservableProperty] private string _wsKernel        = "...";
-    [ObservableProperty] private string _wsRamAvailable  = "...";
-    [ObservableProperty] private string _wsRamTotal      = "...";
-    [ObservableProperty] private string _wsDiskFree      = "...";
-    [ObservableProperty] private string _wsDiskTotal     = "...";
-    [ObservableProperty] private string _wsSoftwareInstalledLabel = "0 / 0 installed";
-    [ObservableProperty] private ObservableCollection<SoftwareCheckItem> _softwareChecks = new();
+        // ══════════════════════════════════════════════════════════════════════
+        // 4. TASK MANAGER (KANBAN 4-COLUMNS)
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _allTasks = new();
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _backlogTasks = new();
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _inProgressTasks = new();
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _reviewTasks = new();
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _doneTasks = new();
+        [ObservableProperty] private int _metricTotalTasks = 0;
+        [ObservableProperty] private int _metricInProgressTasks = 0;
+        [ObservableProperty] private int _metricReviewTasks = 0;
+        [ObservableProperty] private int _metricUrgentTasks = 0;
+        [ObservableProperty] private int _metricDoneTasks = 0;
+        [ObservableProperty] private string _taskSearchQuery = "";
+        [ObservableProperty] private string _selectedDesignerFilter = "All Designers";
+        [ObservableProperty] private ObservableCollection<string> _designerFilterOptions = new() { "All Designers", "Harussani", "Adam", "Sarah", "Afif", "Syahmi" };
 
-    // ─── Settings ────────────────────────────────────────────────────────────
-    [ObservableProperty] private string _currentTheme = "Metamorphosis";
-    [ObservableProperty] private ObservableCollection<string> _availableThemes = new()
-        { "Metamorphosis (OLED Dark & Cyan)", "Falconia (Fluent 2 Light)", "SS Default (Navy & Slate)" };
+        // ══════════════════════════════════════════════════════════════════════
+        // 5. BRAND ASSETS VAULT & MULTI-FORMAT TOKEN INSPECTOR
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<ColorTokenItem> _primaryPalette = new(BrandAssetsService.GetPrimaryPalette());
+        [ObservableProperty] private ObservableCollection<SubBrandPalette> _subBrandPalettes = new(BrandAssetsService.GetSubBrandPalettes());
+        [ObservableProperty] private ColorTokenItem? _inspectedColorToken;
+        [ObservableProperty] private string _copyNotificationText = "Click any color swatch to inspect multi-format values (HEX, RGB, CMYK, RAL, Pantone, Token) or copy to clipboard.";
+        [ObservableProperty] private bool _isCopyNotificationVisible = true;
 
-    // ─── Constructor ─────────────────────────────────────────────────────────
-    public MainViewModel()
-    {
-        _workspaceService = new WorkspaceService();
-        _radioService     = new RadioStreamService();
-        _prayerService    = new PrayerTimeService();
-        _noteService      = new QuickNoteService();
-        _wsService        = new WorkstationHealthService();
+        // ══════════════════════════════════════════════════════════════════════
+        // 6. SEARCH & COPY / DELIVERABLES & DAM
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private string _searchCopyQuery = "";
+        [ObservableProperty] private ObservableCollection<ProjectStatusItem> _filteredSearchProjects = new();
 
-        SynologyDrivePath = _workspaceService.WorkspaceRoot;
-        _mpvAvailable     = _radioService.IsMpvAvailable;
+        // ══════════════════════════════════════════════════════════════════════
+        // 7. BIG CALENDAR & HOLIDAYS
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private DateTime _calendarCurrentMonth = DateTime.Today;
+        [ObservableProperty] private string _calendarMonthYearHeader = "";
+        [ObservableProperty] private ObservableCollection<CalendarWeekRow> _calendarWeeks = new();
+        [ObservableProperty] private ObservableCollection<MalaysiaHolidayItem> _monthlyHolidays = new();
 
-        // Populate initial empty prayer rows
-        BuildDefaultPrayerRows();
-        HijriDate = _prayerService.GetHijriDate();
+        // ══════════════════════════════════════════════════════════════════════
+        // 8. QUICK NOTES
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<QuickNoteItem> _notes = new();
+        [ObservableProperty] private QuickNoteItem? _selectedNote;
+        [ObservableProperty] private string _noteEditorTitle = "";
+        [ObservableProperty] private string _noteEditorContent = "";
+        [ObservableProperty] private string _noteEditorCategory = "General";
 
-        NavigateToPage("Dashboard");
-        LoadProjects();
-        LoadNotes();
-        BuildCalendar();
+        // ══════════════════════════════════════════════════════════════════════
+        // 9. CREATIVE WELLBEING & BOX BREATHING
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private string _breathingPhaseText = "Ready — Press Start to Begin";
+        [ObservableProperty] private string _breathingInstruction = "Inhale (4s) → Hold (4s) → Exhale (4s) → Hold (4s)";
+        [ObservableProperty] private int _breathingCountdown = 4;
+        [ObservableProperty] private double _breathingCircleScale = 1.0;
+        [ObservableProperty] private bool _isBreathingActive = false;
+        [ObservableProperty] private string _breathingButtonText = "▶ Start 16s Box Breathing";
+        [ObservableProperty] private int _hydrationGlasses = 4;
+        [ObservableProperty] private int _hydrationGoal = 8;
+        [ObservableProperty] private string _hydrationProgressText = "4 / 8 Glasses Logged";
+        [ObservableProperty] private string _ergonomicTimerText = "45m until next posture reset";
 
-        // Start live clock tick (non-blocking)
-        _ = StartClockAsync();
-    }
-
-    // ─── Nav tab change handler ───────────────────────────────────────────────
-    partial void OnSelectedNavTabChanged(string value)
-    {
-        // Fire all active/bg/fg property notifications
-        OnPropertyChanged(nameof(IsDashboardActive));     OnPropertyChanged(nameof(NavBgDashboard));     OnPropertyChanged(nameof(NavFgDashboard));
-        OnPropertyChanged(nameof(IsProjectCreatorActive));OnPropertyChanged(nameof(NavBgProjectCreator));OnPropertyChanged(nameof(NavFgProjectCreator));
-        OnPropertyChanged(nameof(IsSearchCopyActive));    OnPropertyChanged(nameof(NavBgSearchCopy));    OnPropertyChanged(nameof(NavFgSearchCopy));
-        OnPropertyChanged(nameof(IsCopywritingActive));   OnPropertyChanged(nameof(NavBgCopywriting));   OnPropertyChanged(nameof(NavFgCopywriting));
-        OnPropertyChanged(nameof(IsBrandAssetsActive));   OnPropertyChanged(nameof(NavBgBrandAssets));   OnPropertyChanged(nameof(NavFgBrandAssets));
-        OnPropertyChanged(nameof(IsTaskManagerActive));   OnPropertyChanged(nameof(NavBgTaskManager));   OnPropertyChanged(nameof(NavFgTaskManager));
-        OnPropertyChanged(nameof(IsCalendarActive));      OnPropertyChanged(nameof(NavBgCalendar));      OnPropertyChanged(nameof(NavFgCalendar));
-        OnPropertyChanged(nameof(IsQuickNoteActive));     OnPropertyChanged(nameof(NavBgQuickNote));     OnPropertyChanged(nameof(NavFgQuickNote));
-        OnPropertyChanged(nameof(IsWellbeingActive));     OnPropertyChanged(nameof(NavBgWellbeing));     OnPropertyChanged(nameof(NavFgWellbeing));
-        OnPropertyChanged(nameof(IsWaktuSolatActive));    OnPropertyChanged(nameof(NavBgWaktuSolat));    OnPropertyChanged(nameof(NavFgWaktuSolat));
-        OnPropertyChanged(nameof(IsRadioActive));         OnPropertyChanged(nameof(NavBgRadio));         OnPropertyChanged(nameof(NavFgRadio));
-        OnPropertyChanged(nameof(IsQrCodeActive));        OnPropertyChanged(nameof(NavBgQrCode));        OnPropertyChanged(nameof(NavFgQrCode));
-        OnPropertyChanged(nameof(IsWorkstationActive));   OnPropertyChanged(nameof(NavBgWorkstation));   OnPropertyChanged(nameof(NavFgWorkstation));
-        OnPropertyChanged(nameof(IsSettingsActive));      OnPropertyChanged(nameof(NavBgSettings));      OnPropertyChanged(nameof(NavFgSettings));
-
-        NavigateToPage(value);
-    }
-
-    private void NavigateToPage(string tabName)
-    {
-        if (!_pageCache.TryGetValue(tabName, out var page))
+        // ══════════════════════════════════════════════════════════════════════
+        // 10. WAKTU SOLAT
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<PrayerTimeRow> _prayerTimes = new();
+        [ObservableProperty] private string _nextPrayerName = "Zohor";
+        [ObservableProperty] private string _nextPrayerTime = "13:18";
+        [ObservableProperty] private string _nextPrayerCountdown = "in 2h 45m";
+        [ObservableProperty] private string _hijriDateString = "1448 Hijri";
+        [ObservableProperty] private string _selectedPrayerZone = "WLY01 - Kuala Lumpur, Putrajaya";
+        [ObservableProperty] private ObservableCollection<string> _prayerZones = new()
         {
-            page = tabName switch
+            "WLY01 - Kuala Lumpur, Putrajaya",
+            "SGR01 - Shah Alam, Petaling, Klang",
+            "JHR02 - Johor Bahru, Kota Tinggi",
+            "PNG01 - Pulau Pinang",
+            "PRK02 - Ipoh, Batu Gajah, Kampar"
+        };
+
+        // ══════════════════════════════════════════════════════════════════════
+        // 11. FOCUS RADIO PLAYER
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private ObservableCollection<RadioStationItem> _radioStations = new();
+        [ObservableProperty] private RadioStationItem? _selectedStation;
+        [ObservableProperty] private string _currentStationName = "BFM 89.9 (The Business Station)";
+        [ObservableProperty] private bool _isRadioPlaying = false;
+        [ObservableProperty] private string _radioPlayIcon = "▶";
+        [ObservableProperty] private double _radioVolume = 0.8;
+
+        // ══════════════════════════════════════════════════════════════════════
+        // 12. QR CODE STUDIO
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private string _qrText = "https://suamisihat.com.my";
+        [ObservableProperty] private string _qrFgColor = "#022057";
+        [ObservableProperty] private string _qrBgColor = "#FFFFFF";
+        [ObservableProperty] private int _qrPixelsPerModule = 15;
+        [ObservableProperty] private Bitmap? _qrBitmap;
+        [ObservableProperty] private string _qrStatusText = "Ready to generate";
+
+        // ══════════════════════════════════════════════════════════════════════
+        // 13. WORKSTATION HEALTH DIAGNOSTICS
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private string _cpuInfo = "Scanning...";
+        [ObservableProperty] private string _ramInfo = "Scanning...";
+        [ObservableProperty] private string _diskRootInfo = "Scanning...";
+        [ObservableProperty] private string _diskHomeInfo = "Scanning...";
+        [ObservableProperty] private string _kernelInfo = "Linux";
+        [ObservableProperty] private string _nasPingStatus = "NAS Latency: Checking...";
+        [ObservableProperty] private ObservableCollection<SoftwareCheckItem> _softwareChecks = new();
+
+        // ══════════════════════════════════════════════════════════════════════
+        // 14. SETTINGS & PREFERENCES
+        // ══════════════════════════════════════════════════════════════════════
+        [ObservableProperty] private string _synologyDrivePath = "";
+        [ObservableProperty] private string _selectedTheme = "SS Default (Deep Navy / Azure)";
+        [ObservableProperty] private ObservableCollection<string> _themes = new()
+        {
+            "SS Default (Deep Navy / Azure)",
+            "Falconia (Charcoal / Gold)",
+            "Metamorphosis (OLED Dark / Emerald)",
+            "Rose Pine (Rosé / Iris)",
+            "Nord (Polar Night / Frost)",
+            "Catppuccin (Mocha / Lavender)"
+        };
+
+        // ── Cache of Views ───────────────────────────────────────────────────
+        private readonly Dictionary<string, object> _viewCache = new();
+        private System.Threading.Timer? _breathingTimer;
+        private int _breathingPhaseIndex = 0; // 0=Inhale, 1=Hold, 2=Exhale, 3=Hold
+        private int _breathingSecondsRemaining = 4;
+
+        public MainViewModel()
+        {
+            // Initialise default paths
+            string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            SynologyDrivePath = Path.Combine(home, "SynologyDrive", "Creative-Team");
+
+            // Setup radio stations
+            RadioStations = new ObservableCollection<RadioStationItem>
             {
-                "Dashboard"         => new DashboardView         { DataContext = this },
-                "Project Creator"   => new ProjectCreatorView    { DataContext = this },
-                "Search & Copy"     => new SearchCopyView        { DataContext = this },
-                "Copywriting"       => new CopywritingView       { DataContext = this },
-                "Brand Assets"      => new BrandAssetsView       { DataContext = this },
-                "Task Manager"      => new TaskManagerView       { DataContext = this },
-                "Big Calendar"      => new CalendarView          { DataContext = this },
-                "Quick Notes"       => new QuickNoteView         { DataContext = this },
-                "Wellbeing"         => new WellbeingView         { DataContext = this },
-                "Waktu Solat"       => new WaktuSolatView        { DataContext = this },
-                "Radio Player"      => new FocusRadioView        { DataContext = this },
-                "QR Code"           => new QrCodeView            { DataContext = this },
-                "Workstation Health"=> new WorkstationHealthView { DataContext = this },
-                "Settings"          => new SettingsView          { DataContext = this },
-                _                   => new DashboardView         { DataContext = this },
+                new() { Name = "BFM 89.9 (Business & News)", StreamUrl = "https://stream.bfm.my/bfm.mp3", Genre = "News & Analysis", Bitrate = "128 kbps" },
+                new() { Name = "Hitz FM (Top 40 Hits)", StreamUrl = "https://stream.hitz.com.my/hitz.mp3", Genre = "Top 40 Pop", Bitrate = "128 kbps" },
+                new() { Name = "Era FM (Muzik Hit Terbaik)", StreamUrl = "https://stream.era.je/era.mp3", Genre = "Malay Pop & Hits", Bitrate = "128 kbps" },
+                new() { Name = "Fly FM (Today's Hottest Music)", StreamUrl = "https://stream.flyfm.audio/flyfm.mp3", Genre = "Modern Pop", Bitrate = "128 kbps" },
+                new() { Name = "Nightwave Plaza (Lo-Fi Vaporwave)", StreamUrl = "https://radio.plaza.one/mp3", Genre = "Vaporwave & Ambient", Bitrate = "128 kbps" },
+                new() { Name = "SomaFM (Groove Salad Chill)", StreamUrl = "https://ice1.somafm.com/groovesalad-128-mp3", Genre = "Downtempo Chill", Bitrate = "128 kbps" }
             };
-            _pageCache[tabName] = page;
-        }
-        CurrentPage = page;
-    }
+            SelectedStation = RadioStations[0];
 
-    // ─── Navigation command ───────────────────────────────────────────────────
-    [RelayCommand]
-    private void SelectTab(string tabName)
-    {
-        SelectedNavTab = tabName;
-        StatusMessage  = $"Navigated to {tabName} — {DateTime.Now:HH:mm:ss}";
-    }
+            // Initialise Project Creator
+            SelectedCategoryPreset = CategoryPresets[0];
+            SelectedPlatformPreset = PlatformPresets[0];
+            UpdateProjectCreatorPreviews();
 
-    // ─── Projects ────────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void LoadProjects()
-    {
-        try
-        {
-            var scanned = _workspaceService.ScanProjects();
-            Projects.Clear();
-            BacklogProjects.Clear();
-            InProgressProjects.Clear();
-            InReviewProjects.Clear();
-            DoneProjects.Clear();
+            // Load Wellbeing Stats
+            var wb = WellbeingDataService.LoadState();
+            HydrationGlasses = wb.HydrationGlasses;
+            HydrationGoal = wb.DailyHydrationGoal;
+            UpdateHydrationText();
 
-            foreach (var p in scanned)
+            // Initialise Notes
+            Notes = new ObservableCollection<QuickNoteItem>(QuickNoteService.LoadNotes());
+            if (Notes.Count > 0) SelectNote(Notes[0]);
+
+            // Initialise Calendar
+            UpdateCalendarView();
+
+            // Generate initial QR
+            GenerateQr();
+
+            // Initialise Clock & Background timers
+            StartLiveClock();
+
+            // Run initial data scans in background
+            Task.Run(async () =>
             {
-                Projects.Add(p);
-                switch (p.Status.ToLowerInvariant())
-                {
-                    case "in_progress": InProgressProjects.Add(p); break;
-                    case "review":
-                    case "in_review":  InReviewProjects.Add(p); break;
-                    case "done":
-                    case "completed":  DoneProjects.Add(p); break;
-                    default:           BacklogProjects.Add(p); break;
-                }
+                await LoadProjectsAsync();
+                await LoadPrayerTimesAsync();
+                await RescanHealthAsync();
+            });
+
+            // Start on Dashboard
+            NavigateTo("Dashboard");
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // NAVIGATION CONTROLLER
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void SelectTab(string tabName)
+        {
+            NavigateTo(tabName);
+        }
+
+        public void NavigateTo(string tabName)
+        {
+            CurrentTabName = tabName;
+            ResetNavHighlights();
+
+            switch (tabName)
+            {
+                case "Dashboard":
+                    NavBgDashboard = "#043388"; NavFgDashboard = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Dashboard", () => new DashboardView { DataContext = this });
+                    break;
+                case "Project Creator":
+                    NavBgProjectCreator = "#043388"; NavFgProjectCreator = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Project Creator", () => new ProjectCreatorView { DataContext = this });
+                    break;
+                case "Search & Copy":
+                    NavBgSearchCopy = "#043388"; NavFgSearchCopy = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Search & Copy", () => new SearchCopyView { DataContext = this });
+                    break;
+                case "Copywriting":
+                    NavBgCopywriting = "#043388"; NavFgCopywriting = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Copywriting", () => new CopywritingView { DataContext = this });
+                    break;
+                case "Brand Assets":
+                    NavBgBrandAssets = "#043388"; NavFgBrandAssets = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Brand Assets", () => new BrandAssetsView { DataContext = this });
+                    break;
+                case "Deliverables":
+                case "Deliverables & DAM":
+                    NavBgDeliverables = "#043388"; NavFgDeliverables = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Deliverables", () => new DeliverablesView { DataContext = this });
+                    break;
+                case "Task Manager":
+                    NavBgTaskManager = "#043388"; NavFgTaskManager = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Task Manager", () => new TaskManagerView { DataContext = this });
+                    break;
+                case "Big Calendar":
+                    NavBgCalendar = "#043388"; NavFgCalendar = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Big Calendar", () => new CalendarView { DataContext = this });
+                    break;
+                case "Quick Notes":
+                    NavBgQuickNote = "#043388"; NavFgQuickNote = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Quick Notes", () => new QuickNoteView { DataContext = this });
+                    break;
+                case "Wellbeing":
+                    NavBgWellbeing = "#043388"; NavFgWellbeing = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Wellbeing", () => new WellbeingView { DataContext = this });
+                    break;
+                case "Waktu Solat":
+                    NavBgWaktuSolat = "#043388"; NavFgWaktuSolat = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Waktu Solat", () => new WaktuSolatView { DataContext = this });
+                    break;
+                case "Radio Player":
+                case "Focus Radio Player":
+                    NavBgRadio = "#043388"; NavFgRadio = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Radio Player", () => new FocusRadioView { DataContext = this });
+                    break;
+                case "QR Code":
+                case "QR Code Studio":
+                    NavBgQrCode = "#043388"; NavFgQrCode = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("QR Code", () => new QrCodeView { DataContext = this });
+                    break;
+                case "Workstation Health":
+                    NavBgWorkstation = "#043388"; NavFgWorkstation = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Workstation Health", () => new WorkstationHealthView { DataContext = this });
+                    break;
+                case "Settings":
+                case "Settings & Vault":
+                    NavBgSettings = "#043388"; NavFgSettings = "#FFFFFF";
+                    CurrentPage = GetOrCreateView("Settings", () => new SettingsView { DataContext = this });
+                    break;
+                default:
+                    CurrentPage = GetOrCreateView("Dashboard", () => new DashboardView { DataContext = this });
+                    break;
             }
 
-            ProjectCount    = Projects.Count;
-            BacklogCount    = BacklogProjects.Count;
-            InProgressCount = InProgressProjects.Count;
-            InReviewCount   = InReviewProjects.Count;
-            DoneCount       = DoneProjects.Count;
-
-            ApplyProjectFilter();
-            UpdateDashboardKpis();
-            BuildCalendar();
-            StatusMessage = $"Scanned {ProjectCount} projects ({DateTime.Now:HH:mm:ss})";
-
-            if (SelectedCopyProject == null && Projects.Count > 0)
-                OpenCopyEditor(Projects.First());
+            StatusMessage = $"Navigated to {tabName} — {DateTime.Now:HH:mm:ss}";
         }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Workspace scan failed: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] LoadProjects: {ex.Message}");
-        }
-    }
 
-    private void UpdateDashboardKpis()
-    {
-        MetricTotalProjects = ProjectCount.ToString();
-        MetricActiveWip     = InProgressCount.ToString();
-        MetricLatestProject = Projects.FirstOrDefault()?.Project ?? "—";
-        MetricThisMonth     = Projects.Count(p =>
-            DateTime.TryParse(p.CreatedDate, out var d) &&
-            d.Month == DateTime.Now.Month && d.Year == DateTime.Now.Year).ToString();
-        MetricWorkspacePath = SynologyDrivePath;
-
-        // Calculate rough workspace size
-        try
+        private object GetOrCreateView(string key, Func<object> factory)
         {
-            if (Directory.Exists(SynologyDrivePath))
+            if (!_viewCache.TryGetValue(key, out var view))
             {
-                long bytes = Directory.GetFiles(SynologyDrivePath, "*", SearchOption.AllDirectories).Sum(f =>
+                view = factory();
+                _viewCache[key] = view;
+            }
+            return view;
+        }
+
+        private void ResetNavHighlights()
+        {
+            NavBgDashboard = NavBgProjectCreator = NavBgSearchCopy = NavBgCopywriting =
+            NavBgBrandAssets = NavBgDeliverables = NavBgTaskManager = NavBgCalendar =
+            NavBgQuickNote = NavBgWellbeing = NavBgWaktuSolat = NavBgRadio =
+            NavBgQrCode = NavBgWorkstation = NavBgSettings = "Transparent";
+
+            NavFgDashboard = NavFgProjectCreator = NavFgSearchCopy = NavFgCopywriting =
+            NavFgBrandAssets = NavFgDeliverables = NavFgTaskManager = NavFgCalendar =
+            NavFgQuickNote = NavFgWellbeing = NavFgWaktuSolat = NavFgRadio =
+            NavFgQrCode = NavFgWorkstation = NavFgSettings = "#94A3B8";
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // WORKSPACE SCANNING & TELEMETRY
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public async Task LoadProjectsAsync()
+        {
+            StatusMessage = "Scanning workspace vault...";
+            var snapshot = await WorkspaceScanner.ScanAsync(SynologyDrivePath);
+
+            TotalProjects = snapshot.TotalProjects;
+            ActiveWipProjects = snapshot.ActiveWIP;
+            LatestProjectName = snapshot.LatestProject;
+            TotalStorageSize = snapshot.StorageSizeFormatted;
+            ThisMonthOutput = snapshot.ThisMonth;
+            MonthComparisonText = snapshot.MonthComparisonText;
+            LargestProjectSize = snapshot.LargestProjectSize;
+            LargestProjectName = snapshot.LargestProjectName;
+            StaleProjectsCount = snapshot.StaleProjects;
+            CreativeTeamFlowText = snapshot.FlowSummaryText;
+
+            RecentProjects.Clear();
+            foreach (var p in snapshot.RecentProjects) RecentProjects.Add(p);
+
+            DesignerCapacities.Clear();
+            foreach (var d in snapshot.DesignerCapacities) DesignerCapacities.Add(d);
+
+            // Populate all tasks for Kanban
+            var tasks = new List<ProjectStatusItem>();
+            foreach (var rp in snapshot.RecentProjects)
+            {
+                tasks.Add(new ProjectStatusItem
                 {
-                    try { return new FileInfo(f).Length; } catch { return 0; }
+                    Project = rp.Project,
+                    FullPath = rp.FullPath,
+                    Designer = rp.Designer,
+                    CreatedDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                    Status = "in-progress",
+                    Priority = "medium",
+                    Deadline = DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")
                 });
-                MetricFileSize = FormatBytes(bytes);
-            }
-        }
-        catch (Exception ex) { Debug.WriteLine($"[MainViewModel] Size calc: {ex.Message}"); }
-    }
-
-    [RelayCommand]
-    private void SelectProject(ProjectStatusItem project)
-    {
-        SelectedProject = project;
-    }
-
-    partial void OnSearchQueryChanged(string value)    => ApplyProjectFilter();
-    partial void OnFilterDesignerChanged(string value) => ApplyProjectFilter();
-    partial void OnFilterBrandChanged(string value)    => ApplyProjectFilter();
-
-    private void ApplyProjectFilter()
-    {
-        var q   = SearchQuery?.ToLowerInvariant() ?? string.Empty;
-        var des = FilterDesigner == "All Designers" ? null : FilterDesigner;
-        var brn = FilterBrand    == "All Brands"    ? null : FilterBrand;
-
-        FilteredProjects.Clear();
-        foreach (var p in Projects)
-        {
-            bool matchQ  = string.IsNullOrEmpty(q) || p.Project.ToLowerInvariant().Contains(q);
-            bool matchD  = des == null || p.Designer == des;
-            bool matchB  = brn == null || p.Project.StartsWith(brn, StringComparison.OrdinalIgnoreCase);
-            if (matchQ && matchD && matchB)
-                FilteredProjects.Add(p);
-        }
-    }
-
-    // ─── Project Creator ─────────────────────────────────────────────────────
-    [RelayCommand]
-    private void CreateProject()
-    {
-        if (string.IsNullOrWhiteSpace(NewProjectTitle))
-        {
-            StatusMessage = "⚠️ Please enter a project title before creating.";
-            return;
-        }
-        try
-        {
-            var created = _workspaceService.CreateProject(
-                NewProjectBrand, NewProjectTitle, NewProjectDesigner,
-                NewProjectClient, NewProjectPriority, NewProjectDeadline);
-
-            if (NewProjectStarterCanvas != "none" && !string.IsNullOrEmpty(created.FullPath))
-            {
-                string src = Path.Combine(created.FullPath, "02_SOURCE_FILES");
-                if (Directory.Exists(src))
-                {
-                    string canvas = Path.Combine(src, $"canvas_{NewProjectTitle.ToLower().Replace(' ', '_')}.{NewProjectStarterCanvas}");
-                    if (!File.Exists(canvas))
-                        File.WriteAllText(canvas, $"# SuamiSihat Creative Starter Canvas ({NewProjectStarterCanvas.ToUpperInvariant()})\n");
-                }
             }
 
-            LoadProjects();
-            StatusMessage  = $"✔ Created project vault: {created.Project}";
-            NewProjectTitle = string.Empty;
-            SelectedNavTab  = "Dashboard";
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Failed to create project: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] CreateProject: {ex.Message}");
-        }
-    }
-
-    partial void OnNewProjectBrandChanged(string value)  => UpdateFolderPreview();
-    partial void OnNewProjectTitleChanged(string value)  => UpdateFolderPreview();
-    private void UpdateFolderPreview()
-    {
-        if (string.IsNullOrWhiteSpace(NewProjectTitle)) { FolderPreview = string.Empty; return; }
-        string year  = DateTime.Now.Year.ToString();
-        string slug  = NewProjectTitle.Trim().Replace(' ', '-').ToUpperInvariant();
-        string root  = $"{year}_{NewProjectBrand}_{slug}";
-        FolderPreview = string.Join("\n",
-            $"📁 {root}/",
-            $"  📁 01_DESIGN_FILES/",
-            $"  📁 02_SOURCE_FILES/",
-            $"  📁 03_COPYWRITING/",
-            $"  📁 04_EXPORTED_ASSETS/",
-            $"  📁 05_CLIENT_REFERENCES/",
-            $"  📄 PROJECT.md");
-    }
-
-    // ─── Copywriting ─────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void OpenCopyEditor(ProjectStatusItem project)
-    {
-        SelectedCopyProject = project;
-        ActiveCopyContent   = _workspaceService.ReadCopy(project.FullPath);
-        UpdateCopyMetrics(ActiveCopyContent);
-        SelectedNavTab = "Copywriting";
-        StatusMessage  = $"Editing 03_COPYWRITING/COPY.md for {project.Project}";
-    }
-
-    [RelayCommand]
-    private void SaveCopy()
-    {
-        if (SelectedCopyProject == null) return;
-        bool ok = _workspaceService.SaveCopy(SelectedCopyProject.FullPath, ActiveCopyContent);
-        StatusMessage = ok ? $"✔ COPY.md saved ({DateTime.Now:HH:mm:ss})" : "⚠️ Failed to save COPY.md";
-    }
-
-    [RelayCommand]
-    private void InsertCopyHook(string formula)
-    {
-        string snippet = formula switch
-        {
-            "PAS"        => "\n### 🎯 Problem-Agitate-Solve\n- **Problem**: Rasa cepat penat dan lesu?\n- **Agitate**: Kerja bertimbun, stamina pula makin drop.\n- **Solve**: Amalkan SuamiSihat untuk tenaga maksimum!\n",
-            "BAB"        => "\n### 🚀 Before-After-Bridge\n- **Before**: Dulu petang je mula lemau.\n- **After**: Sekarang kekal fokus sepanjang hari.\n- **Bridge**: Rahsianya, pemakanan seimbang dan formula SuamiSihat.\n",
-            "CTA"        => "\n📲 **WhatsApp Sekarang:** Tekan pautan di bio untuk konsultasi percuma!\n",
-            "DISCLAIMER" => "\n> ⚠️ *Kesan mungkin berbeza mengikut individu. Sila rujuk pakar.*\n",
-            "PROMO"      => "\n🔥 **PROMOSI TERHAD**: Gunakan kod `SSMERDEKA` untuk potongan 15%!\n",
-            _            => "\n---\n"
-        };
-        ActiveCopyContent += snippet;
-        UpdateCopyMetrics(ActiveCopyContent);
-        StatusMessage = $"✔ Inserted {formula} snippet";
-    }
-
-    partial void OnActiveCopyContentChanged(string value) => UpdateCopyMetrics(value);
-
-    private void UpdateCopyMetrics(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            CopyWordCount = 0; CopyCharCount = 0; CopyReadingTime = "0 sec";
-            WhatsAppPreviewText = "Your live WhatsApp message preview will appear here...";
-            MetaAdPreviewText   = "Your live ad copy preview will appear here...";
-            return;
-        }
-        CopyCharCount = text.Length;
-        var words     = text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-        CopyWordCount = words.Length;
-        int sec       = (int)Math.Ceiling(CopyWordCount / 3.3);
-        CopyReadingTime     = sec < 60 ? $"{sec} sec" : $"{sec / 60}m {sec % 60}s";
-        WhatsAppPreviewText = text.Trim();
-        MetaAdPreviewText   = text.Length > 240 ? text[..240] + "...\n\n👉 Click here to learn more" : text + "\n\n👉 Click here to learn more";
-    }
-
-    // ─── Task Manager / Move Status ──────────────────────────────────────────
-    [RelayCommand]
-    private void MoveStatus(ProjectStatusItem project)
-    {
-        string next = project.Status switch
-        {
-            "backlog"     => "in_progress",
-            "in_progress" => "in_review",
-            "in_review"   => "done",
-            _             => "backlog"
-        };
-        _workspaceService.UpdateProjectStatus(project, next);
-        LoadProjects();
-        StatusMessage = $"✔ Moved {project.Project} to {next.ToUpperInvariant()}";
-    }
-
-    // ─── Calendar ────────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void PrevMonth()
-    {
-        _calendarMonth = _calendarMonth.AddMonths(-1);
-        CalendarMonthLabel = _calendarMonth.ToString("MMMM yyyy");
-        BuildCalendar();
-    }
-
-    [RelayCommand]
-    private void NextMonth()
-    {
-        _calendarMonth = _calendarMonth.AddMonths(1);
-        CalendarMonthLabel = _calendarMonth.ToString("MMMM yyyy");
-        BuildCalendar();
-    }
-
-    private void BuildCalendar()
-    {
-        var deadlines = Projects
-            .Where(p => DateTime.TryParse(p.Deadline, out _))
-            .ToDictionary(p => DateTime.Parse(p.Deadline).Date, p => p.Project);
-
-        var now    = DateTime.Now.Date;
-        var first  = new DateTime(_calendarMonth.Year, _calendarMonth.Month, 1);
-        int offset = (int)first.DayOfWeek; // 0 = Sun
-        int daysInMonth = DateTime.DaysInMonth(_calendarMonth.Year, _calendarMonth.Month);
-
-        CalendarWeeks.Clear();
-        int day = 1 - offset;
-        for (int row = 0; row < 6; row++)
-        {
-            var week = new CalendarWeekRow();
-            var days = new[] { week.Day0, week.Day1, week.Day2, week.Day3, week.Day4, week.Day5, week.Day6 };
-            for (int col = 0; col < 7; col++, day++)
+            // Add demo mock tasks if scan is empty
+            if (tasks.Count == 0)
             {
-                bool inMonth = day >= 1 && day <= daysInMonth;
-                var cell = new CalendarDay
-                {
-                    DayNumber      = inMonth ? day.ToString() : string.Empty,
-                    IsCurrentMonth = inMonth,
-                    IsToday        = inMonth && new DateTime(_calendarMonth.Year, _calendarMonth.Month, day) == now,
-                };
-                if (inMonth && deadlines.TryGetValue(new DateTime(_calendarMonth.Year, _calendarMonth.Month, day), out var proj))
-                    cell.Badge = proj.Length > 16 ? proj[..16] + "…" : proj;
-
-                switch (col)
-                {
-                    case 0: week.Day0 = cell; break; case 1: week.Day1 = cell; break;
-                    case 2: week.Day2 = cell; break; case 3: week.Day3 = cell; break;
-                    case 4: week.Day4 = cell; break; case 5: week.Day5 = cell; break;
-                    case 6: week.Day6 = cell; break;
-                }
+                tasks = GetDefaultKanbanTasks();
             }
-            CalendarWeeks.Add(week);
-            if (day > daysInMonth) break;
-        }
 
-        DeadlinesThisMonth = Projects.Count(p =>
-            DateTime.TryParse(p.Deadline, out var d) && d.Month == _calendarMonth.Month && d.Year == _calendarMonth.Year);
-        StartedThisMonth = Projects.Count(p =>
-            DateTime.TryParse(p.CreatedDate, out var d) && d.Month == _calendarMonth.Month && d.Year == _calendarMonth.Year);
-        OverdueCount = Projects.Count(p =>
-            DateTime.TryParse(p.Deadline, out var d) && d.Date < now && p.Status != "done" && p.Status != "completed");
-    }
-
-    // ─── Quick Notes ─────────────────────────────────────────────────────────
-    private void LoadNotes()
-    {
-        NoteItems.Clear();
-        foreach (var n in _noteService.Notes)
-        {
-            NoteItems.Add(new QuickNoteItem
+            AllTasks = new ObservableCollection<ProjectStatusItem>(tasks);
+            WorkspaceProjects = new ObservableCollection<ProjectStatusItem>(tasks);
+            if (WorkspaceProjects.Count > 0 && SelectedCopyProject == null)
             {
-                Id       = n.Id,
-                Title    = n.Title,
-                Content  = n.Content,
-                Modified = n.Modified.ToString("dd MMM, HH:mm")
-            });
+                SelectedCopyProject = WorkspaceProjects[0];
+                LoadSelectedCopyProject();
+            }
+
+            FilterKanbanTasks();
+            FilterSearchProjects();
+
+            StatusMessage = $"Workspace indexed: {TotalProjects} projects found.";
         }
-        NoteCountLabel = $"{NoteItems.Count} notes";
-    }
 
-    [RelayCommand]
-    private void NewNote()
-    {
-        var note = _noteService.Create("New Note");
-        var item = new QuickNoteItem { Id = note.Id, Title = note.Title };
-        NoteItems.Insert(0, item);
-        NoteCountLabel = $"{NoteItems.Count} notes";
-        SelectNote(item);
-    }
-
-    [RelayCommand]
-    private void SelectNote(QuickNoteItem item)
-    {
-        SelectedNoteItem    = item;
-        SelectedNoteTitle   = item.Title;
-        SelectedNoteContent = item.Content;
-        UpdateNoteMetrics(item.Content);
-        NoteSaveStatus = "Unsaved";
-    }
-
-    [RelayCommand]
-    private void SaveNote()
-    {
-        if (SelectedNoteItem == null) return;
-        SelectedNoteItem.Title   = SelectedNoteTitle;
-        SelectedNoteItem.Content = SelectedNoteContent;
-        _noteService.Save(new Services.QuickNote
+        // ══════════════════════════════════════════════════════════════════════
+        // PROJECT CREATOR LOGIC
+        // ══════════════════════════════════════════════════════════════════════
+        partial void OnSelectedYearChanged(string value) => UpdateProjectCreatorPreviews();
+        partial void OnSelectedSubBrandChanged(string value) => UpdateProjectCreatorPreviews();
+        partial void OnProjectIdSuffixChanged(string value) => UpdateProjectCreatorPreviews();
+        partial void OnProjectTitleChanged(string value) => UpdateProjectCreatorPreviews();
+        partial void OnSelectedCategoryPresetChanged(CategoryPreset? value)
         {
-            Id      = SelectedNoteItem.Id,
-            Title   = SelectedNoteTitle,
-            Content = SelectedNoteContent
-        });
-        NoteSaveStatus = $"Saved {DateTime.Now:HH:mm:ss}";
-        LoadNotes();
-    }
-
-    [RelayCommand]
-    private void DeleteNote()
-    {
-        if (SelectedNoteItem == null) return;
-        _noteService.Delete(SelectedNoteItem.Id);
-        LoadNotes();
-        SelectedNoteItem    = null;
-        SelectedNoteTitle   = string.Empty;
-        SelectedNoteContent = string.Empty;
-        NoteWordCount = "0 words";
-        NoteSaveStatus = "—";
-    }
-
-    partial void OnSelectedNoteContentChanged(string value) => UpdateNoteMetrics(value);
-
-    private void UpdateNoteMetrics(string content)
-    {
-        var words     = (content ?? string.Empty).Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-        NoteWordCount = $"{words.Length} words · {(content ?? "").Length} chars";
-        NoteSaveStatus = "Unsaved";
-    }
-
-    // ─── Radio ───────────────────────────────────────────────────────────────
-    [RelayCommand]
-    private async Task ToggleRadio()
-    {
-        if (IsRadioPlaying)
-        {
-            _radioService.Stop();
-            IsRadioPlaying = false;
-            RadioPlayIcon  = "▶";
-            StatusMessage  = "⏹ Radio stopped";
-        }
-        else
-        {
-            await _radioService.PlayAsync(CurrentStationUrl);
-            IsRadioPlaying = true;
-            RadioPlayIcon  = "⏸";
-            StatusMessage  = $"▶ Streaming: {CurrentStationName}";
-        }
-    }
-
-    [RelayCommand]
-    private async Task SelectRadioStation(RadioStationItem station)
-    {
-        CurrentStationName = station.Name;
-        CurrentStationUrl  = station.StreamUrl;
-        await _radioService.PlayAsync(station.StreamUrl);
-        IsRadioPlaying = true;
-        RadioPlayIcon  = "⏸";
-        StatusMessage  = $"▶ Streaming: {station.Name}";
-    }
-
-    // ─── Waktu Solat ─────────────────────────────────────────────────────────
-    [RelayCommand]
-    private async Task FetchSolat()
-    {
-        NextPrayerCountdown = "Fetching...";
-        var data = await _prayerService.FetchTodayAsync(SelectedSolatZone);
-        if (data == null) { NextPrayerCountdown = "API unavailable"; return; }
-
-        BuildPrayerRows(data);
-        HijriDate = _prayerService.GetHijriDate();
-
-        var next = _prayerService.GetNextPrayer(data);
-        if (next != null)
-        {
-            NextPrayerName     = next.Name;
-            NextPrayerTime     = next.TimeStr;
-            var diff           = next.Time - DateTime.Now;
-            NextPrayerCountdown = diff.TotalMinutes > 0
-                ? $"dalam {(int)diff.TotalHours}j {diff.Minutes}m"
-                : "Sekarang";
-        }
-    }
-
-    private void BuildPrayerRows(PrayerTimeService.WaktuSolatResponse data)
-    {
-        PrayerTimeRows.Clear();
-        var next = _prayerService.GetNextPrayer(data);
-        var rows = new[]
-        {
-            new PrayerTimeRow { Icon="🌙", Name="Imsak",   Description="Henti makan sahur",   TimeStr=data.Imsak   ?? "--:--" },
-            new PrayerTimeRow { Icon="🌅", Name="Subuh",   Description="Fajar sadiq",          TimeStr=data.Subuh   ?? "--:--" },
-            new PrayerTimeRow { Icon="🌄", Name="Syuruk",  Description="Terbit matahari",      TimeStr=data.Syuruk  ?? "--:--" },
-            new PrayerTimeRow { Icon="☀️", Name="Dhuha",   Description="Waktu dhuha",          TimeStr=data.Dhuha   ?? "--:--" },
-            new PrayerTimeRow { Icon="🌞", Name="Zohor",   Description="Tengah hari",          TimeStr=data.Zohor   ?? "--:--" },
-            new PrayerTimeRow { Icon="🌤", Name="Asar",    Description="Petang",               TimeStr=data.Asar    ?? "--:--" },
-            new PrayerTimeRow { Icon="🌇", Name="Maghrib", Description="Matahari terbenam",    TimeStr=data.Maghrib ?? "--:--" },
-            new PrayerTimeRow { Icon="🌙", Name="Isyak",   Description="Malam",                TimeStr=data.Isyak   ?? "--:--" },
-        };
-        foreach (var r in rows)
-        {
-            if (next != null) r.IsNext = r.Name == next.Name;
-            PrayerTimeRows.Add(r);
-        }
-    }
-
-    private void BuildDefaultPrayerRows()
-    {
-        PrayerTimeRows.Clear();
-        string[] names = { "Imsak","Subuh","Syuruk","Dhuha","Zohor","Asar","Maghrib","Isyak" };
-        string[] icons = { "🌙","🌅","🌄","☀️","🌞","🌤","🌇","🌙" };
-        for (int i = 0; i < names.Length; i++)
-            PrayerTimeRows.Add(new PrayerTimeRow { Icon=icons[i], Name=names[i], TimeStr="--:--" });
-    }
-
-    // ─── Wellbeing ───────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void IncrementWater()
-    {
-        if (WaterGlasses < 8) WaterGlasses++;
-        StatusMessage = $"💧 Hydration: {WaterGlasses}/8 glasses today";
-    }
-
-    [RelayCommand]
-    private void TogglePomodoro()
-    {
-        IsPomodoroRunning = !IsPomodoroRunning;
-        PomodoroStatus    = IsPomodoroRunning ? "Running — Focus Mode" : "Paused";
-        if (IsPomodoroRunning) _ = RunPomodoroAsync();
-    }
-
-    private async Task RunPomodoroAsync()
-    {
-        int seconds = 25 * 60;
-        while (IsPomodoroRunning && seconds > 0)
-        {
-            await Task.Delay(1000);
-            seconds--;
-            PomodoroTime = $"{seconds / 60:D2}:{seconds % 60:D2}";
-        }
-        if (seconds == 0) { PomodoroStatus = "✔ Session Complete!"; IsPomodoroRunning = false; }
-    }
-
-    // ─── QR Code ─────────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void GenerateQr()
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(QrUrl)) { QrPreviewLabel = "⚠️ Enter a URL first"; return; }
-
-            using var qrGenerator = new QRCodeGenerator();
-            var ecLevel = QrEcLevel switch
+            if (value != null)
             {
-                "L" => QRCodeGenerator.ECCLevel.L,
-                "Q" => QRCodeGenerator.ECCLevel.Q,
-                "H" => QRCodeGenerator.ECCLevel.H,
-                _   => QRCodeGenerator.ECCLevel.M,
+                SlaTargetDays = value.SlaDays;
+                var deadline = MalaysiaHolidayService.CalculateWorkingDaysDeadline(DateTime.Today, value.SlaDays);
+                SlaDeadlineDisplay = $"SLA Target: {value.SlaDays} Days • Due: {deadline:yyyy-MM-dd}";
+            }
+            UpdateProjectCreatorPreviews();
+        }
+
+        [RelayCommand]
+        public void SelectPlatform(string key)
+        {
+            var p = PlatformPresets.FirstOrDefault(x => x.Key == key);
+            if (p != null) SelectedPlatformPreset = p;
+        }
+
+        [RelayCommand]
+        public void InsertMarkdown(string snippet)
+        {
+            ProjectBriefMarkdown += snippet;
+        }
+
+        private void UpdateProjectCreatorPreviews()
+        {
+            string cleanBrand = "SSH";
+            var m = Regex.Match(SelectedSubBrand ?? "", @"^([A-Z]{2,4})");
+            if (m.Success) cleanBrand = m.Groups[1].Value;
+
+            string cleanYear = SelectedYear ?? DateTime.Now.ToString("yyyy");
+            string curMonth = DateTime.Now.ToString("MM");
+            string curMonthName = DateTime.Now.ToString("MMMM");
+            string dateCode = $"{cleanYear}{curMonth}";
+            string cleanSuffix = string.IsNullOrWhiteSpace(ProjectIdSuffix) ? "0001D" : ProjectIdSuffix.Trim();
+            string cleanTitle = string.IsNullOrWhiteSpace(ProjectTitle) ? "untitled" : Regex.Replace(ProjectTitle.Trim(), @"[^a-zA-Z0-9\-_]", "_");
+
+            string folderName = $"{dateCode}_{cleanSuffix}_{cleanBrand}_{cleanTitle}";
+            PreviewFolderPath = Path.Combine(SynologyDrivePath, $"SS-{cleanYear}", $"{cleanYear}{curMonth}_{curMonthName}", folderName);
+
+            PreviewYamlFrontmatter = 
+$@"project_id: {dateCode}_{cleanSuffix}_{cleanBrand}
+title: ""{ProjectTitle}""
+sub_brand: {cleanBrand}
+designer: {SelectedDesigner}
+created_date: {DateTime.Now:yyyy-MM-dd}
+category: {SelectedCategoryPreset?.Name ?? "Graphic Design"}
+status: in-progress
+priority: medium
+";
+
+            PreviewCopyMarkdown = CopywritingDesktopService.GetDefaultTemplate(ProjectTitle);
+        }
+
+        [RelayCommand]
+        public void GenerateProject()
+        {
+            try
+            {
+                var generator = new ProjectGeneratorService();
+                string createdPath = generator.GenerateProjectFolder(
+                    SynologyDrivePath,
+                    ProjectTitle,
+                    SelectedSubBrand,
+                    SelectedYear,
+                    ProjectIdSuffix,
+                    SelectedCategoryPreset?.Name ?? "Graphic Design",
+                    null,
+                    ProjectBriefMarkdown,
+                    SelectedDesigner
+                );
+
+                StatusMessage = $"✔ Project generated at: {createdPath}";
+                // Refresh workspace in background
+                _ = LoadProjectsAsync();
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"[-] Project creation failed: {ex.Message}";
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // COPYWRITING STUDIO
+        // ══════════════════════════════════════════════════════════════════════
+        partial void OnSelectedCopyProjectChanged(ProjectStatusItem? value)
+        {
+            LoadSelectedCopyProject();
+        }
+
+        partial void OnCopyContentChanged(string value)
+        {
+            UpdateCopyMetrics();
+        }
+
+        private void LoadSelectedCopyProject()
+        {
+            if (SelectedCopyProject == null)
+            {
+                CopyContent = CopywritingDesktopService.GetDefaultTemplate("Sample Campaign");
+                CopyFilePath = "No active project folder";
+                CopySaveStatus = "Ready";
+                return;
+            }
+
+            CopyFilePath = CopywritingDesktopService.GetCopyFilePath(SelectedCopyProject.FullPath) ?? "COPY.md";
+            CopyContent = CopywritingDesktopService.LoadCopywriting(SelectedCopyProject.FullPath, SelectedCopyProject.Project);
+            CopySaveStatus = "Loaded";
+        }
+
+        private void UpdateCopyMetrics()
+        {
+            var m = CopywritingDesktopService.ComputeMetrics(CopyContent);
+            CopyWordCount = m.words;
+            CopyReadTimeMinutes = m.readTimeMinutes;
+            CopyEmojiCount = m.emojis;
+            MetaAdHeadline = m.headline;
+            MetaAdPrimaryText = m.primaryText;
+            MetaAdCta = m.cta;
+            WhatsAppPreviewText = m.primaryText;
+        }
+
+        [RelayCommand]
+        public void SaveCopyScript()
+        {
+            if (SelectedCopyProject != null)
+            {
+                bool ok = CopywritingDesktopService.SaveCopywriting(SelectedCopyProject.FullPath, CopyContent);
+                CopySaveStatus = ok ? "Saved to NAS" : "Save Error";
+                StatusMessage = ok ? "✔ COPY.md saved to Synology vault." : "[-] Failed to save COPY.md";
+            }
+        }
+
+        [RelayCommand]
+        public async Task CopyPlainTextAsync()
+        {
+            string plain = CopywritingDesktopService.FormatPlainTextForAd(CopyContent);
+            await ClipboardService.SetTextAsync(plain);
+            StatusMessage = "✔ Clean plain text copied to clipboard.";
+        }
+
+        [RelayCommand]
+        public async Task CopyMarkdownScriptAsync()
+        {
+            await ClipboardService.SetTextAsync(CopyContent);
+            StatusMessage = "✔ Full Markdown script copied to clipboard.";
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // TASK MANAGER & KANBAN
+        // ══════════════════════════════════════════════════════════════════════
+        partial void OnTaskSearchQueryChanged(string value) => FilterKanbanTasks();
+        partial void OnSelectedDesignerFilterChanged(string value) => FilterKanbanTasks();
+
+        [RelayCommand]
+        public void StartTask(ProjectStatusItem task)
+        {
+            if (task != null)
+            {
+                task.Status = "in-progress";
+                FilterKanbanTasks();
+                StatusMessage = $"Task '{task.Project}' moved to In Progress.";
+            }
+        }
+
+        [RelayCommand]
+        public void ReviewTask(ProjectStatusItem task)
+        {
+            if (task != null)
+            {
+                task.Status = "review";
+                FilterKanbanTasks();
+                StatusMessage = $"Task '{task.Project}' moved to In Review.";
+            }
+        }
+
+        [RelayCommand]
+        public void ApproveTask(ProjectStatusItem task)
+        {
+            if (task != null)
+            {
+                task.Status = "done";
+                FilterKanbanTasks();
+                StatusMessage = $"Task '{task.Project}' marked as Completed.";
+            }
+        }
+
+        [RelayCommand]
+        public void BacklogTask(ProjectStatusItem task)
+        {
+            if (task != null)
+            {
+                task.Status = "backlog";
+                FilterKanbanTasks();
+                StatusMessage = $"Task '{task.Project}' moved to Backlog.";
+            }
+        }
+
+        private void FilterKanbanTasks()
+        {
+            var query = TaskSearchQuery?.Trim().ToLowerInvariant() ?? "";
+            var designer = SelectedDesignerFilter;
+
+            var filtered = AllTasks.Where(t =>
+            {
+                bool matchQuery = string.IsNullOrWhiteSpace(query) ||
+                    t.Project.ToLowerInvariant().Contains(query) ||
+                    t.Designer.ToLowerInvariant().Contains(query);
+
+                bool matchDesigner = designer == "All Designers" ||
+                    string.Equals(t.Designer, designer, StringComparison.OrdinalIgnoreCase);
+
+                return matchQuery && matchDesigner;
+            }).ToList();
+
+            BacklogTasks = new ObservableCollection<ProjectStatusItem>(filtered.Where(t => t.Status == "backlog"));
+            InProgressTasks = new ObservableCollection<ProjectStatusItem>(filtered.Where(t => t.Status == "in-progress"));
+            ReviewTasks = new ObservableCollection<ProjectStatusItem>(filtered.Where(t => t.Status == "review" || t.Status == "revision"));
+            DoneTasks = new ObservableCollection<ProjectStatusItem>(filtered.Where(t => t.Status == "done"));
+
+            MetricTotalTasks = filtered.Count;
+            MetricInProgressTasks = InProgressTasks.Count;
+            MetricReviewTasks = ReviewTasks.Count;
+            MetricDoneTasks = DoneTasks.Count;
+            MetricUrgentTasks = filtered.Count(t => t.Priority == "urgent");
+        }
+
+        private List<ProjectStatusItem> GetDefaultKanbanTasks()
+        {
+            return new List<ProjectStatusItem>
+            {
+                new() { Project = "202609_0001D_SSH_Brand_Identity_Master", Designer = "Harussani", Status = "in-progress", Priority = "urgent", Deadline = DateTime.Today.AddDays(2).ToString("yyyy-MM-dd"), CreatedDate = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd") },
+                new() { Project = "202609_0002S_SSC_Kopi_Tongkat_Ali_MetaAds", Designer = "Adam", Status = "in-progress", Priority = "high", Deadline = DateTime.Today.AddDays(3).ToString("yyyy-MM-dd"), CreatedDate = DateTime.Today.AddDays(-2).ToString("yyyy-MM-dd") },
+                new() { Project = "202609_0003V_SSW_Testimonial_Reels_Video", Designer = "Sarah", Status = "review", Priority = "medium", Deadline = DateTime.Today.AddDays(4).ToString("yyyy-MM-dd"), CreatedDate = DateTime.Today.AddDays(-5).ToString("yyyy-MM-dd") },
+                new() { Project = "202609_0004P_SSE_Shopee_Product_Hero_Banner", Designer = "Afif", Status = "backlog", Priority = "low", Deadline = DateTime.Today.AddDays(7).ToString("yyyy-MM-dd"), CreatedDate = DateTime.Today.AddDays(-3).ToString("yyyy-MM-dd") },
+                new() { Project = "202608_0012D_SST_DAM_Web_Portal_Dashboard", Designer = "Harussani", Status = "done", Priority = "medium", Deadline = DateTime.Today.AddDays(-2).ToString("yyyy-MM-dd"), CreatedDate = DateTime.Today.AddDays(-10).ToString("yyyy-MM-dd") }
             };
-            using var data = qrGenerator.CreateQrCode(QrUrl, ecLevel);
-            // BitmapByteQRCode uses plain byte[] (no System.Drawing dependency)
-            using var code = new BitmapByteQRCode(data);
-            byte[] bytes   = code.GetGraphic(20);
-
-            using var ms = new MemoryStream(bytes);
-            QrPreviewBitmap = new Bitmap(ms);
-            string label    = QrUrl.Length > 30 ? (QrUrl[..30] + "…") : QrUrl;
-            int size        = QrSize.Split('x', 'x', '×')[0].Trim() is { } s && int.TryParse(s, out var px) ? px : 512;
-            QrPreviewLabel  = $"{label} — {size}×{size}px";
-            StatusMessage   = $"✔ QR Code generated for: {QrUrl}";
         }
-        catch (Exception ex)
+
+        // ══════════════════════════════════════════════════════════════════════
+        // BRAND ASSETS TOKEN INSPECTOR & CLICK-TO-COPY
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public async Task InspectAndCopyTokenAsync(ColorTokenItem token)
         {
-            QrPreviewLabel = $"Error: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] GenerateQr: {ex.Message}");
+            if (token == null) return;
+            InspectedColorToken = token;
+
+            await ClipboardService.SetTextAsync(token.Hex);
+
+            CopyNotificationText = $"✔ Copied {token.Name} ({token.Hex}) to clipboard! RGB: {token.Rgb} • CMYK: {token.Cmyk} • {token.Pantone}";
+            IsCopyNotificationVisible = true;
+            StatusMessage = $"Copied: {token.Hex} ({token.Name})";
         }
-    }
 
-    [RelayCommand]
-    private void SaveQrPng()
-    {
-        if (QrPreviewBitmap == null) { StatusMessage = "⚠️ Generate a QR code first"; return; }
-        try
+        [RelayCommand]
+        public async Task CopySpecificValueAsync(string value)
         {
-            string home   = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string output = Path.Combine(home, $"ss-cam-qr-{DateTime.Now:yyyyMMdd-HHmmss}.png");
-            using (var fs = new FileStream(output, FileMode.Create))
-#pragma warning disable CS0618
-                QrPreviewBitmap.Save(fs);
-#pragma warning restore CS0618
-            StatusMessage = $"✔ Saved QR PNG to: {output}";
+            if (string.IsNullOrWhiteSpace(value)) return;
+            await ClipboardService.SetTextAsync(value);
+            CopyNotificationText = $"✔ Copied to clipboard: {value}";
+            StatusMessage = $"Copied: {value}";
         }
-        catch (Exception ex)
+
+        // ══════════════════════════════════════════════════════════════════════
+        // SEARCH & COPY / DELIVERABLES
+        // ══════════════════════════════════════════════════════════════════════
+        partial void OnSearchCopyQueryChanged(string value) => FilterSearchProjects();
+
+        private void FilterSearchProjects()
         {
-            StatusMessage = $"Save failed: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] SaveQrPng: {ex.Message}");
-        }
-    }
-
-    [RelayCommand]
-    private void CopyQr() => StatusMessage = "📋 QR image copied to clipboard (use Save PNG for now)";
-
-    [RelayCommand]
-    private void ResetQr()
-    {
-        QrUrl           = "https://creative.suamisihat.myds.me";
-        QrEcLevel       = "M";
-        QrSize          = "512 × 512";
-        QrMargin        = "4";
-        QrForeground    = "#000000";
-        QrBackground    = "#FFFFFF";
-        QrPreviewBitmap = null;
-        QrPreviewLabel  = "Enter a URL and click Generate";
-    }
-
-    // ─── Workstation Health ──────────────────────────────────────────────────
-    [RelayCommand]
-    private async Task RescanWorkstation()
-    {
-        WsDistro = "Scanning...";
-        WsCpuCores = "...";
-        await Task.Run(() =>
-        {
-            var info = _wsService.GetSystemInfo();
-            var checks = _wsService.CheckCreativeSoftware();
-
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            string q = SearchCopyQuery?.Trim().ToLowerInvariant() ?? "";
+            if (string.IsNullOrWhiteSpace(q))
             {
-                WsDistro       = info.Distro;
-                WsKernel       = info.Kernel;
-                WsCpuCores     = info.CpuCores.ToString();
-                WsCpuName      = info.CpuName;
-                WsRamAvailable = info.RamAvailable;
-                WsRamTotal     = $"of {info.RamTotal} total";
-                WsDiskFree     = info.DiskFree;
-                WsDiskTotal    = $"of {info.DiskTotal} total";
-
-                SoftwareChecks.Clear();
-                foreach (var c in checks)
-                    SoftwareChecks.Add(new SoftwareCheckItem { Name = c.Name, IsInstalled = c.IsInstalled, Version = c.Version });
-
-                int installed = checks.Count(c => c.IsInstalled);
-                WsSoftwareInstalledLabel = $"{installed} / {checks.Length} installed";
-                StatusMessage = $"✔ Workstation scan complete ({DateTime.Now:HH:mm:ss})";
-            });
-        });
-    }
-
-    // ─── Open folder ─────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void OpenFolder(string? path)
-    {
-        if (string.IsNullOrWhiteSpace(path)) { StatusMessage = "⚠️ No folder path"; return; }
-        try
-        {
-            if (Directory.Exists(path))
-            {
-                Process.Start(new ProcessStartInfo { FileName = "xdg-open", Arguments = $"\"{path}\"", UseShellExecute = true });
-                StatusMessage = $"Opened: {path}";
+                FilteredSearchProjects = new ObservableCollection<ProjectStatusItem>(WorkspaceProjects);
             }
-            else StatusMessage = $"Folder not found: {path}";
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Could not open folder: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] OpenFolder: {ex.Message}");
-        }
-    }
-
-    // ─── Clipboard ───────────────────────────────────────────────────────────
-    [RelayCommand]
-    private void CopyToClipboard(string text)
-    {
-        StatusMessage = $"✔ Copied to clipboard";
-        Debug.WriteLine($"[MainViewModel] CopyToClipboard: {text}");
-    }
-
-    // ─── Desktop shortcut ────────────────────────────────────────────────────
-    [RelayCommand]
-    private void CreateDesktopShortcut()
-    {
-        try
-        {
-            string desktop = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop");
-            Directory.CreateDirectory(desktop);
-            string exec    = Process.GetCurrentProcess().MainModule?.FileName ?? "/opt/ss-cam/SS-CAM.Linux";
-            string path    = Path.Combine(desktop, "SS-CAM.desktop");
-            File.WriteAllText(path,
-                $"[Desktop Entry]\nType=Application\nName={AppName}\nExec={exec}\nIcon=ss-cam\nTerminal=false\nCategories=Graphics;Office;\nStartupWMClass=SS-CAM.Linux\n");
-            StatusMessage = $"✔ Desktop shortcut created: {path}";
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Shortcut failed: {ex.Message}";
-            Debug.WriteLine($"[MainViewModel] CreateDesktopShortcut: {ex.Message}");
-        }
-    }
-
-    // ─── NAS check ───────────────────────────────────────────────────────────
-    [RelayCommand]
-    private async Task CheckNasStatus()
-    {
-        NasStatusText  = "Checking...";
-        NasStatusColor = "#94A3B8";
-        await Task.Run(() =>
-        {
-            bool ok = false;
-            try { ok = Directory.Exists(SynologyDrivePath); } catch { /* offline */ }
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            else
             {
-                NasStatusText  = ok ? "SSNAS Online" : "SSNAS Offline";
-                NasStatusColor = ok ? "#34D399"      : "#F87171";
-                StatusMessage  = ok ? $"✔ NAS connected: {SynologyDrivePath}" : "⚠️ NAS not reachable";
+                FilteredSearchProjects = new ObservableCollection<ProjectStatusItem>(
+                    WorkspaceProjects.Where(p => p.Project.ToLowerInvariant().Contains(q) || p.Designer.ToLowerInvariant().Contains(q)));
+            }
+        }
+
+        [RelayCommand]
+        public void OpenProjectFolder(string? path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) path = SynologyDrivePath;
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = $"\"{path}\"",
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch { }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // BIG CALENDAR & HOLIDAYS
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand] public void NextMonth() { CalendarCurrentMonth = CalendarCurrentMonth.AddMonths(1); UpdateCalendarView(); }
+        [RelayCommand] public void PrevMonth() { CalendarCurrentMonth = CalendarCurrentMonth.AddMonths(-1); UpdateCalendarView(); }
+        [RelayCommand] public void TodayCalendar() { CalendarCurrentMonth = DateTime.Today; UpdateCalendarView(); }
+
+        private void UpdateCalendarView()
+        {
+            CalendarMonthYearHeader = CalendarCurrentMonth.ToString("MMMM yyyy");
+            MonthlyHolidays = new ObservableCollection<MalaysiaHolidayItem>(
+                MalaysiaHolidayService.GetHolidaysForMonth(CalendarCurrentMonth.Year, CalendarCurrentMonth.Month));
+
+            var firstDay = new DateTime(CalendarCurrentMonth.Year, CalendarCurrentMonth.Month, 1);
+            int daysInMonth = DateTime.DaysInMonth(CalendarCurrentMonth.Year, CalendarCurrentMonth.Month);
+            int startOffset = (int)firstDay.DayOfWeek; // 0=Sunday
+
+            var weeks = new List<CalendarWeekRow>();
+            var currentWeek = new CalendarWeekRow();
+            int cellCount = 0;
+
+            // Previous month trailing days
+            var prevMonth = firstDay.AddMonths(-1);
+            int prevMonthDays = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month);
+            for (int i = startOffset - 1; i >= 0; i--)
+            {
+                currentWeek.Days.Add(new CalendarDay { DayNumber = prevMonthDays - i, IsCurrentMonth = false });
+                cellCount++;
+            }
+
+            // Current month days
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                var dt = new DateTime(CalendarCurrentMonth.Year, CalendarCurrentMonth.Month, day);
+                bool isToday = dt.Date == DateTime.Today;
+                bool isHoliday = MalaysiaHolidayService.IsHoliday(dt, out var hol);
+
+                currentWeek.Days.Add(new CalendarDay
+                {
+                    DayNumber = day,
+                    IsCurrentMonth = true,
+                    IsToday = isToday,
+                    HolidayName = hol?.ShortName ?? "",
+                    HasHoliday = isHoliday
+                });
+
+                cellCount++;
+                if (cellCount % 7 == 0)
+                {
+                    weeks.Add(currentWeek);
+                    currentWeek = new CalendarWeekRow();
+                }
+            }
+
+            // Next month leading days
+            int nextDay = 1;
+            while (cellCount % 7 != 0 || weeks.Count < 5)
+            {
+                currentWeek.Days.Add(new CalendarDay { DayNumber = nextDay++, IsCurrentMonth = false });
+                cellCount++;
+                if (cellCount % 7 == 0)
+                {
+                    weeks.Add(currentWeek);
+                    currentWeek = new CalendarWeekRow();
+                }
+            }
+
+            CalendarWeeks = new ObservableCollection<CalendarWeekRow>(weeks);
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // QUICK NOTES
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void SelectNote(QuickNoteItem note)
+        {
+            SelectedNote = note;
+            if (note != null)
+            {
+                NoteEditorTitle = note.Title;
+                NoteEditorContent = note.Content;
+                NoteEditorCategory = note.Category;
+            }
+        }
+
+        [RelayCommand]
+        public void NewNote()
+        {
+            var note = new QuickNoteItem
+            {
+                Title = "Untitled Note",
+                Content = "",
+                Category = "General",
+                CreatedDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+            };
+            Notes.Insert(0, note);
+            SelectNote(note);
+            SaveNotes();
+        }
+
+        [RelayCommand]
+        public void DeleteNote()
+        {
+            if (SelectedNote != null)
+            {
+                Notes.Remove(SelectedNote);
+                SelectedNote = Notes.FirstOrDefault();
+                SelectNote(SelectedNote!);
+                SaveNotes();
+            }
+        }
+
+        [RelayCommand]
+        public void SaveCurrentNote()
+        {
+            if (SelectedNote != null)
+            {
+                SelectedNote.Title = NoteEditorTitle;
+                SelectedNote.Content = NoteEditorContent;
+                SelectedNote.Category = NoteEditorCategory;
+                SaveNotes();
+                StatusMessage = "✔ Note saved.";
+            }
+        }
+
+        private void SaveNotes()
+        {
+            QuickNoteService.SaveNotes(Notes.ToList());
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // CREATIVE WELLBEING & BOX BREATHING STATE MACHINE
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void ToggleBreathing()
+        {
+            if (IsBreathingActive)
+            {
+                _breathingTimer?.Dispose();
+                _breathingTimer = null;
+                IsBreathingActive = false;
+                BreathingButtonText = "▶ Start 16s Box Breathing";
+                BreathingPhaseText = "Paused — Press Start to Resume";
+                BreathingCircleScale = 1.0;
+            }
+            else
+            {
+                IsBreathingActive = true;
+                BreathingButtonText = "⏸ Pause Breathing Coach";
+                _breathingPhaseIndex = 0;
+                _breathingSecondsRemaining = 4;
+                UpdateBreathingPhaseDisplay();
+
+                _breathingTimer = new System.Threading.Timer(_ =>
+                {
+                    _breathingSecondsRemaining--;
+                    if (_breathingSecondsRemaining <= 0)
+                    {
+                        _breathingPhaseIndex = (_breathingPhaseIndex + 1) % 4;
+                        _breathingSecondsRemaining = 4;
+                    }
+                    Avalonia.Threading.Dispatcher.UIThread.Post(UpdateBreathingPhaseDisplay);
+                }, null, 1000, 1000);
+            }
+        }
+
+        private void UpdateBreathingPhaseDisplay()
+        {
+            BreathingCountdown = _breathingSecondsRemaining;
+            switch (_breathingPhaseIndex)
+            {
+                case 0:
+                    BreathingPhaseText = "🌬️ INHALE DEEPLY...";
+                    BreathingInstruction = "Fill your lungs with creative energy";
+                    BreathingCircleScale = 1.0 + (4 - _breathingSecondsRemaining) * 0.12;
+                    break;
+                case 1:
+                    BreathingPhaseText = "⏸️ HOLD BREATH...";
+                    BreathingInstruction = "Stay centered and maintain calm stillness";
+                    BreathingCircleScale = 1.48;
+                    break;
+                case 2:
+                    BreathingPhaseText = "💨 EXHALE SLOWLY...";
+                    BreathingInstruction = "Release stress, tension, and fatigue";
+                    BreathingCircleScale = 1.48 - (4 - _breathingSecondsRemaining) * 0.12;
+                    break;
+                case 3:
+                    BreathingPhaseText = "✨ REST & HOLD...";
+                    BreathingInstruction = "Empty stillness before next cycle";
+                    BreathingCircleScale = 1.0;
+                    break;
+            }
+        }
+
+        [RelayCommand]
+        public void AddWater()
+        {
+            HydrationGlasses = Math.Min(12, HydrationGlasses + 1);
+            UpdateHydrationText();
+            WellbeingDataService.SaveState(new WellbeingDataService.WellbeingState { HydrationGlasses = HydrationGlasses, DailyHydrationGoal = HydrationGoal });
+        }
+
+        [RelayCommand]
+        public void ResetWater()
+        {
+            HydrationGlasses = 0;
+            UpdateHydrationText();
+            WellbeingDataService.SaveState(new WellbeingDataService.WellbeingState { HydrationGlasses = HydrationGlasses, DailyHydrationGoal = HydrationGoal });
+        }
+
+        private void UpdateHydrationText()
+        {
+            HydrationProgressText = $"{HydrationGlasses} / {HydrationGoal} Glasses Logged ({(HydrationGlasses * 100 / Math.Max(1, HydrationGoal))}%)";
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // WAKTU SOLAT REST API
+        // ══════════════════════════════════════════════════════════════════════
+        partial void OnSelectedPrayerZoneChanged(string value) => _ = LoadPrayerTimesAsync();
+
+        public async Task LoadPrayerTimesAsync()
+        {
+            string zoneCode = "WLY01";
+            var m = Regex.Match(SelectedPrayerZone ?? "", @"^([A-Z]{3}\d{2})");
+            if (m.Success) zoneCode = m.Groups[1].Value;
+
+            var rows = await PrayerTimeService.GetPrayerTimesAsync(zoneCode);
+            PrayerTimes = new ObservableCollection<PrayerTimeRow>(rows);
+
+            var next = PrayerTimeService.GetNextPrayer(rows);
+            NextPrayerName = next.Name;
+            NextPrayerTime = next.Time;
+            NextPrayerCountdown = $"in {next.Countdown}";
+            HijriDateString = $"{DateTime.Now:dd MMMM yyyy} • JAKIM Malaysia ({zoneCode})";
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // FOCUS RADIO PLAYER (mpv subprocess)
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void ToggleRadio()
+        {
+            if (IsRadioPlaying)
+            {
+                RadioStreamService.StopStream();
+                IsRadioPlaying = false;
+                RadioPlayIcon = "▶";
+                StatusMessage = "Radio stopped.";
+            }
+            else
+            {
+                if (SelectedStation != null)
+                {
+                    RadioStreamService.PlayStream(SelectedStation.StreamUrl);
+                    IsRadioPlaying = true;
+                    RadioPlayIcon = "⏸";
+                    CurrentStationName = SelectedStation.Name;
+                    StatusMessage = $"Streaming: {SelectedStation.Name}";
+                }
+            }
+        }
+
+        [RelayCommand]
+        public void PlayStation(RadioStationItem station)
+        {
+            SelectedStation = station;
+            if (station != null)
+            {
+                RadioStreamService.PlayStream(station.StreamUrl);
+                IsRadioPlaying = true;
+                RadioPlayIcon = "⏸";
+                CurrentStationName = station.Name;
+                StatusMessage = $"Streaming: {station.Name}";
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // QR CODE STUDIO (pure C# QRCoder)
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void GenerateQr()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(QrText)) return;
+                using var qrGen = new QRCodeGenerator();
+                using var qrData = qrGen.CreateQrCode(QrText, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new BitmapByteQRCode(qrData);
+                byte[] qrBytes = qrCode.GetGraphic(Math.Max(5, QrPixelsPerModule));
+                using var ms = new MemoryStream(qrBytes);
+                QrBitmap = new Bitmap(ms);
+                QrStatusText = $"Generated {QrBitmap.Size.Width}×{QrBitmap.Size.Height}px QR code.";
+            }
+            catch (Exception ex)
+            {
+                QrStatusText = $"Error: {ex.Message}";
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // WORKSTATION HEALTH DIAGNOSTICS
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public async Task RescanHealthAsync()
+        {
+            var health = await WorkstationHealthService.GetDiagnosticsAsync();
+            CpuInfo = health.CpuModel;
+            RamInfo = $"{health.UsedRamGb:F1} GB / {health.TotalRamGb:F1} GB ({health.RamUsagePercent}%)";
+            DiskRootInfo = $"{health.DiskRootUsedGb:F1} GB / {health.DiskRootTotalGb:F1} GB ({health.DiskRootUsagePercent}%)";
+            DiskHomeInfo = $"{health.DiskHomeUsedGb:F1} GB / {health.DiskHomeTotalGb:F1} GB";
+            KernelInfo = health.KernelVersion;
+            NasPingStatus = health.NasPingLatencyMs >= 0 ? $"NAS Ping: {health.NasPingLatencyMs}ms (Online)" : "NAS Ping: Offline / Unreachable";
+
+            SoftwareChecks = new ObservableCollection<SoftwareCheckItem>(health.SoftwareChecks);
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // SETTINGS & SAVE
+        // ══════════════════════════════════════════════════════════════════════
+        [RelayCommand]
+        public void SaveSettings()
+        {
+            try
+            {
+                string configDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "ss-cam");
+                Directory.CreateDirectory(configDir);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(new { WorkspaceRoot = SynologyDrivePath, Theme = SelectedTheme, Designer = SelectedDesigner }, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText(Path.Combine(configDir, "settings.json"), json);
+                StatusMessage = "✔ Settings saved successfully.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"[-] Failed to save settings: {ex.Message}";
+            }
+        }
+
+        [RelayCommand]
+        public void CheckNasStatus()
+        {
+            bool exists = Directory.Exists(SynologyDrivePath);
+            NasStatusText = exists ? "Synology Drive Active" : "Synology Drive Offline";
+            NasStatusColor = exists ? "#10B981" : "#EF4444";
+            StatusMessage = exists ? "✔ Synology Drive workspace reachable." : "[-] Synology Drive workspace offline.";
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // LIVE CLOCK LOOP
+        // ══════════════════════════════════════════════════════════════════════
+        private void StartLiveClock()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    CurrentTimeString = DateTime.Now.ToString("HH:mm:ss");
+                    await Task.Delay(1000);
+                }
             });
-        });
-    }
-
-    // ─── Live clock ──────────────────────────────────────────────────────────
-    private async Task StartClockAsync()
-    {
-        while (true)
-        {
-            await Task.Delay(1000);
-            var now = DateTime.Now;
-            CurrentTimeString   = now.ToString("HH:mm:ss");
-            LiveClockTime       = now.ToString("HH:mm:ss");
-            LiveClockDate       = now.ToString("ddd, d MMM");
-            GregorianDate       = now.ToString("dddd, d MMMM yyyy");
-
-            // Update next prayer countdown if rows exist
-            UpdatePrayerCountdown();
         }
-    }
-
-    private void UpdatePrayerCountdown()
-    {
-        // Simple countdown refresh without re-fetching
-        if (string.IsNullOrEmpty(NextPrayerTime) || NextPrayerTime == "--:--") return;
-        if (DateTime.TryParseExact($"{DateTime.Now:yyyy-MM-dd} {NextPrayerTime}", "yyyy-MM-dd HH:mm", null, System.Globalization.DateTimeStyles.None, out var pt))
-        {
-            var diff = pt - DateTime.Now;
-            NextPrayerCountdown = diff.TotalMinutes > 0 ? $"dalam {(int)diff.TotalHours}j {diff.Minutes}m" : "Sekarang";
-        }
-    }
-
-    // ─── Utilities ───────────────────────────────────────────────────────────
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes >= 1_099_511_627_776L) return $"{bytes / 1_099_511_627_776.0:F1} TB";
-        if (bytes >= 1_073_741_824L)    return $"{bytes / 1_073_741_824.0:F1} GB";
-        if (bytes >= 1_048_576L)        return $"{bytes / 1_048_576.0:F0} MB";
-        return $"{bytes / 1024} KB";
     }
 }

@@ -116,7 +116,14 @@
                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
                                     Background="{Binding NavBgBrandAssets}" Foreground="{Binding NavFgBrandAssets}"
                                     CornerRadius="7">
-                                <TextBlock Text="🎨  Brand Assets" FontSize="13"/>
+                                <TextBlock Text="🎨  Brand Assets Vault" FontSize="13"/>
+                            </Button>
+
+                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Deliverables"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                    Background="{Binding NavBgDeliverables}" Foreground="{Binding NavFgDeliverables}"
+                                    CornerRadius="7">
+                                <TextBlock Text="🎁  Deliverables &amp; DAM" FontSize="13"/>
                             </Button>
 
                             <!-- ─ SECTION 2: TASK &amp; PLANNING ─ -->
