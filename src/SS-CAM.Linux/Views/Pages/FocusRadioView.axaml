@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             xmlns:models="using:SS_CAM.Linux.Models"
+             x:Class="SS_CAM.Linux.Views.Pages.FocusRadioView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Focus Radio Player" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Live Malaysian radio streaming for creative focus and flow states." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <!-- Now Playing Card -->
+            <Border Background="#022057" BorderBrush="#1E3A8A" BorderThickness="1" CornerRadius="10" Padding="20">
+                <Grid ColumnDefinitions="*, Auto">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Now Playing" FontSize="12" Foreground="#60A5FA" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding CurrentStationName}" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <TextBlock Text="{Binding CurrentStationUrl}" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <Button Content="▶ / ⏸ Toggle Playback" Command="{Binding ToggleRadioCommand}"
+                                Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" CornerRadius="6" Padding="16,10"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Station List -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Available Stations" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <ItemsControl ItemsSource="{Binding RadioStations}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:RadioStationItem">
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Border Grid.Column="0" Background="{Binding AccentColor}" CornerRadius="6" Width="4" Margin="0,0,12,0"/>
+                                        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#F8FAFC"/>
+                                            <TextBlock Text="{Binding Genre}" FontSize="11" Foreground="#94A3B8"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Content="▶ Play"
+                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).SelectRadioStationCommand}"
+                                                CommandParameter="{Binding}"
+                                                Background="#043388" Foreground="#FFFFFF" FontSize="11" CornerRadius="4" Padding="12,6"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
