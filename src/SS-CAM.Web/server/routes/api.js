@@ -1534,6 +1534,9 @@ router.post('/notes', (req, res) => {
     const stat = fs.statSync(filePath);
     const savedNote = parseNoteMarkdown(fullContent, filename, stat, target.owner);
 
+    SseService.broadcast('note:saved', { note: savedNote, action: 'saved' });
+    SseService.broadcast('notes:updated', { noteId: savedNote.id, action: 'saved' });
+
     res.json({ success: true, note: savedNote });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1554,6 +1557,11 @@ router.delete('/notes/:id', (req, res) => {
           deleted = true;
         } catch (e) {}
       }
+    }
+
+    if (deleted) {
+      SseService.broadcast('note:deleted', { id, action: 'deleted' });
+      SseService.broadcast('notes:updated', { noteId: id, action: 'deleted' });
     }
 
     res.json({ success: true, id, deleted });

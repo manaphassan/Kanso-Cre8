@@ -139,12 +139,22 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
-        /// Deletes a note file.
+        /// Deletes a note file locally and removes it from NAS.
         /// </summary>
         public static void DeleteNote(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) return;
-            try { File.Delete(filePath); }
+            try
+            {
+                string fileName = Path.GetFileName(filePath);
+                File.Delete(filePath);
+
+                var profile = UserProfileService.LoadProfile();
+                if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
+                {
+                    NasConfigSyncService.DeleteFileFromNas(profile.WorkspaceRoot, "Notes", fileName);
+                }
+            }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
 

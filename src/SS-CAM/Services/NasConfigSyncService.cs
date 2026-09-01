@@ -129,6 +129,7 @@ namespace SS_CAM.Services
 
         /// <summary>
         /// Syncs a directory of files from NAS to local if newer.
+        /// When syncing "Notes", discovers user-scoped Notes_* folders and shared Notes folder on NAS.
         /// </summary>
         public static void SyncFolderFromNasIfNewer(string workspaceRoot, string subFolder)
         {
@@ -137,24 +138,55 @@ namespace SS_CAM.Services
                 if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot)) return;
 
                 string localDir = Path.Combine(AppPaths.AppDataFolder, subFolder);
-                string nasSubDirName = GetUserScopedFolderName(subFolder);
-                string nasDir = Path.Combine(workspaceRoot, TeamConfigSubfolder, nasSubDirName);
-
-                if (!Directory.Exists(nasDir)) return;
                 if (!Directory.Exists(localDir)) Directory.CreateDirectory(localDir);
 
-                foreach (string nasFile in Directory.GetFiles(nasDir))
-                {
-                    string name = Path.GetFileName(nasFile);
-                    string localFile = Path.Combine(localDir, name);
+                string teamConfigDir = Path.Combine(workspaceRoot, TeamConfigSubfolder);
+                if (!Directory.Exists(teamConfigDir)) return;
 
-                    if (!File.Exists(localFile))
+                System.Collections.Generic.List<string> sourceDirs = new System.Collections.Generic.List<string>();
+
+                if (string.Equals(subFolder, "Notes", StringComparison.OrdinalIgnoreCase))
+                {
+                    string userDirName = GetUserScopedFolderName("Notes");
+                    string userDirPath = Path.Combine(teamConfigDir, userDirName);
+                    if (Directory.Exists(userDirPath)) sourceDirs.Add(userDirPath);
+
+                    string teamDirPath = Path.Combine(teamConfigDir, "Notes");
+                    if (Directory.Exists(teamDirPath) && !sourceDirs.Contains(teamDirPath)) sourceDirs.Add(teamDirPath);
+
+                    try
                     {
-                        File.Copy(nasFile, localFile, true);
+                        foreach (string d in Directory.GetDirectories(teamConfigDir, "Notes_*"))
+                        {
+                            if (!sourceDirs.Contains(d)) sourceDirs.Add(d);
+                        }
                     }
-                    else if (File.GetLastWriteTimeUtc(nasFile) > File.GetLastWriteTimeUtc(localFile).AddSeconds(2))
+                    catch (Exception ex) { Debug.WriteLine("[NasConfigSyncService] Notes folder discovery: " + ex.Message); }
+                }
+                else
+                {
+                    string nasSubDirName = GetUserScopedFolderName(subFolder);
+                    string nasDir = Path.Combine(teamConfigDir, nasSubDirName);
+                    if (Directory.Exists(nasDir)) sourceDirs.Add(nasDir);
+                }
+
+                foreach (string srcDir in sourceDirs)
+                {
+                    if (!Directory.Exists(srcDir)) continue;
+
+                    foreach (string nasFile in Directory.GetFiles(srcDir))
                     {
-                        File.Copy(nasFile, localFile, true);
+                        string name = Path.GetFileName(nasFile);
+                        string localFile = Path.Combine(localDir, name);
+
+                        if (!File.Exists(localFile))
+                        {
+                            File.Copy(nasFile, localFile, true);
+                        }
+                        else if (File.GetLastWriteTimeUtc(nasFile) > File.GetLastWriteTimeUtc(localFile).AddSeconds(2))
+                        {
+                            File.Copy(nasFile, localFile, true);
+                        }
                     }
                 }
             }
@@ -194,6 +226,54 @@ namespace SS_CAM.Services
             catch (Exception ex)
             {
                 Debug.WriteLine("[NasConfigSyncService] SaveFolderToNas error for " + subFolder + ": " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a file from user's NAS folder and team shared folder.
+        /// </summary>
+        public static void DeleteFileFromNas(string workspaceRoot, string subFolder, string fileName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot)) return;
+                string teamConfigDir = Path.Combine(workspaceRoot, TeamConfigSubfolder);
+                if (!Directory.Exists(teamConfigDir)) return;
+
+                string userDirName = GetUserScopedFolderName(subFolder);
+                string userFilePath = Path.Combine(teamConfigDir, userDirName, fileName);
+                if (File.Exists(userFilePath))
+                {
+                    File.Delete(userFilePath);
+                    Debug.WriteLine("[NasConfigSyncService] Deleted " + fileName + " from NAS " + userDirName);
+                }
+
+                string teamFilePath = Path.Combine(teamConfigDir, subFolder, fileName);
+                if (File.Exists(teamFilePath))
+                {
+                    File.Delete(teamFilePath);
+                    Debug.WriteLine("[NasConfigSyncService] Deleted " + fileName + " from NAS " + subFolder);
+                }
+
+                if (string.Equals(subFolder, "Notes", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        foreach (string d in Directory.GetDirectories(teamConfigDir, "Notes_*"))
+                        {
+                            string targetFile = Path.Combine(d, fileName);
+                            if (File.Exists(targetFile))
+                            {
+                                File.Delete(targetFile);
+                            }
+                        }
+                    }
+                    catch (Exception ex) { Debug.WriteLine("[NasConfigSyncService] Notes_* delete: " + ex.Message); }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[NasConfigSyncService] DeleteFileFromNas error for " + fileName + ": " + ex.Message);
             }
         }
 

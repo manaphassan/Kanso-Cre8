@@ -172,7 +172,9 @@ namespace SS_CAM.Services
                 changeType = WorkspaceChangeType.ProjectCopywriting;
                 isRelevant = true;
             }
-            else if (string.Equals(fileName, "team-notes.json", StringComparison.OrdinalIgnoreCase) ||
+            else if (fullPath.IndexOf("_Config", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     fullPath.IndexOf("Notes", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     string.Equals(fileName, "team-notes.json", StringComparison.OrdinalIgnoreCase) ||
                      string.Equals(fileName, "staff-directory.json", StringComparison.OrdinalIgnoreCase) ||
                      fullPath.IndexOf("05_DELIVERABLES", StringComparison.OrdinalIgnoreCase) >= 0 ||
                      fullPath.IndexOf("04_DELIVERABLES", StringComparison.OrdinalIgnoreCase) >= 0 ||

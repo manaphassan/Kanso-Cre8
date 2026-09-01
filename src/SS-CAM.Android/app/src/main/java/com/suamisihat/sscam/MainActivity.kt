@@ -221,6 +221,7 @@ fun CompanionAppScreen(
                     authToken = token
 
                     val api = SscamApiService.create(authToken = token)
+                    try { SyncQueueManager.flushQueue(context, api) } catch (e: Exception) { }
                     val projRes = api.getProjects()
                     val teamRes = api.getTeam()
                     val notifRes = try { api.getNotifications() } catch (e: Exception) { null }

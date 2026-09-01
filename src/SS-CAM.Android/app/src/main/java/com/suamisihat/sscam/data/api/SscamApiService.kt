@@ -41,7 +41,8 @@ data class CreateNoteRequest(
     @SerializedName("title") val title: String,
     @SerializedName("body") val body: String,
     @SerializedName("isPinned") val isPinned: Boolean = false,
-    @SerializedName("priority") val priority: String = "normal"
+    @SerializedName("priority") val priority: String = "normal",
+    @SerializedName("user") val user: String? = null
 )
 
 interface SscamApiService {
