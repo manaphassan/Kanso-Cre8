@@ -19,6 +19,7 @@ const ShareService = require('../services/ShareService');
 const GeminiService = require('../services/GeminiService');
 const SnapshotService = require('../services/SnapshotService');
 const WebhookService = require('../services/WebhookService');
+const OrderService = require('../services/OrderService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -1567,6 +1568,78 @@ router.delete('/notes/:id', (req, res) => {
     res.json({ success: true, id, deleted });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ─── CREATIVE ORDER FORM ROUTES ─────────────────────────────────────
+
+// GET /api/orders — List all creative orders (with optional filters)
+router.get('/orders', authenticateToken, (req, res) => {
+  try {
+    const { status, entity, priority } = req.query;
+    const orders = OrderService.listOrders({ status, entity, priority });
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error('[Orders] listOrders:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/orders/:id — Get single order
+router.get('/orders/:id', authenticateToken, (req, res) => {
+  try {
+    const order = OrderService.getOrder(req.params.id);
+    if (!order) return res.status(404).json({ error: 'Order not found.' });
+    res.json({ success: true, order });
+  } catch (err) {
+    console.error('[Orders] getOrder:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/orders — Submit a new creative order
+router.post('/orders', authenticateToken, (req, res) => {
+  try {
+    const requester     = req.user?.name     || req.body.requester || 'Unknown';
+    const requesterRole = req.user?.role     || req.body.requesterRole || '';
+    const order = OrderService.submitOrder({ ...req.body, requester, requesterRole });
+    AuditService.log({
+      action:    'order.submitted',
+      actor:     requester,
+      target:    order.id,
+      details:   `"${order.title}" [${order.entity}] [${order.priority}]`,
+      timestamp: new Date().toISOString(),
+    });
+    SseService.broadcast('order:new', { order });
+    res.status(201).json({ success: true, order });
+  } catch (err) {
+    console.error('[Orders] submitOrder:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// PATCH /api/orders/:id — Update order (status, assignment, etc.)
+router.patch('/orders/:id', authenticateToken, (req, res) => {
+  try {
+    const updated = OrderService.updateOrder(req.params.id, req.body);
+    SseService.broadcast('order:updated', { order: updated });
+    res.json({ success: true, order: updated });
+  } catch (err) {
+    console.error('[Orders] updateOrder:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE /api/orders/:id — Cancel order
+router.delete('/orders/:id', authenticateToken, (req, res) => {
+  try {
+    const cancelled = OrderService.cancelOrder(req.params.id);
+    SseService.broadcast('order:cancelled', { id: req.params.id });
+    res.json({ success: true, order: cancelled });
+  } catch (err) {
+    console.error('[Orders] cancelOrder:', err.message);
+    res.status(400).json({ error: err.message });
   }
 });
 
