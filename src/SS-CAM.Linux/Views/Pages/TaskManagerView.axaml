@@ -1,0 +1,122 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             xmlns:models="using:SS_CAM.Linux.Models"
+             x:Class="SS_CAM.Linux.Views.Pages.TaskManagerView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Task Manager" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Kanban board — move projects through Backlog → In Progress → In Review → Done." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <!-- Kanban Board: 4 Columns -->
+            <Grid ColumnDefinitions="*, *, *, *" MinHeight="500">
+                <!-- Backlog -->
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,6,0">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="BACKLOG" FontWeight="Bold" FontSize="12" Foreground="#94A3B8"/>
+                            <TextBlock Grid.Column="1" Text="{Binding BacklogCount}" FontWeight="Bold" FontSize="12" Foreground="#64748B"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding BacklogProjects}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:ProjectStatusItem">
+                                    <Border Background="#1E293B" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="12" Foreground="#F8FAFC"/>
+                                            <TextBlock Text="{Binding Designer}" FontSize="11" Foreground="#38BDF8"/>
+                                            <TextBlock Text="{Binding Priority}" FontSize="10" Foreground="#F59E0B"/>
+                                            <Button Content="➔ In Progress"
+                                                    Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#043388" Foreground="White" FontSize="10" Padding="8,4" HorizontalAlignment="Right" CornerRadius="4"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- In Progress -->
+                <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,6,0">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="IN PROGRESS" FontWeight="Bold" FontSize="12" Foreground="#60A5FA"/>
+                            <TextBlock Grid.Column="1" Text="{Binding InProgressCount}" FontWeight="Bold" FontSize="12" Foreground="#60A5FA"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding InProgressProjects}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:ProjectStatusItem">
+                                    <Border Background="#1E293B" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="12" Foreground="#F8FAFC"/>
+                                            <TextBlock Text="{Binding Designer}" FontSize="11" Foreground="#38BDF8"/>
+                                            <TextBlock Text="{Binding Priority}" FontSize="10" Foreground="#F59E0B"/>
+                                            <Button Content="➔ For Review"
+                                                    Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#043388" Foreground="White" FontSize="10" Padding="8,4" HorizontalAlignment="Right" CornerRadius="4"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- In Review -->
+                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,6,0">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="IN REVIEW" FontWeight="Bold" FontSize="12" Foreground="#F59E0B"/>
+                            <TextBlock Grid.Column="1" Text="{Binding InReviewCount}" FontWeight="Bold" FontSize="12" Foreground="#F59E0B"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding InReviewProjects}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:ProjectStatusItem">
+                                    <Border Background="#1E293B" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="12" Foreground="#F8FAFC"/>
+                                            <TextBlock Text="{Binding Designer}" FontSize="11" Foreground="#38BDF8"/>
+                                            <TextBlock Text="{Binding Priority}" FontSize="10" Foreground="#F59E0B"/>
+                                            <Button Content="✔ Approve (Done)"
+                                                    Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#10B981" Foreground="White" FontWeight="Bold" FontSize="10" Padding="8,4" HorizontalAlignment="Right" CornerRadius="4"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Completed -->
+                <Border Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,0,0">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="COMPLETED" FontWeight="Bold" FontSize="12" Foreground="#10B981"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DoneCount}" FontWeight="Bold" FontSize="12" Foreground="#10B981"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding DoneProjects}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:ProjectStatusItem">
+                                    <Border Background="#1E293B" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="12" Foreground="#F8FAFC"/>
+                                            <TextBlock Text="✔ Archived" FontSize="11" Foreground="#10B981"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

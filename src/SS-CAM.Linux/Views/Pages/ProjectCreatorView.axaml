@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             x:Class="SS_CAM.Linux.Views.Pages.ProjectCreatorView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Project Creator" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Scaffold a standardized 5-folder project vault directly on Synology Drive." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="24">
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Create Standardized Project Vault" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <TextBlock Text="Scaffolds the 5 canonical subfolders and YAML frontmatter directly in Synology Drive." FontSize="13" Foreground="#94A3B8"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" Margin="0,10,0,0">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12" Spacing="4">
+                            <TextBlock Text="Brand Holding Entity *" FontSize="12" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding AvailableBrands}" SelectedItem="{Binding NewProjectBrand}"
+                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,12" Spacing="4">
+                            <TextBlock Text="Lead Designer *" FontSize="12" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding AvailableDesigners}" SelectedItem="{Binding NewProjectDesigner}"
+                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12" Spacing="4">
+                            <TextBlock Text="Project Title / Campaign Name *" FontSize="12" Foreground="#94A3B8"/>
+                            <TextBox Text="{Binding NewProjectTitle}" PlaceholderText="e.g. Ramadhan Mega Campaign 2026 Promo Video"
+                                     Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12" Spacing="4">
+                            <TextBlock Text="Client / Entity" FontSize="12" Foreground="#94A3B8"/>
+                            <TextBox Text="{Binding NewProjectClient}" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,12" Spacing="4">
+                            <TextBlock Text="Deadline" FontSize="12" Foreground="#94A3B8"/>
+                            <TextBox Text="{Binding NewProjectDeadline}" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,12,0" Spacing="4">
+                            <TextBlock Text="Priority Level" FontSize="12" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding AvailablePriorities}" SelectedItem="{Binding NewProjectPriority}"
+                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="1" Margin="12,0,0,0" Spacing="4">
+                            <TextBlock Text="Starter Canvas Type" FontSize="12" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding AvailableStarterCanvases}" SelectedItem="{Binding NewProjectStarterCanvas}"
+                                      HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Button Content="🚀 Create Project Vault on Synology NAS" Command="{Binding CreateProjectCommand}"
+                            Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" CornerRadius="6" Padding="20,12" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Vault Structure Info -->
+            <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="📁 Generated Vault Structure" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <TextBlock Text="01_BRIEF_ASSETS  →  Client brief, moodboards, reference images" FontSize="12" Foreground="#94A3B8"/>
+                    <TextBlock Text="02_SOURCE_FILES  →  Affinity Designer, Photoshop, Illustrator files" FontSize="12" Foreground="#94A3B8"/>
+                    <TextBlock Text="03_COPYWRITING   →  COPY.md script, captions, hashtags" FontSize="12" Foreground="#94A3B8"/>
+                    <TextBlock Text="04_WORK_IN_PROGRESS  →  WIP renders, revision exports" FontSize="12" Foreground="#94A3B8"/>
+                    <TextBlock Text="05_DELIVERABLES  →  Final approved exports ready for publish" FontSize="12" Foreground="#94A3B8"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             xmlns:models="using:SS_CAM.Linux.Models"
+             x:Class="SS_CAM.Linux.Views.Pages.DashboardView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Dashboard" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <TextBlock Text="SuamiSihat Creative Operations &amp; Synology Drive Workspace on Linux" FontSize="13" Foreground="#94A3B8"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="📁 Open NAS Vault" Command="{Binding OpenFolderCommand}" CommandParameter="{Binding SynologyDrivePath}"
+                        Background="#1E293B" Foreground="#38BDF8" CornerRadius="6" Padding="12,8" FontSize="12" FontWeight="SemiBold"/>
+            </Grid>
+
+            <!-- 4 Bento KPI Tiles -->
+            <Grid ColumnDefinitions="*, *, *, *">
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="0,0,6,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="TOTAL PROJECTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding ProjectCount}" FontSize="28" FontWeight="Bold" Foreground="#38BDF8"/>
+                        <TextBlock Text="Indexed across year vaults" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="IN PROGRESS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding InProgressCount}" FontSize="28" FontWeight="Bold" Foreground="#60A5FA"/>
+                        <TextBlock Text="Active design sprint jobs" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="FOR REVIEW" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding InReviewCount}" FontSize="28" FontWeight="Bold" Foreground="#F59E0B"/>
+                        <TextBlock Text="Pending Art Director sign-off" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,0,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="COMPLETED" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding DoneCount}" FontSize="28" FontWeight="Bold" Foreground="#10B981"/>
+                        <TextBlock Text="Approved and archived" FontSize="11" Foreground="#64748B"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Quick Action Banner -->
+            <Border Background="#022057" BorderBrush="#1E3A8A" BorderThickness="1" CornerRadius="10" Padding="20">
+                <Grid ColumnDefinitions="*, Auto">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Standardized 5-Folder Vault Hierarchy Active" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="All projects automatically scaffold 01_BRIEF_ASSETS, 02_SOURCE_FILES, 03_COPYWRITING, 04_WORK_IN_PROGRESS, and 05_DELIVERABLES." FontSize="12" Foreground="#BAE6FD"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="+ New Project" Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
+                            Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" CornerRadius="6" Padding="16,10" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Recent Projects Table -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Text="Recent Studio Projects" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <TextBlock Grid.Column="1" Text="Synology Vault Sync" FontSize="12" Foreground="#64748B"/>
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Projects}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:ProjectStatusItem">
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+                                        <StackPanel Grid.Column="0" Spacing="2">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="13" Foreground="#F8FAFC"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="Designer:" FontSize="11" Foreground="#94A3B8"/>
+                                                <TextBlock Text="{Binding Designer}" FontWeight="SemiBold" FontSize="11" Foreground="#38BDF8"/>
+                                                <TextBlock Text="• Priority:" FontSize="11" Foreground="#94A3B8"/>
+                                                <TextBlock Text="{Binding Priority}" FontWeight="SemiBold" FontSize="11" Foreground="#F59E0B"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="#0F172A" CornerRadius="6" Padding="8,4" Margin="10,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="Bold" Foreground="{Binding StatusBadgeColor}"/>
+                                        </Border>
+                                        <Button Grid.Column="2" Content="✍️ Edit Copy"
+                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenCopyEditorCommand}"
+                                                CommandParameter="{Binding}"
+                                                Background="#334155" Foreground="#F8FAFC" FontSize="11" CornerRadius="4" Padding="10,6" Margin="4,0"/>
+                                        <Button Grid.Column="3" Content="➔ Advance Stage"
+                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}"
+                                                CommandParameter="{Binding}"
+                                                Background="#043388" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" CornerRadius="4" Padding="10,6" Margin="4,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

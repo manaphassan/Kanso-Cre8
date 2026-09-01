@@ -4,16 +4,21 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SS_CAM.Linux.Models;
 using SS_CAM.Linux.Services;
+using SS_CAM.Linux.Views.Pages;
 
 namespace SS_CAM.Linux.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
     private readonly WorkspaceService _workspaceService;
+
+    // Page view instances (created once, reused on re-navigation)
+    private readonly Dictionary<string, Control> _pageCache = new();
 
     [ObservableProperty]
     private string _appName = "SuamiSihat™ SS-CAM";
@@ -27,15 +32,45 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string _selectedNavTab = "Dashboard";
 
-    public bool IsDashboardVisible => SelectedNavTab == "Dashboard";
-    public bool IsProjectCreatorVisible => SelectedNavTab == "Project Creator";
-    public bool IsTaskManagerVisible => SelectedNavTab == "Task Manager";
-    public bool IsCopywritingVisible => SelectedNavTab == "Copywriting";
-    public bool IsBrandAssetsVisible => SelectedNavTab == "Brand Assets";
-    public bool IsDeliverablesVisible => SelectedNavTab == "Deliverables";
-    public bool IsFocusRadioVisible => SelectedNavTab == "Focus Radio";
-    public bool IsWellbeingVisible => SelectedNavTab == "Wellbeing";
-    public bool IsSettingsVisible => SelectedNavTab == "Settings";
+    // Current page content shown in ContentControl
+    [ObservableProperty]
+    private Control? _currentPage;
+
+    // Sidebar active-state booleans
+    public bool IsDashboardActive      => SelectedNavTab == "Dashboard";
+    public bool IsProjectCreatorActive => SelectedNavTab == "Project Creator";
+    public bool IsTaskManagerActive    => SelectedNavTab == "Task Manager";
+    public bool IsCopywritingActive    => SelectedNavTab == "Copywriting";
+    public bool IsBrandAssetsActive    => SelectedNavTab == "Brand Assets";
+    public bool IsDeliverablesActive   => SelectedNavTab == "Deliverables";
+    public bool IsFocusRadioActive     => SelectedNavTab == "Focus Radio";
+    public bool IsWellbeingActive      => SelectedNavTab == "Wellbeing";
+    public bool IsSettingsActive       => SelectedNavTab == "Settings";
+
+    // Sidebar nav button color helpers (active = highlighted, inactive = transparent/dim)
+    private const string ActiveBg  = "#1E3A5F";
+    private const string ActiveFg  = "#38BDF8";
+    private const string InactiveFg = "#CBD5E1";
+
+    public string NavBgDashboard      => IsDashboardActive      ? ActiveBg : "Transparent";
+    public string NavBgProjectCreator => IsProjectCreatorActive ? ActiveBg : "Transparent";
+    public string NavBgTaskManager    => IsTaskManagerActive    ? ActiveBg : "Transparent";
+    public string NavBgCopywriting    => IsCopywritingActive    ? ActiveBg : "Transparent";
+    public string NavBgBrandAssets    => IsBrandAssetsActive    ? ActiveBg : "Transparent";
+    public string NavBgDeliverables   => IsDeliverablesActive   ? ActiveBg : "Transparent";
+    public string NavBgFocusRadio     => IsFocusRadioActive     ? ActiveBg : "Transparent";
+    public string NavBgWellbeing      => IsWellbeingActive      ? ActiveBg : "Transparent";
+    public string NavBgSettings       => IsSettingsActive       ? ActiveBg : "Transparent";
+
+    public string NavFgDashboard      => IsDashboardActive      ? ActiveFg : InactiveFg;
+    public string NavFgProjectCreator => IsProjectCreatorActive ? ActiveFg : InactiveFg;
+    public string NavFgTaskManager    => IsTaskManagerActive    ? ActiveFg : InactiveFg;
+    public string NavFgCopywriting    => IsCopywritingActive    ? ActiveFg : InactiveFg;
+    public string NavFgBrandAssets    => IsBrandAssetsActive    ? ActiveFg : InactiveFg;
+    public string NavFgDeliverables   => IsDeliverablesActive   ? ActiveFg : InactiveFg;
+    public string NavFgFocusRadio     => IsFocusRadioActive     ? ActiveFg : InactiveFg;
+    public string NavFgWellbeing      => IsWellbeingActive      ? ActiveFg : InactiveFg;
+    public string NavFgSettings       => IsSettingsActive       ? ActiveFg : InactiveFg;
 
     [ObservableProperty]
     private string _statusMessage = "Synology Drive workspace integration active.";
@@ -177,20 +212,57 @@ public partial class MainViewModel : ViewModelBase
     {
         _workspaceService = new WorkspaceService();
         _synologyDrivePath = _workspaceService.WorkspaceRoot;
+        // Build the initial page (Dashboard)
+        NavigateToPage("Dashboard");
         LoadProjects();
     }
 
     partial void OnSelectedNavTabChanged(string value)
     {
-        OnPropertyChanged(nameof(IsDashboardVisible));
-        OnPropertyChanged(nameof(IsProjectCreatorVisible));
-        OnPropertyChanged(nameof(IsTaskManagerVisible));
-        OnPropertyChanged(nameof(IsCopywritingVisible));
-        OnPropertyChanged(nameof(IsBrandAssetsVisible));
-        OnPropertyChanged(nameof(IsDeliverablesVisible));
-        OnPropertyChanged(nameof(IsFocusRadioVisible));
-        OnPropertyChanged(nameof(IsWellbeingVisible));
-        OnPropertyChanged(nameof(IsSettingsVisible));
+        // Fire sidebar active-state notifications
+        OnPropertyChanged(nameof(IsDashboardActive));
+        OnPropertyChanged(nameof(IsProjectCreatorActive));
+        OnPropertyChanged(nameof(IsTaskManagerActive));
+        OnPropertyChanged(nameof(IsCopywritingActive));
+        OnPropertyChanged(nameof(IsBrandAssetsActive));
+        OnPropertyChanged(nameof(IsDeliverablesActive));
+        OnPropertyChanged(nameof(IsFocusRadioActive));
+        OnPropertyChanged(nameof(IsWellbeingActive));
+        OnPropertyChanged(nameof(IsSettingsActive));
+        // Fire nav color helpers
+        OnPropertyChanged(nameof(NavBgDashboard));  OnPropertyChanged(nameof(NavFgDashboard));
+        OnPropertyChanged(nameof(NavBgProjectCreator)); OnPropertyChanged(nameof(NavFgProjectCreator));
+        OnPropertyChanged(nameof(NavBgTaskManager));  OnPropertyChanged(nameof(NavFgTaskManager));
+        OnPropertyChanged(nameof(NavBgCopywriting));  OnPropertyChanged(nameof(NavFgCopywriting));
+        OnPropertyChanged(nameof(NavBgBrandAssets));  OnPropertyChanged(nameof(NavFgBrandAssets));
+        OnPropertyChanged(nameof(NavBgDeliverables)); OnPropertyChanged(nameof(NavFgDeliverables));
+        OnPropertyChanged(nameof(NavBgFocusRadio));   OnPropertyChanged(nameof(NavFgFocusRadio));
+        OnPropertyChanged(nameof(NavBgWellbeing));    OnPropertyChanged(nameof(NavFgWellbeing));
+        OnPropertyChanged(nameof(NavBgSettings));     OnPropertyChanged(nameof(NavFgSettings));
+
+        NavigateToPage(value);
+    }
+
+    private void NavigateToPage(string tabName)
+    {
+        if (!_pageCache.TryGetValue(tabName, out var page))
+        {
+            page = tabName switch
+            {
+                "Dashboard"       => new DashboardView    { DataContext = this },
+                "Project Creator" => new ProjectCreatorView{ DataContext = this },
+                "Task Manager"    => new TaskManagerView  { DataContext = this },
+                "Copywriting"     => new CopywritingView  { DataContext = this },
+                "Brand Assets"    => new BrandAssetsView  { DataContext = this },
+                "Deliverables"    => new DeliverablesView { DataContext = this },
+                "Focus Radio"     => new FocusRadioView   { DataContext = this },
+                "Wellbeing"       => new WellbeingView    { DataContext = this },
+                "Settings"        => new SettingsView     { DataContext = this },
+                _                 => new DashboardView    { DataContext = this }
+            };
+            _pageCache[tabName] = page;
+        }
+        CurrentPage = page;
     }
 
     [RelayCommand]
@@ -226,22 +298,21 @@ public partial class MainViewModel : ViewModelBase
                 }
             }
 
-            ProjectCount = Projects.Count;
-            BacklogCount = BacklogProjects.Count;
+            ProjectCount    = Projects.Count;
+            BacklogCount    = BacklogProjects.Count;
             InProgressCount = InProgressProjects.Count;
-            InReviewCount = InReviewProjects.Count;
-            DoneCount = DoneProjects.Count;
+            InReviewCount   = InReviewProjects.Count;
+            DoneCount       = DoneProjects.Count;
 
             StatusMessage = $"Scanned {ProjectCount} projects across vault ({DateTime.Now:HH:mm:ss})";
 
             if (SelectedCopyProject == null && Projects.Count > 0)
-            {
                 OpenCopyEditor(Projects.First());
-            }
         }
         catch (Exception ex)
         {
             StatusMessage = $"Workspace scan failed: {ex.Message}";
+            Debug.WriteLine($"[MainViewModel] LoadProjects: {ex.Message}");
         }
     }
 
@@ -265,7 +336,6 @@ public partial class MainViewModel : ViewModelBase
                 NewProjectDeadline
             );
 
-            // Create starter canvas if requested
             if (NewProjectStarterCanvas != "none" && !string.IsNullOrEmpty(created.FullPath))
             {
                 string sourceDir = Path.Combine(created.FullPath, "02_SOURCE_FILES");
@@ -273,9 +343,7 @@ public partial class MainViewModel : ViewModelBase
                 {
                     string canvasFile = Path.Combine(sourceDir, $"canvas_{NewProjectTitle.ToLower().Replace(' ', '_')}.{NewProjectStarterCanvas}");
                     if (!File.Exists(canvasFile))
-                    {
                         File.WriteAllText(canvasFile, $"# SuamiSihat Creative Starter Canvas ({NewProjectStarterCanvas.ToUpperInvariant()})\n");
-                    }
                 }
             }
 
@@ -287,6 +355,7 @@ public partial class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Failed to create project: {ex.Message}";
+            Debug.WriteLine($"[MainViewModel] CreateProject: {ex.Message}");
         }
     }
 
@@ -304,16 +373,10 @@ public partial class MainViewModel : ViewModelBase
     private void SaveCopy()
     {
         if (SelectedCopyProject == null) return;
-
         bool success = _workspaceService.SaveCopy(SelectedCopyProject.FullPath, ActiveCopyContent);
-        if (success)
-        {
-            StatusMessage = $"✔ COPY.md saved successfully ({DateTime.Now:HH:mm:ss})";
-        }
-        else
-        {
-            StatusMessage = "⚠️ Failed to save COPY.md";
-        }
+        StatusMessage = success
+            ? $"✔ COPY.md saved successfully ({DateTime.Now:HH:mm:ss})"
+            : "⚠️ Failed to save COPY.md";
     }
 
     [RelayCommand]
@@ -321,12 +384,12 @@ public partial class MainViewModel : ViewModelBase
     {
         string snippet = formula switch
         {
-            "PAS" => "\n### 🎯 Problem-Agitate-Solve\n- **Problem**: Rasa cepat penat dan lesu bila balik kerja?\n- **Agitate**: Kerja bertimbun, stamina pula makin drop setiap hari.\n- **Solve**: Amalkan SuamiSihat secara konsisten untuk tenaga maksimum!\n",
-            "BAB" => "\n### 🚀 Before-After-Bridge\n- **Before**: Dulu petang je mula lemau dan mengantuk.\n- **After**: Sekarang kekal fokus dan cergas sepanjang hari.\n- **Bridge**: Rahsianya, pemakanan seimbang dan formula SuamiSihat.\n",
-            "CTA" => "\n📲 **WhatsApp Sekarang:** Tekan pautan di bio untuk konsultasi percuma dan promosi eksklusif!\n",
+            "PAS"        => "\n### 🎯 Problem-Agitate-Solve\n- **Problem**: Rasa cepat penat dan lesu bila balik kerja?\n- **Agitate**: Kerja bertimbun, stamina pula makin drop setiap hari.\n- **Solve**: Amalkan SuamiSihat secara konsisten untuk tenaga maksimum!\n",
+            "BAB"        => "\n### 🚀 Before-After-Bridge\n- **Before**: Dulu petang je mula lemau dan mengantuk.\n- **After**: Sekarang kekal fokus dan cergas sepanjang hari.\n- **Bridge**: Rahsianya, pemakanan seimbang dan formula SuamiSihat.\n",
+            "CTA"        => "\n📲 **WhatsApp Sekarang:** Tekan pautan di bio untuk konsultasi percuma dan promosi eksklusif!\n",
             "DISCLAIMER" => "\n> ⚠️ *Penafian: Kesan mungkin berbeza mengikut individu. Sila rujuk pakar sekiranya mempunyai sejarah kesihatan.*\n",
-            "PROMO" => "\n🔥 **PROMOSI TERHAD**: Gunakan kod `SSMERDEKA` untuk potongan 15% hari ini!\n",
-            _ => "\n---\n"
+            "PROMO"      => "\n🔥 **PROMOSI TERHAD**: Gunakan kod `SSMERDEKA` untuk potongan 15% hari ini!\n",
+            _            => "\n---\n"
         };
 
         ActiveCopyContent += snippet;
@@ -339,10 +402,10 @@ public partial class MainViewModel : ViewModelBase
     {
         string nextStatus = project.Status switch
         {
-            "backlog" => "in_progress",
+            "backlog"     => "in_progress",
             "in_progress" => "in_review",
-            "in_review" => "done",
-            _ => "backlog"
+            "in_review"   => "done",
+            _             => "backlog"
         };
 
         _workspaceService.UpdateProjectStatus(project, nextStatus);
@@ -361,8 +424,8 @@ public partial class MainViewModel : ViewModelBase
     private void SelectRadioStation(RadioStationItem station)
     {
         CurrentStationName = station.Name;
-        CurrentStationUrl = station.StreamUrl;
-        IsRadioPlaying = true;
+        CurrentStationUrl  = station.StreamUrl;
+        IsRadioPlaying     = true;
         StatusMessage = $"▶ Playing stream: {station.Name}";
     }
 
@@ -373,7 +436,10 @@ public partial class MainViewModel : ViewModelBase
         {
             StatusMessage = $"✔ Copied '{text}' to clipboard";
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[MainViewModel] CopyToClipboard: {ex.Message}");
+        }
     }
 
     [RelayCommand]
@@ -391,10 +457,15 @@ public partial class MainViewModel : ViewModelBase
                 });
                 StatusMessage = $"Opened folder: {path}";
             }
+            else
+            {
+                StatusMessage = $"Folder not found: {path}";
+            }
         }
         catch (Exception ex)
         {
             StatusMessage = $"Could not open folder: {ex.Message}";
+            Debug.WriteLine($"[MainViewModel] OpenFolder: {ex.Message}");
         }
     }
 
@@ -414,23 +485,24 @@ public partial class MainViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(text))
         {
-            CopyWordCount = 0;
-            CopyCharCount = 0;
-            CopyReadingTime = "0 sec";
+            CopyWordCount     = 0;
+            CopyCharCount     = 0;
+            CopyReadingTime   = "0 sec";
             WhatsAppPreviewText = "Your live WhatsApp message preview will appear here...";
-            MetaAdPreviewText = "Your live ad copy preview will appear here...";
+            MetaAdPreviewText   = "Your live ad copy preview will appear here...";
             return;
         }
 
         CopyCharCount = text.Length;
-        var words = text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        var words     = text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         CopyWordCount = words.Length;
-        int seconds = (int)Math.Ceiling(CopyWordCount / 3.3); // ~200 words per minute
+        int seconds   = (int)Math.Ceiling(CopyWordCount / 3.3);
         CopyReadingTime = seconds < 60 ? $"{seconds} sec" : $"{seconds / 60}m {seconds % 60}s";
 
-        // Clean WhatsApp preview: transform markdown bold to whatsapp bold
         WhatsAppPreviewText = text.Trim();
-        MetaAdPreviewText = text.Length > 240 ? text.Substring(0, 240) + "...\n\n👉 Click here to learn more" : text + "\n\n👉 Click here to learn more";
+        MetaAdPreviewText   = text.Length > 240
+            ? text.Substring(0, 240) + "...\n\n👉 Click here to learn more"
+            : text + "\n\n👉 Click here to learn more";
     }
 
     [RelayCommand]
@@ -438,25 +510,20 @@ public partial class MainViewModel : ViewModelBase
     {
         try
         {
-            string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string userHome   = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string desktopDir = Path.Combine(userHome, "Desktop");
-            
-            if (!Directory.Exists(desktopDir))
-            {
-                Directory.CreateDirectory(desktopDir);
-            }
+            if (!Directory.Exists(desktopDir)) Directory.CreateDirectory(desktopDir);
 
             string shortcutPath = Path.Combine(desktopDir, "SS-CAM.desktop");
-            string execPath = Process.GetCurrentProcess().MainModule?.FileName ?? "/opt/ss-cam/SS-CAM.Linux";
-
-            string content = $"[Desktop Entry]\nType=Application\nName={AppName}\nComment={AppName} Linux Desktop Client\nExec={execPath}\nIcon=ss-cam\nTerminal=false\nCategories=Graphics;Office;Development;\nStartupWMClass=SS-CAM.Linux\n";
+            string execPath     = Process.GetCurrentProcess().MainModule?.FileName ?? "/opt/ss-cam/SS-CAM.Linux";
+            string content      = $"[Desktop Entry]\nType=Application\nName={AppName}\nComment={AppName} Linux Desktop Client\nExec={execPath}\nIcon=ss-cam\nTerminal=false\nCategories=Graphics;Office;Development;\nStartupWMClass=SS-CAM.Linux\n";
             File.WriteAllText(shortcutPath, content);
-
             StatusMessage = $"✔ Desktop shortcut created at {shortcutPath}";
         }
         catch (Exception ex)
         {
             StatusMessage = $"Failed to create desktop shortcut: {ex.Message}";
+            Debug.WriteLine($"[MainViewModel] CreateDesktopShortcut: {ex.Message}");
         }
     }
 }

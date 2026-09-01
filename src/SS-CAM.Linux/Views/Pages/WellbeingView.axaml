@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             x:Class="SS_CAM.Linux.Views.Pages.WellbeingView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Wellbeing &amp; Solat" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Work sustainably — breathing, hydration, and JAKIM prayer time reminders." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
+                <!-- Left: 16s Box Breathing + Hydration -->
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="🧘 16-Second Box Breathing Coach" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <Border Background="#022057" CornerRadius="12" Padding="28" HorizontalAlignment="Stretch">
+                            <StackPanel Spacing="10" HorizontalAlignment="Center">
+                                <TextBlock Text="Inhale  4s" FontSize="14" FontWeight="Bold" Foreground="#BAE6FD" HorizontalAlignment="Center"/>
+                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Hold    4s" FontSize="14" FontWeight="Bold" Foreground="#60A5FA" HorizontalAlignment="Center"/>
+                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Exhale  4s" FontSize="14" FontWeight="Bold" Foreground="#BAE6FD" HorizontalAlignment="Center"/>
+                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Hold    4s" FontSize="14" FontWeight="Bold" Foreground="#60A5FA" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hydration Tracker -->
+                        <Border Height="1" Background="#1E293B"/>
+                        <TextBlock Text="💧 Daily Hydration Tracker" FontSize="14" FontWeight="SemiBold" Foreground="#F8FAFC"/>
+                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding WaterGlasses}" FontSize="32" FontWeight="Bold" Foreground="#38BDF8" VerticalAlignment="Center"/>
+                            <TextBlock Text="/ 8 glasses" FontSize="16" Foreground="#64748B" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Content="💧 +1 Glass of Water" Command="{Binding IncrementWaterCommand}"
+                                Background="#0EA5E9" Foreground="#FFFFFF" FontWeight="SemiBold" CornerRadius="6" Padding="16,10" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right: JAKIM Waktu Solat -->
+                <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="🕌 JAKIM Waktu Solat" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                        <TextBlock Text="Zone: WLY01 — Kuala Lumpur / Putrajaya" FontSize="12" Foreground="#64748B"/>
+
+                        <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="10" Padding="16">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Next Prayer" FontSize="11" FontWeight="Bold" Foreground="#A7F3D0"/>
+                                <TextBlock Text="{Binding NextSolatName}" FontSize="22" FontWeight="Bold" Foreground="#34D399"/>
+                                <TextBlock Text="{Binding NextSolatTime}" FontSize="16" FontWeight="SemiBold" Foreground="#ECFDF5"/>
+                                <TextBlock Text="{Binding SolatCountdown}" FontSize="12" Foreground="#6EE7B7"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Prayer schedule table -->
+                        <StackPanel Spacing="6">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="Subuh" FontSize="13" Foreground="#CBD5E1"/>
+                                <TextBlock Grid.Column="1" Text="05:52" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Grid>
+                            <Border Height="1" Background="#1E293B"/>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="Zohor" FontSize="13" Foreground="#CBD5E1"/>
+                                <TextBlock Grid.Column="1" Text="13:18" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Grid>
+                            <Border Height="1" Background="#1E293B"/>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="Asar" FontSize="13" Foreground="#CBD5E1"/>
+                                <TextBlock Grid.Column="1" Text="16:42" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Grid>
+                            <Border Height="1" Background="#1E293B"/>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="Maghrib" FontSize="13" Foreground="#CBD5E1"/>
+                                <TextBlock Grid.Column="1" Text="19:21" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Grid>
+                            <Border Height="1" Background="#1E293B"/>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock Text="Isyak" FontSize="13" Foreground="#CBD5E1"/>
+                                <TextBlock Grid.Column="1" Text="20:33" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

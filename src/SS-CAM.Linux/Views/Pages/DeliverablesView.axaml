@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             xmlns:models="using:SS_CAM.Linux.Models"
+             x:Class="SS_CAM.Linux.Views.Pages.DeliverablesView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Deliverables &amp; DAM" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Digital Assets Management — 05_DELIVERABLES across all project vaults." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Digital Assets Management (05_DELIVERABLES)" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <TextBlock Text="Indexes all approved renders, social banners, and video assets across projects." FontSize="13" Foreground="#94A3B8"/>
+
+                    <!-- Summary stats row -->
+                    <Grid ColumnDefinitions="*, *, *" Margin="0,10,0,0">
+                        <Border Grid.Column="0" Background="#1E293B" CornerRadius="8" Padding="16" Margin="0,0,6,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="TOTAL PROJECTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding ProjectCount}" FontSize="24" FontWeight="Bold" Foreground="#38BDF8"/>
+                                <TextBlock Text="with deliverable vaults" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="#1E293B" CornerRadius="8" Padding="16" Margin="6,0,6,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="APPROVED" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding DoneCount}" FontSize="24" FontWeight="Bold" Foreground="#10B981"/>
+                                <TextBlock Text="archived deliverables" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Background="#1E293B" CornerRadius="8" Padding="16" Margin="6,0,0,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="IN REVIEW" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding InReviewCount}" FontSize="24" FontWeight="Bold" Foreground="#F59E0B"/>
+                                <TextBlock Text="awaiting sign-off" FontSize="11" Foreground="#64748B"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Project deliverable list -->
+                    <ItemsControl ItemsSource="{Binding Projects}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:ProjectStatusItem">
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*, Auto, Auto">
+                                        <StackPanel Grid.Column="0" Spacing="2">
+                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="13" Foreground="#F8FAFC"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="05_DELIVERABLES/" FontSize="11" Foreground="#64748B"/>
+                                                <TextBlock Text="{Binding Designer}" FontSize="11" Foreground="#38BDF8"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="#0F172A" CornerRadius="6" Padding="8,4" Margin="10,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="Bold" Foreground="{Binding StatusBadgeColor}"/>
+                                        </Border>
+                                        <Button Grid.Column="2" Content="📁 Open Vault"
+                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenFolderCommand}"
+                                                CommandParameter="{Binding FullPath}"
+                                                Background="#1E293B" Foreground="#38BDF8" FontSize="11" CornerRadius="4" Padding="10,6"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

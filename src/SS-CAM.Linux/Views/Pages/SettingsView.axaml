@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             x:Class="SS_CAM.Linux.Views.Pages.SettingsView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Settings &amp; Vault" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Configure workspace paths, visual themes, and system integrations." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <!-- Workspace Settings -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="⚙️ Application Settings &amp; Preferences" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Synology Drive Vault Path" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                        <TextBlock Text="Root workspace directory where all project vaults are stored." FontSize="11" Foreground="#475569"/>
+                        <TextBox Text="{Binding SynologyDrivePath}"
+                                 Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4" Padding="10,8"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Visual Theme Profile" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                        <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding CurrentTheme}"
+                                  HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                    </StackPanel>
+
+                    <Border Height="1" Background="#1E293B"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Content="🖥️ Create Desktop Shortcut" Command="{Binding CreateDesktopShortcutCommand}"
+                                Background="#1E293B" Foreground="#38BDF8" CornerRadius="6" Padding="14,10"/>
+                        <Button Content="🔄 Rescan Vault" Command="{Binding LoadProjectsCommand}"
+                                Background="#1E293B" Foreground="#F8FAFC" CornerRadius="6" Padding="14,10"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- About -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="About SS-CAM Linux" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="8">
+                        <TextBlock Text="Version" Foreground="#64748B" FontSize="12"/>
+                        <TextBlock Grid.Column="1" Text="{Binding AppVersion}" FontWeight="SemiBold" Foreground="#38BDF8" FontSize="12"/>
+
+                        <TextBlock Grid.Row="1" Text="Platform" Foreground="#64748B" FontSize="12"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Linux (Avalonia UI / .NET 10)" Foreground="#94A3B8" FontSize="12"/>
+
+                        <TextBlock Grid.Row="2" Text="Workspace Engine" Foreground="#64748B" FontSize="12"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Synology Drive + NAS Integration" Foreground="#94A3B8" FontSize="12"/>
+
+                        <TextBlock Grid.Row="3" Text="Organisation" Foreground="#64748B" FontSize="12"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="SuamiSihat Holdings" Foreground="#94A3B8" FontSize="12"/>
+
+                        <TextBlock Grid.Row="4" Text="Build Target" Foreground="#64748B" FontSize="12"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Fedora / Ubuntu / Debian / Arch" Foreground="#94A3B8" FontSize="12"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

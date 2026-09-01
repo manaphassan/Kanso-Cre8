@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SS_CAM.Linux.ViewModels"
+             x:Class="SS_CAM.Linux.Views.Pages.CopywritingView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer Padding="28,24">
+        <StackPanel Spacing="24">
+            <!-- Page Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Copywriting Studio" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                <TextBlock Text="Markdown script authoring with viral formula snippets and live message previews." FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="Copywriting Studio (03_COPYWRITING/COPY.md)" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            <TextBlock Text="{Binding SelectedCopyProject.Project, StringFormat='Editing: {0}', FallbackValue='No project selected — open from Dashboard'}"
+                                       FontSize="13" Foreground="#94A3B8"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Button Content="+ Hook PAS" Command="{Binding InsertCopyHookCommand}" CommandParameter="PAS"
+                                    Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="10,6" CornerRadius="4"/>
+                            <Button Content="+ Hook BAB" Command="{Binding InsertCopyHookCommand}" CommandParameter="BAB"
+                                    Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="10,6" CornerRadius="4"/>
+                            <Button Content="+ Hook CTA" Command="{Binding InsertCopyHookCommand}" CommandParameter="CTA"
+                                    Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="10,6" CornerRadius="4"/>
+                            <Button Content="+ Disclaimer" Command="{Binding InsertCopyHookCommand}" CommandParameter="DISCLAIMER"
+                                    Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="10,6" CornerRadius="4"/>
+                            <Button Content="🔥 Promo Code" Command="{Binding InsertCopyHookCommand}" CommandParameter="PROMO"
+                                    Background="#1E293B" Foreground="#F59E0B" FontSize="11" Padding="10,6" CornerRadius="4"/>
+                            <Button Content="💾 Save COPY.md" Command="{Binding SaveCopyCommand}"
+                                    Background="#10B981" Foreground="#FFFFFF" FontWeight="Bold" FontSize="12" Padding="14,6" CornerRadius="4"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Editor + Previews -->
+                    <Grid ColumnDefinitions="*, *">
+                        <!-- Left: Markdown Editor -->
+                        <StackPanel Grid.Column="0" Margin="0,0,12,0" Spacing="8">
+                            <TextBlock Text="Markdown Script Editor" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            <TextBox Text="{Binding ActiveCopyContent}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="300" MaxHeight="480"
+                                     FontFamily="Monospace" FontSize="13"
+                                     Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="6" Padding="14"/>
+                            <!-- Stats Bar -->
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <TextBlock Text="Words:" Foreground="#64748B" FontSize="12"/>
+                                <TextBlock Text="{Binding CopyWordCount}" FontWeight="Bold" Foreground="#38BDF8" FontSize="12"/>
+                                <TextBlock Text="Chars:" Foreground="#64748B" FontSize="12"/>
+                                <TextBlock Text="{Binding CopyCharCount}" FontWeight="Bold" Foreground="#38BDF8" FontSize="12"/>
+                                <TextBlock Text="Read time:" Foreground="#64748B" FontSize="12"/>
+                                <TextBlock Text="{Binding CopyReadingTime}" FontWeight="Bold" Foreground="#34D399" FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Right: Live Previews -->
+                        <StackPanel Grid.Column="1" Spacing="12">
+                            <!-- WhatsApp Preview -->
+                            <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="💬 Live WhatsApp Chat Preview" FontWeight="Bold" FontSize="12" Foreground="#A7F3D0"/>
+                                    <Border Background="#022C22" CornerRadius="8" Padding="12">
+                                        <TextBlock Text="{Binding WhatsAppPreviewText}" Foreground="#ECFDF5" FontSize="12"
+                                                   TextWrapping="Wrap" LineHeight="18" MaxHeight="200"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <!-- Meta Ad Preview -->
+                            <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="📣 Live Meta / Instagram Ad Preview" FontWeight="Bold" FontSize="12" Foreground="#60A5FA"/>
+                                    <Border Background="#0F172A" CornerRadius="8" Padding="12">
+                                        <TextBlock Text="{Binding MetaAdPreviewText}" Foreground="#F8FAFC" FontSize="12"
+                                                   TextWrapping="Wrap" LineHeight="18" MaxHeight="200"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
