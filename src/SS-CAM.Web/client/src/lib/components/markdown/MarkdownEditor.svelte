@@ -113,13 +113,17 @@
     const callout = `> [!${type}]\n> Enter critical campaign requirements, compliance checks, or brand guidelines here.`;
     insertBlock(callout);
   }
+  let showDiagramMenu = $state<boolean>(false);
+  let showCalloutMenu = $state<boolean>(false);
 </script>
+
+<svelte:window onclick={() => { showDiagramMenu = false; showCalloutMenu = false; }} />
 
 <div class="markdown-editor-wrapper">
   <!-- Top ClickUp-Style Command Toolbar -->
   <div class="editor-toolbar">
-    <!-- Row 1: Document info & Format controls -->
     <div class="toolbar-primary-row">
+      <!-- Left: Formatting & Block Tools -->
       <div class="toolbar-group typography-group">
         {#if title}
           <span class="doc-title-tag">{title}</span>
@@ -127,24 +131,57 @@
 
         <button class="tool-btn font-bold" onclick={() => wrapSelection('**', '**', 'bold text')} title="Bold (Ctrl+B)">B</button>
         <button class="tool-btn font-italic" onclick={() => wrapSelection('*', '*', 'italic text')} title="Italic (Ctrl+I)">I</button>
-        <button class="tool-btn font-strike" onclick={() => wrapSelection('~~', '~~', 'strikethrough')} title="Strikethrough">S</button>
         <button class="tool-btn font-code" onclick={() => wrapSelection('`', '`', 'code')} title="Inline Code">&lt;/&gt;</button>
 
         <span class="tool-divider"></span>
 
         <button class="tool-btn" onclick={() => wrapSelection('# ', '', 'Heading 1')} title="Heading 1">H1</button>
         <button class="tool-btn" onclick={() => wrapSelection('## ', '', 'Heading 2')} title="Heading 2">H2</button>
-        <button class="tool-btn" onclick={() => wrapSelection('### ', '', 'Heading 3')} title="Heading 3">H3</button>
+        <button class="tool-btn" onclick={() => insertBlock('- [ ] New task item')} title="Checklist Task Checkbox">☑ Task</button>
+        <button class="tool-btn" onclick={() => insertTable()} title="Insert 3x3 Table">▦ Table</button>
 
         <span class="tool-divider"></span>
 
-        <button class="tool-btn" onclick={() => insertBlock('- [ ] New task item')} title="Checklist Task Checkbox">☑ Task</button>
-        <button class="tool-btn" onclick={() => insertBlock('- Bullet point item')} title="Bullet List">• List</button>
-        <button class="tool-btn" onclick={() => insertTable()} title="Insert 3x3 Table">▦ Table</button>
+        <!-- Diagram Dropdown -->
+        <div class="dropdown-wrapper" onclick={(e) => e.stopPropagation()}>
+          <button class="tool-dropdown-btn" class:active={showDiagramMenu} onclick={() => { showDiagramMenu = !showDiagramMenu; showCalloutMenu = false; }}>
+            <span>📊 Diagram</span>
+            <span class="arrow-icon">▾</span>
+          </button>
+          {#if showDiagramMenu}
+            <div class="dropdown-menu">
+              <button class="dropdown-item" onclick={() => { insertMermaid('flow'); showDiagramMenu = false; }}>Flowchart</button>
+              <button class="dropdown-item" onclick={() => { insertMermaid('pie'); showDiagramMenu = false; }}>Media Mix Pie</button>
+              <button class="dropdown-item" onclick={() => { insertMermaid('sequence'); showDiagramMenu = false; }}>Approval Sequence</button>
+              <button class="dropdown-item" onclick={() => { insertMermaid('timeline'); showDiagramMenu = false; }}>Timeline</button>
+            </div>
+          {/if}
+        </div>
+
+        <!-- Callout Dropdown -->
+        <div class="dropdown-wrapper" onclick={(e) => e.stopPropagation()}>
+          <button class="tool-dropdown-btn" class:active={showCalloutMenu} onclick={() => { showCalloutMenu = !showCalloutMenu; showDiagramMenu = false; }}>
+            <span>💡 Callout</span>
+            <span class="arrow-icon">▾</span>
+          </button>
+          {#if showCalloutMenu}
+            <div class="dropdown-menu">
+              <button class="dropdown-item" onclick={() => { insertCallout('NOTE'); showCalloutMenu = false; }}>📌 Note</button>
+              <button class="dropdown-item" onclick={() => { insertCallout('IMPORTANT'); showCalloutMenu = false; }}>⚠️ Important</button>
+              <button class="dropdown-item" onclick={() => { insertCallout('TIP'); showCalloutMenu = false; }}>💡 Tip</button>
+            </div>
+          {/if}
+        </div>
       </div>
 
+      <!-- Right: Stats, Mode Switcher & Save CTA -->
       <div class="toolbar-group action-group">
-        <!-- Mode switcher -->
+        <div class="stats-badge">
+          <span>{wordCount}w</span>
+          <span class="stat-dot">•</span>
+          <span>~{readingTime}m read</span>
+        </div>
+
         <div class="mode-pills">
           <button class="mode-pill" class:active={mode === 'preview'} onclick={() => mode = 'preview'}>Preview</button>
           <button class="mode-pill" class:active={mode === 'split'} onclick={() => mode = 'split'}>Split</button>
@@ -154,40 +191,11 @@
         {#if onSave && !readonly}
           <FluentButton appearance="primary" size="sm" loading={isSaving} onclick={handleSave}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-            <span>{saveLabel}</span>
+            <span style="margin-left: 5px;">{saveLabel}</span>
           </FluentButton>
         {/if}
       </div>
     </div>
-
-    <!-- Row 2: Advanced Block Inserts (Mermaid, Callouts, Media) -->
-    {#if !readonly && mode !== 'preview'}
-      <div class="toolbar-secondary-row">
-        <div class="presets-group">
-          <span class="preset-label">Insert Diagram:</span>
-          <button class="preset-chip" onclick={() => insertMermaid('flow')}>📊 Flowchart</button>
-          <button class="preset-chip" onclick={() => insertMermaid('pie')}>🥧 Media Mix Pie</button>
-          <button class="preset-chip" onclick={() => insertMermaid('sequence')}>🔄 Approval Sequence</button>
-          <button class="preset-chip" onclick={() => insertMermaid('timeline')}>📅 Timeline</button>
-
-          <span class="tool-divider"></span>
-
-          <span class="preset-label">Callouts:</span>
-          <button class="preset-chip chip-note" onclick={() => insertCallout('NOTE')}>📌 Note</button>
-          <button class="preset-chip chip-important" onclick={() => insertCallout('IMPORTANT')}>⚠️ Important</button>
-          <button class="preset-chip chip-tip" onclick={() => insertCallout('TIP')}>💡 Tip</button>
-        </div>
-
-        <!-- Document Analytics -->
-        <div class="stats-badge">
-          <span>{wordCount} words</span>
-          <span class="stat-dot">•</span>
-          <span>{charCount} chars</span>
-          <span class="stat-dot">•</span>
-          <span>~{readingTime} min read</span>
-        </div>
-      </div>
-    {/if}
   </div>
 
   <!-- Content Split Area -->
@@ -253,105 +261,73 @@
     flex-wrap: wrap;
   }
 
-  .toolbar-secondary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 12px;
-    background: var(--bg-app);
-    border-top: 1px solid var(--surface-card-border);
-    font-size: 11.5px;
-    gap: 8px;
-    flex-wrap: wrap;
+  .dropdown-wrapper {
+    position: relative;
+    display: inline-block;
   }
 
-  .toolbar-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-
-  .doc-title-tag {
-    font-size: 11.5px;
-    font-weight: 800;
-    color: var(--text-brand, #043388);
-    background: var(--brand-tint, #EBF4FE);
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #BFDBFE;
-    margin-right: 4px;
-  }
-
-  .tool-btn {
+  .tool-dropdown-btn {
     height: 28px;
     padding: 0 8px;
     border: 1px solid var(--surface-card-border);
     background: var(--surface-card);
     color: var(--text-primary);
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 4px;
     transition: all 0.12s;
     font-family: inherit;
   }
-  .tool-btn:hover {
+
+  .tool-dropdown-btn:hover, .tool-dropdown-btn.active {
     background: var(--bg-app);
     border-color: var(--brand-accent);
     color: var(--brand-primary, #043388);
   }
 
-  .font-bold { font-weight: 900; }
-  .font-italic { font-style: italic; }
-  .font-strike { text-decoration: line-through; }
-  .font-code { font-family: monospace; font-size: 11px; }
-
-  .tool-divider {
-    width: 1px;
-    height: 16px;
-    background: var(--surface-card-border);
-    margin: 0 4px;
+  .arrow-icon {
+    font-size: 9px;
+    opacity: 0.6;
   }
 
-  .presets-group {
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: var(--surface-card, #FFFFFF);
+    border: 1px solid var(--surface-card-border, #E2E8F0);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.15));
+    padding: 4px;
     display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 100;
+    min-width: 160px;
   }
 
-  .preset-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-  }
-
-  .preset-chip {
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--surface-card);
-    color: var(--text-secondary);
-    font-size: 11px;
-    font-weight: 600;
+  .dropdown-item {
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.12s;
+    transition: all 0.1s;
     font-family: inherit;
   }
-  .preset-chip:hover {
-    border-color: var(--brand-accent);
-    color: var(--text-primary);
-    background: var(--surface-card-subtle);
-  }
 
-  .chip-note { border-color: #BFDBFE; color: #043388; background: #EBF4FE; }
-  .chip-important { border-color: #FDE68A; color: #B45309; background: #FFFBEB; }
-  .chip-tip { border-color: #A7F3D0; color: #047857; background: #ECFDF5; }
+  .dropdown-item:hover {
+    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    color: var(--brand-primary, #0078D4);
+  }
 
   .stats-badge {
     display: flex;

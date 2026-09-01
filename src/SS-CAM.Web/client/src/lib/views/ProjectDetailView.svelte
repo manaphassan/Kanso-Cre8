@@ -29,6 +29,7 @@
   let showIngesterModal = $state<boolean>(false);
   let showShareModal = $state<boolean>(false);
   let showTimelineModal = $state<boolean>(false);
+  let showMoreMenu = $state<boolean>(false);
 
   // Deliverables & Lightbox
   let selectedDeliverable = $state<DeliverableItem | null>(null);
@@ -378,6 +379,8 @@
   }
 </script>
 
+<svelte:window onclick={() => { showMoreMenu = false; }} />
+
 <div class="clickup-task-container">
   {#if projectStore.loadingDetail}
     <div class="loading-state">
@@ -393,7 +396,7 @@
       </FluentButton>
     </div>
   {:else}
-    <!-- ═══════════ CLICKUP-STYLE TOP COMMAND HEADER ═══════════ -->
+    <!-- ═══════════ MINIMAL & MODERN COMMAND HEADER ═══════════ -->
     <header class="task-command-header">
       <div class="task-breadcrumbs">
         <span class="crumb-link" onclick={() => appState.navigate('projects')}>Projects</span>
@@ -426,103 +429,131 @@
             </select>
           </div>
 
-          <!-- Quick Actions -->
-          <FluentButton
-            appearance="primary"
-            size="sm"
-            loading={isSubmittingDecision}
-            onclick={() => handleQuickDecision('approved')}
-          >
-            <FluentIcons name="checkCircle" size={13} />
-            <span style="margin-left: 5px;">Sign-Off</span>
-          </FluentButton>
-
-          <FluentButton
-            appearance="secondary"
-            size="sm"
-            loading={isSubmittingDecision}
-            onclick={() => handleQuickDecision('revision_requested')}
-          >
-            <FluentIcons name="warning" size={13} color="#F59E0B" />
-            <span style="margin-left: 5px;">Request Revision</span>
-          </FluentButton>
-
-          <!-- Open in SS-CAM Desktop App -->
-          <a
-            href={`sscam://open?id=${encodeURIComponent(p.jobId || p.id)}`}
-            class="desktop-open-btn"
-            title="Open this project directly in SS-CAM Windows Desktop application"
-          >
-            <FluentIcons name="desktop" size={14} />
-            <span>Open in Desktop</span>
-          </a>
-
-          <!-- Ingest Vault Assets Button -->
-          <button
-            class="ingest-vault-btn"
-            onclick={() => (showIngesterModal = true)}
-            title="Drag and drop raw files or deliverables to auto-sort into NAS vault"
-          >
-            <FluentIcons name="upload" size={14} />
-            <span>Ingest Assets</span>
-          </button>
-
-          <!-- Client Share Link Button -->
-          <button
-            class="share-link-btn"
-            onclick={() => (showShareModal = true)}
-            title="Generate secure tokenized client review link for external approval"
-          >
-            <FluentIcons name="link" size={14} />
-            <span>Share Link</span>
-          </button>
-
-          <!-- Version Timeline & Rollback Button -->
-          <button
-            class="timeline-btn"
-            onclick={() => (showTimelineModal = true)}
-            title="View revision milestones and rollback COPY.md or project state"
-          >
-            <FluentIcons name="timeline" size={14} />
-            <span>Timeline &amp; Rollback</span>
-          </button>
-
-          <!-- Export Handover ZIP Button -->
-          <a
-            href={`/api/projects/${encodeURIComponent(p.id)}/export`}
-            download
-            class="export-handover-btn"
-            title="Download client-ready creative handover ZIP with HTML summary sheet"
-          >
-            <FluentIcons name="download" size={14} />
-            <span>Export Handover (ZIP)</span>
-          </a>
-
-          {#if isAdminUser}
+          <!-- Reviewer Decision Actions -->
+          {#if (currentFrontmatter.status || '').toLowerCase() === 'approved'}
+            <div class="approved-tag">
+              <FluentIcons name="checkCircle" size={13} color="#10B981" />
+              <span>Approved &amp; Ready</span>
+            </div>
             <FluentButton
-              appearance="danger"
+              appearance="secondary"
               size="sm"
-              loading={isDeleting}
-              onclick={() => (showDeleteModal = true)}
-              title="Delete Project and all Subfolders from NAS"
+              loading={isSubmittingDecision}
+              onclick={() => handleQuickDecision('revision_requested')}
             >
-              <FluentIcons name="delete" size={13} />
-              <span style="margin-left: 5px;">Delete Project</span>
+              <FluentIcons name="warning" size={13} color="#F59E0B" />
+              <span style="margin-left: 5px;">Request Revision</span>
+            </FluentButton>
+          {:else}
+            <FluentButton
+              appearance="primary"
+              size="sm"
+              loading={isSubmittingDecision}
+              onclick={() => handleQuickDecision('approved')}
+            >
+              <FluentIcons name="checkCircle" size={13} />
+              <span style="margin-left: 5px;">Sign-Off</span>
+            </FluentButton>
+
+            <FluentButton
+              appearance="secondary"
+              size="sm"
+              loading={isSubmittingDecision}
+              onclick={() => handleQuickDecision('revision_requested')}
+            >
+              <FluentIcons name="warning" size={13} color="#F59E0B" />
+              <span style="margin-left: 5px;">Request Revision</span>
             </FluentButton>
           {/if}
 
-          <!-- Toggle Inspector Button -->
-          <button
-            class="icon-toggle-btn"
-            class:active={inspectorOpen}
-            onclick={() => (inspectorOpen = !inspectorOpen)}
-            title="Toggle Right Inspector Panel"
-            aria-label="Toggle Right Inspector Panel"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM15 7h2v10h-2V7z"/>
-            </svg>
-          </button>
+          <!-- Clean Action Outlines Group -->
+          <div class="action-btn-group">
+            <button
+              class="action-btn-clean"
+              onclick={() => (showIngesterModal = true)}
+              title="Ingest raw files or deliverables to NAS"
+            >
+              <FluentIcons name="upload" size={13} />
+              <span>Ingest</span>
+            </button>
+
+            <button
+              class="action-btn-clean"
+              onclick={() => (showShareModal = true)}
+              title="Generate Client Review Link"
+            >
+              <FluentIcons name="link" size={13} />
+              <span>Share</span>
+            </button>
+
+            <a
+              href={`/api/projects/${encodeURIComponent(p.id)}/export`}
+              download
+              class="action-btn-clean"
+              title="Export Handover ZIP"
+            >
+              <FluentIcons name="download" size={13} />
+              <span>Export ZIP</span>
+            </a>
+
+            <!-- More Actions Dropdown -->
+            <div class="more-menu-wrapper" onclick={(e) => e.stopPropagation()}>
+              <button
+                class="action-btn-clean icon-only"
+                class:active={showMoreMenu}
+                onclick={() => (showMoreMenu = !showMoreMenu)}
+                title="More Actions"
+                aria-label="More Actions"
+              >
+                <span style="font-weight: 800; font-size: 14px; line-height: 1;">···</span>
+              </button>
+
+              {#if showMoreMenu}
+                <div class="more-dropdown-menu">
+                  <a
+                    href={`sscam://open?id=${encodeURIComponent(p.jobId || p.id)}`}
+                    class="more-dropdown-item"
+                    onclick={() => (showMoreMenu = false)}
+                  >
+                    <FluentIcons name="desktop" size={13} />
+                    <span>Open in Desktop</span>
+                  </a>
+
+                  <button
+                    class="more-dropdown-item"
+                    onclick={() => { showTimelineModal = true; showMoreMenu = false; }}
+                  >
+                    <FluentIcons name="timeline" size={13} />
+                    <span>Timeline &amp; Rollback</span>
+                  </button>
+
+                  {#if isAdminUser}
+                    <div class="more-divider"></div>
+                    <button
+                      class="more-dropdown-item item-danger"
+                      onclick={() => { showDeleteModal = true; showMoreMenu = false; }}
+                    >
+                      <FluentIcons name="delete" size={13} color="#EF4444" />
+                      <span>Delete Project</span>
+                    </button>
+                  {/if}
+                </div>
+              {/if}
+            </div>
+
+            <!-- Toggle Inspector Button -->
+            <button
+              class="action-btn-clean icon-only"
+              class:active={inspectorOpen}
+              onclick={() => (inspectorOpen = !inspectorOpen)}
+              title="Toggle Properties Panel"
+              aria-label="Toggle Properties Panel"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM15 7h2v10h-2V7z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -533,8 +564,8 @@
           class:active={activeCanvasView === 'brief'}
           onclick={() => (activeCanvasView = 'brief')}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-          <span>Creative Brief (README.md)</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          <span>Creative Brief</span>
         </button>
 
         <button
@@ -542,8 +573,8 @@
           class:active={activeCanvasView === 'copywriting'}
           onclick={() => (activeCanvasView = 'copywriting')}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          <span>Copywriting Studio (COPY.md)</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          <span>Copywriting Studio</span>
           <span class="view-chip">{copyStats.words}w</span>
         </button>
 
@@ -552,8 +583,8 @@
           class:active={activeCanvasView === 'deliverables'}
           onclick={() => (activeCanvasView = 'deliverables')}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          <span>Deliverables Gallery ({projectStore.activeDeliverables.length})</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          <span>Deliverables ({projectStore.activeDeliverables.length})</span>
         </button>
 
         <button
@@ -561,7 +592,7 @@
           class:active={activeCanvasView === 'direction'}
           onclick={() => (activeCanvasView = 'direction')}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.36 19.64 10.63 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.36 19.64 10.63 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
           <span>Creative Direction</span>
         </button>
       </div>
@@ -1008,26 +1039,6 @@
     border-radius: 6px;
   }
 
-  .desktop-open-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface-card-subtle, #F8FAFC);
-    color: var(--text-primary, #0F172A);
-    border: 1px solid var(--surface-card-border, #CBD5E1);
-    border-radius: var(--radius-sm, 6px);
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.14s ease;
-  }
-  .desktop-open-btn:hover {
-    background: var(--brand-tint, #EBF4FE);
-    border-color: var(--brand-accent, #21A1F7);
-    color: var(--text-brand, #043388);
-  }
-
   .task-title {
     font-size: 20px;
     font-weight: 800;
@@ -1038,88 +1049,121 @@
   .headline-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
-  .ingest-vault-btn {
+  .approved-tag {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 5px;
+    padding: 5px 10px;
     border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
-    border: 1px solid rgba(33, 161, 247, 0.3);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .ingest-vault-btn:hover {
-    background: #21A1F7;
-    color: #0F172A;
-  }
-
-  .share-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    background: rgba(16, 185, 129, 0.15);
+    background: rgba(16, 185, 129, 0.12);
     color: #10B981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .share-link-btn:hover {
-    background: #10B981;
-    color: #0F172A;
-  }
-
-  .timeline-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 6px;
+    border: 1px solid rgba(16, 185, 129, 0.25);
     font-size: 12px;
     font-weight: 700;
-    background: rgba(139, 92, 246, 0.15);
-    color: #A78BFA;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .timeline-btn:hover {
-    background: #8B5CF6;
-    color: #FFFFFF;
   }
 
-  .export-handover-btn {
+  .action-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .action-btn-clean {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 5px;
+    padding: 0 10px;
+    height: 30px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
-    text-decoration: none;
-    background: var(--brand-primary, #043388);
-    color: #FFFFFF;
-    border: 1px solid var(--brand-primary, #043388);
+    color: var(--text-secondary);
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
     cursor: pointer;
-    transition: all 0.15s;
+    text-decoration: none;
+    transition: all 0.12s ease;
+    font-family: inherit;
   }
-  .export-handover-btn:hover {
-    background: #0640A8;
-    color: #FFFFFF;
+
+  .action-btn-clean:hover, .action-btn-clean.active {
+    background: var(--surface-card-subtle, #F8FAFC);
+    color: var(--brand-primary, #0078D4);
+    border-color: var(--brand-accent, #0078D4);
+  }
+
+  .action-btn-clean.icon-only {
+    width: 30px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .more-menu-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .more-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--surface-card, #FFFFFF);
+    border: 1px solid var(--surface-card-border, #E2E8F0);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg, 0 10px 25px -5px rgba(0, 0, 0, 0.15));
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 100;
+    min-width: 170px;
+  }
+
+  .more-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.1s;
+    font-family: inherit;
+  }
+
+  .more-dropdown-item:hover {
+    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    color: var(--brand-primary, #0078D4);
+  }
+
+  .more-dropdown-item.item-danger {
+    color: #EF4444;
+  }
+
+  .more-dropdown-item.item-danger:hover {
+    background: rgba(239, 68, 68, 0.08);
+    color: #DC2626;
+  }
+
+  .more-divider {
+    height: 1px;
+    background: var(--surface-card-border);
+    margin: 2px 0;
   }
 
   .status-select {
-    padding: 6px 12px;
+    padding: 5px 10px;
+    height: 30px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 700;
@@ -1134,25 +1178,6 @@
   .status-revision { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
   .status-approved { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
   .status-done { background: #F3E8FF; color: #7E22CE; border-color: #E9D5FF; }
-
-  .icon-toggle-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--bg-app);
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .icon-toggle-btn:hover, .icon-toggle-btn.active {
-    background: var(--surface-card);
-    border-color: var(--brand-accent);
-    color: var(--text-primary);
-  }
 
   /* Segmented Nav */
   .canvas-segmented-nav {
