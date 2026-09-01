@@ -46,7 +46,8 @@ data class ProjectItem(
             "review", "in_review", "in-review" -> "in_review"
             "in_progress", "in-progress", "inprogress" -> "in_progress"
             "revision", "revision_requested" -> "revision"
-            "done", "completed" -> "done"
+            "done", "completed", "approved" -> "done"
+            "on-hold", "on_hold", "hold", "paused" -> "on_hold"
             else -> "backlog"
         }
 
