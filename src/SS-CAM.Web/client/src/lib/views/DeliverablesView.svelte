@@ -36,6 +36,12 @@
   let filterMediaClass = $state<string>('all');
   let filterAspectRatio = $state<string>('all');
   let viewMode = $state<'grid' | 'table'>('grid');
+  let groupByProject = $state<boolean>(true);
+  let collapsedGroups = $state<Record<string, boolean>>({});
+
+  function toggleGroup(projectId: string) {
+    collapsedGroups[projectId] = !collapsedGroups[projectId];
+  }
 
   function handleSearchChange(e: Event) {
     const val = (e.target as HTMLInputElement).value;
@@ -109,6 +115,43 @@
       return true;
     })
   );
+
+  interface ProjectDeliverableGroup {
+    projectId: string;
+    jobId: string;
+    brand: string;
+    title: string;
+    designer: string;
+    status: string;
+    folderName?: string;
+    deliverables: DeliverableItem[];
+    totalSizeBytes: number;
+  }
+
+  const groupedDeliverables = $derived.by<ProjectDeliverableGroup[]>(() => {
+    const map = new Map<string, ProjectDeliverableGroup>();
+    for (const d of filteredDeliverables) {
+      const pId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId || 'unassigned';
+      if (!map.has(pId)) {
+        const proj = projectStore.projects.find(p => p.id === pId || p.jobId === pId);
+        map.set(pId, {
+          projectId: pId,
+          jobId: proj?.jobId || d.project?.jobId || d.projectJobId || '0000',
+          brand: proj?.brand || d.project?.brand || d.projectBrand || 'SS',
+          title: proj?.title || d.project?.title || d.projectTitle || 'Creative Deliverables',
+          designer: proj?.designer || d.project?.designer || d.projectDesigner || 'Unassigned',
+          status: proj?.status || d.status || 'in-progress',
+          folderName: proj?.folderName || '',
+          deliverables: [],
+          totalSizeBytes: 0
+        });
+      }
+      const group = map.get(pId)!;
+      group.deliverables.push(d);
+      group.totalSizeBytes += (d.sizeBytes || 0);
+    }
+    return Array.from(map.values());
+  });
 
   const pendingCount = $derived(projectStore.deliverables.filter(d => (d.status || 'pending') === 'pending').length);
   const revisionCount = $derived(projectStore.deliverables.filter(d => d.status === 'revision').length);
@@ -222,6 +265,24 @@
         {/each}
       </select>
 
+      <!-- Group By Toggle -->
+      <div class="view-mode-toggle" title="Grouping Mode">
+        <button 
+          class="mode-btn {groupByProject ? 'active' : ''}" 
+          onclick={() => groupByProject = true} 
+          title="Group by Project Folder"
+        >
+          <FluentIcons name="folder" size={13} />
+        </button>
+        <button 
+          class="mode-btn {!groupByProject ? 'active' : ''}" 
+          onclick={() => groupByProject = false} 
+          title="Flat Asset List"
+        >
+          <FluentIcons name="box" size={13} />
+        </button>
+      </div>
+
       <!-- View Mode Toggle -->
       <div class="view-mode-toggle">
         <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">
@@ -253,121 +314,293 @@
       </FluentButton>
     </div>
   {:else if viewMode === 'grid'}
-    <div class="deliverables-grid">
-      {#each filteredDeliverables as d}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
-          <div class="del-card">
-            <!-- Preview Box -->
-            <div class="del-preview-box">
-              {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
-                <img
-                  src={d.previewUrl}
-                  alt={d.filename}
-                  loading="lazy"
-                  onerror={(e) => {
-                    (e.currentTarget as HTMLElement).style.display = 'none';
-                  }}
-                />
-              {:else if d.isVideo || d.previewType === 'video'}
-                <div class="doc-sheet video-sheet">
-                  <div class="sheet-icon-circle video-circle">
-                    <FluentIcons name="video" size={20} />
-                  </div>
-                  <span class="sheet-type-tag">VIDEO MASTER</span>
+    {#if groupByProject}
+      <!-- ═══════════ GROUPED BY PROJECT FOLDER ═══════════ -->
+      <div class="project-groups-container">
+        {#each groupedDeliverables as group (group.projectId)}
+          {@const isCollapsed = !!collapsedGroups[group.projectId]}
+          <div class="project-group-card">
+            <!-- Group Header Bar -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="group-header" onclick={() => toggleGroup(group.projectId)}>
+              <div class="group-header-left">
+                <span class="chevron-arrow {isCollapsed ? 'collapsed' : ''}">▾</span>
+                <div class="group-folder-icon">
+                  <FluentIcons name="folder" size={15} color="var(--brand-accent, #0078D4)" />
                 </div>
-              {:else if d.isPdf || d.previewType === 'pdf'}
-                <div class="doc-sheet pdf-sheet">
-                  <div class="sheet-icon-circle pdf-circle">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                      <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                  </div>
-                  <span class="sheet-type-tag">PDF DOCUMENT</span>
-                </div>
-              {:else}
-                <div class="doc-sheet generic-sheet">
-                  <div class="sheet-icon-circle generic-circle">
-                    <FluentIcons name="file" size={20} />
-                  </div>
-                  <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
-                </div>
-              {/if}
-
-              <!-- Status Tag Overlay Top Left -->
-              <span class="preview-status-badge status-{(d.status || 'pending')}">
-                <span class="badge-dot"></span>
-                {(d.status || 'pending')}
-              </span>
-
-              <!-- Format / Ratio Badge Top Right -->
-              <span class="format-badge">
-                {d.format || (d.ext ? d.ext.toUpperCase().replace('.', '') : 'ASSET')}
-                {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
-                  · {d.aspectRatioEstimate}
-                {/if}
-              </span>
-            </div>
-
-            <!-- Card Body -->
-            <div class="del-body">
-              <div class="del-top-meta">
-                <span class="job-tag">{d.project?.jobId || d.projectJobId || '0000'}</span>
-                <span class="brand-tag">{d.project?.brand || d.projectBrand || 'SS'}</span>
-                <span class="proj-title-trunc" title={d.project?.title || d.projectTitle || ''}>
-                  {d.project?.title || d.projectTitle || 'Creative Asset'}
+                <span class="group-job-badge">{group.jobId}</span>
+                <span class="group-brand-badge">{group.brand}</span>
+                <h3 class="group-title">{group.title}</h3>
+                <span class="group-status-pill status-{group.status}">
+                  <span class="badge-dot"></span>
+                  {group.status}
                 </span>
               </div>
 
-              <h3 class="del-title" title={d.filename}>{d.filename}</h3>
-
-              <div class="del-footer-row">
-                <span class="meta-designer">
-                  <FluentIcons name="user" size={11} />
-                  <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+              <div class="group-header-right" onclick={(e) => e.stopPropagation()}>
+                <span class="group-meta-summary">
+                  <strong>{group.deliverables.length}</strong> file{group.deliverables.length === 1 ? '' : 's'} · {(group.totalSizeBytes / (1024 * 1024)).toFixed(2)} MB · {group.designer}
                 </span>
-                <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
-              </div>
 
-              <!-- Quick Action Bar -->
-              <div class="del-actions" onclick={(e) => e.stopPropagation()}>
-                <button class="action-btn-pill" onclick={() => openLightbox(d)} title="Open Fullscreen Inspector">
+                <button 
+                  class="group-action-btn" 
+                  onclick={() => appState.navigate('project-detail', { id: group.projectId })}
+                  title="Open Project Workspace"
+                >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
                   </svg>
-                  <span>Inspect</span>
+                  <span>Workspace</span>
                 </button>
 
-                <div class="action-icons-right">
-                  {#if d.isImage || d.previewType === 'image'}
-                    <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
-                      <FluentIcons name="vector" size={12} />
-                    </button>
-                    <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
-                      <FluentIcons name="printer" size={12} />
-                    </button>
+                <a 
+                  href="/api/projects/{encodeURIComponent(group.projectId)}/export/zip" 
+                  download="{group.jobId}_deliverables.zip"
+                  class="group-action-btn"
+                  title="Download Project Handover ZIP"
+                >
+                  <FluentIcons name="download" size={12} />
+                  <span>ZIP</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Group Deliverables Grid -->
+            {#if !isCollapsed}
+              <div class="group-content">
+                <div class="deliverables-grid">
+                  {#each group.deliverables as d (d.id || d.filename)}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
+                      <div class="del-card">
+                        <!-- Preview Box -->
+                        <div class="del-preview-box">
+                          {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
+                            <img
+                              src={d.previewUrl}
+                              alt={d.filename}
+                              loading="lazy"
+                              onerror={(e) => {
+                                (e.currentTarget as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          {:else if d.isVideo || d.previewType === 'video'}
+                            <div class="doc-sheet video-sheet">
+                              <div class="sheet-icon-circle video-circle">
+                                <FluentIcons name="video" size={20} />
+                              </div>
+                              <span class="sheet-type-tag">VIDEO MASTER</span>
+                            </div>
+                          {:else if d.isPdf || d.previewType === 'pdf'}
+                            <div class="doc-sheet pdf-sheet">
+                              <div class="sheet-icon-circle pdf-circle">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                                  <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                              </div>
+                              <span class="sheet-type-tag">PDF DOCUMENT</span>
+                            </div>
+                          {:else}
+                            <div class="doc-sheet generic-sheet">
+                              <div class="sheet-icon-circle generic-circle">
+                                <FluentIcons name="file" size={20} />
+                              </div>
+                              <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
+                            </div>
+                          {/if}
+
+                          <!-- Status Tag Overlay Top Left -->
+                          <span class="preview-status-badge status-{(d.status || 'pending')}">
+                            <span class="badge-dot"></span>
+                            {(d.status || 'pending')}
+                          </span>
+
+                          <!-- Format / Ratio Badge Top Right -->
+                          <span class="format-badge">
+                            {d.format || (d.ext ? d.ext.toUpperCase().replace('.', '') : 'ASSET')}
+                            {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
+                              · {d.aspectRatioEstimate}
+                            {/if}
+                          </span>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="del-body">
+                          <h3 class="del-title" title={d.filename}>{d.filename}</h3>
+
+                          <div class="del-footer-row">
+                            <span class="meta-designer">
+                              <FluentIcons name="user" size={11} />
+                              <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+                            </span>
+                            <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
+                          </div>
+
+                          <!-- Quick Action Bar -->
+                          <div class="del-actions" onclick={(e) => e.stopPropagation()}>
+                            <button class="action-btn-pill" onclick={() => openLightbox(d)} title="Open Fullscreen Inspector">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                              </svg>
+                              <span>Inspect</span>
+                            </button>
+
+                            <div class="action-icons-right">
+                              {#if d.isImage || d.previewType === 'image'}
+                                <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
+                                  <FluentIcons name="vector" size={12} />
+                                </button>
+                                <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
+                                  <FluentIcons name="printer" size={12} />
+                                </button>
+                              {/if}
+                              <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
+                                <FluentIcons name="link" size={12} />
+                              </button>
+                              {#if d.downloadUrl}
+                                <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
+                                  <FluentIcons name="download" size={12} />
+                                </a>
+                              {/if}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <!-- ═══════════ FLAT LIST GRID ═══════════ -->
+      <div class="deliverables-grid">
+        {#each filteredDeliverables as d (d.id || d.filename)}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
+            <div class="del-card">
+              <!-- Preview Box -->
+              <div class="del-preview-box">
+                {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
+                  <img
+                    src={d.previewUrl}
+                    alt={d.filename}
+                    loading="lazy"
+                    onerror={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                {:else if d.isVideo || d.previewType === 'video'}
+                  <div class="doc-sheet video-sheet">
+                    <div class="sheet-icon-circle video-circle">
+                      <FluentIcons name="video" size={20} />
+                    </div>
+                    <span class="sheet-type-tag">VIDEO MASTER</span>
+                  </div>
+                {:else if d.isPdf || d.previewType === 'pdf'}
+                  <div class="doc-sheet pdf-sheet">
+                    <div class="sheet-icon-circle pdf-circle">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                      </svg>
+                    </div>
+                    <span class="sheet-type-tag">PDF DOCUMENT</span>
+                  </div>
+                {:else}
+                  <div class="doc-sheet generic-sheet">
+                    <div class="sheet-icon-circle generic-circle">
+                      <FluentIcons name="file" size={20} />
+                    </div>
+                    <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
+                  </div>
+                {/if}
+
+                <!-- Status Tag Overlay Top Left -->
+                <span class="preview-status-badge status-{(d.status || 'pending')}">
+                  <span class="badge-dot"></span>
+                  {(d.status || 'pending')}
+                </span>
+
+                <!-- Format / Ratio Badge Top Right -->
+                <span class="format-badge">
+                  {d.format || (d.ext ? d.ext.toUpperCase().replace('.', '') : 'ASSET')}
+                  {#if d.aspectRatioEstimate && d.aspectRatioEstimate !== 'standard'}
+                    · {d.aspectRatioEstimate}
                   {/if}
-                  <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
-                    <FluentIcons name="link" size={12} />
+                </span>
+              </div>
+
+              <!-- Card Body -->
+              <div class="del-body">
+                <div class="del-top-meta">
+                  <span class="job-tag">{d.project?.jobId || d.projectJobId || '0000'}</span>
+                  <span class="brand-tag">{d.project?.brand || d.projectBrand || 'SS'}</span>
+                  <span class="proj-title-trunc" title={d.project?.title || d.projectTitle || ''}>
+                    {d.project?.title || d.projectTitle || 'Creative Asset'}
+                  </span>
+                </div>
+
+                <h3 class="del-title" title={d.filename}>{d.filename}</h3>
+
+                <div class="del-footer-row">
+                  <span class="meta-designer">
+                    <FluentIcons name="user" size={11} />
+                    <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
+                  </span>
+                  <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
+                </div>
+
+                <!-- Quick Action Bar -->
+                <div class="del-actions" onclick={(e) => e.stopPropagation()}>
+                  <button class="action-btn-pill" onclick={() => openLightbox(d)} title="Open Fullscreen Inspector">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Inspect</span>
                   </button>
-                  {#if d.downloadUrl}
-                    <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
-                      <FluentIcons name="download" size={12} />
-                    </a>
-                  {/if}
+
+                  <div class="action-icons-right">
+                    {#if d.isImage || d.previewType === 'image'}
+                      <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
+                        <FluentIcons name="vector" size={12} />
+                      </button>
+                      <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
+                        <FluentIcons name="printer" size={12} />
+                      </button>
+                    {/if}
+                    <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
+                      <FluentIcons name="link" size={12} />
+                    </button>
+                    {#if d.downloadUrl}
+                      <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
+                        <FluentIcons name="download" size={12} />
+                      </a>
+                    {/if}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {/if}
   {:else}
     <!-- Compact Metadata Table Mode -->
     <div class="dam-table-card">
@@ -691,7 +924,147 @@
   .mode-btn:hover { color: var(--text-primary); }
   .mode-btn.active {
     background: var(--brand-tint, rgba(0, 120, 212, 0.1));
+    color: var(--text-primary);
+    border-color: var(--brand-accent);
+  }
+
+  /* Project Groups */
+  .project-groups-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .project-group-card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.15s ease;
+  }
+  .project-group-card:hover {
+    border-color: rgba(0, 120, 212, 0.35);
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--surface-card-subtle, #F8FAFC);
+    border-bottom: 1px solid var(--surface-card-border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .group-header:hover {
+    background: var(--surface-card-hover, rgba(0, 120, 212, 0.04));
+  }
+
+  .group-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .chevron-arrow {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    transition: transform 0.2s ease;
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+  }
+  .chevron-arrow.collapsed {
+    transform: rotate(-90deg);
+  }
+
+  .group-folder-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .group-job-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--brand-accent, #0078D4);
+    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .group-brand-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .group-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.2px;
+  }
+
+  .group-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 12px;
+  }
+
+  .group-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .group-meta-summary {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+
+  .group-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.12s;
+  }
+  .group-action-btn:hover {
+    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
     color: var(--brand-primary, #0078D4);
+    border-color: var(--brand-accent, #0078D4);
+  }
+
+  .group-content {
+    padding: 12px;
   }
 
   /* Grid & Cards */
