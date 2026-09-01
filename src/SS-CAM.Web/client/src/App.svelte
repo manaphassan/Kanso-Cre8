@@ -426,7 +426,7 @@
           {:else if appState.currentRoute === 'projects'}
             <ProjectsView />
           {:else if appState.currentRoute === 'project-detail'}
-            <ProjectDetailView />
+            <ProjectDetailView projectId={appState.routeParams.id} />
           {:else if appState.currentRoute === 'deliverables'}
             <DeliverablesView />
           {:else if appState.currentRoute === 'copy-studio'}

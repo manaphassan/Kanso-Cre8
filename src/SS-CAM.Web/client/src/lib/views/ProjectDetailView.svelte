@@ -209,11 +209,18 @@
     }
   }
 
-  onMount(async () => {
-    await loadStaffList();
-    const id = projectId || appState.routeParams.id;
-    if (id) {
-      await loadProject(id);
+  let targetId = $derived(projectId || appState.routeParams.id || '');
+  let lastLoadedId = $state<string | null>(null);
+
+  onMount(() => {
+    loadStaffList();
+  });
+
+  $effect(() => {
+    const id = targetId;
+    if (id && id !== lastLoadedId) {
+      lastLoadedId = id;
+      loadProject(id);
     }
   });
 

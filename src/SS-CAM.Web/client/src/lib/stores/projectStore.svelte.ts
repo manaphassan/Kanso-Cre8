@@ -13,6 +13,7 @@ class ProjectStore {
   activeDeliverables = $state<DeliverableItem[]>([]);
   
   isLoading = $state<boolean>(false);
+  loadingDetail = $state<boolean>(false);
   isSaving = $state<boolean>(false);
 
   dashboardTimeRange = $state<string>('all');
@@ -93,6 +94,7 @@ class ProjectStore {
   }
 
   async loadProjectDetail(id: string) {
+    this.loadingDetail = true;
     this.isLoading = true;
     try {
       const res = await ApiClient.getProject(id);
@@ -102,6 +104,7 @@ class ProjectStore {
       appState.addToast(`Failed to load project details: ${err.message}`, 'error');
       this.selectedProject = null;
     } finally {
+      this.loadingDetail = false;
       this.isLoading = false;
     }
   }
