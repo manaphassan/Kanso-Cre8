@@ -4,208 +4,351 @@
         xmlns:models="using:SS_CAM.Linux.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1150" d:DesignHeight="780"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="820"
         x:Class="SS_CAM.Linux.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SS-CAM - SuamiSihat Creative Assets Management (Linux / Fedora Edition)"
-        Width="1150" Height="780"
+        Title="SS-CAM — SuamiSihat™ Creative Assets Management (Linux Workstation Client)"
+        Width="1200" Height="820"
+        MinWidth="1000" MinHeight="680"
         WindowStartupLocation="CenterScreen"
-        Background="#18181B">
+        Background="#090D16">
 
     <Grid RowDefinitions="Auto, *, Auto">
-        <!-- Top Header Bar -->
-        <Border Grid.Row="0" Background="#27272A" Padding="16,12" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
+        <!-- ══════════════════════════════════════════════════════════════════
+             1. TOP HEADER BAR (Fluent 2 Header & System Telemetry)
+             ══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0" Background="#0C1322" Padding="16,10" BorderBrush="#1E293B" BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="Auto, *, Auto">
+                <!-- Brand Title & Logomark -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Background="#6366F1" CornerRadius="6" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="SS" Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Background="#043388" CornerRadius="8" Width="36" Height="36" BorderBrush="#21A1F7" BorderThickness="1">
+                        <TextBlock Text="SS" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="{Binding AppName}" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
-                        <TextBlock Text="SuamiSihat Creative Operations on Linux" FontSize="12" Foreground="#A1A1AA"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{Binding AppName}" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            <Border Background="#1E293B" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding AppVersion}" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Creative Operations &amp; Digital Assets Management Suite" FontSize="11" Foreground="#64748B"/>
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Border Background="#312E81" CornerRadius="12" Padding="10,4">
-                        <TextBlock Text="Fedora Linux" Foreground="#C7D2FE" FontSize="12" FontWeight="Medium"/>
+                <!-- Status Badges & Quick Action -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Border Background="#022057" CornerRadius="12" Padding="12,5" BorderBrush="#1E3A8A" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="#38BDF8"/>
+                            <TextBlock Text="Fedora / Linux Client" Foreground="#BAE6FD" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
                     </Border>
-                    <Border Background="#064E3B" CornerRadius="12" Padding="10,4">
-                        <TextBlock Text="Synology Drive Active" Foreground="#A7F3D0" FontSize="12" FontWeight="Medium"/>
+                    <Border Background="#064E3B" CornerRadius="12" Padding="12,5" BorderBrush="#047857" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="#34D399"/>
+                            <TextBlock Text="Synology Drive Active" Foreground="#A7F3D0" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
                     </Border>
+                    <Button Content="🔄 Rescan Vault" Command="{Binding LoadProjectsCommand}"
+                            Background="#1E293B" Foreground="#F8FAFC" FontSize="12" FontWeight="SemiBold" CornerRadius="6" Padding="12,6" BorderBrush="#334155" BorderThickness="1"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Main Body: Sidebar + Content -->
-        <Grid Grid.Row="1" ColumnDefinitions="220, *">
+        <!-- ══════════════════════════════════════════════════════════════════
+             2. MAIN BODY (Categorized Fluent 2 Sidebar + Dynamic Content)
+             ══════════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1" ColumnDefinitions="240, *">
             <!-- Sidebar Navigation -->
-            <Border Grid.Column="0" Background="#202023" BorderBrush="#3F3F46" BorderThickness="0,0,1,0" Padding="12,16">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="CREATIVE STUDIO" FontSize="11" FontWeight="Bold" Foreground="#71717A" Margin="8,0,0,8"/>
-                    
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Dashboard"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#F4F4F5" CornerRadius="6">
-                        <TextBlock Text="📊 Dashboard"/>
-                    </Button>
+            <Border Grid.Column="0" Background="#0A0F1D" BorderBrush="#1E293B" BorderThickness="0,0,1,0" Padding="10,14">
+                <ScrollViewer>
+                    <StackPanel Spacing="4">
+                        <!-- SECTION 1: CREATIVE WORKSPACE -->
+                        <TextBlock Text="CREATIVE WORKSPACE" FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,4,0,6"/>
+                        
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Dashboard"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#F8FAFC" CornerRadius="6">
+                            <TextBlock Text="📊 Dashboard" FontSize="13"/>
+                        </Button>
 
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Task Board"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
-                        <TextBlock Text="📋 Task Board"/>
-                    </Button>
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="📁 Project Creator" FontSize="13"/>
+                        </Button>
 
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Copywriting"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
-                        <TextBlock Text="✍️ Copywriting Studio"/>
-                    </Button>
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Task Manager"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="📋 Task Manager" FontSize="13"/>
+                        </Button>
 
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
-                        <TextBlock Text="📁 Project Creator"/>
-                    </Button>
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Copywriting"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="✍️ Copywriting Studio" FontSize="13"/>
+                        </Button>
 
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Brand Assets"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
-                        <TextBlock Text="🎨 Brand Assets"/>
-                    </Button>
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Brand Assets"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="🎨 Brand Assets Vault" FontSize="13"/>
+                        </Button>
 
-                    <Button Command="{Binding SelectTabCommand}" CommandParameter="Settings"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,10"
-                            Background="Transparent" Foreground="#D4D4D8" CornerRadius="6">
-                        <TextBlock Text="⚙️ Settings"/>
-                    </Button>
-                </StackPanel>
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Deliverables"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="📦 Deliverables &amp; DAM" FontSize="13"/>
+                        </Button>
+
+                        <!-- SECTION 2: STUDIO TOOLS -->
+                        <Border Height="1" Background="#1E293B" Margin="8,10,8,10"/>
+                        <TextBlock Text="STUDIO TOOLS" FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
+
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Focus Radio"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="📻 Focus Radio Player" FontSize="13"/>
+                        </Button>
+
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Wellbeing"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="🧘 Wellbeing &amp; Solat" FontSize="13"/>
+                        </Button>
+
+                        <!-- SECTION 3: SYSTEM & CONFIG -->
+                        <Border Height="1" Background="#1E293B" Margin="8,10,8,10"/>
+                        <TextBlock Text="SYSTEM &amp; SETTINGS" FontSize="10" FontWeight="Bold" Foreground="#475569" Margin="10,0,0,6"/>
+
+                        <Button Command="{Binding SelectTabCommand}" CommandParameter="Settings"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
+                                Background="Transparent" Foreground="#CBD5E1" CornerRadius="6">
+                            <TextBlock Text="⚙️ Settings &amp; Vault" FontSize="13"/>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
-            <!-- Main Content Area -->
-            <ScrollViewer Grid.Column="1" Padding="24">
-                <StackPanel Spacing="20">
-                    <!-- Title Banner -->
+            <!-- Main Dynamic Content Canvas -->
+            <ScrollViewer Grid.Column="1" Padding="28,24">
+                <StackPanel Spacing="24">
+                    <!-- Page Header Banner -->
                     <Grid ColumnDefinitions="*, Auto">
                         <StackPanel Grid.Column="0" Spacing="4">
-                            <TextBlock Text="{Binding SelectedNavTab}" FontSize="24" FontWeight="Bold" Foreground="#F4F4F5"/>
-                            <TextBlock Text="SuamiSihat creative operations and Synology Drive workspace on Linux." FontSize="14" Foreground="#A1A1AA"/>
+                            <TextBlock Text="{Binding SelectedNavTab}" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            <TextBlock Text="SuamiSihat Creative Operations &amp; Synology Drive Workspace on Linux" FontSize="13" Foreground="#94A3B8"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Content="🔄 Rescan Workspace" Command="{Binding LoadProjectsCommand}"
-                                Background="#3B82F6" Foreground="White" CornerRadius="6" Padding="12,8" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Button Content="📁 Open NAS Vault" Command="{Binding OpenFolderCommand}" CommandParameter="{Binding SynologyDrivePath}"
+                                    Background="#1E293B" Foreground="#38BDF8" CornerRadius="6" Padding="12,8" FontSize="12" FontWeight="SemiBold"/>
+                        </StackPanel>
                     </Grid>
 
-                    <!-- VIEW 1: COPYWRITING STUDIO -->
-                    <StackPanel Spacing="14">
-                        <!-- Stat Summary Bar -->
-                        <Grid ColumnDefinitions="*, *, *">
-                            <Border Grid.Column="0" Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <!-- ══════════════════════════════════════════════════════
+                         PAGE VIEW 1: DASHBOARD
+                         ══════════════════════════════════════════════════════ -->
+                    <StackPanel Spacing="20" IsVisible="{Binding SelectedNavTab, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <!-- 4 Bento KPI Metric Tiles -->
+                        <Grid ColumnDefinitions="*, *, *, *">
+                            <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="0,0,6,0">
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="TOTAL PROJECTS" FontSize="11" FontWeight="Bold" Foreground="#A1A1AA"/>
-                                    <TextBlock Text="{Binding ProjectCount}" FontSize="24" FontWeight="Bold" Foreground="#60A5FA"/>
+                                    <TextBlock Text="TOTAL PROJECTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding ProjectCount}" FontSize="28" FontWeight="Bold" Foreground="#38BDF8"/>
+                                    <TextBlock Text="Indexed across year vaults" FontSize="11" Foreground="#64748B"/>
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="1" Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="4,0,4,0">
+                            <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="WORKSPACE ROOT" FontSize="11" FontWeight="Bold" Foreground="#A1A1AA"/>
-                                    <TextBlock Text="~/SynologyDrive/Creative-Team" FontSize="14" FontWeight="SemiBold" Foreground="#34D399" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="IN PROGRESS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding InProgressCount}" FontSize="28" FontWeight="Bold" Foreground="#60A5FA"/>
+                                    <TextBlock Text="Active design sprint jobs" FontSize="11" Foreground="#64748B"/>
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="2" Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,0,0,0">
+                            <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="LINUX CLIENT STATUS" FontSize="11" FontWeight="Bold" Foreground="#A1A1AA"/>
-                                    <TextBlock Text="Native Avalonia / Skia" FontSize="14" FontWeight="SemiBold" Foreground="#F59E0B"/>
+                                    <TextBlock Text="FOR REVIEW" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding InReviewCount}" FontSize="28" FontWeight="Bold" Foreground="#F59E0B"/>
+                                    <TextBlock Text="Pending Art Director sign-off" FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,0,0">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="COMPLETED" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding DoneCount}" FontSize="28" FontWeight="Bold" Foreground="#10B981"/>
+                                    <TextBlock Text="Approved and archived" FontSize="11" Foreground="#64748B"/>
                                 </StackPanel>
                             </Border>
                         </Grid>
 
-                        <!-- Copywriting Editor Card -->
-                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <!-- Quick Action Banner -->
+                        <Border Background="#022057" BorderBrush="#1E3A8A" BorderThickness="1" CornerRadius="10" Padding="20">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Standardized 5-Folder Vault Hierarchy Active" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="All projects automatically scaffold 01_BRIEF_ASSETS, 02_SOURCE_FILES, 03_COPYWRITING, 04_WORK_IN_PROGRESS, and 05_DELIVERABLES." FontSize="12" Foreground="#BAE6FD"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="+ New Project Creator" Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
+                                        Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" CornerRadius="6" Padding="16,10" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Active Projects Table -->
+                        <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                            <StackPanel Spacing="14">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Recent Studio Projects" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                                    <TextBlock Grid.Column="1" Text="Synology Vault Sync" FontSize="12" Foreground="#64748B"/>
+                                </Grid>
+
+                                <ItemsControl ItemsSource="{Binding Projects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="models:ProjectStatusItem">
+                                            <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                                <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+                                                    <StackPanel Grid.Column="0" Spacing="2">
+                                                        <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="13" Foreground="#F8FAFC"/>
+                                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                                            <TextBlock Text="Designer:" FontSize="11" Foreground="#94A3B8"/>
+                                                            <TextBlock Text="{Binding Designer}" FontWeight="SemiBold" FontSize="11" Foreground="#38BDF8"/>
+                                                            <TextBlock Text="• Priority:" FontSize="11" Foreground="#94A3B8"/>
+                                                            <TextBlock Text="{Binding Priority}" FontWeight="SemiBold" FontSize="11" Foreground="#F59E0B"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+
+                                                    <Border Grid.Column="1" Background="#0F172A" CornerRadius="6" Padding="8,4" Margin="10,0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="Bold" Foreground="{Binding StatusBadgeColor}"/>
+                                                    </Border>
+
+                                                    <Button Grid.Column="2" Content="✍️ Edit Copy" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenCopyEditorCommand}" CommandParameter="{Binding}"
+                                                            Background="#334155" Foreground="#F8FAFC" FontSize="11" CornerRadius="4" Padding="10,6" Margin="4,0"/>
+
+                                                    <Button Grid.Column="3" Content="➔ Advance Stage" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}" CommandParameter="{Binding}"
+                                                            Background="#043388" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" CornerRadius="4" Padding="10,6" Margin="4,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Copywriting Studio Snippet Panel -->
+                        <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
                             <StackPanel Spacing="12">
                                 <Grid ColumnDefinitions="*, Auto">
                                     <StackPanel Grid.Column="0" Spacing="2">
-                                        <TextBlock Text="Copywriting Studio (03_COPYWRITING/COPY.md)" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
-                                        <TextBlock Text="Direct markdown script persistence on Synology NAS." FontSize="12" Foreground="#A1A1AA"/>
+                                        <TextBlock Text="Copywriting Studio (03_COPYWRITING/COPY.md)" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                                        <TextBlock Text="Live Markdown Script Editor with Direct NAS Persistence" FontSize="12" Foreground="#94A3B8"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                                        <Button Content="+ Hook PAS" Command="{Binding InsertCopyHookCommand}" CommandParameter="PAS" Background="#374151" Foreground="#E5E7EB" CornerRadius="4" Padding="8,4" FontSize="12"/>
-                                        <Button Content="+ Hook BAB" Command="{Binding InsertCopyHookCommand}" CommandParameter="BAB" Background="#374151" Foreground="#E5E7EB" CornerRadius="4" Padding="8,4" FontSize="12"/>
-                                        <Button Content="+ Hook CTA" Command="{Binding InsertCopyHookCommand}" CommandParameter="CTA" Background="#374151" Foreground="#E5E7EB" CornerRadius="4" Padding="8,4" FontSize="12"/>
-                                        <Button Content="💾 Save COPY.md" Command="{Binding SaveCopyCommand}" Background="#10B981" Foreground="White" FontWeight="Bold" CornerRadius="4" Padding="12,6"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Button Content="+ PAS" Command="{Binding InsertCopyHookCommand}" CommandParameter="PAS" Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="8,5" CornerRadius="4"/>
+                                        <Button Content="+ BAB" Command="{Binding InsertCopyHookCommand}" CommandParameter="BAB" Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="8,5" CornerRadius="4"/>
+                                        <Button Content="+ CTA" Command="{Binding InsertCopyHookCommand}" CommandParameter="CTA" Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="8,5" CornerRadius="4"/>
+                                        <Button Content="+ Disclaimer" Command="{Binding InsertCopyHookCommand}" CommandParameter="DISCLAIMER" Background="#1E293B" Foreground="#94A3B8" FontSize="11" Padding="8,5" CornerRadius="4"/>
+                                        <Button Content="💾 Save COPY.md" Command="{Binding SaveCopyCommand}" Background="#10B981" Foreground="#FFFFFF" FontWeight="Bold" FontSize="11" Padding="12,5" CornerRadius="4"/>
                                     </StackPanel>
                                 </Grid>
 
-                                <TextBox Text="{Binding ActiveCopyContent}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="160" MaxHeight="300"
-                                         FontFamily="Monospace" FontSize="13" Background="#18181B" Foreground="#F4F4F5" CornerRadius="6" Padding="12"/>
-
-                                <Grid ColumnDefinitions="Auto, *">
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16">
-                                        <TextBlock Text="Words:" Foreground="#9CA3AF" FontSize="12"/>
-                                        <TextBlock Text="{Binding CopyWordCount}" FontWeight="Bold" Foreground="#60A5FA" FontSize="12"/>
-                                        <TextBlock Text="Characters:" Foreground="#9CA3AF" FontSize="12"/>
-                                        <TextBlock Text="{Binding CopyCharCount}" FontWeight="Bold" Foreground="#60A5FA" FontSize="12"/>
+                                <Grid ColumnDefinitions="*, *">
+                                    <!-- Left Markdown Editor -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0" Spacing="8">
+                                        <TextBox Text="{Binding ActiveCopyContent}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="180" MaxHeight="300"
+                                                 FontFamily="Monospace" FontSize="13" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="6" Padding="12"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock Text="Words:" Foreground="#64748B" FontSize="11"/>
+                                            <TextBlock Text="{Binding CopyWordCount}" FontWeight="Bold" Foreground="#38BDF8" FontSize="11"/>
+                                            <TextBlock Text="Characters:" Foreground="#64748B" FontSize="11"/>
+                                            <TextBlock Text="{Binding CopyCharCount}" FontWeight="Bold" Foreground="#38BDF8" FontSize="11"/>
+                                            <TextBlock Text="Reading Time:" Foreground="#64748B" FontSize="11"/>
+                                            <TextBlock Text="{Binding CopyReadingTime}" FontWeight="Bold" Foreground="#34D399" FontSize="11"/>
+                                        </StackPanel>
                                     </StackPanel>
+
+                                    <!-- Right Live WhatsApp / Ad Preview Card -->
+                                    <Border Grid.Column="1" Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="8" Padding="14">
+                                        <StackPanel Spacing="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="💬 Live WhatsApp Bubble Preview" FontWeight="Bold" FontSize="12" Foreground="#A7F3D0"/>
+                                            </StackPanel>
+                                            <Border Background="#022C22" CornerRadius="8" Padding="12">
+                                                <TextBlock Text="{Binding WhatsAppPreviewText}" Foreground="#ECFDF5" FontSize="12" TextWrapping="Wrap" LineHeight="18"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Project Scaffolding Panel -->
-                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <!-- Project Creator Scaffolding Box -->
+                        <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
                             <StackPanel Spacing="12">
-                                <TextBlock Text="Quick Project Scaffolding" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
-                                <Grid ColumnDefinitions="*, *, Auto">
+                                <TextBlock Text="Project Creator — Instant Vault Generator" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
+                                <Grid ColumnDefinitions="140, *, 140, Auto">
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Brand Subsidiary" FontSize="12" Foreground="#A1A1AA" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding NewProjectBrand}" Background="#18181B" Foreground="#F4F4F5" CornerRadius="4"/>
+                                        <TextBlock Text="Brand Entity" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                                        <ComboBox ItemsSource="{Binding AvailableBrands}" SelectedItem="{Binding NewProjectBrand}" HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Margin="4,0,8,0">
-                                        <TextBlock Text="Project Title" FontSize="12" Foreground="#A1A1AA" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding NewProjectTitle}" PlaceholderText="e.g. Video Ads Campaign" Background="#18181B" Foreground="#F4F4F5" CornerRadius="4"/>
+                                        <TextBlock Text="Project Title" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                                        <TextBox Text="{Binding NewProjectTitle}" PlaceholderText="e.g. Ramadhan Mega Campaign 2026" Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4"/>
                                     </StackPanel>
 
-                                    <Button Grid.Column="2" Content="Create Project" Command="{Binding CreateProjectCommand}"
-                                            Background="#10B981" Foreground="White" FontWeight="Bold" CornerRadius="6" Padding="16,10" VerticalAlignment="Bottom"/>
+                                    <StackPanel Grid.Column="2" Margin="4,0,8,0">
+                                        <TextBlock Text="Designer" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                                        <ComboBox ItemsSource="{Binding AvailableDesigners}" SelectedItem="{Binding NewProjectDesigner}" HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="3" Content="🚀 Create Project" Command="{Binding CreateProjectCommand}"
+                                            Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" CornerRadius="6" Padding="18,10" VerticalAlignment="Bottom"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Brand Swatches Quick Reference -->
-                        <Border Background="#27272A" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <!-- Brand Asset Palettes (60:30:10 Matrix) -->
+                        <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
                             <StackPanel Spacing="12">
-                                <TextBlock Text="Corporate Holding Brand Colors (60:30:10)" FontSize="16" FontWeight="SemiBold" Foreground="#F4F4F5"/>
+                                <TextBlock Text="SuamiSihat Corporate Brand Palettes (Official 60:30:10 Tokens)" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
                                 <Grid ColumnDefinitions="*, *, *, *, *">
-                                    <Border Grid.Column="0" Background="#022057" CornerRadius="6" Padding="12" Margin="0,0,4,0">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="SSH Navy" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                                    <Border Grid.Column="0" Background="#022057" CornerRadius="6" Padding="14,12" Margin="0,0,4,0">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Text="SSH Navy" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13"/>
                                             <TextBlock Text="#022057" Foreground="#93C5FD" FontSize="11"/>
+                                            <TextBlock Text="Primary Surface" Foreground="#60A5FA" FontSize="10"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Grid.Column="1" Background="#21A1F7" CornerRadius="6" Padding="12" Margin="4,0,4,0">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="SS Azure" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                                    <Border Grid.Column="1" Background="#21A1F7" CornerRadius="6" Padding="14,12" Margin="4,0,4,0">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Text="SS Azure" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13"/>
                                             <TextBlock Text="#21A1F7" Foreground="#EFF6FF" FontSize="11"/>
+                                            <TextBlock Text="Brand Accent" Foreground="#DBEAFE" FontSize="10"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Grid.Column="2" Background="#BD9A73" CornerRadius="6" Padding="12" Margin="4,0,4,0">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="Warm Gold" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                                    <Border Grid.Column="2" Background="#BD9A73" CornerRadius="6" Padding="14,12" Margin="4,0,4,0">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Text="Warm Gold" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13"/>
                                             <TextBlock Text="#BD9A73" Foreground="#FEF3C7" FontSize="11"/>
+                                            <TextBlock Text="Luxury Foil" Foreground="#FDE68A" FontSize="10"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Grid.Column="3" Background="#107C10" CornerRadius="6" Padding="12" Margin="4,0,4,0">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="Success Green" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                                    <Border Grid.Column="3" Background="#107C10" CornerRadius="6" Padding="14,12" Margin="4,0,4,0">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Text="Care Emerald" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13"/>
                                             <TextBlock Text="#107C10" Foreground="#D1FAE5" FontSize="11"/>
+                                            <TextBlock Text="Clinic &amp; Care" Foreground="#A7F3D0" FontSize="10"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Grid.Column="4" Background="#18181B" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="6" Padding="12" Margin="4,0,0,0">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="Dark Surface" Foreground="White" FontWeight="Bold" FontSize="12"/>
-                                            <TextBlock Text="#18181B" Foreground="#9CA3AF" FontSize="11"/>
+                                    <Border Grid.Column="4" Background="#8B5CF6" CornerRadius="6" Padding="14,12" Margin="4,0,0,0">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Text="Tech Violet" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13"/>
+                                            <TextBlock Text="#8B5CF6" Foreground="#EDE9FE" FontSize="11"/>
+                                            <TextBlock Text="E-Commerce &amp; App" Foreground="#DDD6FE" FontSize="10"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -216,11 +359,29 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- Bottom Status Bar -->
-        <Border Grid.Row="2" Background="#18181B" BorderBrush="#3F3F46" BorderThickness="0,1,0,0" Padding="16,8">
-            <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" FontSize="12" Foreground="#A1A1AA"/>
-                <TextBlock Grid.Column="1" Text="{Binding AppVersion}" FontSize="12" Foreground="#71717A"/>
+        <!-- ══════════════════════════════════════════════════════════════════
+             3. BOTTOM LIVE STATUS BAR
+             ══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" Background="#070B14" BorderBrush="#1E293B" BorderThickness="0,1,0,0" Padding="18,8">
+            <Grid ColumnDefinitions="Auto, *, Auto, Auto">
+                <!-- Left Notification & Message -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8" Fill="#10B981"/>
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#CBD5E1"/>
+                </StackPanel>
+
+                <!-- Center Radio Mini Player -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="0,0,24,0">
+                    <TextBlock Text="📻" FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentStationName}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                    <Button Content="▶ / ⏸" Command="{Binding ToggleRadioCommand}" Background="#1E293B" Foreground="#38BDF8" FontSize="10" Padding="6,3" CornerRadius="4"/>
+                </StackPanel>
+
+                <!-- Right Clock & Version -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding CurrentTimeString}" FontSize="12" FontWeight="SemiBold" Foreground="#38BDF8"/>
+                    <TextBlock Text="{Binding AppVersion}" FontSize="12" Foreground="#64748B"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
