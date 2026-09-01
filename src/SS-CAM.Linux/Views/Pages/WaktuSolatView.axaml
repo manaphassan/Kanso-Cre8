@@ -4,76 +4,55 @@
              x:Class="SS_CAM.Linux.Views.Pages.WaktuSolatView"
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
-        <StackPanel Spacing="20">
-
-            <!-- Hero Header Card -->
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="24,20">
-                <Grid ColumnDefinitions="*,Auto,Auto">
-
-                    <!-- Title + Dates -->
-                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="6">
-                        <TextBlock Text="Waktu Solat &amp; Islamic Dashboard" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <TextBlock Text="Accurate prayer schedules, Qibla direction, daily Islamic inspiration, and calendar telemetry."
-                                   FontSize="13" Foreground="#94A3B8"/>
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="{Binding GregorianDate}" FontSize="12" Foreground="#94A3B8"/>
-                            <TextBlock Text="·" FontSize="12" Foreground="#475569"/>
-                            <TextBlock Text="{Binding HijriDate}" FontSize="12" FontWeight="Bold" Foreground="#38BDF8"/>
-                        </StackPanel>
+        <StackPanel Spacing="24">
+            <!-- 1. Header Bar -->
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="🕌" FontSize="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="JAKIM Malaysia Waktu Solat Studio" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
                     </StackPanel>
+                    <TextBlock Text="Live synchronisation with official JAKIM Malaysia prayer time schedule via waktusolat.app API." Foreground="#94A3B8" FontSize="13"/>
+                    <TextBlock Text="{Binding HijriDateString}" Foreground="#38BDF8" FontWeight="SemiBold" FontSize="12" Margin="0,2,0,0"/>
+                </StackPanel>
 
-                    <!-- Live Clock -->
-                    <Border Grid.Column="1" Background="#0A0F1D" BorderBrush="#1E293B" BorderThickness="1"
-                            CornerRadius="10" Padding="20,10" Margin="20,0" VerticalAlignment="Center">
-                        <StackPanel Spacing="2" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding LiveClockTime}" FontSize="28" FontWeight="Bold" Foreground="#38BDF8" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding LiveClockDate}" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                <!-- Zone Selector -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                    <TextBlock Text="Select Malaysia Zone" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                    <ComboBox ItemsSource="{Binding PrayerZones}" SelectedItem="{Binding SelectedPrayerZone}" Width="240"/>
+                </StackPanel>
+            </Grid>
 
-                    <!-- Next Prayer Pill -->
-                    <Border Grid.Column="2" Background="#022057" BorderBrush="#043388" BorderThickness="1"
-                            CornerRadius="10" Padding="20,10" VerticalAlignment="Center">
-                        <StackPanel Spacing="2" HorizontalAlignment="Center">
-                            <TextBlock Text="NEXT PRAYER" FontSize="9" FontWeight="Bold" Foreground="#60A5FA" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding NextPrayerName}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding NextPrayerTime}" FontSize="14" Foreground="#93C5FD" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding NextPrayerCountdown}" FontSize="11" Foreground="#60A5FA" HorizontalAlignment="Center"/>
-                        </StackPanel>
+            <!-- 2. Next Prayer Hero Card -->
+            <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="12" Padding="24">
+                <Grid ColumnDefinitions="Auto, 24, *, Auto">
+                    <Border Grid.Column="0" Width="64" Height="64" Background="#047857" CornerRadius="12">
+                        <TextBlock Text="🕌" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="NEXT PRAYER" FontSize="11" FontWeight="Bold" Foreground="#6EE7B7"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{Binding NextPrayerName}" FontSize="28" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <TextBlock Text="{Binding NextPrayerTime}" FontSize="28" FontWeight="Bold" Foreground="#A7F3D0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding NextPrayerCountdown, StringFormat='Countdown: {0}'}" FontSize="13" Foreground="#D1FAE5"/>
+                    </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Zone Selector + Refresh -->
-            <Grid ColumnDefinitions="300,12,Auto">
-                <ComboBox Grid.Column="0" ItemsSource="{Binding SolatZones}" SelectedItem="{Binding SelectedSolatZone}"
-                          Background="#0F172A" Foreground="#F8FAFC" HorizontalAlignment="Stretch"/>
-                <Button Grid.Column="2" Content="🔄 Fetch" Command="{Binding FetchSolatCommand}"
-                        Background="#022057" Foreground="#60A5FA" CornerRadius="7" Padding="16,8"
-                        FontWeight="SemiBold"/>
-            </Grid>
-
-            <!-- Prayer Times Table -->
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="20">
-                <StackPanel Spacing="0">
-                    <TextBlock Text="Jadual Solat Hari Ini" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" Margin="0,0,0,14"/>
-
-                    <!-- Table rows -->
-                    <ItemsControl ItemsSource="{Binding PrayerTimeRows}">
+            <!-- 3. Full Daily Prayer Schedule Table -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Today's Official Prayer Time Table" FontSize="14" FontWeight="Bold" Foreground="#94A3B8"/>
+                    <ItemsControl ItemsSource="{Binding PrayerTimes}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="vm:PrayerTimeRow">
-                                <Border Background="{Binding RowBg}" CornerRadius="8" Padding="16,12" Margin="0,2">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                        <TextBlock Grid.Column="0" Text="{Binding Icon}" FontSize="20" VerticalAlignment="Center" Margin="0,0,14,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
-                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#64748B"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" Text="{Binding TimeStr}" FontSize="18" FontWeight="Bold"
-                                                   Foreground="{Binding TimeFg}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-                                        <Border Grid.Column="3" Background="{Binding BadgeBg}" CornerRadius="4" Padding="10,3" VerticalAlignment="Center"
-                                                IsVisible="{Binding IsNext}">
-                                            <TextBlock Text="NEXT" FontSize="9" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <DataTemplate>
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="18,14" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="140, *, Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Bold" FontSize="14" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Description}" Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center"/>
+                                        <Border Grid.Column="2" Background="#022057" CornerRadius="6" Padding="12,4" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Time}" FontWeight="Bold" FontSize="14" Foreground="#38BDF8"/>
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -82,34 +61,6 @@
                     </ItemsControl>
                 </StackPanel>
             </Border>
-
-            <!-- Qibla + Hadith Row -->
-            <Grid ColumnDefinitions="*,16,*">
-                <!-- Qibla Placeholder -->
-                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="20">
-                    <StackPanel Spacing="10" HorizontalAlignment="Center">
-                        <TextBlock Text="🧭 Qibla Direction" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
-                        <Border Width="160" Height="160" Background="#0A0F1D" CornerRadius="80" HorizontalAlignment="Center">
-                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
-                                <TextBlock Text="⬆" FontSize="48" Foreground="#38BDF8" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding QiblaDirection}" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                        <TextBlock Text="Kuala Lumpur" FontSize="12" Foreground="#64748B" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Daily Hadith -->
-                <Border Grid.Column="2" Background="#022057" BorderBrush="#043388" BorderThickness="1" CornerRadius="12" Padding="20">
-                    <StackPanel Spacing="12">
-                        <TextBlock Text="📖 Renungan Harian" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <TextBlock Text="{Binding DailyHadith}" FontSize="13" Foreground="#93C5FD"
-                                   TextWrapping="Wrap" FontStyle="Italic"/>
-                        <TextBlock Text="{Binding DailyHadithSource}" FontSize="11" Foreground="#60A5FA"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>

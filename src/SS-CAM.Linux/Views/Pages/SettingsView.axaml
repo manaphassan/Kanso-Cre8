@@ -5,63 +5,90 @@
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
         <StackPanel Spacing="24">
-            <!-- Page Header -->
+            <!-- 1. Header Bar -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Settings &amp; Vault" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                <TextBlock Text="Configure workspace paths, visual themes, and system integrations." FontSize="13" Foreground="#94A3B8"/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="⚙️" FontSize="24" VerticalAlignment="Center"/>
+                    <TextBlock Text="Application Settings &amp; Vault Preferences" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Configure your local Synology Drive vault path, active designer profile, visual themes, and Linux workstation integration." Foreground="#94A3B8" FontSize="13"/>
             </StackPanel>
 
-            <!-- Workspace Settings -->
+            <!-- 2. Workspace Vault Location -->
             <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                <StackPanel Spacing="16">
-                    <TextBlock Text="⚙️ Application Settings &amp; Preferences" FontSize="18" FontWeight="Bold" Foreground="#F8FAFC"/>
-
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Synology Drive Vault Path" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                        <TextBlock Text="Root workspace directory where all project vaults are stored." FontSize="11" Foreground="#475569"/>
-                        <TextBox Text="{Binding SynologyDrivePath}"
-                                 Background="#090D16" Foreground="#F8FAFC" BorderBrush="#334155" CornerRadius="4" Padding="10,8"/>
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="📁" FontSize="16" Foreground="#38BDF8"/>
+                        <TextBlock Text="Synology Drive Workspace Root Directory" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
                     </StackPanel>
+                    <TextBlock Text="All standardized 5-folder project structures, COPY.md briefs, and assets are indexed and saved under this path." Foreground="#94A3B8" FontSize="12"/>
 
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Visual Theme Profile" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                        <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding CurrentTheme}"
-                                  HorizontalAlignment="Stretch" Background="#1E293B" Foreground="#F8FAFC"/>
-                    </StackPanel>
-
-                    <Border Height="1" Background="#1E293B"/>
-
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <Button Content="🖥️ Create Desktop Shortcut" Command="{Binding CreateDesktopShortcutCommand}"
-                                Background="#1E293B" Foreground="#38BDF8" CornerRadius="6" Padding="14,10"/>
-                        <Button Content="🔄 Rescan Vault" Command="{Binding LoadProjectsCommand}"
-                                Background="#1E293B" Foreground="#F8FAFC" CornerRadius="6" Padding="14,10"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- About -->
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="About SS-CAM Linux" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                    <Grid ColumnDefinitions="160, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="8">
-                        <TextBlock Text="Version" Foreground="#64748B" FontSize="12"/>
-                        <TextBlock Grid.Column="1" Text="{Binding AppVersion}" FontWeight="SemiBold" Foreground="#38BDF8" FontSize="12"/>
-
-                        <TextBlock Grid.Row="1" Text="Platform" Foreground="#64748B" FontSize="12"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Linux (Avalonia UI / .NET 10)" Foreground="#94A3B8" FontSize="12"/>
-
-                        <TextBlock Grid.Row="2" Text="Workspace Engine" Foreground="#64748B" FontSize="12"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Synology Drive + NAS Integration" Foreground="#94A3B8" FontSize="12"/>
-
-                        <TextBlock Grid.Row="3" Text="Organisation" Foreground="#64748B" FontSize="12"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" Text="SuamiSihat Holdings" Foreground="#94A3B8" FontSize="12"/>
-
-                        <TextBlock Grid.Row="4" Text="Build Target" Foreground="#64748B" FontSize="12"/>
-                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Fedora / Ubuntu / Debian / Arch" Foreground="#94A3B8" FontSize="12"/>
+                    <Grid ColumnDefinitions="*, 10, Auto">
+                        <TextBox Grid.Column="0" Text="{Binding SynologyDrivePath}" VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" Command="{Binding CheckNasStatusCommand}" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="14,8" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="🔌" FontSize="12"/>
+                                <TextBlock Text="Verify Vault Path" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
                     </Grid>
                 </StackPanel>
             </Border>
+
+            <!-- 3. Active Designer Profile & Visual Theme -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="🎨" FontSize="16" Foreground="#38BDF8"/>
+                        <TextBlock Text="Designer Identity &amp; Visual Theme Profile" FontSize="14" FontWeight="Bold" Foreground="#F8FAFC"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*, 20, *">
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="Active Designer Profile" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding Designers}" SelectedItem="{Binding SelectedDesigner}" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="6">
+                            <TextBlock Text="Visual Theme Profile" FontSize="11" FontWeight="Bold" Foreground="#94A3B8"/>
+                            <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Theme Swatch Palette Preview Tiles -->
+                    <TextBlock Text="Theme Palette Previews" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="*, *, *">
+                        <Border Grid.Column="0" Background="#090D16" BorderBrush="#21A1F7" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,4,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="SS Default" FontWeight="Bold" Foreground="#F8FAFC" FontSize="12"/>
+                                <TextBlock Text="Deep Navy &amp; Azure Accent" Foreground="#38BDF8" FontSize="10.5"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="#111827" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="8" Padding="12" Margin="2,0,2,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Falconia" FontWeight="Bold" Foreground="#F8FAFC" FontSize="12"/>
+                                <TextBlock Text="Charcoal &amp; Warm Gold" Foreground="#F59E0B" FontSize="10.5"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Background="#050505" BorderBrush="#10B981" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4,0,0,0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Metamorphosis" FontWeight="Bold" Foreground="#F8FAFC" FontSize="12"/>
+                                <TextBlock Text="OLED Black &amp; Care Emerald" Foreground="#10B981" FontSize="10.5"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 4. Action Save Button -->
+            <Button Command="{Binding SaveSettingsCommand}"
+                    Background="#043388" Foreground="#FFFFFF" BorderBrush="#21A1F7" BorderThickness="1"
+                    CornerRadius="8" Padding="20,12" HorizontalAlignment="Left" FontSize="13" FontWeight="Bold">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="💾" FontSize="14"/>
+                    <TextBlock Text="Save Settings &amp; Preferences"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

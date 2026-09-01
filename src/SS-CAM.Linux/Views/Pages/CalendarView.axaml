@@ -1,160 +1,98 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SS_CAM.Linux.ViewModels"
-             xmlns:models="using:SS_CAM.Linux.Models"
              x:Class="SS_CAM.Linux.Views.Pages.CalendarView"
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
         <StackPanel Spacing="20">
+            <!-- 1. Header Bar -->
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="📅" FontSize="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="Big Calendar &amp; Malaysian Holidays" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="Project timeline scheduling, campaign release milestones, and official Malaysian public holidays." Foreground="#94A3B8" FontSize="13"/>
+                </StackPanel>
 
-            <!-- Header -->
-            <StackPanel Spacing="4">
-                <TextBlock Text="Visual Project Timeline &amp; Calendar" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                <TextBlock Text="Monthly project schedule, visual timeline charts, and deliverable deadlines."
-                           FontSize="13" Foreground="#94A3B8"/>
-            </StackPanel>
-
-            <!-- KPI Row -->
-            <Grid ColumnDefinitions="*,12,*,12,*,12,*">
-                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="DEADLINES THIS MONTH" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
-                        <TextBlock Text="{Binding DeadlinesThisMonth}" FontSize="28" FontWeight="Bold" Foreground="#F59E0B"/>
-                        <TextBlock Text="Scheduled deliverables" FontSize="11" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="STARTED THIS MONTH" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
-                        <TextBlock Text="{Binding StartedThisMonth}" FontSize="28" FontWeight="Bold" Foreground="#38BDF8"/>
-                        <TextBlock Text="New projects kicked off" FontSize="11" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="4" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="OVERDUE / CRITICAL" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
-                        <TextBlock Text="{Binding OverdueCount}" FontSize="28" FontWeight="Bold" Foreground="#EF4444"/>
-                        <TextBlock Text="Past deadline, unresolved" FontSize="11" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="6" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="COMPLETED THIS MONTH" FontSize="10" FontWeight="Bold" Foreground="#64748B"/>
-                        <TextBlock Text="{Binding DoneCount}" FontSize="28" FontWeight="Bold" Foreground="#10B981"/>
-                        <TextBlock Text="Archived deliverables" FontSize="11" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
+                <!-- Month Navigator -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Command="{Binding PrevMonthCommand}" Content="◀" Background="#1E293B" Foreground="#F8FAFC" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,6"/>
+                    <Border Background="#043388" CornerRadius="6" Padding="14,6">
+                        <TextBlock Text="{Binding CalendarMonthYearHeader}" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                    </Border>
+                    <Button Command="{Binding NextMonthCommand}" Content="▶" Background="#1E293B" Foreground="#F8FAFC" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,6"/>
+                    <Button Command="{Binding TodayCalendarCommand}" Content="Today" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,6"/>
+                </StackPanel>
             </Grid>
 
-            <!-- Calendar Grid -->
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                <StackPanel Spacing="12">
-                    <!-- Month nav -->
-                    <Grid ColumnDefinitions="Auto,*,Auto">
-                        <Button Grid.Column="0" Content="◀" Command="{Binding PrevMonthCommand}"
-                                Background="#1E293B" Foreground="#94A3B8" CornerRadius="6" Padding="12,6"/>
-                        <TextBlock Grid.Column="1" Text="{Binding CalendarMonthLabel}"
-                                   FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Button Grid.Column="2" Content="▶" Command="{Binding NextMonthCommand}"
-                                Background="#1E293B" Foreground="#94A3B8" CornerRadius="6" Padding="12,6"/>
+            <!-- 2. Big Calendar Grid (7 columns: Sun - Sat) -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16">
+                <StackPanel Spacing="10">
+                    <!-- Day Header -->
+                    <Grid ColumnDefinitions="*, *, *, *, *, *, *">
+                        <TextBlock Grid.Column="0" Text="SUN" FontWeight="Bold" FontSize="11" Foreground="#EF4444" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="MON" FontWeight="Bold" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="TUE" FontWeight="Bold" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="3" Text="WED" FontWeight="Bold" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="4" Text="THU" FontWeight="Bold" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="5" Text="FRI" FontWeight="Bold" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="6" Text="SAT" FontWeight="Bold" FontSize="11" Foreground="#38BDF8" HorizontalAlignment="Center"/>
                     </Grid>
 
-                    <!-- Day headers -->
-                    <Grid ColumnDefinitions="*,*,*,*,*,*,*">
-                        <TextBlock Grid.Column="0" Text="SUN" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="MON" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" Text="TUE" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="3" Text="WED" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="4" Text="THU" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="5" Text="FRI" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="6" Text="SAT" FontSize="10" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center"/>
-                    </Grid>
+                    <Border Height="1" Background="#1E293B"/>
 
-                    <!-- Calendar days (ItemsControl renders 6 rows of 7 days) -->
+                    <!-- Calendar Weeks -->
                     <ItemsControl ItemsSource="{Binding CalendarWeeks}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="models:CalendarWeekRow">
-                                <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,4">
-                                    <Border Grid.Column="0" Background="{Binding Day0.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day0.DayNumber}" FontSize="12" FontWeight="{Binding Day0.DayFontWeight}"
-                                                       Foreground="{Binding Day0.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day0.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="1" Background="{Binding Day1.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day1.DayNumber}" FontSize="12" FontWeight="{Binding Day1.DayFontWeight}"
-                                                       Foreground="{Binding Day1.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day1.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="2" Background="{Binding Day2.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day2.DayNumber}" FontSize="12" FontWeight="{Binding Day2.DayFontWeight}"
-                                                       Foreground="{Binding Day2.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day2.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="3" Background="{Binding Day3.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day3.DayNumber}" FontSize="12" FontWeight="{Binding Day3.DayFontWeight}"
-                                                       Foreground="{Binding Day3.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day3.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="4" Background="{Binding Day4.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day4.DayNumber}" FontSize="12" FontWeight="{Binding Day4.DayFontWeight}"
-                                                       Foreground="{Binding Day4.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day4.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="5" Background="{Binding Day5.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day5.DayNumber}" FontSize="12" FontWeight="{Binding Day5.DayFontWeight}"
-                                                       Foreground="{Binding Day5.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day5.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="6" Background="{Binding Day6.CellBg}" CornerRadius="6" Padding="8,6" Margin="2">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{Binding Day6.DayNumber}" FontSize="12" FontWeight="{Binding Day6.DayFontWeight}"
-                                                       Foreground="{Binding Day6.DayFg}" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Day6.Badge}" FontSize="9" Foreground="#F59E0B" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding Days}" Margin="0,2">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Grid ColumnDefinitions="*, *, *, *, *, *, *"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding IsToday, Converter={x:Static ObjectConverters.IsNull}}"
+                                                    BorderBrush="#1E293B" BorderThickness="1" CornerRadius="6" Padding="8" Margin="2" MinHeight="68">
+                                                <StackPanel Spacing="4">
+                                                    <Grid ColumnDefinitions="*, Auto">
+                                                        <TextBlock Text="{Binding DayNumber}" FontWeight="Bold" FontSize="12" Foreground="{Binding IsCurrentMonth, Converter={x:Static ObjectConverters.IsNull}}"/>
+                                                    </Grid>
+                                                    <Border IsVisible="{Binding HasHoliday}" Background="#78350F" CornerRadius="4" Padding="4,2">
+                                                        <TextBlock Text="{Binding HolidayName}" FontSize="9" FontWeight="Bold" Foreground="#FDE68A" TextTrimming="CharacterEllipsis"/>
+                                                    </Border>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
             </Border>
 
-            <!-- Gantt Timeline -->
-            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Project Timeline (Gantt)" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                    <ItemsControl ItemsSource="{Binding InProgressProjects}">
+            <!-- 3. Holidays in this Month -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Malaysian Public Holidays in This Month" FontSize="13" FontWeight="Bold" Foreground="#94A3B8"/>
+                    <ItemsControl ItemsSource="{Binding MonthlyHolidays}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="models:ProjectStatusItem">
-                                <Grid ColumnDefinitions="200,*" Margin="0,0,0,8">
-                                    <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Project}" FontSize="12" FontWeight="SemiBold" Foreground="#F8FAFC"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding Deadline}" FontSize="10" Foreground="#64748B"/>
-                                    </StackPanel>
-                                    <Border Grid.Column="1" Background="#1E293B" CornerRadius="4" Height="22" Margin="8,0,0,0">
-                                        <Border Background="{Binding StatusBadgeColor}" CornerRadius="4"
-                                                HorizontalAlignment="Left" Width="120"/>
-                                    </Border>
-                                </Grid>
+                            <DataTemplate>
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,6">
+                                    <Grid ColumnDefinitions="120, *, Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding Date, StringFormat='{}{0:dd MMM yyyy}'}" FontWeight="Bold" Foreground="#F59E0B" FontSize="12"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Bold" Foreground="#F8FAFC" FontSize="12"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Description}" Foreground="#64748B" FontSize="11"/>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
             </Border>
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>

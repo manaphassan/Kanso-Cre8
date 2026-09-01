@@ -1,23 +1,20 @@
-namespace SS_CAM.Linux.Models;
+using System.Collections.Generic;
 
-public class CalendarDay
+namespace SS_CAM.Linux.Models
 {
-    public string DayNumber    { get; set; } = string.Empty;
-    public string Badge        { get; set; } = string.Empty;
-    public bool   IsToday      { get; set; }
-    public bool   IsCurrentMonth { get; set; } = true;
-    public string CellBg       => IsToday ? "#1E4D7B" : IsCurrentMonth ? "#0F172A" : "#080E1B";
-    public string DayFg        => IsToday ? "#38BDF8" : IsCurrentMonth ? "#F8FAFC" : "#334155";
-    public string DayFontWeight => IsToday ? "Bold" : "Normal";
-}
+    public class CalendarDay
+    {
+        public int DayNumber { get; set; }
+        public bool IsToday { get; set; } = false;
+        public bool IsCurrentMonth { get; set; } = true;
+        public bool HasHoliday { get; set; } = false;
+        public string HolidayName { get; set; } = "";
+        public string CellBg => IsToday ? "#1E3A8A" : HasHoliday ? "#451A03" : IsCurrentMonth ? "#0F172A" : "#080E1B";
+        public string DayFg => IsToday ? "#38BDF8" : HasHoliday ? "#FDE68A" : IsCurrentMonth ? "#F8FAFC" : "#475569";
+    }
 
-public class CalendarWeekRow
-{
-    public CalendarDay Day0 { get; set; } = new();
-    public CalendarDay Day1 { get; set; } = new();
-    public CalendarDay Day2 { get; set; } = new();
-    public CalendarDay Day3 { get; set; } = new();
-    public CalendarDay Day4 { get; set; } = new();
-    public CalendarDay Day5 { get; set; } = new();
-    public CalendarDay Day6 { get; set; } = new();
+    public class CalendarWeekRow
+    {
+        public List<CalendarDay> Days { get; set; } = new List<CalendarDay>();
+    }
 }
