@@ -41,8 +41,8 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
 | 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
-| 🐧 **Linux Desktop (Fedora)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Compile & run: `dotnet run --project src/SS-CAM.Linux -c Release` | **Fedora Workstation Client**: Native Skia desktop rendering, direct `~/SynologyDrive/` I/O. |
-| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.0-android-debug.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
+| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.0-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
+| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.0-android-release.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
 
 ---
