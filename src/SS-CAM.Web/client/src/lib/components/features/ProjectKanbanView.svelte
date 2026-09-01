@@ -131,7 +131,13 @@
                 <!-- Top Row: Job ID, Brand & Quick Delete -->
                 <div class="card-meta-header">
                   <div class="job-id-pill">
-                    <span class="job-id-mono">{p.jobId || p.id}</span>
+                    <a
+                      href="#project-detail/{encodeURIComponent(p.id)}"
+                      class="job-id-mono"
+                      onclick={(e) => { e.stopPropagation(); appState.navigate('project-detail', { id: p.id }); }}
+                    >
+                      {p.jobId || p.id}
+                    </a>
                     <FluentBadge type="brand" value={p.brand || 'SS'} />
                   </div>
 
@@ -160,7 +166,14 @@
                 </div>
 
                 <!-- Title -->
-                <h4 class="card-project-title" title={p.title}>{p.title}</h4>
+                <a
+                  href="#project-detail/{encodeURIComponent(p.id)}"
+                  class="card-project-title"
+                  title={p.title}
+                  onclick={(e) => { e.stopPropagation(); appState.navigate('project-detail', { id: p.id }); }}
+                >
+                  {p.title}
+                </a>
 
                 <!-- Preset & Tags -->
                 <div class="card-preset-row">
@@ -380,6 +393,13 @@
     font-size: 12px;
     font-weight: 800;
     color: #0078D4;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .job-id-mono:hover {
+    text-decoration: underline;
+    color: #005a9e;
   }
 
   .card-action-group {
@@ -423,6 +443,14 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .card-project-title:hover {
+    color: var(--brand-accent, #0078D4);
+    text-decoration: underline;
   }
 
   .card-preset-row {

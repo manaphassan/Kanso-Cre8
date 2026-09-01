@@ -490,12 +490,40 @@ class WorkspaceService {
 
   getProjectById(id) {
     if (!id) return null;
-    const target = id.trim().toLowerCase();
-    const project = this.projectsCache.find(p => 
-      (p.id && p.id.toLowerCase() === target) ||
-      (p.folderName && p.folderName.toLowerCase() === target) ||
-      (p.jobId && p.jobId.toLowerCase() === target)
-    ) || null;
+    let raw = String(id).trim();
+    try {
+      raw = decodeURIComponent(raw);
+    } catch (e) {}
+
+    const target = raw.toLowerCase();
+    const targetNormalized = target.replace(/[\s_-]+/g, '_');
+
+    // Extract potential Job ID (e.g. "0004P" from "202608_0004P_SS_Pertabi Jersey")
+    const jobMatch = target.match(/\b(\d{4}[A-Za-z])\b/);
+    const targetJobId = jobMatch ? jobMatch[1].toLowerCase() : null;
+
+    const project = this.projectsCache.find(p => {
+      if (!p) return false;
+      const pId = (p.id || '').toLowerCase();
+      const pFolder = (p.folderName || '').toLowerCase();
+      const pJob = (p.jobId || '').toLowerCase();
+
+      // 1. Direct match on ID, folder name, or job ID
+      if (pId === target || pFolder === target || pJob === target) return true;
+
+      // 2. Normalized space/underscore/dash match
+      const pIdNorm = pId.replace(/[\s_-]+/g, '_');
+      const pFolderNorm = pFolder.replace(/[\s_-]+/g, '_');
+      if (pIdNorm === targetNormalized || pFolderNorm === targetNormalized) return true;
+
+      // 3. Extracted Job ID match
+      if (targetJobId && (pJob === targetJobId || pIdNorm.includes(`_${targetJobId}_`) || pFolderNorm.includes(`_${targetJobId}_`))) return true;
+
+      // 4. Substring folder match if target is specific
+      if (target.length >= 6 && (pFolder.includes(target) || target.includes(pFolder))) return true;
+
+      return false;
+    }) || null;
 
     if (!project) return null;
 

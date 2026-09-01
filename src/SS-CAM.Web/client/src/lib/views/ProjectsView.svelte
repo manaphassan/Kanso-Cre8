@@ -253,7 +253,13 @@
               </div>
             </div>
 
-            <h3 class="project-card-title">{p.title}</h3>
+            <a
+              href="#project-detail/{encodeURIComponent(p.id)}"
+              class="project-card-title"
+              onclick={(e) => { e.stopPropagation(); appState.navigate('project-detail', { id: p.id }); }}
+            >
+              {p.title}
+            </a>
 
             <div class="meta-rows">
               <div class="meta-row">
@@ -467,6 +473,15 @@
     color: var(--text-primary, #111827);
     margin-bottom: 12px;
     line-height: 1.35;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .project-card-title:hover {
+    color: var(--brand-accent, #0078D4);
+    text-decoration: underline;
   }
 
   .meta-rows {
