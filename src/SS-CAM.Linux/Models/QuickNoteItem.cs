@@ -1,9 +1,14 @@
-namespace SS_CAM.Linux.Models;
+using System;
 
-public class QuickNoteItem
+namespace SS_CAM.Linux.Models
 {
-    public string Id       { get; set; } = System.Guid.NewGuid().ToString();
-    public string Title    { get; set; } = "Untitled Note";
-    public string Content  { get; set; } = string.Empty;
-    public string Modified { get; set; } = System.DateTime.Now.ToString("dd MMM, HH:mm");
+    public class QuickNoteItem
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Title { get; set; } = "Untitled Note";
+        public string Content { get; set; } = "";
+        public string Category { get; set; } = "General";
+        public string CreatedDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        public bool IsPinned { get; set; } = false;
+    }
 }

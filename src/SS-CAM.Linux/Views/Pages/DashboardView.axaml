@@ -1,97 +1,159 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SS_CAM.Linux.ViewModels"
-             xmlns:models="using:SS_CAM.Linux.Models"
              x:Class="SS_CAM.Linux.Views.Pages.DashboardView"
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
         <StackPanel Spacing="24">
-            <!-- Page Header -->
+            <!-- 1. Page Header Bar -->
             <Grid ColumnDefinitions="*, Auto">
                 <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="Dashboard" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                    <TextBlock Text="SuamiSihat Creative Operations &amp; Synology Drive Workspace on Linux" FontSize="13" Foreground="#94A3B8"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="📊" FontSize="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="Designer Intelligence Dashboard" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                        <Border Background="#043388" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding AppVersion}" FontSize="10.5" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="Real-time workspace overview, creative KPI metrics, and project telemetry" Foreground="#94A3B8" FontSize="13"/>
+                    <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
+                        <TextBlock Text="📁" FontSize="12" Foreground="#38BDF8"/>
+                        <TextBlock Text="{Binding SynologyDrivePath}" Foreground="#38BDF8" FontWeight="SemiBold" FontSize="12"/>
+                    </StackPanel>
                 </StackPanel>
-                <Button Grid.Column="1" Content="📁 Open NAS Vault" Command="{Binding OpenFolderCommand}" CommandParameter="{Binding SynologyDrivePath}"
-                        Background="#1E293B" Foreground="#38BDF8" CornerRadius="6" Padding="12,8" FontSize="12" FontWeight="SemiBold"/>
+
+                <Button Grid.Column="1" Command="{Binding LoadProjectsCommand}"
+                        Background="#1E293B" Foreground="#F8FAFC" BorderBrush="#334155" BorderThickness="1"
+                        CornerRadius="8" Padding="14,8" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="🔄" FontSize="13"/>
+                        <TextBlock Text="Refresh Analytics" FontSize="12" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
             </Grid>
 
-            <!-- 4 Bento KPI Tiles -->
-            <Grid ColumnDefinitions="*, *, *, *">
-                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="0,0,6,0">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="TOTAL PROJECTS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
-                        <TextBlock Text="{Binding ProjectCount}" FontSize="28" FontWeight="Bold" Foreground="#38BDF8"/>
-                        <TextBlock Text="Indexed across year vaults" FontSize="11" Foreground="#64748B"/>
+            <!-- 2. 8 KPI Telemetry Grid (2 rows x 4 columns) -->
+            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *, *" Margin="-4">
+                <!-- Total Projects -->
+                <Border Grid.Row="0" Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="TOTAL PROJECTS" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalProjects}" Foreground="#38BDF8" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="Workspace total" Foreground="#64748B" FontSize="11"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="IN PROGRESS" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
-                        <TextBlock Text="{Binding InProgressCount}" FontSize="28" FontWeight="Bold" Foreground="#60A5FA"/>
-                        <TextBlock Text="Active design sprint jobs" FontSize="11" Foreground="#64748B"/>
+
+                <!-- Active WIP Projects -->
+                <Border Grid.Row="0" Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="ACTIVE WIP (7 DAYS)" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ActiveWipProjects}" Foreground="#F59E0B" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="Modified recently" Foreground="#64748B" FontSize="11"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,6,0">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="FOR REVIEW" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
-                        <TextBlock Text="{Binding InReviewCount}" FontSize="28" FontWeight="Bold" Foreground="#F59E0B"/>
-                        <TextBlock Text="Pending Art Director sign-off" FontSize="11" Foreground="#64748B"/>
+
+                <!-- Latest Project -->
+                <Border Grid.Row="0" Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="LATEST CREATED" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding LatestProjectName}" Foreground="#F8FAFC" FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="Most recent project" Foreground="#64748B" FontSize="11"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="18" Margin="6,0,0,0">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="COMPLETED" FontSize="10" FontWeight="Bold" Foreground="#94A3B8"/>
-                        <TextBlock Text="{Binding DoneCount}" FontSize="28" FontWeight="Bold" Foreground="#10B981"/>
-                        <TextBlock Text="Approved and archived" FontSize="11" Foreground="#64748B"/>
+
+                <!-- Storage Size -->
+                <Border Grid.Row="0" Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="STORAGE SIZE" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalStorageSize}" Foreground="#F8FAFC" FontSize="22" FontWeight="Bold"/>
+                        <TextBlock Text="Total asset volume" Foreground="#64748B" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- This Month Output -->
+                <Border Grid.Row="1" Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="THIS MONTH OUTPUT" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ThisMonthOutput}" Foreground="#10B981" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding MonthComparisonText}" Foreground="#10B981" FontSize="11" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Largest Project -->
+                <Border Grid.Row="1" Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="LARGEST PROJECT" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding LargestProjectSize}" Foreground="#F59E0B" FontSize="22" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding LargestProjectName}" Foreground="#64748B" FontSize="10" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Stale Projects -->
+                <Border Grid.Row="1" Grid.Column="2" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="STALE PROJECTS (>90 DAYS)" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding StaleProjectsCount}" Foreground="#EF4444" FontSize="28" FontWeight="Bold"/>
+                        <TextBlock Text="Idle folders to archive" Foreground="#64748B" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Creative Team Flow -->
+                <Border Grid.Row="1" Grid.Column="3" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="4">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="CREATIVE TEAM FLOW" Foreground="#94A3B8" FontSize="10" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding CreativeTeamFlowText}" FontSize="14" FontWeight="Bold" Foreground="#38BDF8" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="Active designers tracking" Foreground="#64748B" FontSize="11"/>
                     </StackPanel>
                 </Border>
             </Grid>
 
-            <!-- Quick Action Banner -->
-            <Border Background="#022057" BorderBrush="#1E3A8A" BorderThickness="1" CornerRadius="10" Padding="20">
-                <Grid ColumnDefinitions="*, Auto">
-                    <StackPanel Grid.Column="0" Spacing="4">
-                        <TextBlock Text="Standardized 5-Folder Vault Hierarchy Active" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
-                        <TextBlock Text="All projects automatically scaffold 01_BRIEF_ASSETS, 02_SOURCE_FILES, 03_COPYWRITING, 04_WORK_IN_PROGRESS, and 05_DELIVERABLES." FontSize="12" Foreground="#BAE6FD"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="+ New Project" Command="{Binding SelectTabCommand}" CommandParameter="Project Creator"
-                            Background="#21A1F7" Foreground="#FFFFFF" FontWeight="Bold" CornerRadius="6" Padding="16,10" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
-
-            <!-- Recent Projects Table -->
+            <!-- 3. Recent Past Projects List (Last 6 Created) -->
             <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
                 <StackPanel Spacing="14">
-                    <Grid ColumnDefinitions="*, Auto">
-                        <TextBlock Text="Recent Studio Projects" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <TextBlock Grid.Column="1" Text="Synology Vault Sync" FontSize="12" Foreground="#64748B"/>
-                    </Grid>
-                    <ItemsControl ItemsSource="{Binding Projects}">
+                    <TextBlock Text="Recent Projects (Last 6 Modified)" FontSize="14" FontWeight="Bold" Foreground="#94A3B8"/>
+                    <ItemsControl ItemsSource="{Binding RecentProjects}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid ColumnDefinitions="*, *, *" RowDefinitions="Auto, Auto"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="models:ProjectStatusItem">
-                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
-                                    <Grid ColumnDefinitions="*, Auto, Auto, Auto">
-                                        <StackPanel Grid.Column="0" Spacing="2">
-                                            <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="13" Foreground="#F8FAFC"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <TextBlock Text="Designer:" FontSize="11" Foreground="#94A3B8"/>
-                                                <TextBlock Text="{Binding Designer}" FontWeight="SemiBold" FontSize="11" Foreground="#38BDF8"/>
-                                                <TextBlock Text="• Priority:" FontSize="11" Foreground="#94A3B8"/>
-                                                <TextBlock Text="{Binding Priority}" FontWeight="SemiBold" FontSize="11" Foreground="#F59E0B"/>
+                            <DataTemplate>
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="4">
+                                    <Grid ColumnDefinitions="Auto, *">
+                                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="6" Background="#043388" Margin="0,0,12,0" VerticalAlignment="Center">
+                                            <TextBlock Text="📁" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                            <TextBlock Text="{Binding Project}" FontWeight="Bold" Foreground="#F8FAFC" FontSize="12.5" TextTrimming="CharacterEllipsis"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <Border Background="#022057" CornerRadius="4" Padding="6,1">
+                                                    <TextBlock Text="{Binding Designer}" Foreground="#38BDF8" FontSize="10" FontWeight="Bold"/>
+                                                </Border>
+                                                <TextBlock Text="{Binding Modified}" Foreground="#64748B" FontSize="10.5" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </StackPanel>
-                                        <Border Grid.Column="1" Background="#0F172A" CornerRadius="6" Padding="8,4" Margin="10,0" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="Bold" Foreground="{Binding StatusBadgeColor}"/>
-                                        </Border>
-                                        <Button Grid.Column="2" Content="✍️ Edit Copy"
-                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).OpenCopyEditorCommand}"
-                                                CommandParameter="{Binding}"
-                                                Background="#334155" Foreground="#F8FAFC" FontSize="11" CornerRadius="4" Padding="10,6" Margin="4,0"/>
-                                        <Button Grid.Column="3" Content="➔ Advance Stage"
-                                                Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).MoveStatusCommand}"
-                                                CommandParameter="{Binding}"
-                                                Background="#043388" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" CornerRadius="4" Padding="10,6" Margin="4,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- 4. Designer Workload & Capacity Section -->
+            <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Designer Workload &amp; Capacity Tracker" FontSize="14" FontWeight="Bold" Foreground="#94A3B8"/>
+                    <ItemsControl ItemsSource="{Binding DesignerCapacities}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="16,12" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="140, 160, *, Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding DesignerName}" FontWeight="Bold" Foreground="#F8FAFC" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding ActiveProjects, StringFormat='Active: {0} projects'}" Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center"/>
+                                        <ProgressBar Grid.Column="2" Value="{Binding CapacityPercentage}" Maximum="100" Height="8" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding CapacityPercentage, StringFormat='{}{0}% Load'}" FontWeight="Bold" Foreground="{Binding CapacityStatusColor}" FontSize="12" VerticalAlignment="Center"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

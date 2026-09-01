@@ -5,85 +5,109 @@
              x:DataType="vm:MainViewModel">
     <ScrollViewer Padding="28,24">
         <StackPanel Spacing="24">
-            <!-- Page Header -->
+            <!-- 1. Header Bar -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Wellbeing &amp; Solat" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC"/>
-                <TextBlock Text="Work sustainably — breathing, hydration, and JAKIM prayer time reminders." FontSize="13" Foreground="#94A3B8"/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="🧘" FontSize="24" VerticalAlignment="Center"/>
+                    <TextBlock Text="Creative Wellbeing &amp; Mindfulness Studio" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="Box breathing rhythm coach, hydration tracker, posture reminders, and prayer time synchronisation for peak creative focus." Foreground="#94A3B8" FontSize="13"/>
             </StackPanel>
 
-            <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
-                <!-- Left: 16s Box Breathing + Hydration -->
-                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                    <StackPanel Spacing="16">
-                        <TextBlock Text="🧘 16-Second Box Breathing Coach" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <Border Background="#022057" CornerRadius="12" Padding="28" HorizontalAlignment="Stretch">
-                            <StackPanel Spacing="10" HorizontalAlignment="Center">
-                                <TextBlock Text="Inhale  4s" FontSize="14" FontWeight="Bold" Foreground="#BAE6FD" HorizontalAlignment="Center"/>
-                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Hold    4s" FontSize="14" FontWeight="Bold" Foreground="#60A5FA" HorizontalAlignment="Center"/>
-                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Exhale  4s" FontSize="14" FontWeight="Bold" Foreground="#BAE6FD" HorizontalAlignment="Center"/>
-                                <TextBlock Text="▼" FontSize="16" Foreground="#38BDF8" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Hold    4s" FontSize="14" FontWeight="Bold" Foreground="#60A5FA" HorizontalAlignment="Center"/>
+            <!-- 2-Column Split: Breathing Coach + Daily Hydration & Ergonomics -->
+            <Grid ColumnDefinitions="1.2*, 24, *">
+                <!-- Left Column: 16s Box Breathing Interactive Studio -->
+                <Border Grid.Column="0" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="24">
+                    <StackPanel Spacing="20" HorizontalAlignment="Center">
+                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                            <TextBlock Text="16-SECOND BOX BREATHING COACH" FontSize="11" FontWeight="Bold" Foreground="#38BDF8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Guided 4-Step Nervous System Reset" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding BreathingInstruction}" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Visual Pulsing Breathing Circle Container -->
+                        <Border Width="220" Height="220" CornerRadius="110" Background="#043388" BorderBrush="#21A1F7" BorderThickness="3" HorizontalAlignment="Center" Margin="0,10">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                <TextBlock Text="{Binding BreathingCountdown}" FontSize="54" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
+                                <TextBlock Text="SECONDS" FontSize="11" FontWeight="Bold" Foreground="#93C5FD" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Hydration Tracker -->
-                        <Border Height="1" Background="#1E293B"/>
-                        <TextBlock Text="💧 Daily Hydration Tracker" FontSize="14" FontWeight="SemiBold" Foreground="#F8FAFC"/>
-                        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding WaterGlasses}" FontSize="32" FontWeight="Bold" Foreground="#38BDF8" VerticalAlignment="Center"/>
-                            <TextBlock Text="/ 8 glasses" FontSize="16" Foreground="#64748B" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <Button Content="💧 +1 Glass of Water" Command="{Binding IncrementWaterCommand}"
-                                Background="#0EA5E9" Foreground="#FFFFFF" FontWeight="SemiBold" CornerRadius="6" Padding="16,10" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Right: JAKIM Waktu Solat -->
-                <Border Grid.Column="1" Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="10" Padding="20">
-                    <StackPanel Spacing="16">
-                        <TextBlock Text="🕌 JAKIM Waktu Solat" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC"/>
-                        <TextBlock Text="Zone: WLY01 — Kuala Lumpur / Putrajaya" FontSize="12" Foreground="#64748B"/>
-
-                        <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="10" Padding="16">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Next Prayer" FontSize="11" FontWeight="Bold" Foreground="#A7F3D0"/>
-                                <TextBlock Text="{Binding NextPrayerName}" FontSize="22" FontWeight="Bold" Foreground="#34D399"/>
-                                <TextBlock Text="{Binding NextPrayerTime}" FontSize="16" FontWeight="SemiBold" Foreground="#ECFDF5"/>
-                                <TextBlock Text="{Binding NextPrayerCountdown}" FontSize="12" Foreground="#6EE7B7"/>
-                            </StackPanel>
+                        <!-- Phase Indicator Banner -->
+                        <Border Background="#022057" BorderBrush="#1E3A8A" BorderThickness="1" CornerRadius="8" Padding="16,10" HorizontalAlignment="Stretch">
+                            <TextBlock Text="{Binding BreathingPhaseText}" FontSize="14" FontWeight="Bold" Foreground="#BAE6FD" HorizontalAlignment="Center"/>
                         </Border>
 
-                        <!-- Prayer schedule table -->
-                        <StackPanel Spacing="6">
-                            <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Text="Subuh" FontSize="13" Foreground="#CBD5E1"/>
-                                <TextBlock Grid.Column="1" Text="05:52" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                            </Grid>
-                            <Border Height="1" Background="#1E293B"/>
-                            <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Text="Zohor" FontSize="13" Foreground="#CBD5E1"/>
-                                <TextBlock Grid.Column="1" Text="13:18" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                            </Grid>
-                            <Border Height="1" Background="#1E293B"/>
-                            <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Text="Asar" FontSize="13" Foreground="#CBD5E1"/>
-                                <TextBlock Grid.Column="1" Text="16:42" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                            </Grid>
-                            <Border Height="1" Background="#1E293B"/>
-                            <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Text="Maghrib" FontSize="13" Foreground="#CBD5E1"/>
-                                <TextBlock Grid.Column="1" Text="19:21" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                            </Grid>
-                            <Border Height="1" Background="#1E293B"/>
-                            <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Text="Isyak" FontSize="13" Foreground="#CBD5E1"/>
-                                <TextBlock Grid.Column="1" Text="20:33" FontSize="13" FontWeight="SemiBold" Foreground="#94A3B8"/>
-                            </Grid>
-                        </StackPanel>
+                        <!-- Breathing Action Button -->
+                        <Button Command="{Binding ToggleBreathingCommand}"
+                                Background="#043388" Foreground="#FFFFFF" BorderBrush="#21A1F7" BorderThickness="1"
+                                CornerRadius="8" Padding="20,12" HorizontalAlignment="Center" FontSize="13" FontWeight="Bold">
+                            <TextBlock Text="{Binding BreathingButtonText}"/>
+                        </Button>
                     </StackPanel>
                 </Border>
+
+                <!-- Right Column: Hydration & Ergonomics -->
+                <StackPanel Grid.Column="2" Spacing="20">
+                    <!-- Daily Hydration Tracker -->
+                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <StackPanel Spacing="14">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="💧" FontSize="16"/>
+                                <TextBlock Text="Daily Hydration Tracker" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding HydrationProgressText}" FontSize="13" FontWeight="Bold" Foreground="#38BDF8"/>
+                            <ProgressBar Value="{Binding HydrationGlasses}" Maximum="{Binding HydrationGoal}" Height="10" CornerRadius="5"/>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+                                <Button Command="{Binding AddWaterCommand}" Background="#043388" Foreground="#FFFFFF" CornerRadius="6" Padding="14,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="➕" FontSize="12"/>
+                                        <TextBlock Text="+1 Glass of Water" FontSize="12" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding ResetWaterCommand}" Background="#1E293B" Foreground="#94A3B8" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="12,8">
+                                    <TextBlock Text="Reset Daily Log" FontSize="12"/>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Ergonomic Health Break Reminders -->
+                    <Border Background="#0F172A" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="20">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="👁️" FontSize="16"/>
+                                <TextBlock Text="Ergonomic Focus &amp; Posture Care" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC"/>
+                            </StackPanel>
+                            <Border Background="#1E293B" CornerRadius="8" Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="20-20-20 Eye Rest Rule" FontWeight="Bold" FontSize="12" Foreground="#F59E0B"/>
+                                    <TextBlock Text="Every 20 minutes, look at an object 20 feet away for 20 seconds to prevent digital eye strain." Foreground="#94A3B8" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#1E293B" CornerRadius="8" Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Spine &amp; Shoulder Stretch Interval" FontWeight="Bold" FontSize="12" Foreground="#10B981"/>
+                                    <TextBlock Text="{Binding ErgonomicTimerText}" Foreground="#94A3B8" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- JAKIM Solat Quick Status Pill -->
+                    <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="12" Padding="16">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Grid.Column="0" Text="🕌" FontSize="20" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="JAKIM Malaysia Waktu Solat" FontWeight="Bold" Foreground="#A7F3D0" FontSize="12.5"/>
+                                <TextBlock Text="{Binding NextPrayerName, StringFormat='Next Prayer: {0}'}" FontSize="12" Foreground="#FFFFFF"/>
+                                <TextBlock Text="{Binding NextPrayerCountdown}" FontSize="11" Foreground="#6EE7B7"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
             </Grid>
         </StackPanel>
     </ScrollViewer>

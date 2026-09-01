@@ -1,108 +1,57 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
+using SS_CAM.Linux.Models;
 
-namespace SS_CAM.Linux.Services;
-
-public class QuickNote
+namespace SS_CAM.Linux.Services
 {
-    public string Id       { get; set; } = Guid.NewGuid().ToString();
-    public string Title    { get; set; } = "Untitled Note";
-    public string Content  { get; set; } = string.Empty;
-    public DateTime Created  { get; set; } = DateTime.Now;
-    public DateTime Modified { get; set; } = DateTime.Now;
-}
-
-/// <summary>
-/// JSON-backed quick notes storage. Stores notes in ~/.config/ss-cam/notes.json
-/// Mirrors QuickNoteService from the Windows build.
-/// </summary>
-public class QuickNoteService
-{
-    private readonly string _notesPath;
-    private List<QuickNote> _notes = new();
-
-    public QuickNoteService()
+    public static class QuickNoteService
     {
-        var configDir = Path.Combine(
+        private static readonly string NotesFilePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".config", "ss-cam");
-        Directory.CreateDirectory(configDir);
-        _notesPath = Path.Combine(configDir, "notes.json");
-        Load();
-    }
+            ".config", "ss-cam", "quick_notes.json");
 
-    public IReadOnlyList<QuickNote> Notes => _notes.AsReadOnly();
+        public static List<QuickNoteItem> LoadNotes()
+        {
+            try
+            {
+                if (File.Exists(NotesFilePath))
+                {
+                    string json = File.ReadAllText(NotesFilePath);
+                    var list = JsonConvert.DeserializeObject<List<QuickNoteItem>>(json);
+                    if (list != null && list.Count > 0) return list;
+                }
+            }
+            catch { }
 
-    public QuickNote Create(string title = "New Note")
-    {
-        var note = new QuickNote { Title = title };
-        _notes.Insert(0, note);
-        Save();
-        return note;
-    }
+            return new List<QuickNoteItem>
+            {
+                new()
+                {
+                    Title = "Campaign Deliverable Checklist",
+                    Category = "Deliverables",
+                    Content = "# Campaign Deliverables Checklist\n- [x] 1:1 Social Square renders (1080x1080)\n- [x] 9:16 Reels video assets (1080x1920)\n- [ ] Export package zipped for client\n- [ ] Synology Drive synced to NAS"
+                },
+                new()
+                {
+                    Title = "Brand Color Tokens SSoT",
+                    Category = "Brand Assets",
+                    Content = "# SuamiSihat Core Brand Tokens\n- SSH Navy: #022057\n- SS Azure: #21A1F7\n- Warm Gold: #BD9A73\n- Care Emerald: #107C10"
+                }
+            };
+        }
 
-    public bool Save(QuickNote note)
-    {
-        try
+        public static void SaveNotes(List<QuickNoteItem> notes)
         {
-            var existing = _notes.Find(n => n.Id == note.Id);
-            if (existing == null) return false;
-            existing.Title    = note.Title;
-            existing.Content  = note.Content;
-            existing.Modified = DateTime.Now;
-            Save();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[QuickNoteService] Save(note) error: {ex.Message}");
-            return false;
-        }
-    }
-
-    public bool Delete(string id)
-    {
-        try
-        {
-            int removed = _notes.RemoveAll(n => n.Id == id);
-            Save();
-            return removed > 0;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[QuickNoteService] Delete error: {ex.Message}");
-            return false;
-        }
-    }
-
-    private void Load()
-    {
-        try
-        {
-            if (!File.Exists(_notesPath)) return;
-            var json = File.ReadAllText(_notesPath);
-            _notes = JsonConvert.DeserializeObject<List<QuickNote>>(json) ?? new();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[QuickNoteService] Load error: {ex.Message}");
-            _notes = new();
-        }
-    }
-
-    private void Save()
-    {
-        try
-        {
-            var json = JsonConvert.SerializeObject(_notes, Formatting.Indented);
-            File.WriteAllText(_notesPath, json);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[QuickNoteService] Save error: {ex.Message}");
+            try
+            {
+                string dir = Path.GetDirectoryName(NotesFilePath)!;
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                string json = JsonConvert.SerializeObject(notes ?? new List<QuickNoteItem>(), Formatting.Indented);
+                File.WriteAllText(NotesFilePath, json);
+            }
+            catch { }
         }
     }
 }
