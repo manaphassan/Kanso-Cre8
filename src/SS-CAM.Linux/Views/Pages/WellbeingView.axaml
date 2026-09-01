@@ -49,9 +49,9 @@
                         <Border Background="#064E3B" BorderBrush="#047857" BorderThickness="1" CornerRadius="10" Padding="16">
                             <StackPanel Spacing="6">
                                 <TextBlock Text="Next Prayer" FontSize="11" FontWeight="Bold" Foreground="#A7F3D0"/>
-                                <TextBlock Text="{Binding NextSolatName}" FontSize="22" FontWeight="Bold" Foreground="#34D399"/>
-                                <TextBlock Text="{Binding NextSolatTime}" FontSize="16" FontWeight="SemiBold" Foreground="#ECFDF5"/>
-                                <TextBlock Text="{Binding SolatCountdown}" FontSize="12" Foreground="#6EE7B7"/>
+                                <TextBlock Text="{Binding NextPrayerName}" FontSize="22" FontWeight="Bold" Foreground="#34D399"/>
+                                <TextBlock Text="{Binding NextPrayerTime}" FontSize="16" FontWeight="SemiBold" Foreground="#ECFDF5"/>
+                                <TextBlock Text="{Binding NextPrayerCountdown}" FontSize="12" Foreground="#6EE7B7"/>
                             </StackPanel>
                         </Border>
 
