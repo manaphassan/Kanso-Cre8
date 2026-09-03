@@ -857,21 +857,29 @@ router.put('/projects/:id/direction', authenticateToken, requirePermission('dire
     const project = WorkspaceService.getProjectById(req.params.id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
 
-    const { tone, keyMessaging, visualNotes } = req.body;
+    const { visual_concept, color_palette, target_audience, aspect_ratio, mood_keywords, reference_links } = req.body;
     const { frontmatter, body } = FrontmatterService.readProjectReadme(project.fullPath);
 
     const updatedFm = {
       ...frontmatter,
       creative_direction: {
-        tone: tone || '',
-        key_messaging: keyMessaging || '',
-        visual_notes: visualNotes || '',
+        ...(frontmatter.creative_direction || {}),
+        visual_concept: visual_concept || '',
+        color_palette: color_palette || '',
+        target_audience: target_audience || '',
+        ...(aspect_ratio !== undefined ? { aspect_ratio } : {}),
+        ...(mood_keywords !== undefined ? { mood_keywords } : {}),
+        ...(reference_links !== undefined ? { reference_links } : {}),
         updatedBy: req.user.name,
         updatedAt: new Date().toISOString()
       }
     };
 
     FrontmatterService.writeProjectReadme(project.fullPath, updatedFm, body);
+
+    if (project) {
+      project.creativeDirection = updatedFm.creative_direction;
+    }
 
     AuditService.logEvent({
       actor: req.user.name,
@@ -881,7 +889,11 @@ router.put('/projects/:id/direction', authenticateToken, requirePermission('dire
       entityId: project.jobId || project.id
     });
 
-    WorkspaceService.scan();
+    WorkspaceService.scan(true);
+    SseService.broadcast('project:updated', { 
+      projectId: req.params.id, 
+      creativeDirection: updatedFm.creative_direction 
+    });
     res.json({ success: true, creativeDirection: updatedFm.creative_direction });
   } catch (err) {
     res.status(400).json({ error: err.message });

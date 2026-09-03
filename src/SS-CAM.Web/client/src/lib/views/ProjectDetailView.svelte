@@ -39,6 +39,7 @@
   // Deletion State
   let showDeleteModal = $state<boolean>(false);
   let isDeleting = $state<boolean>(false);
+  let isSavingDirection = $state<boolean>(false);
 
   const isAdminUser = $derived.by(() => {
     const role = (appState.currentUser?.role || '').toLowerCase();
@@ -728,9 +729,21 @@
             <div class="form-actions">
               <FluentButton
                 appearance="primary"
+                loading={isSavingDirection}
                 onclick={async () => {
-                  await ApiClient.updateCreativeDirection(p.id, currentFrontmatter.creative_direction!);
-                  appState.addToast('Creative direction saved to README.md', 'success');
+                  if (!p) return;
+                  isSavingDirection = true;
+                  try {
+                    const res = await ApiClient.updateCreativeDirection(p.id, currentFrontmatter.creative_direction || {});
+                    if (res?.creativeDirection && p) {
+                      p.creativeDirection = res.creativeDirection;
+                    }
+                    appState.addToast('Creative direction saved to README.md', 'success');
+                  } catch (err: any) {
+                    appState.addToast(`Failed to save: ${err.message}`, 'error');
+                  } finally {
+                    isSavingDirection = false;
+                  }
                 }}
               >
                 Save Creative Direction

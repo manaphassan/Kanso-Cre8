@@ -20,7 +20,7 @@
     saveLabel = 'Save Document'
   }: Props = $props();
 
-  let mode = $state<'split' | 'preview' | 'source'>('split');
+  let mode = $state<'split' | 'preview' | 'source'>('preview');
   let isSaving = $state<boolean>(false);
   let textareaEl = $state<HTMLTextAreaElement | null>(null);
 
@@ -397,6 +397,7 @@
     border: none;
     outline: none;
     resize: none;
+    overflow-y: auto;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 13px;
     line-height: 1.6;
