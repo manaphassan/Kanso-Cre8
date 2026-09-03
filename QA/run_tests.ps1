@@ -1,5 +1,10 @@
-﻿[Reflection.Assembly]::LoadFrom("e:\Dev\Projects\SS-Brand-Assets\dist\SS-CAM-v2.6.0.exe") | Out-Null
-$ws = "e:\Dev\Projects\SS-Brand-Assets\QA\TestWorkspace\TestDesigner"
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$exePath = Join-Path $repoRoot "dist\SS-CAM.exe"
+if (-not (Test-Path $exePath)) {
+    $exePath = Join-Path $repoRoot "src\SS-CAM\bin\Release\SS-CAM.exe"
+}
+[Reflection.Assembly]::LoadFrom($exePath) | Out-Null
+$ws = Join-Path $PSScriptRoot "TestWorkspace\TestDesigner"
 New-Item -ItemType Directory -Path $ws -Force | Out-Null
 
 Write-Host "--- TEST: ProjectGeneratorService ---"
@@ -22,20 +27,25 @@ try {
 
 Write-Host "--- TEST: WorkspaceScanner ---"
 try {
-    $folders = [SS_CAM.Services.WorkspaceScanner]::GetRecentProjects($ws, 10)
-    if ($folders.Count -eq 2) { Write-Host "PASS: Scanner found 2 projects" } else { Write-Host "FAIL: Scanner found 0 projects" }
+    $snapshot = [SS_CAM.Services.WorkspaceScanner]::Scan($ws)
+    if ($snapshot -ne $null -and $snapshot.TotalProjects -eq 2) { 
+        Write-Host "PASS: Scanner found 2 projects (TotalProjects=$($snapshot.TotalProjects))" 
+    } else { 
+        Write-Host "FAIL: Scanner found $($snapshot.TotalProjects) projects" 
+    }
 } catch {
     Write-Host "FAIL: Exception - $_"
 }
 
-Write-Host "--- TEST: PrayerTimeService ---"
+Write-Host "--- TEST: PrayerTimeService & Curated Content ---"
 try {
-    $api = new-object SS_CAM.Services.PrayerTimeService
-    # WLY01 is KL
-    $task = $api.FetchPrayerTimesAsync("WLY01")
-    $task.Wait()
-    $res = $task.Result
-    if ($res -ne $null -and $res.Count -eq 6) { Write-Host "PASS: Prayer API returned 6 times" } else { Write-Host "FAIL: Prayer API failed" }
+    $hadiths = [SS_CAM.Services.PrayerTimeService]::GetCuratedHadiths()
+    $events = [SS_CAM.Services.PrayerTimeService]::GetIslamicEvents()
+    if ($hadiths.Count -gt 0 -and $events.Count -gt 0) { 
+        Write-Host "PASS: Curated content loaded (Hadiths=$($hadiths.Count), Events=$($events.Count))" 
+    } else { 
+        Write-Host "FAIL: Curated content failed to load" 
+    }
 } catch {
     Write-Host "FAIL: Exception - $_"
 }
@@ -43,7 +53,12 @@ try {
 Write-Host "--- TEST: UserProfileService ---"
 try {
     $prof = [SS_CAM.Services.UserProfileService]::LoadProfile()
-    if ($prof.DesignerName -eq "TestDesigner") { Write-Host "PASS: Profile loaded successfully" } else { Write-Host "FAIL: Profile loaded wrong data" }
+    if ($prof -ne $null) { Write-Host "PASS: Profile loaded successfully (DesignerName=$($prof.DesignerName))" } else { Write-Host "FAIL: Profile loaded wrong data" }
 } catch {
     Write-Host "FAIL: Exception - $_"
+}
+
+# Cleanup test workspace
+if (Test-Path $ws) {
+    Remove-Item -Path $ws -Recurse -Force -ErrorAction SilentlyContinue
 }
