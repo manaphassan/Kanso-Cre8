@@ -200,136 +200,7 @@
                 </ui:Card>
             </Grid>
 
-            <!-- 4. CREATIVE SNIPPET & HOOK DRAWER -->
-            <ui:Card Margin="0,0,0,16" Padding="14">
-                <StackPanel>
-                    <!-- Header -->
-                    <Grid Margin="0,0,0,8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ui:SymbolIcon Symbol="Flash24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0"/>
-                            <ui:TextBlock Text="QUICK SNIPPET &amp; HOOK DRAWER" FontSize="11" FontWeight="Bold"
-                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-                            <ui:TextBlock Text="&#x2014; Click chip to insert directly at cursor" FontSize="11"
-                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="6,0,0,0"/>
-                        </StackPanel>
-
-                        <ui:Button x:Name="BtnResetTemplate" Grid.Column="1" Appearance="Secondary" Height="26" Padding="8,0"
-                                   Click="OnResetTemplateClicked" Cursor="Hand" ToolTip="Reset to standard brand copy template">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="DocumentSync24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Reset Template" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-                    </Grid>
-
-                    <!-- Row 1: Viral Script Frameworks -->
-                    <WrapPanel Orientation="Horizontal" Margin="0,0,0,6">
-                        <ui:TextBlock Text="Frameworks:" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
-                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" Width="85"/>
-
-                        <ui:Button x:Name="BtnInsertTikTok" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnInsertTikTokClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Video24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="TikTok 3-Hook Table" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnInsertMetaPas" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnInsertMetaPasClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Speaker224" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Meta PAS Framework" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnInsertWhatsApp" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnInsertWhatsAppClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Chat24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="WhatsApp Broadcast" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnInsertNeubrutalist" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnInsertNeubrutalistClicked" Cursor="Hand" ToolTip="High-CTR bold direct-response ad framework">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Flash24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Neubrutalist Hook" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnInsertRetro" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnInsertRetroClicked" Cursor="Hand" ToolTip="Retro-futuristic nostalgic storytelling framework">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Games24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Retro Story Angle" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnInsertClaims" Appearance="Secondary" Margin="0,2,0,2" Height="26" Padding="8,0"
-                                   Click="OnInsertClaimsClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Checkmark24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Claims Matrix" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-                    </WrapPanel>
-
-                    <!-- Row 2: Instant Snippets (CTAs & Compliance) -->
-                    <WrapPanel Orientation="Horizontal">
-                        <ui:TextBlock Text="Quick Snippets:" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
-                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" Width="85"/>
-
-                        <ui:Button x:Name="BtnSnippetWhatsappLink" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnSnippetWhatsappLinkClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Link24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="WhatsApp CTA Link" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnSnippetPromoVoucher" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnSnippetPromoVoucherClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Tag24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Promo Voucher Code" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnSnippetKkmDisclaimer" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnSnippetKkmDisclaimerClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Shield24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="KKM / Health Disclaimer" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnSnippetHalalGuarantee" Appearance="Secondary" Margin="0,2,6,2" Height="26" Padding="8,0"
-                                   Click="OnSnippetHalalGuaranteeClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Certificate24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="100% Original Guarantee" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-
-                        <ui:Button x:Name="BtnSnippetUrgencyTimer" Appearance="Secondary" Margin="0,2,0,2" Height="26" Padding="8,0"
-                                   Click="OnSnippetUrgencyTimerClicked" Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:SymbolIcon Symbol="Timer24" Margin="0,0,4,0" FontSize="12"/>
-                                <ui:TextBlock Text="Urgency Scarcity Box" FontSize="11"/>
-                            </StackPanel>
-                        </ui:Button>
-                    </WrapPanel>
-                </StackPanel>
-            </ui:Card>
-
-            <!-- 5. MAIN COPY EDITOR & LIVE SIMULATION WORKSPACE -->
+            <!-- 4. MAIN COPY EDITOR & LIVE SIMULATION WORKSPACE -->
             <ui:Card Padding="16">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -392,6 +263,16 @@
                                         <ui:TextBlock Text="Mockup View" FontSize="11.5"/>
                                     </StackPanel>
                                 </ui:Button>
+
+                                <!-- 5. Sidebar Focus Mode Toggle -->
+                                <Border Width="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="4,3,4,3"/>
+                                <ui:Button x:Name="BtnToggleRightPane" Appearance="Secondary" Height="28" Padding="8,0"
+                                           Click="OnToggleRightPaneClicked" Cursor="Hand" ToolTip="Toggle Properties &amp; Snippets Sidebar (Focus Mode)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Navigation24" Margin="0,0,4,0" FontSize="12"/>
+                                        <ui:TextBlock Text="Sidebar" FontSize="11"/>
+                                    </StackPanel>
+                                </ui:Button>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -402,6 +283,8 @@
                             <ColumnDefinition x:Name="ColEditor" Width="*"/>
                             <ColumnDefinition x:Name="ColSplitter" Width="0"/>
                             <ColumnDefinition x:Name="ColLivePreview" Width="0"/>
+                            <ColumnDefinition x:Name="ColRightSplitter" Width="Auto"/>
+                            <ColumnDefinition x:Name="ColRightPane" Width="320" MinWidth="0" MaxWidth="440"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- LEFT COLUMN: Primary Canvas (FlowDocument in Preview Live, Editor in Edit & Split) -->
@@ -581,6 +464,297 @@
                                 </ScrollViewer>
                             </Border>
                         </Grid>
+
+                        <!-- COLUMN 3: Subtle Draggable Splitter for Right Pane -->
+                        <GridSplitter x:Name="RightPaneGridSplitter" Grid.Column="3" Width="6"
+                                      HorizontalAlignment="Center" Background="Transparent"
+                                      Cursor="SizeWE" Margin="4,0,4,0"/>
+
+                        <!-- COLUMN 4: RIGHT PROPERTY PANE & QUICK SNIPPETS -->
+                        <Border x:Name="RightPropertyPane" Grid.Column="4"
+                                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="14">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <!-- 1. Segmented Tab Selector Header -->
+                                    <RowDefinition Height="Auto"/>
+                                    <!-- 2. Tab Content Container -->
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Segmented Tab Header -->
+                                <Border Grid.Row="0" Background="{DynamicResource TextControlBackground}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                        CornerRadius="6" Padding="2" Margin="0,0,0,14">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ui:Button x:Name="BtnRightTabProperties" Grid.Column="0" Appearance="Primary" Height="28"
+                                                   Click="OnRightTabPropertiesClicked" Cursor="Hand" ToolTip="View Project Properties &amp; Metadata">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <ui:SymbolIcon Symbol="Settings24" Margin="0,0,5,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Properties" FontSize="11" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnRightTabSnippets" Grid.Column="1" Appearance="Secondary" Height="28"
+                                                   Click="OnRightTabSnippetsClicked" Cursor="Hand" ToolTip="Quick Snippets &amp; Ad Hooks">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <ui:SymbolIcon Symbol="Flash24" Margin="0,0,5,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Snippets" FontSize="11" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </ui:Button>
+                                    </Grid>
+                                </Border>
+
+                                <!-- TAB 1: PROPERTIES CONTENT (Matches Web Portal Layout) -->
+                                <ScrollViewer x:Name="PanePropertiesContent" Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Margin="0,0,2,0">
+                                        <!-- ASSIGNEE (DESIGNER) -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="ASSIGNEE (DESIGNER)" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Width="26" Height="26" CornerRadius="13" Background="{DynamicResource FluentBrand80}" Margin="0,0,8,0">
+                                                    <ui:TextBlock x:Name="TxtPropDesignerInitial" Text="H" FontSize="11.5" FontWeight="Bold" Foreground="#FFFFFF"
+                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ui:TextBlock x:Name="TxtPropDesigner" Text="Harussani" FontSize="12.5" FontWeight="SemiBold"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- REVIEWER -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="REVIEWER" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Width="26" Height="26" CornerRadius="13" Background="#0078D4" Margin="0,0,8,0">
+                                                    <ui:TextBlock Text="HA" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
+                                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Border Background="{DynamicResource TextControlBackground}"
+                                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                        BorderThickness="1" CornerRadius="6" Padding="8,4" HorizontalAlignment="Stretch">
+                                                    <ui:TextBlock x:Name="TxtPropReviewer" Text="Hasan · Manager" FontSize="12" FontWeight="Normal"
+                                                                  Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- CORPORATE BRAND / SUBSIDIARY -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="CORPORATE BRAND / SUBSIDIARY" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Background="#043388" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                                    <ui:TextBlock x:Name="TxtPropBrandPill" Text="SSE" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                </Border>
+                                                <ui:TextBlock x:Name="TxtPropBrandName" Text="SuamiSihat Ecommerce Sdn Bhd" FontSize="11.5"
+                                                              TextTrimming="CharacterEllipsis" MaxWidth="210"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- PRIORITY LEVEL -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="PRIORITY LEVEL" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <Border x:Name="BadgePropPriority" Background="#FEF3C7" BorderBrush="#FCD34D"
+                                                    BorderThickness="1" CornerRadius="4" Padding="7,2" HorizontalAlignment="Left">
+                                                <ui:TextBlock x:Name="TxtPropPriority" Text="MEDIUM" FontSize="10" FontWeight="Bold" Foreground="#D97706"/>
+                                            </Border>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- CAMPAIGN DEADLINE -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="CAMPAIGN DEADLINE" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <ui:SymbolIcon Symbol="Calendar24" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,6,0"/>
+                                                <ui:TextBlock x:Name="TxtPropDeadline" Text="2026-09-06" FontSize="12" FontWeight="SemiBold"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                            </StackPanel>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- DELIVERABLES STORAGE (Interactive 1-Click Folder Launcher) -->
+                                        <StackPanel Margin="0,0,0,12">
+                                            <ui:TextBlock Text="DELIVERABLES STORAGE" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <Border MouseLeftButtonUp="OnOpenDeliverablesFolderClicked" Cursor="Hand"
+                                                    Background="{DynamicResource TextControlBackground}"
+                                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                    BorderThickness="1" CornerRadius="6" Padding="8,6"
+                                                    ToolTip="Click to open 05_DELIVERABLES in Windows Explorer">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ui:SymbolIcon Grid.Column="0" Symbol="Folder24" FontSize="13"
+                                                                   Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                    <ui:TextBlock Grid.Column="1" x:Name="TxtPropDeliverablesCount" Text="0 files" FontSize="12"
+                                                                  FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                                  VerticalAlignment="Center"/>
+                                                    <ui:SymbolIcon Grid.Column="2" Symbol="Open24" FontSize="11"
+                                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                            <Border Height="1" Background="{DynamicResource CardStrokeColorDefaultBrush}" Margin="0,10,0,0" Opacity="0.5"/>
+                                        </StackPanel>
+
+                                        <!-- RECENT APPROVALS & SIGN-OFFS -->
+                                        <StackPanel Margin="0,0,0,4">
+                                            <ui:TextBlock Text="RECENT APPROVALS &amp; SIGN-OFFS" FontSize="9.5" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <ui:TextBlock x:Name="TxtPropApprovalStatus" Text="No approval records yet." FontSize="11.5"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+
+                                <!-- TAB 2: SNIPPETS & HOOKS CONTENT (Relocated Drawer) -->
+                                <ScrollViewer x:Name="PaneSnippetsContent" Grid.Row="1" Visibility="Collapsed"
+                                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Margin="0,0,2,0">
+                                        <!-- Header row with Reset Template button -->
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ui:TextBlock Grid.Column="0" Text="CLICK TO INSERT AT CURSOR" FontSize="9" FontWeight="Bold"
+                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                                            <ui:Button x:Name="BtnResetTemplate" Grid.Column="1" Appearance="Secondary" Height="24" Padding="6,0"
+                                                       Click="OnResetTemplateClicked" Cursor="Hand" ToolTip="Reset to standard brand copy template">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="DocumentSync24" Margin="0,0,3,0" FontSize="11"/>
+                                                    <ui:TextBlock Text="Reset" FontSize="10"/>
+                                                </StackPanel>
+                                            </ui:Button>
+                                        </Grid>
+
+                                        <!-- Section 1: Viral Frameworks -->
+                                        <ui:TextBlock Text="VIRAL AD FRAMEWORKS" FontSize="9.5" FontWeight="Bold"
+                                                      Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,6"/>
+
+                                        <ui:Button x:Name="BtnInsertTikTok" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertTikTokClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Video24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="TikTok 3-Hook Table" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnInsertMetaPas" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertMetaPasClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Speaker224" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Meta PAS Framework" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnInsertWhatsApp" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertWhatsAppClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Chat24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="WhatsApp Broadcast" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnInsertNeubrutalist" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertNeubrutalistClicked" Cursor="Hand" ToolTip="High-CTR bold direct-response ad framework">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Flash24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Neubrutalist Hook" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnInsertRetro" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertRetroClicked" Cursor="Hand" ToolTip="Retro-futuristic nostalgic storytelling framework">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Games24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Retro Story Angle" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnInsertClaims" Appearance="Secondary" Margin="0,0,0,12" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnInsertClaimsClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Checkmark24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Claims Matrix" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <!-- Section 2: Ad Hooks & CTAs -->
+                                        <ui:TextBlock Text="AD HOOKS &amp; SCARCITY" FontSize="9.5" FontWeight="Bold"
+                                                      Foreground="{DynamicResource FluentBrand80}" Margin="0,4,0,6"/>
+
+                                        <ui:Button x:Name="BtnSnippetWhatsappLink" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnSnippetWhatsappLinkClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Link24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="WhatsApp CTA Link" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnSnippetPromoVoucher" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnSnippetPromoVoucherClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Tag24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Promo Voucher Code" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnSnippetKkmDisclaimer" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnSnippetKkmDisclaimerClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Shield24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="KKM Disclaimer" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnSnippetHalalGuarantee" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnSnippetHalalGuaranteeClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Certificate24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="100% Original Guarantee" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+
+                                        <ui:Button x:Name="BtnSnippetUrgencyTimer" Appearance="Secondary" Margin="0,0,0,6" Height="28" Padding="8,0"
+                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                                   Click="OnSnippetUrgencyTimerClicked" Cursor="Hand">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:SymbolIcon Symbol="Timer24" Margin="0,0,6,0" FontSize="12"/>
+                                                <ui:TextBlock Text="Urgency Scarcity Box" FontSize="11.5"/>
+                                            </StackPanel>
+                                        </ui:Button>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </Grid>
             </ui:Card>

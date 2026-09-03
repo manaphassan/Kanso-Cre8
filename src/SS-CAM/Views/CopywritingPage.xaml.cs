@@ -21,6 +21,8 @@ namespace SS_CAM.Views
         private ProjectItemInfo selectedProject = null;
         private bool isInternalChange = false;
         private int currentViewMode = 0; // 0 = Split, 1 = RenderedDoc, 2 = EditorOnly
+        private bool isRightPaneCollapsed = false;
+        private GridLength rightPaneSavedWidth = new GridLength(320);
 
         public class ProjectItemInfo
         {
@@ -202,6 +204,7 @@ namespace SS_CAM.Views
                 }
                 UpdateMetrics(string.Empty);
                 UpdateLiveSimulation(string.Empty);
+                UpdateProjectProperties(null);
                 SetStatusBadge("No Project", false);
                 return;
             }
@@ -217,6 +220,7 @@ namespace SS_CAM.Views
 
             UpdateMetrics(content);
             UpdateLiveSimulation(content);
+            UpdateProjectProperties(selectedProject);
             SetStatusBadge("NAS Synced", true);
 
             // Default to Preview Live Markdown mode (Default View)
@@ -677,6 +681,201 @@ namespace SS_CAM.Views
                 e.Handled = true;
             }
         }
+
+        #region Right Property Pane & Sidebar Handlers
+
+        private void UpdateProjectProperties(ProjectItemInfo proj)
+        {
+            if (TxtPropDesigner == null) return;
+
+            if (proj == null || string.IsNullOrWhiteSpace(proj.FullPath) || !Directory.Exists(proj.FullPath))
+            {
+                TxtPropDesigner.Text = "—";
+                if (TxtPropDesignerInitial != null) TxtPropDesignerInitial.Text = "—";
+                TxtPropReviewer.Text = "Hasan · Manager";
+                TxtPropBrandPill.Text = "SS";
+                TxtPropBrandName.Text = "SuamiSihat";
+                TxtPropPriority.Text = "MEDIUM";
+                SetPriorityBadge("medium");
+                TxtPropDeadline.Text = "—";
+                TxtPropDeliverablesCount.Text = "0 files";
+                TxtPropApprovalStatus.Text = "No approval records yet.";
+                return;
+            }
+
+            try
+            {
+                ProjectStatusItem status = FrontmatterService.ReadStatus(proj.FullPath);
+
+                // 1. Assignee (Designer)
+                string designer = !string.IsNullOrWhiteSpace(status.Designer) ? status.Designer : "Harussani";
+                TxtPropDesigner.Text = designer;
+                if (TxtPropDesignerInitial != null)
+                {
+                    TxtPropDesignerInitial.Text = designer.Length > 0 ? designer.Substring(0, 1).ToUpperInvariant() : "D";
+                }
+
+                // 2. Reviewer
+                TxtPropReviewer.Text = "Hasan · Manager";
+
+                // 3. Corporate Brand / Subsidiary
+                string brandCode = !string.IsNullOrWhiteSpace(status.Client) ? status.Client : "SS";
+                if (brandCode == "SS" && proj.Name != null && proj.Name.Contains("_"))
+                {
+                    string[] parts = proj.Name.Split('_');
+                    if (parts.Length >= 3 && parts[2].StartsWith("SS", StringComparison.OrdinalIgnoreCase))
+                    {
+                        brandCode = parts[2].ToUpperInvariant();
+                    }
+                }
+                TxtPropBrandPill.Text = brandCode;
+                TxtPropBrandName.Text = GetSubsidiaryFullName(brandCode);
+
+                // 4. Priority Level
+                string priority = !string.IsNullOrWhiteSpace(status.Priority) ? status.Priority : "medium";
+                TxtPropPriority.Text = priority.ToUpperInvariant();
+                SetPriorityBadge(priority);
+
+                // 5. Campaign Deadline
+                string deadline = !string.IsNullOrWhiteSpace(status.Deadline) ? status.Deadline : "—";
+                TxtPropDeadline.Text = deadline;
+
+                // 6. Deliverables Storage
+                string delivDir = Path.Combine(proj.FullPath, "05_DELIVERABLES");
+                int fileCount = 0;
+                if (Directory.Exists(delivDir))
+                {
+                    fileCount = Directory.GetFiles(delivDir, "*.*", SearchOption.AllDirectories).Length;
+                }
+                TxtPropDeliverablesCount.Text = string.Format("{0} file{1}", fileCount, fileCount == 1 ? "" : "s");
+
+                // 7. Recent Approvals & Sign-Offs
+                if (status.Revision > 0)
+                {
+                    TxtPropApprovalStatus.Text = string.Format("Revision {0} • In Review", status.Revision);
+                }
+                else if (string.Equals(status.Status, "approved", StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(status.Status, "done", StringComparison.OrdinalIgnoreCase))
+                {
+                    TxtPropApprovalStatus.Text = "Approved & Signed-Off";
+                }
+                else
+                {
+                    TxtPropApprovalStatus.Text = "No approval records yet.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CopywritingPage] UpdateProjectProperties error: " + ex.Message);
+            }
+        }
+
+        private string GetSubsidiaryFullName(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code)) return "SuamiSihat Creative Production";
+            switch (code.ToUpperInvariant())
+            {
+                case "SSH": return "SuamiSihat Holding Sdn Bhd";
+                case "SSC": return "SuamiSihat Clinic / Healthcare";
+                case "SSW": return "SuamiSihat Wellness Sdn Bhd";
+                case "SSE": return "SuamiSihat Ecommerce Sdn Bhd";
+                case "SST": return "SuamiSihat Technology Sdn Bhd";
+                default: return "SuamiSihat Creative Production";
+            }
+        }
+
+        private void SetPriorityBadge(string priority)
+        {
+            if (BadgePropPriority == null || TxtPropPriority == null) return;
+            switch (priority.ToLowerInvariant())
+            {
+                case "urgent":
+                case "critical":
+                    BadgePropPriority.Background = new SolidColorBrush(Color.FromRgb(254, 226, 226));
+                    BadgePropPriority.BorderBrush = new SolidColorBrush(Color.FromRgb(252, 165, 165));
+                    TxtPropPriority.Foreground = new SolidColorBrush(Color.FromRgb(220, 38, 38));
+                    break;
+                case "high":
+                    BadgePropPriority.Background = new SolidColorBrush(Color.FromRgb(255, 237, 213));
+                    BadgePropPriority.BorderBrush = new SolidColorBrush(Color.FromRgb(253, 186, 116));
+                    TxtPropPriority.Foreground = new SolidColorBrush(Color.FromRgb(194, 65, 12));
+                    break;
+                case "low":
+                    BadgePropPriority.Background = new SolidColorBrush(Color.FromRgb(241, 245, 249));
+                    BadgePropPriority.BorderBrush = new SolidColorBrush(Color.FromRgb(203, 213, 225));
+                    TxtPropPriority.Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139));
+                    break;
+                default: // medium
+                    BadgePropPriority.Background = new SolidColorBrush(Color.FromRgb(254, 243, 199));
+                    BadgePropPriority.BorderBrush = new SolidColorBrush(Color.FromRgb(252, 211, 77));
+                    TxtPropPriority.Foreground = new SolidColorBrush(Color.FromRgb(217, 119, 6));
+                    break;
+            }
+        }
+
+        private void OnRightTabPropertiesClicked(object sender, RoutedEventArgs e)
+        {
+            if (BtnRightTabProperties != null) BtnRightTabProperties.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            if (BtnRightTabSnippets != null) BtnRightTabSnippets.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            if (PanePropertiesContent != null) PanePropertiesContent.Visibility = Visibility.Visible;
+            if (PaneSnippetsContent != null) PaneSnippetsContent.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnRightTabSnippetsClicked(object sender, RoutedEventArgs e)
+        {
+            if (BtnRightTabProperties != null) BtnRightTabProperties.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            if (BtnRightTabSnippets != null) BtnRightTabSnippets.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            if (PanePropertiesContent != null) PanePropertiesContent.Visibility = Visibility.Collapsed;
+            if (PaneSnippetsContent != null) PaneSnippetsContent.Visibility = Visibility.Visible;
+        }
+
+        private void OnToggleRightPaneClicked(object sender, RoutedEventArgs e)
+        {
+            if (ColRightPane == null) return;
+
+            if (isRightPaneCollapsed)
+            {
+                ColRightPane.Width = rightPaneSavedWidth;
+                if (ColRightSplitter != null) ColRightSplitter.Width = GridLength.Auto;
+                if (RightPropertyPane != null) RightPropertyPane.Visibility = Visibility.Visible;
+                if (RightPaneGridSplitter != null) RightPaneGridSplitter.Visibility = Visibility.Visible;
+                isRightPaneCollapsed = false;
+                if (BtnToggleRightPane != null) BtnToggleRightPane.Appearance = Wpf.Ui.Controls.ControlAppearance.Secondary;
+            }
+            else
+            {
+                if (ColRightPane.ActualWidth > 100)
+                {
+                    rightPaneSavedWidth = ColRightPane.Width;
+                }
+                ColRightPane.Width = new GridLength(0);
+                if (ColRightSplitter != null) ColRightSplitter.Width = new GridLength(0);
+                if (RightPropertyPane != null) RightPropertyPane.Visibility = Visibility.Collapsed;
+                if (RightPaneGridSplitter != null) RightPaneGridSplitter.Visibility = Visibility.Collapsed;
+                isRightPaneCollapsed = true;
+                if (BtnToggleRightPane != null) BtnToggleRightPane.Appearance = Wpf.Ui.Controls.ControlAppearance.Primary;
+            }
+        }
+
+        private void OnOpenDeliverablesFolderClicked(object sender, MouseButtonEventArgs e)
+        {
+            if (selectedProject == null || string.IsNullOrWhiteSpace(selectedProject.FullPath)) return;
+            try
+            {
+                string delivDir = Path.Combine(selectedProject.FullPath, "05_DELIVERABLES");
+                if (!Directory.Exists(delivDir))
+                {
+                    Directory.CreateDirectory(delivDir);
+                }
+                Process.Start(new ProcessStartInfo("explorer.exe", delivDir) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CopywritingPage] Open deliverables folder error: " + ex.Message);
+            }
+        }
+
+        #endregion
     }
 }
 
