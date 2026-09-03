@@ -63,12 +63,18 @@ namespace SS_CAM.Services
 
                     string title = ExtractTitle(content, Path.GetFileNameWithoutExtension(file));
                     DateTime modified = File.GetLastWriteTime(file);
+                    int completedTasks, totalTasks;
+                    ExtractTaskStats(content, out completedTasks, out totalTasks);
+                    string snippet = ExtractSnippet(content, title);
 
                     notes.Add(new QuickNoteItem
                     {
                         FilePath = file,
                         Title = title,
                         Content = content,
+                        Snippet = snippet,
+                        TotalTasks = totalTasks,
+                        CompletedTasks = completedTasks,
                         IsPinned = isPinned,
                         Priority = priority,
                         ModifiedTicks = modified.Ticks,
@@ -261,6 +267,54 @@ namespace SS_CAM.Services
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Extracts a clean 1-line text snippet (skipping title and frontmatter) for sidebar display.
+        /// </summary>
+        public static string ExtractSnippet(string content, string title)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return "Empty note";
+            string body = StripFrontmatter(content);
+            string[] lines = body.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string rawLine in lines)
+            {
+                string line = rawLine.Trim();
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                string cleanLine = line.TrimStart('#', '*', '_', '-', '>', ' ', '`');
+                if (cleanLine.Equals(title, StringComparison.OrdinalIgnoreCase)) continue;
+                if (cleanLine.Length > 0)
+                {
+                    cleanLine = cleanLine.Replace("**", "").Replace("*", "").Replace("_", "").Replace("~~", "").Replace("[ ]", "").Replace("[x]", "").Trim();
+                    if (cleanLine.Length > 60) cleanLine = cleanLine.Substring(0, 57) + "...";
+                    return cleanLine;
+                }
+            }
+            return "No additional text";
+        }
+
+        /// <summary>
+        /// Extracts completed and total task checkbox count (- [ ] and - [x]).
+        /// </summary>
+        public static void ExtractTaskStats(string content, out int completed, out int total)
+        {
+            completed = 0;
+            total = 0;
+            if (string.IsNullOrWhiteSpace(content)) return;
+            string[] lines = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string line in lines)
+            {
+                string t = line.Trim();
+                if (t.StartsWith("- [ ]", StringComparison.OrdinalIgnoreCase) || t.StartsWith("* [ ]", StringComparison.OrdinalIgnoreCase))
+                {
+                    total++;
+                }
+                else if (t.StartsWith("- [x]", StringComparison.OrdinalIgnoreCase) || t.StartsWith("* [x]", StringComparison.OrdinalIgnoreCase))
+                {
+                    total++;
+                    completed++;
+                }
+            }
+        }
     }
 
     public class QuickNoteItem
@@ -268,6 +322,9 @@ namespace SS_CAM.Services
         public string FilePath { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
+        public string Snippet { get; set; }
+        public int TotalTasks { get; set; }
+        public int CompletedTasks { get; set; }
         public bool IsPinned { get; set; }
         public NotePriority Priority { get; set; }
         public long ModifiedTicks { get; set; }
@@ -281,6 +338,16 @@ namespace SS_CAM.Services
         public System.Windows.Visibility PriorityBadgeVisibility
         {
             get { return Priority != NotePriority.Normal ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed; }
+        }
+
+        public System.Windows.Visibility TaskBadgeVisibility
+        {
+            get { return TotalTasks > 0 ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed; }
+        }
+
+        public string TaskProgressDisplay
+        {
+            get { return string.Format("{0}/{1} tasks", CompletedTasks, TotalTasks); }
         }
 
         public string PriorityLabel

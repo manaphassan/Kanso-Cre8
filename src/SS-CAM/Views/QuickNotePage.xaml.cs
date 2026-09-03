@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using SS_CAM.Services;
+using SS_CAM.Utilities;
 
 namespace SS_CAM.Views
 {
@@ -15,6 +17,8 @@ namespace SS_CAM.Views
         private QuickNoteItem _currentNote = null;
         private DispatcherTimer _autoSaveTimer;
         private bool _isLoading = false;
+        private int _activeFilter = 0; // 0 = All, 1 = Pinned, 2 = High, 3 = Tasks
+        private int _currentViewMode = 0; // 0 = Split, 1 = Edit, 2 = Preview
 
         public QuickNotePage()
         {
@@ -44,19 +48,21 @@ namespace SS_CAM.Views
         private void RefreshNoteList()
         {
             _notes = QuickNoteService.ListNotes();
-            NotesList.ItemsSource = null;
-            NotesList.ItemsSource = _notes;
-            TxtNoteCount.Text = string.Format("{0} note{1}", _notes.Count, _notes.Count == 1 ? "" : "s");
+            ApplyNoteFilter();
         }
 
         private void OnNewNoteClicked(object sender, RoutedEventArgs e)
         {
             SaveCurrentNote();
             string path = QuickNoteService.CreateNote();
-            RefreshNoteList();
+            _notes = QuickNoteService.ListNotes();
+            ApplyNoteFilter();
 
-            // Select the new note (it will be first in the list — newest)
-            if (_notes.Count > 0) NotesList.SelectedIndex = 0;
+            // Select the new note (first in list)
+            if (_notes.Count > 0)
+            {
+                NotesList.SelectedIndex = 0;
+            }
         }
 
         private void OnNoteSelected(object sender, SelectionChangedEventArgs e)
@@ -69,26 +75,30 @@ namespace SS_CAM.Views
             {
                 _currentNote = null;
                 PanelEmptyState.Visibility = Visibility.Visible;
-                NoteEditor.Visibility = Visibility.Collapsed;
-                NotePreviewViewer.Visibility = Visibility.Collapsed;
+                PanelActiveWorkspace.Visibility = Visibility.Collapsed;
+                TxtWordCount.Text = "0 words";
+                TxtCharCount.Text = "0 chars";
+                TxtTaskStats.Visibility = Visibility.Collapsed;
                 return;
             }
 
             _currentNote = selected;
             _isLoading = true;
-            NoteEditor.Text = selected.Content;
+
+            // Load clean text WITHOUT raw YAML frontmatter
+            NoteEditor.Text = QuickNoteService.StripFrontmatter(selected.Content);
+
             BtnTogglePin.ToolTip = selected.IsPinned ? "Unpin note from top" : "Pin note to top";
             BtnTogglePin.Appearance = selected.IsPinned ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
             CmbPriority.SelectedIndex = (int)selected.Priority;
             _isLoading = false;
 
             PanelEmptyState.Visibility = Visibility.Collapsed;
-            NoteEditor.Visibility = Visibility.Visible;
-            NotePreviewViewer.Visibility = Visibility.Collapsed;
-            TxtSavedStatus.Text = "";
+            PanelActiveWorkspace.Visibility = Visibility.Visible;
+            TxtSavedStatus.Text = "Saved ✓";
 
-            // Reset to Edit mode
-            UpdateModeVisuals(isEdit: true);
+            UpdateTelemetry();
+            ApplyViewMode(_currentViewMode);
         }
 
         private void OnTogglePinClicked(object sender, RoutedEventArgs e)
@@ -115,9 +125,7 @@ namespace SS_CAM.Views
         {
             _isLoading = true;
             _notes = QuickNoteService.ListNotes();
-            NotesList.ItemsSource = null;
-            NotesList.ItemsSource = _notes;
-            TxtNoteCount.Text = string.Format("{0} note{1}", _notes.Count, _notes.Count == 1 ? "" : "s");
+            ApplyNoteFilter();
 
             if (!string.IsNullOrEmpty(targetFilePath))
             {
@@ -134,37 +142,15 @@ namespace SS_CAM.Views
             _isLoading = false;
         }
 
-        private void UpdateModeVisuals(bool isEdit)
-        {
-            System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
-            System.Windows.Media.Brush textBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
-
-            if (isEdit)
-            {
-                if (brandBrush != null) BtnModeEdit.Background = brandBrush;
-                BtnModeEdit.Foreground = System.Windows.Media.Brushes.White;
-                BtnModeEdit.FontWeight = FontWeights.SemiBold;
-
-                BtnModePreview.Background = System.Windows.Media.Brushes.Transparent;
-                if (textBrush != null) BtnModePreview.Foreground = textBrush;
-                BtnModePreview.FontWeight = FontWeights.Normal;
-            }
-            else
-            {
-                if (brandBrush != null) BtnModePreview.Background = brandBrush;
-                BtnModePreview.Foreground = System.Windows.Media.Brushes.White;
-                BtnModePreview.FontWeight = FontWeights.SemiBold;
-
-                BtnModeEdit.Background = System.Windows.Media.Brushes.Transparent;
-                if (textBrush != null) BtnModeEdit.Foreground = textBrush;
-                BtnModeEdit.FontWeight = FontWeights.Normal;
-            }
-        }
-
         private void OnNoteEditorChanged(object sender, TextChangedEventArgs e)
         {
             if (_isLoading || _currentNote == null) return;
             TxtSavedStatus.Text = "Unsaved...";
+            UpdateTelemetry();
+            if (_currentViewMode == 0 || _currentViewMode == 2)
+            {
+                UpdateLivePreview();
+            }
             if (_autoSaveTimer != null) { _autoSaveTimer.Stop(); _autoSaveTimer.Start(); }
         }
 
@@ -172,19 +158,14 @@ namespace SS_CAM.Views
         {
             if (_autoSaveTimer != null) _autoSaveTimer.Stop();
             SaveCurrentNote();
-            TxtSavedStatus.Text = "Saved \u2713";
+            TxtSavedStatus.Text = "Saved ✓";
 
-            // Update the title in the list
             if (_currentNote != null)
             {
                 string newTitle = QuickNoteService.ExtractTitle(NoteEditor.Text, _currentNote.Title);
                 _currentNote.Title = newTitle;
-                _isLoading = true;
-                int idx = NotesList.SelectedIndex;
-                NotesList.ItemsSource = null;
-                NotesList.ItemsSource = _notes;
-                NotesList.SelectedIndex = idx;
-                _isLoading = false;
+                _currentNote.ModifiedDisplay = DateTime.Now.ToString("dd MMM yyyy, HH:mm");
+                ApplyNoteFilter();
             }
         }
 
@@ -193,6 +174,11 @@ namespace SS_CAM.Views
             if (_currentNote == null) return;
             QuickNoteService.SaveNote(_currentNote.FilePath, NoteEditor.Text, _currentNote.IsPinned, _currentNote.Priority);
             _currentNote.Content = NoteEditor.Text;
+            _currentNote.Snippet = QuickNoteService.ExtractSnippet(NoteEditor.Text, _currentNote.Title);
+            int comp, tot;
+            QuickNoteService.ExtractTaskStats(NoteEditor.Text, out comp, out tot);
+            _currentNote.CompletedTasks = comp;
+            _currentNote.TotalTasks = tot;
         }
 
         private void OnDeleteNoteClicked(object sender, RoutedEventArgs e)
@@ -208,273 +194,371 @@ namespace SS_CAM.Views
             RefreshNoteList();
 
             PanelEmptyState.Visibility = Visibility.Visible;
-            NoteEditor.Visibility = Visibility.Collapsed;
-            NotePreviewViewer.Visibility = Visibility.Collapsed;
+            PanelActiveWorkspace.Visibility = Visibility.Collapsed;
         }
 
-        // ─── View Mode Toggle ─────────────────────────────────────────────────
+        // ─── Search & Sidebar Filtering ──────────────────────────────────────
+
+        private void OnSearchNotesChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyNoteFilter();
+        }
+
+        private void OnFilterAllClicked(object sender, RoutedEventArgs e)
+        {
+            SetFilter(0);
+        }
+
+        private void OnFilterPinnedClicked(object sender, RoutedEventArgs e)
+        {
+            SetFilter(1);
+        }
+
+        private void OnFilterHighClicked(object sender, RoutedEventArgs e)
+        {
+            SetFilter(2);
+        }
+
+        private void OnFilterTasksClicked(object sender, RoutedEventArgs e)
+        {
+            SetFilter(3);
+        }
+
+        private void SetFilter(int filterIndex)
+        {
+            _activeFilter = filterIndex;
+            BtnFilterAll.Appearance = filterIndex == 0 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnFilterPinned.Appearance = filterIndex == 1 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnFilterHigh.Appearance = filterIndex == 2 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            BtnFilterTasks.Appearance = filterIndex == 3 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            ApplyNoteFilter();
+        }
+
+        private void ApplyNoteFilter()
+        {
+            if (_notes == null) return;
+            string query = (TxtSearchNotes != null && !string.IsNullOrWhiteSpace(TxtSearchNotes.Text))
+                ? TxtSearchNotes.Text.Trim().ToLowerInvariant()
+                : null;
+
+            List<QuickNoteItem> filtered = _notes.FindAll(delegate(QuickNoteItem n)
+            {
+                // Filter chips check
+                if (_activeFilter == 1 && !n.IsPinned) return false;
+                if (_activeFilter == 2 && n.Priority != NotePriority.High) return false;
+                if (_activeFilter == 3 && n.TotalTasks == 0) return false;
+
+                // Search query check
+                if (!string.IsNullOrEmpty(query))
+                {
+                    bool matchTitle = n.Title != null && n.Title.ToLowerInvariant().Contains(query);
+                    bool matchBody = n.Content != null && n.Content.ToLowerInvariant().Contains(query);
+                    if (!matchTitle && !matchBody) return false;
+                }
+
+                return true;
+            });
+
+            _isLoading = true;
+            QuickNoteItem currentlySelected = _currentNote;
+            NotesList.ItemsSource = null;
+            NotesList.ItemsSource = filtered;
+
+            if (currentlySelected != null)
+            {
+                QuickNoteItem found = filtered.Find(delegate(QuickNoteItem n) { return n.FilePath == currentlySelected.FilePath; });
+                if (found != null) NotesList.SelectedItem = found;
+            }
+
+            TxtNoteCount.Text = string.Format("{0} note{1}", filtered.Count, filtered.Count == 1 ? "" : "s");
+            _isLoading = false;
+        }
+
+        // ─── 3-Way Mode Switcher & Live Split View ────────────────────────────
+
+        private void OnModeSplit(object sender, RoutedEventArgs e)
+        {
+            ApplyViewMode(0);
+        }
 
         private void OnModeEdit(object sender, RoutedEventArgs e)
         {
-            if (_currentNote == null) return;
-            NoteEditor.Visibility = Visibility.Visible;
-            NotePreviewViewer.Visibility = Visibility.Collapsed;
-            UpdateModeVisuals(isEdit: true);
+            ApplyViewMode(1);
         }
 
         private void OnModePreview(object sender, RoutedEventArgs e)
         {
-            if (_currentNote == null) return;
-            RenderPreview(NoteEditor.Text);
-            NoteEditor.Visibility = Visibility.Collapsed;
-            NotePreviewViewer.Visibility = Visibility.Visible;
-            UpdateModeVisuals(isEdit: false);
+            ApplyViewMode(2);
         }
 
-        private void RenderPreview(string markdown)
+        private void ApplyViewMode(int mode)
         {
-            FlowDocument doc = new FlowDocument();
-            doc.FontFamily = new System.Windows.Media.FontFamily("Segoe UI");
-            doc.FontSize = 13;
-            doc.PagePadding = new Thickness(0);
+            _currentViewMode = mode;
+            System.Windows.Media.Brush brandBrush = FindResource("FluentBrand80") as System.Windows.Media.Brush;
+            System.Windows.Media.Brush textBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
 
-            System.Windows.Media.Brush mainTextBrush = FindResource("TextFillColorPrimaryBrush") as System.Windows.Media.Brush;
-            System.Windows.Media.Brush brandBrush    = FindResource("FluentBrand80")             as System.Windows.Media.Brush;
-            System.Windows.Media.Brush secondaryBrush = FindResource("TextFillColorSecondaryBrush") as System.Windows.Media.Brush;
+            BtnModeSplit.Background = System.Windows.Media.Brushes.Transparent;
+            BtnModeSplit.Foreground = textBrush ?? System.Windows.Media.Brushes.Black;
+            BtnModeSplit.FontWeight = FontWeights.Normal;
 
-            if (mainTextBrush != null) doc.Foreground = mainTextBrush;
-            if (string.IsNullOrWhiteSpace(markdown)) { NotePreviewViewer.Document = doc; return; }
+            BtnModeEdit.Background = System.Windows.Media.Brushes.Transparent;
+            BtnModeEdit.Foreground = textBrush ?? System.Windows.Media.Brushes.Black;
+            BtnModeEdit.FontWeight = FontWeights.Normal;
 
-            string content = QuickNoteService.StripFrontmatter(markdown);
-            bool inCodeBlock = false;
-            Paragraph codePara = null;
+            BtnModePreview.Background = System.Windows.Media.Brushes.Transparent;
+            BtnModePreview.Foreground = textBrush ?? System.Windows.Media.Brushes.Black;
+            BtnModePreview.FontWeight = FontWeights.Normal;
 
-            foreach (string line in content.Split(new char[] { '\n' }))
+            if (mode == 0) // Split View (Side-by-Side)
             {
-                string l = line.TrimEnd('\r');
+                BtnModeSplit.Background = brandBrush ?? System.Windows.Media.Brushes.DodgerBlue;
+                BtnModeSplit.Foreground = System.Windows.Media.Brushes.White;
+                BtnModeSplit.FontWeight = FontWeights.SemiBold;
 
-                // ── Code fence (``` ... ```) ───────────────────────────────────
-                if (l.TrimStart().StartsWith("```"))
-                {
-                    inCodeBlock = !inCodeBlock;
-                    if (inCodeBlock)
-                    {
-                        codePara = new Paragraph();
-                        codePara.Margin = new Thickness(0, 4, 0, 4);
-                        codePara.FontFamily = new System.Windows.Media.FontFamily("Consolas");
-                        codePara.FontSize = 12;
-                        if (secondaryBrush != null) codePara.Foreground = secondaryBrush;
-                    }
-                    else if (codePara != null)
-                    {
-                        doc.Blocks.Add(codePara);
-                        codePara = null;
-                    }
-                    continue;
-                }
-                if (inCodeBlock)
-                {
-                    if (codePara != null) codePara.Inlines.Add(new Run(l + "\n"));
-                    continue;
-                }
+                ColNoteEditor.Width = new GridLength(1, GridUnitType.Star);
+                ColNoteSplitter.Width = new GridLength(6, GridUnitType.Pixel);
+                ColNotePreview.Width = new GridLength(1, GridUnitType.Star);
 
-                // ── Headings ───────────────────────────────────────────────────
-                if (l.StartsWith("### "))
-                {
-                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 6, 0, 2);
-                    p.FontSize = 14; p.FontWeight = FontWeights.SemiBold;
-                    AddInlines(p.Inlines, l.Substring(4), brandBrush, mainTextBrush);
-                    doc.Blocks.Add(p); continue;
-                }
-                if (l.StartsWith("## "))
-                {
-                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 8, 0, 2);
-                    p.FontSize = 16; p.FontWeight = FontWeights.Bold;
-                    if (brandBrush != null) p.Foreground = brandBrush;
-                    AddInlines(p.Inlines, l.Substring(3), brandBrush, mainTextBrush);
-                    doc.Blocks.Add(p); continue;
-                }
-                if (l.StartsWith("# "))
-                {
-                    Paragraph p = new Paragraph(); p.Margin = new Thickness(0, 10, 0, 4);
-                    p.FontSize = 20; p.FontWeight = FontWeights.Bold;
-                    if (brandBrush != null) p.Foreground = brandBrush;
-                    AddInlines(p.Inlines, l.Substring(2), brandBrush, mainTextBrush);
-                    doc.Blocks.Add(p); continue;
-                }
+                NoteEditor.Visibility = Visibility.Visible;
+                NoteGridSplitter.Visibility = Visibility.Visible;
+                NotePreviewViewer.Visibility = Visibility.Visible;
 
-                // ── Horizontal rule ────────────────────────────────────────────
-                if (l == "---" || l == "***" || l == "___")
-                {
-                    doc.Blocks.Add(new BlockUIContainer(new System.Windows.Controls.Separator()));
-                    continue;
-                }
-
-                // ── Blockquote ─────────────────────────────────────────────────
-                if (l.StartsWith("> "))
-                {
-                    Paragraph p = new Paragraph(); p.Margin = new Thickness(16, 2, 0, 2);
-                    p.BorderBrush = brandBrush; p.BorderThickness = new Thickness(3, 0, 0, 0);
-                    p.Padding = new Thickness(8, 0, 0, 0);
-                    if (secondaryBrush != null) p.Foreground = secondaryBrush;
-                    AddInlines(p.Inlines, l.Substring(2), brandBrush, mainTextBrush);
-                    doc.Blocks.Add(p); continue;
-                }
-
-                // ── Task checkbox ──────────────────────────────────────────────
-                if (l.StartsWith("- [ ] ") || l.StartsWith("- [x] ") || l.StartsWith("- [X] "))
-                {
-                    bool done = l[3] != ' ';
-                    List taskList = new List(); taskList.MarkerStyle = TextMarkerStyle.None;
-                    Paragraph inner = new Paragraph();
-                    inner.Inlines.Add(new Run(done ? "\u2611 " : "\u2610 "));
-                    AddInlines(inner.Inlines, l.Substring(6), brandBrush, mainTextBrush);
-                    if (done && secondaryBrush != null) inner.TextDecorations = TextDecorations.Strikethrough;
-                    taskList.ListItems.Add(new ListItem(inner));
-                    doc.Blocks.Add(taskList); continue;
-                }
-
-                // ── Bullet list ────────────────────────────────────────────────
-                if (l.StartsWith("- ") || l.StartsWith("* "))
-                {
-                    List list = new List();
-                    Paragraph inner = new Paragraph();
-                    AddInlines(inner.Inlines, l.Substring(2), brandBrush, mainTextBrush);
-                    list.ListItems.Add(new ListItem(inner));
-                    doc.Blocks.Add(list); continue;
-                }
-
-                // ── Numbered list ──────────────────────────────────────────────
-                int dotIdx = l.IndexOf(". ");
-                if (dotIdx > 0 && dotIdx < 4)
-                {
-                    string numStr = l.Substring(0, dotIdx);
-                    int dummy;
-                    if (int.TryParse(numStr, out dummy))
-                    {
-                        List list = new List(); list.MarkerStyle = TextMarkerStyle.Decimal;
-                        Paragraph inner = new Paragraph();
-                        AddInlines(inner.Inlines, l.Substring(dotIdx + 2), brandBrush, mainTextBrush);
-                        list.ListItems.Add(new ListItem(inner));
-                        doc.Blocks.Add(list); continue;
-                    }
-                }
-
-                // ── Normal paragraph ───────────────────────────────────────────
-                Paragraph para = new Paragraph(); para.Margin = new Thickness(0, 2, 0, 2);
-                AddInlines(para.Inlines, l, brandBrush, mainTextBrush);
-                doc.Blocks.Add(para);
+                UpdateLivePreview();
             }
+            else if (mode == 1) // Edit Only
+            {
+                BtnModeEdit.Background = brandBrush ?? System.Windows.Media.Brushes.DodgerBlue;
+                BtnModeEdit.Foreground = System.Windows.Media.Brushes.White;
+                BtnModeEdit.FontWeight = FontWeights.SemiBold;
 
-            if (codePara != null) doc.Blocks.Add(codePara); // unclosed fence
-            NotePreviewViewer.Document = doc;
+                ColNoteEditor.Width = new GridLength(1, GridUnitType.Star);
+                ColNoteSplitter.Width = new GridLength(0, GridUnitType.Pixel);
+                ColNotePreview.Width = new GridLength(0, GridUnitType.Pixel);
+
+                NoteEditor.Visibility = Visibility.Visible;
+                NoteGridSplitter.Visibility = Visibility.Collapsed;
+                NotePreviewViewer.Visibility = Visibility.Collapsed;
+            }
+            else if (mode == 2) // Preview Only
+            {
+                BtnModePreview.Background = brandBrush ?? System.Windows.Media.Brushes.DodgerBlue;
+                BtnModePreview.Foreground = System.Windows.Media.Brushes.White;
+                BtnModePreview.FontWeight = FontWeights.SemiBold;
+
+                ColNoteEditor.Width = new GridLength(0, GridUnitType.Pixel);
+                ColNoteSplitter.Width = new GridLength(0, GridUnitType.Pixel);
+                ColNotePreview.Width = new GridLength(1, GridUnitType.Star);
+
+                NoteEditor.Visibility = Visibility.Collapsed;
+                NoteGridSplitter.Visibility = Visibility.Collapsed;
+                NotePreviewViewer.Visibility = Visibility.Visible;
+
+                UpdateLivePreview();
+            }
         }
 
-        // ── Inline span parser: bold, italic, code, links ─────────────────────
-        private void AddInlines(InlineCollection inlines, string text,
-                                System.Windows.Media.Brush brandBrush,
-                                System.Windows.Media.Brush mainTextBrush)
+        private void UpdateLivePreview()
         {
-            int i = 0;
-            while (i < text.Length)
+            if (_currentNote == null) return;
+            string markdown = NoteEditor.Text ?? "";
+            try
             {
-                // Bold+Italic ***text***
-                if (i + 2 < text.Length && text[i] == '*' && text[i+1] == '*' && text[i+2] == '*')
+                NotePreviewViewer.Document = MarkdownHelper.ToFlowDocument(markdown);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[QuickNotePage] Live preview render error: " + ex.Message);
+            }
+        }
+
+        private void UpdateTelemetry()
+        {
+            string text = NoteEditor.Text ?? "";
+            int chars = text.Length;
+
+            int words = 0;
+            string[] tokens = text.Split(new char[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            words = tokens.Length;
+
+            int completed, total;
+            QuickNoteService.ExtractTaskStats(text, out completed, out total);
+
+            TxtWordCount.Text = string.Format("{0} word{1}", words, words == 1 ? "" : "s");
+            TxtCharCount.Text = string.Format("{0} char{1}", chars, chars == 1 ? "" : "s");
+
+            if (total > 0)
+            {
+                TxtTaskStats.Text = string.Format("{0}/{1} tasks done", completed, total);
+                TxtTaskStats.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TxtTaskStats.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // ─── Starter Templates ───────────────────────────────────────────────
+
+        private void OnTemplatesButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (BtnTemplates != null && BtnTemplates.ContextMenu != null)
+            {
+                BtnTemplates.ContextMenu.PlacementTarget = BtnTemplates;
+                BtnTemplates.ContextMenu.IsOpen = true;
+            }
+        }
+
+        private void OnTemplateBriefClicked(object sender, RoutedEventArgs e)
+        {
+            InsertTemplateText("# Creative Brief: [Project Title]\n\n" +
+                "**Client / Brand:** \n" +
+                "**Campaign Goal:** Direct Response Conversion\n" +
+                "**Target Audience:** \n\n" +
+                "## Key Message\n" +
+                "- Main problem solved:\n" +
+                "- Offer / Hook angle:\n\n" +
+                "## Deliverables Checklist\n" +
+                "- [ ] 1x Video Ad (9:16 TikTok / Reels)\n" +
+                "- [ ] 3x Carousel Feed (1:1 / 4:5)\n" +
+                "- [ ] 1x Landing Page Banner\n\n" +
+                "## Deadlines & Review\n" +
+                "- Draft: \n" +
+                "- Final Approval: \n");
+        }
+
+        private void OnTemplateFeedbackClicked(object sender, RoutedEventArgs e)
+        {
+            InsertTemplateText("# Client Feedback — " + DateTime.Now.ToString("dd MMM yyyy") + "\n\n" +
+                "**Reviewer:** \n" +
+                "**Status:** Needs Revision\n\n" +
+                "## Changes Requested\n" +
+                "1. **Opening Hook:** \n" +
+                "2. **Color Grading:** \n" +
+                "3. **Call-To-Action:** \n\n" +
+                "## Action Items\n" +
+                "- [ ] Apply revisions to video cut\n" +
+                "- [ ] Send updated preview link\n" +
+                "- [ ] Obtain final client sign-off\n");
+        }
+
+        private void OnTemplateMeetingClicked(object sender, RoutedEventArgs e)
+        {
+            InsertTemplateText("# Creative Sync — " + DateTime.Now.ToString("dd MMM yyyy") + "\n\n" +
+                "**Attendees:** \n" +
+                "**Topic:** \n\n" +
+                "## Discussion Points\n" +
+                "- Point 1: \n" +
+                "- Point 2: \n\n" +
+                "## Decisions Made\n" +
+                "- Decision 1:\n\n" +
+                "## Next Steps\n" +
+                "- [ ] Action item 1 (Assigned to: )\n" +
+                "- [ ] Action item 2 (Assigned to: )\n");
+        }
+
+        private void OnTemplateTikTokClicked(object sender, RoutedEventArgs e)
+        {
+            InsertTemplateText("# TikTok & Reels 3-Hook Matrix\n\n" +
+                "| Hook # | Angle Type | Opening Line (0-3s) | Visual Retention Driver |\n" +
+                "| :--- | :--- | :--- | :--- |\n" +
+                "| Hook 1 | Problem Callout | \"Ramai tak perasan punca sebenar...\" | Fast zoom cut |\n" +
+                "| Hook 2 | Story & Shock | \"Saya ingat biasa je, rupanya...\" | Close-up expression |\n" +
+                "| Hook 3 | Quick Demo | \"Tengok beza lepas 3 hari pakai...\" | Before/after split |\n\n" +
+                "## Body Script\n" +
+                "- Core Value: \n" +
+                "- Social Proof: \n" +
+                "- Urgency: \n\n" +
+                "## Call-To-Action\n" +
+                "> \"Tekan beg kuning sekarang sebelum promosi tamat!\"\n");
+        }
+
+        private void OnTemplateChecklistClicked(object sender, RoutedEventArgs e)
+        {
+            InsertTemplateText("# Task Checklist & Priorities\n\n" +
+                "## High Priority (Today)\n" +
+                "- [ ] \n" +
+                "- [ ] \n\n" +
+                "## Medium Priority\n" +
+                "- [ ] \n" +
+                "- [ ] \n\n" +
+                "## Completed\n" +
+                "- [x] Setup scratchpad notes\n");
+        }
+
+        private void InsertTemplateText(string template)
+        {
+            if (_currentNote == null) return;
+            if (string.IsNullOrWhiteSpace(NoteEditor.Text) || NoteEditor.Text.Trim() == "# New Note")
+            {
+                NoteEditor.Text = template;
+                NoteEditor.CaretIndex = NoteEditor.Text.Length;
+            }
+            else
+            {
+                int caret = NoteEditor.CaretIndex;
+                NoteEditor.Text = NoteEditor.Text.Insert(caret, "\n\n" + template);
+                NoteEditor.CaretIndex = caret + template.Length + 2;
+            }
+            NoteEditor.Focus();
+        }
+
+        // ─── Clean Plain Text Export ─────────────────────────────────────────
+
+        private void OnCopyCleanTextClicked(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(NoteEditor.Text)) return;
+            try
+            {
+                string clean = StripMarkdownFormatting(NoteEditor.Text);
+                Clipboard.SetText(clean);
+                TxtSavedStatus.Text = "Copied to clipboard!";
+                DispatcherTimer t = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+                t.Tick += delegate { TxtSavedStatus.Text = "Saved ✓"; t.Stop(); };
+                t.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[QuickNotePage] Copy clean text error: " + ex.Message);
+            }
+        }
+
+        private string StripMarkdownFormatting(string md)
+        {
+            if (string.IsNullOrWhiteSpace(md)) return "";
+            string text = QuickNoteService.StripFrontmatter(md);
+            string[] lines = text.Split(new char[] { '\r', '\n' });
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            foreach (string l in lines)
+            {
+                string line = l.Trim();
+                if (line.StartsWith("#")) line = line.TrimStart('#', ' ');
+                if (line.StartsWith("- [ ] ")) line = "☐ " + line.Substring(6);
+                else if (line.StartsWith("- [x] ") || line.StartsWith("- [X] ")) line = "☑ " + line.Substring(6);
+                else if (line.StartsWith("- ") || line.StartsWith("* ")) line = "• " + line.Substring(2);
+                else if (line.StartsWith("> ")) line = "\"" + line.Substring(2) + "\"";
+
+                line = line.Replace("**", "").Replace("*", "").Replace("~~", "").Replace("`", "");
+                sb.AppendLine(line);
+            }
+            return sb.ToString().Trim();
+        }
+
+        // ─── Keyboard Shortcuts ──────────────────────────────────────────────
+
+        private void OnPageKeyDown(object sender, KeyEventArgs e)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if (e.Key == Key.N)
                 {
-                    int end = text.IndexOf("***", i + 3);
-                    if (end >= 0)
-                    {
-                        var r = new Run(text.Substring(i + 3, end - i - 3));
-                        r.FontWeight = FontWeights.Bold; r.FontStyle = FontStyles.Italic;
-                        inlines.Add(r); i = end + 3; continue;
-                    }
+                    e.Handled = true;
+                    OnNewNoteClicked(this, null);
                 }
-                // Bold **text**
-                if (i + 1 < text.Length && text[i] == '*' && text[i+1] == '*')
+                else if (e.Key == Key.S)
                 {
-                    int end = text.IndexOf("**", i + 2);
-                    if (end >= 0)
-                    {
-                        var r = new Run(text.Substring(i + 2, end - i - 2));
-                        r.FontWeight = FontWeights.Bold; inlines.Add(r); i = end + 2; continue;
-                    }
+                    e.Handled = true;
+                    DoAutoSave();
                 }
-                // Italic *text*
-                if (text[i] == '*')
-                {
-                    int end = text.IndexOf('*', i + 1);
-                    if (end >= 0)
-                    {
-                        var r = new Run(text.Substring(i + 1, end - i - 1));
-                        r.FontStyle = FontStyles.Italic; inlines.Add(r); i = end + 1; continue;
-                    }
-                }
-                // Strikethrough ~~text~~
-                if (i + 1 < text.Length && text[i] == '~' && text[i+1] == '~')
-                {
-                    int end = text.IndexOf("~~", i + 2);
-                    if (end >= 0)
-                    {
-                        var r = new Run(text.Substring(i + 2, end - i - 2));
-                        r.TextDecorations = TextDecorations.Strikethrough; inlines.Add(r); i = end + 2; continue;
-                    }
-                }
-                // Inline code `text`
-                if (text[i] == '`')
-                {
-                    int end = text.IndexOf('`', i + 1);
-                    if (end >= 0)
-                    {
-                        var r = new Run(text.Substring(i + 1, end - i - 1));
-                        r.FontFamily = new System.Windows.Media.FontFamily("Consolas");
-                        r.FontSize = 12; inlines.Add(r); i = end + 1; continue;
-                    }
-                }
-                // Link [text](url)
-                if (text[i] == '[')
-                {
-                    int closeBracket = text.IndexOf(']', i + 1);
-                    if (closeBracket >= 0 && closeBracket + 1 < text.Length && text[closeBracket + 1] == '(')
-                    {
-                        int closeParen = text.IndexOf(')', closeBracket + 2);
-                        if (closeParen >= 0)
-                        {
-                            string linkText = text.Substring(i + 1, closeBracket - i - 1);
-                            string url      = text.Substring(closeBracket + 2, closeParen - closeBracket - 2);
-                            try
-                            {
-                                Hyperlink hl = new Hyperlink(new Run(linkText));
-                                hl.NavigateUri = new Uri(url, UriKind.RelativeOrAbsolute);
-                                hl.RequestNavigate += (s, ev) => { System.Diagnostics.Process.Start(ev.Uri.AbsoluteUri); ev.Handled = true; };
-                                if (brandBrush != null) hl.Foreground = brandBrush;
-                                inlines.Add(hl);
-                            }
-                            catch { inlines.Add(new Run(string.Format("[{0}]({1})", linkText, url))); }
-                            i = closeParen + 1; continue;
-                        }
-                    }
-                }
-                // Image ![alt](url) — show alt text in italics
-                if (i + 1 < text.Length && text[i] == '!' && text[i+1] == '[')
-                {
-                    int closeBracket = text.IndexOf(']', i + 2);
-                    if (closeBracket >= 0 && closeBracket + 1 < text.Length && text[closeBracket + 1] == '(')
-                    {
-                        int closeParen = text.IndexOf(')', closeBracket + 2);
-                        if (closeParen >= 0)
-                        {
-                            string alt = text.Substring(i + 2, closeBracket - i - 2);
-                            var r = new Run(string.Format("[image: {0}]", alt)); r.FontStyle = FontStyles.Italic;
-                            if (brandBrush != null) r.Foreground = brandBrush;
-                            inlines.Add(r); i = closeParen + 1; continue;
-                        }
-                    }
-                }
-                // Plain character
-                int runStart = i;
-                while (i < text.Length && text[i] != '*' && text[i] != '`' && text[i] != '[' && text[i] != '~' && !(i + 1 < text.Length && text[i] == '!' && text[i+1] == '['))
-                    i++;
-                if (i > runStart) inlines.Add(new Run(text.Substring(runStart, i - runStart)));
             }
         }
 

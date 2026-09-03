@@ -2,7 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      Title="Quick Note">
+      Title="Quick Note"
+      Focusable="True" KeyDown="OnPageKeyDown">
 
     <Grid Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -24,7 +25,7 @@
         <!-- Main Two-Panel Body -->
         <Grid Grid.Row="1" Margin="24,0,24,24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="280" MinWidth="220" MaxWidth="360"/>
                 <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -34,10 +35,60 @@
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
                 <DockPanel>
                     <Border DockPanel.Dock="Top" Padding="12,12,12,8">
-                        <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="36" Width="36" Padding="0"
-                                HorizontalAlignment="Center" Cursor="Hand" ToolTip="Create New Note">
-                            <ui:SymbolIcon Symbol="Add24" FontSize="16" VerticalAlignment="Center"/>
-                        </ui:Button>
+                        <StackPanel>
+                            <!-- Full-width Primary New Note Button -->
+                            <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="34"
+                                       HorizontalAlignment="Stretch" Cursor="Hand" ToolTip="Create New Note (Ctrl+N)">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Add24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <ui:TextBlock Text="New Note" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ui:Button>
+
+                            <!-- Instant Search Box -->
+                            <ui:TextBox x:Name="TxtSearchNotes" PlaceholderText="Search notes..." Margin="0,8,0,8"
+                                        TextChanged="OnSearchNotesChanged" Height="30" FontSize="11.5"
+                                        Icon="Search24"/>
+
+                            <!-- Filter Chips Row -->
+                            <Grid Margin="0,0,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ui:Button x:Name="BtnFilterAll" Grid.Column="0" Appearance="Primary"
+                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                           Click="OnFilterAllClicked" Cursor="Hand" ToolTip="All Notes">
+                                    <ui:TextBlock Text="All" FontSize="10" HorizontalAlignment="Center"/>
+                                </ui:Button>
+                                <ui:Button x:Name="BtnFilterPinned" Grid.Column="1" Appearance="Secondary"
+                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                           Click="OnFilterPinnedClicked" Cursor="Hand" ToolTip="Pinned Notes">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Pin" FontSize="10" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                                <ui:Button x:Name="BtnFilterHigh" Grid.Column="2" Appearance="Secondary"
+                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                           Click="OnFilterHighClicked" Cursor="Hand" ToolTip="High Priority Notes">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ui:TextBlock Text="&#xE7BA;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="High" FontSize="10" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                                <ui:Button x:Name="BtnFilterTasks" Grid.Column="3" Appearance="Secondary"
+                                           Height="24" Padding="0"
+                                           Click="OnFilterTasksClicked" Cursor="Hand" ToolTip="Notes with Tasks">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ui:TextBlock Text="&#xE73A;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Tasks" FontSize="10" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </ui:Button>
+                            </Grid>
+                        </StackPanel>
                     </Border>
 
                     <!-- Note count label -->
@@ -97,10 +148,27 @@
                                                            TextTrimming="CharacterEllipsis"
                                                            ToolTip="{Binding Title}" VerticalAlignment="Center"/>
                                             </StackPanel>
-                                            <ui:TextBlock Text="{Binding ModifiedDisplay}"
-                                                       FontSize="10"
+
+                                            <!-- Body snippet preview -->
+                                            <ui:TextBlock Text="{Binding Snippet}"
+                                                       FontSize="10.5"
                                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                       Margin="0,3,0,0"/>
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="0,2,0,4"
+                                                       Opacity="0.85"/>
+
+                                            <!-- Meta row: Modified date + task count -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:TextBlock Text="{Binding ModifiedDisplay}"
+                                                           FontSize="9.5"
+                                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                           VerticalAlignment="Center"/>
+                                                <Border Visibility="{Binding TaskBadgeVisibility}" Background="{DynamicResource TextControlBackground}"
+                                                        CornerRadius="3" Padding="4,0" Margin="6,0,0,0" VerticalAlignment="Center">
+                                                    <ui:TextBlock Text="{Binding TaskProgressDisplay}" FontSize="9"
+                                                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                </Border>
+                                            </StackPanel>
                                         </StackPanel>
 
                                         <!-- Priority Badge Tag -->
@@ -235,58 +303,133 @@
                             </StackPanel>
 
 
-                            <!-- Toolbar Row 2: Status + Actions -->
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:TextBlock x:Name="TxtSavedStatus" Text=""
-                                            FontSize="11" FontWeight="Medium"
-                                            Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center"
-                                            Margin="0,0,12,0"/>
+                            <!-- Toolbar Row 2: Controls + Mode Switcher + Templates + Actions -->
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                                <!-- Pin Toggle Button -->
-                                <ui:Button x:Name="BtnTogglePin" Click="OnTogglePinClicked"
-                                           Height="28" Width="28" Padding="0" Cursor="Hand" Margin="0,0,6,0"
-                                           ToolTip="Pin note to top">
-                                    <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </ui:Button>
+                                <!-- Left Group: Pin, Priority, 3-Way Mode, Templates, Copy Plain -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <!-- Pin Toggle Button -->
+                                    <ui:Button x:Name="BtnTogglePin" Click="OnTogglePinClicked"
+                                               Height="28" Width="28" Padding="0" Cursor="Hand" Margin="0,0,6,0"
+                                               ToolTip="Pin note to top">
+                                        <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </ui:Button>
 
-                                <!-- Priority Dropdown -->
-                                <ComboBox x:Name="CmbPriority" SelectionChanged="OnPriorityChanged"
-                                          Height="28" Width="92" FontSize="11" Margin="0,0,6,0"
-                                          Padding="8,0" VerticalContentAlignment="Center" ToolTip="Set note priority">
-                                    <ComboBoxItem Content="Normal"/>
-                                    <ComboBoxItem Content="Medium"/>
-                                    <ComboBoxItem Content="High"/>
-                                </ComboBox>
+                                    <!-- Priority Dropdown -->
+                                    <ComboBox x:Name="CmbPriority" SelectionChanged="OnPriorityChanged"
+                                              Height="28" Width="92" FontSize="11" Margin="0,0,8,0"
+                                              Padding="8,0" VerticalContentAlignment="Center" ToolTip="Set note priority">
+                                        <ComboBoxItem Content="Normal"/>
+                                        <ComboBoxItem Content="Medium"/>
+                                        <ComboBoxItem Content="High"/>
+                                    </ComboBox>
 
-                                <!-- Mode Toggle Segmented Control -->
-                                <Border CornerRadius="4" Margin="0,0,6,0" Background="{DynamicResource ControlFillColorSecondaryBrush}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <ui:Button x:Name="BtnModeEdit" Click="OnModeEdit"
-                                                Height="28" Width="28" Padding="0" Background="{DynamicResource FluentBrand80}"
-                                                Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Edit Note">
-                                            <ui:TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </ui:Button>
-                                        <ui:Button x:Name="BtnModePreview" Click="OnModePreview"
-                                                Height="28" Width="28" Padding="0" Background="Transparent"
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                BorderThickness="0" Cursor="Hand" ToolTip="Preview Markdown">
-                                            <ui:TextBlock Text="&#xE890;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </ui:Button>
-                                    </StackPanel>
-                                </Border>
+                                    <!-- 3-Way Mode Segmented Control (Split / Edit / Preview) -->
+                                    <Border CornerRadius="4" Margin="0,0,8,0" Background="{DynamicResource ControlFillColorSecondaryBrush}" Padding="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:Button x:Name="BtnModeSplit" Click="OnModeSplit"
+                                                    Height="26" Padding="8,0" Background="{DynamicResource FluentBrand80}"
+                                                    Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Split View (Side-by-side Live Preview)">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="TableSplit24" FontSize="13" Margin="0,0,4,0"/>
+                                                    <ui:TextBlock Text="Split" FontSize="11.5" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </ui:Button>
+                                            <ui:Button x:Name="BtnModeEdit" Click="OnModeEdit"
+                                                    Height="26" Padding="8,0" Background="Transparent"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                    BorderThickness="0" Cursor="Hand" ToolTip="Edit Markdown Only">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Edit24" FontSize="13" Margin="0,0,4,0"/>
+                                                    <ui:TextBlock Text="Edit" FontSize="11.5"/>
+                                                </StackPanel>
+                                            </ui:Button>
+                                            <ui:Button x:Name="BtnModePreview" Click="OnModePreview"
+                                                    Height="26" Padding="8,0" Background="Transparent"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                    BorderThickness="0" Cursor="Hand" ToolTip="Preview Markdown Only">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Eye24" FontSize="13" Margin="0,0,4,0"/>
+                                                    <ui:TextBlock Text="Preview" FontSize="11.5"/>
+                                                </StackPanel>
+                                            </ui:Button>
+                                        </StackPanel>
+                                    </Border>
 
-                                <!-- Delete Note Button -->
-                                <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
-                                           Height="28" Width="28" Padding="0" Cursor="Hand" ToolTip="Delete Note">
-                                    <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </ui:Button>
-                            </StackPanel>
+                                    <!-- Templates Dropdown Button -->
+                                    <ui:Button x:Name="BtnTemplates" Click="OnTemplatesButtonClicked" Height="28" Padding="8,0" Margin="0,0,6,0"
+                                               Cursor="Hand" ToolTip="Insert Ready-to-use Template">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="DocumentSync24" FontSize="13" Margin="0,0,4,0"/>
+                                            <ui:TextBlock Text="Templates &#x25BE;" FontSize="11.5"/>
+                                        </StackPanel>
+                                        <ui:Button.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Creative Brief" Click="OnTemplateBriefClicked"/>
+                                                <MenuItem Header="Client Feedback &amp; Revisions" Click="OnTemplateFeedbackClicked"/>
+                                                <MenuItem Header="Meeting Minutes" Click="OnTemplateMeetingClicked"/>
+                                                <MenuItem Header="TikTok / Reels 3-Hook Matrix" Click="OnTemplateTikTokClicked"/>
+                                                <Separator/>
+                                                <MenuItem Header="Task Checklist &amp; Next Steps" Click="OnTemplateChecklistClicked"/>
+                                            </ContextMenu>
+                                        </ui:Button.ContextMenu>
+                                    </ui:Button>
+
+                                    <!-- Copy Plain Text Button -->
+                                    <ui:Button x:Name="BtnCopyCleanText" Click="OnCopyCleanTextClicked" Height="28" Padding="8,0" Margin="0,0,6,0"
+                                               Cursor="Hand" ToolTip="Copy plain text without markdown markup (for WhatsApp / Slack)">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="Copy24" FontSize="13" Margin="0,0,4,0"/>
+                                            <ui:TextBlock Text="Clean Text" FontSize="11.5"/>
+                                        </StackPanel>
+                                    </ui:Button>
+                                </StackPanel>
+
+                                <!-- Right Group: Delete Note -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:Button x:Name="BtnDeleteNote" Appearance="Danger" Click="OnDeleteNoteClicked"
+                                               Height="28" Width="28" Padding="0" Cursor="Hand" ToolTip="Delete Note">
+                                        <ui:TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="13"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </ui:Button>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
 
+                    </Border>
+
+                    <!-- Bottom Telemetry & Sync Strip -->
+                    <Border DockPanel.Dock="Bottom" Background="{DynamicResource SubtitleBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0"
+                            Padding="14,6" CornerRadius="0,0,8,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <ui:TextBlock x:Name="TxtWordCount" Text="0 words" FontSize="11"
+                                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,12,0"/>
+                                <ui:TextBlock x:Name="TxtCharCount" Text="0 characters" FontSize="11"
+                                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,12,0"/>
+                                <ui:TextBlock x:Name="TxtTaskStats" Text="0 tasks" FontSize="11"
+                                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,12,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <ui:TextBlock x:Name="TxtSyncStatus" Text="&#x25CF; NAS Synced" FontSize="11" FontWeight="SemiBold"
+                                              Foreground="{DynamicResource SystemFillColorSuccessBrush}" VerticalAlignment="Center"
+                                              Margin="0,0,10,0"/>
+                                <ui:TextBlock x:Name="TxtSavedStatus" Text="" FontSize="11"
+                                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
                     <!-- Main Editor Body Container -->
@@ -303,32 +446,48 @@
                                 <ui:TextBlock Text="Select a note from the left sidebar or create a new note to start writing."
                                             FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             HorizontalAlignment="Center" Margin="0,6,0,20" TextWrapping="Wrap" TextAlignment="Center"/>
-                                <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="36" Width="36" Padding="0"
-                                           HorizontalAlignment="Center" Cursor="Hand" ToolTip="Create New Note">
-                                    <ui:SymbolIcon Symbol="Add24" FontSize="16" VerticalAlignment="Center"/>
+                                <ui:Button Click="OnNewNoteClicked" Appearance="Primary" Height="34" Padding="14,0"
+                                           HorizontalAlignment="Center" Cursor="Hand" ToolTip="Create New Note (Ctrl+N)">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:SymbolIcon Symbol="Add24" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock Text="Create New Note" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </ui:Button>
                             </StackPanel>
                         </Grid>
 
-                        <!-- Edit Mode TextBox -->
-                        <TextBox x:Name="NoteEditor"
-                                 AcceptsReturn="True" AcceptsTab="True"
-                                 TextWrapping="Wrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 FontFamily="Consolas" FontSize="13"
-                                 Padding="16" BorderThickness="0"
-                                 Background="{DynamicResource TextControlBackground}"
-                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                 CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
-                                 Visibility="Collapsed"
-                                 TextChanged="OnNoteEditorChanged"/>
+                        <!-- Active Note Workspace (Split / Edit / Preview) -->
+                        <Grid x:Name="PanelActiveWorkspace" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="ColNoteEditor" Width="*"/>
+                                <ColumnDefinition x:Name="ColNoteSplitter" Width="6"/>
+                                <ColumnDefinition x:Name="ColNotePreview" Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <!-- Preview Mode -->
-                        <FlowDocumentScrollViewer x:Name="NotePreviewViewer"
-                                                  FontFamily="{DynamicResource FluentFontFamily}"
-                                                  VerticalScrollBarVisibility="Auto"
-                                                  Background="{DynamicResource TextControlBackground}" BorderThickness="0"
-                                                  Padding="20" Visibility="Collapsed"/>
+                            <!-- Edit Mode TextBox -->
+                            <TextBox x:Name="NoteEditor" Grid.Column="0"
+                                     AcceptsReturn="True" AcceptsTab="True"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     FontFamily="Consolas, Cascadia Mono, Segoe UI" FontSize="13"
+                                     Padding="16" BorderThickness="0"
+                                     Background="{DynamicResource TextControlBackground}"
+                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                     CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                     TextChanged="OnNoteEditorChanged"/>
+
+                            <!-- Splitter -->
+                            <GridSplitter x:Name="NoteGridSplitter" Grid.Column="1" Width="6"
+                                          HorizontalAlignment="Center" Background="{DynamicResource CardStrokeColorDefaultBrush}"
+                                          Cursor="SizeWE"/>
+
+                            <!-- Live Rendered Markdown Preview -->
+                            <FlowDocumentScrollViewer x:Name="NotePreviewViewer" Grid.Column="2"
+                                                      FontFamily="{DynamicResource FluentFontFamily}"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      Background="{DynamicResource TextControlBackground}" BorderThickness="0"
+                                                      Padding="20"/>
+                        </Grid>
 
                         <!-- Markdown Guide Slide-out Drawer Panel -->
                         <Border x:Name="PanelMarkdownHelp" HorizontalAlignment="Right" Width="320"
