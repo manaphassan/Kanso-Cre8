@@ -40,6 +40,7 @@
   let showDeleteModal = $state<boolean>(false);
   let isDeleting = $state<boolean>(false);
   let isSavingDirection = $state<boolean>(false);
+  let isEditingDirection = $state<boolean>(false);
 
   const isAdminUser = $derived.by(() => {
     const role = (appState.currentUser?.role || '').toLowerCase();
@@ -315,6 +316,29 @@
       }
     } catch (err: any) {
       appState.addToast(`Failed to save copy: ${err.message}`, 'error');
+    }
+  }
+
+  function extractColorChips(paletteText?: string): string[] {
+    if (!paletteText) return [];
+    const hexMatches = paletteText.match(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g);
+    return hexMatches || [];
+  }
+
+  async function saveCreativeDirection() {
+    if (!p) return;
+    isSavingDirection = true;
+    try {
+      const res = await ApiClient.updateCreativeDirection(p.id, currentFrontmatter.creative_direction || {});
+      if (res?.creativeDirection && p) {
+        p.creativeDirection = res.creativeDirection;
+      }
+      appState.addToast('Creative direction saved to README.md', 'success');
+      isEditingDirection = false;
+    } catch (err: any) {
+      appState.addToast(`Failed to save creative direction: ${err.message}`, 'error');
+    } finally {
+      isSavingDirection = false;
     }
   }
 
@@ -690,65 +714,127 @@
           <!-- Creative Direction Panel -->
           <FluentCard elevated>
             <div class="form-section-header">
-              <h3>Creative &amp; Visual Direction Matrix</h3>
-              <p>Core visual tone, typography mood, and brand guidelines for designers.</p>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-field">
-                <label class="form-label">Visual Concept / Style Direction</label>
-                <input
-                  type="text"
-                  class="form-input"
-                  bind:value={currentFrontmatter.creative_direction!.visual_concept}
-                  placeholder="e.g. Modern Bold Minimalist, Dark Neon Accent"
-                />
+              <div class="header-titles">
+                <h3>Creative &amp; Visual Direction Matrix</h3>
+                <p>Core visual tone, typography mood, and brand guidelines for designers.</p>
               </div>
 
-              <div class="form-field">
-                <label class="form-label">Primary Color Palette Tokens</label>
-                <input
-                  type="text"
-                  class="form-input"
-                  bind:value={currentFrontmatter.creative_direction!.color_palette}
-                  placeholder="e.g. Prussian Blue #022057, SS Blue #043388, Gold #D4AF37"
-                />
-              </div>
-
-              <div class="form-field full-width">
-                <label class="form-label">Target Audience Demographics &amp; Psychology</label>
-                <textarea
-                  class="form-textarea"
-                  rows="3"
-                  bind:value={currentFrontmatter.creative_direction!.target_audience}
-                  placeholder="Demographics, pain points, desired emotional response..."
-                ></textarea>
+              <div class="header-actions">
+                {#if !isEditingDirection}
+                  <FluentButton appearance="secondary" size="sm" onclick={() => (isEditingDirection = true)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    <span style="margin-left: 5px;">Edit Direction</span>
+                  </FluentButton>
+                {:else}
+                  <div class="direction-action-group">
+                    <FluentButton appearance="secondary" size="sm" onclick={() => (isEditingDirection = false)}>
+                      Cancel
+                    </FluentButton>
+                    <FluentButton appearance="primary" size="sm" loading={isSavingDirection} onclick={saveCreativeDirection}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                      </svg>
+                      <span style="margin-left: 5px;">Save Direction</span>
+                    </FluentButton>
+                  </div>
+                {/if}
               </div>
             </div>
 
-            <div class="form-actions">
-              <FluentButton
-                appearance="primary"
-                loading={isSavingDirection}
-                onclick={async () => {
-                  if (!p) return;
-                  isSavingDirection = true;
-                  try {
-                    const res = await ApiClient.updateCreativeDirection(p.id, currentFrontmatter.creative_direction || {});
-                    if (res?.creativeDirection && p) {
-                      p.creativeDirection = res.creativeDirection;
-                    }
-                    appState.addToast('Creative direction saved to README.md', 'success');
-                  } catch (err: any) {
-                    appState.addToast(`Failed to save: ${err.message}`, 'error');
-                  } finally {
-                    isSavingDirection = false;
-                  }
-                }}
-              >
-                Save Creative Direction
-              </FluentButton>
-            </div>
+            {#if !isEditingDirection}
+              <!-- ─── PREVIEW MODE (DEFAULT) ─── -->
+              <div class="direction-preview-grid">
+                <div class="preview-card">
+                  <div class="preview-card-header">
+                    <span class="preview-icon">🎨</span>
+                    <span class="preview-title">Visual Concept / Style Direction</span>
+                  </div>
+                  <div class="preview-card-body">
+                    {#if currentFrontmatter.creative_direction?.visual_concept}
+                      <p class="preview-text highlight-concept">{currentFrontmatter.creative_direction.visual_concept}</p>
+                    {:else}
+                      <p class="preview-empty">No visual concept specified. Click "Edit Direction" to add.</p>
+                    {/if}
+                  </div>
+                </div>
+
+                <div class="preview-card">
+                  <div class="preview-card-header">
+                    <span class="preview-icon">🎯</span>
+                    <span class="preview-title">Primary Color Palette Tokens</span>
+                  </div>
+                  <div class="preview-card-body">
+                    {#if currentFrontmatter.creative_direction?.color_palette}
+                      {@const chips = extractColorChips(currentFrontmatter.creative_direction.color_palette)}
+                      <div class="palette-preview-wrap">
+                        {#if chips.length > 0}
+                          <div class="color-chips-row">
+                            {#each chips as color}
+                              <span class="color-swatch-dot" style="background-color: {color};" title={color}></span>
+                            {/each}
+                          </div>
+                        {/if}
+                        <p class="preview-text font-mono">{currentFrontmatter.creative_direction.color_palette}</p>
+                      </div>
+                    {:else}
+                      <p class="preview-empty">No color palette tokens defined yet.</p>
+                    {/if}
+                  </div>
+                </div>
+
+                <div class="preview-card full-width">
+                  <div class="preview-card-header">
+                    <span class="preview-icon">👥</span>
+                    <span class="preview-title">Target Audience Demographics &amp; Psychology</span>
+                  </div>
+                  <div class="preview-card-body">
+                    {#if currentFrontmatter.creative_direction?.target_audience}
+                      <div class="audience-content">{currentFrontmatter.creative_direction.target_audience}</div>
+                    {:else}
+                      <p class="preview-empty">No target audience profile documented yet. Click "Edit Direction" to add.</p>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+            {:else}
+              <!-- ─── EDIT FORM MODE ─── -->
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="dir-visual-concept">Visual Concept / Style Direction</label>
+                  <input
+                    id="dir-visual-concept"
+                    type="text"
+                    class="form-input"
+                    bind:value={currentFrontmatter.creative_direction!.visual_concept}
+                    placeholder="e.g. Modern Bold Minimalist, Dark Neon Accent"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="dir-color-palette">Primary Color Palette Tokens</label>
+                  <input
+                    id="dir-color-palette"
+                    type="text"
+                    class="form-input"
+                    bind:value={currentFrontmatter.creative_direction!.color_palette}
+                    placeholder="e.g. Prussian Blue #022057, SS Blue #043388, Gold #D4AF37"
+                  />
+                </div>
+
+                <div class="form-field full-width">
+                  <label class="form-label" for="dir-target-audience">Target Audience Demographics &amp; Psychology</label>
+                  <textarea
+                    id="dir-target-audience"
+                    class="form-textarea"
+                    rows="4"
+                    bind:value={currentFrontmatter.creative_direction!.target_audience}
+                    placeholder="Demographics, pain points, desired emotional response..."
+                  ></textarea>
+                </div>
+              </div>
+            {/if}
           </FluentCard>
         {/if}
       </main>
@@ -1620,10 +1706,124 @@
   .empty-gallery p { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
   .empty-gallery .empty-sub { font-size: 12px; color: var(--text-secondary); margin: 0; }
 
-  /* Creative Direction Form */
-  .form-section-header h3 { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0; }
-  .form-section-header p { font-size: 12px; color: var(--text-secondary); margin: 0 0 16px 0; }
+  /* Creative Direction Section */
+  .form-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .header-titles h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 2px 0;
+  }
+  .header-titles p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .direction-action-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
+  /* Direction Preview Grid (Default View) */
+  .direction-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .preview-card {
+    background: var(--bg-app);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-md, 8px);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+  }
+  .preview-card.full-width {
+    grid-column: 1 / -1;
+  }
+  .preview-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .preview-icon {
+    font-size: 15px;
+  }
+  .preview-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .preview-card-body {
+    min-height: 24px;
+  }
+  .preview-text {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.55;
+  }
+  .highlight-concept {
+    color: var(--brand-primary, #043388);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .palette-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .color-chips-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .color-swatch-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .audience-content {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .preview-empty {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+
+  /* Creative Direction Edit Form */
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1637,12 +1837,12 @@
     font-size: 12px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .form-input, .form-textarea {
     width: 100%;
-    padding: 8px 10px;
+    padding: 10px 12px;
     border-radius: 6px;
     border: 1px solid var(--surface-card-border);
     background: var(--bg-app);
@@ -1651,6 +1851,7 @@
     font-family: inherit;
     box-sizing: border-box;
     outline: none;
+    line-height: 1.5;
   }
   .form-input:focus, .form-textarea:focus {
     border-color: var(--brand-accent);
