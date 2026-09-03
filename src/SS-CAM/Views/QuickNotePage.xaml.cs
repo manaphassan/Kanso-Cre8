@@ -29,14 +29,28 @@ namespace SS_CAM.Views
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
-            SetupAutoSaveTimer();
-            RefreshNoteList();
+            try
+            {
+                SetupAutoSaveTimer();
+                RefreshNoteList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[QuickNotePage] OnPageLoaded error: " + ex.Message);
+            }
         }
 
         private void OnPageUnloaded(object sender, RoutedEventArgs e)
         {
-            if (_autoSaveTimer != null) { _autoSaveTimer.Stop(); _autoSaveTimer = null; }
-            SaveCurrentNote();
+            try
+            {
+                if (_autoSaveTimer != null) { _autoSaveTimer.Stop(); _autoSaveTimer = null; }
+                SaveCurrentNote();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[QuickNotePage] OnPageUnloaded error: " + ex.Message);
+            }
         }
 
         private void SetupAutoSaveTimer()

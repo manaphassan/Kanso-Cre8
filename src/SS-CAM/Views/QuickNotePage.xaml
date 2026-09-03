@@ -336,7 +336,7 @@
                                                     Height="26" Padding="8,0" Background="{DynamicResource FluentBrand80}"
                                                     Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="Split View (Side-by-side Live Preview)">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <ui:SymbolIcon Symbol="TableSplit24" FontSize="13" Margin="0,0,4,0"/>
+                                                    <ui:SymbolIcon Symbol="SplitVertical24" FontSize="13" Margin="0,0,4,0"/>
                                                     <ui:TextBlock Text="Split" FontSize="11.5" FontWeight="SemiBold"/>
                                                 </StackPanel>
                                             </ui:Button>
