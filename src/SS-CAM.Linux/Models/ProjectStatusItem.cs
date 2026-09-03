@@ -101,12 +101,33 @@ namespace SS_CAM.Linux.Models
             }
         }
 
+        public bool IsCompletedStatus
+        {
+            get
+            {
+                string s = (Status ?? "").ToLowerInvariant().Trim();
+                return s == "done" || s == "approved" || s == "completed";
+            }
+        }
+
         public string DeadlineDisplay
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(Deadline)) return "No deadline";
-                if (DateTime.TryParse(Deadline, out var dt))
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
+                if (string.IsNullOrWhiteSpace(cleanDeadline)) return "No deadline";
+
+                if (IsCompletedStatus)
+                {
+                    if (DateTime.TryParse(cleanDeadline, out var dtComp))
+                    {
+                        return dtComp.ToString("yyyy-MM-dd");
+                    }
+                    return cleanDeadline;
+                }
+
+                if (DateTime.TryParse(cleanDeadline, out var dt))
                 {
                     int daysLeft = (int)(dt.Date - DateTime.Today).TotalDays;
                     if (daysLeft < 0) return $"Overdue ({-daysLeft}d)";
@@ -114,7 +135,7 @@ namespace SS_CAM.Linux.Models
                     if (daysLeft == 1) return "Due Tomorrow";
                     return $"Due in {daysLeft}d ({dt:dd MMM})";
                 }
-                return Deadline;
+                return cleanDeadline;
             }
         }
 
@@ -122,8 +143,10 @@ namespace SS_CAM.Linux.Models
         {
             get
             {
+                if (IsCompletedStatus) return "Transparent";
                 if (string.IsNullOrWhiteSpace(Deadline)) return "#1E293B";
-                if (DateTime.TryParse(Deadline, out var dt))
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
+                if (DateTime.TryParse(cleanDeadline, out var dt))
                 {
                     int daysLeft = (int)(dt.Date - DateTime.Today).TotalDays;
                     if (daysLeft < 0) return "#450A0A";
@@ -138,8 +161,10 @@ namespace SS_CAM.Linux.Models
         {
             get
             {
+                if (IsCompletedStatus) return "#10B981";
                 if (string.IsNullOrWhiteSpace(Deadline)) return "#94A3B8";
-                if (DateTime.TryParse(Deadline, out var dt))
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
+                if (DateTime.TryParse(cleanDeadline, out var dt))
                 {
                     int daysLeft = (int)(dt.Date - DateTime.Today).TotalDays;
                     if (daysLeft < 0) return "#F87171";
