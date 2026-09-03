@@ -240,9 +240,12 @@ namespace SS_CAM.Views
                     else if (status == "review") reviewCount++;
                     else if (status == "done" || status == "approved") doneCount++;
 
-                    if (priority == "urgent" || status == "revision" || p.IsOverdue || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
+                    if (status != "done" && status != "approved" && status != "completed")
                     {
-                        urgentCount++;
+                        if (priority == "urgent" || status == "revision" || p.IsOverdue || deadlineDisp.StartsWith("Overdue", StringComparison.OrdinalIgnoreCase))
+                        {
+                            urgentCount++;
+                        }
                     }
                 }
 

@@ -44,8 +44,9 @@ namespace SS_CAM.Models
             {
                 if (!string.IsNullOrWhiteSpace(CreatedDate))
                 {
+                    string clean = CreatedDate.Trim().Trim('"', '\'');
                     DateTime dt;
-                    if (DateTime.TryParse(CreatedDate, out dt)) return dt;
+                    if (DateTime.TryParse(clean, out dt)) return dt;
                 }
                 return DateTime.Today;
             }
@@ -76,6 +77,7 @@ namespace SS_CAM.Models
         {
             get
             {
+                if (IsCompletedStatus) return "#64748B";
                 int age = AgeInDays;
                 if (age > 60) return "#EF4444";
                 if (age > 30) return "#F59E0B";
@@ -88,10 +90,11 @@ namespace SS_CAM.Models
             get
             {
                 if (string.IsNullOrWhiteSpace(CreatedDate)) return "N/A";
+                string clean = CreatedDate.Trim().Trim('"', '\'');
                 DateTime dt;
-                if (DateTime.TryParse(CreatedDate, out dt))
+                if (DateTime.TryParse(clean, out dt))
                     return dt.ToString("yyyy-MM-dd");
-                return CreatedDate;
+                return clean;
             }
         }
 
@@ -136,11 +139,11 @@ namespace SS_CAM.Models
             }
         }
 
-        private bool IsCompletedStatus
+        public bool IsCompletedStatus
         {
             get
             {
-                string s = (Status ?? "").ToLowerInvariant();
+                string s = (Status ?? "").ToLowerInvariant().Trim();
                 return s == "done" || s == "approved" || s == "completed";
             }
         }
@@ -150,24 +153,27 @@ namespace SS_CAM.Models
             get
             {
                 if (string.IsNullOrWhiteSpace(Deadline)) return "";
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
+                if (string.IsNullOrWhiteSpace(cleanDeadline)) return "";
+
                 if (IsCompletedStatus)
                 {
                     DateTime dtCompleted;
-                    if (DateTime.TryParse(Deadline, out dtCompleted))
+                    if (DateTime.TryParse(cleanDeadline, out dtCompleted))
                     {
                         return dtCompleted.ToString("yyyy-MM-dd");
                     }
-                    return Deadline;
+                    return cleanDeadline;
                 }
                 DateTime dt;
-                if (DateTime.TryParse(Deadline, out dt))
+                if (DateTime.TryParse(cleanDeadline, out dt))
                 {
                     int days = (int)(dt - DateTime.Today).TotalDays;
                     if (days < 0) return string.Format("Overdue {0}d", Math.Abs(days));
                     if (days == 0) return "Due Today";
                     return string.Format("Due in {0}d", days);
                 }
-                return Deadline;
+                return cleanDeadline;
             }
         }
 
@@ -177,8 +183,11 @@ namespace SS_CAM.Models
             {
                 if (IsCompletedStatus) return false;
                 if (string.IsNullOrWhiteSpace(Deadline)) return false;
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
+                if (string.IsNullOrWhiteSpace(cleanDeadline)) return false;
+
                 DateTime dt;
-                if (DateTime.TryParse(Deadline, out dt))
+                if (DateTime.TryParse(cleanDeadline, out dt))
                 {
                     return (dt - DateTime.Today).TotalDays < 0;
                 }
@@ -190,8 +199,8 @@ namespace SS_CAM.Models
         {
             get
             {
+                if (IsCompletedStatus) return "Transparent";
                 if (IsOverdue) return "#EF4444"; // Solid Red
-                if (string.IsNullOrWhiteSpace(Deadline)) return "Transparent";
                 return "Transparent";
             }
         }
@@ -200,6 +209,7 @@ namespace SS_CAM.Models
         {
             get
             {
+                if (IsCompletedStatus) return "#10B981"; // Emerald green for finished projects
                 if (IsOverdue) return "#FFFFFF"; // White text on Red
                 return DeadlineColor;
             }
@@ -211,8 +221,9 @@ namespace SS_CAM.Models
             {
                 if (string.IsNullOrWhiteSpace(Deadline)) return "#64748B";
                 if (IsCompletedStatus) return "#10B981"; // Emerald green for finished projects
+                string cleanDeadline = (Deadline ?? "").Trim().Trim('"', '\'');
                 DateTime dt;
-                if (DateTime.TryParse(Deadline, out dt))
+                if (DateTime.TryParse(cleanDeadline, out dt))
                 {
                     int days = (int)(dt - DateTime.Today).TotalDays;
                     if (days < 0) return "#EF4444";

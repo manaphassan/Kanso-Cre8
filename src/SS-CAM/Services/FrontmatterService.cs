@@ -208,6 +208,10 @@ namespace SS_CAM.Services
                 {
                     string key = lines[i].Substring(0, colon).Trim();
                     string val = lines[i].Substring(colon + 1).Trim();
+                    if (val.Length >= 2 && ((val.StartsWith("\"") && val.EndsWith("\"")) || (val.StartsWith("'") && val.EndsWith("'"))))
+                    {
+                        val = val.Substring(1, val.Length - 2).Trim();
+                    }
                     result[key] = val;
                 }
             }
