@@ -94,7 +94,12 @@ class ApprovalService {
    */
   static postTeamNotification(project, decision, reviewer, comment, revision) {
     try {
-      const teamDir = path.join(config.WORKSPACE_ROOT, '_Team');
+      if (process.env.NODE_ENV === 'test') return;
+      if (!project || project.id === '9998A' || project.jobId === '9998A') return;
+      const rootDir = WorkspaceService.workspaceRoot || config.WORKSPACE_ROOT;
+      if (rootDir.includes('temp-') || (project.fullPath && project.fullPath.includes('temp-'))) return;
+
+      const teamDir = path.join(rootDir, '_Team');
       if (!fs.existsSync(teamDir)) fs.mkdirSync(teamDir, { recursive: true });
       const notesPath = path.join(teamDir, 'team-notes.json');
 
