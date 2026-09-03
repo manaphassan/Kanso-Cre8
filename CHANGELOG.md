@@ -2,6 +2,29 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.6.1] - 2026-09-03 (Creative Direction Matrix Preview, Markdown Auto-Wrapping, Overdue Suppression & Shared Team Board Isolation)
+
+### Added & Refined — Desktop Kanban Overdue Suppression, Web Creative Direction Preview & Test Isolation
+- **Desktop Task Manager Kanban Overdue Suppression (`ProjectStatus.cs`, `TaskManagerPage.xaml.cs`)**:
+  - Implemented strict completed status checking (`IsCompletedStatus = status == "done" || status == "approved" || status == "completed"`).
+  - Completed projects now completely suppress the red `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in clean emerald green (`#10B981`) text.
+  - Excluded completed and approved projects from the top metric glance "URGENT / OVERDUE" counter.
+  - Neutralized queue age color (`AgeBadgeColor`) to slate (`#64748B`) on finished projects rather than triggering alert colors.
+- **Frontmatter YAML String Sanitization (`FrontmatterService.cs`, `ProjectStatusItem.cs`)**:
+  - Automatically strip surrounding quotes (`"..."` / `'...'`) on frontmatter values during extraction, resolving unparsed raw ISO strings like `"2026-08-27T00:00:00.000Z"` into clean formatted dates (`yyyy-MM-dd`).
+  - Added full parity to Linux Avalonia desktop model (`SS-CAM.Linux/Models/ProjectStatusItem.cs`).
+- **Web Portal Creative Direction Matrix Preview & Header Toggle (`ProjectDetailView.svelte`, `api.js`)**:
+  - Creative Direction tab now defaults to a clean, read-only preview card matrix displaying Visual Concept, Target Audience, and auto-rendered live color swatch chips parsed from hex tokens.
+  - Moved the `Edit Direction` / `Save Direction` and `Cancel` actions into the top-right header action group with loading spinner feedback.
+  - Resolved API persistence mismatch in `PUT /projects/:id/direction` so `visual_concept`, `color_palette`, and `target_audience` correctly persist to project `README.md`.
+- **Web Portal Markdown Editor Auto-Wrapping (`MarkdownEditor.svelte`)**:
+  - Defaulted editor mode to Preview (`preview`).
+  - Removed fixed `720px` height restriction, allowing the editor pane to wrap naturally to document contents without cutting off text or creating nested scrollbar traps.
+  - Added sticky toolbar (`position: sticky; top: 0; z-index: 20`).
+- **Shared Team Board Test Isolation (`ApprovalService.js`)**:
+  - Added environment and project ID guards in `postTeamNotification` to ensure automated test suites (`9998A` sandbox runs) never inject test notes into the production `_Team/team-notes.json` on the Synology NAS.
+  - Purged all legacy test notes from the live NAS board.
+
 ## [4.6.0] - 2026-09-01 (Beta Release — Preflight Quality Auditor, Android Bento Telemetry, Persistent Caching, Live Radio Metadata & Desk Standby Mode)
 
 ### Added & Refined — Desktop Preflight Quality Auditor, Android 2×2 Bento Telemetry, Persistent Caching & Live Radio Metadata Engine

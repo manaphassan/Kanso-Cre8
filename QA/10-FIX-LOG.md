@@ -1,5 +1,29 @@
 # SS-CAM FIX LOG
 
+## v4.6.1 — 2026-09-03 (Creative Direction Matrix Preview, Markdown Auto-Wrapping, Overdue Suppression & Shared Team Board Isolation)
+- **Assembly Version**: `4.6.1.0`
+- **Desktop Task Manager Kanban Overdue Suppression**:
+  - Implemented `IsCompletedStatus` checking (`done`, `approved`, `completed`).
+  - Strict suppression of `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in emerald green (`#10B981`) text.
+  - Excluded completed projects from the top metric glance "URGENT / OVERDUE" counter in `TaskManagerPage.xaml.cs`.
+  - Neutralized queue age indicator (`AgeBadgeColor`) to `#64748B` on finished projects.
+- **Frontmatter YAML String Sanitization**:
+  - Auto-strip surrounding quotes (`"..."` / `'...'`) from frontmatter values in `FrontmatterService.cs` so ISO timestamp strings parse properly into clean `yyyy-MM-dd` dates.
+  - Applied parity update to Linux Avalonia desktop model `SS-CAM.Linux/Models/ProjectStatusItem.cs`.
+- **Web Portal Creative Direction Matrix Preview & Header Toggle**:
+  - Refactored `ProjectDetailView.svelte` to default to formatted read-only preview cards with visual concept highlights, demographic cards, and live color swatch chips.
+  - Relocated action button into top-right header with Edit / Save / Cancel toggle states.
+  - Aligned backend API `PUT /projects/:id/direction` to persist `visual_concept`, `color_palette`, and `target_audience` into `README.md`.
+- **Web Portal Markdown Editor Auto-Wrapping**:
+  - Removed `max-height: 720px` restriction in `MarkdownEditor.svelte` so editor card expands to fit document content without cutting off text.
+  - Defaulted editor mode to Preview (`preview`) with sticky toolbar.
+- **Shared Team Board Test Isolation**:
+  - Guarded `ApprovalService.postTeamNotification` from posting test items (`9998A`) to live `\\SSNAS\Creative-Team\_Team\team-notes.json` during unit and DOM test runs.
+  - Purged legacy test notes from the NAS shared JSON.
+- **Build & Quality Suite**: Passed 9/9 Source Guardian checks and 29/29 Web Management Portal test suite. Release executable compiled to `E:\SS-CAM-v4.6.1.exe`.
+
+---
+
 ## v4.6.0-linux — 2026-09-02 (Linux Port — Full Feature Parity with Windows v4.6.0)
 - **Scope**: Complete rebuild of SS-CAM.Linux (Avalonia 11 / .NET 10) to match all 14 pages and backend logic of Windows WPF v4.6.0.
 - **Architecture**: Replaced StackPanel-based navigation with ContentControl + NavigateTo(key) pattern. Single MainViewModel drives all 15 views.

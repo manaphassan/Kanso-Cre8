@@ -4,7 +4,7 @@
 
 Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
 
-[![Beta Release](https://img.shields.io/badge/release-v4.6.0--beta.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.0)
+[![Release](https://img.shields.io/badge/release-v4.6.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.1)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0%20%7C%20Compose-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
@@ -13,16 +13,17 @@ Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Br
 
 ---
 
-## 🚀 What's New in v4.6.0 (Beta Release)
+## 🚀 What's New in v4.6.1
 
-* **🪟 Desktop Preflight Quality Audit & Auto-Scaffold Engine**: Automated 5-folder vault hierarchy inspection, YAML frontmatter validation, `COPY.md` script completeness checks, canonical asset naming audits, and 1-click auto-scaffolding prior to ZIP export.
-* **📱 Android Native Studio Companion Overhaul**: 
-  * **2×2 Bento KPI Telemetry**: Zero-scroll telemetry grid with instant touch filtering for Active Tasks, Due Projects, Active Brands, and NAS Assets.
-  * **Persistent Local Data Caching (`ProjectCacheManager`)**: 0ms offline launch with dynamic synchronization against Synology NAS API.
-  * **Live Broadcasting & ICY Audio Engine**: Real-time AzuraCast/Laut.fm/SomaFM track resolution with mechanical cassette deck ribbon, TopAppBar equalizer pill, and Now Playing Station Sheet.
-  * **Standby OLED Desk Clock & Pomodoro Companion**: Full-screen ambient focus timer with landscape/portrait sensor adaptation.
-  * **Interactive Markdown Checklist Sync**: Live task checklist toggling with instant underlying markdown persistence.
-* **🌐 Web Management Portal (`SS-CAM.Web`)**: Full Svelte 5 runes architecture, zero-emoji Microsoft Fluent 2 vector design system, AI assistant dual-persistence, and Synology NAS Docker deployment.
+* **🪟 Desktop Task Manager Kanban Overdue Suppression**:
+  * Completed and approved projects (`done`, `approved`, `completed`) strictly suppress the red `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in clean emerald green (`#10B981`) text.
+  * Completed projects are excluded from the top "URGENT / OVERDUE" metric counter.
+  * Auto-sanitization of YAML frontmatter string values stripping enclosing quotes (`"..."` / `'...'`), eliminating unparsed raw strings.
+* **🌐 Web Management Portal (`SS-CAM.Web`)**:
+  * **Creative Direction Matrix Preview & Header Toggle**: Defaults to clean formatted preview cards with live color swatch dots parsed from hex tokens, and relocated Edit/Save action toggle into the header.
+  * **Markdown Editor Auto-Wrapping**: Removed fixed 720px height restriction, allowing the editor pane to wrap naturally to document contents with sticky toolbar.
+  * **Shared Team Board Test Isolation**: Automated test runs are strictly isolated from posting sandbox entries to the live Synology NAS `_Team/team-notes.json`.
+* **📱 Android Native Studio Companion & Linux Edition**: Full parity across data models and status formatting.
 
 ---
 
@@ -40,7 +41,7 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.1.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
 | 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.0-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
 | 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.0-android-release.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
