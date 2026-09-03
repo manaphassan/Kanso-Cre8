@@ -250,6 +250,9 @@
     border-bottom: 1px solid var(--surface-card-border);
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0;
+    z-index: 20;
   }
 
   .toolbar-primary-row {
@@ -364,12 +367,10 @@
     color: #FFFFFF;
   }
 
-  /* Panes Layout */
+  /* Panes Layout: Wraps frame to content naturally */
   .editor-panes {
     display: grid;
-    min-height: 520px;
-    max-height: 720px;
-    overflow: hidden;
+    min-height: 280px;
   }
   .editor-panes.mode-split {
     grid-template-columns: 1fr 1fr;
@@ -379,12 +380,14 @@
   }
   .editor-panes.mode-preview {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .source-pane {
     display: flex;
     border-right: 1px solid var(--surface-card-border);
     background: var(--surface-card);
+    min-height: 480px;
   }
   .mode-source .source-pane {
     border-right: none;
@@ -392,11 +395,12 @@
 
   .source-pane textarea {
     width: 100%;
+    min-height: 480px;
     height: 100%;
     padding: 16px;
     border: none;
     outline: none;
-    resize: none;
+    resize: vertical;
     overflow-y: auto;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 13px;
@@ -407,9 +411,10 @@
   }
 
   .preview-pane {
-    padding: 16px 20px;
-    overflow-y: auto;
+    padding: 20px 24px;
     background: var(--surface-card);
+    min-height: 240px;
+    overflow: visible;
   }
 
   .empty-preview {
