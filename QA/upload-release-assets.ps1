@@ -1,5 +1,5 @@
 param(
-    [string]$Tag = "v4.6.0",
+    [string]$Tag = "v4.6.1",
     [string]$Repo = "SuamiSihat/ss_cam"
 )
 

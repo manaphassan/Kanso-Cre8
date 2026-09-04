@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.suamisihat.sscam.data.models.ProjectItem
+import com.suamisihat.sscam.data.models.CreativeOrder
+import com.suamisihat.sscam.data.models.CreateOrderRequest
 import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
 
@@ -48,13 +50,17 @@ data class TodayTaskItem(
     val subBrandFullName: String
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardCompanionScreen(
     projects: List<ProjectItem>,
     syncMessage: String,
     isLiveSync: Boolean,
     onNavigateDestination: (String, Int) -> Unit = { _, _ -> },
-    onSignOff: (ProjectItem) -> Unit = {}
+    onSignOff: (ProjectItem) -> Unit = {},
+    orders: List<CreativeOrder> = emptyList(),
+    onUpdateOrderStatus: (String, String) -> Unit = { _, _ -> },
+    onSubmitNewOrder: (CreateOrderRequest) -> Unit = {}
 ) {
     val colors = LocalSscamColors.current
     val haptic = LocalHapticFeedback.current
@@ -62,6 +68,10 @@ fun DashboardCompanionScreen(
     var selectedTimeframe by remember { mutableStateOf("Weekly") }
     var isTimeframeMenuExpanded by remember { mutableStateOf(false) }
     var activeQuickStatFilter by remember { mutableStateOf("All") }
+
+    var selectedOrderFilter by remember { mutableStateOf("all") }
+    var selectedOrderForDetail by remember { mutableStateOf<CreativeOrder?>(null) }
+    var showNewOrderModal by remember { mutableStateOf(false) }
 
     val filteredProjects = remember(projects, searchQuery) {
         if (searchQuery.isBlank()) projects
@@ -418,7 +428,7 @@ fun DashboardCompanionScreen(
             }
         }
 
-        // 4. Deliverables Queue Section (Horizontal Card Carousel with NAS Images)
+        // 4. New Order Requests Section (Syncs with Web Portal creative.suamisihat.myds.me/#order-form)
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -426,71 +436,133 @@ fun DashboardCompanionScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Deliverables Queue",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "New Order Requests",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textPrimary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFEFF6FF),
+                            shape = RoundedCornerShape(8.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
+                        ) {
+                            Text(
+                                text = "${orders.size}",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.primary,
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
 
-                    Text(
-                        text = "See all",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
+                    Surface(
                         color = colors.primary,
-                        modifier = Modifier.clickable { onNavigateDestination("Tasks", 0) }
-                    )
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showNewOrderModal = true
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "New Request",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "New Request",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                val displayTasks = remember(filteredProjects, activeQuickStatFilter) {
-                    val baseList = when (activeQuickStatFilter) {
-                        "Active Tasks" -> filteredProjects.filter { !it.normalizedStatus.equals("done", true) && !it.normalizedStatus.equals("completed", true) }
-                        "Due Projects" -> filteredProjects.filter { it.safePriority.equals("urgent", true) || it.safePriority.equals("high", true) || it.normalizedStatus.equals("in_review", true) }
-                        "Active Brands" -> filteredProjects.sortedBy { it.safeBrand }
-                        "NAS Assets" -> filteredProjects.filter { it.safeDeliverableCount > 0 }
-                        else -> filteredProjects
-                    }
-                    baseList.map { p ->
-                        val progressVal = when (p.normalizedStatus) {
-                            "done" -> 1.0f
-                            "in_review" -> 0.85f
-                            "in_progress" -> 0.50f
-                            "stuck" -> 0.25f
-                            else -> 0.15f
-                        }
-                        val progressText = "${(progressVal * 100).toInt()}%"
-                        val bannerGrad = when (p.safeBrand.uppercase()) {
-                            "SSH", "SS" -> listOf(Color(0xFF0F172A), Color(0xFF0284C7), Color(0xFF0369A1))
-                            "SSE" -> listOf(Color(0xFF064E3B), Color(0xFF059669), Color(0xFF10B981))
-                            "SSW" -> listOf(Color(0xFF831843), Color(0xFFDB2777), Color(0xFFF472B6))
-                            "SSP" -> listOf(Color(0xFF4C1D95), Color(0xFF7C3AED), Color(0xFF8B5CF6))
-                            "SST" -> listOf(Color(0xFF1E1B4B), Color(0xFF4338CA), Color(0xFF6366F1))
-                            "SSC" -> listOf(Color(0xFF3B0764), Color(0xFF9333EA), Color(0xFFA855F7))
-                            else -> listOf(Color(0xFF1E293B), Color(0xFF475569), Color(0xFF64748B))
-                        }
-                        val subBrandFull = when (p.safeBrand.uppercase()) {
-                            "SSH", "SS" -> "SUAMISIHAT HERO"
-                            "SSE" -> "SUAMISIHAT E-COMMERCE"
-                            "SSW" -> "SUAMISIHAT WELLNESS"
-                            "SSP" -> "SUAMISIHAT PHARMA"
-                            "SST" -> "SUAMISIHAT TECH"
-                            "SSC" -> "SUAMISIHAT CREATIVE"
-                            else -> p.safeBrand.uppercase()
-                        }
+                // Status Filter Tabs matching Web Portal tabs: All Requests, Pending, In Progress, For Approval, Completed
+                val orderTabs = listOf(
+                    Triple("all", "All Requests", orders.size),
+                    Triple("pending", "Pending", orders.count { it.status.equals("pending", true) }),
+                    Triple("in_progress", "In Progress", orders.count { it.status.equals("in_progress", true) }),
+                    Triple("for_approval", "For Approval", orders.count { it.status.equals("for_approval", true) }),
+                    Triple("done", "Completed", orders.count { it.status.equals("done", true) || it.status.equals("completed", true) })
+                )
 
-                        TodayTaskItem(
-                            project = p,
-                            progressText = progressText,
-                            progressVal = progressVal,
-                            bannerGradient = bannerGrad,
-                            subBrandFullName = subBrandFull
-                        )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(orderTabs) { (key, label, count) ->
+                        val isSelected = selectedOrderFilter == key
+                        Surface(
+                            color = if (isSelected) colors.primary else if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                            shape = RoundedCornerShape(12.dp),
+                            border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                            modifier = Modifier.clickable {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                selectedOrderFilter = key
+                            }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Color.White else colors.textPrimary
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(
+                                    color = if (isSelected) Color.White.copy(alpha = 0.25f) else if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0),
+                                    shape = CircleShape
+                                ) {
+                                    Text(
+                                        text = "$count",
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) Color.White else colors.textSecondary,
+                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
-                if (displayTasks.isEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val filteredOrders = remember(orders, selectedOrderFilter, searchQuery) {
+                    val base = when (selectedOrderFilter) {
+                        "pending" -> orders.filter { it.status.equals("pending", true) }
+                        "in_progress" -> orders.filter { it.status.equals("in_progress", true) }
+                        "for_approval" -> orders.filter { it.status.equals("for_approval", true) }
+                        "done" -> orders.filter { it.status.equals("done", true) || it.status.equals("completed", true) }
+                        else -> orders
+                    }
+                    if (searchQuery.isBlank()) base
+                    else base.filter {
+                        it.title.contains(searchQuery, ignoreCase = true) ||
+                        it.entity.contains(searchQuery, ignoreCase = true) ||
+                        it.id.contains(searchQuery, ignoreCase = true) ||
+                        it.requester.contains(searchQuery, ignoreCase = true) ||
+                        it.copy.contains(searchQuery, ignoreCase = true)
+                    }
+                }
+
+                if (filteredOrders.isEmpty()) {
                     FluentCard(
                         cornerRadius = 16.dp,
                         modifier = Modifier.fillMaxWidth()
@@ -498,40 +570,68 @@ fun DashboardCompanionScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(24.dp),
+                                .padding(28.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                Icons.Default.FolderOpen,
+                                Icons.Default.Article,
                                 contentDescription = null,
                                 tint = colors.textMuted,
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(36.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                             Text(
-                                text = "All Deliverables Up to Date",
+                                text = if (selectedOrderFilter == "all") "No creative requests on record." else "No ${selectedOrderFilter.replace('_', ' ').replaceFirstChar { it.uppercase() }} orders.",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = colors.textPrimary
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Synced with Synology NAS storage. Production deliverables will populate here when projects are active.",
-                                fontSize = 11.sp,
+                                text = "Submit the first request or adjust the status filter.",
+                                fontSize = 11.5.sp,
                                 color = colors.textSecondary,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Button(
+                                onClick = { showNewOrderModal = true },
+                                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("New Request", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 } else {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        items(displayTasks) { task ->
-                            val taskBannerGrad = if (colors.isMonochrome) {
-                                listOf(Color(0xFFE4E4E7), Color(0xFFD4D4D8), Color(0xFFA1A1AA))
-                            } else {
-                                task.bannerGradient
+                        items(filteredOrders, key = { it.id }) { order ->
+                            val entityGrad = when (order.safeEntity.uppercase()) {
+                                "SSH", "SS" -> listOf(Color(0xFF043388), Color(0xFF0284C7))
+                                "SSE" -> listOf(Color(0xFF065F46), Color(0xFF10B981))
+                                "SSC" -> listOf(Color(0xFF4A044E), Color(0xFFA21CAF))
+                                "SSW" -> listOf(Color(0xFF831843), Color(0xFFF43F5E))
+                                "SST" -> listOf(Color(0xFF0E7490), Color(0xFF06B6D4))
+                                else -> listOf(Color(0xFF1E293B), Color(0xFF475569))
+                            }
+
+                            val prioColors = when (order.priority.lowercase()) {
+                                "tier_3", "urgent" -> Color(0xFF991B1B) to Color(0xFFFEF2F2)
+                                "tier_2", "fast-track" -> Color(0xFF92400E) to Color(0xFFFFFBEB)
+                                else -> Color(0xFF065F46) to Color(0xFFECFDF5)
+                            }
+
+                            val statusColors = when (order.status.lowercase()) {
+                                "in_progress" -> Color(0xFF1D4ED8) to Color(0xFFEFF6FF)
+                                "for_approval" -> Color(0xFF92400E) to Color(0xFFFFFBEB)
+                                "done", "completed" -> Color(0xFF065F46) to Color(0xFFECFDF5)
+                                "cancelled" -> Color(0xFF991B1B) to Color(0xFFFEF2F2)
+                                else -> Color(0xFF475569) to Color(0xFFF1F5F9)
                             }
 
                             Surface(
@@ -539,88 +639,83 @@ fun DashboardCompanionScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
                                 modifier = Modifier
-                                    .width(260.dp)
-                                    .clickable { onNavigateDestination("Tasks", 0) }
+                                    .width(295.dp)
+                                    .clickable {
+                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        selectedOrderForDetail = order
+                                    }
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
-                                    // Card Header: Brand Gradient Art Tile with live tags
+                                    // Header Art Banner
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(110.dp)
+                                            .height(82.dp)
                                             .clip(RoundedCornerShape(10.dp))
-                                            .background(
-                                                androidx.compose.ui.graphics.Brush.linearGradient(taskBannerGrad)
-                                            )
+                                            .background(androidx.compose.ui.graphics.Brush.linearGradient(entityGrad))
+                                            .padding(8.dp)
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(10.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    text = task.project.safeBrand,
-                                                    fontSize = 24.sp,
-                                                    fontWeight = FontWeight.Black,
-                                                    color = Color.White.copy(alpha = 0.28f),
-                                                    letterSpacing = 2.sp
-                                                )
-                                                Text(
-                                                    text = task.subBrandFullName,
-                                                    fontSize = 7.5.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = Color.White.copy(alpha = 0.45f),
-                                                    letterSpacing = 1.2.sp
-                                                )
-                                            }
-                                        }
-
-                                        // Subsidiary Tag Pill
-                                        Surface(
-                                            color = if (colors.isMonochrome) Color(0xFF18181B) else Color(0xFF0F172A).copy(alpha = 0.82f),
-                                            shape = RoundedCornerShape(6.dp),
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .align(Alignment.TopStart)
-                                        ) {
-                                            Text(
-                                                text = task.project.safeBrand,
-                                                color = Color.White,
-                                                fontSize = 9.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                            )
-                                        }
-
-                                        // Live NAS Deliverables Status Badge
-                                        Surface(
-                                            color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.project.safeDeliverableCount > 0) SshSuccessGreen.copy(alpha = 0.92f) else Color(0xFF475569).copy(alpha = 0.92f),
-                                            shape = RoundedCornerShape(6.dp),
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .align(Alignment.TopEnd)
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.SpaceBetween
                                         ) {
                                             Row(
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Icon(
-                                                    if (task.project.safeDeliverableCount > 0) Icons.Default.CloudDone else Icons.Default.CloudQueue,
-                                                    contentDescription = null,
-                                                    tint = Color.White,
-                                                    modifier = Modifier.size(10.dp)
-                                                )
-                                                Spacer(modifier = Modifier.width(3.dp))
+                                                Surface(
+                                                    color = Color.Black.copy(alpha = 0.35f),
+                                                    shape = RoundedCornerShape(6.dp)
+                                                ) {
+                                                    Text(
+                                                        text = order.safeEntity,
+                                                        color = Color.White,
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.ExtraBold,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+
+                                                Surface(
+                                                    color = prioColors.second,
+                                                    shape = RoundedCornerShape(6.dp),
+                                                    border = androidx.compose.foundation.BorderStroke(0.8.dp, prioColors.first.copy(alpha = 0.3f))
+                                                ) {
+                                                    Text(
+                                                        text = order.priorityLabel,
+                                                        color = prioColors.first,
+                                                        fontSize = 9.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Surface(
+                                                    color = Color.White.copy(alpha = 0.22f),
+                                                    shape = RoundedCornerShape(5.dp)
+                                                ) {
+                                                    Text(
+                                                        text = order.formatLabel,
+                                                        color = Color.White,
+                                                        fontSize = 9.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+
                                                 Text(
-                                                    if (task.project.safeDeliverableCount > 0) "${task.project.safeDeliverableCount} Files" else "Pending",
-                                                    fontSize = 8.sp,
+                                                    text = "#${order.id}",
+                                                    color = Color.White.copy(alpha = 0.9f),
+                                                    fontSize = 9.5.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    color = Color.White
+                                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                                                 )
                                             }
                                         }
@@ -629,31 +724,50 @@ fun DashboardCompanionScreen(
                                     Spacer(modifier = Modifier.height(10.dp))
 
                                     Text(
-                                        text = task.project.safeTitle,
-                                        fontSize = 13.sp,
+                                        text = order.safeTitle,
+                                        fontSize = 13.5.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = colors.textPrimary,
-                                        lineHeight = 17.sp,
+                                        lineHeight = 18.sp,
                                         maxLines = 2
                                     )
 
                                     Spacer(modifier = Modifier.height(6.dp))
 
-                                    // Dynamic Date & Priority Meta
+                                    // Brief Snippet preview box
+                                    Surface(
+                                        color = if (colors.isDark) Color(0xFF1E293B).copy(alpha = 0.5f) else Color(0xFFF8FAFC),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = androidx.compose.foundation.BorderStroke(0.8.dp, colors.border.copy(alpha = 0.6f)),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "\"${order.copy.take(80)}${if (order.copy.length > 80) "…" else ""}\"",
+                                            fontSize = 10.5.sp,
+                                            color = colors.textSecondary,
+                                            maxLines = 2,
+                                            lineHeight = 14.sp,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
                                     Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(
                                                 Icons.Default.CalendarToday,
                                                 contentDescription = null,
                                                 tint = colors.textMuted,
-                                                modifier = Modifier.size(12.dp)
+                                                modifier = Modifier.size(11.dp)
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = "Due ${task.project.formattedDeadline}",
+                                                text = "Due ${order.targetDate.ifBlank { "TBD" }}",
                                                 fontSize = 10.sp,
                                                 color = colors.textSecondary
                                             )
@@ -661,87 +775,109 @@ fun DashboardCompanionScreen(
 
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(
-                                                Icons.Default.Schedule,
+                                                Icons.Default.Person,
                                                 contentDescription = null,
                                                 tint = colors.textMuted,
-                                                modifier = Modifier.size(12.dp)
+                                                modifier = Modifier.size(11.dp)
                                             )
-                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Spacer(modifier = Modifier.width(3.dp))
                                             Text(
-                                                text = "${task.project.safePriority.replaceFirstChar { it.uppercase() }} Priority",
+                                                text = order.requester,
                                                 fontSize = 10.sp,
-                                                color = colors.textSecondary
+                                                color = colors.textSecondary,
+                                                maxLines = 1
                                             )
                                         }
                                     }
 
                                     Spacer(modifier = Modifier.height(10.dp))
 
-                                    // Dynamic Linear Progress Bar
+                                    // Status & Quick Action Button
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            text = task.project.normalizedStatus.replace("_", " ").replaceFirstChar { it.uppercase() },
-                                            fontSize = 10.sp,
-                                            color = colors.textSecondary,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                        Text(
-                                            text = task.progressText,
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24)
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(5.dp))
-
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(RoundedCornerShape(3.dp))
-                                            .background(if (colors.isMonochrome) Color(0xFFE4E4E7) else if (colors.isDark) Color(0xFF334155) else Color(0xFFE2E8F0))
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth(task.progressVal)
-                                                .fillMaxHeight()
-                                                .clip(RoundedCornerShape(3.dp))
-                                                .background(if (colors.isMonochrome) Color(0xFF18181B) else if (task.progressVal >= 1f) SshSuccessGreen else Color(0xFFFBBF24))
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(10.dp))
-
-                                    // Dynamic Footer: Real Assets Count & Real Designer Avatar
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        Surface(
+                                            color = statusColors.second,
+                                            shape = RoundedCornerShape(6.dp),
+                                            border = androidx.compose.foundation.BorderStroke(0.8.dp, statusColors.first.copy(alpha = 0.25f))
                                         ) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(Icons.Default.FolderOpen, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
-                                                Spacer(modifier = Modifier.width(3.dp))
-                                                Text("${task.project.safeDeliverableCount} files", fontSize = 10.sp, color = colors.textMuted)
-                                            }
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(Icons.Default.History, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(11.dp))
-                                                Spacer(modifier = Modifier.width(3.dp))
-                                                Text("r${task.project.revision ?: 0}", fontSize = 10.sp, color = colors.textMuted)
-                                            }
+                                            Text(
+                                                text = order.statusLabel,
+                                                color = statusColors.first,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                                            )
                                         }
 
-                                        // Dynamic Designer Avatar
-                                        val designerInitial = task.project.safeDesigner.take(1).uppercase().ifBlank { "S" }
-                                        AvatarStack(listOf(designerInitial))
+                                        when (order.status.lowercase()) {
+                                            "pending" -> {
+                                                Surface(
+                                                    color = Color(0xFF1D4ED8),
+                                                    shape = RoundedCornerShape(6.dp),
+                                                    modifier = Modifier.clickable {
+                                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                        onUpdateOrderStatus(order.id, "in_progress")
+                                                    }
+                                                ) {
+                                                    Row(
+                                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(11.dp))
+                                                        Spacer(modifier = Modifier.width(3.dp))
+                                                        Text("Start", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                                    }
+                                                }
+                                            }
+                                            "in_progress" -> {
+                                                Surface(
+                                                    color = Color(0xFFD97706),
+                                                    shape = RoundedCornerShape(6.dp),
+                                                    modifier = Modifier.clickable {
+                                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                        onUpdateOrderStatus(order.id, "for_approval")
+                                                    }
+                                                ) {
+                                                    Row(
+                                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Icon(Icons.Default.RateReview, contentDescription = null, tint = Color.White, modifier = Modifier.size(11.dp))
+                                                        Spacer(modifier = Modifier.width(3.dp))
+                                                        Text("Review", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                                    }
+                                                }
+                                            }
+                                            "for_approval" -> {
+                                                Surface(
+                                                    color = Color(0xFF059669),
+                                                    shape = RoundedCornerShape(6.dp),
+                                                    modifier = Modifier.clickable {
+                                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                        onUpdateOrderStatus(order.id, "done")
+                                                    }
+                                                ) {
+                                                    Row(
+                                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color.White, modifier = Modifier.size(11.dp))
+                                                        Spacer(modifier = Modifier.width(3.dp))
+                                                        Text("Complete", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                                    }
+                                                }
+                                            }
+                                            else -> {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(13.dp))
+                                                    Spacer(modifier = Modifier.width(3.dp))
+                                                    Text("Fulfilled", color = Color(0xFF059669), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -750,6 +886,382 @@ fun DashboardCompanionScreen(
                 }
             }
         }
+    }
+
+    // Creative Order Detail Modal
+    if (selectedOrderForDetail != null) {
+        val detailOrder = selectedOrderForDetail!!
+        AlertDialog(
+            onDismissRequest = { selectedOrderForDetail = null },
+            confirmButton = {
+                TextButton(onClick = { selectedOrderForDetail = null }) {
+                    Text("Close", color = colors.primary, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                when (detailOrder.status.lowercase()) {
+                    "pending" -> {
+                        Button(
+                            onClick = {
+                                onUpdateOrderStatus(detailOrder.id, "in_progress")
+                                selectedOrderForDetail = null
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D4ED8))
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Start Work")
+                        }
+                    }
+                    "in_progress" -> {
+                        Button(
+                            onClick = {
+                                onUpdateOrderStatus(detailOrder.id, "for_approval")
+                                selectedOrderForDetail = null
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706))
+                        ) {
+                            Icon(Icons.Default.RateReview, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Submit for Review")
+                        }
+                    }
+                    "for_approval" -> {
+                        Button(
+                            onClick = {
+                                onUpdateOrderStatus(detailOrder.id, "done")
+                                selectedOrderForDetail = null
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF059669))
+                        ) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Mark Completed")
+                        }
+                    }
+                    else -> {}
+                }
+            },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Order Details",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = "#${detailOrder.id}",
+                        fontSize = 11.sp,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        color = colors.textSecondary
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = detailOrder.safeTitle,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = colors.textPrimary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Surface(
+                            color = colors.primary.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = detailOrder.safeEntity,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.primary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+
+                        Surface(
+                            color = if (detailOrder.priority.contains("3")) Color(0xFFFEF2F2) else Color(0xFFEFF6FF),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = detailOrder.priorityLabel,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (detailOrder.priority.contains("3")) Color(0xFF991B1B) else Color(0xFF1D4ED8),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+
+                        Surface(
+                            color = if (colors.isDark) Color(0xFF334155) else Color(0xFFF1F5F9),
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = detailOrder.formatLabel,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = colors.textPrimary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "Brief & Copy Script:",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary
+                    )
+
+                    Surface(
+                        color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF8FAFC),
+                        shape = RoundedCornerShape(8.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = detailOrder.copy,
+                            fontSize = 12.sp,
+                            color = colors.textPrimary,
+                            lineHeight = 16.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+
+                    if (detailOrder.attachmentNote.isNotBlank()) {
+                        Text(
+                            text = "Asset Reference:",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textSecondary
+                        )
+                        Surface(
+                            color = if (colors.isDark) Color(0xFF0F172A) else Color(0xFFEFF6FF),
+                            shape = RoundedCornerShape(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = detailOrder.attachmentNote,
+                                fontSize = 11.sp,
+                                color = colors.primary,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("Requester", fontSize = 10.sp, color = colors.textMuted)
+                            Text(detailOrder.requester, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text("Target Date", fontSize = 10.sp, color = colors.textMuted)
+                            Text(detailOrder.targetDate, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    // Create New Order Modal
+    if (showNewOrderModal) {
+        var newTitle by remember { mutableStateOf("") }
+        var newEntity by remember { mutableStateOf("SSH") }
+        var newPriority by remember { mutableStateOf("tier_1") }
+        var newFormat by remember { mutableStateOf("9_16_video") }
+        var newCopy by remember { mutableStateOf("") }
+        var newTargetDate by remember {
+            val cal = java.util.Calendar.getInstance()
+            cal.add(java.util.Calendar.DAY_OF_YEAR, 3)
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+            mutableStateOf(sdf.format(cal.time))
+        }
+        var newAttachment by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { showNewOrderModal = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (newTitle.isNotBlank() && newCopy.isNotBlank()) {
+                            onSubmitNewOrder(
+                                CreateOrderRequest(
+                                    title = newTitle.trim(),
+                                    entity = newEntity,
+                                    priority = newPriority,
+                                    format = newFormat,
+                                    copy = newCopy.trim(),
+                                    targetDate = newTargetDate,
+                                    attachmentNote = newAttachment.trim()
+                                )
+                            )
+                            showNewOrderModal = false
+                        }
+                    },
+                    enabled = newTitle.isNotBlank() && newCopy.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary)
+                ) {
+                    Text("Submit Request", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNewOrderModal = false }) {
+                    Text("Cancel", color = colors.textSecondary)
+                }
+            },
+            title = {
+                Column {
+                    Text("Creative Request Form", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                    Text("Submit structured creative brief under 60 seconds", fontSize = 11.sp, color = colors.textSecondary)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = newTitle,
+                        onValueChange = { newTitle = it },
+                        label = { Text("Project Title *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    // Entity selector
+                    Text("Requesting Entity", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf("SSH", "SSE", "SSC", "SST", "SSW").forEach { ent ->
+                            Surface(
+                                color = if (newEntity == ent) colors.primary else if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { newEntity = ent }
+                            ) {
+                                Text(
+                                    text = ent,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (newEntity == ent) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (newEntity == ent) Color.White else colors.textPrimary,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Priority Selector
+                    Text("Priority Tier", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf(
+                            "tier_1" to "Standard",
+                            "tier_2" to "Fast-Track",
+                            "tier_3" to "Urgent"
+                        ).forEach { (prio, label) ->
+                            Surface(
+                                color = if (newPriority == prio) colors.primary else if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { newPriority = prio }
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 10.5.sp,
+                                    fontWeight = if (newPriority == prio) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (newPriority == prio) Color.White else colors.textPrimary,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Format Selector
+                    Text("Format", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf(
+                            "9_16_video" to "9:16 Video",
+                            "1_1_feed" to "1:1 Feed",
+                            "print_posm" to "Print POSM"
+                        ).forEach { (fmt, label) ->
+                            Surface(
+                                color = if (newFormat == fmt) colors.primary else if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { newFormat = fmt }
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 10.sp,
+                                    fontWeight = if (newFormat == fmt) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (newFormat == fmt) Color.White else colors.textPrimary,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = newCopy,
+                        onValueChange = { newCopy = it },
+                        label = { Text("Brief & Copy Script *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3,
+                        maxLines = 4
+                    )
+
+                    OutlinedTextField(
+                        value = newTargetDate,
+                        onValueChange = { newTargetDate = it },
+                        label = { Text("Target Date (YYYY-MM-DD) *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = newAttachment,
+                        onValueChange = { newAttachment = it },
+                        label = { Text("Asset Reference (NAS path or Drive link)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+            }
+        )
     }
 }
 

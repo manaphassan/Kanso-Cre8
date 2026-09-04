@@ -15,15 +15,23 @@ Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Br
 
 ## 🚀 What's New in v4.6.1
 
+* **🔄 Cross-Platform Creative Orders Real-Time Sync**:
+  * Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and the Web Management Portal (`/api/orders`).
+  * Automatic JWT authentication and live queue fetching ensuring Desktop, Web Portal, and Android Companion app display the exact same active orders in real time.
+  * Dual-layer persistence: live cloud orders are automatically cached to the local Synology NAS ledger (`_Team\Orders\creative-orders.jsonl`) for offline resilience.
+  * Instant bidirectional status propagation: converting or updating an order on Desktop immediately issues an HTTP `PATCH /api/orders/{id}` to the central cloud API.
+* **📦 Desktop 1-Click Project Scaffolding Engine**:
+  * Automatically calculates canonical next project ID (`NNNNX`), scaffolds standard 4-folder project vaults (`01_Brief_and_Copy`, `02_Source_Assets`, `03_Artwork_Design`, `04_Final_Exports`), auto-generates `01_Brief_and_Copy/COPY.md` with the approved brief, and writes `README.md` with YAML frontmatter.
+* **🛡️ Desktop Startup Sequence & Splash Screen Resilience**:
+  * Fixed WPF-UI icon symbol compilation clash (`ClipboardTasklist24` -> `ClipboardTask24`).
+  * High-speed in-process `WScript.Shell` COM shortcut registration, `OnLastWindowClose` shutdown mode, and diagnostic file logging.
 * **🪟 Desktop Task Manager Kanban Overdue Suppression**:
-  * Completed and approved projects (`done`, `approved`, `completed`) strictly suppress the red `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in clean emerald green (`#10B981`) text.
-  * Completed projects are excluded from the top "URGENT / OVERDUE" metric counter.
-  * Auto-sanitization of YAML frontmatter string values stripping enclosing quotes (`"..."` / `'...'`), eliminating unparsed raw strings.
+  * Completed and approved projects (`done`, `approved`, `completed`) strictly suppress the red overdue badge (`IsOverdue = false`), rendering deadlines in clean emerald green (`#10B981`) text.
 * **🌐 Web Management Portal (`SS-CAM.Web`)**:
-  * **Creative Direction Matrix Preview & Header Toggle**: Defaults to clean formatted preview cards with live color swatch dots parsed from hex tokens, and relocated Edit/Save action toggle into the header.
-  * **Markdown Editor Auto-Wrapping**: Removed fixed 720px height restriction, allowing the editor pane to wrap naturally to document contents with sticky toolbar.
-  * **Shared Team Board Test Isolation**: Automated test runs are strictly isolated from posting sandbox entries to the live Synology NAS `_Team/team-notes.json`.
-* **📱 Android Native Studio Companion & Linux Edition**: Full parity across data models and status formatting.
+  * **Creative Direction Matrix Preview & Header Toggle**: Defaults to clean formatted preview cards with live color swatch dots parsed from hex tokens.
+  * **Markdown Editor Auto-Wrapping**: Eliminated fixed 720px height restriction with sticky toolbar.
+* **📱 Android Native Studio Companion (v4.6.1, Code 462)**:
+  * Full real-time synchronization with Creative Orders pipeline, signed Google Play AAB bundle & standalone APK.
 
 ---
 
@@ -42,8 +50,8 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
 | 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.1.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
-| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.0-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
-| 📱 **Android Native** | **Native Android APK (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.0-android-release.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
+| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.1-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
+| 📱 **Android Native** | **Native Android APK & AAB (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.1-android-release.apk`<br>Play Store Bundle: `.\dist\SS-CAM-v4.6.1-android-release.aab` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
 
 ---

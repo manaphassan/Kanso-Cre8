@@ -2,28 +2,37 @@
 
 All notable SS-CAM changes are documented here.
 
-## [4.6.1] - 2026-09-03 (Creative Direction Matrix Preview, Markdown Auto-Wrapping, Overdue Suppression & Shared Team Board Isolation)
+## [4.6.1] - 2026-09-04 (Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience)
 
-### Added & Refined — Desktop Kanban Overdue Suppression, Web Creative Direction Preview & Test Isolation
+### Added & Refined — Ecosystem-Wide Creative Orders Real-Time Sync, Scaffolding Engine & Stability
+- **Cross-Platform Creative Orders Synchronization (`CreativeOrderService.cs`, `OrderRequestsPage.xaml.cs`)**:
+  - Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and the Web Management Portal (`https://creative.suamisihat.myds.me/api/orders`).
+  - Automatic JWT authentication and live queue fetching ensuring Desktop, Web Portal, and Android Companion app display the exact same active orders in real time.
+  - Dual-layer persistence: live cloud orders are automatically cached to the local Synology NAS ledger (`_Team\Orders\creative-orders.jsonl`) for offline resilience and local file-watcher integration.
+  - Instant bidirectional status propagation: converting or updating an order on Desktop immediately issues an HTTP `PATCH /api/orders/{id}` to the central cloud API, reflecting `in_progress` status on Web and Mobile instantly.
+- **Desktop 1-Click Project Scaffolding Engine (`CreativeOrderService.ConvertOrderToProjectAsync`)**:
+  - Automatically calculates canonical next project ID (`NNNNX`), scaffolds standard 4-folder project vaults (`01_Brief_and_Copy`, `02_Source_Assets`, `03_Artwork_Design`, `04_Final_Exports`), auto-generates `01_Brief_and_Copy/COPY.md` containing the requester's approved script, and writes `README.md` with YAML frontmatter linking the order ID.
+- **Desktop Startup Sequence & Splash Screen Hang Resolution (`App.xaml`, `App.xaml.cs`, `MainWindow.xaml`)**:
+  - Fixed WPF-UI icon symbol compilation clash by updating legacy `ClipboardTasklist24` to canonical `ClipboardTask24`.
+  - Replaced synchronous PowerShell shortcut child-process invocation with high-speed in-process `WScript.Shell` COM shortcut registration.
+  - Switched application shutdown mode to `OnLastWindowClose` with explicit `MainWindow.Closed` process termination guards.
+  - Added robust diagnostic file logging (`%LOCALAPPDATA%\SuamiSihat\startup_trace.log`) and individual `try/catch` safety guards across all `MainWindow.OnLoaded` initialization routines.
 - **Desktop Task Manager Kanban Overdue Suppression (`ProjectStatus.cs`, `TaskManagerPage.xaml.cs`)**:
-  - Implemented strict completed status checking (`IsCompletedStatus = status == "done" || status == "approved" || status == "completed"`).
-  - Completed projects now completely suppress the red `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in clean emerald green (`#10B981`) text.
-  - Excluded completed and approved projects from the top metric glance "URGENT / OVERDUE" counter.
-  - Neutralized queue age color (`AgeBadgeColor`) to slate (`#64748B`) on finished projects rather than triggering alert colors.
+  - Strict completed status checking (`IsCompletedStatus = status == "done" || status == "approved" || status == "completed"`).
+  - Completed projects suppress the red overdue badge (`IsOverdue = false`), rendering deadlines in clean emerald green (`#10B981`) text and excluding them from the top "URGENT / OVERDUE" metric glance.
+  - Neutralized queue age badge to slate (`#64748B`) on finished projects.
 - **Frontmatter YAML String Sanitization (`FrontmatterService.cs`, `ProjectStatusItem.cs`)**:
-  - Automatically strip surrounding quotes (`"..."` / `'...'`) on frontmatter values during extraction, resolving unparsed raw ISO strings like `"2026-08-27T00:00:00.000Z"` into clean formatted dates (`yyyy-MM-dd`).
-  - Added full parity to Linux Avalonia desktop model (`SS-CAM.Linux/Models/ProjectStatusItem.cs`).
+  - Automatically strip surrounding quotes (`"..."` / `'...'`) on frontmatter values during extraction, resolving unparsed raw ISO strings into clean formatted dates (`yyyy-MM-dd`). Full parity across Windows WPF and Linux Avalonia.
 - **Web Portal Creative Direction Matrix Preview & Header Toggle (`ProjectDetailView.svelte`, `api.js`)**:
-  - Creative Direction tab now defaults to a clean, read-only preview card matrix displaying Visual Concept, Target Audience, and auto-rendered live color swatch chips parsed from hex tokens.
-  - Moved the `Edit Direction` / `Save Direction` and `Cancel` actions into the top-right header action group with loading spinner feedback.
-  - Resolved API persistence mismatch in `PUT /projects/:id/direction` so `visual_concept`, `color_palette`, and `target_audience` correctly persist to project `README.md`.
+  - Creative Direction tab defaults to clean read-only preview cards with live color swatch chips parsed from hex tokens.
+  - Relocated Edit/Save/Cancel actions into the top header group with loading spinner feedback and atomic `README.md` persistence.
 - **Web Portal Markdown Editor Auto-Wrapping (`MarkdownEditor.svelte`)**:
-  - Defaulted editor mode to Preview (`preview`).
-  - Removed fixed `720px` height restriction, allowing the editor pane to wrap naturally to document contents without cutting off text or creating nested scrollbar traps.
-  - Added sticky toolbar (`position: sticky; top: 0; z-index: 20`).
+  - Defaulted editor mode to Preview (`preview`), eliminated fixed 720px height clipping, enabled natural vertical expansion, and added a sticky toolbar.
 - **Shared Team Board Test Isolation (`ApprovalService.js`)**:
-  - Added environment and project ID guards in `postTeamNotification` to ensure automated test suites (`9998A` sandbox runs) never inject test notes into the production `_Team/team-notes.json` on the Synology NAS.
-  - Purged all legacy test notes from the live NAS board.
+  - Automated sandbox test suites (`9998A`) are strictly isolated from posting mock items to the live Synology NAS `_Team/team-notes.json`.
+- **Android Companion App Release (`src/SS-CAM.Android`)**:
+  - Bumped version to `4.6.1` (versionCode `462`).
+  - Cryptographically signed release AAB (`app-release.aab`) and standalone release APK (`app-release.apk`) verified with 2048-bit RSA key.
 
 ## [4.6.0] - 2026-09-01 (Beta Release — Preflight Quality Auditor, Android Bento Telemetry, Persistent Caching, Live Radio Metadata & Desk Standby Mode)
 

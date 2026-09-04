@@ -27,7 +27,7 @@ data class NoteItemDto(
     @SerializedName("body") val body: String,
     @SerializedName("isPinned") val isPinned: Boolean = false,
     @SerializedName("priority") val priority: String = "normal",
-    @SerializedName("modified") val modified: Long = 0L,
+    @SerializedName("modified") val modified: Double = 0.0,
     @SerializedName("dateText") val dateText: String = ""
 )
 
@@ -97,6 +97,24 @@ interface SscamApiService {
     @DELETE("api/notes/{id}")
     suspend fun deleteNote(
         @Path("id") noteId: String
+    ): Response<Unit>
+
+    @GET("api/orders")
+    suspend fun getOrders(
+        @Query("status") status: String? = null,
+        @Query("entity") entity: String? = null,
+        @Query("priority") priority: String? = null
+    ): Response<OrdersResponse>
+
+    @POST("api/orders")
+    suspend fun submitOrder(
+        @Body request: CreateOrderRequest
+    ): Response<Map<String, Any>>
+
+    @PATCH("api/orders/{id}")
+    suspend fun updateOrderStatus(
+        @Path("id") orderId: String,
+        @Body patch: Map<String, String>
     ): Response<Unit>
 
     companion object {

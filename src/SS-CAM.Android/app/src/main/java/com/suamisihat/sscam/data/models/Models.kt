@@ -53,7 +53,7 @@ data class ProjectItem(
 
     val formattedDeadline: String
         get() {
-            val d = deadline.orEmpty()
+            val d = deadline.orEmpty().trim().trim('"', '\'')
             if (d.isBlank()) return "TBD"
             return try {
                 if (d.contains("T")) {
@@ -73,6 +73,67 @@ data class ProjectItem(
                 } else d
             } catch (e: Exception) {
                 d
+            }
+        }
+
+    val parsedCreatedDate: java.time.LocalDate?
+        get() {
+            val c = created.orEmpty().trim().trim('"', '\'')
+            if (c.isBlank()) return null
+            return try {
+                val dateStr = if (c.contains("T")) c.substringBefore("T") else c
+                java.time.LocalDate.parse(dateStr.trim())
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+    val parsedDeadlineDate: java.time.LocalDate?
+        get() {
+            val d = deadline.orEmpty().trim().trim('"', '\'')
+            if (d.isBlank()) return null
+            return try {
+                val dateStr = if (d.contains("T")) d.substringBefore("T") else d
+                java.time.LocalDate.parse(dateStr.trim())
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+    val effectiveStartDate: java.time.LocalDate
+        get() = parsedCreatedDate ?: parsedDeadlineDate ?: java.time.LocalDate.MIN
+
+    val effectiveEndDate: java.time.LocalDate
+        get() = parsedDeadlineDate ?: parsedCreatedDate ?: java.time.LocalDate.MAX
+
+    fun isActiveOn(date: java.time.LocalDate): Boolean {
+        val start = parsedCreatedDate ?: parsedDeadlineDate ?: return false
+        val due = parsedDeadlineDate ?: parsedCreatedDate ?: return false
+        val s = if (due.isBefore(start)) due else start
+        val e = if (due.isBefore(start)) start else due
+        return !date.isBefore(s) && !date.isAfter(e)
+    }
+
+    val formattedCreated: String
+        get() {
+            val c = created.orEmpty().trim().trim('"', '\'')
+            if (c.isBlank()) return "N/A"
+            return try {
+                val datePart = if (c.contains("T")) c.substringBefore("T") else c
+                val parts = datePart.split("-")
+                if (parts.size == 3) {
+                    val year = parts[0]
+                    val month = when (parts[1]) {
+                        "01" -> "Jan"; "02" -> "Feb"; "03" -> "Mar"; "04" -> "Apr"
+                        "05" -> "May"; "06" -> "Jun"; "07" -> "Jul"; "08" -> "Aug"
+                        "09" -> "Sep"; "10" -> "Oct"; "11" -> "Nov"; "12" -> "Dec"
+                        else -> parts[1]
+                    }
+                    val day = parts[2]
+                    "$day $month $year"
+                } else datePart
+            } catch (e: Exception) {
+                c
             }
         }
 }
@@ -193,3 +254,79 @@ data class StaffWorkload(
     @SerializedName("capacityStatus") val capacityStatus: String = "Optimal Bandwidth",
     @SerializedName("capacityColor") val capacityColor: String = "#10B981"
 )
+
+data class OrdersResponse(
+    @SerializedName("success") val success: Boolean = false,
+    @SerializedName("orders") val orders: List<CreativeOrder> = emptyList()
+)
+
+data class CreativeOrder(
+    @SerializedName("id") val id: String = "",
+    @SerializedName("title") val title: String = "",
+    @SerializedName("entity") val entity: String = "SSH",
+    @SerializedName("priority") val priority: String = "tier_1",
+    @SerializedName("format") val format: String = "1_1_feed",
+    @SerializedName("copy") val copy: String = "",
+    @SerializedName("targetDate") val targetDate: String = "",
+    @SerializedName("attachmentNote") val attachmentNote: String = "",
+    @SerializedName("requester") val requester: String = "Unknown",
+    @SerializedName("requesterRole") val requesterRole: String = "",
+    @SerializedName("status") val status: String = "pending",
+    @SerializedName("submittedAt") val submittedAt: String = "",
+    @SerializedName("updatedAt") val updatedAt: String = "",
+    @SerializedName("assignedTo") val assignedTo: String? = null,
+    @SerializedName("projectId") val projectId: String? = null
+) {
+    val safeTitle: String
+        get() = title.ifBlank { "Untitled Request" }
+
+    val safeEntity: String
+        get() = entity.ifBlank { "SSH" }
+
+    val priorityBadge: String
+        get() = when (priority.lowercase()) {
+            "tier_3", "urgent" -> "P3"
+            "tier_2", "fast-track", "high" -> "P2"
+            else -> "P1"
+        }
+
+    val priorityLabel: String
+        get() = when (priority.lowercase()) {
+            "tier_3", "urgent" -> "P3 (Urgent)"
+            "tier_2", "fast-track", "high" -> "P2 (Fast-Track)"
+            else -> "P1 (Standard)"
+        }
+
+    val formatLabel: String
+        get() = when (format) {
+            "9_16_video" -> "9:16 Video"
+            "1_1_feed" -> "1:1 Feed"
+            "16_9_landscape" -> "16:9 Landscape"
+            "print_posm" -> "Print / POSM"
+            "print_digital" -> "Digital Banner"
+            else -> format.replace("_", " ").replaceFirstChar { it.uppercase() }
+        }
+
+    val statusLabel: String
+        get() = when (status) {
+            "pending" -> "Pending"
+            "in_progress" -> "In Progress"
+            "for_approval" -> "For Approval"
+            "done", "completed" -> "Completed"
+            "cancelled" -> "Cancelled"
+            else -> status.replace("_", " ").replaceFirstChar { it.uppercase() }
+        }
+}
+
+data class CreateOrderRequest(
+    @SerializedName("title") val title: String,
+    @SerializedName("entity") val entity: String,
+    @SerializedName("priority") val priority: String,
+    @SerializedName("format") val format: String,
+    @SerializedName("copy") val copy: String,
+    @SerializedName("targetDate") val targetDate: String,
+    @SerializedName("attachmentNote") val attachmentNote: String = "",
+    @SerializedName("requester") val requester: String = "Harussani",
+    @SerializedName("requesterRole") val requesterRole: String = "Admin, Designer"
+)
+

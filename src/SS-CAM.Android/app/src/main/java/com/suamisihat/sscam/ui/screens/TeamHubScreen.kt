@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.suamisihat.sscam.data.models.ProjectItem
 import com.suamisihat.sscam.data.models.StaffMember
 import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
@@ -36,6 +37,7 @@ fun parseHexColor(hex: String, fallback: Color = SshAzureLight): Color {
 @Composable
 fun TeamHubScreen(
     staffList: List<StaffMember> = emptyList(),
+    projects: List<ProjectItem> = emptyList(),
     initialSubTab: Int = 0
 ) {
     var selectedTab by remember { mutableStateOf(initialSubTab.coerceIn(0, 1)) }
@@ -55,19 +57,26 @@ fun TeamHubScreen(
         )
 
         when (selectedTab) {
-            0 -> TeamWorkloadContentView(staffList = staffList)
+            0 -> TeamWorkloadContentView(staffList = staffList, projects = projects)
             1 -> QuickNotesContentView()
         }
     }
 }
 
 @Composable
-fun TeamWorkloadContentView(staffList: List<StaffMember> = emptyList()) {
+fun TeamWorkloadContentView(
+    staffList: List<StaffMember> = emptyList(),
+    projects: List<ProjectItem> = emptyList()
+) {
     val colors = LocalSscamColors.current
 
     val displayStaff = remember(staffList) { staffList }
 
-    val totalAssignedDeliverables = displayStaff.sumOf { it.totalAssignedCount.coerceAtLeast(it.workload?.total ?: 0) }
+    val totalAssignedDeliverables = if (projects.isNotEmpty()) {
+        projects.count { it.normalizedStatus != "done" && it.safeDesigner.isNotBlank() && it.safeDesigner != "Unassigned" }
+    } else {
+        displayStaff.sumOf { it.totalAssignedCount.coerceAtLeast(it.workload?.total ?: 0) }
+    }
     val activeStaffCount = displayStaff.size
 
     LazyColumn(
@@ -169,14 +178,32 @@ fun TeamWorkloadContentView(staffList: List<StaffMember> = emptyList()) {
 
         // 3. Staff Member Cards
         items(displayStaff, key = { it.staffId }) { member ->
-            val assignedCount = member.totalAssignedCount.coerceAtLeast(member.workload?.total ?: 0)
+            val mName = member.name.trim().lowercase()
+            val mUser = member.username.trim().lowercase()
+            val mStaff = member.staffId.trim().lowercase()
+
+            val memberActiveProjects = projects.filter { p ->
+                val d = p.safeDesigner.trim().lowercase()
+                val isAssigned = (mName.isNotBlank() && d == mName) ||
+                                 (mUser.isNotBlank() && d == mUser) ||
+                                 (mStaff.isNotBlank() && d == mStaff) ||
+                                 (mName.isNotBlank() && d.contains(mName))
+                isAssigned && p.normalizedStatus != "done"
+            }
+
+            val assignedCount = if (projects.isNotEmpty()) {
+                memberActiveProjects.size
+            } else {
+                member.totalAssignedCount.coerceAtLeast(member.workload?.total ?: 0)
+            }
+
             val initial = member.name.firstOrNull()?.toString()?.uppercase() ?: "S"
             val avatarColor = parseHexColor(member.avatarColor)
 
             val capacityPercent = when {
-                assignedCount == 0 -> 0.15f
-                assignedCount in 1..2 -> 0.45f
-                assignedCount in 3..4 -> 0.80f
+                assignedCount == 0 -> 0.0f
+                assignedCount in 1..2 -> 0.40f
+                assignedCount in 3..4 -> 0.75f
                 else -> 1.0f
             }
 
@@ -184,10 +211,19 @@ fun TeamWorkloadContentView(staffList: List<StaffMember> = emptyList()) {
                 if (assignedCount >= 4) Color(0xFF18181B) else Color(0xFF71717A)
             } else {
                 when {
+                    assignedCount == 0 -> colors.textMuted
                     assignedCount >= 4 -> Color(0xFFE53E3E) // High load
                     assignedCount in 2..3 -> SshWarmGoldBright // Moderate
                     else -> SshSuccessGreen // Available
                 }
+            }
+
+            val activeBrands = if (projects.isNotEmpty()) {
+                memberActiveProjects.map { it.safeBrand.uppercase() }.filter { it.isNotBlank() }.distinct()
+            } else if (assignedCount > 0) {
+                listOf(member.defaultBrand.ifBlank { "SS" }).distinct()
+            } else {
+                emptyList()
             }
 
             FluentCard(
@@ -258,14 +294,15 @@ fun TeamWorkloadContentView(staffList: List<StaffMember> = emptyList()) {
                         trackColor = if (colors.isMonochrome) Color(0xFFE4E4E7) else if (colors.isDark) colors.surface else Color(0xFFE2E8F0)
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        SubBrandBadge(member.defaultBrand.ifBlank { "SS" })
-                        if (member.department.contains("Creative", ignoreCase = true)) {
-                            SubBrandBadge("SSH")
+                    if (activeBrands.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            activeBrands.forEach { brand ->
+                                SubBrandBadge(brand)
+                            }
                         }
                     }
                 }
