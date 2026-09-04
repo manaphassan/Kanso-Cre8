@@ -223,6 +223,7 @@ data class StaffMember(
     @SerializedName("name") val name: String = "",
     @SerializedName("role") val role: String = "Designer",
     @SerializedName("department") val department: String = "Creative Production",
+    @SerializedName("email") val email: String = "",
     @SerializedName("avatar") val avatar: String = "",
     @SerializedName("avatarUrl") val avatarUrl: String = "",
     @SerializedName("avatarColor") val avatarColor: String = "#0078D4",

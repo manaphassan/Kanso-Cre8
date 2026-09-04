@@ -28,6 +28,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.suamisihat.sscam.AuthPreferences
+import com.suamisihat.sscam.data.models.ProjectItem
 import com.suamisihat.sscam.data.models.StaffMember
 import com.suamisihat.sscam.ui.components.*
 import com.suamisihat.sscam.ui.theme.*
@@ -36,6 +38,7 @@ import com.suamisihat.sscam.ui.theme.*
 fun SettingsProfileScreen(
     currentTheme: AppThemeMode = AppThemeMode.SS_ROYAL,
     currentUserProfile: StaffMember? = null,
+    projects: List<ProjectItem> = emptyList(),
     onThemeSelected: (AppThemeMode) -> Unit = {},
     onSignOut: () -> Unit = {}
 ) {
@@ -52,8 +55,51 @@ fun SettingsProfileScreen(
     val designerName = currentUserProfile?.name?.ifBlank { "Harussani" } ?: "Harussani"
     val designerUsername = currentUserProfile?.username?.ifBlank { "harussani" } ?: "harussani"
     val designerStaffId = currentUserProfile?.staffId?.ifBlank { "SS0004" } ?: "SS0004"
-    val designerRole = currentUserProfile?.role?.ifBlank { "Designer" } ?: "Designer"
+    val designerRole = currentUserProfile?.role?.ifBlank { "Admin, Designer" } ?: "Admin, Designer"
     val designerBrand = currentUserProfile?.defaultBrand?.ifBlank { "SSH" } ?: "SSH"
+    val designerDept = currentUserProfile?.department?.ifBlank { "Creative Production" } ?: "Creative Production"
+    val designerEmail = remember(currentUserProfile) {
+        val em = currentUserProfile?.email
+        if (!em.isNullOrBlank()) em else AuthPreferences.getSavedEmail(context).ifBlank { "harussani.suamisihat@gmail.com" }
+    }
+
+    var userBio by remember { mutableStateOf(AuthPreferences.getSavedBio(context)) }
+    var isEditBioDialogOpen by remember { mutableStateOf(false) }
+    var tempBio by remember { mutableStateOf(userBio) }
+    var isConnectCardDialogOpen by remember { mutableStateOf(false) }
+
+    val designerProjects = remember(projects, designerName, designerStaffId, designerUsername) {
+        projects.filter { p ->
+            val d = p.designer.orEmpty()
+            d.contains(designerName, ignoreCase = true) ||
+            d.contains(designerStaffId, ignoreCase = true) ||
+            d.contains(designerUsername, ignoreCase = true) ||
+            (d.isBlank() && designerRole.contains("Admin", ignoreCase = true))
+        }
+    }
+
+    val assignedDeliverables = remember(currentUserProfile, designerProjects) {
+        if (currentUserProfile?.totalAssignedCount != null && currentUserProfile.totalAssignedCount > 0) {
+            currentUserProfile.totalAssignedCount
+        } else if (currentUserProfile?.workload?.total != null && currentUserProfile.workload.total > 0) {
+            currentUserProfile.workload.total
+        } else {
+            designerProjects.size.coerceAtLeast(1)
+        }
+    }
+
+    val activeProjectsCount = remember(currentUserProfile, designerProjects) {
+        if (currentUserProfile?.workload?.inProgress != null && currentUserProfile.workload.inProgress > 0) {
+            currentUserProfile.workload.inProgress
+        } else {
+            val inProg = designerProjects.count {
+                it.status.equals("in-progress", ignoreCase = true) ||
+                it.status.equals("active", ignoreCase = true) ||
+                it.status.equals("review", ignoreCase = true)
+            }
+            if (inProg > 0) inProg else 1
+        }
+    }
 
     val imageModel: Any? = remember(currentUserProfile?.profileImageUrl) {
         val url = currentUserProfile?.profileImageUrl
@@ -116,7 +162,7 @@ fun SettingsProfileScreen(
             }
         }
 
-        // 2. Hero Identity 2-Column Section (Square Portrait & Huge Numeral)
+        // 2. Hero Identity 2-Column Section (Square Portrait & Designer Badges)
         item {
             Row(
                 modifier = Modifier
@@ -128,7 +174,7 @@ fun SettingsProfileScreen(
                 // Left Column: Square Photo Portrait & Designer Title
                 Column(modifier = Modifier.weight(1f)) {
                     Surface(
-                        shape = RoundedCornerShape(2.dp),
+                        shape = RoundedCornerShape(4.dp),
                         color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0),
                         modifier = Modifier.size(135.dp)
                     ) {
@@ -181,7 +227,7 @@ fun SettingsProfileScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
                         text = designerName,
@@ -191,7 +237,7 @@ fun SettingsProfileScreen(
                         letterSpacing = (-0.5).sp
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
                         text = designerRole.uppercase(),
@@ -201,45 +247,109 @@ fun SettingsProfileScreen(
                         color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                     )
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
+                    // Email with Tap-to-Copy
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            Toast.makeText(context, "Location: Cyberjaya Studio HQ ($designerBrand)", Toast.LENGTH_SHORT).show()
-                        }
+                        modifier = Modifier
+                            .clickable {
+                                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                val clip = android.content.ClipData.newPlainText("Email", designerEmail)
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(context, "Email copied: $designerEmail", Toast.LENGTH_SHORT).show()
+                            }
                     ) {
-                        Text(
-                            text = "Cyberjaya, MY",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = colors.textPrimary
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "Email",
+                            tint = colors.primary,
+                            modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
+                            text = designerEmail,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.primary,
+                            maxLines = 1
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    // Location
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            Toast.makeText(context, "Studio Station: Cyberjaya Studio HQ (Holding - $designerBrand)", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "Location",
+                            tint = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Cyberjaya, Selangor (HQ)",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
                             text = "↗",
-                            fontSize = 13.sp,
+                            fontSize = 11.sp,
                             color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                         )
                     }
                 }
 
-                // Right Column: Big Display Numeral & Active Status
+                // Right Column: Official Staff ID Badge & Display Numeral
                 Column(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier.padding(start = 12.dp, top = 4.dp)
                 ) {
-                    val singleDigitId = designerStaffId.filter { it.isDigit() }.trimStart('0').ifEmpty { "4" }
                     Text(
-                        text = singleDigitId,
-                        fontSize = 72.sp,
-                        fontWeight = FontWeight.Light,
-                        color = colors.textPrimary,
-                        letterSpacing = (-3).sp,
-                        lineHeight = 72.sp
+                        text = "STAFF ID",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.4.sp,
+                        color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = colors.primary.copy(alpha = 0.12f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.35f)),
+                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
+                    ) {
+                        Text(
+                            text = designerStaffId,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.primary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    val displayNum = remember(designerStaffId) {
+                        val digits = designerStaffId.filter { it.isDigit() }
+                        if (digits.isNotEmpty()) String.format("%02d", digits.toIntOrNull() ?: 4) else "04"
+                    }
+
+                    Text(
+                        text = displayNum,
+                        fontSize = 64.sp,
+                        fontWeight = FontWeight.Light,
+                        color = colors.textPrimary,
+                        letterSpacing = (-2).sp,
+                        lineHeight = 64.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
@@ -264,10 +374,23 @@ fun SettingsProfileScreen(
                         text = buildAnnotatedString {
                             append("Dept: ")
                             withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(currentUserProfile?.department ?: "Creative")
+                                append(designerDept)
                             }
                         },
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
+                        color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Holding: ")
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append(designerBrand)
+                            }
+                        },
+                        fontSize = 11.sp,
                         color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                     )
                 }
@@ -282,64 +405,155 @@ fun SettingsProfileScreen(
             )
         }
 
-        // 4. ABOUT Section
+        // 4. ABOUT & RESPONSIBILITIES Section
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "ABOUT",
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.2.sp,
-                    color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "ABOUT & RESPONSIBILITIES",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.2.sp,
+                        color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            tempBio = userBio
+                            isEditBioDialogOpen = true
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edit Bio",
+                            tint = colors.primary,
+                            modifier = Modifier.size(11.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = "EDIT",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.8.sp,
+                            color = colors.primary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Product & creative designer focused on minimal systems, packaging dielines, thoughtful details, and human-centred design.",
+                    text = userBio,
                     fontSize = 13.sp,
                     lineHeight = 19.sp,
-                    color = colors.textPrimary
+                    color = colors.textPrimary,
+                    modifier = Modifier.clickable {
+                        tempBio = userBio
+                        isEditBioDialogOpen = true
+                    }
                 )
             }
         }
 
-        // 5. INTERESTS / SKILLS Section
+        // 5. CREATIVE SPECIALTIES & DISCIPLINES
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "INTERESTS",
+                    text = "CREATIVE SPECIALTIES & DISCIPLINES",
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.2.sp,
                     color = if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Architecture", fontSize = 13.sp, color = colors.textPrimary)
-                    Text("Typography", fontSize = 13.sp, color = colors.textPrimary)
-                    Text("Photography", fontSize = 13.sp, color = colors.textPrimary)
-                    Text("Design", fontSize = 13.sp, color = colors.textPrimary)
+                val row1 = listOf("Art Direction", "Packaging & Dielines", "Brand Identity")
+                val row2 = listOf("Campaign Creative", "Print & POSM", "Asset Systems")
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row1.forEach { tag ->
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    0.8.dp,
+                                    if (colors.isDark) colors.border.copy(alpha = 0.7f) else Color(0xFFCBD5E1)
+                                )
+                            ) {
+                                Text(
+                                    text = tag,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = colors.textPrimary,
+                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        row2.forEach { tag ->
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = if (colors.isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    0.8.dp,
+                                    if (colors.isDark) colors.border.copy(alpha = 0.7f) else Color(0xFFCBD5E1)
+                                )
+                            ) {
+                                Text(
+                                    text = tag,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = colors.textPrimary,
+                                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        // 6. CONNECT CARD (Warm Sand / Stone Surface with Dot Matrix)
+        // 6. CONNECT CARD (Studio NFC / Digital Card with Dot Matrix)
         item {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(
                         if (colors.isMonochrome) Color(0xFFF4F4F5) else if (colors.isDark) Color(0xFF1E293B) else Color(0xFFDCD8D0)
                     )
                     .border(
-                        if (colors.isMonochrome) 1.dp else 0.dp,
-                        if (colors.isMonochrome) Color(0xFFD4D4D8) else Color.Transparent,
-                        RoundedCornerShape(6.dp)
+                        1.dp,
+                        if (colors.isMonochrome) Color(0xFFD4D4D8) else if (colors.isDark) colors.border.copy(alpha = 0.5f) else Color(0xFFCBD5E1),
+                        RoundedCornerShape(8.dp)
                     )
+                    .clickable {
+                        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val vCard = """
+                            BEGIN:VCARD
+                            VERSION:3.0
+                            FN:$designerName
+                            ORG:SuamiSihat Creative Operations
+                            TITLE:$designerRole
+                            EMAIL:$designerEmail
+                            NOTE:Staff ID: $designerStaffId | Dept: $designerDept
+                            END:VCARD
+                        """.trimIndent()
+                        val clip = android.content.ClipData.newPlainText("vCard", vCard)
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(context, "Studio Card copied: $designerName ($designerStaffId)", Toast.LENGTH_SHORT).show()
+                        isConnectCardDialogOpen = true
+                    }
                     .padding(16.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -349,35 +563,56 @@ fun SettingsProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "CONNECT CARD",
+                            text = "STUDIO CONNECT CARD",
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.2.sp,
                             color = if (colors.isMonochrome) Color(0xFF52525B) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF475569)
                         )
                         Text(
-                            text = "1",
-                            fontSize = 9.sp,
+                            text = designerStaffId,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.8.sp,
                             color = if (colors.isMonochrome) Color(0xFF52525B) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF475569)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Left Text
+                        // Left Text with actual user details
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Share your card\nto connect\nintentionally.",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                lineHeight = 20.sp,
+                                text = designerName,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = if (colors.isMonochrome) Color(0xFF18181B) else if (colors.isDark) Color.White else Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "$designerRole • $designerDept",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (colors.isMonochrome) Color(0xFF52525B) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF475569)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = designerEmail,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = if (colors.isMonochrome) Color(0xFF71717A) else if (colors.isDark) Color(0xFFCBD5E1) else Color(0xFF334155)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "SuamiSihat Holding • Cyberjaya HQ",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = if (colors.isMonochrome) Color(0xFF71717A) else if (colors.isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                             )
                         }
 
@@ -389,21 +624,18 @@ fun SettingsProfileScreen(
                             dotSpacing = 3.5.dp,
                             color = if (colors.isMonochrome) Color(0xFF71717A) else if (colors.isDark) Color(0xFF64748B) else Color(0xFF334155),
                             modifier = Modifier
-                                .width(90.dp)
-                                .height(52.dp)
+                                .width(85.dp)
+                                .height(50.dp)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            Toast.makeText(context, "Studio Connect Card: ${designerName} (${designerStaffId})", Toast.LENGTH_SHORT).show()
-                        }
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "TAP TO VIEW",
+                            text = "TAP TO SHARE / COPY VCARD",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.2.sp,
@@ -420,7 +652,7 @@ fun SettingsProfileScreen(
             }
         }
 
-        // 7. Bottom Two-Column Metrics (CONNECTIONS • MOMENTS)
+        // 7. Bottom Two-Column Metrics (DELIVERABLES • ACTIVE SPRINT)
         item {
             Row(
                 modifier = Modifier
@@ -429,9 +661,6 @@ fun SettingsProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left Metric: DELIVERABLES
-                val assignedDeliverables = currentUserProfile?.totalAssignedCount ?: currentUserProfile?.workload?.total ?: 0
-                val activeProjectsCount = currentUserProfile?.workload?.inProgress ?: 0
-
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -448,7 +677,7 @@ fun SettingsProfileScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
-                            Toast.makeText(context, "$assignedDeliverables Assigned Deliverables", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "$assignedDeliverables deliverables assigned to $designerName", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Text(
@@ -474,7 +703,7 @@ fun SettingsProfileScreen(
                         .background(if (colors.isDark) colors.border.copy(alpha = 0.6f) else Color(0xFFE2E8F0))
                 )
 
-                // Right Metric: PROJECTS
+                // Right Metric: ACTIVE SPRINT
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -491,7 +720,7 @@ fun SettingsProfileScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
-                            Toast.makeText(context, "$activeProjectsCount In-Progress Projects", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "$activeProjectsCount active sprint projects for $designerName", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Text(
@@ -761,6 +990,161 @@ fun SettingsProfileScreen(
                 )
             }
         }
+    }
+
+    // Edit Bio Dialog
+    if (isEditBioDialogOpen) {
+        AlertDialog(
+            onDismissRequest = { isEditBioDialogOpen = false },
+            title = {
+                Text(
+                    "Edit Profile & Bio",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        "Update your professional bio and responsibilities displayed on your studio profile:",
+                        fontSize = 12.sp,
+                        color = colors.textSecondary
+                    )
+                    OutlinedTextField(
+                        value = tempBio,
+                        onValueChange = { tempBio = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        placeholder = { Text("Enter your bio...") },
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = colors.textPrimary)
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        userBio = tempBio.trim()
+                        AuthPreferences.saveBio(context, userBio)
+                        isEditBioDialogOpen = false
+                        Toast.makeText(context, "Profile bio updated", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary)
+                ) {
+                    Text("Save", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(
+                        onClick = {
+                            val defaultBio = "Lead Art Director & Administrator for SuamiSihat Creative Operations. Directing multi-brand creative assets, packaging dielines, brand identities, and campaign deliverables across SSH, SSC, SSW, SSE, and SST."
+                            tempBio = defaultBio
+                            userBio = defaultBio
+                            AuthPreferences.saveBio(context, defaultBio)
+                            isEditBioDialogOpen = false
+                            Toast.makeText(context, "Bio restored to default", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Text("Reset Default", fontSize = 11.sp, color = colors.textSecondary)
+                    }
+                    TextButton(onClick = { isEditBioDialogOpen = false }) {
+                        Text("Cancel", fontSize = 12.sp, color = colors.textPrimary)
+                    }
+                }
+            },
+            containerColor = colors.surface
+        )
+    }
+
+    // Connect Card Studio Modal Dialog
+    if (isConnectCardDialogOpen) {
+        AlertDialog(
+            onDismissRequest = { isConnectCardDialogOpen = false },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Studio Digital Pass",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = colors.primary.copy(alpha = 0.12f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = designerStaffId,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.primary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        designerName,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        "$designerRole • $designerDept",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colors.textSecondary
+                    )
+                    HorizontalDivider(color = colors.border)
+                    Text(
+                        "Email: $designerEmail",
+                        fontSize = 12.sp,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        "Entity: SuamiSihat Holding ($designerBrand)",
+                        fontSize = 12.sp,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        "Station: Cyberjaya Studio HQ, Selangor",
+                        fontSize = 12.sp,
+                        color = colors.textSecondary
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip = android.content.ClipData.newPlainText("Email", designerEmail)
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(context, "Copied email: $designerEmail", Toast.LENGTH_SHORT).show()
+                        isConnectCardDialogOpen = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary)
+                ) {
+                    Text("Copy Email", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isConnectCardDialogOpen = false }) {
+                    Text("Close", fontSize = 12.sp, color = colors.textPrimary)
+                }
+            },
+            containerColor = colors.surface
+        )
     }
 }
 

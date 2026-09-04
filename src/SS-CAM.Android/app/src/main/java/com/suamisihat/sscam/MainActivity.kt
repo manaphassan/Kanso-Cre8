@@ -109,6 +109,32 @@ object AuthPreferences {
             .apply()
     }
 
+    private const val KEY_BIO = "saved_bio"
+    private const val KEY_EMAIL = "saved_email"
+
+    fun getSavedBio(context: android.content.Context): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        return prefs.getString(
+            KEY_BIO,
+            "Lead Art Director & Administrator for SuamiSihat Creative Operations. Directing multi-brand creative assets, packaging dielines, brand identities, and campaign deliverables across SSH, SSC, SSW, SSE, and SST."
+        ) ?: ""
+    }
+
+    fun saveBio(context: android.content.Context, bio: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_BIO, bio).apply()
+    }
+
+    fun getSavedEmail(context: android.content.Context): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        return prefs.getString(KEY_EMAIL, "harussani.suamisihat@gmail.com") ?: "harussani.suamisihat@gmail.com"
+    }
+
+    fun saveEmail(context: android.content.Context, email: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_EMAIL, email).apply()
+    }
+
     fun clearAuth(context: android.content.Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         prefs.edit()
@@ -716,6 +742,7 @@ fun CompanionAppScreen(
                     SettingsProfileScreen(
                         currentTheme = currentTheme,
                         currentUserProfile = currentUserProfile,
+                        projects = projects,
                         onThemeSelected = onThemeChange,
                         onSignOut = {
                             isLoggedIn = false
