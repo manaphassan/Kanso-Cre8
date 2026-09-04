@@ -938,9 +938,15 @@
                 <div class="prop-group">
                   <span class="prop-label">Priority Level</span>
                   <div class="prop-value">
-                    <span class="priority-chip priority-{p.priority || 'medium'}">
-                      {p.priority || 'medium'}
-                    </span>
+                    {#if (p.priority || '').toLowerCase() === 'urgent'}
+                      <span class="priority-chip priority-urgent">P3 (Urgent)</span>
+                    {:else if (p.priority || '').toLowerCase() === 'high'}
+                      <span class="priority-chip priority-high">P2 (High)</span>
+                    {:else if (p.priority || '').toLowerCase() === 'medium' || (p.priority || '').toLowerCase() === 'standard'}
+                      <span class="priority-chip priority-medium">P1 (Medium)</span>
+                    {:else}
+                      <span class="prop-empty">— (Low / No Badge)</span>
+                    {/if}
                   </div>
                 </div>
 
@@ -1501,9 +1507,10 @@
     padding: 2px 7px;
     border-radius: 4px;
   }
-  .priority-high { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .priority-medium { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-  .priority-low { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+  .priority-urgent { background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; font-weight: 800; }
+  .priority-high { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+  .priority-medium { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+  .priority-low { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
 
   .approvals-mini-section {
     display: flex;

@@ -128,13 +128,34 @@ namespace SS_CAM.Models
             }
         }
 
+        public string PriorityBadgeText
+        {
+            get
+            {
+                string p = (Priority ?? "").ToLowerInvariant().Trim();
+                if (p == "urgent") return "P3";
+                if (p == "high") return "P2";
+                if (p == "medium" || p == "standard") return "P1";
+                return ""; // Low has no badge
+            }
+        }
+
+        public System.Windows.Visibility PriorityBadgeVisibility
+        {
+            get
+            {
+                return string.IsNullOrEmpty(PriorityBadgeText) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            }
+        }
+
         public string PriorityColor
         {
             get
             {
-                if (Priority == "urgent") return "#EF4444";
-                if (Priority == "high") return "#F59E0B";
-                if (Priority == "medium") return "#21A1F7";
+                string p = (Priority ?? "").ToLowerInvariant().Trim();
+                if (p == "urgent") return "#EF4444"; // P3 - Red
+                if (p == "high") return "#F59E0B";   // P2 - Orange/Amber
+                if (p == "medium" || p == "standard") return "#0078D4"; // P1 - Fluent Blue
                 return "#64748B";
             }
         }

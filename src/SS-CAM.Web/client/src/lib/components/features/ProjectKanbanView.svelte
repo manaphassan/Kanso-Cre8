@@ -72,12 +72,13 @@
     draggedProjectId = null;
   }
 
-  function getPriorityColor(priority?: string): string {
-    switch ((priority || '').toLowerCase()) {
-      case 'urgent': return '#EF4444';
-      case 'high': return '#F59E0B';
-      case 'medium': return '#0284C7';
-      default: return '#6B7280';
+  function getPriorityBadge(priority?: string): { text: string; color: string } | null {
+    switch ((priority || '').toLowerCase().trim()) {
+      case 'urgent': return { text: 'P3', color: '#EF4444' };
+      case 'high': return { text: 'P2', color: '#F59E0B' };
+      case 'medium':
+      case 'standard': return { text: 'P1', color: '#0284C7' };
+      default: return null; // Low - no badge
     }
   }
 </script>
@@ -142,13 +143,16 @@
                   </div>
 
                   <div class="card-action-group">
-                    <span
-                      class="priority-dot-badge"
-                      style="background: {getPriorityColor(p.priority)}18; color: {getPriorityColor(p.priority)}; border-color: {getPriorityColor(p.priority)}40;"
-                      title="Priority: {p.priority || 'Normal'}"
-                    >
-                      ● {p.priority || 'Normal'}
-                    </span>
+                    {#if getPriorityBadge(p.priority)}
+                      {@const badge = getPriorityBadge(p.priority)}
+                      <span
+                        class="priority-dot-badge"
+                        style="background: {badge.color}18; color: {badge.color}; border-color: {badge.color}40;"
+                        title="Priority: {badge.text}"
+                      >
+                        ● {badge.text}
+                      </span>
+                    {/if}
                     {#if isAdminUser && onDelete}
                       <button
                         type="button"

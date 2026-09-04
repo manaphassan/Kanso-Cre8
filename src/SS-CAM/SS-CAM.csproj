@@ -114,6 +114,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\OrderRequestsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\SearchCopyPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -191,6 +195,7 @@
     <Compile Include="Models\ProjectStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\ProjectComment.cs" />
+    <Compile Include="Models\CreativeOrder.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
@@ -221,6 +226,7 @@
     <Compile Include="Services\PreflightValidatorService.cs" />
     <Compile Include="Services\WorkloadSlaService.cs" />
     <Compile Include="Services\MalaysiaHolidayService.cs" />
+    <Compile Include="Services\CreativeOrderService.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -243,6 +249,10 @@
     <Compile Include="Services\PrayerTimeService.cs"/>
     <Compile Include="Views\ProjectCreatorPage.xaml.cs">
       <DependentUpon>ProjectCreatorPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\OrderRequestsPage.xaml.cs">
+      <DependentUpon>OrderRequestsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Views\SearchCopyPage.xaml.cs">

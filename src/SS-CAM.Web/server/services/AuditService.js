@@ -42,6 +42,10 @@ class AuditService {
     }
   }
 
+  static log(entry) {
+    return this.logEvent(entry);
+  }
+
   /**
    * Retrieves recent audit logs, optionally filtered.
    */

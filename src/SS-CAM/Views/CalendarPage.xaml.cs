@@ -25,6 +25,26 @@ namespace SS_CAM.Views
         public string EventType { get; set; }  // "Deadline" or "Started"
         public string Status { get; set; }
         public string DesignerDisplay { get; set; }
+
+        public string PriorityBadgeText
+        {
+            get
+            {
+                string p = (Priority ?? "").ToLowerInvariant().Trim();
+                if (p == "urgent") return "P3";
+                if (p == "high") return "P2";
+                if (p == "medium" || p == "standard") return "P1";
+                return "";
+            }
+        }
+
+        public System.Windows.Visibility PriorityBadgeVisibility
+        {
+            get
+            {
+                return string.IsNullOrEmpty(PriorityBadgeText) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            }
+        }
     }
 
     public partial class CalendarPage : Page
@@ -807,15 +827,66 @@ namespace SS_CAM.Views
             RenderGanttTimeline();
         }
 
+        private static bool TryParseProjectDates(ProjectStatusItem p, out DateTime startDt, out DateTime endDt)
+        {
+            startDt = DateTime.MinValue;
+            endDt = DateTime.MinValue;
+            if (p == null) return false;
+
+            // 1. Parse Start Date
+            if (!string.IsNullOrWhiteSpace(p.CreatedDate))
+            {
+                string clean = p.CreatedDate.Trim().Trim('"', '\'');
+                if (clean.Contains("T")) clean = clean.Substring(0, clean.IndexOf("T"));
+                DateTime dt;
+                if (DateTime.TryParse(clean, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt) ||
+                    DateTime.TryParse(clean, out dt))
+                {
+                    startDt = dt.Date;
+                }
+            }
+            if (startDt == DateTime.MinValue)
+            {
+                startDt = p.ParsedCreatedDate.Date;
+            }
+
+            // 2. Parse Deadline Date
+            if (!string.IsNullOrWhiteSpace(p.Deadline))
+            {
+                string clean = p.Deadline.Trim().Trim('"', '\'');
+                if (clean.Contains("T")) clean = clean.Substring(0, clean.IndexOf("T"));
+                DateTime dt;
+                if (DateTime.TryParse(clean, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt) ||
+                    DateTime.TryParse(clean, out dt))
+                {
+                    endDt = dt.Date;
+                }
+            }
+
+            // If deadline is missing, default to startDt
+            if (endDt == DateTime.MinValue)
+            {
+                endDt = startDt;
+            }
+
+            if (endDt < startDt)
+            {
+                endDt = startDt;
+            }
+
+            return true;
+        }
+
         private void RenderGanttTimeline()
         {
             try
             {
                 if (GanttHeaderGrid == null || GanttRowsStack == null) return;
 
+                DateTime activeMonthDate = new DateTime(_currentYear, _currentMonth, 1);
+
                 if (TxtCurrentMonthTitle != null)
                 {
-                    DateTime activeMonthDate = new DateTime(_currentYear, _currentMonth, 1);
                     List<MalaysiaHolidayItem> monthHolidays = MalaysiaHolidayService.GetHolidaysForMonth(_currentYear, _currentMonth);
                     if (monthHolidays != null && monthHolidays.Count > 0)
                     {
@@ -835,6 +906,17 @@ namespace SS_CAM.Views
                 GanttRowsStack.Children.Clear();
 
                 int daysInMonth = DateTime.DaysInMonth(_currentYear, _currentMonth);
+
+                if (GanttTodayRowsGrid != null)
+                {
+                    GanttTodayRowsGrid.Children.Clear();
+                    GanttTodayRowsGrid.ColumnDefinitions.Clear();
+                    GanttTodayRowsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
+                    for (int day = 1; day <= daysInMonth; day++)
+                    {
+                        GanttTodayRowsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    }
+                }
 
                 // Column 0 for Project Title label (width 160)
                 GanttHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
@@ -859,20 +941,77 @@ namespace SS_CAM.Views
                     bool isToday = (dt.Date == DateTime.Today);
                     MalaysiaHolidayItem holiday = MalaysiaHolidayService.GetHoliday(dt);
 
-                    TextBlock dayText = new TextBlock
+                    if (isToday)
                     {
-                        Text = day.ToString(),
-                        FontWeight = isToday || holiday != null ? FontWeights.Bold : FontWeights.Normal,
-                        FontSize = 10,
-                        Foreground = isToday 
-                            ? (Brush)Application.Current.FindResource("FluentBrand80")
-                            : (holiday != null ? new SolidColorBrush(Color.FromRgb(220, 38, 38)) : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush")),
-                        ToolTip = holiday != null ? ("🇲🇾 " + holiday.Name) : null,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    Grid.SetColumn(dayText, day);
-                    GanttHeaderGrid.Children.Add(dayText);
+                        Border todayBadge = new Border
+                        {
+                            Background = (Brush)Application.Current.FindResource("FluentBrand80"),
+                            CornerRadius = new CornerRadius(4),
+                            Padding = new Thickness(4, 1, 4, 1),
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            ToolTip = string.Format("Today ({0:dd MMM yyyy})", dt)
+                        };
+                        StackPanel todayStack = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center };
+                        TextBlock todayLbl = new TextBlock
+                        {
+                            Text = "TODAY",
+                            FontSize = 7,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.White,
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+                        TextBlock todayNum = new TextBlock
+                        {
+                            Text = day.ToString(),
+                            FontSize = 9,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.White,
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+                        todayStack.Children.Add(todayLbl);
+                        todayStack.Children.Add(todayNum);
+                        todayBadge.Child = todayStack;
+                        Grid.SetColumn(todayBadge, day);
+                        GanttHeaderGrid.Children.Add(todayBadge);
+                    }
+                    else
+                    {
+                        TextBlock dayText = new TextBlock
+                        {
+                            Text = day.ToString(),
+                            FontWeight = holiday != null ? FontWeights.Bold : FontWeights.Normal,
+                            FontSize = 10,
+                            Foreground = holiday != null 
+                                ? new SolidColorBrush(Color.FromRgb(220, 38, 38)) 
+                                : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                            ToolTip = holiday != null ? ("🇲🇾 " + holiday.Name) : null,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        Grid.SetColumn(dayText, day);
+                        GanttHeaderGrid.Children.Add(dayText);
+                    }
+                }
+
+                // Add Today Vertical Indicator Line across Gantt rows
+                if (_currentYear == DateTime.Today.Year && _currentMonth == DateTime.Today.Month)
+                {
+                    int todayDay = DateTime.Today.Day;
+                    if (GanttTodayRowsGrid != null && todayDay >= 1 && todayDay <= daysInMonth)
+                    {
+                        Border todayLine = new Border
+                        {
+                            Width = 2,
+                            Background = (Brush)Application.Current.FindResource("FluentBrand80"),
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Stretch,
+                            Opacity = 0.85,
+                            IsHitTestVisible = false
+                        };
+                        Grid.SetColumn(todayLine, todayDay);
+                        GanttTodayRowsGrid.Children.Add(todayLine);
+                    }
                 }
 
                 // Filter projects matching search, designer, and status
@@ -892,9 +1031,30 @@ namespace SS_CAM.Views
                     return;
                 }
 
+                DateTime monthStart = new DateTime(_currentYear, _currentMonth, 1);
+                DateTime monthEnd = new DateTime(_currentYear, _currentMonth, daysInMonth);
+                int renderedCount = 0;
+
                 foreach (ProjectStatusItem p in filtered)
                 {
                     if (p == null) continue;
+
+                    DateTime startDt;
+                    DateTime endDt;
+                    if (!TryParseProjectDates(p, out startDt, out endDt)) continue;
+
+                    // 1. Skip if project has NO overlap with active month view
+                    if (endDt < monthStart || startDt > monthEnd) continue;
+
+                    // 2. Clamp strictly to current month view boundaries
+                    DateTime effectiveStart = (startDt < monthStart) ? monthStart : startDt;
+                    DateTime effectiveEnd = (endDt > monthEnd) ? monthEnd : endDt;
+
+                    int startDay = effectiveStart.Day;
+                    int endDay = effectiveEnd.Day;
+                    if (startDay > endDay) startDay = endDay;
+
+                    int colSpan = Math.Max(1, (endDay - startDay) + 1);
 
                     Border rowBorder = new Border
                     {
@@ -932,36 +1092,6 @@ namespace SS_CAM.Views
                     Grid.SetColumn(nameStack, 0);
                     rowGrid.Children.Add(nameStack);
 
-                    // Determine start and end day for timeline bar
-                    DateTime monthStart = new DateTime(_currentYear, _currentMonth, 1);
-                    DateTime monthEnd = new DateTime(_currentYear, _currentMonth, daysInMonth);
-
-                    DateTime startDt = monthStart;
-                    DateTime endDt = monthEnd;
-
-                    DateTime parsedCreated;
-                    if (DateTime.TryParse(p.CreatedDate, out parsedCreated))
-                    {
-                        startDt = parsedCreated;
-                    }
-
-                    DateTime parsedDeadline;
-                    if (DateTime.TryParse(p.Deadline, out parsedDeadline))
-                    {
-                        endDt = parsedDeadline;
-                    }
-
-                    // Clamp to current month view range
-                    if (startDt < monthStart) startDt = monthStart;
-                    if (endDt > monthEnd) endDt = monthEnd;
-
-                    int startDay = (startDt.Month == _currentMonth && startDt.Year == _currentYear) ? startDt.Day : 1;
-                    int endDay = (endDt.Month == _currentMonth && endDt.Year == _currentYear) ? endDt.Day : daysInMonth;
-
-                    if (startDay > endDay) startDay = endDay;
-
-                    int colSpan = Math.Max(1, (endDay - startDay) + 1);
-
                     // Timeline bar element
                     Brush barBrush = GetStatusBrush(p.Status);
                     Border bar = new Border
@@ -994,6 +1124,20 @@ namespace SS_CAM.Views
 
                     rowBorder.Child = rowGrid;
                     GanttRowsStack.Children.Add(rowBorder);
+                    renderedCount++;
+                }
+
+                if (renderedCount == 0)
+                {
+                    TextBlock emptyMsg = new TextBlock
+                    {
+                        Text = string.Format("No projects active during {0}.", activeMonthDate.ToString("MMMM yyyy", CultureInfo.InvariantCulture)),
+                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        FontSize = 12,
+                        Margin = new Thickness(0, 16, 0, 16),
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+                    GanttRowsStack.Children.Add(emptyMsg);
                 }
             }
             catch (Exception ex)

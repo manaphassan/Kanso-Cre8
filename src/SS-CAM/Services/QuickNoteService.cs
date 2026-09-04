@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SS_CAM.Utilities;
 
 namespace SS_CAM.Services
@@ -19,6 +23,9 @@ namespace SS_CAM.Services
     /// </summary>
     public static class QuickNoteService
     {
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(4) };
+        private const string WebPortalNotesApiUrl = "https://creative.suamisihat.myds.me/api/notes";
+
         private static string NotesDirectory
         {
             get
@@ -121,15 +128,25 @@ namespace SS_CAM.Services
                 string fullContent = BuildContentWithFrontmatter(rawContent, isPinned, priority);
                 File.WriteAllText(filePath, fullContent, Encoding.UTF8);
 
+                string noteId = Path.GetFileNameWithoutExtension(filePath);
+                string title = ExtractTitle(rawContent, noteId);
+                var profile = UserProfileService.LoadProfile();
+
                 try
                 {
-                    var profile = UserProfileService.LoadProfile();
                     if (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot))
                     {
                         NasConfigSyncService.SaveFolderToNas(profile.WorkspaceRoot, "Notes");
                     }
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] SaveNote NAS sync error: " + ex.Message); }
+
+                try
+                {
+                    string username = (profile != null && !string.IsNullOrWhiteSpace(profile.DesignerName)) ? profile.DesignerName.ToLowerInvariant() : "harus";
+                    PushNoteToWebPortalAsync(noteId, title, rawContent, isPinned, priority, username);
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] SaveNote Portal push error: " + ex.Message); }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         }
@@ -145,7 +162,7 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
-        /// Deletes a note file locally and removes it from NAS.
+        /// Deletes a note file locally and removes it from NAS and Web Portal.
         /// </summary>
         public static void DeleteNote(string filePath)
         {
@@ -153,6 +170,7 @@ namespace SS_CAM.Services
             try
             {
                 string fileName = Path.GetFileName(filePath);
+                string noteId = Path.GetFileNameWithoutExtension(filePath);
                 File.Delete(filePath);
 
                 var profile = UserProfileService.LoadProfile();
@@ -160,8 +178,149 @@ namespace SS_CAM.Services
                 {
                     NasConfigSyncService.DeleteFileFromNas(profile.WorkspaceRoot, "Notes", fileName);
                 }
+
+                DeleteNoteFromWebPortalAsync(noteId);
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
+        }
+
+        /// <summary>
+        /// Synchronizes notes with the Web Portal / Mobile REST API.
+        /// Discovers notes created on mobile or web and downloads them into local storage.
+        /// </summary>
+        public static async Task SyncWithWebPortalAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(WebPortalNotesApiUrl);
+                if (!response.IsSuccessStatusCode) return;
+
+                string json = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(json)) return;
+
+                var root = JObject.Parse(json);
+                var notesArray = root["notes"] as JArray;
+                if (notesArray == null) return;
+
+                string dir = NotesDirectory;
+                var profile = UserProfileService.LoadProfile();
+                string wsRoot = (profile != null && !string.IsNullOrWhiteSpace(profile.WorkspaceRoot)) ? profile.WorkspaceRoot : null;
+                string nasNotesDir = wsRoot != null ? Path.Combine(wsRoot, "_Team", "_Config", "Notes") : null;
+
+                foreach (var token in notesArray)
+                {
+                    try
+                    {
+                        string id = token["id"] != null ? token["id"].ToString() : null;
+                        string filename = token["filename"] != null ? token["filename"].ToString() : null;
+                        if (string.IsNullOrWhiteSpace(filename))
+                        {
+                            if (string.IsNullOrWhiteSpace(id)) continue;
+                            filename = id + ".md";
+                        }
+
+                        string body = token["body"] != null ? token["body"].ToString() : "";
+                        bool isPinned = token["isPinned"] != null && (bool)token["isPinned"];
+                        string prioStr = token["priority"] != null ? token["priority"].ToString().ToLowerInvariant() : "normal";
+                        NotePriority priority = NotePriority.Normal;
+                        if (prioStr == "high") priority = NotePriority.High;
+                        else if (prioStr == "medium") priority = NotePriority.Medium;
+
+                        long modifiedMs = 0L;
+                        if (token["modified"] != null)
+                        {
+                            try { modifiedMs = Convert.ToInt64(token["modified"]); }
+                            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] modified timestamp parse: " + ex.Message); }
+                        }
+                        DateTime serverModified = modifiedMs > 0
+                            ? new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(modifiedMs)
+                            : DateTime.UtcNow;
+
+                        string localPath = Path.Combine(dir, filename);
+                        bool needsWrite = false;
+
+                        if (!File.Exists(localPath))
+                        {
+                            needsWrite = true;
+                        }
+                        else
+                        {
+                            DateTime localModified = File.GetLastWriteTimeUtc(localPath);
+                            if (serverModified > localModified.AddSeconds(2))
+                            {
+                                needsWrite = true;
+                            }
+                        }
+
+                        if (needsWrite)
+                        {
+                            string fullContent = BuildContentWithFrontmatter(body, isPinned, priority);
+                            File.WriteAllText(localPath, fullContent, Encoding.UTF8);
+                            try { File.SetLastWriteTimeUtc(localPath, serverModified); }
+                            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] SetLastWriteTimeUtc: " + ex.Message); }
+
+                            if (nasNotesDir != null && Directory.Exists(nasNotesDir))
+                            {
+                                try
+                                {
+                                    string nasPath = Path.Combine(nasNotesDir, filename);
+                                    File.Copy(localPath, nasPath, true);
+                                }
+                                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNoteService] NAS notes mirror: " + ex.Message); }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[QuickNoteService] Note sync item: " + ex.Message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[QuickNoteService] SyncWithWebPortal error: " + ex.Message);
+            }
+        }
+
+        private static void PushNoteToWebPortalAsync(string id, string title, string body, bool isPinned, NotePriority priority, string username)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var payload = new
+                    {
+                        id = id,
+                        title = title,
+                        body = body,
+                        isPinned = isPinned,
+                        priority = priority.ToString().ToLowerInvariant(),
+                        user = username
+                    };
+                    string json = JsonConvert.SerializeObject(payload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    await _httpClient.PostAsync(WebPortalNotesApiUrl, content);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[QuickNoteService] PushNoteToWebPortal error: " + ex.Message);
+                }
+            });
+        }
+
+        private static void DeleteNoteFromWebPortalAsync(string id)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await _httpClient.DeleteAsync(WebPortalNotesApiUrl + "/" + id);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[QuickNoteService] DeleteNoteFromWebPortal error: " + ex.Message);
+                }
+            });
         }
 
         /// <summary>
@@ -356,8 +515,8 @@ namespace SS_CAM.Services
             {
                 switch (Priority)
                 {
-                    case NotePriority.High: return "HIGH";
-                    case NotePriority.Medium: return "MED";
+                    case NotePriority.High: return "P2";
+                    case NotePriority.Medium: return "P1";
                     default: return "";
                 }
             }

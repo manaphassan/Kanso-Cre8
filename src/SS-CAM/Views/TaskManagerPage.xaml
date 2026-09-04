@@ -33,8 +33,8 @@
                 <StackPanel>
                     <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                        <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
-                            <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
+                        <Border Background="{Binding PriorityColor}" Visibility="{Binding PriorityBadgeVisibility}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
+                            <ui:TextBlock Text="{Binding PriorityBadgeText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
                         </Border>
                         <Border Background="{Binding DeadlineBadgeBackground}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
                             <ui:TextBlock Text="{Binding DeadlineDisplay}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding DeadlineBadgeForeground}" VerticalAlignment="Center"/>
@@ -170,12 +170,12 @@
                     </ComboBox>
 
                     <ui:TextBlock Text="Priority:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <ComboBox x:Name="PriorityFilter" Width="120" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
-                        <ComboBoxItem Content="All Priorities" IsSelected="True" VerticalContentAlignment="Center"/>
-                        <ComboBoxItem Content="urgent" VerticalContentAlignment="Center"/>
-                        <ComboBoxItem Content="high" VerticalContentAlignment="Center"/>
-                        <ComboBoxItem Content="medium" VerticalContentAlignment="Center"/>
-                        <ComboBoxItem Content="low" VerticalContentAlignment="Center"/>
+                    <ComboBox x:Name="PriorityFilter" Width="125" Height="32" Padding="8,4" VerticalContentAlignment="Center" SelectionChanged="OnTMFilterChanged" FontSize="11" Margin="0,0,12,0">
+                        <ComboBoxItem Content="All Priorities" Tag="all" IsSelected="True" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="P3 (Urgent)" Tag="urgent" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="P2 (High)" Tag="high" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="P1 (Medium)" Tag="medium" VerticalContentAlignment="Center"/>
+                        <ComboBoxItem Content="Low" Tag="low" VerticalContentAlignment="Center"/>
                     </ComboBox>
 
                     <ui:TextBlock Text="Sort:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>

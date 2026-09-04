@@ -1478,7 +1478,7 @@ function parseNoteMarkdown(content, filename, stat, owner = 'team') {
     isPinned,
     priority,
     owner,
-    modified: stat.mtimeMs,
+    modified: Math.round(stat.mtimeMs),
     dateText: new Date(stat.mtimeMs).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   };
 }
@@ -1616,11 +1616,12 @@ router.post('/orders', authenticateToken, (req, res) => {
     const requester     = req.user?.name     || req.body.requester || 'Unknown';
     const requesterRole = req.user?.role     || req.body.requesterRole || '';
     const order = OrderService.submitOrder({ ...req.body, requester, requesterRole });
-    AuditService.log({
+    AuditService.logEvent({
       action:    'order.submitted',
       actor:     requester,
-      target:    order.id,
-      details:   `"${order.title}" [${order.entity}] [${order.priority}]`,
+      entityType: 'order',
+      entityId:  order.id,
+      details:   { title: order.title, entity: order.entity, priority: order.priority },
       timestamp: new Date().toISOString(),
     });
     SseService.broadcast('order:new', { order });

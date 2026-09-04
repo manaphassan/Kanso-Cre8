@@ -51,40 +51,40 @@
                                         Icon="Search24"/>
 
                             <!-- Filter Chips Row -->
-                            <Grid Margin="0,0,0,2">
+                            <Grid Margin="0,0,0,6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <ui:Button x:Name="BtnFilterAll" Grid.Column="0" Appearance="Primary"
-                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                <ui:Button x:Name="BtnFilterAll" Grid.Column="0" Appearance="Secondary"
+                                           Height="28" Padding="0" Margin="0,0,3,0"
                                            Click="OnFilterAllClicked" Cursor="Hand" ToolTip="All Notes">
-                                    <ui:TextBlock Text="All" FontSize="10" HorizontalAlignment="Center"/>
+                                    <ui:TextBlock x:Name="TxtFilterAll" Text="All" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnFilterPinned" Grid.Column="1" Appearance="Secondary"
-                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                           Height="28" Padding="0" Margin="0,0,3,0"
                                            Click="OnFilterPinnedClicked" Cursor="Hand" ToolTip="Pinned Notes">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <ui:TextBlock Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="Pin" FontSize="10" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <ui:TextBlock x:Name="IconFilterPinned" Text="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="10" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock x:Name="TxtFilterPinned" Text="Pin" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnFilterHigh" Grid.Column="2" Appearance="Secondary"
-                                           Height="24" Padding="0" Margin="0,0,2,0"
+                                           Height="28" Padding="0" Margin="0,0,3,0"
                                            Click="OnFilterHighClicked" Cursor="Hand" ToolTip="High Priority Notes">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <ui:TextBlock Text="&#xE7BA;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="High" FontSize="10" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <ui:TextBlock x:Name="IconFilterHigh" Text="&#xE7BA;" FontFamily="Segoe Fluent Icons" FontSize="10" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock x:Name="TxtFilterHigh" Text="High" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
                                 <ui:Button x:Name="BtnFilterTasks" Grid.Column="3" Appearance="Secondary"
-                                           Height="24" Padding="0"
+                                           Height="28" Padding="0"
                                            Click="OnFilterTasksClicked" Cursor="Hand" ToolTip="Notes with Tasks">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <ui:TextBlock Text="&#xE73A;" FontFamily="Segoe Fluent Icons" FontSize="9" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                                        <ui:TextBlock Text="Tasks" FontSize="10" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <ui:TextBlock x:Name="IconFilterTasks" Text="&#xE73A;" FontFamily="Segoe Fluent Icons" FontSize="10" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                        <ui:TextBlock x:Name="TxtFilterTasks" Text="Tasks" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </ui:Button>
                             </Grid>

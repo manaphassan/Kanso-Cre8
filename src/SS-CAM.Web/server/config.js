@@ -66,5 +66,5 @@ module.exports = {
   DEFAULT_NAS_PATH: process.platform === 'win32' ? uncNasPath : linuxNasPath,
   FALLBACK_LOCAL_WORKSPACE: fallbackLocalWorkspace,
   APP_TITLE: 'SuamiSihat Creative Team Portal',
-  VERSION: '4.6.0'
+  VERSION: '4.6.1'
 };

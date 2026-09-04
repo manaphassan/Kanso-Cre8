@@ -1,6 +1,6 @@
 # SS-CAM Project Roadmap
 
-> **Living document.** Updated with every release. Last updated: 2026-09-03.
+> **Living document.** Updated with every release. Last updated: 2026-09-04.
 
 ---
 
@@ -43,7 +43,7 @@
 | **v4.5.0** | 2026-08-28 | **Master Brand System v3.5.1 Integration & Brand Assets Vault Modernization**: Full alignment with official SuamiSihat Master Brand System Guide, Multi-Format Color Matrix (BAL/RAL standard, CIE-Lab, Pantone, CSS tokens), 5 Corporate Sub-Brands Hub with 1-click folder launchers, interactive Surface Contrast Previewer ($L \ge 50\%$ rule), 4-tier typography scale reference |
 | **v4.5.1** | 2026-08-30 | **Cross-Platform Ecosystem Synchronization & Companion Harmonization**: Windows Desktop Client v4.5.1 (single-file executable, UTF-8 BOM, 100% theme-adaptive DynamicResource tokens), Web Management Portal Svelte 5 / Node.js 20 (zero-emoji Fluent 2 design, desktop mobile dock layout fix, 28/28 passed test suite), Android Companion App (Compose UI, Studio Lounge, and live NAS sync) |
 | **v4.6.0** | 2026-09-01 | **Beta Release — Android Native Companion Modernization, Live ICY Stream Metadata Engine, Preflight Quality Auditor & Desk Companion Standby Mode**: Desktop Preflight Quality Validator & Auto-Fix Scaffolding, Android 2×2 Bento KPI Telemetry & Persistent Local Caching (`ProjectCacheManager`), real-time AzuraCast/Laut.fm/SomaFM live song broadcasting metadata on TopAppBar & bottom cassette deck, interactive `SsHero` animated wave mesh splash screen, interactive `FluentMarkdownViewer` with live task checkbox syncing, OLED Desk Standby Mode, and Material You monochromatic icons |
-| **v4.6.1** | 2026-09-03 | **Patch Release — Creative Direction Matrix Preview, Markdown Auto-Wrapping, Overdue Suppression & Shared Team Board Isolation**: Desktop Task Manager Kanban overdue suppression for completed/approved projects, frontmatter YAML quote stripping, Web Portal Creative Direction preview-first card matrix & header toggle, auto-wrapping markdown editor, and isolated shared team board test suite |
+| **v4.6.1** | 2026-09-04 | **Multi-Platform Release — Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience**: Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and central Web Portal (`/api/orders`), automatic JWT authentication and live queue fetching with local Synology NAS ledger caching (`creative-orders.jsonl`), instant bidirectional status sync (`PATCH /api/orders/{id}`), 1-Click project vault scaffolding (`01_Brief_and_Copy/COPY.md` + frontmatter), startup splash hang resolution, task manager Kanban overdue suppression, frontmatter YAML quote sanitization, web creative direction matrix preview & auto-wrapping markdown editor, shared team board test isolation, Android Companion App release (v4.6.1, Code 462), and Linux Avalonia release package. |
 
 ---
 

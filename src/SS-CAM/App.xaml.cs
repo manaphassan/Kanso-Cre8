@@ -10,51 +10,108 @@ namespace SS_CAM
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            AppDomain.CurrentDomain.UnhandledException += (s, args) => LogException(args.ExceptionObject as Exception);
-            DispatcherUnhandledException += (s, args) => { LogException(args.Exception); args.Handled = true; };
+            LogTrace("=== SS-CAM APPLICATION STARTUP ===");
+            AppDomain.CurrentDomain.ProcessExit += (s, args) => LogTrace("=== AppDomain ProcessExit fired ===");
+            AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+            {
+                Exception ex = args.ExceptionObject as Exception;
+                LogTrace("Unhandled AppDomain Exception: " + (ex != null ? ex.ToString() : (args.ExceptionObject != null ? args.ExceptionObject.ToString() : "null")));
+                LogException(ex);
+            };
+            DispatcherUnhandledException += (s, args) =>
+            {
+                LogTrace("DispatcherUnhandledException: " + (args.Exception != null ? args.Exception.ToString() : "null"));
+                LogException(args.Exception);
+                args.Handled = true;
+            };
 
             base.OnStartup(e);
 
             Views.SplashWindow splash = new Views.SplashWindow();
             splash.Show();
+            LogTrace("SplashWindow shown");
 
             System.Threading.Tasks.Task.Run(() =>
             {
                 try
                 {
+                    LogTrace("Step 1: Initializing");
                     splash.UpdateStatus("Initializing SuamiSihat CAM...");
-                    System.Threading.Thread.Sleep(300);
+                    System.Threading.Thread.Sleep(200);
 
+                    LogTrace("Step 2: RegisterUserAppPlacement");
                     splash.UpdateStatus("Deploying brand assets & fonts...");
                     RegisterUserAppPlacement();
                     RegisterCustomUriScheme();
 
+                    LogTrace("Step 3: UserProfileService.LoadProfile");
                     splash.UpdateStatus("Synchronizing NAS preferences...");
                     UserProfileService.LoadProfile();
 
+                    LogTrace("Step 4: Preparing workstation shell");
                     splash.UpdateStatus("Preparing workstation shell...");
-                    System.Threading.Thread.Sleep(200);
+                    System.Threading.Thread.Sleep(150);
 
+                    LogTrace("Step 5: Invoking MainWindow creation on UI thread");
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        MainWindow main = new MainWindow();
-                        this.MainWindow = main;
-                        main.Show();
-                        splash.FadeOutAndClose();
+                        try
+                        {
+                            LogTrace("Dispatcher.Invoke: Instantiating MainWindow");
+                            MainWindow main = new MainWindow();
+                            this.MainWindow = main;
+                            main.Closed += (s, args) => { LogTrace("MainWindow Closed -> Shutting down application"); Shutdown(); };
+                            LogTrace("Dispatcher.Invoke: Showing MainWindow");
+                            main.Show();
+                            LogTrace("Dispatcher.Invoke: Fading out splash");
+                            splash.FadeOutAndClose();
+                        }
+                        catch (Exception ex)
+                        {
+                            LogTrace("FATAL during MainWindow creation: " + ex.ToString());
+                            LogException(ex);
+                            splash.Close();
+                            MessageBox.Show("Unable to load SS-CAM workstation:\n" + ex.Message, "SS-CAM Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Shutdown(1);
+                        }
                     }));
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("[App] Startup error: " + ex.Message);
+                    LogTrace("FATAL during background startup: " + ex.ToString());
+                    LogException(ex);
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        MainWindow main = new MainWindow();
-                        this.MainWindow = main;
-                        main.Show();
-                        splash.Close();
+                        try
+                        {
+                            splash.Close();
+                            MessageBox.Show("SS-CAM startup failure:\n" + ex.Message, "SS-CAM Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            Shutdown(1);
+                        }
+                        catch (Exception innerEx) { System.Diagnostics.Debug.WriteLine(innerEx); }
                     }));
                 }
             });
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            LogTrace(string.Format("=== SS-CAM APPLICATION EXIT (ExitCode={0}) ===", e.ApplicationExitCode));
+            base.OnExit(e);
+        }
+
+        public static void LogTrace(string message)
+        {
+            try
+            {
+                string dir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "SuamiSihat");
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                string path = Path.Combine(dir, "startup_trace.log");
+                File.AppendAllText(path, string.Format("[{0:yyyy-MM-dd HH:mm:ss.fff}] {1}\r\n", DateTime.Now, message));
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[App] LogTrace error: " + ex.Message); }
         }
 
         private static void LogException(Exception ex)
@@ -104,23 +161,24 @@ namespace SS_CAM
                 string startMenuFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs");
                 string shortcutPath = Path.Combine(startMenuFolder, "SuamiSihat Creative Assets Management.lnk");
 
-                string psCommand = string.Format(
-                    "$s=(New-Object -COM WScript.Shell).CreateShortcut('{0}');$s.TargetPath='{1}';$s.WorkingDirectory='{2}';$s.Save()",
-                    shortcutPath.Replace("'", "''"),
-                    exeForShortcut.Replace("'", "''"),
-                    Path.GetDirectoryName(exeForShortcut).Replace("'", "''")
-                );
-
-                ProcessStartInfo psi = new ProcessStartInfo
+                if (!File.Exists(shortcutPath))
                 {
-                    FileName = "powershell.exe",
-                    Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -Command \"{0}\"", psCommand),
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (Process p = Process.Start(psi))
-                {
-                    p.WaitForExit(3000);
+                    try
+                    {
+                        Type shellType = Type.GetTypeFromProgID("WScript.Shell");
+                        if (shellType != null)
+                        {
+                            dynamic shell = Activator.CreateInstance(shellType);
+                            dynamic shortcut = shell.CreateShortcut(shortcutPath);
+                            shortcut.TargetPath = exeForShortcut;
+                            shortcut.WorkingDirectory = Path.GetDirectoryName(exeForShortcut);
+                            shortcut.Save();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[App] Shortcut creation error: " + ex.Message);
+                    }
                 }
             }
             catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }

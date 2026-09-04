@@ -182,9 +182,12 @@
                         <Border Grid.Row="0" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="8,6" CornerRadius="6" Margin="0,0,0,8">
                             <Grid x:Name="GanttHeaderGrid"/>
                         </Border>
-                        <!-- Timeline Rows Stack -->
+                        <!-- Timeline Rows Stack with Today Guide Line Overlay -->
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="520">
-                            <StackPanel x:Name="GanttRowsStack"/>
+                            <Grid>
+                                <Grid x:Name="GanttTodayRowsGrid" IsHitTestVisible="False" Panel.ZIndex="10"/>
+                                <StackPanel x:Name="GanttRowsStack" Panel.ZIndex="1"/>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </ui:Card>
@@ -220,8 +223,8 @@
                                 <ui:Card Margin="0,0,0,10" Padding="12">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                            <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
-                                                <ui:TextBlock Text="{Binding Priority}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
+                                            <Border Background="{Binding PriorityColor}" Visibility="{Binding PriorityBadgeVisibility}" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
+                                                <ui:TextBlock Text="{Binding PriorityBadgeText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
                                             </Border>
                                             <Border Background="{DynamicResource TextControlBackground}" CornerRadius="4" Padding="5,2">
                                                 <ui:TextBlock Text="{Binding EventType}" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>

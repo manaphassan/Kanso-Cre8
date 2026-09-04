@@ -144,6 +144,13 @@ $apkAsset = Join-Path $repoRoot "dist\SS-CAM-$tag-android-release.apk"
 if (-not (Test-Path $apkAsset)) { $apkAsset = Join-Path $repoRoot "dist\SS-CAM-$Version-android-release.apk" }
 if (Test-Path $apkAsset) { $assetsToUpload += $apkAsset }
 
+$aabAsset = Join-Path $repoRoot "dist\SS-CAM-$tag-android-release.aab"
+if (-not (Test-Path $aabAsset)) { $aabAsset = Join-Path $repoRoot "dist\SS-CAM-$Version-android-release.aab" }
+if (Test-Path $aabAsset) { $assetsToUpload += $aabAsset }
+
+$apkDebugAsset = Join-Path $repoRoot "dist\SS-CAM-$tag-android-debug.apk"
+if (Test-Path $apkDebugAsset) { $assetsToUpload += $apkDebugAsset }
+
 if (-not $DryRun) {
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
         Write-Result 'GitHub Release' "$tag publish blocked" 'BLOCKED' "GitHub CLI (gh) not installed on local machine. Git tag $tag pushed to remote."

@@ -1,6 +1,6 @@
 # 06 — Accessibility Audit
 
-Last updated: 2026-08-27 | Version: v4.4.3
+Last updated: 2026-09-04 | Version: v4.6.1
 
 ---
 

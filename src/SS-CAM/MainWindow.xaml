@@ -179,6 +179,7 @@
                 <ui:NavigationViewItemSeparator />
 
                 <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
+                <ui:NavigationViewItem Content="Order Requests"     Icon="{ui:SymbolIcon ClipboardTask24}" TargetPageType="{x:Type views:OrderRequestsPage}" />
                 <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
                 <ui:NavigationViewItem Content="Copywriting Studio" Icon="{ui:SymbolIcon Edit24}"        TargetPageType="{x:Type views:CopywritingPage}" />
                 <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />

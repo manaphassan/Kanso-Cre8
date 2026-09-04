@@ -381,18 +381,29 @@ fun ReferenceStyleDeliverableCard(
     val safeDeadline = deadline.orEmpty().ifBlank { "TBD" }
     val safePriority = priority.orEmpty().ifBlank { "standard" }
 
+    val pClean = safePriority.lowercase().trim()
+    val priorityLabel = when (pClean) {
+        "urgent" -> "P3"
+        "high" -> "P2"
+        "medium", "standard" -> "P1"
+        else -> ""
+    }
+    val hasPriorityBadge = priorityLabel.isNotEmpty()
+
     val colors = LocalSscamColors.current
-    val (priorityDotColor, priorityLabel) = if (colors.isMonochrome) {
-        when (safePriority.lowercase()) {
-            "urgent" -> Color(0xFF18181B) to "Urgent Priority"
-            "high" -> Color(0xFF52525B) to "High Priority"
-            else -> Color(0xFF71717A) to "Standard Review"
+    val priorityDotColor = if (colors.isMonochrome) {
+        when (priorityLabel) {
+            "P3" -> Color(0xFF18181B)
+            "P2" -> Color(0xFF52525B)
+            "P1" -> Color(0xFF71717A)
+            else -> Color.Transparent
         }
     } else {
-        when (safePriority.lowercase()) {
-            "urgent" -> Color(0xFFEF4444) to "Urgent Priority"
-            "high" -> Color(0xFFF97316) to "High Priority"
-            else -> SshWarmGoldBright to "Standard Review"
+        when (priorityLabel) {
+            "P3" -> Color(0xFFEF4444)
+            "P2" -> Color(0xFFF97316)
+            "P1" -> Color(0xFF2563EB)
+            else -> Color.Transparent
         }
     }
 
@@ -400,7 +411,7 @@ fun ReferenceStyleDeliverableCard(
         onClick = onCardClick,
         colors = CardDefaults.cardColors(containerColor = colors.card),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, if (safePriority.lowercase() == "urgent") priorityDotColor.copy(alpha = 0.45f) else colors.border),
+        border = BorderStroke(1.dp, if (pClean == "urgent") priorityDotColor.copy(alpha = 0.45f) else colors.border),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -408,13 +419,15 @@ fun ReferenceStyleDeliverableCard(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            // Left Severity Accent Indicator Strip
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(4.5.dp)
-                    .background(priorityDotColor)
-            )
+            // Left Severity Accent Indicator Strip (only if has priority badge)
+            if (hasPriorityBadge) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(4.5.dp)
+                        .background(priorityDotColor)
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -427,27 +440,31 @@ fun ReferenceStyleDeliverableCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else priorityDotColor.copy(alpha = 0.15f))
-                            .border(0.5.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else priorityDotColor.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                            .padding(horizontal = 8.dp, vertical = 3.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
+                    if (hasPriorityBadge) {
+                        Row(
                             modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(priorityDotColor)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            priorityLabel,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (colors.isMonochrome) Color(0xFF18181B) else priorityDotColor
-                        )
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(if (colors.isMonochrome) Color(0xFFF4F4F5) else priorityDotColor.copy(alpha = 0.15f))
+                                .border(0.5.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else priorityDotColor.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(priorityDotColor)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                priorityLabel,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (colors.isMonochrome) Color(0xFF18181B) else priorityDotColor
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.width(1.dp))
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -642,18 +659,27 @@ fun StatusChip(status: String) {
 
 @Composable
 fun PriorityChip(priority: String) {
+    val pClean = priority.lowercase().trim()
+    val label = when (pClean) {
+        "urgent" -> "P3"
+        "high" -> "P2"
+        "medium", "standard" -> "P1"
+        else -> ""
+    }
+    if (label.isEmpty()) return // Low - no badge
+
     val colors = LocalSscamColors.current
     val (bg, fg) = if (colors.isMonochrome) {
-        when (priority.lowercase()) {
-            "urgent" -> Color(0xFF18181B) to Color.White
-            "high" -> Color(0xFF52525B) to Color.White
+        when (label) {
+            "P3" -> Color(0xFF18181B) to Color.White
+            "P2" -> Color(0xFF52525B) to Color.White
             else -> Color(0xFFE4E4E7) to Color(0xFF18181B)
         }
     } else {
-        val color = when (priority.lowercase()) {
-            "urgent" -> StatusUrgent
-            "high" -> Color(0xFFF97316)
-            else -> SshAzureLight
+        val color = when (label) {
+            "P3" -> StatusUrgent
+            "P2" -> Color(0xFFF97316)
+            else -> Color(0xFF2563EB)
         }
         color.copy(alpha = 0.18f) to color
     }
@@ -664,7 +690,7 @@ fun PriorityChip(priority: String) {
             .border(0.5.dp, if (colors.isMonochrome) Color(0xFFD4D4D8) else fg.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
-        Text(priority.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = fg)
+        Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = fg)
     }
 }
 

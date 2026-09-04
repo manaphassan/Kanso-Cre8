@@ -42,43 +42,77 @@ namespace SS_CAM
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Title = "SuamiSihat Creative Assets Management " + Services.AppVersion.DisplayVersion;
-            WindowState = WindowState.Normal;
-            Width = 1280;
-            Height = 820;
-            Activate();
-
-            // 1. Initialize Header Geometric Loop Animation
-            InitHeaderAnimation();
-
-            // 2. Play Intro Sound Effect on App Launch
-            AudioFeedbackService.PlayIntroSound();
-
-            // 2. Load Designer Profile & Check First-Run Setup
-            RefreshProfileUI();
-            CheckFirstRunProfileSetup();
-
-            // 3. Initialize Real-Time Footer Status Bar Timer & NAS Online Check
-            InitNasHealthCheck();
-            InitUpdateCheck();
-            InitRadioStatusListeners();
-            InitVisualizerListeners();
-
-            // 4. Apply Theme on Launch (loads saved theme from ThemeService)
-            ThemeService.ApplyTheme(ThemeService.CurrentTheme);
-
-            // 5. Start Background NAS File Watcher
-            if (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot))
+            try
             {
-                WorkspaceWatcherService.Instance.Start(currentProfile.WorkspaceRoot);
+                App.LogTrace("MainWindow: OnLoaded started");
+                Title = "SuamiSihat Creative Assets Management " + Services.AppVersion.DisplayVersion;
+                WindowState = WindowState.Normal;
+                Width = 1280;
+                Height = 820;
+                Activate();
+
+                // 1. Initialize Header Geometric Loop Animation
+                try { InitHeaderAnimation(); App.LogTrace("MainWindow: InitHeaderAnimation done"); }
+                catch (Exception ex) { App.LogTrace("MainWindow: InitHeaderAnimation error: " + ex.Message); }
+
+                // 2. Play Intro Sound Effect on App Launch
+                try { AudioFeedbackService.PlayIntroSound(); App.LogTrace("MainWindow: PlayIntroSound done"); }
+                catch (Exception ex) { App.LogTrace("MainWindow: PlayIntroSound error: " + ex.Message); }
+
+                // 3. Load Designer Profile & Check First-Run Setup
+                try
+                {
+                    RefreshProfileUI();
+                    CheckFirstRunProfileSetup();
+                    App.LogTrace("MainWindow: ProfileSetup done");
+                }
+                catch (Exception ex) { App.LogTrace("MainWindow: Profile setup error: " + ex.Message); }
+
+                // 4. Initialize Real-Time Footer Status Bar Timer & NAS Online Check
+                try
+                {
+                    InitNasHealthCheck();
+                    InitUpdateCheck();
+                    InitRadioStatusListeners();
+                    InitVisualizerListeners();
+                    App.LogTrace("MainWindow: Listeners done");
+                }
+                catch (Exception ex) { App.LogTrace("MainWindow: Listeners error: " + ex.Message); }
+
+                // 5. Apply Theme on Launch (loads saved theme from ThemeService)
+                try { ThemeService.ApplyTheme(ThemeService.CurrentTheme); App.LogTrace("MainWindow: ApplyTheme done"); }
+                catch (Exception ex) { App.LogTrace("MainWindow: ApplyTheme error: " + ex.Message); }
+
+                // 6. Start Background NAS File Watcher
+                try
+                {
+                    if (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.WorkspaceRoot))
+                    {
+                        WorkspaceWatcherService.Instance.Start(currentProfile.WorkspaceRoot);
+                        App.LogTrace("MainWindow: WorkspaceWatcher started");
+                    }
+                }
+                catch (Exception ex) { App.LogTrace("MainWindow: WorkspaceWatcher error: " + ex.Message); }
+
+                // 7. Navigate to Dashboard on startup
+                try { RootNavigation.Navigate(typeof(DashboardPage)); App.LogTrace("MainWindow: Navigated to DashboardPage"); }
+                catch (Exception ex) { App.LogTrace("MainWindow: Navigate Dashboard error: " + ex.Message); }
+
+                // 8. Trigger Welcome Toast Notification
+                try
+                {
+                    string displayName = (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.DesignerName)) ? currentProfile.DesignerName : "designer";
+                    NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, " + displayName + "!");
+                    App.LogTrace("MainWindow: Welcome notification done");
+                }
+                catch (Exception ex) { App.LogTrace("MainWindow: Welcome notification error: " + ex.Message); }
+
+                App.LogTrace("MainWindow: OnLoaded finished completely");
             }
-
-            // 6. Navigate to Dashboard on startup
-            RootNavigation.Navigate(typeof(DashboardPage));
-
-            // 7. Trigger Welcome Toast Notification
-            string displayName = (currentProfile != null && !string.IsNullOrWhiteSpace(currentProfile.DesignerName)) ? currentProfile.DesignerName : "designer";
-            NotificationService.ShowSuccess("SuamiSihat CAM Ready", "Workstation initialized. Welcome back, " + displayName + "!");
+            catch (Exception fatalEx)
+            {
+                App.LogTrace("MainWindow: Fatal OnLoaded exception: " + fatalEx);
+            }
         }
 
         // ─── Global Mouse Wheel Scroll Handler ────────────────────────────────────

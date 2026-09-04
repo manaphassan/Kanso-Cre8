@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using SS_CAM.Services;
@@ -27,11 +28,15 @@ namespace SS_CAM.Views
             Unloaded += OnPageUnloaded;
         }
 
-        private void OnPageLoaded(object sender, RoutedEventArgs e)
+        private async void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
+                UpdateFilterButtonStyles();
                 SetupAutoSaveTimer();
+                RefreshNoteList();
+
+                await QuickNoteService.SyncWithWebPortalAsync();
                 RefreshNoteList();
             }
             catch (Exception ex)
@@ -241,11 +246,54 @@ namespace SS_CAM.Views
         private void SetFilter(int filterIndex)
         {
             _activeFilter = filterIndex;
-            BtnFilterAll.Appearance = filterIndex == 0 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
-            BtnFilterPinned.Appearance = filterIndex == 1 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
-            BtnFilterHigh.Appearance = filterIndex == 2 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
-            BtnFilterTasks.Appearance = filterIndex == 3 ? Wpf.Ui.Controls.ControlAppearance.Primary : Wpf.Ui.Controls.ControlAppearance.Secondary;
+            UpdateFilterButtonStyles();
             ApplyNoteFilter();
+        }
+
+        private void UpdateFilterButtonStyles()
+        {
+            Brush brandBrush = null;
+            try { brandBrush = FindResource("FluentBrand80") as Brush; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNotePage] brandBrush: " + ex.Message); }
+            if (brandBrush == null) brandBrush = new SolidColorBrush(Color.FromRgb(2, 132, 199)); // #0284C7 brand blue
+
+            Brush inactiveBg = null;
+            try { inactiveBg = FindResource("ControlFillColorSecondaryBrush") as Brush; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNotePage] inactiveBg: " + ex.Message); }
+            if (inactiveBg == null) inactiveBg = Brushes.Transparent;
+
+            Brush inactiveFg = null;
+            try { inactiveFg = FindResource("TextFillColorPrimaryBrush") as Brush; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNotePage] inactiveFg: " + ex.Message); }
+            if (inactiveFg == null) inactiveFg = Brushes.Black;
+
+            Brush strokeBrush = null;
+            try { strokeBrush = FindResource("CardStrokeColorDefaultBrush") as Brush; }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[QuickNotePage] strokeBrush: " + ex.Message); }
+            if (strokeBrush == null) strokeBrush = new SolidColorBrush(Color.FromArgb(40, 0, 0, 0));
+
+            ApplyChipStyle(BtnFilterAll, TxtFilterAll, null, _activeFilter == 0, brandBrush, Brushes.White, inactiveBg, inactiveFg, strokeBrush);
+            ApplyChipStyle(BtnFilterPinned, TxtFilterPinned, IconFilterPinned, _activeFilter == 1, brandBrush, Brushes.White, inactiveBg, inactiveFg, strokeBrush);
+            ApplyChipStyle(BtnFilterHigh, TxtFilterHigh, IconFilterHigh, _activeFilter == 2, brandBrush, Brushes.White, inactiveBg, inactiveFg, strokeBrush);
+            ApplyChipStyle(BtnFilterTasks, TxtFilterTasks, IconFilterTasks, _activeFilter == 3, brandBrush, Brushes.White, inactiveBg, inactiveFg, strokeBrush);
+        }
+
+        private void ApplyChipStyle(Wpf.Ui.Controls.Button btn, Wpf.Ui.Controls.TextBlock label, Wpf.Ui.Controls.TextBlock icon, bool isActive,
+            Brush activeBg, Brush activeFg, Brush inactiveBg, Brush inactiveFg, Brush border)
+        {
+            if (btn == null) return;
+            btn.Background = isActive ? activeBg : inactiveBg;
+            btn.BorderBrush = isActive ? activeBg : border;
+            btn.BorderThickness = new Thickness(1);
+            if (label != null)
+            {
+                label.Foreground = isActive ? activeFg : inactiveFg;
+                label.FontWeight = isActive ? FontWeights.SemiBold : FontWeights.Normal;
+            }
+            if (icon != null)
+            {
+                icon.Foreground = isActive ? activeFg : inactiveFg;
+            }
         }
 
         private void ApplyNoteFilter()

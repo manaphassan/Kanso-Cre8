@@ -270,8 +270,17 @@ namespace SS_CAM.Views
                 string priorityFilter = "";
                 if (PriorityFilter != null && PriorityFilter.SelectedItem is ComboBoxItem)
                 {
-                    string sel = ((ComboBoxItem)PriorityFilter.SelectedItem).Content.ToString();
-                    if (sel != "All Priorities") priorityFilter = sel;
+                    ComboBoxItem cbi = (ComboBoxItem)PriorityFilter.SelectedItem;
+                    string tag = cbi.Tag != null ? cbi.Tag.ToString() : "";
+                    if (!string.IsNullOrEmpty(tag) && tag != "all")
+                    {
+                        priorityFilter = tag;
+                    }
+                    else
+                    {
+                        string sel = cbi.Content != null ? cbi.Content.ToString() : "";
+                        if (sel != "All Priorities" && sel != "all") priorityFilter = sel;
+                    }
                 }
                 string statusFilter = "";
                 if (StatusFilter != null && StatusFilter.SelectedItem is ComboBoxItem)
