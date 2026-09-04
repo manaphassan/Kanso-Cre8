@@ -1,5 +1,5 @@
 # SS-CAM — UX Recommendations & Design Audit
-**SS-CAM v4.4.3** | Last updated: 2026-08-27
+**SS-CAM v4.6.1** | Last updated: 2026-09-04
 
 ---
 

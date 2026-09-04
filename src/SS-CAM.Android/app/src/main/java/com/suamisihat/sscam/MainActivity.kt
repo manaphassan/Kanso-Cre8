@@ -36,6 +36,8 @@ import com.suamisihat.sscam.data.api.LoginRequest
 import com.suamisihat.sscam.data.api.SscamApiService
 import com.suamisihat.sscam.data.sync.SyncQueueManager
 import com.suamisihat.sscam.data.models.CreateProjectRequest
+import com.suamisihat.sscam.data.models.CreativeOrder
+import com.suamisihat.sscam.data.models.CreateOrderRequest
 import com.suamisihat.sscam.data.models.DecisionRequest
 import com.suamisihat.sscam.data.models.NotificationItem
 import com.suamisihat.sscam.data.models.ProjectItem
@@ -120,6 +122,7 @@ object ProjectCacheManager {
     private const val PREFS_NAME = "sscam_data_cache"
     private const val KEY_PROJECTS_JSON = "cached_projects_json"
     private const val KEY_STAFF_JSON = "cached_staff_json"
+    private const val KEY_ORDERS_JSON = "cached_orders_json"
     private val gson = com.google.gson.Gson()
 
     fun getCachedProjects(context: android.content.Context): List<ProjectItem> {
@@ -154,6 +157,75 @@ object ProjectCacheManager {
         val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         val json = gson.toJson(staff)
         prefs.edit().putString(KEY_STAFF_JSON, json).apply()
+    }
+
+    fun getCachedOrders(context: android.content.Context): List<CreativeOrder> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = prefs.getString(KEY_ORDERS_JSON, null)
+        if (json != null) {
+            try {
+                val type = object : com.google.gson.reflect.TypeToken<List<CreativeOrder>>() {}.type
+                val list: List<CreativeOrder>? = gson.fromJson(json, type)
+                if (list != null && list.isNotEmpty()) return list
+            } catch (e: Exception) { }
+        }
+        return getSeedOrders()
+    }
+
+    fun saveOrders(context: android.content.Context, orders: List<CreativeOrder>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val json = gson.toJson(orders)
+        prefs.edit().putString(KEY_ORDERS_JSON, json).apply()
+    }
+
+    private fun getSeedOrders(): List<CreativeOrder> {
+        return listOf(
+            CreativeOrder(
+                id = "ORD-260904-7821",
+                title = "Rejal Madu Tualang TikTok Hook & Reels 9:16",
+                entity = "SSE",
+                priority = "tier_2",
+                format = "9_16_video",
+                copy = "Hook: Tenaga drop pukul 3 petang? Ini rahsia orang lama kekal bertenaga sampai malam dengan Madu Tualang Asli SuamiSihat. Call to action: Tekan beg kuning sebelum habis promosi!",
+                targetDate = "2026-09-07",
+                attachmentNote = "\\\\SSNAS\\Creative-Team\\RAW_FOOTAGE\\Rejal_Madu_2026",
+                requester = "Harussani",
+                requesterRole = "Admin, Designer",
+                status = "pending",
+                submittedAt = "2026-09-04T09:15:00Z",
+                updatedAt = "2026-09-04T09:15:00Z"
+            ),
+            CreativeOrder(
+                id = "ORD-260904-4192",
+                title = "Men Clinic Health Awareness POSM & Rollup",
+                entity = "SSC",
+                priority = "tier_1",
+                format = "print_posm",
+                copy = "Headline: Kesihatan Lelaki Keutamaan Kami. Dapatkan konsultasi percuma bersama doktor pakar SuamiSihat Clinic cawangan Bangi & Shah Alam.",
+                targetDate = "2026-09-10",
+                attachmentNote = "drive.google.com/drive/folders/ssc-bangi-posm",
+                requester = "Dr. Danial",
+                requesterRole = "Medical Director",
+                status = "in_progress",
+                submittedAt = "2026-09-03T14:30:00Z",
+                updatedAt = "2026-09-03T16:00:00Z"
+            ),
+            CreativeOrder(
+                id = "ORD-260904-1055",
+                title = "SuamiSihat Holding Annual Corporate Deck",
+                entity = "SSH",
+                priority = "tier_3",
+                format = "16_9_landscape",
+                copy = "Executive presentation for Board of Directors Q3 Strategy & Financial Review. Include 5-subsidiary breakdown slides.",
+                targetDate = "2026-09-05",
+                attachmentNote = "\\\\SSNAS\\Corporate\\Q3_Brief.pdf",
+                requester = "CEO Office",
+                requesterRole = "Executive",
+                status = "for_approval",
+                submittedAt = "2026-09-04T08:00:00Z",
+                updatedAt = "2026-09-04T08:30:00Z"
+            )
+        )
     }
 }
 
@@ -199,6 +271,9 @@ fun CompanionAppScreen(
     var staffList by remember {
         mutableStateOf<List<StaffMember>>(ProjectCacheManager.getCachedStaff(context))
     }
+    var orders by remember {
+        mutableStateOf<List<CreativeOrder>>(ProjectCacheManager.getCachedOrders(context))
+    }
     var authToken by remember { mutableStateOf<String?>(AuthPreferences.getSavedToken(context)) }
 
     var notifications by remember {
@@ -224,6 +299,7 @@ fun CompanionAppScreen(
                     try { SyncQueueManager.flushQueue(context, api) } catch (e: Exception) { }
                     val projRes = api.getProjects()
                     val teamRes = api.getTeam()
+                    val orderRes = try { api.getOrders() } catch (e: Exception) { null }
                     val notifRes = try { api.getNotifications() } catch (e: Exception) { null }
 
                     val fetchedProjects = if (projRes.isSuccessful && projRes.body() != null) {
@@ -234,12 +310,16 @@ fun CompanionAppScreen(
                         teamRes.body()!!.allStaff
                     } else emptyList()
 
+                    val fetchedOrders = if (orderRes?.isSuccessful == true && orderRes.body() != null) {
+                        orderRes.body()!!.orders
+                    } else emptyList()
+
                     val fetchedNotifs = if (notifRes?.isSuccessful == true && notifRes.body()?.notifications?.isNotEmpty() == true) {
                         notifRes.body()!!.notifications
                     } else null
 
                     withContext(Dispatchers.Main) {
-                        if (fetchedProjects.isNotEmpty() || fetchedStaff.isNotEmpty()) {
+                        if (fetchedProjects.isNotEmpty() || fetchedStaff.isNotEmpty() || fetchedOrders.isNotEmpty()) {
                             if (fetchedProjects.isNotEmpty()) {
                                 projects = fetchedProjects
                                 ProjectCacheManager.saveProjects(context, fetchedProjects)
@@ -248,11 +328,15 @@ fun CompanionAppScreen(
                                 staffList = fetchedStaff
                                 ProjectCacheManager.saveStaff(context, fetchedStaff)
                             }
+                            if (fetchedOrders.isNotEmpty()) {
+                                orders = fetchedOrders
+                                ProjectCacheManager.saveOrders(context, fetchedOrders)
+                            }
                             if (fetchedNotifs != null) {
                                 notifications = fetchedNotifs
                             }
                             isLiveSync = true
-                            syncMessage = "Live NAS Synced (${projects.size} deliverables • ${staffList.size} staff)"
+                            syncMessage = "Live NAS Synced (${projects.size} deliverables • ${orders.size} orders)"
                         } else {
                             syncMessage = "NAS Live API: HTTP ${projRes.code()}"
                         }
@@ -682,6 +766,50 @@ fun CompanionAppScreen(
                                             Toast.makeText(context, "Queued offline: Sign-off recorded for ${item.title}", Toast.LENGTH_SHORT).show()
                                         }
                                     }
+                                },
+                                orders = orders,
+                                onUpdateOrderStatus = { orderId, newStatus ->
+                                    orders = orders.map { if (it.id == orderId) it.copy(status = newStatus) else it }
+                                    ProjectCacheManager.saveOrders(context, orders)
+                                    Toast.makeText(context, "Status updated to ${newStatus.replace('_', ' ').replaceFirstChar { it.uppercase() }}", Toast.LENGTH_SHORT).show()
+                                    coroutineScope.launch {
+                                        try {
+                                            withContext(Dispatchers.IO) {
+                                                val api = SscamApiService.create(authToken = authToken)
+                                                api.updateOrderStatus(orderId, mapOf("status" to newStatus))
+                                            }
+                                        } catch (e: Exception) { }
+                                    }
+                                },
+                                onSubmitNewOrder = { req ->
+                                    val now = java.util.Date()
+                                    val localId = "ORD-" + java.text.SimpleDateFormat("yyMMdd", java.util.Locale.US).format(now) + "-" + (1000..9999).random()
+                                    val newOrder = CreativeOrder(
+                                        id = localId,
+                                        title = req.title,
+                                        entity = req.entity,
+                                        priority = req.priority,
+                                        format = req.format,
+                                        copy = req.copy,
+                                        targetDate = req.targetDate,
+                                        attachmentNote = req.attachmentNote,
+                                        requester = req.requester,
+                                        requesterRole = req.requesterRole,
+                                        status = "pending",
+                                        submittedAt = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).format(now)
+                                    )
+                                    orders = listOf(newOrder) + orders
+                                    ProjectCacheManager.saveOrders(context, orders)
+                                    Toast.makeText(context, "Creative request queued: ${req.title}", Toast.LENGTH_SHORT).show()
+                                    coroutineScope.launch {
+                                        try {
+                                            withContext(Dispatchers.IO) {
+                                                val api = SscamApiService.create(authToken = authToken)
+                                                api.submitOrder(req)
+                                            }
+                                            refreshLiveData()
+                                        } catch (e: Exception) { }
+                                    }
                                 }
                             )
                             CompanionScreen.Tasks -> TaskManagerScreen(
@@ -770,6 +898,7 @@ fun CompanionAppScreen(
                             )
                             CompanionScreen.Team -> TeamHubScreen(
                                 staffList = staffList,
+                                projects = projects,
                                 initialSubTab = teamSubTab
                             )
                             CompanionScreen.Wellbeing -> WellbeingHubScreen(

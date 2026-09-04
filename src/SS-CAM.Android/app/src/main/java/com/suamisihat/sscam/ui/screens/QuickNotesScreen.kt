@@ -103,7 +103,8 @@ fun QuickNotesContentView() {
 
     suspend fun fetchLiveNotes() {
         try {
-            val api = SscamApiService.create()
+            val token = AuthPreferences.getSavedToken(context)
+            val api = SscamApiService.create(authToken = token)
             SyncQueueManager.flushQueue(context, api)
 
             val res = withContext(Dispatchers.IO) { api.getNotes() }
@@ -118,7 +119,7 @@ fun QuickNotesContentView() {
                             priority = dto.priority,
                             isPinned = dto.isPinned,
                             dateText = dto.dateText,
-                            modified = dto.modified
+                            modified = dto.modified.toLong()
                         )
                     }
                     notes.clear()
@@ -164,7 +165,8 @@ fun QuickNotesContentView() {
                 user = currentUsername
             )
             try {
-                val api = SscamApiService.create()
+                val token = AuthPreferences.getSavedToken(context)
+                val api = SscamApiService.create(authToken = token)
                 val res = api.createNote(noteReq)
                 if (!res.isSuccessful) {
                     SyncQueueManager.queueCreateNote(context, noteReq)
@@ -178,7 +180,8 @@ fun QuickNotesContentView() {
     fun deleteNoteFromServer(noteId: String) {
         scope.launch(Dispatchers.IO) {
             try {
-                val api = SscamApiService.create()
+                val token = AuthPreferences.getSavedToken(context)
+                val api = SscamApiService.create(authToken = token)
                 val res = api.deleteNote(noteId)
                 if (!res.isSuccessful) {
                     SyncQueueManager.queueDeleteNote(context, noteId)
@@ -189,15 +192,15 @@ fun QuickNotesContentView() {
         }
     }
 
-    val filterOptions = listOf("All", "Pinned", "High", "Medium", "Normal")
+    val filterOptions = listOf("All", "Pinned", "P2 (High)", "P1 (Medium)", "Low")
 
     val filteredNotes = notes.filter { note ->
         val matchesFilter = when (selectedFilter) {
             "All" -> true
             "Pinned" -> note.isPinned
-            "High" -> note.priority.equals("high", ignoreCase = true)
-            "Medium" -> note.priority.equals("medium", ignoreCase = true)
-            "Normal" -> note.priority.equals("normal", ignoreCase = true)
+            "P2 (High)" -> note.priority.equals("high", ignoreCase = true)
+            "P1 (Medium)" -> note.priority.equals("medium", ignoreCase = true)
+            "Low" -> note.priority.equals("normal", ignoreCase = true) || note.priority.equals("low", ignoreCase = true)
             else -> true
         }
         val matchesSearch = searchQuery.isBlank() ||
@@ -498,7 +501,7 @@ fun QuickNotesContentView() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Priority:", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
-                    listOf("normal" to "Normal", "medium" to "Medium", "high" to "High").forEach { (pKey, pLabel) ->
+                    listOf("normal" to "Low", "medium" to "P1", "high" to "P2").forEach { (pKey, pLabel) ->
                         val isSel = notePriority.equals(pKey, ignoreCase = true)
                         val pColor = when (pKey) {
                             "high" -> Color(0xFFDC2626)
@@ -633,18 +636,26 @@ fun TactileNoteCard(
                     )
                 }
 
-                // Priority Stamp Badge
-                Surface(
-                    color = prioColor.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(4.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, prioColor.copy(alpha = 0.4f))
-                ) {
-                    Text(
-                        text = " ${note.priority.uppercase()} ",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = prioColor
-                    )
+                // Priority Stamp Badge (P3 / P2 / P1, Low has no badge)
+                val prioBadge = when (note.priority.lowercase().trim()) {
+                    "urgent" -> "P3"
+                    "high" -> "P2"
+                    "medium" -> "P1"
+                    else -> ""
+                }
+                if (prioBadge.isNotEmpty()) {
+                    Surface(
+                        color = prioColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(4.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, prioColor.copy(alpha = 0.4f))
+                    ) {
+                        Text(
+                            text = " $prioBadge ",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = prioColor
+                        )
+                    }
                 }
             }
 

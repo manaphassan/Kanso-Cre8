@@ -1,7 +1,19 @@
 # SS-CAM FIX LOG
 
-## v4.6.1 — 2026-09-03 (Creative Direction Matrix Preview, Markdown Auto-Wrapping, Overdue Suppression & Shared Team Board Isolation)
-- **Assembly Version**: `4.6.1.0`
+## v4.6.1 — 2026-09-04 (Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience)
+- **Assembly Version**: `4.6.1.0` / Android `versionCode = 462`, `versionName = "4.6.1"`
+- **Cross-Platform Creative Orders Real-Time Sync**:
+  - Unified Desktop (Windows WPF & Linux Avalonia) with Web Portal (`/api/orders`) using direct live REST API calls.
+  - Automatic JWT authentication and live queue fetching ensuring Desktop, Web Portal, and Android Companion app display identical active orders in real time.
+  - Dual-layer persistence: live cloud orders are automatically cached to the local Synology NAS ledger (`_Team\Orders\creative-orders.jsonl`) for offline resilience.
+  - Instant bidirectional status propagation: converting or updating an order on Desktop immediately issues an HTTP `PATCH /api/orders/{id}` to the central cloud API.
+- **Desktop 1-Click Project Scaffolding Engine**:
+  - Implemented `CreativeOrderService.ConvertOrderToProjectAsync` calculating next canonical project ID (`NNNNX`), generating standard 4-folder project vaults (`01_Brief_and_Copy`, `02_Source_Assets`, `03_Artwork_Design`, `04_Final_Exports`), auto-generating `01_Brief_and_Copy/COPY.md` containing the requester's script, and writing `README.md` with YAML frontmatter linking the order ID.
+- **Desktop Startup Sequence & Splash Screen Hang Resolution**:
+  - Resolved WPF-UI icon symbol clash by updating `ClipboardTasklist24` to `ClipboardTask24`.
+  - Replaced synchronous PowerShell shortcut child process with fast in-process `WScript.Shell` COM registration.
+  - Set application shutdown mode to `OnLastWindowClose` with explicit `MainWindow.Closed` process termination guards.
+  - Added diagnostic file logging (`%LOCALAPPDATA%\SuamiSihat\startup_trace.log`) and individual `try/catch` safety guards across all `MainWindow.OnLoaded` initialization routines.
 - **Desktop Task Manager Kanban Overdue Suppression**:
   - Implemented `IsCompletedStatus` checking (`done`, `approved`, `completed`).
   - Strict suppression of `[Overdue ...d]` badge (`IsOverdue = false`, `DeadlineBadgeBackground = Transparent`), rendering deadlines in emerald green (`#10B981`) text.
@@ -20,7 +32,12 @@
 - **Shared Team Board Test Isolation**:
   - Guarded `ApprovalService.postTeamNotification` from posting test items (`9998A`) to live `\\SSNAS\Creative-Team\_Team\team-notes.json` during unit and DOM test runs.
   - Purged legacy test notes from the NAS shared JSON.
-- **Build & Quality Suite**: Passed 9/9 Source Guardian checks and 29/29 Web Management Portal test suite. Release executable compiled to `E:\SS-CAM-v4.6.1.exe`.
+- **Build & Multi-Platform Quality Suite**:
+  - Source Guardian: 9/9 PASS.
+  - Web Portal Test Suite: 29/29 PASS.
+  - Linux Avalonia Release: 0 warnings, 0 errors, packaged to `dist/SS-CAM-v4.6.1-linux-x64.tar.gz`.
+  - Android Companion App: versionCode 462, 2048-bit RSA signed AAB & APK in `dist/`.
+  - Windows Desktop: Release executable compiled and verified at `dist/SS-CAM-v4.6.1.exe`.
 
 ---
 
