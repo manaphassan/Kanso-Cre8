@@ -78,7 +78,7 @@ fun SettingsProfileScreen(
             .padding(horizontal = 22.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Editorial Header Bar (SETTINGS & PROFILE • v4.5.1)
+        // 1. Editorial Header Bar (SETTINGS & PROFILE • v4.6.1)
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -101,7 +101,7 @@ fun SettingsProfileScreen(
                         border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
                     ) {
                         Text(
-                            text = "v4.5.1",
+                            text = "v4.6.1",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = colors.primary,
@@ -685,7 +685,7 @@ fun SettingsProfileScreen(
                             ) {
                                 Column {
                                     Text("Application Version", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
-                                    Text("Production Release • Build 451", fontSize = 10.sp, color = colors.textSecondary)
+                                    Text("Production Release • Build 463", fontSize = 10.sp, color = colors.textSecondary)
                                 }
                                 Surface(
                                     shape = RoundedCornerShape(6.dp),
@@ -693,7 +693,7 @@ fun SettingsProfileScreen(
                                     border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.3f))
                                 ) {
                                     Text(
-                                        text = "v4.5.1",
+                                        text = "v4.6.1",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = colors.primary,
@@ -748,7 +748,7 @@ fun SettingsProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    "SS-CAM Studio Companion • v4.5.1 (Build 451)",
+                    "SS-CAM Studio Companion • v4.6.1 (Build 463)",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (colors.isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
