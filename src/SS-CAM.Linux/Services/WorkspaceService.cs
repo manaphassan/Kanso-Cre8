@@ -34,7 +34,7 @@ public class WorkspaceService
         {
             // Scan year/month folders (e.g. 2026/202608_August/...) or direct folders
             var dirs = Directory.GetDirectories(WorkspaceRoot, "*", SearchOption.AllDirectories)
-                .Where(d => !d.Contains("#recycle") && !d.Contains("_Team") && !d.Contains(".git"))
+                .Where(d => !d.Contains("#recycle") && !d.Contains("_Team") && !d.Contains("_Orders") && !d.Contains("@eaDir") && !d.Contains(".git"))
                 .Where(d => File.Exists(Path.Combine(d, "README.md")) || Directory.Exists(Path.Combine(d, "01_BRIEF_ASSETS")))
                 .ToList();
 
