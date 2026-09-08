@@ -13,8 +13,8 @@ export interface ZettelNote {
   created: string;
   updated: string;
   relatedLinks: string[]; // e.g. ["[[b2b_saas_hero_formula]]"]
-  linkedClients?: string[]; // e.g. ["[[Govicle]]"]
-  linkedProjects?: string[]; // e.g. ["[[202609_0001_GOV_FleetApp]]"]
+  linkedClients?: string[]; // e.g. ["[[ACME]]", "[[NEX]]"]
+  linkedProjects?: string[]; // e.g. ["[[202609_0001_ACME_MobileAppIllustration]]"]
   extractedTasks?: ZettelTask[];
 }
 

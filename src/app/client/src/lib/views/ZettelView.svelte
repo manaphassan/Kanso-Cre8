@@ -54,7 +54,7 @@
       created: new Date().toISOString().split('T')[0],
       updated: new Date().toISOString().split('T')[0],
       relatedLinks: [],
-      content: `# ${type === 'fleeting' ? 'Quick Capture' : 'New Atomic Concept'}\n\nWrite your atomic thought here. Link to clients with [[Govicle]] or [[Jomparking]].\n\n- [ ] #task Next immediate action 📅 ${new Date().toISOString().split('T')[0]}`
+      content: `# ${type === 'fleeting' ? 'Quick Capture' : 'New Atomic Concept'}\n\nWrite your atomic thought here. Link to clients with [[ACME]] or [[NEX]].\n\n- [ ] #task Next immediate action 📅 ${new Date().toISOString().split('T')[0]}`
     };
 
     zettelService.saveNote(newNote);

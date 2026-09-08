@@ -67,12 +67,12 @@
 
   function createNewInvoice() {
     const defaultClient = clients[0] || {
-      code: 'GOV',
-      name: 'Govicle Sdn Bhd',
-      contactPerson: 'Amirul Haziq',
-      email: 'amirul@govicle.my',
-      billingAddress: 'Level 15, Menara Govicle, Bangsar South, KL',
-      currency: 'MYR'
+      code: 'ACME',
+      name: 'Acme Corporation',
+      contactPerson: 'Sarah Jenkins',
+      email: 'billing@acmefintech.io',
+      billingAddress: '100 Market St, Suite 400, San Francisco, CA 94105',
+      currency: 'USD'
     };
 
     const newDoc: InvoiceDocument = {
@@ -87,14 +87,14 @@
       clientContact: defaultClient.contactPerson,
       clientEmail: defaultClient.email,
       clientAddress: defaultClient.billingAddress,
-      freelancerName: 'Harussani Design Studio',
-      freelancerEmail: 'harussani.design@gmail.com',
-      freelancerPhone: '+60 19-876 5432',
-      freelancerAddress: 'Kuala Lumpur, Malaysia',
-      paymentBank: 'Maybank Islamic',
-      paymentAccount: '5140 1234 5678',
-      paymentAccountName: 'Harussani Creative',
-      currency: defaultClient.currency || 'MYR',
+      freelancerName: 'Harusssani Creative Vault',
+      freelancerEmail: 'contact@kansocre8.local',
+      freelancerPhone: '+1 (555) 019-2834',
+      freelancerAddress: 'San Francisco, CA',
+      paymentBank: 'First Creative Bank',
+      paymentAccount: '9876-5432-1098',
+      paymentAccountName: 'Harusssani Manaphassan',
+      currency: defaultClient.currency || 'USD',
       items: [
         {
           id: '1',
