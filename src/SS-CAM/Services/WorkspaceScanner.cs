@@ -61,6 +61,17 @@ namespace SS_CAM.Services
                 foreach (string directory in directories)
                 {
                     string name = Path.GetFileName(directory);
+                    if (string.IsNullOrEmpty(name) ||
+                        name.StartsWith(".") ||
+                        name.StartsWith("_") ||
+                        name.StartsWith("#") ||
+                        name.StartsWith("@") ||
+                        name.Equals("node_modules", StringComparison.OrdinalIgnoreCase) ||
+                        name.Equals("$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     Match match = ProjectPattern.Match(name);
                     if (!match.Success)
                     {

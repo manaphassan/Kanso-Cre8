@@ -80,7 +80,13 @@ namespace SS_CAM.Services
                     foreach (string sub in subDirs)
                     {
                         string dirName = Path.GetFileName(sub);
-                        if (dirName.StartsWith(".") || dirName.Equals("#recycle", StringComparison.OrdinalIgnoreCase) || dirName.Equals("_Team", StringComparison.OrdinalIgnoreCase))
+                        if (string.IsNullOrEmpty(dirName) ||
+                            dirName.StartsWith(".") ||
+                            dirName.StartsWith("_") ||
+                            dirName.StartsWith("#") ||
+                            dirName.StartsWith("@") ||
+                            dirName.Equals("node_modules", StringComparison.OrdinalIgnoreCase) ||
+                            dirName.Equals("$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }

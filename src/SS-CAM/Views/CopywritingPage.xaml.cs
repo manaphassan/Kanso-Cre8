@@ -134,8 +134,16 @@ namespace SS_CAM.Views
                             foreach (string sub in subdirs)
                             {
                                 string dirName = Path.GetFileName(sub);
-                                if (dirName.StartsWith(".") || dirName.Equals("_Team", StringComparison.OrdinalIgnoreCase) || dirName.Equals("#recycle", StringComparison.OrdinalIgnoreCase))
+                                if (string.IsNullOrEmpty(dirName) ||
+                                    dirName.StartsWith(".") ||
+                                    dirName.StartsWith("_") ||
+                                    dirName.StartsWith("#") ||
+                                    dirName.StartsWith("@") ||
+                                    dirName.Equals("node_modules", StringComparison.OrdinalIgnoreCase) ||
+                                    dirName.Equals("$RECYCLE.BIN", StringComparison.OrdinalIgnoreCase))
+                                {
                                     continue;
+                                }
 
                                 if (pattern.IsMatch(dirName))
                                 {
