@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { ApiClient } from '$lib/services/api';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
@@ -81,6 +83,97 @@
       default: return null; // Low - no badge
     }
   }
+
+  let staffList = $state<any[]>([]);
+
+  async function loadStaffList() {
+    try {
+      const res = await ApiClient.getStaffRoster();
+      if (res && res.roster && Array.isArray(res.roster)) {
+        staffList = res.roster;
+        return;
+      }
+    } catch {
+      // fallback
+    }
+
+    try {
+      const teamRes = await ApiClient.getTeam();
+      if (teamRes && teamRes.team && Array.isArray(teamRes.team)) {
+        staffList = teamRes.team;
+      }
+    } catch (err) {
+      console.warn('[ProjectKanbanView] Failed to load staff roster:', err);
+    }
+  }
+
+  onMount(() => {
+    loadStaffList();
+
+    const handleTeamUpdate = () => {
+      loadStaffList();
+    };
+    window.addEventListener('team:updated', handleTeamUpdate);
+    return () => {
+      window.removeEventListener('team:updated', handleTeamUpdate);
+    };
+  });
+
+  function getDesignerMeta(designerName?: string): { name: string; initial: string; avatar: string | null; avatarColor: string } {
+    const raw = (designerName || '').trim();
+    if (!raw || raw.toLowerCase() === 'unassigned') {
+      return {
+        name: 'Unassigned',
+        initial: '?',
+        avatar: null,
+        avatarColor: '#6B7280'
+      };
+    }
+
+    const key = raw.toLowerCase();
+    const member = staffList.find(s =>
+      (s.name && s.name.toLowerCase() === key) ||
+      (s.username && s.username.toLowerCase() === key) ||
+      (s.staffId && s.staffId.toLowerCase() === key) ||
+      (s.name && key.includes(s.name.toLowerCase()))
+    );
+
+    const isCurrentUser = Boolean(appState.currentUser && (
+      (appState.currentUser.name && appState.currentUser.name.toLowerCase() === key) ||
+      (appState.currentUser.username && appState.currentUser.username.toLowerCase() === key) ||
+      (appState.currentUser.staffId && appState.currentUser.staffId.toLowerCase() === key) ||
+      (member?.staffId && appState.currentUser.staffId && member.staffId.toLowerCase() === appState.currentUser.staffId.toLowerCase())
+    ));
+
+    let avatar: string | null = member?.avatar || null;
+
+    if (!avatar && typeof localStorage !== 'undefined') {
+      if (member?.staffId) {
+        avatar = localStorage.getItem(`ss_cam_avatar_${member.staffId}`);
+      }
+      if (!avatar && member?.username) {
+        avatar = localStorage.getItem(`ss_cam_avatar_${member.username}`);
+      }
+      if (!avatar && isCurrentUser) {
+        avatar = appState.currentUser?.avatar || localStorage.getItem('ss_cam_user_avatar') || null;
+      }
+    }
+
+    if (!avatar && isCurrentUser && appState.currentUser?.avatar) {
+      avatar = appState.currentUser.avatar;
+    }
+
+    const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || '#0078D4';
+    const displayName = member?.name || raw;
+    const initial = displayName.charAt(0).toUpperCase();
+
+    return {
+      name: displayName,
+      initial,
+      avatar,
+      avatarColor
+    };
+  }
 </script>
 
 <div class="kanban-board-container">
@@ -118,6 +211,7 @@
             </div>
           {:else}
             {#each colProjects as p (p.id)}
+              {@const dMeta = getDesignerMeta(p.designer)}
               <div
                 class="kanban-card"
                 draggable="true"
@@ -191,11 +285,26 @@
 
                 <!-- Bottom Row: Designer & Due Date -->
                 <div class="card-footer-row">
-                  <div class="designer-badge" title="Assigned Designer: {p.designer || 'Unassigned'}">
-                    <div class="designer-avatar-circle" style="background: var(--brand-accent, #0078D4);">
-                      {(p.designer || 'U').charAt(0).toUpperCase()}
+                  <div class="designer-badge" title="Assigned Designer: {dMeta.name}">
+                    <div class="designer-avatar-circle" style="background: {dMeta.avatarColor};">
+                      {#if dMeta.avatar}
+                        <img
+                          src={dMeta.avatar}
+                          alt={dMeta.name}
+                          class="designer-avatar-img"
+                          onerror={(e) => {
+                            const target = e.currentTarget as HTMLElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                        <span class="designer-initial-fallback" style="display: none;">{dMeta.initial}</span>
+                      {:else}
+                        <span class="designer-initial-text">{dMeta.initial}</span>
+                      {/if}
                     </div>
-                    <span class="designer-name">{p.designer || 'Unassigned'}</span>
+                    <span class="designer-name">{dMeta.name}</span>
                   </div>
 
                   <div class="deadline-block" class:is-overdue={p.isOverdue}>
@@ -500,8 +609,10 @@
   }
 
   .designer-avatar-circle {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
     border-radius: 50%;
     color: #FFFFFF;
     font-size: 10px;
@@ -509,6 +620,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  .designer-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .designer-initial-fallback,
+  .designer-initial-text {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 800;
   }
 
   .designer-name {
