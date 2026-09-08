@@ -1,4 +1,5 @@
 # SS-CAM QA Suite
+
 **Application:** SuamiSihat Creative Assets Management (SS-CAM)
 **Version under review:** v4.6.2
 **QA Lead:** Brand / Creative & Brand Team
@@ -7,6 +8,7 @@
 ---
 
 ## Purpose
+
 This folder contains the complete quality assurance record for SS-CAM — a WPF .NET 4.x desktop application built for the SuamiSihat creative team. It covers architecture, functional correctness, component integrity, accessibility, security, performance, and Windows platform behaviour.
 
 ---
@@ -14,7 +16,7 @@ This folder contains the complete quality assurance record for SS-CAM — a WPF 
 ## Document Index
 
 | # | File | Scope |
-|---|---|---|
+| --- | --- | --- |
 | — | `README.md` ← you are here | Index & process |
 | 01 | `01-ARCHITECTURE.md` | Codebase structure, layer separation, dependency map |
 | 02 | `02-FUNCTIONAL-TESTS.md` | Page-by-page feature test cases with pass/fail |
@@ -32,8 +34,8 @@ This folder contains the complete quality assurance record for SS-CAM — a WPF 
 
 ## QA Process
 
-```
-Build v3.0.0 dist
+```text
+Build v4.6.2 dist
       │
       ▼
 01 Architecture review  ──→  02 Functional tests (manual)
@@ -59,7 +61,7 @@ FINAL-QA-REPORT.md  →  Sign-off  →  Tag release
 ## Status Legend used across all documents
 
 | Symbol | Meaning |
-|---|---|
+| --- | --- |
 | ✅ | Pass |
 | ❌ | Fail — blocker |
 | ⚠️ | Warning — non-blocking |
@@ -71,10 +73,11 @@ FINAL-QA-REPORT.md  →  Sign-off  →  Tag release
 
 ## Build under test
 
-```
-Executable : src\SS-CAM\bin\Release\SS-CAM.exe / dist\SS-CAM-v3.6.1.exe
-Size       : ~5.24 MB (Costura single-file, all DLLs embedded)
+```text
+Executable : src\SS-CAM\bin\Release\SS-CAM.exe / dist\SS-CAM-v4.6.2.exe
+Size       : ~5.42 MB (Costura single-file, all DLLs embedded)
 Framework  : .NET Framework 4.8 (CLR 4.0.30319)
 UI Library : WPF-UI / Fluent 2 (Wpf.Ui v3.0.4)
 Commit     : SS-Master branch
 ```
+

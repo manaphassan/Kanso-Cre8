@@ -4,6 +4,7 @@
 **Auditor**: Antigravity AI (Art Director & Lead Product Designer Role)  
 **Version**: `v4.6.2`  
 **Platforms Covered**:
+
 - **Desktop**: Windows WPF (.NET Framework 4.8 / Fluent 2)
 - **Web Portal**: Svelte 5 / Node.js Express / Docker Container on Synology NAS
 - **Mobile Companion**: Android Jetpack Compose / Material 3 (Target SDK 35)
