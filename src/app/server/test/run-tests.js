@@ -988,6 +988,64 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 30: Obsidian & Notion Vault Migration Wizard ─────────────
+  test('MigrationService previews, categorizes, and ingests external markdown vaults', () => {
+    const MigrationService = require('../services/MigrationService');
+    const sourceVault = path.join(__dirname, 'temp-source-obsidian');
+    const destVault = path.join(__dirname, 'temp-dest-kanso');
+
+    fs.mkdirSync(path.join(sourceVault, 'Daily'), { recursive: true });
+    fs.mkdirSync(path.join(sourceVault, 'Literature'), { recursive: true });
+    fs.mkdirSync(path.join(sourceVault, 'Atomic'), { recursive: true });
+    fs.mkdirSync(path.join(sourceVault, 'Finance'), { recursive: true });
+    fs.mkdirSync(path.join(sourceVault, 'Clients'), { recursive: true });
+    fs.mkdirSync(destVault, { recursive: true });
+
+    try {
+      // 1. Create sample source files
+      fs.writeFileSync(path.join(sourceVault, 'Daily', '2026-09-09-call.md'), '# Fleeting Call Note\nQuick call thoughts.', 'utf8');
+      fs.writeFileSync(path.join(sourceVault, 'Literature', 'minimalist_grids.md'), '# Grid Systems\nJosef Muller-Brockmann.', 'utf8');
+      fs.writeFileSync(path.join(sourceVault, 'Atomic', 'zen_contrast.md'), '# Zen Principle\nEliminate chrome.', 'utf8');
+      fs.writeFileSync(path.join(sourceVault, 'Finance', 'INV-2026-0901.md'), '---\nclient: ACME\namount: 4500\n---\n# Invoice', 'utf8');
+      fs.writeFileSync(path.join(sourceVault, 'Clients', 'acme_brand_notes.md'), '# Acme Corp Brand\nPrimary blue: #38BDF8', 'utf8');
+      fs.writeFileSync(path.join(sourceVault, 'random_scratch.md'), '# Scratchpad\nDraft ideas', 'utf8');
+
+      // 2. Preview Migration
+      const preview = MigrationService.preview(sourceVault);
+      assert.strictEqual(preview.totalFiles, 6, 'Must detect 6 source markdown files');
+      assert.strictEqual(preview.counts.fleeting, 1, 'Must detect 1 fleeting note');
+      assert.strictEqual(preview.counts.literature, 1, 'Must detect 1 literature note');
+      assert.strictEqual(preview.counts.permanent, 1, 'Must detect 1 permanent note');
+      assert.strictEqual(preview.counts.finance, 1, 'Must detect 1 finance invoice');
+      assert.strictEqual(preview.counts.clients, 1, 'Must detect 1 client note');
+      assert.strictEqual(preview.counts.notes, 1, 'Must detect 1 general scratch note');
+
+      // 3. Execute Migration into target Kanso vault
+      const result = MigrationService.execute(sourceVault, destVault, { mode: 'copy', author: 'TestArchitect' });
+      assert.strictEqual(result.success, true, 'Migration execution must report success');
+      assert.strictEqual(result.migratedCount, 6, 'Must successfully migrate all 6 files');
+      assert.strictEqual(result.errorCount, 0, 'Must have zero migration errors');
+
+      // 4. Verify target vault layout
+      assert.ok(fs.existsSync(path.join(destVault, '_Zettelkasten', '01_Fleeting', '2026-09-09-call.md')), 'Fleeting note must be in 01_Fleeting');
+      assert.ok(fs.existsSync(path.join(destVault, '_Zettelkasten', '02_Literature', 'minimalist_grids.md')), 'Literature note must be in 02_Literature');
+      assert.ok(fs.existsSync(path.join(destVault, '_Zettelkasten', '03_Permanent', 'zen_contrast.md')), 'Permanent note must be in 03_Permanent');
+      assert.ok(fs.existsSync(path.join(destVault, '_Finance', 'Invoices', 'INV-2026-0901.md')), 'Invoice must be in _Finance/Invoices');
+      assert.ok(fs.existsSync(path.join(destVault, '_Clients', 'acme_brand_notes.md')), 'Client note must be in _Clients');
+      assert.ok(fs.existsSync(path.join(destVault, '_Notes', 'random_scratch.md')), 'General note must be in _Notes');
+
+      // 5. Verify Migration Report
+      const reportFile = path.join(destVault, result.reportPath);
+      assert.ok(fs.existsSync(reportFile), 'Migration report markdown file must exist in _Notes');
+      const reportText = fs.readFileSync(reportFile, 'utf8');
+      assert.ok(reportText.includes('Kanso Cre8 Vault Migration Report'), 'Report must contain title');
+      assert.ok(reportText.includes('Total Migrated**: **6 files**'), 'Report must record 6 migrated files');
+    } finally {
+      try { fs.rmSync(sourceVault, { recursive: true, force: true }); } catch (e) {}
+      try { fs.rmSync(destVault, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
