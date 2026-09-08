@@ -416,24 +416,62 @@ namespace SS_CAM
             }
 
             // Update avatar photo if set
-            if (!string.IsNullOrWhiteSpace(currentProfile.AvatarPath) && File.Exists(currentProfile.AvatarPath))
+            if (!string.IsNullOrWhiteSpace(currentProfile.AvatarPath))
             {
                 try
                 {
                     BitmapImage bmp = new BitmapImage();
-                    bmp.BeginInit();
-                    bmp.UriSource = new Uri(currentProfile.AvatarPath, UriKind.Absolute);
-                    bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.EndInit();
-                    if (SidebarAvatarImage != null)
+                    if (currentProfile.AvatarPath.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
                     {
-                        SidebarAvatarImage.Source = bmp;
-                        SidebarAvatarImage.Visibility = System.Windows.Visibility.Visible;
+                        int comma = currentProfile.AvatarPath.IndexOf(',');
+                        if (comma >= 0)
+                        {
+                            byte[] bytes = Convert.FromBase64String(currentProfile.AvatarPath.Substring(comma + 1));
+                            using (var ms = new System.IO.MemoryStream(bytes))
+                            {
+                                bmp.BeginInit();
+                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                bmp.StreamSource = ms;
+                                bmp.EndInit();
+                                bmp.Freeze();
+                            }
+                            if (SidebarAvatarImage != null)
+                            {
+                                SidebarAvatarImage.Source = bmp;
+                                SidebarAvatarImage.Visibility = System.Windows.Visibility.Visible;
+                            }
+                            if (SidebarAvatarInitials != null)
+                                SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
+                        }
                     }
-                    if (SidebarAvatarInitials != null)
-                        SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
+                    else if (File.Exists(currentProfile.AvatarPath))
+                    {
+                        bmp.BeginInit();
+                        bmp.UriSource = new Uri(currentProfile.AvatarPath, UriKind.Absolute);
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+                        if (SidebarAvatarImage != null)
+                        {
+                            SidebarAvatarImage.Source = bmp;
+                            SidebarAvatarImage.Visibility = System.Windows.Visibility.Visible;
+                        }
+                        if (SidebarAvatarInitials != null)
+                            SidebarAvatarInitials.Visibility = System.Windows.Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        if (SidebarAvatarImage != null)
+                            SidebarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
+                        if (SidebarAvatarInitials != null)
+                            SidebarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
+                    }
                 }
-                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[MainWindow] LoadSidebarAvatar: " + ex.Message); }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[MainWindow] LoadSidebarAvatar: " + ex.Message);
+                    if (SidebarAvatarImage != null) SidebarAvatarImage.Visibility = System.Windows.Visibility.Collapsed;
+                    if (SidebarAvatarInitials != null) SidebarAvatarInitials.Visibility = System.Windows.Visibility.Visible;
+                }
             }
             else
             {

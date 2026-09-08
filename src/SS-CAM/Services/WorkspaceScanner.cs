@@ -122,6 +122,10 @@ namespace SS_CAM.Services
                         result.StaleProjects++;
                     }
 
+                    if (modified != DateTime.MinValue && (now - modified).TotalDays <= 7)
+                    {
+                        result.ActiveWipProjects++;
+                    }
                     result.RecentProjects.Add(new DesignerFolderItem
                     {
                         Designer = brand,

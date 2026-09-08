@@ -352,10 +352,21 @@ namespace SS_CAM.Views
                 PanelUnconvertedActions.Visibility = Visibility.Collapsed;
                 PanelConvertedActions.Visibility = Visibility.Visible;
 
-                string projectDir = ResolveExistingProjectDirectory(order.ProjectId);
-                TxtExistingProjectPath.Text = !string.IsNullOrEmpty(projectDir)
-                    ? projectDir
-                    : string.Format("Project: {0} (Check active workspace)", order.ProjectId);
+                string targetPid = order.ProjectId;
+                TxtExistingProjectPath.Text = string.Format("Project: {0} (Resolving path...)", targetPid);
+                System.Threading.Tasks.Task.Run(() => ResolveExistingProjectDirectory(targetPid)).ContinueWith(t =>
+                {
+                    string dir = t.Result;
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (_selectedOrder != null && _selectedOrder.ProjectId == targetPid)
+                        {
+                            TxtExistingProjectPath.Text = !string.IsNullOrEmpty(dir)
+                                ? dir
+                                : string.Format("Project: {0} (Check active workspace)", targetPid);
+                        }
+                    });
+                });
             }
             else
             {

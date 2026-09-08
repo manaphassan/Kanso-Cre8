@@ -67,6 +67,35 @@ namespace SS_CAM.Services
                 }
             }
 
+            // Auto-sync avatar from staff_directory.json on NAS if available
+            if (profile != null && !string.IsNullOrWhiteSpace(profile.StaffId))
+            {
+                try
+                {
+                    var directory = GetStaffDirectory(profile.WorkspaceRoot);
+                    if (directory != null)
+                    {
+                        var match = directory.Find(d => string.Equals(d.StaffId, profile.StaffId, StringComparison.OrdinalIgnoreCase));
+                        if (match != null && !string.IsNullOrWhiteSpace(match.Avatar))
+                        {
+                            string cached = CacheAvatarFromData(match.Avatar, match.StaffId);
+                            if (!string.IsNullOrWhiteSpace(cached) && File.Exists(cached))
+                            {
+                                if (!string.Equals(profile.AvatarPath, cached, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    profile.AvatarPath = cached;
+                                    JsonPersistenceHelper.Save(ConfigFilePath, profile);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[UserProfileService] Avatar auto-sync error: " + ex.Message);
+                }
+            }
+
             return profile;
         }
 
@@ -384,6 +413,84 @@ namespace SS_CAM.Services
             }
 
             return defaults;
+        }
+
+        public static string CacheAvatarFromData(string avatarData, string staffId)
+        {
+            if (string.IsNullOrWhiteSpace(avatarData)) return null;
+            try
+            {
+                if (avatarData.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
+                {
+                    int commaIndex = avatarData.IndexOf(',');
+                    if (commaIndex >= 0)
+                    {
+                        string base64 = avatarData.Substring(commaIndex + 1);
+                        byte[] bytes = Convert.FromBase64String(base64);
+                        string localApp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SuamiSihat");
+                        if (!Directory.Exists(localApp)) Directory.CreateDirectory(localApp);
+                        string fileName = string.Format("avatar_{0}.jpg", string.IsNullOrWhiteSpace(staffId) ? "user" : staffId.Trim());
+                        string targetPath = Path.Combine(localApp, fileName);
+                        File.WriteAllBytes(targetPath, bytes);
+                        return targetPath;
+                    }
+                }
+                else if (File.Exists(avatarData))
+                {
+                    return avatarData;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[UserProfileService] CacheAvatarFromData error: " + ex.Message);
+            }
+            return null;
+        }
+
+        public static bool SyncAvatarToNas(string staffId, string localImagePath, string workspaceRoot = null)
+        {
+            if (string.IsNullOrWhiteSpace(staffId) || string.IsNullOrWhiteSpace(localImagePath) || !File.Exists(localImagePath))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+            {
+                workspaceRoot = NasConfigSyncService.DiscoverWorkspaceRoot();
+            }
+
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || !Directory.Exists(workspaceRoot))
+                return false;
+
+            try
+            {
+                byte[] bytes = File.ReadAllBytes(localImagePath);
+                string ext = Path.GetExtension(localImagePath).TrimStart('.').ToLowerInvariant();
+                if (ext == "jpg") ext = "jpeg";
+                string mime = "image/" + ext;
+                string base64 = string.Format("data:{0};base64,{1}", mime, Convert.ToBase64String(bytes));
+
+                string staffPath = Path.Combine(workspaceRoot, "_Team", "_Config", "staff_directory.json");
+                if (File.Exists(staffPath))
+                {
+                    string json = File.ReadAllText(staffPath, System.Text.Encoding.UTF8);
+                    var list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<StaffDirectoryItem>>(json);
+                    if (list != null)
+                    {
+                        var member = list.Find(x => string.Equals(x.StaffId, staffId, StringComparison.OrdinalIgnoreCase));
+                        if (member != null)
+                        {
+                            member.Avatar = base64;
+                            string newJson = Newtonsoft.Json.JsonConvert.SerializeObject(list, Newtonsoft.Json.Formatting.Indented);
+                            File.WriteAllText(staffPath, newJson, System.Text.Encoding.UTF8);
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[UserProfileService] SyncAvatarToNas error: " + ex.Message);
+            }
+            return false;
         }
 
         public static void ClearAllDataAndCache()

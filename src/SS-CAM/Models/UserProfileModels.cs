@@ -46,6 +46,13 @@ namespace SS_CAM.Models
         public string Role { get; set; }
         public string Department { get; set; }
         public string Email { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("avatar")]
+        public string Avatar { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("avatarColor")]
+        public string AvatarColor { get; set; }
+
         public string AvatarPath { get; set; }
         public string DefaultBrand { get; set; }
         public bool Active { get; set; }
@@ -65,6 +72,8 @@ namespace SS_CAM.Models
             Role = "";
             Department = "Creative Production";
             Email = "";
+            Avatar = "";
+            AvatarColor = "#0078D4";
             AvatarPath = "";
             DefaultBrand = "SS";
             Active = true;

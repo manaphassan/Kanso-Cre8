@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SS_CAM.Models
@@ -112,6 +112,7 @@ namespace SS_CAM.Models
         public string LargestProjectName { get; set; }
         public string LargestProjectSize { get; set; }
         public int StaleProjects { get; set; }
+        public int ActiveWipProjects { get; set; }
 
         public DashboardSnapshot()
         {

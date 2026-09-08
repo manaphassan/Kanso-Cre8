@@ -196,23 +196,7 @@ namespace SS_CAM.Views
             MetricStaleProjects.Text = snapshot.StaleProjects.ToString();
 
             Recent6ProjectsControl.ItemsSource = snapshot.RecentProjects;
-
-            // Calculate Active WIP Projects (modified in last 7 days)
-            int activeWip = 0;
-            try
-            {
-                if (Directory.Exists(workspaceRoot))
-                {
-                    DateTime sevenDaysAgo = DateTime.Now.AddDays(-7);
-                    foreach (string dir in Directory.GetDirectories(workspaceRoot, "*", SearchOption.AllDirectories))
-                    {
-                        DirectoryInfo di = new DirectoryInfo(dir);
-                        if (di.LastWriteTime >= sevenDaysAgo) activeWip++;
-                    }
-                }
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
-            MetricActiveWIP.Text = activeWip.ToString();
+            MetricActiveWIP.Text = snapshot.ActiveWipProjects.ToString();
 
             // Charts
             TypeChartControl.ItemsSource = snapshot.TypeChart;

@@ -53,6 +53,27 @@ namespace SS_CAM.Services
 
                 string tagsRaw = GetValue(fm, "tags", "");
                 item.Tags = ParseTags(tagsRaw);
+                item.CanvaUrl = GetValue(fm, "canva_url", "");
+                if (string.IsNullOrWhiteSpace(item.CanvaUrl))
+                {
+                    string sourceFolder = Path.Combine(projectFolderPath, "02_SOURCE");
+                    string shortcutPath = Path.Combine(sourceFolder, "Open_In_Canva.url");
+                    if (File.Exists(shortcutPath))
+                    {
+                        try
+                        {
+                            foreach (string line in File.ReadAllLines(shortcutPath))
+                            {
+                                if (line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    item.CanvaUrl = line.Substring(4).Trim();
+                                    break;
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -122,6 +143,8 @@ namespace SS_CAM.Services
             sb.AppendLine(string.Format("priority: {0}", item.Priority ?? "medium"));
             if (!string.IsNullOrWhiteSpace(item.Duration))
                 sb.AppendLine(string.Format("duration: {0}", item.Duration));
+            if (!string.IsNullOrWhiteSpace(item.CanvaUrl))
+                sb.AppendLine(string.Format("canva_url: {0}", item.CanvaUrl));
             if (item.Tags != null && item.Tags.Count > 0)
                 sb.AppendLine(string.Format("tags: [{0}]", string.Join(", ", item.Tags.ToArray())));
             else
@@ -145,7 +168,7 @@ namespace SS_CAM.Services
         /// <summary>
         /// Generates the default frontmatter block for a new project.
         /// </summary>
-        public static string BuildDefaultFrontmatter(string designerStaffId, string client, string deadline = null, string categoryPreset = null, string orderId = null)
+        public static string BuildDefaultFrontmatter(string designerStaffId, string client, string deadline = null, string categoryPreset = null, string orderId = null, string canvaUrl = null)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(Delimiter);
@@ -163,6 +186,10 @@ namespace SS_CAM.Services
             if (!string.IsNullOrWhiteSpace(orderId))
             {
                 sb.AppendLine(string.Format("order_id: {0}", orderId.Trim()));
+            }
+            if (!string.IsNullOrWhiteSpace(canvaUrl))
+            {
+                sb.AppendLine(string.Format("canva_url: {0}", canvaUrl.Trim()));
             }
             sb.AppendLine("tags: []");
             sb.AppendLine("revision: 0");

@@ -27,6 +27,21 @@ namespace SS_CAM.Models
             }
         }
 
+        public string CanvaUrl { get; set; }
+
+        public bool HasCanvaUrl
+        {
+            get { return !string.IsNullOrWhiteSpace(CanvaUrl); }
+        }
+
+        public System.Windows.Visibility CanvaBadgeVisibility
+        {
+            get
+            {
+                return HasCanvaUrl ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+            }
+        }
+
         public ProjectStatusItem()
         {
             Status = "backlog";
@@ -36,6 +51,7 @@ namespace SS_CAM.Models
             HasFrontmatter = false;
             CreatedDate = "";
             Duration = "";
+            CanvaUrl = "";
         }
 
         public DateTime ParsedCreatedDate

@@ -237,6 +237,34 @@
                                     <ComboBox x:Name="TemplateExtensionComboBox" Grid.Column="2" Width="140" Height="34" IsEditable="True" SelectionChanged="OnFormInputChanged" TextBoxBase.TextChanged="OnFormInputChanged"/>
                                 </Grid>
 
+                                <!-- Canva Cloud Bridge Section -->
+                                <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Background="#00C4CC" CornerRadius="4" Padding="5,2" Margin="0,0,8,0">
+                                                    <ui:TextBlock Text="CANVA" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                                                </Border>
+                                                <ui:TextBlock Text="Canva Creative Cloud Bridge" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <ui:Button Grid.Column="1" Appearance="Secondary" Content="Create on Canva (Auto-size)" Click="OnLaunchCanvaWithDimensionsClicked" Height="26" Padding="10,0" FontSize="11" FontWeight="SemiBold" Cursor="Hand" ToolTip="Open Canva in browser with exact platform dimensions"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ui:TextBox x:Name="CanvaUrlInput" Grid.Column="0" Height="32" FontSize="11" PlaceholderText="Paste Canva Design URL (e.g. https://www.canva.com/design/...)" TextChanged="OnFormInputChanged"/>
+                                            <ui:Button Grid.Column="2" Appearance="Secondary" Content="Test Link" Click="OnTestCanvaLinkClicked" Height="32" Padding="12,0" FontSize="11" Cursor="Hand" ToolTip="Test open Canva URL"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                     <CheckBox x:Name="IncludeRevisionsCheck" Content="Include Client Revisions folder" IsChecked="True" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,16,0" Click="OnFormInputChanged"/>
                                     <CheckBox x:Name="IncludeRawMediaCheck" Content="Include Raw Media folder" IsChecked="True" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Click="OnFormInputChanged"/>

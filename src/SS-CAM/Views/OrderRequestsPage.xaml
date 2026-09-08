@@ -9,6 +9,33 @@
       Title="Order Requests"
       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <ContextMenu x:Key="OrderCardContextMenu">
+            <MenuItem Header="Accept Brief (In Progress)" Click="OnContextMenuAcceptClicked">
+                <MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Play24" FontSize="14"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Convert into Official Project" Click="OnContextMenuConvertClicked">
+                <MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="FolderAdd24" FontSize="14"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="Copy Script &amp; Angle Brief" Click="OnContextMenuCopyScriptClicked">
+                <MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Copy24" FontSize="14"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="Reject / Cancel Order Request" Click="OnContextMenuRejectClicked">
+                <MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </Page.Resources>
+
     <Grid>
         <ScrollViewer x:Name="PageScrollViewer"
                       VerticalScrollBarVisibility="Auto"
@@ -186,34 +213,7 @@
                                             <Setter Property="Background" Value="Transparent"/>
                                             <Setter Property="BorderThickness" Value="0"/>
                                             <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnListBoxItemPreviewMouseRightButtonDown"/>
-                                            <Setter Property="ContextMenu">
-                                                <Setter.Value>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Accept Brief (In Progress)" Click="OnContextMenuAcceptClicked">
-                                                            <MenuItem.Icon>
-                                                                <ui:SymbolIcon Symbol="Play24" FontSize="14"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <MenuItem Header="Convert into Official Project" Click="OnContextMenuConvertClicked">
-                                                            <MenuItem.Icon>
-                                                                <ui:SymbolIcon Symbol="FolderAdd24" FontSize="14"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <Separator/>
-                                                        <MenuItem Header="Copy Script &amp; Angle Brief" Click="OnContextMenuCopyScriptClicked">
-                                                            <MenuItem.Icon>
-                                                                <ui:SymbolIcon Symbol="Copy24" FontSize="14"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <Separator/>
-                                                        <MenuItem Header="Reject / Cancel Order Request" Click="OnContextMenuRejectClicked">
-                                                            <MenuItem.Icon>
-                                                                <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                    </ContextMenu>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="ContextMenu" Value="{StaticResource OrderCardContextMenu}"/>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ListBoxItem">

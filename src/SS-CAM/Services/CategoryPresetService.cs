@@ -92,9 +92,18 @@ namespace SS_CAM.Services
 
         public static DateTime CalculateTargetDeadline(CategoryPreset preset, DateTime? startDate = null)
         {
-            DateTime start = startDate ?? DateTime.Today;
-            int days = (preset != null && preset.SlaDays > 0) ? preset.SlaDays : 3;
-            return start.AddDays(days);
+            DateTime current = startDate ?? DateTime.Today;
+            int workingDaysNeeded = (preset != null && preset.SlaDays > 0) ? preset.SlaDays : 3;
+            
+            while (workingDaysNeeded > 0)
+            {
+                current = current.AddDays(1);
+                if (!MalaysiaHolidayService.IsOffDay(current))
+                {
+                    workingDaysNeeded--;
+                }
+            }
+            return current;
         }
 
         public static List<string> ParseFolderLines(string folderText)

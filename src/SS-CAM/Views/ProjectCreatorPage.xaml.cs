@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -254,7 +255,7 @@ namespace SS_CAM.Views
             FilterTargetPlatformsByCategory(GetSelectedCategoryPreset());
 
             // Canvas extensions (.af Affinity format default)
-            List<string> extensions = new List<string> { ".af", ".afdesign", ".psd", ".ai", ".prproj", ".catcomp" };
+            List<string> extensions = new List<string> { ".af", ".afdesign", ".psd", ".ai", ".prproj", ".catcomp", "Canva (.url)" };
             TemplateExtensionComboBox.ItemsSource = extensions;
             TemplateExtensionComboBox.SelectedIndex = 0;
         }
@@ -553,6 +554,10 @@ namespace SS_CAM.Views
                     if ((folder.Contains("SOURCE") || folder.Contains("Artwork_Design") || folder.Contains("Working")) && InjectCanvasCheck != null && InjectCanvasCheck.IsChecked == true)
                     {
                         lines.Add(" │   └── 📄 " + folderName + GetSelectedExtension());
+                        if (CanvaUrlInput != null && !string.IsNullOrWhiteSpace(CanvaUrlInput.Text))
+                        {
+                            lines.Add(" │   └── 🔗 Open_In_Canva.url");
+                        }
                     }
                     else if (folder.Contains("COPYWRITING") || folder.Contains("Copywriting"))
                     {
@@ -651,12 +656,14 @@ namespace SS_CAM.Views
                 CreativeOrderItem selectedOrder = LinkedOrderComboBox != null ? LinkedOrderComboBox.SelectedItem as CreativeOrderItem : null;
                 string orderId = (selectedOrder != null && !string.IsNullOrWhiteSpace(selectedOrder.Id) && selectedOrder.Id != "NONE") ? selectedOrder.Id : null;
 
+                string canvaLink = CanvaUrlInput != null ? CanvaUrlInput.Text.Trim() : "";
                 string frontmatter = FrontmatterService.BuildDefaultFrontmatter(
                     designerName,
                     subBrandCode,
                     deadlineFormatted,
                     presetName,
-                    orderId);
+                    orderId,
+                    string.IsNullOrWhiteSpace(canvaLink) ? null : canvaLink);
 
                 string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Project ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
                     frontmatter,
@@ -669,7 +676,36 @@ namespace SS_CAM.Views
                     PlatformSpecsText.Text,
                     ProjectDescriptionInput.Text);
 
+                if (!string.IsNullOrWhiteSpace(canvaLink))
+                {
+                    readmeContent += string.Format("\n## Canva Cloud Design\n- [Open Project in Canva]({0})\n", canvaLink);
+                }
                 File.WriteAllText(Path.Combine(targetDir, "README.md"), readmeContent);
+
+                // Auto-generate Open_In_Canva.url in 02_SOURCE if Canva link provided
+                if (!string.IsNullOrWhiteSpace(canvaLink))
+                {
+                    string sourceDir = Path.Combine(targetDir, "02_SOURCE");
+                    if (!Directory.Exists(sourceDir))
+                    {
+                        string altSource = Directory.GetDirectories(targetDir, "*SOURCE*").FirstOrDefault();
+                        sourceDir = altSource ?? targetDir;
+                    }
+                    try
+                    {
+                        string safeUrl = canvaLink;
+                        if (!safeUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !safeUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                        {
+                            safeUrl = "https://" + safeUrl;
+                        }
+                        string shortcutContent = string.Format("[InternetShortcut]\r\nURL={0}\r\nIconIndex=0\r\n", safeUrl);
+                        File.WriteAllText(Path.Combine(sourceDir, "Open_In_Canva.url"), shortcutContent, Encoding.UTF8);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] Failed to write Open_In_Canva.url: " + ex.Message);
+                    }
+                }
 
                 int attachmentsCopied = 0;
                 if (!string.IsNullOrWhiteSpace(orderId))
@@ -795,6 +831,19 @@ namespace SS_CAM.Views
         {
             try
             {
+                if (ext == ".url")
+                {
+                    string canvaLink = CanvaUrlInput != null && !string.IsNullOrWhiteSpace(CanvaUrlInput.Text)
+                        ? CanvaUrlInput.Text.Trim()
+                        : "https://www.canva.com";
+                    if (!canvaLink.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !canvaLink.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        canvaLink = "https://" + canvaLink;
+                    }
+                    string sc = string.Format("[InternetShortcut]\r\nURL={0}\r\nIconIndex=0\r\n", canvaLink);
+                    File.WriteAllText(Path.Combine(fPath, "Open_In_Canva.url"), sc, Encoding.UTF8);
+                    return;
+                }
                 string projectId = ProjectIdInput != null ? ProjectIdInput.Text.Trim() : "";
                 string rawTitle = ProjectNameInput != null ? ProjectNameInput.Text.Trim() : "project";
                 string cleanTitle = Regex.Replace(rawTitle, @"[\\/:*?""<>|]", "_");
@@ -833,6 +882,73 @@ namespace SS_CAM.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] InjectCanvasFile error: " + ex.Message);
+            }
+        }
+
+        private void OnLaunchCanvaWithDimensionsClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int width = 1080;
+                int height = 1080;
+                string unit = "px";
+
+                string specs = PlatformSpecsText != null ? PlatformSpecsText.Text : "";
+                var match = Regex.Match(specs, @"(\d+)\s*[xX×]\s*(\d+)");
+                if (match.Success)
+                {
+                    int.TryParse(match.Groups[1].Value, out width);
+                    int.TryParse(match.Groups[2].Value, out height);
+                }
+                else if (specs.Contains("A4"))
+                {
+                    width = 210;
+                    height = 297;
+                    unit = "mm";
+                }
+                else if (specs.Contains("A3"))
+                {
+                    width = 297;
+                    height = 420;
+                    unit = "mm";
+                }
+                else if (specs.Contains("A5"))
+                {
+                    width = 148;
+                    height = 210;
+                    unit = "mm";
+                }
+
+                string canvaUrl = string.Format("https://www.canva.com/create/?width={0}&height={1}&unit={2}", width, height, unit);
+                Process.Start(new ProcessStartInfo(canvaUrl) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not launch Canva: " + ex.Message, "Canva Launch", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void OnTestCanvaLinkClicked(object sender, RoutedEventArgs e)
+        {
+            string url = CanvaUrlInput != null ? CanvaUrlInput.Text.Trim() : "";
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                MessageBox.Show("Please enter a Canva design URL first.", "Canva Link", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                url = "https://" + url;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open URL: " + ex.Message, "Canva Link", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1055,9 +1171,11 @@ namespace SS_CAM.Views
         /// </summary>
         private string GetSelectedExtension()
         {
-            string val = TemplateExtensionComboBox.Text;
+            string val = TemplateExtensionComboBox != null ? TemplateExtensionComboBox.Text : "";
             if (string.IsNullOrWhiteSpace(val))
                 return ".afdesign";
+            if (val.IndexOf("Canva", StringComparison.OrdinalIgnoreCase) >= 0 || val.EndsWith(".url", StringComparison.OrdinalIgnoreCase))
+                return ".url";
             // Ensure it starts with a dot
             return val.StartsWith(".") ? val : "." + val;
         }

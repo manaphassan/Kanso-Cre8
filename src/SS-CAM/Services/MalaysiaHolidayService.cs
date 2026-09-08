@@ -139,5 +139,46 @@ namespace SS_CAM.Services
             }
             return list;
         }
+
+        public static bool IsOffDay(DateTime date)
+        {
+            return date.DayOfWeek == DayOfWeek.Saturday ||
+                   date.DayOfWeek == DayOfWeek.Sunday ||
+                   IsHoliday(date);
+        }
+
+        public static string GetOffDayReason(DateTime date)
+        {
+            var holiday = GetHoliday(date);
+            if (holiday != null) return "Public Holiday (" + holiday.Name + ")";
+            if (date.DayOfWeek == DayOfWeek.Saturday) return "Saturday (Weekend)";
+            if (date.DayOfWeek == DayOfWeek.Sunday) return "Sunday (Weekend)";
+            return null;
+        }
+
+        public static string GetDayLetter(DateTime date)
+        {
+            switch (date.DayOfWeek)
+            {
+                case DayOfWeek.Monday: return "M";
+                case DayOfWeek.Tuesday: return "T";
+                case DayOfWeek.Wednesday: return "W";
+                case DayOfWeek.Thursday: return "T";
+                case DayOfWeek.Friday: return "F";
+                case DayOfWeek.Saturday: return "S";
+                case DayOfWeek.Sunday: return "Sun";
+                default: return date.ToString("ddd").Substring(0, 1);
+            }
+        }
+
+        public static DateTime GetNextWorkingDay(DateTime date)
+        {
+            DateTime cur = date;
+            while (IsOffDay(cur))
+            {
+                cur = cur.AddDays(1);
+            }
+            return cur;
+        }
     }
 }

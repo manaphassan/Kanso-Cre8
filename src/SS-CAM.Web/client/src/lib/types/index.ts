@@ -50,6 +50,7 @@ export interface ProjectFrontmatter {
   deadline?: string;
   priority?: ProjectPriority;
   presetType?: string;
+  canva_url?: string;
   tags?: string[];
   revision?: number;
   creative_direction?: CreativeDirectionState;

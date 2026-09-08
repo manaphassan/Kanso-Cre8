@@ -90,8 +90,18 @@ namespace SS_CAM.Views
                 ProfileHeaderDept.Text = selected.Department;
                 ProfileHeaderStaffId.Text = string.Format("Staff ID: {0}", selected.StaffId);
 
-                // Update avatar if the staff directory entry carries a photo path
-                if (!string.IsNullOrWhiteSpace(selected.AvatarPath))
+                // Update avatar if the staff directory entry carries an avatar or photo path
+                if (!string.IsNullOrWhiteSpace(selected.Avatar))
+                {
+                    string cached = UserProfileService.CacheAvatarFromData(selected.Avatar, selected.StaffId);
+                    if (!string.IsNullOrWhiteSpace(cached) && File.Exists(cached))
+                    {
+                        UpdateAvatarPreview(cached);
+                        if (currentProfile != null)
+                            currentProfile.AvatarPath = cached;
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(selected.AvatarPath))
                 {
                     UpdateAvatarPreview(selected.AvatarPath);
                     if (currentProfile != null)
@@ -102,11 +112,38 @@ namespace SS_CAM.Views
 
         private void UpdateAvatarPreview(string path)
         {
-            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                try
+                AvatarPreviewImg.Visibility = Visibility.Collapsed;
+                AvatarEmojiText.Visibility = Visibility.Visible;
+                return;
+            }
+
+            try
+            {
+                BitmapImage bmp = new BitmapImage();
+                if (path.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
                 {
-                    BitmapImage bmp = new BitmapImage();
+                    int comma = path.IndexOf(',');
+                    if (comma >= 0)
+                    {
+                        byte[] bytes = Convert.FromBase64String(path.Substring(comma + 1));
+                        using (var ms = new System.IO.MemoryStream(bytes))
+                        {
+                            bmp.BeginInit();
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.StreamSource = ms;
+                            bmp.EndInit();
+                            bmp.Freeze();
+                        }
+                        AvatarPreviewImg.Source = bmp;
+                        AvatarPreviewImg.Visibility = Visibility.Visible;
+                        AvatarEmojiText.Visibility = Visibility.Collapsed;
+                        return;
+                    }
+                }
+                else if (File.Exists(path))
+                {
                     bmp.BeginInit();
                     bmp.UriSource = new Uri(path, UriKind.Absolute);
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
@@ -115,19 +152,16 @@ namespace SS_CAM.Views
                     AvatarPreviewImg.Source = bmp;
                     AvatarPreviewImg.Visibility = Visibility.Visible;
                     AvatarEmojiText.Visibility = Visibility.Collapsed;
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("[SettingsPage] LoadAvatar: " + ex.Message);
-                    AvatarPreviewImg.Visibility = Visibility.Collapsed;
-                    AvatarEmojiText.Visibility = Visibility.Visible;
+                    return;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                AvatarPreviewImg.Visibility = Visibility.Collapsed;
-                AvatarEmojiText.Visibility = Visibility.Visible;
+                System.Diagnostics.Debug.WriteLine("[SettingsPage] LoadAvatar error: " + ex.Message);
             }
+
+            AvatarPreviewImg.Visibility = Visibility.Collapsed;
+            AvatarEmojiText.Visibility = Visibility.Visible;
         }
 
         private void OnChangeAvatarClicked(object sender, RoutedEventArgs e)
@@ -150,6 +184,12 @@ namespace SS_CAM.Views
                     currentProfile.AvatarPath = targetPath;
 
                     UpdateAvatarPreview(targetPath);
+
+                    // Sync avatar to NAS staff_directory.json for Web Portal & Android
+                    if (!string.IsNullOrWhiteSpace(currentProfile.StaffId))
+                    {
+                        UserProfileService.SyncAvatarToNas(currentProfile.StaffId, targetPath, currentProfile.WorkspaceRoot);
+                    }
                 }
                 catch (Exception ex)
                 {

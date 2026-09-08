@@ -162,38 +162,53 @@ namespace SS_CAM.Views
             }
         }
 
-        private void LoadProjects()
+        private async System.Threading.Tasks.Task LoadProjectsAsync()
         {
             try
             {
-                _allProjects.Clear();
-
                 if (string.IsNullOrWhiteSpace(_workspaceRoot) || !Directory.Exists(_workspaceRoot))
                 {
+                    _allProjects.Clear();
                     PopulateDesignerFilter();
                     RenderCalendarGrid();
                     return;
                 }
 
-                List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(_workspaceRoot, "", "", 500);
-                if (folders != null)
+                string root = _workspaceRoot;
+                List<ProjectStatusItem> items = await System.Threading.Tasks.Task.Run(() =>
                 {
-                    foreach (DesignerFolderItem folder in folders)
+                    List<ProjectStatusItem> list = new List<ProjectStatusItem>();
+                    try
                     {
-                        if (folder != null && !string.IsNullOrEmpty(folder.FullPath))
+                        List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(root, "", "", 500);
+                        if (folders != null)
                         {
-                            ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
-                            if (item != null)
+                            foreach (DesignerFolderItem folder in folders)
                             {
-                                if (string.IsNullOrWhiteSpace(item.Designer) && !string.IsNullOrWhiteSpace(folder.Designer))
+                                if (folder != null && !string.IsNullOrEmpty(folder.FullPath))
                                 {
-                                    item.Designer = folder.Designer;
+                                    ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
+                                    if (item != null)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(item.Designer) && !string.IsNullOrWhiteSpace(folder.Designer))
+                                        {
+                                            item.Designer = folder.Designer;
+                                        }
+                                        list.Add(item);
+                                    }
                                 }
-                                _allProjects.Add(item);
                             }
                         }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("[CalendarPage] Background LoadProjects error: " + ex.Message);
+                    }
+                    return list;
+                });
+
+                _allProjects.Clear();
+                _allProjects.AddRange(items);
 
                 PopulateDesignerFilter();
                 UpdateMetrics();
@@ -204,6 +219,11 @@ namespace SS_CAM.Views
                 Debug.WriteLine("[CalendarPage] LoadProjects error: " + ex.Message);
                 RenderCalendarGrid();
             }
+        }
+
+        private async void LoadProjects()
+        {
+            await LoadProjectsAsync();
         }
 
         private List<ProjectStatusItem> GetFilteredProjects()
@@ -907,6 +927,19 @@ namespace SS_CAM.Views
 
                 int daysInMonth = DateTime.DaysInMonth(_currentYear, _currentMonth);
 
+                // ─── 1. Setup Background Grid Columns ───
+                if (GanttBackgroundGrid != null)
+                {
+                    GanttBackgroundGrid.Children.Clear();
+                    GanttBackgroundGrid.ColumnDefinitions.Clear();
+                    GanttBackgroundGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
+                    for (int day = 1; day <= daysInMonth; day++)
+                    {
+                        GanttBackgroundGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    }
+                }
+
+                // ─── 2. Setup Today Overlay Grid Columns ───
                 if (GanttTodayRowsGrid != null)
                 {
                     GanttTodayRowsGrid.Children.Clear();
@@ -918,7 +951,7 @@ namespace SS_CAM.Views
                     }
                 }
 
-                // Column 0 for Project Title label (width 160)
+                // ─── 3. Setup Header Column 0 (Project Name) ───
                 GanttHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(160) });
                 TextBlock titleHeader = new TextBlock
                 {
@@ -927,12 +960,12 @@ namespace SS_CAM.Views
                     FontSize = 10,
                     Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(4, 0, 0, 0)
+                    Margin = new Thickness(6, 0, 0, 0)
                 };
                 Grid.SetColumn(titleHeader, 0);
                 GanttHeaderGrid.Children.Add(titleHeader);
 
-                // Columns 1 to daysInMonth for days
+                // ─── 4. Build Days Header & Background Fills (Columns 1 to daysInMonth) ───
                 for (int day = 1; day <= daysInMonth; day++)
                 {
                     GanttHeaderGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -940,6 +973,82 @@ namespace SS_CAM.Views
                     DateTime dt = new DateTime(_currentYear, _currentMonth, day);
                     bool isToday = (dt.Date == DateTime.Today);
                     MalaysiaHolidayItem holiday = MalaysiaHolidayService.GetHoliday(dt);
+                    bool isWeekend = (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday);
+                    bool isSunday = (dt.DayOfWeek == DayOfWeek.Sunday);
+                    bool isSaturday = (dt.DayOfWeek == DayOfWeek.Saturday);
+                    string dayLetter = MalaysiaHolidayService.GetDayLetter(dt);
+                    string dayNumberStr = day.ToString();
+
+                    // Background Grid Fills & Column Lines
+                    if (GanttBackgroundGrid != null)
+                    {
+                        Grid colGrid = new Grid
+                        {
+                            VerticalAlignment = VerticalAlignment.Stretch,
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        // Vertical subtle separator border line for each day
+                        Border rightLine = new Border
+                        {
+                            BorderBrush = (Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush"),
+                            BorderThickness = new Thickness(0, 0, 1, 0),
+                            Opacity = 0.35,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            VerticalAlignment = VerticalAlignment.Stretch
+                        };
+                        colGrid.Children.Add(rightLine);
+
+                        // Saturday & Sunday Weekend Shading Fill
+                        if (isWeekend)
+                        {
+                            Border weekendFill = new Border
+                            {
+                                Background = new SolidColorBrush(Color.FromArgb(20, 100, 116, 139)),
+                                BorderBrush = new SolidColorBrush(Color.FromArgb(35, 100, 116, 139)),
+                                BorderThickness = new Thickness(1, 0, 1, 0),
+                                HorizontalAlignment = HorizontalAlignment.Stretch,
+                                VerticalAlignment = VerticalAlignment.Stretch
+                            };
+                            colGrid.Children.Add(weekendFill);
+                        }
+
+                        // Public Holiday Shading Fill (e.g. Malaysia Day)
+                        if (holiday != null)
+                        {
+                            Border holidayFill = new Border
+                            {
+                                Background = new SolidColorBrush(Color.FromArgb(32, 239, 68, 68)),
+                                BorderBrush = new SolidColorBrush(Color.FromArgb(75, 239, 68, 68)),
+                                BorderThickness = new Thickness(1, 0, 1, 0),
+                                HorizontalAlignment = HorizontalAlignment.Stretch,
+                                VerticalAlignment = VerticalAlignment.Stretch
+                            };
+                            colGrid.Children.Add(holidayFill);
+                        }
+
+                        Grid.SetColumn(colGrid, day);
+                        GanttBackgroundGrid.Children.Add(colGrid);
+                    }
+
+                    // Header Cell UI with Day Letter & Number
+                    string tooltipDateText = string.Format("{0:dddd, d MMMM yyyy}", dt);
+                    if (holiday != null)
+                    {
+                        tooltipDateText += "\n🇲🇾 " + holiday.Name + " (Public Holiday - Creative Off-Day)";
+                    }
+                    else if (isSunday)
+                    {
+                        tooltipDateText += "\nSunday (Weekend Off-Day - Non-Working Day)";
+                    }
+                    else if (isSaturday)
+                    {
+                        tooltipDateText += "\nSaturday (Weekend Off-Day - Non-Working Day)";
+                    }
+                    else
+                    {
+                        tooltipDateText += "\nWorking Day";
+                    }
 
                     if (isToday)
                     {
@@ -947,29 +1056,30 @@ namespace SS_CAM.Views
                         {
                             Background = (Brush)Application.Current.FindResource("FluentBrand80"),
                             CornerRadius = new CornerRadius(4),
-                            Padding = new Thickness(4, 1, 4, 1),
-                            HorizontalAlignment = HorizontalAlignment.Center,
+                            Padding = new Thickness(2, 2, 2, 2),
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
                             VerticalAlignment = VerticalAlignment.Center,
-                            ToolTip = string.Format("Today ({0:dd MMM yyyy})", dt)
+                            Margin = new Thickness(1, 0, 1, 0),
+                            ToolTip = tooltipDateText + " [TODAY]"
                         };
                         StackPanel todayStack = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center };
-                        TextBlock todayLbl = new TextBlock
+                        TextBlock todayDayName = new TextBlock
                         {
-                            Text = "TODAY",
-                            FontSize = 7,
+                            Text = dayLetter,
+                            FontSize = 8,
                             FontWeight = FontWeights.Bold,
                             Foreground = Brushes.White,
                             HorizontalAlignment = HorizontalAlignment.Center
                         };
                         TextBlock todayNum = new TextBlock
                         {
-                            Text = day.ToString(),
-                            FontSize = 9,
+                            Text = dayNumberStr,
+                            FontSize = 10,
                             FontWeight = FontWeights.Bold,
                             Foreground = Brushes.White,
                             HorizontalAlignment = HorizontalAlignment.Center
                         };
-                        todayStack.Children.Add(todayLbl);
+                        todayStack.Children.Add(todayDayName);
                         todayStack.Children.Add(todayNum);
                         todayBadge.Child = todayStack;
                         Grid.SetColumn(todayBadge, day);
@@ -977,24 +1087,93 @@ namespace SS_CAM.Views
                     }
                     else
                     {
-                        TextBlock dayText = new TextBlock
+                        Border cellBorder = new Border
                         {
-                            Text = day.ToString(),
-                            FontWeight = holiday != null ? FontWeights.Bold : FontWeights.Normal,
-                            FontSize = 10,
-                            Foreground = holiday != null 
-                                ? new SolidColorBrush(Color.FromRgb(220, 38, 38)) 
-                                : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
-                            ToolTip = holiday != null ? ("🇲🇾 " + holiday.Name) : null,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center
+                            CornerRadius = new CornerRadius(4),
+                            Padding = new Thickness(1, 2, 1, 2),
+                            Margin = new Thickness(1, 0, 1, 0),
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            ToolTip = tooltipDateText
                         };
-                        Grid.SetColumn(dayText, day);
-                        GanttHeaderGrid.Children.Add(dayText);
+
+                        if (holiday != null)
+                        {
+                            cellBorder.Background = new SolidColorBrush(Color.FromArgb(35, 239, 68, 68));
+                            cellBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(80, 239, 68, 68));
+                            cellBorder.BorderThickness = new Thickness(1);
+                        }
+                        else if (isWeekend)
+                        {
+                            cellBorder.Background = new SolidColorBrush(Color.FromArgb(20, 100, 116, 139));
+                            cellBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(40, 100, 116, 139));
+                            cellBorder.BorderThickness = new Thickness(1);
+                        }
+
+                        StackPanel cellStack = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center };
+
+                        // Day Letter (M, T, W, T, F, S, Sun)
+                        TextBlock txtDayLetter = new TextBlock
+                        {
+                            Text = dayLetter,
+                            FontSize = 8,
+                            FontWeight = (isWeekend || holiday != null) ? FontWeights.Bold : FontWeights.SemiBold,
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+
+                        if (holiday != null)
+                        {
+                            txtDayLetter.Foreground = new SolidColorBrush(Color.FromRgb(220, 38, 38));
+                        }
+                        else if (isSunday)
+                        {
+                            txtDayLetter.Foreground = new SolidColorBrush(Color.FromRgb(239, 68, 68)); // Coral/Red for Sunday
+                        }
+                        else if (isSaturday)
+                        {
+                            txtDayLetter.Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)); // Slate for Saturday
+                        }
+                        else if (dt.DayOfWeek == DayOfWeek.Friday)
+                        {
+                            txtDayLetter.Foreground = (Brush)Application.Current.FindResource("FluentBrand80"); // Friday accent
+                        }
+                        else
+                        {
+                            txtDayLetter.Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush");
+                        }
+
+                        // Day Number (1..31)
+                        TextBlock txtDayNum = new TextBlock
+                        {
+                            Text = dayNumberStr,
+                            FontSize = 10,
+                            FontWeight = (holiday != null) ? FontWeights.Bold : FontWeights.Normal,
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+
+                        if (holiday != null)
+                        {
+                            txtDayNum.Foreground = new SolidColorBrush(Color.FromRgb(220, 38, 38));
+                        }
+                        else if (isSunday)
+                        {
+                            txtDayNum.Foreground = new SolidColorBrush(Color.FromRgb(239, 68, 68));
+                        }
+                        else
+                        {
+                            txtDayNum.Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush");
+                        }
+
+                        cellStack.Children.Add(txtDayLetter);
+                        cellStack.Children.Add(txtDayNum);
+                        cellBorder.Child = cellStack;
+
+                        Grid.SetColumn(cellBorder, day);
+                        GanttHeaderGrid.Children.Add(cellBorder);
                     }
                 }
 
-                // Add Today Vertical Indicator Line across Gantt rows
+                // ─── 5. Add Today Vertical Indicator Line across Gantt rows ───
                 if (_currentYear == DateTime.Today.Year && _currentMonth == DateTime.Today.Month)
                 {
                     int todayDay = DateTime.Today.Day;
@@ -1006,7 +1185,7 @@ namespace SS_CAM.Views
                             Background = (Brush)Application.Current.FindResource("FluentBrand80"),
                             HorizontalAlignment = HorizontalAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Stretch,
-                            Opacity = 0.85,
+                            Opacity = 0.9,
                             IsHitTestVisible = false
                         };
                         Grid.SetColumn(todayLine, todayDay);
@@ -1014,7 +1193,7 @@ namespace SS_CAM.Views
                     }
                 }
 
-                // Filter projects matching search, designer, and status
+                // ─── 6. Filter and Render Project Rows ───
                 List<ProjectStatusItem> filtered = GetFilteredProjects();
 
                 if (filtered.Count == 0)
@@ -1056,6 +1235,10 @@ namespace SS_CAM.Views
 
                     int colSpan = Math.Max(1, (endDay - startDay) + 1);
 
+                    // 3. Detect Off-Day Conflicts (Deadline falls on Saturday, Sunday, or Public Holiday)
+                    bool isDeadlineOffDay = MalaysiaHolidayService.IsOffDay(endDt);
+                    string offDayReason = isDeadlineOffDay ? MalaysiaHolidayService.GetOffDayReason(endDt) : null;
+
                     Border rowBorder = new Border
                     {
                         BorderBrush = (Brush)Application.Current.FindResource("CardStrokeColorDefaultBrush"),
@@ -1080,13 +1263,20 @@ namespace SS_CAM.Views
                         Foreground = (Brush)Application.Current.FindResource("TextFillColorPrimaryBrush"),
                         TextTrimming = TextTrimming.CharacterEllipsis
                     };
+
                     TextBlock pSub = new TextBlock
                     {
-                        Text = string.Format("{0} • {1}", p.Designer ?? "Unknown", p.Status ?? "backlog"),
+                        Text = isDeadlineOffDay
+                            ? string.Format("{0} • {1} • ⚠️ Due on {2}!", p.Designer ?? "Unknown", p.Status ?? "backlog", offDayReason)
+                            : string.Format("{0} • {1}", p.Designer ?? "Unknown", p.Status ?? "backlog"),
                         FontSize = 9,
-                        Foreground = (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
+                        FontWeight = isDeadlineOffDay ? FontWeights.Bold : FontWeights.Normal,
+                        Foreground = isDeadlineOffDay
+                            ? new SolidColorBrush(Color.FromRgb(220, 38, 38)) // Red warning text
+                            : (Brush)Application.Current.FindResource("TextFillColorSecondaryBrush"),
                         TextTrimming = TextTrimming.CharacterEllipsis
                     };
+
                     nameStack.Children.Add(pName);
                     nameStack.Children.Add(pSub);
                     Grid.SetColumn(nameStack, 0);
@@ -1098,12 +1288,48 @@ namespace SS_CAM.Views
                     {
                         Background = barBrush,
                         CornerRadius = new CornerRadius(4),
-                        Height = 18,
+                        Height = 20,
                         VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(1, 0, 1, 0),
-                        ToolTip = string.Format("Project: {0}\nDesigner: {1}\nStatus: {2}\nStart: {3}\nDeadline: {4}",
-                            p.Project, p.Designer, p.Status, p.CreatedDateDisplay, p.DeadlineDisplay)
+                        Margin = new Thickness(1, 0, 1, 0)
                     };
+
+                    if (isDeadlineOffDay)
+                    {
+                        bar.BorderBrush = new SolidColorBrush(Color.FromRgb(239, 68, 68)); // Red border for conflict
+                        bar.BorderThickness = new Thickness(1.5);
+                    }
+
+                    string warningToolTip = isDeadlineOffDay
+                        ? string.Format("\n\n⚠️ SCHEDULE CONFLICT: Project deadline falls on an OFF-DAY ({0})!\nCreative deliverables must not be scheduled on weekends or public holidays. Please reschedule to a working day.", offDayReason)
+                        : "";
+
+                    bar.ToolTip = string.Format("Project: {0}\nDesigner: {1}\nStatus: {2}\nStart: {3}\nDeadline: {4}{5}",
+                        p.Project, p.Designer, p.Status, p.CreatedDateDisplay, p.DeadlineDisplay, warningToolTip);
+
+                    DockPanel barContent = new DockPanel { LastChildFill = true, Margin = new Thickness(4, 0, 4, 0) };
+
+                    if (isDeadlineOffDay)
+                    {
+                        Border warnBadge = new Border
+                        {
+                            Background = new SolidColorBrush(Color.FromRgb(220, 38, 38)),
+                            CornerRadius = new CornerRadius(3),
+                            Padding = new Thickness(3, 0, 3, 0),
+                            Margin = new Thickness(4, 0, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        DockPanel.SetDock(warnBadge, Dock.Right);
+                        TextBlock warnTxt = new TextBlock
+                        {
+                            Text = "⚠️ Off-Day",
+                            FontSize = 8,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.White,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        warnBadge.Child = warnTxt;
+                        barContent.Children.Add(warnBadge);
+                    }
 
                     TextBlock barText = new TextBlock
                     {
@@ -1111,12 +1337,11 @@ namespace SS_CAM.Views
                         FontSize = 9,
                         FontWeight = FontWeights.Bold,
                         Foreground = Brushes.White,
-                        HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
-                        TextTrimming = TextTrimming.CharacterEllipsis,
-                        Margin = new Thickness(4, 0, 4, 0)
+                        TextTrimming = TextTrimming.CharacterEllipsis
                     };
-                    bar.Child = barText;
+                    barContent.Children.Add(barText);
+                    bar.Child = barContent;
 
                     Grid.SetColumn(bar, startDay);
                     Grid.SetColumnSpan(bar, colSpan);

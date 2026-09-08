@@ -28,6 +28,8 @@
                         <MenuItem Header="Mark as Approved" Tag="approved" Click="OnQuickStatusMenuClicked"/>
                         <MenuItem Header="Move to Done" Tag="done" Click="OnQuickStatusMenuClicked"/>
                         <MenuItem Header="Set On Hold" Tag="on-hold" Click="OnQuickStatusMenuClicked"/>
+                        <Separator Visibility="{Binding CanvaBadgeVisibility}"/>
+                        <MenuItem Header="Open in Canva" Visibility="{Binding CanvaBadgeVisibility}" Click="OnOpenInCanvaClicked"/>
                         <Separator/>
                         <MenuItem Header="Hand Over Task To..." Tag="handover_root">
                             <MenuItem Header="Loading team..." IsEnabled="False"/>
@@ -37,6 +39,9 @@
                 <StackPanel>
                     <ui:TextBlock Text="{Binding Project}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" LineHeight="18"/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Border Background="#00C4CC" Visibility="{Binding CanvaBadgeVisibility}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
+                            <ui:TextBlock Text="CANVA" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                        </Border>
                         <Border Background="{Binding PriorityColor}" Visibility="{Binding PriorityBadgeVisibility}" CornerRadius="4" Padding="5,2" Margin="0,0,6,0">
                             <ui:TextBlock Text="{Binding PriorityBadgeText}" FontSize="9" FontWeight="Bold" Foreground="White"/>
                         </Border>
@@ -422,6 +427,15 @@
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Color24" Margin="0,0,4,0" FontSize="12"/>
                                 <ui:TextBlock Text="Source File" FontSize="11"/>
+                            </StackPanel>
+                        </ui:Button>
+
+                        <ui:Button x:Name="BtnDetailOpenCanva" Click="OnDetailOpenCanvaClicked" Appearance="Secondary" Height="28" Padding="8,2" Margin="0,0,6,4" ToolTip="Open project in Canva Cloud">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#00C4CC" CornerRadius="2" Padding="3,0" Margin="0,0,4,0" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="CANVA" FontSize="8" FontWeight="Bold" Foreground="White"/>
+                                </Border>
+                                <ui:TextBlock Text="Open Canva" FontSize="11" VerticalAlignment="Center"/>
                             </StackPanel>
                         </ui:Button>
 

@@ -10,6 +10,83 @@
 
   let { projects }: Props = $props();
 
+    const MALAYSIA_HOLIDAYS: Record<string, string> = {
+    '2025-01-01': "New Year's Day",
+    '2025-01-29': 'Chinese New Year (Day 1)',
+    '2025-01-30': 'Chinese New Year (Day 2)',
+    '2025-02-01': 'Federal Territory Day',
+    '2025-02-11': 'Thaipusam',
+    '2025-03-18': 'Nuzul Al-Quran',
+    '2025-03-31': 'Hari Raya Aidilfitri (Day 1)',
+    '2025-04-01': 'Hari Raya Aidilfitri (Day 2)',
+    '2025-05-01': 'Labour Day',
+    '2025-05-12': 'Wesak Day',
+    '2025-06-02': "Agong's Birthday",
+    '2025-06-07': 'Hari Raya Haji',
+    '2025-06-27': 'Awal Muharram',
+    '2025-08-31': 'National Day / Merdeka',
+    '2025-09-05': 'Maulidur Rasul',
+    '2025-09-16': 'Malaysia Day',
+    '2025-10-20': 'Deepavali',
+    '2025-12-25': 'Christmas Day',
+    '2026-01-01': "New Year's Day",
+    '2026-02-01': 'Federal Territory Day',
+    '2026-02-02': 'Thaipusam',
+    '2026-02-17': 'Chinese New Year (Day 1)',
+    '2026-02-18': 'Chinese New Year (Day 2)',
+    '2026-03-07': 'Nuzul Al-Quran',
+    '2026-03-20': 'Hari Raya Aidilfitri (Day 1)',
+    '2026-03-21': 'Hari Raya Aidilfitri (Day 2)',
+    '2026-05-01': 'Labour Day',
+    '2026-05-27': 'Hari Raya Haji',
+    '2026-05-31': 'Wesak Day',
+    '2026-06-01': "Agong's Birthday",
+    '2026-06-17': 'Awal Muharram',
+    '2026-08-26': 'Maulidur Rasul',
+    '2026-08-31': 'National Day / Merdeka',
+    '2026-09-16': 'Malaysia Day',
+    '2026-11-08': 'Deepavali',
+    '2026-12-25': 'Christmas Day',
+    '2027-01-01': "New Year's Day",
+    '2027-01-21': 'Thaipusam',
+    '2027-02-01': 'Federal Territory Day',
+    '2027-02-06': 'Chinese New Year (Day 1)',
+    '2027-02-07': 'Chinese New Year (Day 2)',
+    '2027-02-24': 'Nuzul Al-Quran',
+    '2027-03-10': 'Hari Raya Aidilfitri (Day 1)',
+    '2027-03-11': 'Hari Raya Aidilfitri (Day 2)',
+    '2027-05-01': 'Labour Day',
+    '2027-05-16': 'Hari Raya Haji',
+    '2027-05-20': 'Wesak Day',
+    '2027-06-06': 'Awal Muharram',
+    '2027-06-07': "Agong's Birthday",
+    '2027-08-16': 'Maulidur Rasul',
+    '2027-08-31': 'National Day / Merdeka',
+    '2027-09-16': 'Malaysia Day',
+    '2027-10-29': 'Deepavali',
+    '2027-12-25': 'Christmas Day'
+  };
+
+  function getHoliday(date: Date): string | undefined {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return MALAYSIA_HOLIDAYS[`${y}-${m}-${d}`];
+  }
+
+  function isOffDay(date: Date): boolean {
+    const day = date.getDay();
+    return day === 0 || day === 6 || !!getHoliday(date);
+  }
+
+  function getOffDayReason(date: Date): string | null {
+    const h = getHoliday(date);
+    if (h) return `Public Holiday (${h})`;
+    if (date.getDay() === 0) return 'Sunday';
+    if (date.getDay() === 6) return 'Saturday';
+    return null;
+  }
+
   let currentDate = $state<Date>(new Date());
 
   // Derive active month days
@@ -192,7 +269,7 @@
             <div class="gantt-col-right timeline-track-grid" style="grid-template-columns: repeat({monthInfo.totalDays}, 1fr);">
               <!-- Background Grid Columns -->
               {#each monthInfo.days as day}
-                <div class="timeline-grid-col" class:is-today={day.isToday} class:is-weekend={day.isWeekend}></div>
+                <div class="timeline-grid-col" class:is-today={day.isToday} class:is-weekend={day.isWeekend} class:is-holiday={day.isHoliday}></div>
               {/each}
 
               <!-- Project Schedule Bar -->
@@ -488,4 +565,35 @@
     color: var(--text-secondary, #6B7280);
     font-size: 13px;
   }
+
+  .day-head-cell.is-holiday {
+    background: rgba(239, 68, 68, 0.14) !important;
+    color: #DC2626 !important;
+    font-weight: 800;
+  }
+
+  .day-head-cell.is-sunday {
+    color: #EF4444;
+  }
+
+  .timeline-grid-col.is-holiday {
+    background: rgba(239, 68, 68, 0.08) !important;
+    border-right: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .gantt-schedule-bar.is-conflict {
+    outline: 2px solid #EF4444;
+    outline-offset: 1px;
+  }
+
+  .conflict-badge {
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
 </style>

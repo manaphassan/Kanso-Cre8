@@ -199,40 +199,54 @@ namespace SS_CAM.Views
             }
         }
 
-        private void LoadProjects()
+        private async System.Threading.Tasks.Task LoadProjectsAsync()
         {
             try
             {
-                _allProjects.Clear();
-
                 if (string.IsNullOrWhiteSpace(_workspaceRoot) ||
                     !System.IO.Directory.Exists(_workspaceRoot))
                 {
+                    _allProjects.Clear();
                     PopulateDesignerFilter();
                     UpdateBoard();
                     return;
                 }
 
-                // Scan all project folders via WorkspaceScanner then read their frontmatter
-                List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(_workspaceRoot, "", "", 500);
-                if (folders != null)
+                string root = _workspaceRoot;
+                List<ProjectStatusItem> items = await System.Threading.Tasks.Task.Run(() =>
                 {
-                    foreach (DesignerFolderItem folder in folders)
+                    List<ProjectStatusItem> list = new List<ProjectStatusItem>();
+                    try
                     {
-                        if (folder != null && !string.IsNullOrEmpty(folder.FullPath))
+                        List<DesignerFolderItem> folders = WorkspaceScanner.ListDesignerFolders(root, "", "", 500);
+                        if (folders != null)
                         {
-                            ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
-                            if (item != null)
+                            foreach (DesignerFolderItem folder in folders)
                             {
-                                if (string.IsNullOrWhiteSpace(item.Designer) && !string.IsNullOrWhiteSpace(folder.Designer))
+                                if (folder != null && !string.IsNullOrEmpty(folder.FullPath))
                                 {
-                                    item.Designer = folder.Designer;
+                                    ProjectStatusItem item = FrontmatterService.ReadStatus(folder.FullPath);
+                                    if (item != null)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(item.Designer) && !string.IsNullOrWhiteSpace(folder.Designer))
+                                        {
+                                            item.Designer = folder.Designer;
+                                        }
+                                        list.Add(item);
+                                    }
                                 }
-                                _allProjects.Add(item);
                             }
                         }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Background TaskManager LoadProjects error: " + ex);
+                    }
+                    return list;
+                });
+
+                _allProjects.Clear();
+                _allProjects.AddRange(items);
 
                 PopulateDesignerFilter();
                 UpdateMetricSummaryCards();
@@ -245,6 +259,10 @@ namespace SS_CAM.Views
             }
         }
 
+        private async void LoadProjects()
+        {
+            await LoadProjectsAsync();
+        }
         private void UpdateMetricSummaryCards()
         {
             try
@@ -473,6 +491,48 @@ namespace SS_CAM.Views
             if (PriorityFilter != null && PriorityFilter.Items.Count > 0) PriorityFilter.SelectedIndex = 0;
             if (SortFilter != null && SortFilter.Items.Count > 0) SortFilter.SelectedIndex = 0;
             ApplyFiltersAndUpdateBoard();
+        }
+
+        private void OnOpenInCanvaClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var menu = sender as System.Windows.Controls.MenuItem;
+                ProjectStatusItem item = (menu != null ? menu.DataContext : null) as ProjectStatusItem;
+                if (item != null && !string.IsNullOrWhiteSpace(item.CanvaUrl))
+                {
+                    string url = item.CanvaUrl.Trim();
+                    if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        url = "https://" + url;
+                    }
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[TaskManagerPage] OnOpenInCanvaClicked error: " + ex.Message);
+            }
+        }
+
+        private void OnDetailOpenCanvaClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject != null && !string.IsNullOrWhiteSpace(_editingProject.CanvaUrl))
+            {
+                try
+                {
+                    string url = _editingProject.CanvaUrl.Trim();
+                    if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        url = "https://" + url;
+                    }
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("[TaskManagerPage] OpenCanva error: " + ex.Message);
+                }
+            }
         }
 
         private void OnQuickStatusMenuClicked(object sender, RoutedEventArgs e)
@@ -728,6 +788,10 @@ namespace SS_CAM.Views
             _isPopulatingDetail = true;
 
             DetailProjectName.Text = item.Project;
+            if (BtnDetailOpenCanva != null)
+            {
+                BtnDetailOpenCanva.Visibility = item.HasCanvaUrl ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             // Set Status combobox
             SelectComboItemByContent(DetailStatus, item.Status ?? "backlog");

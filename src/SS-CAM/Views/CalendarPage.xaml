@@ -176,17 +176,50 @@
                     <Grid x:Name="GanttGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
+
+                        <!-- Gantt Timeline Off-Days & Status Legend Bar -->
+                        <Border Grid.Row="0" Margin="0,0,0,10" Padding="10,6" Background="{DynamicResource TextControlBackground}" CornerRadius="6" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+                            <DockPanel LastChildFill="False">
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Info24" FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <ui:TextBlock Text="Timeline Off-Days &amp; Conflict Guide:" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                    <!-- Working Days -->
+                                    <Border Width="10" Height="10" CornerRadius="2" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Working Day" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                    <!-- Weekend Off-Day -->
+                                    <Border Width="10" Height="10" CornerRadius="2" Background="#1864748B" BorderBrush="#3564748B" BorderThickness="1" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Weekend (Sat/Sun Off-Day)" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                    <!-- Public Holiday Off-Day -->
+                                    <Border Width="10" Height="10" CornerRadius="2" Background="#28EF4444" BorderBrush="#60EF4444" BorderThickness="1" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="🇲🇾 Public Holiday (Off-Day)" FontSize="10" Foreground="#DC2626" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                                    <!-- Today Marker -->
+                                    <Border Width="10" Height="10" CornerRadius="2" Background="{DynamicResource FluentBrand80}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBlock Text="Today" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,14,0"/>
+
+                                    <!-- Conflict Alert -->
+                                    <ui:TextBlock Text="⚠️ Due on Off-Day (Reschedule Required)" FontSize="10" Foreground="#DC2626" FontWeight="Bold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
                         <!-- Timeline Header Row (Days of current month) -->
-                        <Border Grid.Row="0" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="8,6" CornerRadius="6" Margin="0,0,0,8">
+                        <Border Grid.Row="1" Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}" Padding="8,6" CornerRadius="6" Margin="0,0,0,8">
                             <Grid x:Name="GanttHeaderGrid"/>
                         </Border>
-                        <!-- Timeline Rows Stack with Today Guide Line Overlay -->
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="520">
+
+                        <!-- Timeline Rows Stack with Today Guide Line Overlay & Background Grid Fills -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="520">
                             <Grid>
-                                <Grid x:Name="GanttTodayRowsGrid" IsHitTestVisible="False" Panel.ZIndex="10"/>
+                                <Grid x:Name="GanttBackgroundGrid" IsHitTestVisible="False" Panel.ZIndex="0"/>
                                 <StackPanel x:Name="GanttRowsStack" Panel.ZIndex="1"/>
+                                <Grid x:Name="GanttTodayRowsGrid" IsHitTestVisible="False" Panel.ZIndex="10"/>
                             </Grid>
                         </ScrollViewer>
                     </Grid>

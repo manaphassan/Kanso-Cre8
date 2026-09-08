@@ -1,9 +1,9 @@
-<ui:FluentWindow x:Class="SS_CAM.MainWindow"
+﻿<ui:FluentWindow x:Class="SS_CAM.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:views="clr-namespace:SS_CAM.Views"
-        Title="SuamiSihat Creative Assets Management v4.6.2" Height="820" Width="1280"
+        Title="SuamiSihat Creative Assets Management v4.7.0" Height="820" Width="1280"
         MinHeight="680" MinWidth="1024"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
@@ -174,34 +174,34 @@
 
             <!-- MENU ITEMS (Grouped by Separators) -->
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" />
+                <ui:NavigationViewItem Content="Dashboard"          Icon="{ui:SymbolIcon Home24}"        TargetPageType="{x:Type views:DashboardPage}" NavigationCacheMode="Required" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" />
-                <ui:NavigationViewItem Content="Order Requests"     Icon="{ui:SymbolIcon ClipboardTask24}" TargetPageType="{x:Type views:OrderRequestsPage}" />
-                <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" />
-                <ui:NavigationViewItem Content="Copywriting Studio" Icon="{ui:SymbolIcon Edit24}"        TargetPageType="{x:Type views:CopywritingPage}" />
-                <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" />
+                <ui:NavigationViewItem Content="Project Creator"    Icon="{ui:SymbolIcon Folder24}"      TargetPageType="{x:Type views:ProjectCreatorPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Order Requests"     Icon="{ui:SymbolIcon ClipboardTask24}" TargetPageType="{x:Type views:OrderRequestsPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Search &amp; Copy"  Icon="{ui:SymbolIcon Search24}"      TargetPageType="{x:Type views:SearchCopyPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Copywriting Studio" Icon="{ui:SymbolIcon Edit24}"        TargetPageType="{x:Type views:CopywritingPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Brand Assets"       Icon="{ui:SymbolIcon Library24}"     TargetPageType="{x:Type views:BrandAssetsPage}" NavigationCacheMode="Required" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" />
-                <ui:NavigationViewItem Content="Big Calendar"       Icon="{ui:SymbolIcon CalendarMonth24}"   TargetPageType="{x:Type views:CalendarPage}" />
-                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" />
+                <ui:NavigationViewItem Content="Task Manager"       Icon="{ui:SymbolIcon Checkmark24}"   TargetPageType="{x:Type views:TaskManagerPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Big Calendar"       Icon="{ui:SymbolIcon CalendarMonth24}"   TargetPageType="{x:Type views:CalendarPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Quick Notes"        Icon="{ui:SymbolIcon Document24}"    TargetPageType="{x:Type views:QuickNotePage}" NavigationCacheMode="Required" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" />
-                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" />
-                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" />
-                <ui:NavigationViewItem Content="QR Code Studio"     Icon="{ui:SymbolIcon QrCode24}"      TargetPageType="{x:Type views:QrCodePage}" />
+                <ui:NavigationViewItem Content="Creative Wellbeing" Icon="{ui:SymbolIcon Heart24}"       TargetPageType="{x:Type views:WellbeingPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Waktu Solat"        Icon="{ui:SymbolIcon Clock24}"       TargetPageType="{x:Type views:WaktuSolatPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="Radio Player"       Icon="{ui:SymbolIcon MusicNote224}"  TargetPageType="{x:Type views:RadioPage}" NavigationCacheMode="Required" />
+                <ui:NavigationViewItem Content="QR Code Studio"     Icon="{ui:SymbolIcon QrCode24}"      TargetPageType="{x:Type views:QrCodePage}" NavigationCacheMode="Required" />
 
                 <ui:NavigationViewItemSeparator />
 
-                <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" />
+                <ui:NavigationViewItem Content="Workstation Health" Icon="{ui:SymbolIcon Important24}"   TargetPageType="{x:Type views:WorkstationHealthPage}" NavigationCacheMode="Required" />
                 <ui:NavigationViewItemSeparator />
-                <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" />
+                <ui:NavigationViewItem Content="Settings &amp; Profile" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type views:SettingsPage}" NavigationCacheMode="Required" />
             </ui:NavigationView.MenuItems>
 
             <!-- PANE FOOTER: Status rows -->
