@@ -1,412 +1,105 @@
-# SS-CAM AGENT RULES
+# KANSO CRE8 AGENT RULES
 
 ## Project
 
-SS-CAM is the SuamiSihat Creative Assets Management desktop application.
+**Kanso Cre8 (簡素)** is the Mindful Creative Vault — an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.
 
-Platform:
+**Platform**:
+- Windows 11/10 (x64)
+- Linux (x64 / ARM64)
+- Android Companion (APK)
 
-Windows Desktop
-
-Technology:
-
-- C#
-- WPF
-- .NET Framework 4.8
-- WPF-UI
-- Fluent 2
-- MVVM architecture
+**Technology Stack**:
+- Tauri v2 (Rust desktop runtime)
+- Svelte 5 (Runes: `$state`, `$derived`, `$props`, `$effect`)
+- Tailwind CSS + Linear / Geist Minimalist Studio Tokens
+- Pure Markdown-as-Database Storage Engine (Zero SQL, SQLite, or Prisma)
+- Web Audio API (Retro Cassette Focus Radio & Studio Deck)
 
 ---
 
-# CORE PRINCIPLE
+# CORE PRINCIPLE: KANSO (簡素)
 
-Treat SS-CAM as a production application used by working designers.
+Treat Kanso Cre8 as a zen sanctuary for working freelance creators.
 
 Prioritize:
-
-1. Reliability
-2. Data safety
-3. Functional correctness
-4. Predictable UX
-5. Fluent 2 consistency
-6. Accessibility
-7. Maintainability
-8. Performance
-
-Do not optimize for code cleverness.
+1. Simplicity over cleverness (eliminate clutter and visual noise)
+2. Total data ownership (100% human-readable UTF-8 `.md` files)
+3. Zero database binary locks (openable anytime in Obsidian or VS Code)
+4. Speed and tactile responsiveness (< 16ms interactions, ~35MB RAM)
+5. Linear / Geist design token adherence (`var(--kanso-*)`)
+6. Client privacy and security
 
 ---
 
-# BEFORE CHANGING CODE
+# CLIENT PRIVACY LAW
 
-Always:
+**STRICTLY FORBIDDEN**: Never expose or commit real client names to public git commits, mock datasets, tests, or documentation.
 
-1. Inspect the existing implementation.
-2. Understand the affected feature.
-3. Identify dependencies.
-4. Identify existing reusable components.
-5. Identify existing business logic.
-6. Determine the root cause.
-7. Make the smallest safe change.
-8. Build.
-9. Test.
-10. Regression test affected functionality.
-
-Never rewrite a working feature without a clear reason.
+Always use canonical sample profiles:
+1. **Acme Corp** (`ACME`) — Acme Corporation
+2. **Nexus Studio** (`NEX`) — Nexus Studio
+3. **Lumina Labs** (`LUM`) — Lumina Labs
 
 ---
 
-# UI/UX RULES
+# PURE MARKDOWN STORAGE LAW
 
-Use Fluent 2 as the primary design-system reference.
-
-Prefer:
-
-- Existing project components
-- Existing design tokens
-- Existing resources
-- Existing WPF-UI components
-- Existing icon system
-
-Do not create a new component when an existing component can reasonably support the requirement.
-
-Do not introduce visually different versions of an existing component without a semantic reason.
+* **ZERO DATABASE SERVERS**: Absolutely NO SQL Server, SQLite binary files, Prisma ORM, MongoDB, or external cloud databases.
+* **100% Plain Filesystem**: All data lives as plain directories and UTF-8 `.md` files with YAML frontmatter.
+* **Universal Cloud Sync**: Must work transparently inside Dropbox, Google Drive, OneDrive, Synology Drive, or fast local NVMe.
+* **Canonical 8-Folder Vault Layout**:
+  - `_Clients/`
+  - `_Finance/` (`Quotes/` and `Invoices/`)
+  - `_Zettelkasten/` (`01_Fleeting/`, `02_Literature/`, `03_Permanent/`)
+  - `[YYYY]/` (Standardized 5-folder project vaults)
+  - `_Notes/` (Scratchpad)
 
 ---
 
-# COMPONENT RULE
+# UI/UX RULES: LINEAR / GEIST STUDIO SYSTEM
 
-ONE PURPOSE = ONE CANONICAL COMPONENT
+Use the Linear / Geist Studio design tokens as the sole design system reference.
 
-Before creating a new:
+### Color Tokens
+Never use hardcoded hex colors in components. Always use:
+- Canvas background: `var(--kanso-canvas)` (`#09090B` dark / `#F8FAFC` light)
+- Surface / Cards: `var(--kanso-surface)` (`#18181B` dark / `#FFFFFF` light)
+- Hover surface: `var(--kanso-surface-hover)` (`#27272A` dark / `#F1F5F9` light)
+- Hairline borders: `var(--kanso-border)` (`#27272A` 1px / `#E2E8F0` 1px)
+- Primary text: `var(--kanso-text-primary)` (`#F4F4F5` / `#0F172A`)
+- Muted text: `var(--kanso-text-muted)` (`#71717A` / `#64748B`)
+- Accent CTA: `var(--kanso-accent)` (`#38BDF8` / `#0078D4`)
+- Status colors: `var(--kanso-success)`, `var(--kanso-warning)`, `var(--kanso-danger)`
 
-- Button
-- Dialog
-- Card
-- Input
-- Navigation item
-- Status indicator
-- Notification
-- Tooltip
-
-search the project for an existing implementation.
-
-If one exists, reuse or extend it.
-
----
-
-# TERMINOLOGY RULE
-
-ONE CONCEPT = ONE CANONICAL NAME.
-
-Before introducing user-facing terminology:
-
-Search the application for existing terminology.
-
-Do not introduce:
-
-`Create Project`
-
-if the application already uses:
-
-`Project Creator`
-
-unless there is a deliberate semantic distinction.
-
-Avoid inconsistent naming such as:
-
-- Project / Job
-- Create / Generate
-- Delete / Remove
-- Settings / Preferences
-- User / Designer
-
-unless they represent genuinely different concepts.
+### Hairline Borders Over Heavy Shadows
+Elevate surfaces using `1px solid var(--kanso-border)` instead of heavy blurry drop shadows.
 
 ---
 
-# DUPLICATION RULE
+# CANONICAL RETRO CASSETTE RADIO
 
-Before creating logic:
-
-Search for existing implementations.
-
-Avoid:
-
-- Duplicate services
-- Duplicate ViewModels
-- Duplicate commands
-- Duplicate validation
-- Duplicate filesystem logic
-- Duplicate API calls
-- Duplicate UI components
-- Duplicate styles
-- Duplicate terminology
-
-If duplication is found, determine whether it is:
-
-KEEP
-
-MERGE
-
-REMOVE
-
-or
-
-DIFFERENTIATE
-
-Do not remove code without understanding its purpose.
+The Retro Cassette Focus Radio is ported faithfully from the mechanical cassette player in SS-CAM Android:
+- 4 corner silver screws, trapezoidal head/roller, Side A label badge, clear tape window.
+- Dual 6-spoke gear spool wheels rotating at 33 RPM via smooth CSS animations during playback.
+- Curated focus streams (Chillhop Cafe, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus).
+- Persistent 40px Mini-Cassette Dock in the sidebar footer.
+- 25-minute Pomodoro focus timer.
 
 ---
 
-# FILESYSTEM SAFETY
+# GOVERNANCE VERIFICATION
 
-SS-CAM performs real filesystem operations.
+Before committing changes, always run the brand and architecture auditor:
 
-Treat filesystem operations as HIGH RISK.
-
-Never blindly:
-
-- Delete files
-- Delete directories
-- Overwrite existing files
-- Move user files
-- Modify files outside the intended workspace
-
-Always validate:
-
-- Source path
-- Destination path
-- File existence
-- Directory existence
-- Permissions
-- Invalid characters
-- Path traversal
-- Network paths
-- UNC paths
-
-For destructive operations:
-
-Require appropriate confirmation.
-
----
-
-# DATA SAFETY
-
-Never modify production/user data during testing unless explicitly instructed.
-
-Use:
-
-- Test workspace
-- Temporary directories
-- Mock data
-- Disposable test files
-
-When testing file generation or copying:
-
-Verify the actual resulting filesystem state.
-
-Do not consider a notification saying "Success" proof of success.
-
----
-
-# NETWORK / NAS SAFETY
-
-SS-CAM interacts with Synology/NAS resources.
-
-Network failures must be treated as expected operating conditions.
-
-Handle:
-
-- Offline NAS
-- Timeout
-- Connection failure
-- Permission failure
-- Missing share
-- Missing directory
-- Slow response
-- Interrupted operation
-
-Never allow a network failure to freeze the UI.
-
----
-
-# BACKGROUND OPERATIONS
-
-Network, filesystem, scanning, copying, streaming, polling and other potentially expensive operations must not unnecessarily block the WPF UI thread.
-
-Watch for:
-
-- `.Result`
-- `.Wait()`
-- synchronous network calls
-- synchronous filesystem scans
-- timer leaks
-- duplicated polling
-- unbounded background tasks
-
-Use asynchronous patterns where appropriate.
-
----
-
-# ERROR HANDLING
-
-Never silently swallow exceptions.
-
-Avoid:
-
-```csharp
-catch
-{
-}
+```powershell
+powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
 ```
 
-Errors should be:
-
-1. Detected
-2. Logged appropriately
-3. Communicated appropriately
-4. Recoverable where possible
-
-Do not expose unnecessary technical information to normal users.
-
----
-
-# UI STATES
-
-Important operations should account for:
-
-- Default
-- Hover
-- Focus
-- Disabled
-- Loading
-- Success
-- Error
-- Empty
-
-Where applicable also support:
-
-- Offline
-- Permission denied
-- Not configured
-- Missing resource
-
----
-
-# ACCESSIBILITY
-
-Important functionality must be usable through:
-
-- Keyboard
-- Visible focus
-- Logical Tab order
-- Accessible names
-- Semantic controls
-- Appropriate tooltips
-
-Do not make icon-only controls dependent solely on visual recognition.
-
----
-
-# TESTING RULE
-
-Never claim:
-
-"PASS"
-
-unless the behaviour has actually been verified.
-
-Allowed statuses:
-
-PASS
-FAIL
-PARTIAL
-BLOCKED
-N/A
-
----
-
-# BUILD RULE
-
-After meaningful code changes:
-
-1. Build.
-2. Run tests.
-3. Launch application where possible.
-4. Test the affected workflow.
-5. Check logs/errors.
-6. Perform regression testing.
-
-Never leave the repository knowingly unable to build.
-
----
-
-# CHANGE CONTROL
-
-Do not:
-
-- Disable tests
-- Delete tests
-- Suppress errors without investigation
-- Remove features to make tests pass
-- Change business rules without justification
-- Introduce unnecessary dependencies
-- Rewrite architecture unnecessarily
-
----
-
-# QA ARTIFACTS
-
-Keep QA documentation under:
-
-`/QA/`
-
-Update relevant QA documents when testing or fixing functionality.
-
----
-
-# AGENT BEHAVIOUR
-
-Be conservative with destructive operations.
-
-Prefer:
-
-READ → ANALYZE → PROPOSE → CHANGE → VERIFY
-
-over:
-
-CHANGE → HOPE → APOLOGIZE
-
-If a potentially destructive action is required, stop and request confirmation unless the action is explicitly authorized by the current task.
-
----
-
-# DEFINITION OF DONE
-
-A feature is not done merely because:
-
-- Code compiles
-- UI appears
-- A button exists
-- A notification appears
-
-A feature is done when:
-
-**The intended user action produces the intended real-world result and the resulting state is verified.**
+All 10 checks must pass with `0 warned / 0 failed`.
 
 ---
 
 # WORKSPACE AGENT SKILLS
 
 - `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Zettelkasten knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
-- `sscam-code-guardian`: Validates SS-CAM source before any edit or commit. Enforces UTF-8 BOM, checks Fluent 2 compliance, hardcoded paths, silent catches, and UI thread blocking.
-- `sscam-git-cleaner`: Automates post git pull/push cleanup, archiving unused/temporary files, organizing repository folder hierarchy, enforcing UTF-8 BOM encoding, and auditing project security.
-- `sscam-page-scaffold`: Generates a new SS-CAM page with correct Fluent 2 structure, ScrollViewer root, lifecycle error guards, and automatic MainWindow navigation.
-- `sscam-qa`: Automates safe QA for SS-CAM WPF desktop app including smoke testing, regression testing, build verification, and accessibility checks.
-- `sscam-release-manager`: Automates SS-CAM version bump, packaging, tagging, and release preparation.
-- `sscam-release-publisher`: Automates GitHub release publication, documentation updates, and health report publishing.
-- `sscam-fluentui-web`: Comprehensive guide and design system reference for Microsoft Fluent UI Web (Fluent 2) in SS-CAM Web Portal (SS-CAM.Web). Covers repo breakdown of github.com/microsoft/fluentui, Fluent 2 web design tokens, Web Components, typography scale, elevation/shadows, component standards, and accessibility.
-- `sscam-web-deploy`: Automates the complete testing, git commit/push, SSH sync, and Docker container restart pipeline for the SS-CAM Web Portal (creative.suamisihat.myds.me). Triggers: "deploy web", "deploy portal", "publish web", "update web portal", "deploy ss-cam web", "sync docker".
-- `sscam-android-release`: Automates building, version-bumping, cryptographic signing, and packaging of the SS-CAM Android Companion App (AAB/APK) for Google Play Console and internal testing distribution. Triggers: "build android", "release android", "android release", "build aab", "publish playstore", "publish android", "package android", "android bundle".
