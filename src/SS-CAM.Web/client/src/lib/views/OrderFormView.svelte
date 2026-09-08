@@ -5,6 +5,14 @@
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
 
   // ─── Types ─────────────────────────────────────────────────────────────────
+  interface OrderAttachment {
+    filename: string;
+    size: number;
+    sizeFormatted: string;
+    uploadedAt: string;
+    url: string;
+  }
+
   interface CreativeOrder {
     id: string;
     title: string;
@@ -21,6 +29,15 @@
     updatedAt: string;
     assignedTo: string | null;
     projectId: string | null;
+    attachments?: OrderAttachment[];
+    attachmentCount?: number;
+    nasPath?: string;
+  }
+
+  interface UploadFileItem {
+    filename: string;
+    sizeFormatted: string;
+    fileData: string;
   }
 
   // ─── State ─────────────────────────────────────────────────────────────────
@@ -39,6 +56,7 @@
   let f_copy           = $state('');
   let f_targetDate     = $state('');
   let f_attachmentNote = $state('');
+  let f_files          = $state<UploadFileItem[]>([]);
   let formError        = $state('');
   let submitSuccess    = $state(false);
 
@@ -114,11 +132,28 @@
   const formValid = $derived(formFilled === 6);
 
   const isDesigner = $derived(
-    ['admin', 'Art Director', 'Designer', 'Lead Designer'].includes(appState.currentUser?.role || '')
+    (() => {
+      const r = (appState.currentUser?.role || '').toLowerCase();
+      const roles: string[] = ((appState.currentUser as any)?.roles || []).map((x: string) => x.toLowerCase());
+      return r.includes('admin') ||
+             r.includes('director') ||
+             r.includes('designer') ||
+             roles.some(x => x.includes('admin') || x.includes('designer') || x.includes('director'));
+    })()
   );
 
+  let roster = $state<{ name: string; staffId: string }[]>([]);
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
-  onMount(() => { loadOrders(); });
+  onMount(async () => {
+    loadOrders();
+    try {
+      const res = await ApiClient.getStaffRoster();
+      if (res && res.roster) {
+        roster = res.roster.map((m: any) => ({ name: m.name, staffId: m.staffId }));
+      }
+    } catch {}
+  });
 
   async function loadOrders() {
     isLoading = true;
@@ -142,7 +177,40 @@
     f_copy           = '';
     f_targetDate     = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
     f_attachmentNote = '';
+    f_files          = [];
     showForm = true;
+  }
+
+  function formatBytes(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function handleFileInput(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+    Array.from(target.files).forEach(file => {
+      if (file.size > 50 * 1024 * 1024) {
+        appState.addToast(`${file.name} exceeds 50MB limit`, 'warning');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const fileData = ev.target?.result as string;
+        f_files = [...f_files, {
+          filename: file.name,
+          sizeFormatted: formatBytes(file.size),
+          fileData
+        }];
+      };
+      reader.readAsDataURL(file);
+    });
+    target.value = '';
+  }
+
+  function removeSelectedFile(index: number) {
+    f_files = f_files.filter((_, i) => i !== index);
   }
 
   async function handleSubmit(e: SubmitEvent) {
@@ -160,6 +228,7 @@
           copy:           f_copy.trim(),
           targetDate:     f_targetDate,
           attachmentNote: f_attachmentNote.trim(),
+          attachments:    f_files.map(f => ({ filename: f.filename, fileData: f.fileData }))
         }),
       });
       submitSuccess = true;
@@ -193,6 +262,118 @@
       await loadOrders();
     } catch (err: any) {
       appState.addToast(err.message || 'Cancellation failed.', 'error');
+    }
+  }
+
+  async function assignDesigner(id: string, designerName: string) {
+    try {
+      await ApiClient.request(`/orders/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ assignedTo: designerName || null }),
+      });
+      appState.addToast(designerName ? `Assigned order to ${designerName}.` : 'Cleared designer assignment.', 'success');
+      await loadOrders();
+    } catch (err: any) {
+      appState.addToast(err.message || 'Assignment failed.', 'error');
+    }
+  }
+
+  async function linkProject(id: string, projId: string) {
+    if (!projId.trim()) return;
+    try {
+      await ApiClient.request(`/orders/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ projectId: projId.trim() }),
+      });
+      appState.addToast(`Linked order to project ${projId.trim()}.`, 'success');
+      await loadOrders();
+    } catch (err: any) {
+      appState.addToast(err.message || 'Linking failed.', 'error');
+    }
+  }
+
+  async function handleUploadToExistingOrder(orderId: string, e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+    const files = Array.from(target.files);
+    target.value = '';
+
+    for (const file of files) {
+      if (file.size > 50 * 1024 * 1024) {
+        appState.addToast(`${file.name} exceeds 50MB limit`, 'warning');
+        continue;
+      }
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const fileData = ev.target?.result as string;
+        try {
+          await ApiClient.request(`/orders/${encodeURIComponent(orderId)}/attachments`, {
+            method: 'POST',
+            body: JSON.stringify({ filename: file.name, fileData })
+          });
+          appState.addToast(`Uploaded ${file.name} to order NAS folder`, 'success');
+          await loadOrders();
+        } catch (err: any) {
+          appState.addToast(err.message || 'Upload failed', 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function deleteAttachment(orderId: string, filename: string) {
+    if (!confirm(`Remove attachment "${filename}" from NAS _Orders folder?`)) return;
+    try {
+      await ApiClient.request(`/orders/${encodeURIComponent(orderId)}/attachments/${encodeURIComponent(filename)}`, {
+        method: 'DELETE'
+      });
+      appState.addToast(`Removed ${filename}.`, 'info');
+      await loadOrders();
+    } catch (err: any) {
+      appState.addToast(err.message || 'Failed to remove attachment', 'error');
+    }
+  }
+
+  async function importToProject(orderId: string, projectId: string) {
+    if (!projectId) {
+      appState.addToast('Please link a project ID first before importing attachments.', 'warning');
+      return;
+    }
+    try {
+      const res = await ApiClient.request<{ success: boolean; count: number; destination: string }>(`/orders/${encodeURIComponent(orderId)}/import-to-project`, {
+        method: 'POST',
+        body: JSON.stringify({ projectId })
+      });
+      appState.addToast(`Successfully ingested ${res.count} attachments into project ${projectId} (${res.destination})!`, 'success', 'Files Ingested');
+      await loadOrders();
+    } catch (err: any) {
+      appState.addToast(err.message || 'Ingestion failed.', 'error');
+    }
+  }
+
+  async function copyNasPath(order: CreativeOrder) {
+    const uncPath = order.nasPath || `\\\\SSNAS\\Creative-Team\\_Orders\\${order.id}`;
+    try {
+      await navigator.clipboard.writeText(uncPath);
+      appState.addToast(`Copied NAS folder path: ${uncPath}`, 'success');
+    } catch {
+      appState.addToast(uncPath, 'info');
+    }
+  }
+
+  async function copyBrief(order: CreativeOrder) {
+    const text = `PROJECT: ${order.title}\n` +
+      `ENTITY: ${order.entity}\n` +
+      `FORMAT: ${formatLabel(order.format)}\n` +
+      `DEADLINE: ${fmtDate(order.targetDate)}\n` +
+      `REQUESTER: ${order.requester}\n\n` +
+      `--- BRIEF & COPY ---\n${order.copy}\n` +
+      (order.attachmentNote ? `\n--- ASSET REFERENCES ---\n${order.attachmentNote}\n` : '');
+    try {
+      await navigator.clipboard.writeText(text);
+      appState.addToast('Copied brief & script to clipboard!', 'success');
+    } catch {
+      appState.addToast('Unable to access clipboard.', 'warning');
     }
   }
 
@@ -456,6 +637,45 @@
               </div>
             </div>
 
+            <!-- 7. File Attachments (NAS _Orders Vault) -->
+            <div class="field">
+              <label class="field-label" for="f-file-input">
+                Upload Reference Files / Assets (NAS Temporary Vault)
+                <span class="optional-label">Optional • Stored in \\SSNAS\_Orders</span>
+              </label>
+              <div class="file-dropzone">
+                <input
+                  id="f-file-input"
+                  type="file"
+                  multiple
+                  class="sr-only"
+                  onchange={handleFileInput}
+                />
+                <label for="f-file-input" class="dropzone-label">
+                  <iconify-icon icon="fluent:folder-arrow-up-24-regular" style="font-size:24px; color:var(--brand-accent);"></iconify-icon>
+                  <span class="dropzone-text">Click to choose files or drop images, logos, briefs, PDFs here</span>
+                  <span class="dropzone-hint">PNG, JPG, WEBP, PDF, DOCX, ZIP • Up to 50 MB per file</span>
+                </label>
+              </div>
+
+              {#if f_files.length > 0}
+                <div class="selected-files-list">
+                  {#each f_files as file, idx}
+                    <div class="file-chip">
+                      <span class="file-name" title={file.filename}>{file.filename}</span>
+                      <span class="file-size">({file.sizeFormatted})</span>
+                      <button
+                        type="button"
+                        class="file-remove-btn"
+                        onclick={() => removeSelectedFile(idx)}
+                        title="Remove file"
+                      >✕</button>
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+
             <!-- Error -->
             {#if formError}
               <div class="error-msg" role="alert">
@@ -628,10 +848,212 @@
                           <button
                             class="proj-link"
                             onclick={() => appState.navigate('project-detail', { id: order.projectId! })}
-                          >Open Workspace</button>
+                          >Open Workspace ↗</button>
                         </div>
                       {/if}
                     </div>
+
+                    <!-- ── Attached Reference Files Section ── -->
+                    <div class="detail-attachments-section">
+                      <div class="att-header">
+                        <span class="detail-label">
+                          Attached Reference Files ({order.attachments?.length || 0})
+                        </span>
+                        <div class="att-header-actions">
+                          <button
+                            type="button"
+                            class="text-link-btn"
+                            onclick={(e) => { e.stopPropagation(); copyNasPath(order); }}
+                            title="Copy physical UNC path for Windows Explorer"
+                          >
+                            📁 Copy NAS Folder Path
+                          </button>
+                          <label class="upload-more-btn" onclick={(e) => e.stopPropagation()}>
+                            <span>+ Upload File</span>
+                            <input
+                              type="file"
+                              multiple
+                              class="sr-only"
+                              onchange={(e) => handleUploadToExistingOrder(order.id, e)}
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      {#if order.attachments && order.attachments.length > 0}
+                        <div class="attachments-grid">
+                          {#each order.attachments as att}
+                            <div class="att-card" onclick={(e) => e.stopPropagation()}>
+                              <div class="att-icon-box">
+                                {#if att.filename.match(/\.(png|jpg|jpeg|webp|gif|svg)$/i)}
+                                  <iconify-icon icon="fluent:image-24-regular" style="color:#0078D4; font-size:20px;"></iconify-icon>
+                                {:else if att.filename.match(/\.pdf$/i)}
+                                  <iconify-icon icon="fluent:document-pdf-24-regular" style="color:#E11D48; font-size:20px;"></iconify-icon>
+                                {:else if att.filename.match(/\.(mp4|mov|avi|mkv)$/i)}
+                                  <iconify-icon icon="fluent:video-24-regular" style="color:#7C3AED; font-size:20px;"></iconify-icon>
+                                {:else if att.filename.match(/\.(zip|rar|7z|tar|gz)$/i)}
+                                  <iconify-icon icon="fluent:folder-zip-24-regular" style="color:#D97706; font-size:20px;"></iconify-icon>
+                                {:else}
+                                  <iconify-icon icon="fluent:document-24-regular" style="color:#64748B; font-size:20px;"></iconify-icon>
+                                {/if}
+                              </div>
+                              <div class="att-info">
+                                <a
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  class="att-filename"
+                                  title={`Open ${att.filename}`}
+                                >{att.filename}</a>
+                                <span class="att-meta">{att.sizeFormatted || '—'}</span>
+                              </div>
+                              <div class="att-actions">
+                                <a
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  class="att-act-btn"
+                                  title="View in new tab"
+                                >↗</a>
+                                {#if isDesigner}
+                                  <button
+                                    type="button"
+                                    class="att-act-btn att-del"
+                                    onclick={() => deleteAttachment(order.id, att.filename)}
+                                    title="Delete attachment"
+                                  >✕</button>
+                                {/if}
+                              </div>
+                            </div>
+                          {/each}
+                        </div>
+
+                        {#if isDesigner && order.projectId}
+                          <div class="ingest-row">
+                            <button
+                              type="button"
+                              class="act-btn act-blue mgt-btn"
+                              onclick={(e) => { e.stopPropagation(); importToProject(order.id, order.projectId!); }}
+                              title="Copy all attachments directly to project 01_BRIEF_ASSETS folder"
+                            >
+                              📥 Copy All Attachments to Project {order.projectId} (01_BRIEF_ASSETS)
+                            </button>
+                          </div>
+                        {/if}
+                      {:else}
+                        <div class="att-empty">
+                          <span class="att-empty-text">No files attached yet. Requesters and designers can attach references here.</span>
+                        </div>
+                      {/if}
+                    </div>
+
+                    <!-- ── Processing & Management Controls ── -->
+                    {#if isDesigner}
+                      <div class="detail-management-bar">
+                        <div class="mgt-col">
+                          <span class="detail-label">Lifecycle Actions</span>
+                          <div class="mgt-btn-group">
+                            {#if order.status === 'pending'}
+                              <button
+                                class="act-btn act-blue mgt-btn"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'in_progress'); }}
+                                title="Start working on this request"
+                              >▶ Start Working</button>
+                            {:else if order.status === 'in_progress'}
+                              <button
+                                class="act-btn act-amber mgt-btn"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'for_approval'); }}
+                                title="Submit for review & sign-off"
+                              >◉ Send for Review</button>
+                              <button
+                                class="act-btn mgt-btn text-muted"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'pending'); }}
+                                title="Reset back to pending"
+                              >↺ Back to Pending</button>
+                            {:else if order.status === 'for_approval'}
+                              <button
+                                class="act-btn act-green mgt-btn"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'done'); }}
+                                title="Mark request as complete"
+                              >✓ Complete Order</button>
+                              <button
+                                class="act-btn mgt-btn text-muted"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'in_progress'); }}
+                                title="Re-open into production"
+                              >↺ Return to WIP</button>
+                            {:else if order.status === 'done'}
+                              <span class="status-done-badge">✓ Order Completed</span>
+                              <button
+                                class="act-btn mgt-btn text-muted"
+                                onclick={(e) => { e.stopPropagation(); updateStatus(order.id, 'in_progress'); }}
+                                title="Reopen order"
+                              >↺ Reopen</button>
+                            {/if}
+                            {#if order.status !== 'done' && order.status !== 'cancelled'}
+                              <button
+                                class="act-btn act-red mgt-btn"
+                                onclick={(e) => { e.stopPropagation(); cancelOrder(order.id); }}
+                                title="Cancel this order"
+                              >✕ Cancel</button>
+                            {/if}
+                          </div>
+                        </div>
+
+                        <div class="mgt-col">
+                          <span class="detail-label">Designer Handover</span>
+                          <select
+                            class="mgt-select"
+                            value={order.assignedTo || ''}
+                            onclick={(e) => e.stopPropagation()}
+                            onchange={(e) => {
+                              e.stopPropagation();
+                              assignDesigner(order.id, (e.target as HTMLSelectElement).value);
+                            }}
+                          >
+                            <option value="">-- Assign Designer --</option>
+                            {#each (roster.length > 0 ? roster : [{name:'Harussani'},{name:'Haikal'},{name:'Aliff'},{name:'Raihan'},{name:'Hasan'}]) as staff}
+                              <option value={staff.name} selected={order.assignedTo === staff.name}>{staff.name}</option>
+                            {/each}
+                          </select>
+                        </div>
+
+                        <div class="mgt-col">
+                          <span class="detail-label">Project Workspace Linking</span>
+                          <div class="mgt-link-row" onclick={(e) => e.stopPropagation()}>
+                            <input
+                              type="text"
+                              class="mgt-input"
+                              placeholder="Link Project ID (e.g. 0007V)"
+                              value={order.projectId || ''}
+                              id={`proj-input-${order.id}`}
+                              onkeydown={(e) => {
+                                if (e.key === 'Enter') {
+                                  linkProject(order.id, (e.target as HTMLInputElement).value);
+                                }
+                              }}
+                            />
+                            <button
+                              class="act-btn act-blue mgt-btn"
+                              onclick={() => {
+                                const input = document.getElementById(`proj-input-${order.id}`) as HTMLInputElement;
+                                if (input) linkProject(order.id, input.value);
+                              }}
+                            >Link</button>
+                          </div>
+                        </div>
+
+                        <div class="mgt-col actions-right">
+                          <span class="detail-label">Studio Handover</span>
+                          <button
+                            class="act-btn act-blue mgt-btn"
+                            onclick={(e) => { e.stopPropagation(); copyBrief(order); }}
+                            title="Copy title, entity, format, and full script to clipboard"
+                          >
+                            📋 Copy Brief &amp; Script
+                          </button>
+                        </div>
+                      </div>
+                    {/if}
                   </div>
                 </td>
               </tr>
@@ -1361,6 +1783,283 @@
     font-family: var(--font-family);
   }
   .proj-link:hover { opacity: 0.7; }
+
+  /* ── Management Bar ── */
+  .detail-management-bar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--surface-card-border);
+    align-items: flex-end;
+  }
+  .mgt-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mgt-col.actions-right {
+    margin-left: auto;
+  }
+  .mgt-btn-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .mgt-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .mgt-select {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--surface-card-border);
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+  }
+  .mgt-link-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .mgt-input {
+    width: 170px;
+    padding: 5px 8px;
+    font-size: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--surface-card-border);
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+  }
+  .status-done-badge {
+    font-size: 12px;
+    font-weight: 700;
+    color: #065F46;
+    background: #ECFDF5;
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid #A7F3D0;
+  }
+  .text-muted {
+    color: var(--text-secondary);
+  }
+
+  /* ── File Attachments & Dropzone ── */
+  .file-dropzone {
+    border: 1.5px dashed var(--surface-card-border);
+    border-radius: var(--radius-md);
+    background: var(--surface-card-subtle);
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+  }
+  .file-dropzone:hover {
+    border-color: var(--brand-accent);
+    background: rgba(33, 161, 247, 0.04);
+  }
+  .dropzone-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .dropzone-text {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .dropzone-hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+  .selected-files-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    font-size: 12px;
+  }
+  .file-name {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .file-size {
+    color: var(--text-tertiary);
+    font-size: 11px;
+  }
+  .file-remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-danger);
+    padding: 0 2px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* ── Detail Panel Attachments ── */
+  .detail-attachments-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--surface-card-border);
+  }
+  .att-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .att-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .text-link-btn {
+    background: none;
+    border: none;
+    color: var(--brand-accent);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+  .upload-more-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background: rgba(33, 161, 247, 0.08);
+    color: var(--brand-accent);
+    border: 1px solid rgba(33, 161, 247, 0.2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+  }
+  .upload-more-btn:hover {
+    background: rgba(33, 161, 247, 0.15);
+  }
+  .attachments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .att-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-card-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast);
+  }
+  .att-card:hover {
+    border-color: var(--brand-accent);
+  }
+  .att-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-card-subtle);
+    flex-shrink: 0;
+  }
+  .att-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  .att-filename {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .att-filename:hover {
+    color: var(--brand-accent);
+    text-decoration: underline;
+  }
+  .att-meta {
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+  }
+  .att-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .att-act-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--surface-card-border);
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .att-act-btn:hover {
+    background: var(--surface-card-hover);
+    color: var(--text-primary);
+  }
+  .att-act-btn.att-del {
+    color: var(--color-danger);
+  }
+  .att-act-btn.att-del:hover {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger-border);
+  }
+  .ingest-row {
+    margin-top: 10px;
+  }
+  .att-empty {
+    padding: 14px;
+    text-align: center;
+    border: 1px dashed var(--surface-card-border);
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+  }
+  .att-empty-text {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+  }
 
   /* ── State Shells ── */
   .state-shell {

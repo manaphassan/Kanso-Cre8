@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using SS_CAM.Models;
 using SS_CAM.Services;
 using SS_CAM.Utilities;
 using Wpf.Ui.Controls;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace SS_CAM.Views
 {
@@ -98,6 +100,56 @@ namespace SS_CAM.Views
             });
         }
 
+        private List<string> GetAvailableDesignersList()
+        {
+            HashSet<string> designerSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            List<StaffDirectoryItem> staffList = null;
+            try { staffList = UserProfileService.GetStaffDirectory(_workspaceRoot); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[TaskManagerPage] GetStaffDirectory: " + ex.Message); }
+
+            if (staffList != null)
+            {
+                foreach (var s in staffList)
+                {
+                    if (s != null && !string.IsNullOrWhiteSpace(s.Name))
+                    {
+                        if (WorkloadSlaService.IsDesignerOrAdminRole(s.Role, s.Department))
+                            designerSet.Add(s.Name);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(_workspaceRoot))
+            {
+                List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(_workspaceRoot);
+                if (designers != null)
+                {
+                    foreach (DesignerFolderChoice d in designers)
+                    {
+                        if (d != null && !string.IsNullOrWhiteSpace(d.Name))
+                            designerSet.Add(d.Name);
+                    }
+                }
+            }
+
+            foreach (ProjectStatusItem p in _allProjects)
+            {
+                if (p != null && !string.IsNullOrWhiteSpace(p.Designer))
+                {
+                    if (!Regex.IsMatch(p.Designer, @"^\d{4}$") && !Regex.IsMatch(p.Designer, @"^\d{6}") &&
+                        !p.Designer.StartsWith("#") && !p.Designer.StartsWith("_"))
+                    {
+                        designerSet.Add(p.Designer);
+                    }
+                }
+            }
+
+            List<string> list = new List<string>(designerSet);
+            list.Sort(StringComparer.OrdinalIgnoreCase);
+            return list;
+        }
+
         private void PopulateDesignerFilter()
         {
             try
@@ -105,49 +157,11 @@ namespace SS_CAM.Views
                 _isPopulatingFilter = true;
                 string currentSelection = DesignerFilterTM.SelectedItem != null ? DesignerFilterTM.SelectedItem.ToString() : "All Designers";
 
-                HashSet<string> designerSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                List<StaffDirectoryItem> staffList = null;
-                try { staffList = UserProfileService.GetStaffDirectory(_workspaceRoot); }
-                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[TaskManagerPage] GetStaffDirectory: " + ex.Message); }
-
-                if (!string.IsNullOrWhiteSpace(_workspaceRoot))
-                {
-                    List<DesignerFolderChoice> designers = WorkspaceScanner.GetDesignerFolders(_workspaceRoot);
-                    if (designers != null)
-                    {
-                        foreach (DesignerFolderChoice d in designers)
-                        {
-                            if (d != null && !string.IsNullOrWhiteSpace(d.Name))
-                                designerSet.Add(d.Name);
-                        }
-                    }
-                }
-
-                foreach (ProjectStatusItem p in _allProjects)
-                {
-                    if (p != null && !string.IsNullOrWhiteSpace(p.Designer))
-                    {
-                        if (!Regex.IsMatch(p.Designer, @"^\d{4}$") && !Regex.IsMatch(p.Designer, @"^\d{6}") &&
-                            !p.Designer.StartsWith("#") && !p.Designer.StartsWith("_"))
-                        {
-                            if (staffList != null)
-                            {
-                                var matched = staffList.Find(s => string.Equals(s.Name, p.Designer, StringComparison.OrdinalIgnoreCase) ||
-                                                                  string.Equals(s.StaffId, p.Designer, StringComparison.OrdinalIgnoreCase));
-                                if (matched != null && !WorkloadSlaService.IsDesignerOrAdminRole(matched.Role, matched.Department))
-                                {
-                                    continue; // Exclude manager role
-                                }
-                            }
-                            designerSet.Add(p.Designer);
-                        }
-                    }
-                }
+                List<string> designers = GetAvailableDesignersList();
 
                 DesignerFilterTM.Items.Clear();
                 DesignerFilterTM.Items.Add("All Designers");
-                foreach (string d in designerSet)
+                foreach (string d in designers)
                 {
                     DesignerFilterTM.Items.Add(d);
                 }
@@ -162,6 +176,18 @@ namespace SS_CAM.Views
                     }
                 }
                 DesignerFilterTM.SelectedIndex = selectedIdx;
+
+                if (DetailDesigner != null)
+                {
+                    string currentDetailText = DetailDesigner.Text;
+                    DetailDesigner.Items.Clear();
+                    foreach (string d in designers)
+                    {
+                        DetailDesigner.Items.Add(d);
+                    }
+                    if (!string.IsNullOrEmpty(currentDetailText))
+                        DetailDesigner.Text = currentDetailText;
+                }
             }
             catch (Exception ex)
             {
@@ -472,6 +498,94 @@ namespace SS_CAM.Views
             }
         }
 
+        private void OnCardContextMenuOpened(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ContextMenu cm = sender as ContextMenu;
+                if (cm == null) return;
+
+                ProjectStatusItem item = cm.DataContext as ProjectStatusItem;
+                if (item == null) return;
+
+                MenuItem handoverRoot = null;
+                foreach (var obj in cm.Items)
+                {
+                    MenuItem mi = obj as MenuItem;
+                    if (mi != null && object.Equals(mi.Tag, "handover_root"))
+                    {
+                        handoverRoot = mi;
+                        break;
+                    }
+                }
+
+                if (handoverRoot != null)
+                {
+                    handoverRoot.Items.Clear();
+                    List<string> designers = GetAvailableDesignersList();
+                    foreach (string d in designers)
+                    {
+                        MenuItem sub = new MenuItem
+                        {
+                            Header = d,
+                            Tag = d,
+                            IsChecked = string.Equals(item.Designer, d, StringComparison.OrdinalIgnoreCase)
+                        };
+                        sub.Click += OnQuickHandoverMenuClicked;
+                        handoverRoot.Items.Add(sub);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[TaskManagerPage] OnCardContextMenuOpened error: " + ex.Message);
+            }
+        }
+
+        private void OnQuickHandoverMenuClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MenuItem menu = sender as MenuItem;
+                if (menu == null || menu.Tag == null) return;
+
+                string targetDesigner = menu.Tag.ToString();
+                ProjectStatusItem item = menu.DataContext as ProjectStatusItem;
+                if (item == null)
+                {
+                    ContextMenu cm = FindParentContextMenu(menu);
+                    if (cm != null) item = cm.DataContext as ProjectStatusItem;
+                }
+
+                if (item != null && !string.IsNullOrEmpty(item.FullPath))
+                {
+                    string oldDesigner = !string.IsNullOrWhiteSpace(item.Designer) ? item.Designer : "Unassigned";
+                    item.Designer = targetDesigner;
+                    FrontmatterService.WriteStatus(item);
+                    NotificationService.ShowSuccess(
+                        "Task Handed Over",
+                        string.Format("Project '{0}' handed over to {1}.", item.Project, targetDesigner),
+                        item.FullPath);
+                    LoadProjects();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[TaskManagerPage] OnQuickHandoverMenuClicked error: " + ex.Message);
+            }
+        }
+
+        private ContextMenu FindParentContextMenu(MenuItem item)
+        {
+            DependencyObject current = item;
+            while (current != null)
+            {
+                if (current is ContextMenu) return (ContextMenu)current;
+                current = LogicalTreeHelper.GetParent(current);
+            }
+            return null;
+        }
+
         private void OnTMRefreshClicked(object sender, RoutedEventArgs e)
         {
             LoadProjects();
@@ -633,6 +747,7 @@ namespace SS_CAM.Views
 
             if (DetailDuration != null) DetailDuration.Text = item.Duration ?? "";
             DetailRevision.Text = item.Revision.ToString();
+            if (DetailDesigner != null) DetailDesigner.Text = item.Designer ?? "";
 
             // Load README body content notes
             string body = FrontmatterService.ReadBody(item.FullPath);
@@ -778,6 +893,9 @@ namespace SS_CAM.Views
             if (DetailDuration != null)
                 _editingProject.Duration = DetailDuration.Text.Trim();
 
+            if (DetailDesigner != null)
+                _editingProject.Designer = DetailDesigner.Text.Trim();
+
             int revVal;
             if (int.TryParse(DetailRevision.Text, out revVal))
             {
@@ -795,6 +913,66 @@ namespace SS_CAM.Views
                 DetailReadmeRendered.Document = MarkdownHelper.ToFlowDocument(newBody);
 
                 // Refresh metrics & board
+                PopulateDesignerFilter();
+                UpdateMetricSummaryCards();
+                ApplyFiltersAndUpdateBoard();
+            }
+            catch (Exception ex)
+            {
+                DetailSaveStatus.Text = string.Format("Error: {0}", ex.Message);
+            }
+        }
+
+        private void OnDetailHandoverClicked(object sender, RoutedEventArgs e)
+        {
+            if (_editingProject == null) return;
+            string newOwner = DetailDesigner != null ? DetailDesigner.Text.Trim() : "";
+            if (string.IsNullOrWhiteSpace(newOwner))
+            {
+                DetailSaveStatus.Text = "Please specify a designer name.";
+                return;
+            }
+
+            string oldOwner = !string.IsNullOrWhiteSpace(_editingProject.Designer) ? _editingProject.Designer : "Unassigned";
+            _editingProject.Designer = newOwner;
+
+            if (DetailStatus.SelectedItem is ComboBoxItem)
+                _editingProject.Status = ((ComboBoxItem)DetailStatus.SelectedItem).Content.ToString();
+            if (DetailPriority.SelectedItem is ComboBoxItem)
+                _editingProject.Priority = ((ComboBoxItem)DetailPriority.SelectedItem).Content.ToString();
+
+            _editingProject.Deadline = DetailDeadline.SelectedDate.HasValue 
+                ? DetailDeadline.SelectedDate.Value.ToString("yyyy-MM-dd") 
+                : "";
+
+            if (DetailCreatedDate != null) 
+            {
+                _editingProject.CreatedDate = DetailCreatedDate.SelectedDate.HasValue 
+                    ? DetailCreatedDate.SelectedDate.Value.ToString("yyyy-MM-dd") 
+                    : "";
+            }
+
+            if (DetailDuration != null)
+                _editingProject.Duration = DetailDuration.Text.Trim();
+
+            int revVal;
+            if (int.TryParse(DetailRevision.Text, out revVal))
+                _editingProject.Revision = revVal;
+
+            string newBody = DetailReadmePreview.Text;
+
+            try
+            {
+                FrontmatterService.WriteStatusAndBody(_editingProject, newBody);
+                DetailSaveStatus.Text = string.Format("Handed over to {0} \u2713", newOwner);
+                DetailReadmeRendered.Document = MarkdownHelper.ToFlowDocument(newBody);
+
+                NotificationService.ShowSuccess(
+                    "Task Handed Over",
+                    string.Format("Project '{0}' handed over from {1} to {2}.", _editingProject.Project, oldOwner, newOwner),
+                    _editingProject.FullPath);
+
+                PopulateDesignerFilter();
                 UpdateMetricSummaryCards();
                 ApplyFiltersAndUpdateBoard();
             }

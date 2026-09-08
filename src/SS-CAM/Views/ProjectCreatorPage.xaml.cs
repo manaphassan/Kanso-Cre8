@@ -73,6 +73,7 @@ namespace SS_CAM.Views
             AutoCalculateNextProjectId();
             UpdateLivePreview();
             LoadRecentProjects();
+            LoadCreativeOrders();
         }
 
         private void ReloadCategoryPresets()
@@ -647,11 +648,15 @@ namespace SS_CAM.Views
                 string deadlineFormatted = targetDeadline.ToString("yyyy-MM-dd");
                 string presetName = selectedPreset != null ? selectedPreset.Name : (PresetComboBox.SelectedItem != null ? PresetComboBox.SelectedItem.ToString() : "Graphic & Print Design");
 
+                CreativeOrderItem selectedOrder = LinkedOrderComboBox != null ? LinkedOrderComboBox.SelectedItem as CreativeOrderItem : null;
+                string orderId = (selectedOrder != null && !string.IsNullOrWhiteSpace(selectedOrder.Id) && selectedOrder.Id != "NONE") ? selectedOrder.Id : null;
+
                 string frontmatter = FrontmatterService.BuildDefaultFrontmatter(
                     designerName,
                     subBrandCode,
                     deadlineFormatted,
-                    presetName);
+                    presetName,
+                    orderId);
 
                 string readmeContent = string.Format("{0}\n# {1}\n\n- **Created**: {2:yyyy-MM-dd HH:mm}\n- **Designer**: {3}\n- **Project ID**: {4}\n- **Preset**: {5}\n- **Platform**: {6}\n- **Platform Specs**: {7}\n\n## Project Brief & Remarks\n{8}\n",
                     frontmatter,
@@ -666,8 +671,19 @@ namespace SS_CAM.Views
 
                 File.WriteAllText(Path.Combine(targetDir, "README.md"), readmeContent);
 
-                CreateStatusText.Text = "Project created successfully!";
+                int attachmentsCopied = 0;
+                if (!string.IsNullOrWhiteSpace(orderId))
+                {
+                    string briefAssetsDir = Path.Combine(targetDir, "01_BRIEF_ASSETS");
+                    attachmentsCopied = CreativeOrderService.CopyAttachmentsToProject(workspaceRoot, orderId, briefAssetsDir);
+                    CreativeOrderService.UpdateOrderProject(workspaceRoot, orderId, folderName, "in_progress");
+                }
+
+                CreateStatusText.Text = !string.IsNullOrWhiteSpace(orderId)
+                    ? string.Format("Project created! Imported {0} attachment(s) from {1}", attachmentsCopied, orderId)
+                    : "Project created successfully!";
                 LoadRecentProjects();
+                LoadCreativeOrders();
                 
                 AutoCalculateNextProjectId();
                 ProjectNameInput.Text = "";
@@ -678,6 +694,100 @@ namespace SS_CAM.Views
             {
                 MessageBox.Show(string.Format("Could not create project: {0}", ex.Message), "Creation Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 CreateStatusText.Text = "Project creation failed.";
+            }
+        }
+
+        private void LoadCreativeOrders()
+        {
+            if (LinkedOrderComboBox == null) return;
+            try
+            {
+                SyncWorkspaceRootFromInput();
+                List<CreativeOrderItem> orders = CreativeOrderService.LoadOrders(workspaceRoot);
+
+                List<CreativeOrderItem> displayList = new List<CreativeOrderItem>();
+                displayList.Add(new CreativeOrderItem
+                {
+                    Id = "NONE",
+                    Title = "-- Standalone Project (No Order Linked) --",
+                    AttachmentCount = 0
+                });
+
+                var sorted = orders
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToList();
+
+                displayList.AddRange(sorted);
+
+                LinkedOrderComboBox.ItemsSource = displayList;
+                LinkedOrderComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[ProjectCreatorPage] LoadCreativeOrders error: " + ex.Message);
+            }
+        }
+
+        private void OnRefreshOrdersClicked(object sender, RoutedEventArgs e)
+        {
+            LoadCreativeOrders();
+            CreateStatusText.Text = "Synchronized orders from NAS _Orders.";
+        }
+
+        private void OnLinkedOrderSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (LinkedOrderComboBox == null) return;
+            CreativeOrderItem item = LinkedOrderComboBox.SelectedItem as CreativeOrderItem;
+
+            if (item != null && item.Id != "NONE" && !string.IsNullOrWhiteSpace(item.Id))
+            {
+                if (ProjectNameInput != null)
+                {
+                    if (string.IsNullOrWhiteSpace(ProjectNameInput.Text) || ProjectNameInput.Text.Equals("brand campaign", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ProjectNameInput.Text = item.Title ?? "order task";
+                    }
+                }
+
+                if (SubBrandComboBox != null && !string.IsNullOrWhiteSpace(item.SubBrand))
+                {
+                    for (int i = 0; i < SubBrandComboBox.Items.Count; i++)
+                    {
+                        string b = SubBrandComboBox.Items[i].ToString();
+                        if (b.IndexOf(item.SubBrand, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            SubBrandComboBox.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (ProjectDescriptionInput != null)
+                {
+                    string briefNotes = string.Format("### Order: {0}\n- **Requester**: {1} ({2})\n- **Type**: {3} | **Priority**: {4}\n- **Deadline**: {5}\n\n## Brief / Instructions\n{6}\n",
+                        item.Id,
+                        item.RequesterName ?? "N/A",
+                        item.RequesterEmail ?? "",
+                        item.DeliverableType ?? "General",
+                        item.Priority ?? "medium",
+                        item.Deadline ?? "ASAP",
+                        item.Description ?? "No description provided.");
+                    ProjectDescriptionInput.Text = briefNotes;
+                }
+
+                if (OrderAttachmentsBadge != null)
+                {
+                    OrderAttachmentsBadge.Text = item.AttachmentCount > 0
+                        ? string.Format("📎 {0} attachment(s) will be imported to 01_BRIEF_ASSETS", item.AttachmentCount)
+                        : "No attachments";
+                }
+            }
+            else
+            {
+                if (OrderAttachmentsBadge != null)
+                {
+                    OrderAttachmentsBadge.Text = "";
+                }
             }
         }
 

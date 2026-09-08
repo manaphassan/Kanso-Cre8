@@ -229,5 +229,50 @@ namespace SS_CAM.Models
                 return false;
             }
         }
+
+        public int AttachmentCount { get; set; }
+        public List<string> AttachmentFiles { get; set; }
+    }
+
+    /// <summary>
+    /// Lightweight order item used in dropdowns, ProjectCreator linking, and attachment ingestion.
+    /// </summary>
+    public class CreativeOrderItem
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string SubBrand { get; set; }
+        public string RequesterName { get; set; }
+        public string RequesterEmail { get; set; }
+        public string DeliverableType { get; set; }
+        public string Priority { get; set; }
+        public string Deadline { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public string ProjectId { get; set; }
+        public string CreatedAt { get; set; }
+        public string UpdatedAt { get; set; }
+        public int AttachmentCount { get; set; }
+        public List<string> AttachmentFiles { get; set; }
+
+        public CreativeOrderItem()
+        {
+            AttachmentFiles = new List<string>();
+        }
+
+        public string DisplayText
+        {
+            get
+            {
+                string attachBadge = AttachmentCount > 0 ? string.Format(" [\uD83D\uDCCE {0} files]", AttachmentCount) : "";
+                string brand = !string.IsNullOrWhiteSpace(SubBrand) ? string.Format("[{0}] ", SubBrand) : "";
+                return string.Format("{0}{1} | {2}{3}", brand, Id, Title ?? "Untitled", attachBadge);
+            }
+        }
+
+        public override string ToString()
+        {
+            return DisplayText;
+        }
     }
 }

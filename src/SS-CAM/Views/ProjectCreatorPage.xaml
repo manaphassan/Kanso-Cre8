@@ -68,6 +68,23 @@
                                     </StackPanel>
                                 </Grid>
 
+                                <!-- Linked Creative Request from NAS _Orders -->
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <ui:TextBlock Text="Link Creative Order (Optional from NAS _Orders)" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                            <ui:TextBlock x:Name="OrderAttachmentsBadge" Text="" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource FluentBrand80}" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                        <ComboBox x:Name="LinkedOrderComboBox" Height="36" SelectionChanged="OnLinkedOrderSelectionChanged" DisplayMemberPath="DisplayText"/>
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Appearance="Secondary" Content="Sync" Click="OnRefreshOrdersClicked" Height="36" Padding="12,0" VerticalAlignment="Bottom" ToolTip="Reload orders from NAS _Orders"/>
+                                </Grid>
+
                                 <StackPanel Margin="0,0,0,14">
                                     <ui:TextBlock Text="Project Title / Descriptor" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6"/>
                                     <ui:TextBox x:Name="ProjectNameInput" Text="brand campaign" Height="36" TextChanged="OnFormInputChanged"/>

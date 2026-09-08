@@ -20,6 +20,11 @@ const GeminiService = require('../services/GeminiService');
 const SnapshotService = require('../services/SnapshotService');
 const WebhookService = require('../services/WebhookService');
 const OrderService = require('../services/OrderService');
+const multer = require('multer');
+const orderUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit for high-res creative assets
+});
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -1617,12 +1622,12 @@ router.post('/orders', authenticateToken, (req, res) => {
     const requesterRole = req.user?.role     || req.body.requesterRole || '';
     const order = OrderService.submitOrder({ ...req.body, requester, requesterRole });
     AuditService.logEvent({
-      action:    'order.submitted',
-      actor:     requester,
+      action:     'order.submitted',
+      actor:      requester,
+      role:       requesterRole,
       entityType: 'order',
-      entityId:  order.id,
-      details:   { title: order.title, entity: order.entity, priority: order.priority },
-      timestamp: new Date().toISOString(),
+      entityId:   order.id,
+      details:    { title: order.title, entity: order.entity, priority: order.priority }
     });
     SseService.broadcast('order:new', { order });
     res.status(201).json({ success: true, order });
@@ -1653,6 +1658,128 @@ router.delete('/orders/:id', authenticateToken, (req, res) => {
   } catch (err) {
     console.error('[Orders] cancelOrder:', err.message);
     res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/orders/:id/attachments — Upload attachments to order NAS vault
+router.post('/orders/:id/attachments', authenticateToken, orderUpload.array('files', 15), (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = OrderService.getOrder(id);
+    if (!order) return res.status(404).json({ error: 'Order not found.' });
+
+    const saved = [];
+    const actor = req.user?.name || 'Requester';
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const result = OrderService.saveOrderAttachment(id, file.originalname, file.buffer, actor);
+        saved.push(result);
+      }
+    } else if (req.body.filename && (req.body.fileData || req.body.data)) {
+      const result = OrderService.saveOrderAttachment(id, req.body.filename, req.body.fileData || req.body.data, actor);
+      saved.push(result);
+    } else if (Array.isArray(req.body.attachments)) {
+      for (const att of req.body.attachments) {
+        if (att.filename && (att.fileData || att.data)) {
+          const result = OrderService.saveOrderAttachment(id, att.filename, att.fileData || att.data, actor);
+          saved.push(result);
+        }
+      }
+    }
+
+    AuditService.logEvent({
+      actor,
+      role: req.user?.role || '',
+      action: 'ORDER_ATTACHMENT_UPLOADED',
+      entityType: 'Order',
+      entityId: id,
+      details: { files: saved.map(s => s.filename), count: saved.length }
+    });
+
+    const updated = OrderService.getOrder(id);
+    SseService.broadcast('order:updated', { order: updated });
+    res.json({ success: true, saved, order: updated });
+  } catch (err) {
+    console.error('[Orders] uploadAttachments:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/orders/:id/attachments/:filename — Download or preview attachment
+router.get('/orders/:id/attachments/:filename', (req, res) => {
+  try {
+    const { id, filename } = req.params;
+    const filePath = OrderService.getOrderAttachmentPath(id, filename);
+    if (!filePath) return res.status(404).json({ error: 'Attachment not found.' });
+
+    const ext = path.extname(filename).toLowerCase();
+    const mimeTypes = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.webp': 'image/webp',
+      '.gif': 'image/gif',
+      '.svg': 'image/svg+xml',
+      '.pdf': 'application/pdf',
+      '.zip': 'application/zip',
+      '.mp4': 'video/mp4',
+      '.mov': 'video/quicktime',
+      '.ai': 'application/postscript',
+      '.psd': 'image/vnd.adobe.photoshop',
+      '.txt': 'text/plain',
+      '.md': 'text/markdown',
+      '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    };
+    const contentType = mimeTypes[ext] || 'application/octet-stream';
+    res.setHeader('Content-Type', contentType);
+    const isInline = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.pdf', '.txt', '.mp4'].includes(ext);
+    res.setHeader('Content-Disposition', `${isInline ? 'inline' : 'attachment'}; filename="${encodeURIComponent(filename)}"`);
+    fs.createReadStream(filePath).pipe(res);
+  } catch (err) {
+    console.error('[Orders] downloadAttachment:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/orders/:id/attachments/:filename — Delete an attachment
+router.delete('/orders/:id/attachments/:filename', authenticateToken, (req, res) => {
+  try {
+    const { id, filename } = req.params;
+    const result = OrderService.deleteOrderAttachment(id, filename);
+    const updated = OrderService.getOrder(id);
+    SseService.broadcast('order:updated', { order: updated });
+    res.json({ success: true, ...result, order: updated });
+  } catch (err) {
+    console.error('[Orders] deleteAttachment:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/orders/:id/import-to-project — Ingest attachments to linked project 01_BRIEF_ASSETS
+router.post('/orders/:id/import-to-project', authenticateToken, (req, res) => {
+  try {
+    const { id } = req.params;
+    const { projectId } = req.body;
+    if (!projectId) return res.status(400).json({ error: 'projectId is required.' });
+
+    const result = OrderService.copyAttachmentsToProject(id, projectId, req.user?.name);
+    AuditService.logEvent({
+      actor: req.user?.name || 'Designer',
+      role: req.user?.role || '',
+      action: 'ORDER_ATTACHMENTS_IMPORTED',
+      entityType: 'Project',
+      entityId: projectId,
+      details: { orderId: id, filesCopied: result.count }
+    });
+
+    const updated = OrderService.getOrder(id);
+    SseService.broadcast('order:updated', { order: updated });
+    res.json({ success: true, ...result, order: updated });
+  } catch (err) {
+    console.error('[Orders] importToProject:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

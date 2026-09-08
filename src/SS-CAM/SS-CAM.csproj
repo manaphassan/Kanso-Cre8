@@ -197,6 +197,7 @@
     <Compile Include="Models\ProjectComment.cs" />
     <Compile Include="Models\CreativeOrder.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
+    <Compile Include="Services\CreativeOrderService.cs" />
     <Compile Include="Services\WellbeingDataService.cs" />
     <Compile Include="Services\WellbeingTimerService.cs" />
     <Compile Include="Services\FatigueRuleEngine.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="Services\PreflightValidatorService.cs" />
     <Compile Include="Services\WorkloadSlaService.cs" />
     <Compile Include="Services\MalaysiaHolidayService.cs" />
-    <Compile Include="Services\CreativeOrderService.cs" />
     <Compile Include="Views\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

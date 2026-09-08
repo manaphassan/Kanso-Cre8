@@ -59,14 +59,17 @@ namespace SS_CAM.Services
         {
             if (!string.IsNullOrWhiteSpace(workspaceRoot) && Directory.Exists(workspaceRoot))
             {
-                string ordersDir = Path.Combine(workspaceRoot, "_Team", "Orders");
+                string nasOrdersVault = Path.Combine(workspaceRoot, "_Orders");
+                string nasOrdersFile = Path.Combine(nasOrdersVault, "creative-orders.jsonl");
+                if (File.Exists(nasOrdersFile)) return nasOrdersFile;
+
+                string legacyOrdersFile = Path.Combine(workspaceRoot, "_Team", "Orders", "creative-orders.jsonl");
+                if (File.Exists(legacyOrdersFile)) return legacyOrdersFile;
+
                 try
                 {
-                    if (!Directory.Exists(ordersDir))
-                    {
-                        Directory.CreateDirectory(ordersDir);
-                    }
-                    return Path.Combine(ordersDir, "creative-orders.jsonl");
+                    if (!Directory.Exists(nasOrdersVault)) Directory.CreateDirectory(nasOrdersVault);
+                    return nasOrdersFile;
                 }
                 catch (Exception ex)
                 {
@@ -687,6 +690,179 @@ The complete brief and approved script are maintained in [`01_Brief_and_Copy/COP
                     ProjectId = null
                 }
             };
+        }
+
+        public static List<CreativeOrderItem> LoadOrders(string workspaceRoot)
+        {
+            List<CreativeOrderItem> list = new List<CreativeOrderItem>();
+            string filePath = GetOrdersFilePath(workspaceRoot);
+            if (!File.Exists(filePath)) return list;
+
+            try
+            {
+                string[] lines;
+                lock (_fileLock)
+                {
+                    lines = File.ReadAllLines(filePath, Encoding.UTF8);
+                }
+
+                foreach (string line in lines)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    try
+                    {
+                        var obj = Newtonsoft.Json.Linq.JObject.Parse(line);
+                        string id = (string)obj["id"] ?? (string)obj["Id"] ?? "";
+                        if (string.IsNullOrWhiteSpace(id)) continue;
+
+                        CreativeOrderItem item = new CreativeOrderItem
+                        {
+                            Id = id,
+                            Title = (string)obj["title"] ?? (string)obj["Title"] ?? "Untitled Request",
+                            SubBrand = (string)obj["entity"] ?? (string)obj["subBrand"] ?? (string)obj["Entity"] ?? "SSH",
+                            RequesterName = (string)obj["requester"] ?? (string)obj["requesterName"] ?? (string)obj["Requester"] ?? "Staff",
+                            RequesterEmail = (string)obj["requesterEmail"] ?? "",
+                            DeliverableType = (string)obj["format"] ?? (string)obj["deliverableType"] ?? (string)obj["Format"] ?? "Standard Asset",
+                            Priority = (string)obj["priority"] ?? (string)obj["Priority"] ?? "medium",
+                            Deadline = (string)obj["targetDate"] ?? (string)obj["deadline"] ?? (string)obj["TargetDate"] ?? "",
+                            Description = (string)obj["copy"] ?? (string)obj["description"] ?? (string)obj["Copy"] ?? "",
+                            Status = (string)obj["status"] ?? (string)obj["Status"] ?? "pending",
+                            ProjectId = (string)obj["projectId"] ?? (string)obj["ProjectId"],
+                            CreatedAt = (string)obj["submittedAt"] ?? (string)obj["createdAt"] ?? (string)obj["SubmittedAt"] ?? "",
+                            UpdatedAt = (string)obj["updatedAt"] ?? (string)obj["UpdatedAt"] ?? ""
+                        };
+
+                        // Check physical attachments in _Orders/<orderId>/
+                        if (!string.IsNullOrWhiteSpace(workspaceRoot))
+                        {
+                            string orderVaultDir = Path.Combine(workspaceRoot, "_Orders", id);
+                            if (Directory.Exists(orderVaultDir))
+                            {
+                                try
+                                {
+                                    var files = Directory.GetFiles(orderVaultDir)
+                                        .Where(f => !Path.GetFileName(f).StartsWith(".") && !Path.GetFileName(f).StartsWith("~") && Path.GetFileName(f) != "creative-orders.jsonl")
+                                        .ToList();
+                                    item.AttachmentCount = files.Count;
+                                    item.AttachmentFiles = files.Select(f => Path.GetFileName(f)).ToList();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine("[CreativeOrderService] LoadOrders attachment scan error: " + ex.Message);
+                                }
+                            }
+                        }
+
+                        list.Add(item);
+                    }
+                    catch (Exception lineEx)
+                    {
+                        Debug.WriteLine("[CreativeOrderService] LoadOrders parse line error: " + lineEx.Message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CreativeOrderService] LoadOrders error: " + ex.Message);
+            }
+
+            return list;
+        }
+
+        public static int CopyAttachmentsToProject(string workspaceRoot, string orderId, string briefAssetsDir)
+        {
+            if (string.IsNullOrWhiteSpace(workspaceRoot) || string.IsNullOrWhiteSpace(orderId) || string.IsNullOrWhiteSpace(briefAssetsDir))
+                return 0;
+
+            try
+            {
+                string orderVaultDir = Path.Combine(workspaceRoot, "_Orders", orderId);
+                if (!Directory.Exists(orderVaultDir)) return 0;
+
+                if (!Directory.Exists(briefAssetsDir))
+                    Directory.CreateDirectory(briefAssetsDir);
+
+                int copied = 0;
+                var files = Directory.GetFiles(orderVaultDir)
+                    .Where(f => !Path.GetFileName(f).StartsWith(".") && !Path.GetFileName(f).StartsWith("~") && Path.GetFileName(f) != "creative-orders.jsonl");
+
+                foreach (string src in files)
+                {
+                    string dest = Path.Combine(briefAssetsDir, Path.GetFileName(src));
+                    File.Copy(src, dest, true);
+                    copied++;
+                }
+
+                return copied;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CreativeOrderService] CopyAttachmentsToProject error: " + ex.Message);
+                return 0;
+            }
+        }
+
+        public static bool UpdateOrderProject(string workspaceRoot, string orderId, string newProjectId, string newStatus)
+        {
+            if (string.IsNullOrWhiteSpace(orderId)) return false;
+
+            try
+            {
+                string jsonlPath = GetOrdersFilePath(workspaceRoot);
+                if (!File.Exists(jsonlPath)) return false;
+
+                bool updated = false;
+                List<string> newLines = new List<string>();
+
+                lock (_fileLock)
+                {
+                    string[] lines = File.ReadAllLines(jsonlPath, Encoding.UTF8);
+                    foreach (string line in lines)
+                    {
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+                        try
+                        {
+                            var obj = Newtonsoft.Json.Linq.JObject.Parse(line);
+                            string id = (string)obj["id"] ?? (string)obj["Id"] ?? "";
+                            if (string.Equals(id, orderId, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (!string.IsNullOrWhiteSpace(newProjectId))
+                                {
+                                    obj["projectId"] = newProjectId;
+                                }
+                                if (!string.IsNullOrWhiteSpace(newStatus))
+                                {
+                                    obj["status"] = newStatus;
+                                }
+                                obj["updatedAt"] = DateTime.UtcNow.ToString("o");
+                                newLines.Add(obj.ToString(Formatting.None));
+                                updated = true;
+                            }
+                            else
+                            {
+                                newLines.Add(line);
+                            }
+                        }
+                        catch (Exception parseEx)
+                        {
+                            Debug.WriteLine("[CreativeOrderService] UpdateOrderProject parse error: " + parseEx.Message);
+                            newLines.Add(line);
+                        }
+                    }
+
+                    if (updated)
+                    {
+                        File.WriteAllLines(jsonlPath, newLines, Encoding.UTF8);
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CreativeOrderService] UpdateOrderProject error: " + ex.Message);
+            }
+
+            return false;
         }
     }
 }

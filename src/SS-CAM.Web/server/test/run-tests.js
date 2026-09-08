@@ -938,6 +938,66 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 30: OrderService NAS _Orders Attachment Vault & Ingestion ──
+  test('OrderService saves, lists, downloads attachments in NAS _Orders and ingests to 01_BRIEF_ASSETS', async () => {
+    const OrderService = require('../services/OrderService');
+    const testDir = path.join(__dirname, 'temp-orders-workspace');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testDir;
+
+    try {
+      // 1. Submit an order with an attachment
+      const order = OrderService.submitOrder({
+        title: 'Hero Banner Campaign',
+        entity: 'SSC',
+        priority: 'tier_1',
+        format: 'print_digital',
+        copy: 'Special headline copy for test',
+        targetDate: '2026-09-30',
+        requester: 'Test Requester',
+        attachments: [
+          { filename: 'logo_mockup.png', fileData: Buffer.from('fake_image_bytes').toString('base64') }
+        ]
+      });
+
+      assert.ok(order && order.id.startsWith('ORD-'), 'Order ID must be generated');
+      assert.strictEqual(order.attachmentCount, 1, 'Order must have 1 initial attachment');
+
+      // 2. Add another attachment
+      const added = OrderService.saveOrderAttachment(order.id, 'spec_sheet.pdf', Buffer.from('pdf_content'), 'Designer Harussani');
+      assert.strictEqual(added.filename, 'spec_sheet.pdf');
+
+      // 3. List attachments
+      const list = OrderService.listOrderAttachments(order.id);
+      assert.strictEqual(list.length, 2, 'Must list 2 attachments');
+      assert.ok(list.some(f => f.filename === 'logo_mockup.png'), 'Must contain logo_mockup.png');
+      assert.ok(list.some(f => f.filename === 'spec_sheet.pdf'), 'Must contain spec_sheet.pdf');
+
+      // 4. Verify physical NAS path
+      const filePath = OrderService.getOrderAttachmentPath(order.id, 'spec_sheet.pdf');
+      assert.ok(fs.existsSync(filePath), 'Physical file must exist on NAS _Orders directory');
+
+      // 5. Ingest to project
+      const projDir = path.join(testDir, '2026', '202609_September', '202609_0091D_SSC_Test_Vault');
+      fs.mkdirSync(projDir, { recursive: true });
+      fs.writeFileSync(path.join(projDir, 'README.md'), '---\nstatus: in-progress\n---\n# Vault\n', 'utf8');
+
+      const origWsRoot = WorkspaceService.workspaceRoot;
+      WorkspaceService.workspaceRoot = testDir;
+      try {
+        const ingestRes = OrderService.copyAttachmentsToProject(order.id, '0091D', 'Designer');
+        assert.strictEqual(ingestRes.count, 2, 'Must copy 2 files into 01_BRIEF_ASSETS');
+        assert.ok(fs.existsSync(path.join(projDir, '01_BRIEF_ASSETS', 'logo_mockup.png')), 'File must exist in 01_BRIEF_ASSETS');
+        assert.ok(fs.existsSync(path.join(projDir, '01_BRIEF_ASSETS', 'spec_sheet.pdf')), 'File must exist in 01_BRIEF_ASSETS');
+      } finally {
+        WorkspaceService.workspaceRoot = origWsRoot;
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

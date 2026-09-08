@@ -57,6 +57,7 @@ $pagesToTest = @(
     "SS_CAM.Views.BrandAssetsPage",
     "SS_CAM.Views.RadioPage",
     "SS_CAM.Views.WorkstationHealthPage",
+    "SS_CAM.Views.TaskManagerPage",
     "SS_CAM.Views.SettingsPage"
 )
 
