@@ -1,6 +1,7 @@
-﻿# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
+# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
 
 > **Product**: Kanso Cre8  
+> **Author**: harusssani.manaphassan  
 > **Japanese**: 簡素 (Kanso — Simplicity, Elimination of Clutter)  
 > **Tagline**: The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine for Freelance Designers  
 > **License**: PolyForm Noncommercial License 1.0.0 (Free for Personal & Freelance Use)  
