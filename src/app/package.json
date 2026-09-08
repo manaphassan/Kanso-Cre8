@@ -1,0 +1,51 @@
+{
+  "name": "kanso-cre8",
+  "version": "1.0.0",
+  "description": "The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine for Freelance Designers",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev:server": "node --watch-path=server server/index.js",
+    "dev:client": "vite",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:client": "vite build",
+    "test": "node server/test/run-tests.js"
+  },
+  "dependencies": {
+    "archiver": "^8.0.0",
+    "bcryptjs": "^2.4.3",
+    "chokidar": "^4.0.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "keywords": [
+    "kanso-cre8",
+    "creative-vault",
+    "freelance-designer",
+    "zettelkasten",
+    "atomic-notes",
+    "invoicing",
+    "markdown"
+  ],
+  "author": "Harussani Design Studio",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@types/dompurify": "^3.0.5",
+    "concurrently": "^10.0.5",
+    "dompurify": "^3.4.13",
+    "marked": "^18.0.9",
+    "mermaid": "^11.16.1",
+    "svelte": "^5.56.9",
+    "svelte-check": "^4.7.6",
+    "svelte-spa-router": "^5.1.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.21"
+  }
+}

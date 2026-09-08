@@ -1,0 +1,70 @@
+/**
+ * Kanso Cre8 — Linear / Geist Studio Minimalist Design Tokens
+ * High-craft, distraction-free, platform-agnostic design system.
+ */
+
+:root {
+  /* LIGHT MODE (Porcelain Slate) */
+  --kanso-canvas: #F8FAFC;
+  --kanso-surface: #FFFFFF;
+  --kanso-surface-hover: #F1F5F9;
+  --kanso-surface-active: #E2E8F0;
+  --kanso-border: #E2E8F0;
+  --kanso-border-subtle: #F1F5F9;
+  --kanso-border-focus: #0078D4;
+
+  --kanso-text-primary: #0F172A;
+  --kanso-text-secondary: #475569;
+  --kanso-text-muted: #64748B;
+  --kanso-text-faint: #94A3B8;
+
+  --kanso-accent: #0078D4;
+  --kanso-accent-hover: #0284C7;
+  --kanso-accent-muted: #E0EDFD;
+  --kanso-accent-text: #FFFFFF;
+
+  --kanso-success: #10B981;
+  --kanso-success-muted: #ECFDF5;
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: #FFFBEB;
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: #FEF2F2;
+
+  /* Geometry & Radius */
+  --kanso-radius-sm: 6px;
+  --kanso-radius-md: 10px;
+  --kanso-radius-lg: 14px;
+  --kanso-radius-full: 9999px;
+
+  /* Typography */
+  --kanso-font-sans: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+  --kanso-font-mono: 'Geist Mono', 'JetBrains Mono', 'Cascadia Code', monospace;
+}
+
+.dark, [data-theme="dark"] {
+  /* DARK MODE (Matte Obsidian) */
+  --kanso-canvas: #09090B;
+  --kanso-surface: #18181B;
+  --kanso-surface-hover: #27272A;
+  --kanso-surface-active: #3F3F46;
+  --kanso-border: #27272A;
+  --kanso-border-subtle: #1F1F23;
+  --kanso-border-focus: #38BDF8;
+
+  --kanso-text-primary: #F4F4F5;
+  --kanso-text-secondary: #D4D4D8;
+  --kanso-text-muted: #A1A1AA;
+  --kanso-text-faint: #71717A;
+
+  --kanso-accent: #38BDF8;
+  --kanso-accent-hover: #7DD3FC;
+  --kanso-accent-muted: #082F49;
+  --kanso-accent-text: #09090B;
+
+  --kanso-success: #10B981;
+  --kanso-success-muted: #064E3B;
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: #78350F;
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: #7F1D1D;
+}

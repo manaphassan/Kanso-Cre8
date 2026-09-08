@@ -1,0 +1,34 @@
+[
+  {
+    "Id": "note_1787918868765",
+    "Author": "QA Lead (Web Portal)",
+    "StaffId": "MGMT",
+    "Content": "⚠️ REVISION REQUIRED (Round 4) - 0088D Prostate Health Infographic\nBy: QA Lead\nNote: Please refine typography hierarchy",
+    "Timestamp": "2026-08-28T12:07:48.765Z",
+    "Pinned": true
+  },
+  {
+    "Id": "note_1787918583547",
+    "Author": "QA Lead (Web Portal)",
+    "StaffId": "MGMT",
+    "Content": "⚠️ REVISION REQUIRED (Round 3) - 0088D Prostate Health Infographic\nBy: QA Lead\nNote: Please refine typography hierarchy",
+    "Timestamp": "2026-08-28T12:03:03.547Z",
+    "Pinned": true
+  },
+  {
+    "Id": "note_1787918057100",
+    "Author": "QA Lead (Web Portal)",
+    "StaffId": "MGMT",
+    "Content": "⚠️ REVISION REQUIRED (Round 2) - 0088D Prostate Health Infographic\nBy: QA Lead\nNote: Please refine typography hierarchy",
+    "Timestamp": "2026-08-28T11:54:17.100Z",
+    "Pinned": true
+  },
+  {
+    "Id": "note_1787917853379",
+    "Author": "QA Lead (Web Portal)",
+    "StaffId": "MGMT",
+    "Content": "⚠️ REVISION REQUIRED (Round 1) - 0088D Prostate Health Infographic\nBy: QA Lead\nNote: Please refine typography hierarchy",
+    "Timestamp": "2026-08-28T11:50:53.379Z",
+    "Pinned": true
+  }
+]

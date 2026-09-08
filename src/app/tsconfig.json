@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
+    "moduleResolution": "bundler",
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "paths": {
+      "$lib": ["./client/src/lib"],
+      "$lib/*": ["./client/src/lib/*"]
+    }
+  },
+  "include": ["client/src/**/*.d.ts", "client/src/**/*.ts", "client/src/**/*.js", "client/src/**/*.svelte"]
+}
