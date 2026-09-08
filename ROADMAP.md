@@ -44,6 +44,7 @@
 | **v4.5.1** | 2026-08-30 | **Cross-Platform Ecosystem Synchronization & Companion Harmonization**: Windows Desktop Client v4.5.1 (single-file executable, UTF-8 BOM, 100% theme-adaptive DynamicResource tokens), Web Management Portal Svelte 5 / Node.js 20 (zero-emoji Fluent 2 design, desktop mobile dock layout fix, 28/28 passed test suite), Android Companion App (Compose UI, Studio Lounge, and live NAS sync) |
 | **v4.6.0** | 2026-09-01 | **Beta Release — Android Native Companion Modernization, Live ICY Stream Metadata Engine, Preflight Quality Auditor & Desk Companion Standby Mode**: Desktop Preflight Quality Validator & Auto-Fix Scaffolding, Android 2×2 Bento KPI Telemetry & Persistent Local Caching (`ProjectCacheManager`), real-time AzuraCast/Laut.fm/SomaFM live song broadcasting metadata on TopAppBar & bottom cassette deck, interactive `SsHero` animated wave mesh splash screen, interactive `FluentMarkdownViewer` with live task checkbox syncing, OLED Desk Standby Mode, and Material You monochromatic icons |
 | **v4.6.1** | 2026-09-04 | **Multi-Platform Release — Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience**: Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and central Web Portal (`/api/orders`), automatic JWT authentication and live queue fetching with local Synology NAS ledger caching (`creative-orders.jsonl`), instant bidirectional status sync (`PATCH /api/orders/{id}`), 1-Click project vault scaffolding (`01_Brief_and_Copy/COPY.md` + frontmatter), startup splash hang resolution, task manager Kanban overdue suppression, frontmatter YAML quote sanitization, web creative direction matrix preview & auto-wrapping markdown editor, shared team board test isolation, Android Companion App release (v4.6.1, Code 462), and Linux Avalonia release package. |
+| **v4.6.2** | 2026-09-08 | **NAS Temporary Attachment Vault, Designer Task Handover, Web Multi-File Upload & Desktop Project Creator Auto-Ingestion**: Desktop Task Manager Kanban card task ownership handover & reassignment menu (`README.md` + frontmatter sync), Synology NAS temporary intake directory (`\\SSNAS\Creative-Team\_Orders\<ORDER_ID>\`) with JSONL persistence, Web Portal drag-and-drop multi-file upload dropzone, role detection fix for composite roles (`"Admin, Designer"`), 1-click project ingestion into `01_BRIEF_ASSETS`, and Desktop Project Creator live order discovery, auto-population, and automatic attachment copy |
 
 ---
 
@@ -74,7 +75,7 @@
 
 ---
 
-## 🔮 Planned — v4.6.0: Global Studio Command Palette & Ingester (Target: Q4 2026)
+## 🔮 Planned — v4.9.0: Global Studio Command Palette & Ingester (Target: Q4 2026)
 
 ### 1. Global Command Palette (`Ctrl + K`)
 * Universal keyboard launcher for jumping to projects, copying brand hex codes, searching snippets, or toggling radio stations without leaving the current view.
@@ -84,7 +85,7 @@
 
 ---
 
-## 📱 & 🐧 Planned — v4.6.0: Multi-Platform Ecosystem Alignment (Target: Q4 2026 / Q1 2027)
+## 📱 & 🐧 Planned — v5.0.0: Multi-Platform Ecosystem Expansion (Target: Q1 2027)
 
 | Feature / Component | Target Stack | Description |
 |---|---|---|

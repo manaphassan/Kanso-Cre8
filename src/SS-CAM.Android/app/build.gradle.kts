@@ -12,8 +12,8 @@ android {
         applicationId = "com.suamisihat.creative"
         minSdk = 26
         targetSdk = 35
-        versionCode = 465
-        versionName = "4.6.1"
+        versionCode = 466
+        versionName = "4.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

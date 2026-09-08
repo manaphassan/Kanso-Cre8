@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # SS-CAM Linux Native Desktop Application Interactive Installer & Setup
-# Version  : 4.6.0
+# Version  : 4.6.2
 # Supported: Fedora, Ubuntu, Debian, Pop!_OS, Arch Linux, RHEL, Manjaro, openSUSE
 # Usage    : sudo bash install-linux.sh [OPTIONS]
 # Curl pipe: bash <(curl -fsSL https://suamisihat.github.io/ss-cam/install.sh)
@@ -21,7 +21,7 @@ main() {
 
     local APP_NAME="ss-cam"
     local DISPLAY_NAME="SuamiSihat Creative Assets Management"
-    local VERSION="4.6.0"
+    local VERSION="4.6.2"
     local DEFAULT_INSTALL_DIR="/opt/ss-cam"
     local INSTALL_DIR="$DEFAULT_INSTALL_DIR"
     local BIN_LINK="/usr/local/bin/ss-cam"

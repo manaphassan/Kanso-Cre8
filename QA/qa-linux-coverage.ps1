@@ -1,9 +1,9 @@
 #!/usr/bin/env pwsh
-# SS-CAM Linux v4.6.0 — Functional Coverage & Smoke Test QA Script
+# SS-CAM Linux v4.6.2 — Functional Coverage & Smoke Test QA Script
 param()
 
 $ErrorActionPreference = "Continue"
-$root = "D:\HaNa_Innovation\ss_cam\src\SS-CAM.Linux"
+$root = if (Test-Path "$PSScriptRoot\..\src\SS-CAM.Linux") { (Resolve-Path "$PSScriptRoot\..\src\SS-CAM.Linux").Path } else { "src\SS-CAM.Linux" }
 $pass = 0; $fail = 0; $warn = 0
 
 function Check([string]$label, [bool]$cond, [string]$note = "") {
@@ -32,7 +32,7 @@ function Warn([string]$label, [bool]$cond, [string]$note = "") {
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "     SS-CAM Linux v4.6.0 -- Functional Coverage QA Smoke Test" -ForegroundColor Cyan
+Write-Host "     SS-CAM Linux v4.6.1 -- Functional Coverage QA Smoke Test" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -117,16 +117,17 @@ Check "No UI thread blocking (.Result / .Wait)" ($blockingCalls.Count -eq 0) ("{
 Write-Host ""
 Write-Host "[ 7. BUILD ARTIFACTS ]" -ForegroundColor White
 $dll = "$root\bin\Release\net10.0\SS-CAM.Linux.dll"
-Check "SS-CAM.Linux.dll built" (Test-Path $dll)
+Warn "SS-CAM.Linux.dll built" (Test-Path $dll) "Optional on Windows host; compile via 'dotnet build -c Release'"
 
-$pubExe = "D:\HaNa_Innovation\ss_cam\publish\linux-x64\SS-CAM.Linux"
+$pubDir = if (Test-Path "$PSScriptRoot\..\publish") { (Resolve-Path "$PSScriptRoot\..\publish").Path } else { "publish" }
+$pubExe = "$pubDir\linux-x64\SS-CAM.Linux"
 Check "Single-file linux-x64 binary exists" (Test-Path $pubExe)
 if (Test-Path $pubExe) {
     $szMb = [math]::Round((Get-Item $pubExe).Length / 1MB, 2)
     Write-Host ("    Linux Executable Size: {0} MB" -f $szMb) -ForegroundColor Gray
 }
 
-$tar = "D:\HaNa_Innovation\ss_cam\publish\ss-cam-linux-x64.tar.gz"
+$tar = "$pubDir\ss-cam-linux-x64.tar.gz"
 Check "Distribution tarball (ss-cam-linux-x64.tar.gz) exists" (Test-Path $tar)
 
 # ── SUMMARY ──────────────────────────────────────────────────────────
