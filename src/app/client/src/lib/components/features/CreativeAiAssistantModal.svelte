@@ -15,7 +15,7 @@
 
   let {
     open = $bindable(false),
-    brand = 'SSH',
+    brand = 'ACME',
     projectTitle = '',
     onInsertCopy,
     onClose
@@ -25,18 +25,18 @@
   let activeTab = $state<TabType>('hooks');
 
   // Generation Inputs
-  let selectedBrand = $state<string>('SSH');
+  let selectedBrand = $state<string>('ACME');
   let productInput = $state<string>('');
-  let audienceInput = $state<string>('Men aged 28-55');
+  let audienceInput = $state<string>('B2B Founders & Design Directors');
   let angleInput = $state<string>('Pain Point & Agitation');
-  let languageInput = $state<string>('Malay');
+  let languageInput = $state<string>('English');
   let platformInput = $state<string>('Meta Feed');
   let selectedHookInput = $state<string>('');
 
   // Image Prompt Inputs
   let imageStyle = $state<string>('Photorealistic Commercial Studio');
-  let imageEnv = $state<string>('Minimalist Dark Luxury, Volumetric Gold Backlighting');
-  let imageColors = $state<string>('#D4AF37 Gold, #043388 Navy Blue');
+  let imageEnv = $state<string>('Minimalist Dark Luxury, Volumetric Hairline Backlighting');
+  let imageColors = $state<string>('#38BDF8 Sky Cyan, #18181B Dark Zinc');
 
   // Output State
   let generatedOutput = $state<string>('');
@@ -55,7 +55,7 @@
 
   $effect(() => {
     if (open) {
-      selectedBrand = brand || 'SSH';
+      selectedBrand = brand || 'ACME';
       if (projectTitle && !productInput) productInput = projectTitle;
       loadAiStatus();
     }
@@ -161,7 +161,7 @@
     try {
       const res = await ApiClient.formatUltraPrompt({
         brand: selectedBrand,
-        title: productInput || projectTitle || 'SuamiSihat Creative Campaign',
+        title: productInput || projectTitle || 'Acme Operations Campaign',
         audience: audienceInput,
         goal: 'High-conversion direct response marketing asset generation'
       });
@@ -308,19 +308,17 @@
             <div class="inputs-col">
               <div class="input-card">
                 <div class="field-col">
-                  <label class="field-label" for="brand-select">Brand Line</label>
+                  <label class="field-label" for="brand-select">Brand Line / Client</label>
                   <select id="brand-select" class="form-select" bind:value={selectedBrand}>
-                    <option value="SSH">SuamiSihat Holding (SSH)</option>
-                    <option value="SSC">SuamiSihat Care (SSC)</option>
-                    <option value="SSW">SuamiSihat Wellness (SSW)</option>
-                    <option value="SSE">SuamiSihat Ecommerce (SSE)</option>
-                    <option value="SST">SuamiSihat Technology (SST)</option>
+                    <option value="ACME">Acme Corporation (ACME)</option>
+                    <option value="NEX">Nexus Studio (NEX)</option>
+                    <option value="LUM">Lumina Labs (LUM)</option>
                   </select>
                 </div>
 
                 <div class="field-col">
                   <label class="field-label" for="prod-input">Product / Campaign Focus</label>
-                  <input id="prod-input" type="text" class="form-input" placeholder="e.g. SuamiSihat Gold Maca Extract" bind:value={productInput} />
+                  <input id="prod-input" type="text" class="form-input" placeholder="e.g. Mobile Banking 3D Isometric Assets" bind:value={productInput} />
                 </div>
 
                 {#if activeTab === 'hooks' || activeTab === 'scripts'}

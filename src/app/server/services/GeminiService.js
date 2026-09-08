@@ -157,10 +157,10 @@ class GeminiService {
 
   // ─── HIGH-CONVERTING BRAND ENGINES ──────────────────────────────────
 
-  async generateHooks({ brand = 'SSH', product = 'Men Health Formulation', audience = 'Men aged 28-55', angle = 'Pain Point', language = 'Malay' }) {
-    const systemPrompt = `You are a world-class direct-response copywriter for "SuamiSihat" brand holding company in Malaysia.
-Your task is to write high-converting, viral advertising hooks that capture attention within the first 3 seconds on TikTok, Facebook, and Instagram Reels.
-Language requirement: ${language === 'Malay' ? 'Bahasa Melayu yang santai, persuasive, dan natural (bukan kaku)' : 'High-impact persuasive English with local nuance'}.
+  async generateHooks({ brand = 'ACME', product = 'Digital Asset Platform', audience = 'Founders & Product Leads', angle = 'Pain Point', language = 'English' }) {
+    const systemPrompt = `You are a world-class direct-response copywriter for Kanso Cre8 studio working with clients like Acme Corporation (ACME), Nexus Studio (NEX), and Lumina Labs (LUM).
+Your task is to write high-converting, viral advertising hooks that capture attention within the first 3 seconds on TikTok, LinkedIn, Meta, and X/Twitter.
+Language requirement: ${language === 'Malay' ? 'Bahasa Melayu yang santai, persuasive, dan natural' : 'High-impact persuasive English with razor-sharp clarity'}.
 Always provide 5 distinct categorized hooks:
 1. 💥 CURIOSITY / PATTERN INTERRUPT
 2. ⚡ PAIN POINT / AGITATION
@@ -170,7 +170,7 @@ Always provide 5 distinct categorized hooks:
 
 Format as clean, ready-to-use markdown bullets with strong emojis.`;
 
-    const userPrompt = `Brand: ${brand} (SuamiSihat holding)
+    const userPrompt = `Client / Brand: ${brand}
 Product / Campaign: ${product}
 Target Audience: ${audience}
 Primary Angle: ${angle}
@@ -180,20 +180,20 @@ Generate the 5 categorized viral hooks now:`;
     return await this.callGemini(systemPrompt, userPrompt);
   }
 
-  async generateAdScript({ brand = 'SSH', product = 'Supplements', hook = '', platform = 'Meta Feed', language = 'Malay' }) {
-    const systemPrompt = `You are an elite creative director and conversion copywriter for SuamiSihat health & lifestyle brands.
+  async generateAdScript({ brand = 'ACME', product = 'Creative Assets', hook = '', platform = 'Meta Feed', language = 'English' }) {
+    const systemPrompt = `You are an elite creative director and conversion copywriter for Kanso Cre8 studio.
 Write a full, ready-to-run advertising script optimized specifically for ${platform}.
 Include:
 - 🎣 Opening Hook (with visual text-on-screen cues)
 - 🔥 Agitation & Problem Breakdown
-- 💡 Solution & Mechanism of Action
-- 🛡️ Medical / Regulatory Disclaimer (KKM / Halal / Natural compliant)
-- 🚀 Strong Call to Action (CTA) with WhatsApp / Web checkout urgency
+- 💡 Solution & Tactical Mechanism
+- 🛡️ Commercial Licensing & Quality Standards
+- 🚀 Strong Call to Action (CTA) with direct link urgency
 
-Language: ${language}. Use clean Markdown suitable for direct insertion into COPY.md.`;
+Language: ${language}. Use clean Markdown suitable for direct insertion into 03_COPY/COPY.md.`;
 
-    const userPrompt = `Brand: ${brand}
-Product: ${product}
+    const userPrompt = `Client / Brand: ${brand}
+Product / Asset: ${product}
 Selected Opening Hook: ${hook || 'Auto-generate strong hook'}
 Platform: ${platform}
 
@@ -202,15 +202,15 @@ Write the complete high-converting copy script:`;
     return await this.callGemini(systemPrompt, userPrompt);
   }
 
-  async generateImagePrompts({ product = 'Product packaging', style = 'Photorealistic Studio', environment = 'Minimalist Luxury Dark Mode', brandColors = '#D4AF37 Gold, #043388 Blue' }) {
+  async generateImagePrompts({ product = 'Creative asset packaging', style = 'Photorealistic Studio', environment = 'Minimalist Luxury Dark Mode', brandColors = '#38BDF8 Sky Cyan, #18181B Zinc' }) {
     const systemPrompt = `You are a commercial 3D packaging and studio photographer prompt engineer specializing in Midjourney v6 and Google Imagen 3 prompts.
-Generate 4 distinct, hyper-realistic commercial photography prompt variations for advertising mockups, social media creative banners, and packaging.
+Generate 4 distinct, hyper-realistic commercial photography prompt variations for advertising mockups, social media creative banners, and design deliverables.
 For each prompt, include:
 - Prompt text (with lighting, camera lens e.g., 85mm f/1.4, volumetric lighting, Octane render details)
 - Aspect ratio tag (e.g., --ar 1:1, --ar 9:16, --ar 16:9)
 - Visual Style notes`;
 
-    const userPrompt = `Product: ${product}
+    const userPrompt = `Product / Subject: ${product}
 Style: ${style}
 Environment / Backdrop: ${environment}
 Brand Color Accents: ${brandColors}
@@ -220,27 +220,27 @@ Generate the 4 commercial image prompt variations:`;
     return await this.callGemini(systemPrompt, userPrompt);
   }
 
-  formatUltraWebPrompt({ brand = 'SSH', title = 'Product Campaign', audience = 'Men 30-50', goal = 'High CTR Direct Response' }) {
-    return `# SUAMISIHAT CREATIVE CAMPAIGN PROMPT FOR GEMINI ULTRA
+  formatUltraWebPrompt({ brand = 'ACME', title = 'Product Campaign', audience = 'B2B Buyers & Designers', goal = 'High CTR Direct Response' }) {
+    return `# KANSO CRE8 CAMPAIGN PROMPT FOR GEMINI ULTRA
 
-You are the Lead Creative Director for **${brand} (SuamiSihat Group)**.
+You are the Lead Creative Director for **${brand}**.
 
 ## Project Context:
 - **Campaign Title**: ${title}
-- **Brand Line**: ${brand}
+- **Brand Line / Client**: ${brand}
 - **Target Demographic**: ${audience}
 - **Primary Objective**: ${goal}
 
-## Brand & Compliance Guidelines:
-1. **Tone**: Confident, empathetic, authoritative yet conversational (Bahasa Melayu / English).
-2. **Compliance**: Avoid over-promising absolute cures; emphasize holistic wellness, premium natural active ingredients, lab-tested formulations, and real user confidence.
+## Studio & Architecture Guidelines:
+1. **Tone**: Confident, tactile, authoritative yet conversational. Minimalist and uncluttered.
+2. **Standard**: Deliver high-contrast, sub-16ms visual clarity, pure Markdown-compatible formats, and premium commercial tokens.
 3. **Pacing**: Rapid-fire hook within first 3 seconds, concise agitation, clear transformation, and a single frictionless CTA.
 
 ## Request:
 Please generate:
 1. **5 Viral Opening Hooks** (Curiosity, Pain-Point, Proof, Urgency, Story).
 2. **Full Video/Feed Script** with visual scene directions [Scene: ...] and audio voiceover script.
-3. **3 WhatsApp Direct-Response Closing Messages** with interactive numbered options.
+3. **3 Interactive Direct-Response Closing Messages** with clear call-to-action choices.
 `;
   }
 }
