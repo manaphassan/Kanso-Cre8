@@ -77,6 +77,21 @@ class ProjectStore {
     }
   }
 
+  async createProject(payload: any) {
+    this.isSaving = true;
+    try {
+      const res = await ApiClient.createProject(payload);
+      appState.addToast(`Standardized 5-folder vault created for "${payload.title}".`, 'success');
+      await this.loadProjects();
+      return res;
+    } catch (err: any) {
+      appState.addToast(`Failed to create project: ${err.message}`, 'error');
+      throw err;
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
   async loadDashboard(options?: { timeRange?: string; brand?: string }) {
     this.isLoading = true;
     if (options?.timeRange) this.dashboardTimeRange = options.timeRange;

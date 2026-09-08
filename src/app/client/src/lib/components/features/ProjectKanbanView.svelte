@@ -233,7 +233,7 @@
                     >
                       {p.jobId || p.id}
                     </a>
-                    <FluentBadge type="brand" value={p.brand || 'SS'} />
+                    <FluentBadge type="brand" value={p.brand || 'ACME'}>{p.brand || 'ACME'}</FluentBadge>
                   </div>
 
                   <div class="card-action-group">
@@ -318,8 +318,9 @@
 
                 <!-- Status Selector Menu -->
                 <div class="quick-status-selector-row" onclick={(e) => e.stopPropagation()}>
-                  <label class="status-quick-label">Move:</label>
+                  <label class="status-quick-label" for="move-status-{p.id}">Move:</label>
                   <select
+                    id="move-status-{p.id}"
                     class="status-select-native"
                     value={p.status}
                     onchange={async (e) => {

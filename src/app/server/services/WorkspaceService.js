@@ -51,157 +51,112 @@ class WorkspaceService {
   }
 
   seedSampleProjects() {
-    console.log('[WorkspaceService] Seeding sample Creative-Team project folders...');
+    console.log('[WorkspaceService] Seeding sample Kanso Cre8 project vaults...');
     const samples = [
       {
-        designer: 'Haikal',
-        designerName: 'Haikal',
+        designer: 'harusssani.manaphassan',
+        designerName: 'Harusssani',
         year: '2026',
-        month: '202608_August',
-        folder: '202608_0085D_SS_Rejal_Premium_Packaging',
-        title: 'Rejal Premium Packaging & POSM Kit',
-        brand: 'SS',
-        jobId: '0085D',
+        month: '202609_September',
+        folder: '202609_0001D_ACME_MobileAppIllustration',
+        title: 'Mobile Banking 3D Isometric Illustrations',
+        brand: 'ACME',
+        jobId: '0001D',
+        status: 'in-progress',
+        priority: 'high',
+        deadline: '2026-09-23',
+        created: '2026-09-01',
+        department: 'Product Design',
+        manager: 'Lead Designer',
+        revision: 1,
+        tags: ['illustration', '3d', 'fintech', 'mobile'],
+        tone: 'Trustworthy, Modern, Electric Blue Fintech',
+        messaging: 'Seamless Digital Banking Experience with 3D Visual Depth',
+        copyStatus: 'approved',
+        headline: 'Next-Gen Mobile Banking Visualization',
+        copyBody: 'High-fidelity isometric compositions highlighting contactless payments, automated savings, and biometric vault security.',
+        deliverables: [
+          { name: 'Mobile_Banking_Hero_3D.png', folder: '05_DELIVERABLES', type: 'mockup' },
+          { name: 'Isometric_Icons_16x_Set.svg', folder: '05_DELIVERABLES', type: 'vector' },
+          { name: 'Card_Design_Preview_WIP.png', folder: '04_WIP', type: 'web' }
+        ]
+      },
+      {
+        designer: 'harusssani.manaphassan',
+        designerName: 'Harusssani',
+        year: '2026',
+        month: '202609_September',
+        folder: '202609_0002S_NEX_GameKeyVisual',
+        title: 'Key Visual Concept Artwork & Launch Assets',
+        brand: 'NEX',
+        jobId: '0002S',
         status: 'review',
         priority: 'urgent',
-        deadline: '2026-08-25',
-        created: '2026-08-10',
-        department: 'Marketing',
-        manager: 'MGR01',
-        revision: 1,
-        tags: ['packaging', 'posm', 'print', 'rejal'],
-        tone: 'Premium, Masculine, Luxury Gold & Midnight Blue',
-        messaging: 'Definisi Kejantanan Sebenar & Tenaga Luar Biasa',
-        copyStatus: 'approved',
-        headline: 'Sentuhan Kemewahan Untuk Lelaki Berprestasi',
-        copyBody: 'Formula herba warisan dengan sentuhan saintifik moden. Memberikan ketahanan dan stamina berpanjangan.',
-        deliverables: [
-          { name: 'Rejal_Box_3D_Mockup_V1.png', folder: '05_DELIVERABLES', type: 'mockup' },
-          { name: 'Rejal_Packaging_Dieline_Final.pdf', folder: '05_DELIVERABLES', type: 'print' },
-          { name: 'POSM_Counter_Display_1080.png', folder: '04_WORK_IN_PROGRESS', type: 'web' }
-        ]
-      },
-      {
-        designer: 'Aliff',
-        designerName: 'Aliff',
-        year: '2026',
-        month: '202608_August',
-        folder: '202608_0086S_SSE_Merdeka_Flash_Sale',
-        title: 'Merdeka Big Sale Social Campaign',
-        brand: 'SSE',
-        jobId: '0086S',
-        status: 'revision',
-        priority: 'high',
-        deadline: '2026-08-28',
-        created: '2026-08-12',
-        department: 'E-Commerce',
-        manager: 'MGR01',
+        deadline: '2026-09-18',
+        created: '2026-09-02',
+        department: 'Gaming Studio',
+        manager: 'Art Director',
         revision: 2,
-        tags: ['social', 'merdeka', 'tiktok', 'instagram'],
-        tone: 'High Energy, Patriotic, Flash Deal Urgency',
-        messaging: 'Potongan Sehingga 67% Sempena Kemerdekaan!',
-        copyStatus: 'revision_requested',
-        headline: 'Merdeka Dari Keletihan! Tawaran Terhad 3 Hari Sahaja',
-        copyBody: 'Jangan lepaskan peluang miliki set kombo SuamiSihat dengan diskaun luar biasa.',
-        deliverables: [
-          { name: 'Merdeka_IG_Carousel_1080x1080.png', folder: '05_DELIVERABLES', type: 'social' },
-          { name: 'TikTok_9x16_Story_Ad.png', folder: '04_WORK_IN_PROGRESS', type: 'social' }
-        ]
-      },
-      {
-        designer: 'Haikal',
-        designerName: 'Haikal',
-        year: '2026',
-        month: '202608_August',
-        folder: '202608_0087V_SSH_Corporate_Documentary',
-        title: 'SuamiSihat Holdings Corporate Profile Video',
-        brand: 'SSH',
-        jobId: '0087V',
-        status: 'in-progress',
-        priority: 'medium',
-        deadline: '2026-09-15',
-        created: '2026-08-05',
-        department: 'Corporate Communications',
-        manager: 'MGR02',
-        revision: 0,
-        tags: ['video', 'corporate', 'documentary'],
-        tone: 'Inspirational, Trustworthy, Modern Healthcare Leadership',
-        messaging: 'Membina Generasi Keluarga Sejahtera & Bahagia',
-        copyStatus: 'submitted',
-        headline: 'Perjalanan 10 Tahun Memacu Kesihatan Lelaki Malaysia',
-        copyBody: 'Daripada permulaan sederhana hingga menjadi peneraju utama penjagaan kesejahteraan lelaki di Asia Tenggara.',
-        deliverables: [
-          { name: 'Storyboard_V1_Draft.pdf', folder: '04_WORK_IN_PROGRESS', type: 'pdf' }
-        ]
-      },
-      {
-        designer: 'Harussani',
-        designerName: 'Harussani',
-        year: '2026',
-        month: '202607_July',
-        folder: '202607_0079P_SSW_Wellness_Centre_Signage',
-        title: 'SS Wellness Centre Outdoor Signage & Wall Graphics',
-        brand: 'SSW',
-        jobId: '0079P',
-        status: 'done',
-        priority: 'medium',
-        deadline: '2026-08-01',
-        created: '2026-07-15',
-        department: 'Retail & Facilities',
-        manager: 'MGR01',
-        revision: 1,
-        tags: ['branding', 'interior', 'signage'],
-        tone: 'Serene, Clean, Holistic Healing',
-        messaging: 'Pusat Rawatan Holistik Kesejahteraan Lelaki',
+        tags: ['gaming', 'keyvisual', 'motion', 'social'],
+        tone: 'Cyberpunk, High Contrast, Emerald & Neon Sky',
+        messaging: 'Enter the Frontier: Next-Gen Multiplayer Battle Arena',
         copyStatus: 'approved',
-        headline: 'Selamat Datang Ke Pusat Pemulihan Tenaga & Kesihatan',
-        copyBody: 'Rawatan profesional privasi tinggi untuk kesejahteraan fizikal dan mental.',
+        headline: 'Gear Up For The Global Arena Launch',
+        copyBody: 'Dynamic theatrical key art optimized for multi-platform digital store banners, 9:16 reels, and launch promo cards.',
         deliverables: [
-          { name: 'Entrance_3D_Wall_Signage.pdf', folder: '05_DELIVERABLES', type: 'print' },
-          { name: 'Reception_Lightbox_Graphic.png', folder: '05_DELIVERABLES', type: 'print' }
+          { name: 'Nexus_KeyVisual_4K_Final.png', folder: '05_DELIVERABLES', type: 'keyvisual' },
+          { name: 'Launch_Promo_Reel_9x16.mp4', folder: '05_DELIVERABLES', type: 'video' },
+          { name: 'Character_Concept_Draft.png', folder: '04_WIP', type: 'wip' }
         ]
       },
       {
-        designer: 'Aliff',
-        designerName: 'Aliff',
+        designer: 'harusssani.manaphassan',
+        designerName: 'Harusssani',
         year: '2026',
-        month: '202608_August',
-        folder: '202608_0088D_SSC_Prostate_Health_Infographic',
-        title: 'Prostate Health Awareness Infographic Guide',
-        brand: 'SSC',
-        jobId: '0088D',
+        month: '202609_September',
+        folder: '202609_0003P_LUM_BrandIdentity',
+        title: 'Synthetic Intelligence Brand System & UI Guidelines',
+        brand: 'LUM',
+        jobId: '0003P',
         status: 'backlog',
-        priority: 'low',
+        priority: 'normal',
         deadline: '2026-09-30',
-        created: '2026-08-16',
-        department: 'Medical & Content',
-        manager: 'MGR02',
+        created: '2026-09-05',
+        department: 'Brand Systems',
+        manager: 'Creative Lead',
         revision: 0,
-        tags: ['medical', 'infographic', 'education'],
-        tone: 'Educational, Empathic, Clear',
-        messaging: '5 Tanda Awal Kesihatan Prostat Yang Perlu Anda Tahu',
+        tags: ['branding', 'design-system', 'tokens', 'ai'],
+        tone: 'Minimalist, Intelligent, Luminescent Violet & Slate',
+        messaging: 'Clarity in Artificial Intelligence Architecture',
         copyStatus: 'draft',
-        headline: 'Cegah Sebelum Parah: Panduan Kesihatan Prostat Lelaki 35+',
-        copyBody: 'Ketahui langkah mudah menjaga kelenjar prostat melalui nutrisi dan gaya hidup sihat.',
-        deliverables: []
+        headline: 'A Refined Visual Language for Machine Learning',
+        copyBody: 'Comprehensive design tokens, typography scales, vector glyph systems, and dark-mode first design tokens.',
+        deliverables: [
+          { name: 'Lumina_Design_Token_Specs.pdf', folder: '01_BRIEF', type: 'doc' }
+        ]
       }
     ];
 
     for (const s of samples) {
-      const projDir = path.join(this.workspaceRoot, s.designer, `SS-${s.year}`, s.month, s.folder);
+      const projDir = path.join(this.workspaceRoot, s.year, s.folder);
       fs.mkdirSync(projDir, { recursive: true });
 
-      // Create canonical SS-CAM 5-folder vault hierarchy
-      const subFolders = ['01_BRIEF_ASSETS', '02_SOURCE_FILES', '03_COPYWRITING', '04_WORK_IN_PROGRESS', '05_DELIVERABLES'];
+      // Canonical 5-folder project vault hierarchy
+      const subFolders = ['01_BRIEF', '02_SOURCE', '03_COPY', '04_WIP', '05_DELIVERABLES'];
       subFolders.forEach(sub => fs.mkdirSync(path.join(projDir, sub), { recursive: true }));
 
       // Create mock deliverables
       for (const d of s.deliverables) {
         const filePath = path.join(projDir, d.folder, d.name);
         if (!fs.existsSync(filePath)) {
-          // Write dummy placeholder image or pdf content
-          fs.writeFileSync(filePath, `SS-CAM Deliverable Placeholder: ${d.name}\nProject: ${s.title}\nDate: ${new Date().toISOString()}`);
+          fs.writeFileSync(filePath, `Kanso Cre8 Deliverable: ${d.name}\nProject: ${s.title}\nClient: ${s.brand}\nDate: ${new Date().toISOString()}`);
         }
+      }
+
+      // Write initial COPY.md
+      const copyPath = path.join(projDir, '03_COPY', 'COPY.md');
+      if (!fs.existsSync(copyPath)) {
+        fs.writeFileSync(copyPath, `# ${s.title}\n**Client**: ${s.brand}\n**Status**: ${s.copyStatus}\n\n## Headline\n${s.headline}\n\n## Body Copy\n${s.copyBody}\n`, 'utf8');
       }
 
       // Write README.md with Frontmatter
@@ -212,7 +167,7 @@ class WorkspaceService {
         deadline: s.deadline,
         created: s.created,
         priority: s.priority,
-        duration: '3 days',
+        duration: '2 weeks',
         tags: s.tags,
         revision: s.revision,
         department: s.department,
@@ -228,12 +183,12 @@ class WorkspaceService {
         }
       };
 
-      const body = `# ${s.title}\n\n## Project Objective\nProvide high-impact marketing and brand assets for SuamiSihat's ${s.department} initiatives.\n\n## Target Audience\nMen aged 25-55 looking for vitality, health, and holistic performance.\n\n## Core Deliverables\n- Master high-res vectors and editable files\n- Presentation mockups for management review\n- Final print and web exports\n`;
+      const body = `# ${s.title}\n\n## Project Objective\nDeliver high-impact visual design and production collateral for ${s.brand}.\n\n## Core Deliverables\n- Master high-res vectors and source design files in \`02_SOURCE/\`\n- Review exports and renders in \`04_WIP/\`\n- Client-ready delivery assets in \`05_DELIVERABLES/\`\n\n## Sprint Checklist\n- [ ] #task Review client brief and references in 01_BRIEF/ 📅 ${s.deadline} ⏫ normal\n- [ ] #task Prepare design source files in 02_SOURCE/\n- [ ] #task Finalize copy and messaging in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Deliver approved assets in 05_DELIVERABLES/\n`;
 
       FrontmatterService.writeProjectReadme(projDir, fm, body);
     }
 
-    console.log('[WorkspaceService] Seeded 5 sample projects successfully.');
+    console.log('[WorkspaceService] Seeded Kanso Cre8 sample vaults successfully.');
   }
 
   startWatcher() {
@@ -350,8 +305,9 @@ class WorkspaceService {
     const deadline = frontmatter.deadline || '';
     const created = frontmatter.created || this.inferCreatedDate(folderName, fullPath);
 
-    // Count deliverables in canonical 05_DELIVERABLES (with fallback to legacy names)
+    // Count deliverables in canonical 05_DELIVERABLES (with fallback to 04_WIP)
     const deliverableCount = this.countFiles(path.join(fullPath, '05_DELIVERABLES')) +
+                             this.countFiles(path.join(fullPath, '04_WIP')) +
                              this.countFiles(path.join(fullPath, '04_WORK_IN_PROGRESS'));
 
     // Check overdue and due soon (within 48 hours / 2 days)
@@ -943,6 +899,116 @@ class WorkspaceService {
   }
 
   /**
+   * Scaffolds a new standardized 5-folder project vault.
+   * Creates:
+   *   [YYYY]/[YYYYMM]_[JOBID]_[CLIENT]_[TITLE]/
+   *     ├── 01_BRIEF/
+   *     ├── 02_SOURCE/
+   *     ├── 03_COPY/COPY.md
+   *     ├── 04_WIP/
+   *     ├── 05_DELIVERABLES/
+   *     └── README.md (with YAML Frontmatter)
+   */
+  scaffoldProject(options, actor = 'harusssani.manaphassan') {
+    const title = (options.title || 'Untitled Project').trim();
+    const clientCode = (options.clientCode || 'ACME').toUpperCase().trim();
+    const clientName = options.clientName || clientCode;
+    const now = new Date();
+    const year = options.year || String(now.getFullYear());
+    const monthCode = options.month || `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Auto-generate jobId if not provided
+    let jobId = options.jobId;
+    if (!jobId) {
+      const existingCount = this.projectsCache.length;
+      const letter = options.deliverableType === 'Social Media' ? 'S' :
+                     options.deliverableType === 'Video' ? 'V' :
+                     options.deliverableType === 'Brand Identity' ? 'P' : 'D';
+      jobId = `${String(existingCount + 1).padStart(4, '0')}${letter}`;
+    }
+
+    // Clean title for directory name (alphanumeric and underscores only)
+    const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'Creative_Project';
+    const folderName = `${monthCode}_${jobId}_${clientCode}_${sanitizedTitle}`;
+
+    // Target folder under workspaceRoot:
+    const targetDir = path.join(this.workspaceRoot, year, folderName);
+    if (fs.existsSync(targetDir)) {
+      throw new Error(`Project folder "${folderName}" already exists.`);
+    }
+
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    // Canonical 5-folder structure
+    const subFolders = ['01_BRIEF', '02_SOURCE', '03_COPY', '04_WIP', '05_DELIVERABLES'];
+    subFolders.forEach(sub => fs.mkdirSync(path.join(targetDir, sub), { recursive: true }));
+
+    // Write initial COPY.md inside 03_COPY
+    const copyMdPath = path.join(targetDir, '03_COPY', 'COPY.md');
+    const initialCopy = `# ${title}\n**Client**: ${clientName} (${clientCode})\n**Status**: Draft\n\n## Hook & Value Proposition\n- Hook: Engaging headline for ${title}\n- Core value proposition\n\n## Body Copy & Messaging\nDetailed creative copy, specifications, and call-to-action.\n`;
+    fs.writeFileSync(copyMdPath, initialCopy, 'utf8');
+
+    // Write README.md with YAML frontmatter
+    const deadline = options.deadline || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+    const priority = options.priority || 'normal';
+    const designer = options.designer || 'harusssani.manaphassan';
+    const budget = Number(options.budget) || 0;
+    const currency = options.currency || 'USD';
+
+    const fm = {
+      status: 'in-progress',
+      priority,
+      designer,
+      client: clientCode,
+      client_name: clientName,
+      deadline,
+      created: now.toISOString().split('T')[0],
+      budget,
+      currency,
+      revision: 0,
+      tags: ['design', clientCode.toLowerCase(), (options.deliverableType || 'creative').toLowerCase().replace(/\s+/g, '-')],
+      creative_direction: {
+        tone: options.tone || 'Modern, minimal, high-impact',
+        key_messaging: options.description || title
+      },
+      copywriting: {
+        status: 'draft',
+        headline: title,
+        body_copy: ''
+      }
+    };
+
+    const readmeBody = `# ${title}\n\n> [!NOTE]\n> ${options.description || 'Standardized 5-folder creative project vault.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and vector assets in 01_BRIEF/ 📅 ${deadline} ⏫ normal\n- [ ] #task Prepare master design source files in 02_SOURCE/\n- [ ] #task Compose hooks and copywriting in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Package final deliverables in 05_DELIVERABLES/\n`;
+
+    FrontmatterService.writeProjectReadme(targetDir, fm, readmeBody);
+
+    // Audit log
+    AuditService.logEvent({
+      actor,
+      action: 'PROJECT_SCAFFOLDED',
+      entityType: 'Project',
+      entityId: jobId,
+      details: { folderName, clientCode, title, deadline }
+    });
+
+    // Rescan and broadcast
+    this.scan(true);
+    try {
+      const SseService = require('./SseService');
+      SseService.broadcast('workspace:updated', {
+        projectId: folderName,
+        action: 'created',
+        timestamp: new Date().toISOString()
+      });
+    } catch (e) {}
+
+    return {
+      success: true,
+      project: this.getProjectById(folderName) || { id: folderName, title, folderName, fullPath: targetDir }
+    };
+  }
+
+  /**
    * Deletes a project folder and all subfolders recursively.
    * Admin-only operation with strict path validation and audit logging.
    * @param {string} projectId Project folder name or Job ID
@@ -1100,9 +1166,14 @@ class WorkspaceService {
     }
 
     // Sanitize filename and subfolder to prevent path traversal
-    const safeFilename = path.basename(filename);
-    const validSubfolders = ['01_BRIEF_ASSETS', '02_SOURCE_FILES', '03_COPYWRITING', '04_WORK_IN_PROGRESS', '05_DELIVERABLES'];
-    const safeSubfolder = validSubfolders.includes(targetSubfolder) ? targetSubfolder : '01_BRIEF_ASSETS';
+    const validSubfolders = [
+      '01_BRIEF', '01_BRIEF_ASSETS',
+      '02_SOURCE', '02_SOURCE_FILES',
+      '03_COPY', '03_COPYWRITING',
+      '04_WIP', '04_WORK_IN_PROGRESS',
+      '05_DELIVERABLES'
+    ];
+    const safeSubfolder = validSubfolders.includes(targetSubfolder) ? targetSubfolder : '01_BRIEF';
 
     const targetDir = path.join(project.fullPath, safeSubfolder);
     if (!fs.existsSync(targetDir)) {
