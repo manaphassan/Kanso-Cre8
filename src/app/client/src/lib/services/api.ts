@@ -123,6 +123,23 @@ export class ApiClient {
     return this.request<{ projects: Project[]; total: number }>(`/projects${qs}`);
   }
 
+  static createProject(payload: {
+    title: string;
+    clientCode: string;
+    clientName?: string;
+    priority?: 'low' | 'normal' | 'high' | 'urgent';
+    deadline?: string;
+    budget?: number;
+    currency?: string;
+    deliverableType?: string;
+    description?: string;
+  }): Promise<{ success: boolean; project: Project }> {
+    return this.request('/projects', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
   static getProject(id: string): Promise<{ project: Project; deliverables: DeliverableItem[]; exists: boolean }> {
     return this.request(`/projects/${encodeURIComponent(id)}`);
   }
