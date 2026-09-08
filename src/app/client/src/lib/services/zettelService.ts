@@ -16,20 +16,20 @@ export const DEFAULT_ZETTEL_NOTES: ZettelNote[] = [
     created: '2026-09-09',
     updated: '2026-09-09',
     relatedLinks: ['[[b2b_saas_hero_formula]]'],
-    linkedClients: ['[[Govicle]]', '[[Jomparking]]'],
-    linkedProjects: ['[[202609_0001_GOV_FleetApp]]'],
+    linkedClients: ['[[ACME]]', '[[NEX]]'],
+    linkedProjects: ['[[202609_0001D_ACME_MobileAppIllustration]]'],
     content: `# The Curiosity Gap Hook Formula
 
 State an unexpected, counter-intuitive result in line 1 without revealing the catalyst until line 3.
 
 ### 3 Actionable Patterns:
-1. **The Negative Result**: Show the worst-case scenario first (e.g. *"90% of logistics fleets leak RM 12,000 monthly in untracked idle fuel..."*).
+1. **The Negative Result**: Show the worst-case scenario first (e.g. *"90% of fintech platforms lose $12,000 monthly in untracked drop-offs..."*).
 2. **The Fast Cutaway**: High-contrast graphic transition within 1.2 seconds.
-3. **The Contrast Statement**: *"Stop buying GPS trackers. Start using live fleet intelligence."*
+3. **The Contrast Statement**: *"Stop buying generic stock templates. Start deploying custom 3D isometric brand systems."*
 
 ### Proven Client Tests:
-- Tested on [[Govicle]] Fleet Dashboard hero copy.
-- Tested on [[Jomparking]] promotional reels.`
+- Tested on [[ACME]] Mobile Banking dashboard hero copy.
+- Tested on [[NEX]] interactive campaign reels.`
   },
   {
     id: 'zettel_002',
@@ -39,7 +39,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
     created: '2026-09-08',
     updated: '2026-09-08',
     relatedLinks: ['[[The Curiosity Gap Hook Formula]]'],
-    linkedClients: ['[[SuamiSihat]]', '[[Govicle]]'],
+    linkedClients: ['[[LUM]]', '[[ACME]]'],
     content: `# The 60-30-10 Creative Color Rule
 
 A timeless interior and graphic design ratio to balance palette harmony:
@@ -52,26 +52,26 @@ A timeless interior and graphic design ratio to balance palette harmony:
   },
   {
     id: 'zettel_003',
-    title: 'Client Intake Call: Amirul ([[Govicle]])',
+    title: 'Client Intake Call: Sarah Jenkins ([[ACME]])',
     type: 'fleeting',
-    tags: ['client-meeting', 'brief-intake', 'fleet-app'],
+    tags: ['client-meeting', 'brief-intake', 'fintech'],
     created: '2026-09-09',
     updated: '2026-09-09',
     relatedLinks: [],
-    linkedClients: ['[[Govicle]]'],
-    linkedProjects: ['[[202609_0001_GOV_FleetApp]]'],
-    content: `# Client Intake Call: Amirul ([[Govicle]])
+    linkedClients: ['[[ACME]]'],
+    linkedProjects: ['[[202609_0001D_ACME_MobileAppIllustration]]'],
+    content: `# Client Intake Call: Sarah Jenkins ([[ACME]])
 
-Met with Amirul via Google Meet regarding the new Enterprise Fleet Management 3D hero assets.
+Met with Sarah Jenkins regarding the new Enterprise Mobile Banking 3D isometric asset package.
 
 ### Action Items & Deliverables:
-- [ ] #task 3D chassis blockout in Blender for [[202609_0001_GOV_FleetApp]] 📅 2026-09-14 ⏫ high
+- [ ] #task 3D chassis blockout in Blender for [[202609_0001D_ACME_MobileAppIllustration]] 📅 2026-09-14 ⏫ high
 - [ ] #task Export transparent 4K PNG renders to 04_WIP/ 📅 2026-09-18
-- [ ] #task Send revised quote [[QUOTE-2026-001]] to Amirul
-- [ ] Verify font licensing for [[Govicle]] typography assets
+- [ ] #task Send revised quote [[INV-2026-001]] to Sarah
+- [ ] Verify font licensing for [[ACME]] typography assets
 
 ### Notes on Preferences:
-Amirul likes bold, high-contrast dark enterprise UI with subtle 1px cyan borders. Avoid playful cartoonish 3D; keep it clean and industrial.`
+Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline borders. Avoid playful cartoonish 3D; keep it clean, professional, and tactile.`
   }
 ];
 
@@ -160,7 +160,10 @@ export class ZettelService {
     const uniqueLinks = Array.from(new Set(matches));
 
     note.relatedLinks = uniqueLinks.filter(l => !l.startsWith('[[client_') && !l.startsWith('[[2026'));
-    note.linkedClients = uniqueLinks.filter(l => l.includes('Govicle') || l.includes('Jomparking') || l.includes('SuamiSihat'));
+    note.linkedClients = uniqueLinks.filter(l => 
+      l.includes('ACME') || l.includes('NEX') || l.includes('LUM') ||
+      l.toLowerCase().includes('acme') || l.toLowerCase().includes('nexus') || l.toLowerCase().includes('lumina')
+    );
     note.linkedProjects = uniqueLinks.filter(l => l.match(/\[\[\d{6}_/));
 
     // Extract inline tasks: - [ ] #task Description 📅 YYYY-MM-DD ⏫ priority
