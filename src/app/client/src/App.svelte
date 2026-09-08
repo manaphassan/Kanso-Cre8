@@ -237,11 +237,20 @@
 
       <div class="sidebar-header" class:rail-header={isRail}>
         {#if !isRail}
-          <img src="brand/suamisihat-logo-on-dark.svg" alt="SuamiSihat" class="sidebar-logo" />
-          <span class="portal-pill">PORTAL</span>
+          <div class="flex items-center gap-2.5 px-3 py-2">
+            <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
+              K8
+            </div>
+            <div class="flex flex-col">
+              <span class="font-bold text-sm tracking-tight text-[var(--kanso-text-primary)]">Kanso Cre8</span>
+              <span class="text-[10px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Creative Vault</span>
+            </div>
+          </div>
         {:else}
-          <div class="sidebar-logomark-wrap" title="SuamiSihat Portal">
-            <img src="brand/ss-logomark.svg" alt="SuamiSihat Logomark" class="sidebar-logomark-svg" />
+          <div class="sidebar-logomark-wrap" title="Kanso Cre8 Vault">
+            <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
+              K8
+            </div>
           </div>
         {/if}
       </div>
@@ -280,35 +289,18 @@
         <div class="nav-spacer"></div>
 
         {#if !isRail}
-          <div class="desktop-banner desktop-app-banner">
-            <div class="banner-row">
-              <span class="banner-pill">Desktop Client &amp; Apps</span>
-              <span class="banner-ver">v{serverVersion}</span>
-            </div>
-            <div class="banner-title">SS-CAM Native Apps</div>
-            <p class="banner-desc">Native Windows (WPF), Linux (Fedora), and Android companion clients.</p>
-            <a
-              href="https://suamisihat.github.io/ss_cam/"
-              class="banner-btn"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-              </svg>
-              Downloads &amp; Docs ↗
-            </a>
+          <div class="px-2 pb-2">
+            <MiniCassetteDock />
           </div>
         {:else}
           <a
-            href="https://suamisihat.github.io/ss_cam/"
+            href="#radio"
             class="nav-link rail-link"
-            target="_blank"
-            rel="noreferrer"
-            title="Download SS-CAM App"
+            class:active={appState.currentRoute === 'radio'}
+            title="Focus Radio"
           >
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              {@html radioIcon}
             </svg>
           </a>
         {/if}
@@ -468,6 +460,8 @@
             <InvoiceStudioView />
           {:else if appState.currentRoute === 'zettel'}
             <ZettelView />
+          {:else if appState.currentRoute === 'radio'}
+            <RadioView />
           {:else if appState.currentRoute === 'order-form'}
             <OrderFormView />
           {:else if appState.currentRoute === 'copy-studio'}
