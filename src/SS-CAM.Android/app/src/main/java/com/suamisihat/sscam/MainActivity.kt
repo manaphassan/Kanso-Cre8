@@ -195,7 +195,7 @@ object ProjectCacheManager {
                 if (list != null && list.isNotEmpty()) return list
             } catch (e: Exception) { }
         }
-        return getSeedOrders()
+        return emptyList()
     }
 
     fun saveOrders(context: android.content.Context, orders: List<CreativeOrder>) {

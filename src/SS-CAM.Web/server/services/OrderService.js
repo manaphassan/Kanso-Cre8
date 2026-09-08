@@ -45,62 +45,7 @@ function getOrderDir(orderId) {
 }
 
 function getSeedOrders() {
-  return [
-    {
-      id: 'ORD-260904-1001',
-      title: 'Men Clinic Awareness POSM Poster',
-      entity: 'SSC',
-      priority: 'tier_1',
-      format: 'print_posm',
-      copy: '# Kempen Kesedaran Kesihatan Lelaki 2026\n\n## Headline\nKekal Bertenaga, Sihat & Berkeyakinan Setiap Hari.\n\n## Subhead\nKonsultasi professional & rawatan berperingkat daripada doktor bertauliah SuamiSihat Clinic.\n\n## Key Message Points\n- Ujian saringan pantas 15 minit tanpa rasa bimbang\n- Privasi pelanggan 100% terjaga rapi\n- Khidmat nasihat gaya hidup sihat dan suplemen semula jadi\n\n## Call to Action (CTA)\nImbas kod QR di kaunter untuk tempahan slot konsultasi percuma minggu ini.',
-      targetDate: '2026-09-18',
-      attachmentNote: 'Sila gunakan logo SuamiSihat Clinic (SSC) rasmi dan palet warna Medical Teal & Deep Slate.',
-      requester: 'Dr. Danial',
-      requesterRole: 'Medical Operations Lead',
-      status: 'pending',
-      submittedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-      updatedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-      comments: [],
-      assignedTo: null,
-      projectId: null
-    },
-    {
-      id: 'ORD-260904-1002',
-      title: 'Kopi Pahlawan TikTok Reels 9:16 Promo',
-      entity: 'SSE',
-      priority: 'tier_2',
-      format: '9_16_video',
-      copy: '# Script Hook TikTok / Reels: Kopi Pahlawan\n\n## Scene 1 (0-3s) - The Pattern Interrupt\nVisual: Close-up buih kopi panas berkrim dituang ke cawan kaca berwap.\nVO: "Bro, jangan biar petang kau lemau tak bertenaga..."\nText on Screen: TENAGA PETANG PADU!\n\n## Scene 2 (3-8s) - Problem & Solution\nVisual: Lelaki aktif bekerja fokus depan komputer, senyum yakin.\nVO: "Secawan Kopi Pahlawan dengan herba premium Tongkat Ali & Maca asli. Halal & bertenaga."\n\n## Scene 3 (8-15s) - CTA\nVisual: Kotak Kopi Pahlawan & badge Promosi Kombo Jimat.\nVO: "Tekan beg kuning sekarang untuk harga pengenalan sebelum stok licin!"',
-      targetDate: '2026-09-12',
-      attachmentNote: 'Format vertikal 1080x1920 60fps. Margin selamat untuk UI TikTok bawah & kanan.',
-      requester: 'Sarah Amin',
-      requesterRole: 'E-Commerce Marketing Lead',
-      status: 'pending',
-      submittedAt: new Date(Date.now() - 3600000 * 8).toISOString(),
-      updatedAt: new Date(Date.now() - 3600000 * 8).toISOString(),
-      comments: [],
-      assignedTo: null,
-      projectId: null
-    },
-    {
-      id: 'ORD-260904-1003',
-      title: 'SuamiSihat Annual Leadership Summit Backdrop',
-      entity: 'SSH',
-      priority: 'tier_3',
-      format: '16_9_landscape',
-      copy: '# SuamiSihat Leadership Summit 2026\n\n## Theme\n"Transformasi Kesihatan & Inovasi Lestari Menuju 2030"\n\n## Key Details\n- Tarikh: 28 Oktober 2026\n- Lokasi: Grand Ballroom, Putrajaya\n- Penganjur: SuamiSihat Holding Sdn. Bhd.\n\n## Visual Direction\nElegance, minimalis korporat, sentuhan gradien Falconia Gold dan Deep Obsidian Navy.',
-      targetDate: '2026-09-08',
-      attachmentNote: 'Resolusi tinggi untuk LED Screen 4K panggung utama.',
-      requester: 'Harussani',
-      requesterRole: 'Creative Director',
-      status: 'pending',
-      submittedAt: new Date(Date.now() - 3600000 * 20).toISOString(),
-      updatedAt: new Date(Date.now() - 3600000 * 20).toISOString(),
-      comments: [],
-      assignedTo: null,
-      projectId: null
-    }
-  ];
+  return [];
 }
 
 /**
@@ -142,15 +87,7 @@ function getOrdersFilePath() {
 function readAllOrders() {
   const filePath = getOrdersFilePath();
   if (!fs.existsSync(filePath)) {
-    const seeds = getSeedOrders();
-    try {
-      const dir = path.dirname(filePath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(filePath, seeds.map(o => JSON.stringify(o)).join('\n') + '\n', 'utf8');
-      return seeds;
-    } catch (e) {
-      return seeds;
-    }
+    return [];
   }
 
   try {
@@ -164,15 +101,6 @@ function readAllOrders() {
       })
       .filter(Boolean);
 
-    if (parsed.length === 0) {
-      const seeds = getSeedOrders();
-      try {
-        fs.writeFileSync(filePath, seeds.map(o => JSON.stringify(o)).join('\n') + '\n', 'utf8');
-        return seeds;
-      } catch (e) {
-        return seeds;
-      }
-    }
     return parsed;
   } catch (err) {
     console.error('[OrderService] readAllOrders error:', err.message);

@@ -206,11 +206,10 @@ namespace SS_CAM.Services
                     }
                 }
 
-                // If still empty, return seed default orders
+                // If empty, return empty list without mock/seed injection
                 if (orders.Count == 0)
                 {
-                    orders = GetInitialSeedOrders();
-                    SaveOrdersInternal(filePath, orders);
+                    return orders;
                 }
 
                 return orders.OrderByDescending(o => o.SubmittedAt).ToList();
@@ -633,63 +632,7 @@ The complete brief and approved script are maintained in [`01_Brief_and_Copy/COP
 
         private static List<CreativeOrder> GetInitialSeedOrders()
         {
-            return new List<CreativeOrder>
-            {
-                new CreativeOrder
-                {
-                    Id = "ORD-260904-1001",
-                    Title = "Men Clinic Awareness POSM Poster",
-                    Entity = "SSC",
-                    Priority = "tier_1",
-                    Format = "print_posm",
-                    Copy = "# Kempen Kesedaran Kesihatan Lelaki 2026\n\n## Headline\nKekal Bertenaga, Sihat & Berkeyakinan Setiap Hari.\n\n## Subhead\nKonsultasi professional & rawatan berperingkat daripada doktor bertauliah SuamiSihat Clinic.\n\n## Key Message Points\n- Ujian saringan pantas 15 minit tanpa rasa bimbang\n- Privasi pelanggan 100% terjaga rapi\n- Khidmat nasihat gaya hidup sihat dan suplemen semula jadi\n\n## Call to Action (CTA)\nImbas kod QR di kaunter untuk tempahan slot konsultasi percuma minggu ini.",
-                    TargetDate = DateTime.Now.AddDays(14).ToString("yyyy-MM-dd"),
-                    AttachmentNote = "Sila gunakan logo SuamiSihat Clinic (SSC) rasmi dan palet warna Medical Teal & Deep Slate.",
-                    Requester = "Dr. Danial",
-                    RequesterRole = "Medical Operations Lead",
-                    Status = "pending",
-                    SubmittedAt = DateTime.UtcNow.AddHours(-4).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    UpdatedAt = DateTime.UtcNow.AddHours(-4).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    AssignedTo = null,
-                    ProjectId = null
-                },
-                new CreativeOrder
-                {
-                    Id = "ORD-260904-1002",
-                    Title = "Kopi Pahlawan TikTok Reels 9:16 Promo",
-                    Entity = "SSE",
-                    Priority = "tier_2",
-                    Format = "9_16_video",
-                    Copy = "# Script Hook TikTok / Reels: Kopi Pahlawan\n\n## Scene 1 (0-3s) - The Pattern Interrupt\nVisual: Close-up buih kopi panas berkrim dituang ke cawan kaca berwap.\nVO: \"Bro, jangan biar petang kau lemau tak bertenaga...\"\nText on Screen: TENAGA PETANG PADU!\n\n## Scene 2 (3-8s) - Problem & Solution\nVisual: Lelaki aktif bekerja fokus depan komputer, senyum yakin.\nVO: \"Secawan Kopi Pahlawan dengan herba premium Tongkat Ali & Maca asli. Halal & bertenaga.\"\n\n## Scene 3 (8-15s) - CTA\nVisual: Kotak Kopi Pahlawan & badge Promosi Kombo Jimat.\nVO: \"Tekan beg kuning sekarang untuk harga pengenalan sebelum stok licin!\"",
-                    TargetDate = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"),
-                    AttachmentNote = "Format vertikal 1080x1920 60fps. Margin selamat untuk UI TikTok bawah & kanan.",
-                    Requester = "Sarah Amin",
-                    RequesterRole = "E-Commerce Marketing Lead",
-                    Status = "pending",
-                    SubmittedAt = DateTime.UtcNow.AddHours(-8).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    UpdatedAt = DateTime.UtcNow.AddHours(-8).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    AssignedTo = null,
-                    ProjectId = null
-                },
-                new CreativeOrder
-                {
-                    Id = "ORD-260904-1003",
-                    Title = "SuamiSihat Annual Leadership Summit Backdrop",
-                    Entity = "SSH",
-                    Priority = "tier_3",
-                    Format = "16_9_landscape",
-                    Copy = "# SuamiSihat Leadership Summit 2026\n\n## Theme\n\"Transformasi Kesihatan & Inovasi Lestari Menuju 2030\"\n\n## Key Details\n- Tarikh: 28 Oktober 2026\n- Lokasi: Grand Ballroom, Putrajaya\n- Penganjur: SuamiSihat Holding Sdn. Bhd.\n\n## Visual Direction\nElegance, minimalis korporat, sentuhan gradien Falconia Gold dan Deep Obsidian Navy.",
-                    TargetDate = DateTime.Now.AddDays(4).ToString("yyyy-MM-dd"),
-                    AttachmentNote = "Resolusi tinggi untuk LED Screen 4K panggung utama.",
-                    Requester = "Harussani",
-                    RequesterRole = "Creative Director",
-                    Status = "pending",
-                    SubmittedAt = DateTime.UtcNow.AddHours(-20).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    UpdatedAt = DateTime.UtcNow.AddHours(-20).ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    AssignedTo = null,
-                    ProjectId = null
-                }
-            };
+            return new List<CreativeOrder>();
         }
 
         public static List<CreativeOrderItem> LoadOrders(string workspaceRoot)
