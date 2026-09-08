@@ -1,4 +1,4 @@
-# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
+﻿# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
 
 > **Product**: Kanso Cre8  
 > **Author**: harusssani.manaphassan  
@@ -21,7 +21,7 @@
 ### 1.2 Brand Voice & Archetype
 * **Archetype**: The Master Craftsman / Digital Architect (inspired by Dieter Rams, Linear, Raycast, and Obsidian).
 * **Tone**: Calm, intentional, tactile, razor-sharp, respectful of focus.
-* **User Target**: Solo art directors, freelance graphic/UI designers, 3D artists, and content creators managing multiple clients simultaneously (e.g. **Govicle**, **Jomparking**, **SuamiSihat**).
+* **User Target**: Solo art directors, freelance graphic/UI designers, 3D artists, and content creators managing multiple clients simultaneously (e.g. **Acme Corp**, **Nexus Studio**, **Lumina Labs**).
 
 ### 1.3 Visual Identity & Logomark
 * **The "K8" Vault Monogram**:
@@ -81,22 +81,22 @@ LIGHT MODE: Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accen
 📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
 ├── 📁 _Clients/                          # 🏢 Client Database (Profiles & Brand Assets)
-│   ├── 📁 GOV_Govicle/
+│   ├── 📁 ACME_AcmeCorp/
 │   │   ├── 📄 client.md                 # YAML frontmatter: contacts, billing, palette, rates
 │   │   └── 📁 Assets/                   # SVG logos, fonts, brand guidelines PDF
-│   ├── 📁 JOM_Jomparking/
+│   ├── 📁 NEX_NexusStudio/
 │   │   ├── 📄 client.md
 │   │   └── 📁 Assets/
-│   └── 📁 SSH_SuamiSihat/
+│   └── 📁 LUM_LuminaLabs/
 │       ├── 📄 client.md
 │       └── 📁 Assets/
 │
 ├── 📁 _Finance/                          # 🧾 Financial Documents (Quotes & Invoices)
 │   ├── 📁 Quotes/
-│   │   └── 📄 QUOTE-2026-001_Govicle_FleetApp.md
+│   │   └── 📄 QUOTE-2026-001_AcmeCorp_BrandSystem.md
 │   └── 📁 Invoices/
-│       ├── 📄 INV-2026-001_Govicle_Deposit.md
-│       └── 📄 INV-2026-002_Jomparking_SocialLaunch.md
+│       ├── 📄 INV-2026-001_AcmeCorp_Deposit.md
+│       └── 📄 INV-2026-002_NexusStudio_LaunchDesign.md
 │
 ├── 📁 _Zettelkasten/                     # 🧠 Knowledge Engine & Second Brain
 │   ├── 📁 01_Fleeting/                   # Raw quick captures (e.g. 20260909_call_notes.md)
@@ -108,7 +108,7 @@ LIGHT MODE: Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accen
 │
 ├── 📁 2026/                              # 📁 Project Vaults (Year / Month / Project)
 │   └── 📁 202609_September/
-│       └── 📁 202609_0001_GOV_FleetAppIllustration/
+│       └── 📁 202609_0001_ACME_MobileAppIllustration/
 │           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
 │           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
 │           ├── 📁 03_COPY/               # COPY.md (scripts, social hooks, specs)
@@ -124,17 +124,17 @@ LIGHT MODE: Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accen
 
 ## 📋 3. Data Schemas & YAML Frontmatter
 
-### 3.1 Client Profile Schema (`_Clients/GOV_Govicle/client.md`)
+### 3.1 Client Profile Schema (`_Clients/ACME_AcmeCorp/client.md`)
 ```yaml
 ---
-id: "client_govicle"
-name: "Govicle Sdn Bhd"
-code: "GOV"
-contact_person: "Amirul Haziq"
-email: "amirul@govicle.my"
-phone: "+60 12-345 6789"
-billing_address: "Level 15, Menara Govicle, Bangsar South, 59200 Kuala Lumpur"
-currency: "MYR"
+id: "client_acme"
+name: "Acme Corporation"
+code: "ACME"
+contact_person: "Alex Rivera"
+email: "alex@acme.example"
+phone: "+1 555-019-2834"
+billing_address: "Suite 400, 100 Innovation Way, San Francisco, CA 94105"
+currency: "USD"
 default_hourly_rate: 120.00
 payment_terms_days: 14
 palette:
@@ -147,24 +147,24 @@ active_projects: 2
 total_invoiced: 4750.00
 ---
 
-# Govicle Brand Guidelines & Client Notes
+# Acme Corporation Brand Guidelines & Client Notes
 - Prefers high-contrast dark enterprise UI with electric blue accents.
 - All final deliverables must be 4K PNG (transparent alpha) and print collateral at 300 DPI CMYK.
 ```
 
-### 3.2 Project Master Schema (`.../202609_0001_GOV_FleetApp/README.md`)
+### 3.2 Project Master Schema (`.../202609_0001_ACME_MobileApp/README.md`)
 ```yaml
 ---
-id: "202609_0001_GOV"
+id: "202609_0001_ACME"
 title: "Fleet Management App 3D Illustration"
-client: "Govicle"
-client_code: "GOV"
+client: "Acme Corp"
+client_code: "ACME"
 status: "in-progress"    # backlog | in-progress | review | revision | done
 priority: "high"         # low | normal | high | urgent
 created_at: 2026-09-09
 due_date: 2026-09-22
 budget: 3500.00
-currency: "MYR"
+currency: "USD"
 quote_ref: "QUOTE-2026-001"
 invoice_ref: "INV-2026-001"
 figma_url: "https://figma.com/file/..."
@@ -175,13 +175,13 @@ knowledge_links:
 ---
 
 # Project Brief & Milestone Checklist
-- [x] Initial alignment meeting with Amirul
+- [x] Initial alignment meeting with Alex
 - [ ] #task 3D chassis blockout in Blender 📅 2026-09-14 ⏫ high
 - [ ] #task Render 4K lighting passes to 04_WIP/ 📅 2026-09-18
 - [ ] Client review & final sign-off
 ```
 
-### 3.3 Quote & Invoice Schema (`_Finance/Invoices/INV-2026-001_Govicle_Deposit.md`)
+### 3.3 Quote & Invoice Schema (`_Finance/Invoices/INV-2026-001_AcmeCorp_Deposit.md`)
 ```yaml
 ---
 type: "invoice"          # quote | invoice
@@ -189,21 +189,21 @@ document_number: "INV-2026-001"
 date: 2026-09-09
 due_date: 2026-09-23
 status: "sent"           # draft | sent | paid | overdue
-client_code: "GOV"
-client_name: "Govicle Sdn Bhd"
-client_contact: "Amirul Haziq"
-client_email: "amirul@govicle.my"
-client_address: "Level 15, Menara Govicle, Bangsar South, 59200 KL"
-freelancer_name: "Harussani Design Studio"
-freelancer_email: "harussani.design@gmail.com"
-freelancer_phone: "+60 19-876 5432"
-freelancer_address: "Kuala Lumpur, Malaysia"
-payment_bank: "Maybank Islamic"
+client_code: "ACME"
+client_name: "Acme Corporation"
+client_contact: "Alex Rivera"
+client_email: "alex@acme.example"
+client_address: "Suite 400, 100 Innovation Way, San Francisco, CA 94105"
+freelancer_name: "Harus Studio"
+freelancer_email: "harus@studio.example"
+freelancer_phone: "+1 555-014-9823"
+freelancer_address: "Studio 12, Creative Loft, Austin, TX"
+payment_bank: "First Creative Bank"
 payment_account: "5140 1234 5678"
-payment_account_name: "Harussani Creative"
-currency: "MYR"
+payment_account_name: "Harus Studio LLC"
+currency: "USD"
 items:
-  - description: "50% Deposit: Fleet Management 3D Isometric Illustrations (3 Sets)"
+  - description: "50% Deposit: Mobile App 3D Isometric Illustrations (3 Sets)"
     quantity: 1
     unit_price: 1750.00
     amount: 1750.00
@@ -216,7 +216,7 @@ subtotal: 2250.00
 tax_amount: 0.00
 total: 2250.00
 notes: "Payment due within 14 days of invoice date via direct bank transfer."
-linked_project_id: "202609_0001_GOV"
+linked_project_id: "202609_0001_ACME"
 ---
 ```
 
@@ -232,8 +232,8 @@ updated: 2026-09-09
 related:
   - "[[b2b_saas_hero_formula]]"
 clients_used:
-  - "[[Govicle]]"
-  - "[[Jomparking]]"
+  - "[[AcmeCorp]]"
+  - "[[NexusStudio]]"
 ---
 
 # The Curiosity Gap Hook Formula
@@ -263,7 +263,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 │ • DashboardView      (Bento KPIs, Sprint Queue, Revenue Pipeline)                │
 │ • ProjectsView       (Standardized 5-Folder Project Browser & Scaffolder)        │
 │ • KanbanView         (4-Stage Task Pipeline + Note Task Rollup)                  │
-│ • ClientsView        (Govicle, Jomparking, SuamiSihat Profiles & Swatches)       │
+│ • ClientsView        (Client Profiles, Rate Cards & Brand Swatches)              │
 │ • InvoiceStudioView  (Dual-Pane Markdown YAML Editor + Printable HTML/PDF)       │
 │ • CopyStudioView     (03_COPY/COPY.md Editor + Word Count + Atomic Hook Tray)    │
 │ • ZettelView         (3-Tier Knowledge Second Brain + WikiLink Explorer)         │
@@ -291,7 +291,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 
 ### Phase 2: Core Markdown Vault Engine & Client Hub
 - Build `vaultService.ts` using `@tauri-apps/plugin-fs` to scan, read, and write local folders and YAML frontmatter.
-- Pre-populate default client profiles (**Govicle**, **Jomparking**, **SuamiSihat**) with interactive brand color swatches (1-click clipboard copy).
+- Pre-populate sample client profiles (**Acme Corp**, **Nexus Studio**, **Lumina Labs**) with interactive brand color swatches (1-click clipboard copy).
 - Build the standardized 5-folder project scaffolder with automatic client prefixing (`[YYYYMM]_[PREFIX]_[ProjectTitle]`).
 
 ### Phase 3: Zettelkasten Knowledge Engine & Inline Task Rollup
