@@ -13,6 +13,8 @@
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import { clientService } from '$lib/services/clientService';
+  import type { ClientProfile } from '$lib/types/kanso';
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
 
@@ -27,6 +29,19 @@
   let projectToDelete = $state<Project | null>(null);
   let showDeleteModal = $state<boolean>(false);
   let isDeleting = $state<boolean>(false);
+
+  // New Project Scaffolder State
+  let showNewProjectModal = $state<boolean>(false);
+  let isSubmitting = $state<boolean>(false);
+  let npTitle = $state('');
+  let npClientCode = $state('ACME');
+  let npDeliverableType = $state('Graphic / Print');
+  let npPriority = $state<'low' | 'normal' | 'high' | 'urgent'>('normal');
+  let npDeadline = $state(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+  let npBudget = $state(1750);
+  let npCurrency = $state('USD');
+  let npDescription = $state('');
+  let clientsList = $state<ClientProfile[]>([]);
 
   const isAdminUser = $derived.by(() => {
     const role = (appState.currentUser?.role || '').toLowerCase();
@@ -78,8 +93,46 @@
     }
   }
 
+  function openNewProjectModal() {
+    clientsList = clientService.getClients();
+    if (clientsList.length > 0 && !clientsList.some(c => c.code === npClientCode)) {
+      npClientCode = clientsList[0].code;
+    }
+    showNewProjectModal = true;
+  }
+
+  async function handleCreateProject() {
+    if (!npTitle.trim()) {
+      appState.addToast('Please provide a project title.', 'warning');
+      return;
+    }
+    isSubmitting = true;
+    try {
+      const selectedClient = clientsList.find(c => c.code === npClientCode);
+      await projectStore.createProject({
+        title: npTitle.trim(),
+        clientCode: npClientCode,
+        clientName: selectedClient ? selectedClient.name : npClientCode,
+        deliverableType: npDeliverableType,
+        priority: npPriority,
+        deadline: npDeadline,
+        budget: Number(npBudget) || 0,
+        currency: npCurrency || 'USD',
+        description: npDescription.trim()
+      });
+      showNewProjectModal = false;
+      npTitle = '';
+      npDescription = '';
+    } catch (err: any) {
+      // Handled in store
+    } finally {
+      isSubmitting = false;
+    }
+  }
+
   onMount(() => {
     projectStore.loadProjects();
+    clientsList = clientService.getClients();
   });
 </script>
 
@@ -178,6 +231,19 @@
           <span>Save as Default</span>
         </button>
       {/if}
+
+      <!-- New Project Action Button -->
+      <button
+        type="button"
+        class="new-project-header-btn"
+        onclick={openNewProjectModal}
+        title="Scaffold a new 5-folder project vault"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 4v16m8-8H4" />
+        </svg>
+        <span>New Project</span>
+      </button>
     </div>
   </div>
 
@@ -188,7 +254,7 @@
   {#if projectStore.isLoading}
     <div class="loading-box">
       <div class="loading-spinner-orbit"></div>
-      <span>Syncing Projects with Synology NAS Workspace...</span>
+      <span>Syncing Projects with Creative Vault...</span>
     </div>
   {:else if projectStore.filteredProjects.length === 0}
     <div class="empty-box">
@@ -248,7 +314,7 @@
                 {/if}
               </div>
               <div class="badges-row">
-                <FluentBadge type="brand" value={p.brand || 'SS'} />
+                <FluentBadge type="brand" value={p.brand || 'ACME'}>{p.brand || 'ACME'}</FluentBadge>
                 <FluentBadge type="status" value={p.status} />
               </div>
             </div>
@@ -277,9 +343,6 @@
                 {#each p.tags.slice(0, 3) as t}
                   <span class="tag-pill">{t}</span>
                 {/each}
-                {#if p.tags.length > 3}
-                  <span class="tag-more">+{p.tags.length - 3}</span>
-                {/if}
               </div>
             {/if}
           </FluentCard>
@@ -305,13 +368,13 @@
           <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
         </div>
         <p class="warning-text">
-          This will permanently delete the project directory and <strong>all 5 subfolders</strong> on Synology NAS:
+          This will permanently delete the project directory and <strong>all 5 subfolders</strong> from the vault:
         </p>
         <ul class="subfolder-list">
-          <li><code>01_BRIEF_ASSETS/</code></li>
-          <li><code>02_SOURCE_FILES/</code></li>
-          <li><code>03_COPYWRITING/</code></li>
-          <li><code>04_WORK_IN_PROGRESS/</code></li>
+          <li><code>01_BRIEF/</code></li>
+          <li><code>02_SOURCE/</code></li>
+          <li><code>03_COPY/</code></li>
+          <li><code>04_WIP/</code></li>
           <li><code>05_DELIVERABLES/</code></li>
         </ul>
       </div>
@@ -321,6 +384,114 @@
           <span class="target-val"><strong>{projectToDelete.jobId || projectToDelete.id}</strong> — {projectToDelete.title}</span>
         </div>
       {/if}
+    </div>
+  </FluentDialog>
+
+  <!-- New Project Scaffolding Dialog -->
+  <FluentDialog
+    bind:open={showNewProjectModal}
+    title="Scaffold 5-Folder Project Vault"
+    confirmText="Scaffold Vault"
+    confirmAppearance="primary"
+    loading={isSubmitting}
+    onConfirm={handleCreateProject}
+    onClose={() => { showNewProjectModal = false; }}
+  >
+    <div class="scaffold-dialog-body">
+      <!-- Info banner with 5-folder preview -->
+      <div class="scaffold-preview-banner">
+        <div class="preview-title">
+          <span>📁 Standardized Vault Structure</span>
+        </div>
+        <p class="preview-text">
+          Instantly generates canonical 5-folder hierarchy and <code>README.md</code> with YAML frontmatter specs:
+        </p>
+        <div class="folder-tree-box">
+          <div class="tree-root">📂 {new Date().getFullYear()}/{new Date().getFullYear()}{String(new Date().getMonth() + 1).padStart(2, '0')}_[JOBID]_{npClientCode}_{npTitle.replace(/[^a-zA-Z0-9]/g, '_') || 'Project'}/</div>
+          <div class="tree-branch">├── 01_BRIEF/ <span class="tree-desc">(References &amp; logos)</span></div>
+          <div class="tree-branch">├── 02_SOURCE/ <span class="tree-desc">(Master design vectors)</span></div>
+          <div class="tree-branch">├── 03_COPY/COPY.md <span class="tree-desc">(Headlines &amp; copy)</span></div>
+          <div class="tree-branch">├── 04_WIP/ <span class="tree-desc">(Draft review renders)</span></div>
+          <div class="tree-branch">├── 05_DELIVERABLES/ <span class="tree-desc">(Client final packages)</span></div>
+          <div class="tree-branch">└── README.md <span class="tree-desc">(YAML frontmatter specs)</span></div>
+        </div>
+      </div>
+
+      <!-- Form Inputs -->
+      <div class="scaffold-form-grid">
+        <div class="form-field">
+          <label class="form-label" for="np-client">Client</label>
+          <select id="np-client" bind:value={npClientCode} class="form-input form-select">
+            {#each clientsList as c}
+              <option value={c.code}>[{c.code}] {c.name}</option>
+            {/each}
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="np-deliverable-type">Deliverable Type</label>
+          <select id="np-deliverable-type" bind:value={npDeliverableType} class="form-input form-select">
+            <option value="Graphic / Print">Graphic / Print (D)</option>
+            <option value="Social Media">Social Media (S)</option>
+            <option value="Video">Video / Motion (V)</option>
+            <option value="Brand Identity">Brand Identity (P)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="np-title">Project Title</label>
+        <input
+          id="np-title"
+          type="text"
+          bind:value={npTitle}
+          placeholder="e.g. Mobile Banking 3D Isometric Illustrations"
+          class="form-input"
+        />
+      </div>
+
+      <div class="scaffold-form-row-3">
+        <div class="form-field">
+          <label class="form-label" for="np-priority">Priority</label>
+          <select id="np-priority" bind:value={npPriority} class="form-input form-select">
+            <option value="normal">Normal</option>
+            <option value="low">Low</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="np-deadline">Deadline</label>
+          <input
+            id="np-deadline"
+            type="date"
+            bind:value={npDeadline}
+            class="form-input font-mono"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="np-budget">Budget ({npCurrency})</label>
+          <input
+            id="np-budget"
+            type="number"
+            bind:value={npBudget}
+            class="form-input font-mono"
+          />
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="np-description">Creative Brief &amp; Scope</label>
+        <textarea
+          id="np-description"
+          bind:value={npDescription}
+          rows="3"
+          placeholder="Campaign objectives, target dimensions, visual style notes, and milestones..."
+          class="form-input"
+        ></textarea>
+      </div>
     </div>
   </FluentDialog>
 </div>
@@ -652,5 +823,135 @@
   }
   .target-val {
     color: var(--text-primary, #111827);
+  }
+
+  /* ═══ NEW PROJECT BUTTON & SCAFFOLD DIALOG ═════════════════════ */
+  .new-project-header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--kanso-accent, #38BDF8);
+    color: #09090B;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  .new-project-header-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .scaffold-dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .scaffold-preview-banner {
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .preview-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  .preview-text {
+    font-size: 0.8rem;
+    color: var(--kanso-text-muted, #71717A);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .preview-text code {
+    font-family: monospace;
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover, #27272A);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .folder-tree-box {
+    font-family: monospace;
+    font-size: 0.72rem;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 6px;
+    padding: 8px 10px;
+    line-height: 1.5;
+  }
+
+  .tree-root {
+    color: var(--kanso-accent, #38BDF8);
+    font-weight: 700;
+  }
+
+  .tree-branch {
+    padding-left: 12px;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .tree-desc {
+    color: var(--kanso-text-muted, #52525B);
+  }
+
+  .scaffold-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .scaffold-form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .form-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface, #18181B);
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-size: 0.8rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--kanso-accent, #38BDF8);
+  }
+
+  .form-select {
+    cursor: pointer;
   }
 </style>
