@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import { radioService } from '$lib/services/radioService.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
@@ -12,7 +12,7 @@
 </script>
 
 <div
-  class="h-11 px-3 rounded-xl border flex items-center justify-between gap-3 shadow-sm select-none transition-all"
+  class="h-10 px-2.5 rounded-xl border flex items-center justify-between gap-2.5 shadow-sm select-none transition-all"
   style="
     background: var(--kanso-surface);
     border-color: var(--kanso-border);
@@ -21,7 +21,7 @@
   <!-- Mini Cassette Chamber Inset (Click to navigate to Radio Studio) -->
   <button
     type="button"
-    class="flex items-center gap-2.5 px-2 py-1 rounded-lg border text-left hover:brightness-110 active:scale-98 transition shrink-0"
+    class="flex items-center gap-2 px-2 py-0.5 rounded-lg border text-left hover:brightness-110 active:scale-98 transition shrink-0"
     style="
       background: {station.shellColor};
       border-color: rgba(255, 255, 255, 0.2);
@@ -32,19 +32,21 @@
   >
     <!-- Left Mini Spool -->
     <CassetteSpoolWheel
-      size={18}
+      size={16}
+      isSpinning={state.isPlaying}
       rotationAngle={state.isPlaying ? state.spoolRotation : 0}
       holeColor="#020617"
     />
 
     <!-- Center Mini Tape Window -->
-    <div class="w-6 h-3 bg-black/60 rounded border border-white/10 flex items-center justify-center">
-      <div class="w-2 h-1 bg-red-500/80 rounded-full"></div>
+    <div class="w-5 h-2.5 bg-black/60 rounded-sm border border-white/10 flex items-center justify-center">
+      <div class="w-1.5 h-1 bg-red-500/80 rounded-full"></div>
     </div>
 
     <!-- Right Mini Spool -->
     <CassetteSpoolWheel
-      size={18}
+      size={16}
+      isSpinning={state.isPlaying}
       rotationAngle={state.isPlaying ? state.spoolRotation : 0}
       holeColor="#020617"
     />

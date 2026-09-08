@@ -1,9 +1,9 @@
-﻿import type { CassetteRadioStation, RadioPlaybackState } from '$lib/types/radio';
+import type { CassetteRadioStation, RadioPlaybackState } from '$lib/types/radio';
 
 export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
   {
     id: 'lofi-cafe',
-    name: 'Chillhop & Lo-Fi Cafe',
+    name: 'Chillhop Cafe',
     genre: 'Lo-Fi / Beats',
     frequency: '98.4 FM',
     streamUrl: 'https://stream.laut.fm/lofi',
@@ -36,7 +36,7 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
   },
   {
     id: 'paris-jazz',
-    name: 'Coffeehouse Jazz',
+    name: 'Parisian Jazz',
     genre: 'Acoustic / Bossa',
     frequency: '88.5 FM',
     streamUrl: 'https://0nlineradio.radioho.st/0r-jazz?ref=radio-browser',
@@ -47,7 +47,7 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
   },
   {
     id: 'deep-focus',
-    name: 'Deep Focus Alpha Drone',
+    name: 'Zen Alpha Focus',
     genre: 'Ambient / Zen',
     frequency: '95.0 FM',
     streamUrl: 'https://stream.bigfm.de/lofifocus/mp3-128/radiobrowser',

@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import { radioService, ALL_CASSETTE_STATIONS } from '$lib/services/radioService.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
   import CassetteTapeCard from './CassetteTapeCard.svelte';
@@ -11,7 +11,44 @@
   let isTimerRunning = $state(false);
   let timerInterval: any = null;
 
+  function playPomodoroChime() {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(528, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(264, ctx.currentTime + 1.2);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 1.2);
+    } catch {
+      // Audio context restricted or unavailable
+    }
+  }
+
+  function playMechanicalClick() {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(110, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.06);
+    } catch {}
+  }
+
   function toggleTimer() {
+    playMechanicalClick();
     if (isTimerRunning) {
       clearInterval(timerInterval);
       isTimerRunning = false;
@@ -20,6 +57,11 @@
       timerInterval = setInterval(() => {
         if (pomodoroSeconds > 0) {
           pomodoroSeconds--;
+          if (pomodoroSeconds === 0) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            playPomodoroChime();
+          }
         } else {
           clearInterval(timerInterval);
           isTimerRunning = false;
@@ -29,6 +71,7 @@
   }
 
   function resetTimer() {
+    playMechanicalClick();
     clearInterval(timerInterval);
     isTimerRunning = false;
     pomodoroSeconds = 25 * 60;
@@ -97,6 +140,14 @@
             border-color: rgba(255, 255, 255, 0.2);
           "
         >
+          <!-- Top 2 Silver Corner Screws -->
+          <div class="absolute top-2.5 left-2.5 w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+            <div class="w-1.5 h-0.5 bg-zinc-600 rotate-45"></div>
+          </div>
+          <div class="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+            <div class="w-1.5 h-0.5 bg-zinc-600 -rotate-45"></div>
+          </div>
+
           <!-- Tape Label Header -->
           <div
             class="w-full rounded-md px-3 py-2 flex items-center justify-between shadow z-10"
@@ -126,19 +177,37 @@
               </div>
             </div>
 
-            <!-- Left Spool Wheel -->
+            <!-- Left Spool Wheel (Rotating at 33 RPM via CSS animation) -->
             <div class="z-10 relative">
-              <CassetteSpoolWheel size={44} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
+              <CassetteSpoolWheel size={44} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
 
-            <!-- Right Spool Wheel -->
+            <!-- Right Spool Wheel (Rotating at 33 RPM via CSS animation) -->
             <div class="z-10 relative">
-              <CassetteSpoolWheel size={44} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
+              <CassetteSpoolWheel size={44} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
           </div>
 
-          <!-- Bottom Pins & Screws -->
-          <div class="w-full flex items-center justify-between px-3 text-[10px] text-white/40 font-mono">
+          <!-- Bottom Head-Reader Trapezoid & 2 Bottom Corner Screws -->
+          <div class="w-full flex items-end justify-between px-2 pt-0.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+              <div class="w-1.5 h-0.5 bg-zinc-600 rotate-12"></div>
+            </div>
+
+            <!-- Center Roller Inset Notch (Trapezoidal head/roller) -->
+            <div class="w-36 h-3 bg-black/50 rounded-t-md border-t border-x border-white/20 flex items-center justify-center gap-4">
+              <div class="w-3 h-1 bg-amber-300/40 rounded-full border border-amber-200/30"></div>
+              <div class="w-2 h-1.5 bg-zinc-400 rounded-sm"></div>
+              <div class="w-3 h-1 bg-amber-300/40 rounded-full border border-amber-200/30"></div>
+            </div>
+
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+              <div class="w-1.5 h-0.5 bg-zinc-600 -rotate-12"></div>
+            </div>
+          </div>
+
+          <!-- High Bias text ribbon -->
+          <div class="w-full flex items-center justify-between px-3 text-[9px] text-white/40 font-mono tracking-widest mt-1">
             <span>● HIGH BIAS 70µs</span>
             <span>JAPAN TYPE II ●</span>
           </div>
