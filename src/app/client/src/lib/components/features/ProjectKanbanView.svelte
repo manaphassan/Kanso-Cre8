@@ -5,6 +5,8 @@
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import { zettelService } from '$lib/services/zettelService';
+  import type { ZettelTask } from '$lib/types/zettel';
 
   interface Props {
     projects: Project[];
@@ -13,6 +15,20 @@
   }
 
   let { projects, isAdminUser = false, onDelete }: Props = $props();
+
+  let showTaskBar = $state(false);
+  let vaultTasks = $state<ZettelTask[]>([]);
+
+  onMount(() => {
+    vaultTasks = zettelService.getAllTasks();
+  });
+
+  let pendingVaultTasks = $derived(vaultTasks.filter(t => !t.completed));
+
+  function handleToggleVaultTask(task: ZettelTask) {
+    zettelService.toggleTask(task);
+    vaultTasks = zettelService.getAllTasks();
+  }
 
   const columns = [
     { id: 'backlog', label: 'Backlog', icon: '📝', color: '#6B7280', hint: 'Ideation & briefs queued' },
@@ -177,6 +193,53 @@
 </script>
 
 <div class="kanban-board-container">
+  <!-- Universal Task Rollup Bar -->
+  <div class="vault-task-rollup-bar">
+    <div class="task-rollup-left">
+      <span class="task-rollup-icon">📋</span>
+      <span class="task-rollup-title">Vault Task Rollup</span>
+      <span class="task-rollup-badge">{pendingVaultTasks.length} active tasks</span>
+    </div>
+    <button
+      type="button"
+      class="task-rollup-toggle-btn"
+      onclick={() => showTaskBar = !showTaskBar}
+    >
+      {showTaskBar ? 'Hide Tasks ▲' : 'Show Tasks ▼'}
+    </button>
+  </div>
+
+  {#if showTaskBar}
+    <div class="vault-tasks-shelf">
+      {#if vaultTasks.length === 0}
+        <div class="tasks-empty">No inline tasks found. Add <code>- [ ] #task Action item</code> in notes or briefs.</div>
+      {:else}
+        <div class="tasks-chips-grid">
+          {#each vaultTasks as task}
+            <label class="task-chip-card" class:is-done={task.completed}>
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onchange={() => handleToggleVaultTask(task)}
+                class="task-chip-check"
+              />
+              <span class="task-chip-desc">{task.description}</span>
+              {#if task.dueDate}
+                <span class="task-chip-date">📅 {task.dueDate}</span>
+              {/if}
+              {#if task.priority && task.priority !== 'normal'}
+                <span class="task-chip-priority" class:is-high={task.priority === 'high' || task.priority === 'urgent'}>
+                  {task.priority}
+                </span>
+              {/if}
+              <span class="task-chip-source">({task.sourceNoteTitle})</span>
+            </label>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {/if}
+
   <div class="kanban-columns-grid">
     {#each columns as col}
       {@const colProjects = getProjectsForColumn(col.id)}
@@ -695,5 +758,146 @@
     color: var(--text-primary, #111827);
     outline: none;
     cursor: pointer;
+  }
+
+  /* ═══ VAULT TASK ROLLUP ═══════════════════════════════════════ */
+  .vault-task-rollup-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+  }
+
+  .task-rollup-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-rollup-icon {
+    font-size: 14px;
+  }
+
+  .task-rollup-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .task-rollup-badge {
+    font-size: 11px;
+    font-weight: 600;
+    font-family: monospace;
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--kanso-accent, #38BDF8);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .task-rollup-toggle-btn {
+    background: transparent;
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .task-rollup-toggle-btn:hover {
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover, #27272A);
+  }
+
+  .vault-tasks-shelf {
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+
+  .tasks-empty {
+    font-size: 12px;
+    color: var(--kanso-text-muted, #71717A);
+    text-align: center;
+    padding: 12px;
+  }
+
+  .tasks-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .task-chip-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  .task-chip-card:hover {
+    border-color: var(--kanso-accent, #38BDF8);
+  }
+
+  .task-chip-card.is-done {
+    opacity: 0.5;
+  }
+
+  .task-chip-card.is-done .task-chip-desc {
+    text-decoration: line-through;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .task-chip-check {
+    cursor: pointer;
+  }
+
+  .task-chip-desc {
+    font-weight: 500;
+  }
+
+  .task-chip-date {
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--kanso-text-muted, #71717A);
+    background: var(--kanso-surface, #18181B);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .task-chip-priority {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.12);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .task-chip-priority.is-high {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.12);
+  }
+
+  .task-chip-source {
+    font-size: 9px;
+    color: var(--kanso-accent, #38BDF8);
+    opacity: 0.8;
   }
 </style>
