@@ -61,10 +61,10 @@ if (userOverridePath) {
 module.exports = {
   PORT: process.env.PORT || 4000,
   HOST: process.env.HOST || '0.0.0.0',
-  JWT_SECRET: process.env.JWT_SECRET || 'ss-cam-creative-secret-key-2026-mgmt-portal',
+  JWT_SECRET: process.env.JWT_SECRET || 'kanso-cre8-secret-key-2026-vault',
   WORKSPACE_ROOT: resolvedWorkspace,
   DEFAULT_NAS_PATH: process.platform === 'win32' ? uncNasPath : linuxNasPath,
   FALLBACK_LOCAL_WORKSPACE: fallbackLocalWorkspace,
-  APP_TITLE: 'SuamiSihat Creative Team Portal',
-  VERSION: '4.6.2'
+  APP_TITLE: 'Kanso Cre8 — The Mindful Creative Vault',
+  VERSION: '1.0.0'
 };

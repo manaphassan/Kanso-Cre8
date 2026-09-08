@@ -158,15 +158,13 @@ function getUserPermissions(user) {
   return Array.from(permSet);
 }
 
-// Initial Users Directory (All User IDs strictly start with SS)
+// Initial Users Directory
 const SYSTEM_USERS = [
-  { id: 'SS0001', username: 'hasan', name: 'Hasan', email: 'hasan@suamisihat.com', role: 'CEO, Manager', roles: ['CEO', 'Manager'], staffId: 'SS0001', department: 'Executive Management' },
-  { id: 'SS0071', username: 'gaddafi', name: 'Gaddafi', email: 'gaddafi@suamisihat.com', role: 'CEO', roles: ['CEO'], staffId: 'SS0071', department: 'Executive Management' },
-  { id: 'SS0073', username: 'raihan', name: 'Raihan', email: 'raihan.suamisihat@gmail.com', role: 'SalesManager', roles: ['SalesManager'], staffId: 'SS0073', department: 'Marketing & Sales' },
-  { id: 'SS0004', username: 'harussani', name: 'Harussani', email: 'harussani.suamisihat@gmail.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'SS0004', department: 'Creative Production' },
-  { id: 'SS0035', username: 'haikal', name: 'Haikal', email: 'haikal.suamisihat@gmail.com', role: 'Designer', roles: ['Designer'], staffId: 'SS0035', department: 'Multimedia & Motion' },
-  { id: 'SS0037', username: 'aliff', name: 'Aliff', email: 'aliffnaz.suamisihat@gmail.com', role: 'Designer', roles: ['Designer'], staffId: 'SS0037', department: 'Multimedia & Motion' },
-  { id: 'SS0000', username: 'admin', name: 'System Administrator', email: 'admin@suamisihat.com', role: 'Administrator', roles: ['Administrator'], staffId: 'SS0000', department: 'IT & Infrastructure' }
+  { id: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'ACME001', department: 'Creative Production' },
+  { id: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Designer', roles: ['Designer'], staffId: 'NEX002', department: 'Multimedia & Motion' },
+  { id: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Manager', roles: ['Manager'], staffId: 'LUM003', department: 'Research & Strategy' },
+  { id: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Copywriter', roles: ['Copywriter'], staffId: 'ACME004', department: 'Content & Copy' },
+  { id: 'ADMIN00', username: 'admin', name: 'System Administrator', email: 'admin@kansocre8.local', role: 'Administrator', roles: ['Administrator'], staffId: 'ADMIN00', department: 'IT & Infrastructure' }
 ];
 
 function getPasswordStorePath() {
@@ -188,7 +186,7 @@ function getStoredPasswords() {
 }
 
 function verifyUserPassword(username, password) {
-  const defaultPassword = process.env.DEFAULT_PASSWORD || 'SuamiSihat123!';
+  const defaultPassword = process.env.DEFAULT_PASSWORD || 'KansoCre8!';
   const passwords = getStoredPasswords();
   const userKey = (username || '').toLowerCase();
   

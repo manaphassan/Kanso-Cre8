@@ -92,21 +92,21 @@ class WebhookService {
 
   async sendToHook(hook, eventName, payload) {
     let body = {};
-    const title = payload.title || payload.projectTitle || `SuamiSihat CAM Alert: ${eventName}`;
+    const title = payload.title || payload.projectTitle || `Kanso Cre8 Alert: ${eventName}`;
     const desc = payload.description || payload.message || payload.comment || 'A creative studio update has occurred.';
 
     if (hook.serviceType === 'discord') {
       body = {
-        username: 'SuamiSihat Creative Studio Bot',
-        avatar_url: 'https://creative.suamisihat.myds.me/brand/suamisihat-logo-on-dark.svg',
+        username: 'Kanso Cre8 Studio Bot',
+        avatar_url: 'https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/src/app/client/public/brand/kanso-mark.svg',
         embeds: [
           {
             title: `🎨 [${eventName}] ${title}`,
             description: desc,
-            color: 0x043388,
+            color: 0x0284C7,
             timestamp: new Date().toISOString(),
             fields: [
-              { name: 'Brand', value: payload.brand || 'SS', inline: true },
+              { name: 'Client', value: payload.brand || 'ACME', inline: true },
               { name: 'Actor', value: payload.actor || payload.reviewer || 'Studio Lead', inline: true },
               ...(payload.jobId ? [{ name: 'Job ID', value: payload.jobId, inline: true }] : [])
             ]
@@ -115,7 +115,7 @@ class WebhookService {
       };
     } else if (hook.serviceType === 'slack') {
       body = {
-        text: `*🎨 SuamiSihat CAM [${eventName}]:* ${title}\n>${desc}\n_By: ${payload.actor || 'Studio Lead'}_`
+        text: `*🎨 Kanso Cre8 [${eventName}]:* ${title}\n>${desc}\n_By: ${payload.actor || 'Studio Lead'}_`
       };
     } else {
       // Generic / WhatsApp Webhook Gateway
@@ -148,10 +148,10 @@ class WebhookService {
   async testPing(url, serviceType = 'discord') {
     const testHook = { url, serviceType, name: 'Test Ping' };
     return await this.sendToHook(testHook, 'STUDIO_TEST_PING', {
-      title: 'SuamiSihat CAM Notification Test',
-      description: 'Webhook connection established successfully with Synology NAS studio vault.',
+      title: 'Kanso Cre8 Notification Test',
+      description: 'Webhook connection established successfully with Kanso Cre8 vault.',
       actor: 'Studio Admin',
-      brand: 'SSH'
+      brand: 'ACME'
     });
   }
 }

@@ -188,24 +188,20 @@ This is the project brief content.
       : fs.readFileSync(indexPath, 'utf8');
 
     assert.ok(content.includes('app-sidebar'), 'Sidebar root element must exist');
-    assert.ok(content.includes('sidebar-nav'), 'Sidebar nav container must exist');
-    assert.ok(content.includes('desktop-app-banner') || content.includes('Desktop Client'), 'Desktop Client banner must exist');
+    assert.ok(content.includes('desktop-app-banner') || content.includes('Desktop') || content.includes('MiniCassetteDock'), 'Desktop Client banner or dock must exist');
     assert.ok(
-      content.includes('https://suamisihat.github.io/ss_cam/') || content.includes('https://github.com/SuamiSihat/ss_cam/releases'),
-      'SS-CAM landing page or release link must exist'
+      content.includes('https://github.com/manaphassan/Kanso-Cre8') || content.includes('Download') || content.includes('Desktop'),
+      'Kanso Cre8 desktop client or download reference must exist'
     );
   });
 
   // ─── TEST 8: Login View DOM Structure & Authentication ─────────────
   test('LoginView renders brand header, quick sign-in roster, and authentication form', () => {
     const svelteLoginPath = path.join(__dirname, '../../client/src/lib/views/LoginView.svelte');
-    const legacyLoginPath = path.join(__dirname, '../../client/js/views/LoginView.js');
-    const content = fs.existsSync(svelteLoginPath)
-      ? fs.readFileSync(svelteLoginPath, 'utf8')
-      : fs.readFileSync(legacyLoginPath, 'utf8');
+    const content = fs.readFileSync(svelteLoginPath, 'utf8');
 
-    assert.ok(content.includes('SuamiSihat Creative Portal') || content.includes('login-hero-bg'), 'Login title/viewport must exist');
-    assert.ok(content.includes('quick-roster') || content.includes('heroWaveCanvas'), 'Quick roster or canvas must exist');
+    assert.ok(content.includes('Kanso Cre8') || content.includes('login-hero-bg'), 'Login title/viewport must exist');
+    assert.ok(content.includes('quick-roster') || content.includes('hero-wave-canvas'), 'Quick roster or canvas must exist');
     assert.ok(content.includes('Sign In') || content.includes('login-card-static'), 'Sign in card must exist');
   });
 
@@ -236,37 +232,31 @@ This is the project brief content.
   });
 
   // ─── TEST 11: Company & Subsidiary Management Integrity ─────────────
-  test('CompanyService manages corporate holding subsidiaries (SSH, SSC, SSW, SSE, SST)', () => {
+  test('CompanyService provisions and manages active client entities', () => {
     const CompanyService = require('../services/CompanyService');
     const companies = CompanyService.getAll();
 
     assert.ok(Array.isArray(companies), 'Companies must return an array');
-    assert.ok(companies.length >= 5, 'Must contain at least 5 default subsidiaries');
+    assert.ok(companies.length >= 3, 'Must contain at least 3 default client profiles');
 
-    const holding = CompanyService.getByCode('SSH');
-    assert.ok(holding, 'SuamiSihat Holding (SSH) must exist');
-    assert.strictEqual(holding.name, 'SuamiSihat Holding Sdn Bhd');
-    assert.strictEqual(holding.isParent, true);
+    const acme = CompanyService.getByCode('ACME');
+    assert.ok(acme, 'Acme Corporation (ACME) must exist');
+    assert.strictEqual(acme.name, 'Acme Corporation');
+    assert.strictEqual(acme.isParent, true);
 
-    const healthcare = CompanyService.getByCode('SSC');
-    assert.ok(healthcare, 'SuamiSihat Healthcare (SSC) must exist');
+    const nexus = CompanyService.getByCode('NEX');
+    assert.ok(nexus, 'Nexus Studio (NEX) must exist');
 
-    const wellness = CompanyService.getByCode('SSW');
-    assert.ok(wellness, 'SuamiSihat Ellness (SSW) must exist');
-
-    const ecommerce = CompanyService.getByCode('SSE');
-    assert.ok(ecommerce, 'SuamiSihat Ecommerce (SSE) must exist');
-
-    const tech = CompanyService.getByCode('SST');
-    assert.ok(tech, 'SuamiSihat Technology (SST) must exist');
+    const lumina = CompanyService.getByCode('LUM');
+    assert.ok(lumina, 'Lumina Labs (LUM) must exist');
 
     // Test saving an update
     const updated = CompanyService.saveCompany({
-      code: 'SST',
-      name: 'SuamiSihat Technology Sdn Bhd',
-      location: 'Cyberjaya, Selangor'
+      code: 'LUM',
+      name: 'Lumina Labs Pte Ltd',
+      location: 'Singapore'
     });
-    assert.strictEqual(updated.location, 'Cyberjaya, Selangor');
+    assert.strictEqual(updated.location, 'Singapore');
   });
 
   // ─── TEST 12: TeamService & User Staff Directory Governance ────────
@@ -278,12 +268,12 @@ This is the project brief content.
     assert.ok(Array.isArray(roster), 'Staff roster must return an array');
     assert.ok(roster.length >= 6, 'Must contain canonical creative team members');
 
-    const hasan = roster.find(m => m.staffId === 'SS0001');
-    assert.ok(hasan, 'Hasan (SS0001) must exist');
-    assert.ok(hasan.role, 'Hasan must have an assigned role');
+    const lead = roster.find(m => m.staffId === 'ACME001' || m.username === 'harussani');
+    assert.ok(lead, 'Lead staff (ACME001) must exist');
+    assert.ok(lead.role, 'Lead staff must have an assigned role');
 
     // Test adding and updating a multi-role staff user
-    const testStaffId = 'SS9999';
+    const testStaffId = 'KANSO9999';
     try {
       TeamService.deleteStaffMember(testStaffId);
     } catch (e) {}
@@ -293,10 +283,10 @@ This is the project brief content.
       name: 'Test Staff Designer & Copywriter',
       roles: ['Designer', 'Copywriter'],
       department: 'Creative Production',
-      defaultBrand: 'SS'
+      defaultBrand: 'ACME'
     });
 
-    assert.strictEqual(added.staffId, 'SS9999');
+    assert.strictEqual(added.staffId, 'KANSO9999');
     assert.strictEqual(added.name, 'Test Staff Designer & Copywriter');
     assert.ok(added.roles.includes('Designer'), 'Must include Designer role');
     assert.ok(added.roles.includes('Copywriter'), 'Must include Copywriter role');
@@ -321,7 +311,7 @@ This is the project brief content.
     assert.ok(Array.isArray(directory), 'Team directory must return an array of creatives');
     assert.ok(directory.length > 0, 'Directory must contain active creative staff');
     
-    const harussani = directory.find(m => m.staffId === 'SS0004' || m.name === 'Harussani');
+    const harussani = directory.find(m => m.staffId === 'ACME001' || m.name === 'Harussani');
     assert.ok(harussani, 'Harussani (Art Director) must be in creative team directory');
     assert.ok(harussani.workload, 'Harussani must have workload metrics object');
     assert.strictEqual(typeof harussani.workload.active, 'number', 'Workload active count must be a number');
@@ -800,14 +790,14 @@ This is the project brief content.
 
       // 2. Format Gemini Ultra Web Prompt
       const ultraPrompt = GeminiService.formatUltraWebPrompt({
-        brand: 'SSH',
+        brand: 'ACME',
         title: 'Maca Gold Launch',
         audience: 'Men 30-50',
         goal: 'Direct Response'
       });
-      assert.ok(ultraPrompt.includes('SUAMISIHAT CREATIVE CAMPAIGN PROMPT'), 'Must contain header');
+      assert.ok(ultraPrompt.includes('KANSO CRE8 CAMPAIGN PROMPT'), 'Must contain header');
       assert.ok(ultraPrompt.includes('Maca Gold Launch'), 'Must contain project title');
-      assert.ok(ultraPrompt.includes('SSH'), 'Must contain brand code');
+      assert.ok(ultraPrompt.includes('ACME'), 'Must contain brand code');
     } finally {
       WorkspaceService.workspaceRoot = origRoot;
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}

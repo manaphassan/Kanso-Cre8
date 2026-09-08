@@ -1,4 +1,4 @@
-# SuamiSihat Creative Team Web Portal
+# Kanso Cre8 Creative Operations & Client Vault
 FROM node:20-alpine
 
 # Create app directory

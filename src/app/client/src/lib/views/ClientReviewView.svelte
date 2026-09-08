@@ -107,7 +107,7 @@
   <header class="portal-header">
     <div class="header-content">
       <div class="brand-row">
-        <img src="brand/suamisihat-logo-on-dark.svg" alt="SuamiSihat" class="portal-logo" />
+        <img src="brand/kanso-logo.svg" alt="Kanso Cre8" class="portal-logo" style="height: 36px; width: auto;" />
         <span class="portal-badge">CLIENT REVIEW PORTAL</span>
       </div>
       {#if reviewData?.shareInfo}
@@ -130,7 +130,7 @@
       <div class="state-card loading-card">
         <div class="spinner"></div>
         <h2>Loading Campaign Review Workspace...</h2>
-        <p>Connecting to secure SuamiSihat Synology NAS vault.</p>
+        <p>Connecting to secure Kanso Cre8 vault.</p>
       </div>
 
     {:else if errorMsg}
@@ -140,7 +140,7 @@
         </div>
         <h2>Review Link Expired or Invalid</h2>
         <p>{errorMsg}</p>
-        <span class="error-hint">Please contact your SuamiSihat Creative Account Lead to request a new review link.</span>
+        <span class="error-hint">Please contact your Creative Account Lead to request a new review link.</span>
       </div>
 
     {:else if submittedResult}
@@ -154,7 +154,7 @@
         </div>
         <h2>Decision Recorded Successfully</h2>
         <p>
-          Thank you, <b>{submittedResult.reviewer}</b>. Your feedback has been logged in the SuamiSihat master audit ledger.
+          Thank you, <b>{submittedResult.reviewer}</b>. Your feedback has been logged in the master audit ledger.
         </p>
         <div class="decision-receipt">
           <div class="receipt-row"><span>Status:</span> <b>{submittedResult.decision.toUpperCase()}</b></div>

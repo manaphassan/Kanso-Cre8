@@ -570,13 +570,13 @@
         <div class="platform-header">
           <div class="platform-icon win-icon">🪟</div>
           <div class="platform-meta">
-            <div class="platform-title">Windows Desktop Application</div>
-            <div class="platform-desc">Single-file portable .exe with Fluent 2 Mica design (~5.6 MB)</div>
+            <div class="platform-title">Windows Desktop (Tauri v2)</div>
+            <div class="platform-desc">High-performance Rust desktop runtime with Linear/Geist design (~12 MB)</div>
           </div>
         </div>
         <div class="platform-actions">
           <a
-            href="https://suamisihat.github.io/ss_cam/"
+            href="https://github.com/manaphassan/Kanso-Cre8/releases"
             class="platform-download-btn win-btn"
             target="_blank"
             rel="noreferrer"
@@ -584,7 +584,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-            Download App (suamisihat.github.io) ↗
+            Download Kanso Cre8 Windows (GitHub) ↗
           </a>
         </div>
       </div>
@@ -594,21 +594,21 @@
           <div class="platform-icon android-icon">📱</div>
           <div class="platform-meta">
             <div class="platform-title">Android Mobile Studio Companion</div>
-            <div class="platform-desc">Jetpack Compose native app with 2×2 Bento KPI & live ICY radio</div>
+            <div class="platform-desc">Companion app with 2×2 Bento KPI & live retro cassette player</div>
           </div>
         </div>
         <div class="platform-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
           <a
-            href="https://play.google.com/store/apps/details?id=com.suamisihat.creative&hl=en-US&ah=4fxu9FCVL39aFVxQdNL2fGvtHd4&pli=1"
+            href="https://github.com/manaphassan/Kanso-Cre8/releases"
             class="platform-download-btn android-btn"
             target="_blank"
             rel="noreferrer"
             style="background: #01875f; flex: 1; min-width: 150px;"
           >
-            Google Play Store ↗
+            Google Play / Releases ↗
           </a>
           <a
-            href="https://github.com/SuamiSihat/ss_cam/releases/download/v{serverVersion}/SS-CAM-v{serverVersion}-android-release.apk"
+            href="https://github.com/manaphassan/Kanso-Cre8/releases/download/v1.0.0/kanso-cre8-android-release.apk"
             class="platform-download-btn"
             target="_blank"
             rel="noreferrer"
@@ -626,17 +626,17 @@
         <div class="platform-header">
           <div class="platform-icon linux-icon">🐧</div>
           <div class="platform-meta">
-            <div class="platform-title">Linux Native Desktop Client (Fedora, Ubuntu, Arch)</div>
-            <div class="platform-desc">Standalone Avalonia GUI app with Skia rendering & app launcher</div>
+            <div class="platform-title">Linux Desktop (Debian, Ubuntu, Arch, Fedora)</div>
+            <div class="platform-desc">Tauri v2 native client (.deb / .AppImage) with hardware acceleration</div>
           </div>
         </div>
         <div class="linux-terminal-box">
-          <code>curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash</code>
+          <code>curl -fsSL https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/scripts/install-linux.sh | sudo bash</code>
           <button
             type="button"
             class="copy-cmd-btn"
             onclick={() => {
-              navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh | sudo bash');
+              navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/scripts/install-linux.sh | sudo bash');
               appState.addToast('Linux terminal installer command copied!', 'success');
             }}
           >
@@ -649,12 +649,12 @@
         <div class="platform-header">
           <div class="platform-icon web-icon">🌐</div>
           <div class="platform-meta">
-            <div class="platform-title">Synology NAS Docker Web Portal</div>
-            <div class="platform-desc">Live production portal hosted on NAS (Docker Compose)</div>
+            <div class="platform-title">Self-Hosted Docker Vault</div>
+            <div class="platform-desc">Run Kanso Cre8 inside Docker on local NAS, Synology, or private VPS</div>
           </div>
         </div>
         <div class="platform-actions">
-          <a href="https://github.com/SuamiSihat/ss_cam/tree/SS-Master/src/SS-CAM.Web" class="platform-link-btn" target="_blank" rel="noreferrer">
+          <a href="https://github.com/manaphassan/Kanso-Cre8#docker-deployment" class="platform-link-btn" target="_blank" rel="noreferrer">
             View Docker Setup Guide ↗
           </a>
         </div>

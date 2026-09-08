@@ -1180,6 +1180,7 @@ class WorkspaceService {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
+    const safeFilename = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, '_');
     const targetFilePath = path.join(targetDir, safeFilename);
 
     // Decode base64 data or buffer

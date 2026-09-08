@@ -11,23 +11,18 @@
   }
 
   // Active Subsidiaries Configuration
-  // Represents SuamiSihat entities (Holding, Healthcare, Ellness, Ecommerce, Technology)
+  // Represents client entities (Acme Corp, Nexus Studio, Lumina Labs)
   // Dynamically fetched from Company Manager API!
   let subsidiaryList = $state<any[]>([
-    { code: 'SSH', name: 'SuamiSihat Holding Sdn Bhd' },
-    { code: 'SSC', name: 'SuamiSihat Healthcare Sdn Bhd' },
-    { code: 'SSW', name: 'SuamiSihat Ellness Sdn Bhd' },
-    { code: 'SSE', name: 'SuamiSihat Ecommernce SDN BHD' },
-    { code: 'SST', name: 'SuamiSihat Technology sdn bhd' }
+    { code: 'ACME', name: 'Acme Corporation' },
+    { code: 'NEX', name: 'Nexus Studio' },
+    { code: 'LUM', name: 'Lumina Labs' }
   ]);
 
   const defaultStaffList: UserProfile[] = [
-    { username: 'harussani', name: 'Harussani', staffId: 'SS0004', role: 'Administrator' },
-    { username: 'haikal', name: 'Haikal', staffId: 'SS0035', role: 'Designer' },
-    { username: 'aliff', name: 'Aliff', staffId: 'SS0037', role: 'Designer' },
-    { username: 'raihan', name: 'Raihan', staffId: 'SS0073', role: 'Sales Manager' },
-    { username: 'hasan', name: 'Hasan', staffId: 'SS0001', role: 'Manager' },
-    { username: 'gaddafi', name: 'Gaddafi', staffId: 'SS0071', role: 'Manager' }
+    { username: 'harussani', name: 'Harussani', staffId: 'ACME001', role: 'Art Director' },
+    { username: 'alex', name: 'Alex Vance', staffId: 'NEX002', role: 'Designer' },
+    { username: 'elena', name: 'Elena Rostova', staffId: 'LUM003', role: 'Creative Strategist' }
   ];
 
   let staffProfiles = $state<UserProfile[]>(defaultStaffList);
@@ -43,14 +38,14 @@
 
   // Recent Active Logins (Dynamic, strictly limited to 3)
   function getStoredRecentUsers(): string[] {
-    if (typeof localStorage === 'undefined') return ['harussani', 'haikal', 'aliff'];
+    if (typeof localStorage === 'undefined') return ['harussani', 'alex', 'elena'];
     try {
-      const stored = JSON.parse(localStorage.getItem('ss_cam_recent_users') || '[]');
+      const stored = JSON.parse(localStorage.getItem('kanso_recent_users') || '[]');
       if (Array.isArray(stored) && stored.length > 0) {
         return stored.slice(0, 3);
       }
     } catch {}
-    return ['harussani', 'haikal', 'aliff'];
+    return ['harussani', 'alex', 'elena'];
   }
 
   let recentUsernames = $state<string[]>(getStoredRecentUsers());
@@ -64,19 +59,20 @@
     }
     // Fill up to 3 from sortedUsers if less than 3
     if (list.length < 3) {
-      for (const p of sortedUsers) {
-        if (!list.some((item) => item.username === p.username)) {
-          list.push(p);
+      for (const u of sortedUsers) {
+        if (!list.some((p) => p.username === u.username)) {
+          list.push(u);
+          if (list.length === 3) break;
         }
-        if (list.length >= 3) break;
       }
     }
-    return list.slice(0, 3);
+    return list;
   });
 
-  let rememberMe = $state<boolean>(isRemembered);
-  let username = $state<string>(savedUser || sortedUsers[0]?.username || 'harussani');
+  // Reactive credentials
+  let username = $state<string>(savedUser || 'harussani');
   let password = $state<string>('');
+  let rememberMe = $state<boolean>(isRemembered);
   let showPassword = $state<boolean>(false);
   let isLoading = $state<boolean>(false);
   let errorMessage = $state<string | null>(null);
@@ -89,7 +85,7 @@
   onMount(async () => {
     // Preload brand logo for canvas drawing
     brandLogoImg = new Image();
-    brandLogoImg.src = 'brand/ss-logomark-full.png';
+    brandLogoImg.src = 'brand/kanso-mark.svg';
 
     // Fetch live staff roster dynamically from Synology NAS / Server API
     try {
@@ -159,7 +155,7 @@
     const initParticles = () => {
       particles = [];
 
-      // 1. Dedicated Floating SuamiSihat Brand Logos (Matching exact count of active subsidiaries)
+      // 1. Dedicated Floating Kanso Brand Logos (Matching exact count of active portfolios)
       const subCount = Math.max(1, subsidiaryList.length);
       for (let i = 0; i < subCount; i++) {
         particles.push({
@@ -416,13 +412,13 @@
 
   <!-- Static Glassmorphism Card -->
   <div class="login-card-static">
-    <!-- Official SuamiSihat Logo Header -->
-    <div class="card-header-logo-interactive" onclick={() => quickLogin('hasan')}>
-      <img src="brand/ss-logomark-full.png" alt="SuamiSihat Logo" class="brand-logo-img" />
+    <!-- Official Kanso Cre8 Logo Header -->
+    <div class="card-header-logo-interactive" onclick={() => quickLogin('harussani')}>
+      <img src="brand/kanso-mark.svg" alt="Kanso Cre8" class="brand-logo-img" style="height: 52px; width: auto;" />
     </div>
 
-    <h1 class="portal-heading">SuamiSihat Creative Portal</h1>
-    <p class="portal-subheading">Production Management & Creative Assets System</p>
+    <h1 class="portal-heading">Kanso Cre8</h1>
+    <p class="portal-subheading">簡素 · The Mindful Creative Vault</p>
 
     {#if errorMessage}
       <div class="login-error-alert">{errorMessage}</div>
@@ -497,9 +493,9 @@
       </div>
     </form>
 
-    <!-- Official 2026 Brand Footer -->
+    <!-- Official Kanso Cre8 Footer -->
     <div class="portal-footer-meta">
-      2026® SuamiSihat Holding Sdn Bhd • Creative-Team
+      2026 © harusssani.manaphassan · PolyForm Noncommercial 1.0.0
     </div>
   </div>
 </div>
@@ -518,7 +514,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, #022057 0%, #043388 60%, #021233 100%);
+    background: linear-gradient(180deg, #09090B 0%, #18181B 60%, #09090B 100%);
     overflow: hidden;
     z-index: 1000;
   }
