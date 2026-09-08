@@ -9,70 +9,70 @@ const STORAGE_KEY = 'kanso_cre8_clients';
 
 export const DEFAULT_CLIENTS: ClientProfile[] = [
   {
-    id: 'govicle',
-    name: 'Govicle Sdn Bhd',
-    code: 'GOV',
-    contactPerson: 'Amirul Haziq',
-    email: 'amirul@govicle.my',
-    phone: '+60 12-345 6789',
-    billingAddress: 'Level 15, Menara Govicle, Bangsar South, 59200 Kuala Lumpur',
-    currency: 'MYR',
-    defaultHourlyRate: 120,
-    paymentTermsDays: 14,
+    id: 'acmecorp',
+    name: 'Acme Corporation',
+    code: 'ACME',
+    contactPerson: 'Sarah Jenkins',
+    email: 'sarah.j@acmefintech.io',
+    phone: '+1 (555) 234-5678',
+    billingAddress: '100 Market St, Suite 400, San Francisco, CA 94105',
+    currency: 'USD',
+    defaultHourlyRate: 125,
+    paymentTermsDays: 15,
     palette: {
-      primary: '#0EA5E9',   // Sky Blue
-      secondary: '#0284C7', // Cobalt
-      dark: '#0F172A',      // Slate Dark
+      primary: '#0066FF',   // Electric Blue
+      secondary: '#0052CC', // Deep Cobalt
+      dark: '#0A0D14',      // Obsidian
       light: '#F8FAFC',     // Slate Light
-      accent: '#38BDF8'     // Light Glow
+      accent: '#00F0FF'     // Cyber Cyan
     },
-    notes: 'Tone: Modern, trustworthy, tech-forward B2B enterprise mobility. Deliver 4K PNGs & vector SVGs.',
+    notes: 'Tone: Modern, trustworthy, tech-forward fintech. Deliver 4K PNGs & vector SVGs.',
     activeProjectsCount: 2,
     totalInvoiced: 4750
   },
   {
-    id: 'jomparking',
-    name: 'Jomparking Technologies',
-    code: 'JOM',
-    contactPerson: 'Stephanie Wong',
-    email: 'steph@jomparking.com',
-    phone: '+60 16-987 6543',
-    billingAddress: 'Q Sentral, 2A, Jalan Stesen Sentral 2, KL Sentral, 50470 Kuala Lumpur',
-    currency: 'MYR',
+    id: 'nexusstudio',
+    name: 'Nexus Studio',
+    code: 'NEX',
+    contactPerson: 'Marcus Vance',
+    email: 'marcus@nexusstudio.io',
+    phone: '+1 (555) 876-5432',
+    billingAddress: '540 Arts District Blvd, Los Angeles, CA 90013',
+    currency: 'USD',
     defaultHourlyRate: 110,
     paymentTermsDays: 14,
     palette: {
       primary: '#10B981',   // Emerald Green
-      secondary: '#047857', // Forest
-      dark: '#1E293B',      // Charcoal
+      secondary: '#059669', // Forest
+      dark: '#18181B',      // Zinc Dark
       light: '#F0FDF4',     // Emerald Wash
-      accent: '#F59E0B'     // Amber Accent
+      accent: '#38BDF8'     // Sky Accent
     },
-    notes: 'Smart parking app promotional campaigns, viral social ads, and outdoor banner collateral.',
+    notes: 'Gaming UI/UX, key visual artwork, and high-impact social media campaign collateral.',
     activeProjectsCount: 1,
     totalInvoiced: 2200
   },
   {
-    id: 'suamisihat',
-    name: 'SuamiSihat Holding',
-    code: 'SSH',
-    contactPerson: 'Harussani (Lead Art Director)',
-    email: 'tech@suamisihat.com.my',
-    phone: '+60 19-876 5432',
-    billingAddress: 'SuamiSihat Creative HQ, Kuala Lumpur',
-    currency: 'MYR',
-    defaultHourlyRate: 150,
+    id: 'luminalabs',
+    name: 'Lumina Labs',
+    code: 'LUM',
+    contactPerson: 'Elena Rostova',
+    email: 'elena@luminalabs.ai',
+    phone: '+44 20 7946 0912',
+    billingAddress: '74 Shoreditch High St, London E1 6JJ, United Kingdom',
+    currency: 'USD',
+    defaultHourlyRate: 140,
     paymentTermsDays: 30,
     palette: {
-      primary: '#043388',   // Royal Navy
-      secondary: '#21A1F7', // Azure Blue
-      dark: '#022057',      // Deep Navy
-      light: '#FAFAFA',     // Clean Slate
-      accent: '#FCE53D'     // Gold
+      primary: '#8B5CF6',   // Deep Purple
+      secondary: '#6D28D9', // Violet
+      dark: '#09090B',      // Matte Obsidian
+      light: '#FAFAFA',     // Clean Porcelain
+      accent: '#F59E0B'     // Amber Gold
     },
-    notes: 'Brand asset management, packaging box dielines, and corporate digital media retainer.',
+    notes: 'AI research visual brand system, 3D interactive hero illustrations, and investor decks.',
     activeProjectsCount: 1,
-    totalInvoiced: 3000
+    totalInvoiced: 3500
   }
 ];
 
