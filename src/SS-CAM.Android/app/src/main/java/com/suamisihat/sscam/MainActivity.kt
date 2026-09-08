@@ -205,53 +205,7 @@ object ProjectCacheManager {
     }
 
     private fun getSeedOrders(): List<CreativeOrder> {
-        return listOf(
-            CreativeOrder(
-                id = "ORD-260904-7821",
-                title = "Rejal Madu Tualang TikTok Hook & Reels 9:16",
-                entity = "SSE",
-                priority = "tier_2",
-                format = "9_16_video",
-                copy = "Hook: Tenaga drop pukul 3 petang? Ini rahsia orang lama kekal bertenaga sampai malam dengan Madu Tualang Asli SuamiSihat. Call to action: Tekan beg kuning sebelum habis promosi!",
-                targetDate = "2026-09-07",
-                attachmentNote = "\\\\SSNAS\\Creative-Team\\RAW_FOOTAGE\\Rejal_Madu_2026",
-                requester = "Harussani",
-                requesterRole = "Admin, Designer",
-                status = "pending",
-                submittedAt = "2026-09-04T09:15:00Z",
-                updatedAt = "2026-09-04T09:15:00Z"
-            ),
-            CreativeOrder(
-                id = "ORD-260904-4192",
-                title = "Men Clinic Health Awareness POSM & Rollup",
-                entity = "SSC",
-                priority = "tier_1",
-                format = "print_posm",
-                copy = "Headline: Kesihatan Lelaki Keutamaan Kami. Dapatkan konsultasi percuma bersama doktor pakar SuamiSihat Clinic cawangan Bangi & Shah Alam.",
-                targetDate = "2026-09-10",
-                attachmentNote = "drive.google.com/drive/folders/ssc-bangi-posm",
-                requester = "Dr. Danial",
-                requesterRole = "Medical Director",
-                status = "in_progress",
-                submittedAt = "2026-09-03T14:30:00Z",
-                updatedAt = "2026-09-03T16:00:00Z"
-            ),
-            CreativeOrder(
-                id = "ORD-260904-1055",
-                title = "SuamiSihat Holding Annual Corporate Deck",
-                entity = "SSH",
-                priority = "tier_3",
-                format = "16_9_landscape",
-                copy = "Executive presentation for Board of Directors Q3 Strategy & Financial Review. Include 5-subsidiary breakdown slides.",
-                targetDate = "2026-09-05",
-                attachmentNote = "\\\\SSNAS\\Corporate\\Q3_Brief.pdf",
-                requester = "CEO Office",
-                requesterRole = "Executive",
-                status = "for_approval",
-                submittedAt = "2026-09-04T08:00:00Z",
-                updatedAt = "2026-09-04T08:30:00Z"
-            )
-        )
+        return emptyList()
     }
 }
 
