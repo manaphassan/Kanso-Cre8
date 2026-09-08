@@ -265,6 +265,16 @@ router.get('/projects', authenticateToken, (req, res) => {
   }
 });
 
+router.post('/projects', authenticateToken, (req, res) => {
+  try {
+    const actor = (req.user && (req.user.name || req.user.username)) || 'harusssani.manaphassan';
+    const result = WorkspaceService.scaffoldProject(req.body, actor);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 router.get('/projects/:id', authenticateToken, (req, res) => {
   try {
     const project = WorkspaceService.getProjectById(req.params.id);
