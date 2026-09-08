@@ -1,7 +1,7 @@
 {
-  "name": "ss-cam-web-portal",
-  "version": "4.7.0",
-  "description": "SuamiSihat Creative Team Management Web Portal",
+  "name": "kanso-cre8",
+  "version": "1.0.0",
+  "description": "The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine for Freelance Designers",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -24,13 +24,16 @@
     "multer": "^1.4.5-lts.1"
   },
   "keywords": [
-    "suamisihat",
-    "creative-team",
-    "ss-cam",
-    "management-portal"
+    "kanso-cre8",
+    "creative-vault",
+    "freelance-designer",
+    "zettelkasten",
+    "atomic-notes",
+    "invoicing",
+    "markdown"
   ],
-  "author": "SuamiSihat Creative Team",
-  "license": "UNLICENSED",
+  "author": "Harussani Design Studio",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/dompurify": "^3.0.5",
