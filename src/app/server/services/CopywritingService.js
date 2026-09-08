@@ -54,7 +54,7 @@ class CopywritingService {
 
 ### Angle 2: Social Proof & Urgency
 > **Headline**: "Lebih 15,000+ Pelanggan Berpuas Hati — Stok Terhad!"
-> **Primary Text**: Nikmati keyakinan diri tahap maksimum dengan ramuan herba terpilih SuamiSihat.
+> **Primary Text**: Nikmati keyakinan diri tahap maksimum dengan kualiti reka bentuk bertaraf dunia bersama Acme Corporation.
 > **CTA**: [ Dapatkan Tawaran Eksklusif Hari Ini ]
 
 ---
@@ -63,9 +63,9 @@ class CopywritingService {
 
 | Scene | Visual / On-Screen Action | Audio / Voiceover (Malay) |
 | :--- | :--- | :--- |
-| **00:00 - 00:03** | Close-up botol Rejal, pencahayaan dramatik, audio swoosh | *"Bang, kalau selalu rasa lemau balik kerja, dengar ni kejap..."* |
-| **00:03 - 00:07** | B-roll lelaki bertenaga bekerja & bersenam | *"Rahsia stamina padu bukan kopi biasa, tapi khasiat herba gred premium."* |
-| **00:07 - 00:12** | Unboxing packaging premium SuamiSihat | *"Lulus KKM, 100% bahan selamat dan terbukti berkesan."* |
+| **00:00 - 00:03** | Close-up botol produk, pencahayaan dramatik, audio swoosh | *"Bang, kalau selalu rasa lemau balik kerja, dengar ni kejap..."* |
+| **00:03 - 00:07** | B-roll lelaki bertenaga bekerja & bersenam | *"Rahsia stamina padu bukan kopi biasa, tapi khasiat kualiti gred premium."* |
+| **00:07 - 00:12** | Unboxing packaging premium Acme Design Studio | *"100% standard kualiti tertinggi dan terbukti berkesan."* |
 | **00:12 - 00:15** | CTA end card & promo link | *"Klik beg kuning atau link di bio sekarang sebelum promosi tamat!"* |
 
 ---

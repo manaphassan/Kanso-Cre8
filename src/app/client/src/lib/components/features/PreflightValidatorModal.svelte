@@ -102,14 +102,14 @@
 </head>
 <body>
   <div class="card">
-    <h1>SuamiSihat Print Preflight Certificate</h1>
+    <h1>Kanso Cre8 Print Preflight Certificate</h1>
     <p>Asset: <b>${deliverable.filename}</b></p>
     <div class="row"><span class="label">Target Preset:</span><span>${selectedPreset.name} (${selectedPreset.widthCm}×${selectedPreset.heightCm} cm)</span></div>
     <div class="row"><span class="label">Pixel Dimensions:</span><span>${imgNaturalWidth} × ${imgNaturalHeight} px</span></div>
     <div class="row"><span class="label">Calculated DPI:</span><span><b>${preflightMetrics.avgDpi} DPI</b> (Recommended: ${selectedPreset.recommendedDpi} DPI)</span></div>
     <div class="row"><span class="label">Aspect Ratio Fit:</span><span>Deviation ${preflightMetrics.ratioDiff}%</span></div>
     <div class="row"><span class="label">Verdict:</span><span class="badge badge-${preflightMetrics.status}">${preflightMetrics.status.toUpperCase()}</span></div>
-    <div class="footer">Generated on ${new Date().toLocaleString()} · SuamiSihat Creative Studio Production Engine</div>
+    <div class="footer">Generated on ${new Date().toLocaleString()} · Kanso Cre8 Studio Engine</div>
   </div>
 </body>
 </html>`;

@@ -393,14 +393,12 @@
   }
 
   function getCompanyFullName(code?: string): string {
-    if (!code) return 'SuamiSihat Holding Sdn Bhd';
+    if (!code) return 'Acme Corporation';
     const c = code.toUpperCase().trim();
-    if (c === 'SSH' || c === 'SS') return 'SuamiSihat Holding Sdn Bhd';
-    if (c === 'SSC') return 'SuamiSihat Healthcare Sdn Bhd';
-    if (c === 'SSW') return 'SuamiSihat Wellness Sdn Bhd';
-    if (c === 'SSE' || c === 'SSL') return 'SuamiSihat Ecommerce Sdn Bhd';
-    if (c === 'SST') return 'SuamiSihat Technology Sdn Bhd';
-    return `${code} Operating Unit`;
+    if (c === 'ACME' || c === 'AC') return 'Acme Corporation';
+    if (c === 'NEX' || c === 'NX') return 'Nexus Studio';
+    if (c === 'LUM' || c === 'LM') return 'Lumina Labs';
+    return `${code} Client Unit`;
   }
 </script>
 

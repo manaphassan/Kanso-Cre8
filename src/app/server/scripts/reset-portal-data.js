@@ -3,79 +3,53 @@ const path = require('path');
 
 const DEFAULT_COMPANIES = [
   {
-    code: 'SSH',
-    name: 'SuamiSihat Holding Sdn Bhd',
-    shortName: 'Holding Group',
-    regNo: '202401012345 (1550123-X)',
-    address: 'Level 28, Menara SuamiSihat, Jalan Ampang, 50450 Kuala Lumpur, Malaysia',
-    contact: '+603-2181-8888 / holding@suamisihat.com',
-    location: 'Kuala Lumpur, Malaysia',
+    code: 'ACME',
+    name: 'Acme Corporation',
+    shortName: 'Acme Corp',
+    regNo: 'US-DEL-202401',
+    address: '100 Innovation Way, Suite 400, San Francisco, CA 94105',
+    contact: '+1-555-0199 / operations@acme.com',
+    location: 'San Francisco, CA',
     status: 'active',
     isParent: true,
     establishedYear: '2020',
-    color: '#022057'
+    color: '#0284C7'
   },
   {
-    code: 'SSC',
-    name: 'SuamiSihat Healthcare Sdn Bhd',
-    shortName: 'Healthcare & Clinic',
-    regNo: '202401012346 (1550124-Y)',
-    address: 'SuamiSihat Clinic, No. 12, Ground Floor, Jalan Telawi 3, Bangsar, 59100 Kuala Lumpur',
-    contact: '+603-2282-7777 / healthcare@suamisihat.com',
-    location: 'Bangsar, Kuala Lumpur',
-    status: 'active',
-    isParent: false,
-    establishedYear: '2021',
-    color: '#043388'
-  },
-  {
-    code: 'SSW',
-    name: 'SuamiSihat Ellness Sdn Bhd',
-    shortName: 'Wellness & Nutrition',
-    regNo: '202401012347 (1550125-Z)',
-    address: 'Unit 3A-01, Oval Damansara, 685 Jalan Damansara, 60000 Kuala Lumpur',
-    contact: '+603-7733-6666 / wellness@suamisihat.com',
-    location: 'Damansara, Kuala Lumpur',
+    code: 'NEX',
+    name: 'Nexus Studio',
+    shortName: 'Nexus Creative',
+    regNo: 'UK-LON-889201',
+    address: '42 Shoreditch High St, Hackney, London E1 6JJ, UK',
+    contact: '+44-20-7946-0912 / hello@nexusstudio.io',
+    location: 'London, UK',
     status: 'active',
     isParent: false,
     establishedYear: '2022',
-    color: '#21A1F7'
+    color: '#8B5CF6'
   },
   {
-    code: 'SSE',
-    name: 'SuamiSihat Ecommerce Sdn Bhd',
-    shortName: 'E-Commerce & Retail',
-    regNo: '202401012348 (1550126-A)',
-    address: 'Warehouse Hub 2, Jalan PJU 1A/41B, Ara Damansara, 47301 Petaling Jaya, Selangor',
-    contact: '+603-7848-5555 / ecom@suamisihat.com',
-    location: 'Petaling Jaya, Selangor',
+    code: 'LUM',
+    name: 'Lumina Labs',
+    shortName: 'Lumina Research',
+    regNo: 'SG-UEN-202399',
+    address: '71 Ayer Rajah Crescent, #03-01, Singapore 139951',
+    contact: '+65-6789-0123 / contact@luminalabs.dev',
+    location: 'Singapore',
     status: 'active',
     isParent: false,
     establishedYear: '2023',
-    color: '#107C41'
-  },
-  {
-    code: 'SST',
-    name: 'SuamiSihat Technology Sdn Bhd',
-    shortName: 'Technology & Digital',
-    regNo: '202401012349 (1550127-B)',
-    address: 'Cyberjaya Tech Park, Block 3, Persiaran APEC, 63000 Cyberjaya, Selangor',
-    contact: '+603-8322-4444 / tech@suamisihat.com',
-    location: 'Cyberjaya, Selangor',
-    status: 'active',
-    isParent: false,
-    establishedYear: '2024',
-    color: '#8764B8'
+    color: '#10B981'
   }
 ];
 
 const DEFAULT_STAFF = [
-  { staffId: 'SS0004', username: 'harussani', name: 'Harussani', email: 'harussani.suamisihat@gmail.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'SS', avatarColor: '#0078D4', active: true },
-  { staffId: 'SS0035', username: 'haikal', name: 'Haikal', email: 'haikal.suamisihat@gmail.com', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'SS', avatarColor: '#106EBE', active: true },
-  { staffId: 'SS0037', username: 'aliff', name: 'Aliff', email: 'aliffnaz.suamisihat@gmail.com', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'SSE', avatarColor: '#7C3AED', active: true },
-  { staffId: 'SS0073', username: 'raihan', name: 'Raihan', email: 'raihan.suamisihat@gmail.com', role: 'Head of Marketing & Sale', department: 'Marketing & Sales', defaultBrand: 'SS', avatarColor: '#D97706', active: true },
-  { staffId: 'SS0001', username: 'hasan', name: 'Hasan', email: 'hasan@suamisihat.com', role: 'Chief Executive Officer', department: 'Executive Management', defaultBrand: 'SS', avatarColor: '#21A1F7', active: true },
-  { staffId: 'SS0071', username: 'gaddafi', name: 'Gaddafi', email: 'gaddafi@suamisihat.com', role: 'Co-Chief Executive Officer', department: 'Executive Management', defaultBrand: 'SS', avatarColor: '#059669', active: true }
+  { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
+  { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
+  { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
+  { staffId: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Lead Copywriter', department: 'Content & Copy', defaultBrand: 'ACME', avatarColor: '#F59E0B', active: true },
+  { staffId: 'NEX005', username: 'maya', name: 'Maya Lin', email: 'maya@nexusstudio.io', role: 'Senior Designer', department: 'Brand & Identity', defaultBrand: 'NEX', avatarColor: '#EC4899', active: true },
+  { staffId: 'LUM006', username: 'david', name: 'David Chen', email: 'david@luminalabs.dev', role: 'Motion Graphic Designer', department: 'Multimedia & Motion', defaultBrand: 'LUM', avatarColor: '#6366F1', active: true }
 ];
 
 const INITIAL_AUDIT_LOG = {
@@ -85,7 +59,7 @@ const INITIAL_AUDIT_LOG = {
   role: 'Administrator',
   action: 'SYSTEM_INITIALIZED',
   entityType: 'System',
-  entityId: 'SS-CAM v4.0.0',
+  entityId: 'Kanso Cre8 v1.0.0',
   details: { message: 'Fresh install metadata reset completed successfully.' }
 };
 

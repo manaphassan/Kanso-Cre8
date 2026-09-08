@@ -30,9 +30,6 @@ app.use('/api', apiRoutes);
 const fs = require('fs');
 const candidates = [
   path.resolve(__dirname, '../client/dist'),
-  path.resolve(__dirname, '../../src/SS-CAM.Web/client/dist'),
-  path.resolve(__dirname, '../src/SS-CAM.Web/client/dist'),
-  path.resolve(__dirname, './src/SS-CAM.Web/client/dist'),
   path.resolve(__dirname, './client/dist'),
   path.resolve(__dirname, '../client')
 ];
@@ -70,7 +67,7 @@ app.use((err, req, res, next) => {
 
 app.listen(config.PORT, config.HOST, () => {
   console.log('================================================================');
-  console.log(`🚀 SuamiSihat Creative Team Management Web Portal`);
+  console.log(`🚀 Kanso Cre8 (簡素) — The Mindful Creative Vault Server`);
   console.log(`🌐 Server running at: http://${config.HOST === '0.0.0.0' ? 'localhost' : config.HOST}:${config.PORT}`);
   console.log(`📂 Workspace Root:   ${config.WORKSPACE_ROOT}`);
   console.log(`🔒 Environment:      Production Ready`);

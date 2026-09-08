@@ -79,10 +79,10 @@
     'Branding': {
       icon: '✨',
       category: 'Brand Identity & Design System',
-      whatItMeasures: 'Multi-brand cohesion across SuamiSihat entities (SSH, SSE, SSC, SST, SSW), logo protection zones, color palettes, and brand equity.',
+      whatItMeasures: 'Multi-brand cohesion across client entities (Acme Corp, Nexus Studio, Lumina Labs), logo protection zones, color palettes, and brand equity.',
       whatIsGood: 'Flawless brand consistency across packaging, web, and ads; zero off-palette colors; instant customer trust and brand recall.',
       whatIsBad: 'Stretched logos, wrong entity sub-brand color schemes, unapproved typography, or fragmented visual identity confusing customers.',
-      actionAdvice: 'Pull colors and typography directly from the SS-CAM design tokens in Brand Hub.'
+      actionAdvice: 'Pull colors and typography directly from the Kanso Cre8 design tokens in Brand Hub.'
     }
   };
 

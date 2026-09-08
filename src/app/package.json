@@ -9,7 +9,10 @@
     "dev:client": "vite",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build:client": "vite build",
-    "test": "node server/test/run-tests.js"
+    "test": "node server/test/run-tests.js",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "archiver": "^8.0.0",

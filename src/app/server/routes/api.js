@@ -1148,7 +1148,7 @@ router.delete('/users/:id', authenticateToken, (req, res) => {
 router.post('/users/:username/reset-password', authenticateToken, (req, res) => {
   try {
     const { newPassword } = req.body;
-    updateUserPassword(req.params.username, newPassword || 'SuamiSihat123!');
+    updateUserPassword(req.params.username, newPassword || 'KansoCre8!');
     AuditService.logEvent({
       actor: req.user.name,
       role: req.user.role,
