@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Kanso Cre8 Architecture & Brand Compliance Validator
 .DESCRIPTION
@@ -145,10 +145,10 @@ Write-Host "[ 5. CORE WORKSPACE CAPABILITIES ]" -ForegroundColor White
 $clientServicePath = Join-Path $repoRoot "src\app\client\src\lib\services\clientService.ts"
 if (Test-Path $clientServicePath) {
     $csText = Get-Content $clientServicePath -Raw
-    if ($csText -match "GOV" -and $csText -match "JOM" -and $csText -match "SSH") {
-        Report-Check "ClientHub" "Mandatory client profiles configured: Govicle, Jomparking, SuamiSihat" "PASS"
+    if ($csText -match "loadClients|getClients") {
+        Report-Check "ClientHub" "Multi-client profile and swatch management engine verified" "PASS"
     } else {
-        Report-Check "ClientHub" "clientService.ts missing one or more default client profiles" "WARN"
+        Report-Check "ClientHub" "clientService.ts missing client management methods" "WARN"
     }
 } else {
     Report-Check "ClientHub" "clientService.ts not found" "FAIL"

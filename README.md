@@ -54,9 +54,9 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 ```text
 📁 KansoCre8-Vault/
 ├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
-│   ├── 📁 GOV_Govicle/                   # (Govicle Sdn Bhd)
-│   ├── 📁 JOM_Jomparking/                # (Jomparking Solutions)
-│   └── 📁 SSH_SuamiSihat/                # (SuamiSihat Brand Vault)
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs)
 │
 ├── 📁 _Finance/                          # 🧾 Markdown & YAML Quotes & Invoices
 │   ├── 📁 Quotes/                        # QUOTE-2026-xxx.md
@@ -69,7 +69,7 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 │
 ├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
 │   └── 📁 202609_September/
-│       └── 📁 202609_0001_GOV_FleetAppIllustration/
+│       └── 📁 202609_0001_ACME_MobileAppIllustration/
 │           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
 │           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
 │           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
@@ -86,7 +86,7 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 ## 🚀 Core Features for Freelance Designers
 
 ### 1. 🏢 Multi-Client Hub & Brand Palettes
-* Pre-configured profiles for **Govicle**, **Jomparking**, and **SuamiSihat**, plus 1-click addition of new clients.
+* Pre-configured profiles for sample clients (**Acme Corp**, **Nexus Studio**, **Lumina Labs**), plus 1-click addition of your own clients.
 * Instant interactive brand color swatches (`HEX`, `RGB`, `CMYK`) with 1-click clipboard copy.
 * Hourly rates, contact details, and client billing terms stored in clean YAML frontmatter.
 
