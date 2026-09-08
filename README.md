@@ -17,20 +17,48 @@
 
 Inspired by the Japanese Zen aesthetic of **Kanso (簡素)** — the conscious elimination of clutter and devotion to essential simplicity — Kanso Cre8 replaces heavy enterprise software and monthly SaaS subscriptions with a lightning-fast, calm, tactile desktop application that puts you in complete control of your creative business.
 
-Operating on a pure **Markdown-as-Database** foundation, all client profiles, project milestones, invoices, and atomic notes are stored directly on your disk as plain human-readable text and YAML frontmatter. Open them anytime in Obsidian, VS Code, or Typora without lock-in.
+Operating on a pure **Markdown-as-Database** foundation, all client profiles, project milestones, invoices, and atomic notes are stored directly on your disk as plain human-readable text and YAML frontmatter. Open them anytime in Obsidian, VS Code, or Typora with zero vendor lock-in.
+
+---
+
+## 🏛️ Modular by Design Architecture
+
+Kanso Cre8 is architected as a strictly modular, decoupled system across **four independent layers**:
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ 1. VAULT STORAGE LAYER (Zero-Database Markdown Engine)     │
+│    _Clients/    _Finance/    _Zettelkasten/    2026/Projects │
+├─────────────────────────────────────────────────────────────┤
+│ 2. DOMAIN SERVICES LAYER (Single-Responsibility Business)   │
+│    clientService   financeService   zettelService   radioService │
+├─────────────────────────────────────────────────────────────┤
+│ 3. UI VIEW & FEATURE LAYER (Pluggable Svelte 5 Views)        │
+│    ClientsView    InvoiceStudio    ZettelView    RadioView   │
+│    └─ KanbanView  └─ Lightbox      └─ CassetteDeck           │
+├─────────────────────────────────────────────────────────────┤
+│ 4. ATOMIC DESIGN SYSTEM LAYER (Reusable Lego Primitives)    │
+│    Button · Card · Dialog · Input · Toast · CSS Tokens      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+1. **Vault Storage Layer**: Every domain lives in its own isolated filesystem container. Projects, clients, invoices, and notes can be edited or deleted independently using external editors (Obsidian, VS Code, Finder/Explorer) without database migration errors.
+2. **Domain Services Layer**: Focused TypeScript services with single responsibilities (`clientService.ts`, `financeService.ts`, `zettelService.ts`, `radioService.svelte.ts`) maintain clean domain boundaries.
+3. **Pluggable Views Layer**: Self-contained Svelte 5 views mount seamlessly into the app shell. Features such as the Cassette Radio Deck or Invoice Studio plug in as autonomous modules.
+4. **Atomic Design System Layer**: Standardized UI primitives built on Linear / Geist design tokens ensure consistent visual harmony across all screens.
 
 ---
 
 ## ⚡ Cross-Platform Architecture (Tauri v2 + Svelte 5)
 
-Kanso Cre8 is built on a single, ultra-lightweight codebase powered by **Tauri v2**, **Svelte 5**, and **Tailwind CSS**, consuming only ~35MB of RAM:
+Kanso Cre8 is powered by a lightweight unified codebase built on **Tauri v2**, **Svelte 5**, and **Tailwind CSS**, consuming only ~35MB of RAM:
 
 | Target Platform | Package / Runtime | Role in Workspace |
 | :--- | :--- | :--- |
-| 🪟 **Windows 11 / 10** | **Tauri v2 Native (.msi / .exe)** | **Primary Desktop Studio**: Edge WebView2 runtime, hardware-accelerated rendering, native system file dialogs, global hotkeys. |
+| 🪟 **Windows 11 / 10** | **Tauri v2 Native (.msi / .exe)** | **Primary Desktop Studio**: Edge WebView2 runtime, hardware-accelerated rendering, native system file dialogs, global hotkeys (`Ctrl+Space`). |
 | 🐧 **Linux Desktop** | **Tauri v2 Native (.deb / .AppImage)** | **Linux Creator Workstation**: WebKitGTK engine, GNOME/KDE theme compliance, native Wayland & X11 support. |
 | 📱 **Android Mobile** | **Tauri v2 Mobile Companion (.apk)** | **Mobile Companion**: Review deliverable proofs on the go, 1-click client approvals, mobile task tracking. |
-| 🌐 **Local Web Portal** | **Svelte 5 SPA (Optional)** | **Local Studio Hub**: Optional self-hosted web review portal for local network devices. |
+| 🌐 **Local Studio Hub** | **Svelte 5 SPA (Optional)** | **Local Studio Hub**: Optional self-hosted web review portal for local network devices. |
 
 ---
 
@@ -47,12 +75,13 @@ Kanso Cre8 has zero proprietary database servers. Simply point your vault root t
 
 ---
 
-## 🗄️ Standardized 5-Folder Creative Vault
+## 🗄️ Standardized Creative Vault Hierarchy
 
 Never search for missing fonts, lost PSDs, or scattered client briefs again:
 
 ```text
-📁 KansoCre8-Vault/
+📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
+│
 ├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
 │   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
 │   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
@@ -83,7 +112,7 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 
 ---
 
-## 🚀 Core Features for Freelance Designers
+## 🚀 Core Studio Features
 
 ### 1. 🏢 Multi-Client Hub & Brand Palettes
 * Pre-configured profiles for sample clients (**Acme Corp**, **Nexus Studio**, **Lumina Labs**), plus 1-click addition of your own clients.
@@ -92,26 +121,41 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 
 ### 2. 🧾 Dual-Pane Quote & Invoice Studio
 * Write invoices in intuitive YAML line-items on the left; get a live, pixel-perfect printable invoice on the right.
-* Automated calculation of subtotals, custom tax rates, and grand totals.
-* 1-Click PDF export or print via system dialog.
+* Automated arithmetic for subtotals, custom tax rates, and grand totals.
+* 1-Click PDF export or print via system dialog (`window.print()`).
 
-### 3. 🧠 Atomic Notes & Zettelkasten Second Brain
+### 3. 📁 Standardized 5-Folder Project Scaffolder & Kanban Board
+* 1-Click generator creating standardized project vaults (`01_BRIEF` to `05_DELIVERABLES`).
+* Interactive 5-stage Kanban board (`Backlog` ➔ `In Progress` ➔ `Review Queue` ➔ `Revision Required` ➔ `Approved & Done`).
+* Dragging cards or toggling stages directly updates the project's `README.md` frontmatter on disk.
+
+### 4. 🧠 Atomic Notes & Zettelkasten Second Brain
 * 3-tier knowledge categorization: **Fleeting Notes** (quick raw captures), **Literature Notes** (teardowns & references), and **Permanent Notes** (proven atomic design rules & hooks).
 * Bi-directional `[[WikiLinks]]` with real-time backlink indexing.
-* **Universal Task Rollup**: Any `- [ ] #task` written in meeting notes or fleeting files auto-populates the Kanban board.
+* **Universal Task Rollup**: Any `- [ ] #task` written in meeting notes or fleeting files auto-populates the Kanban board; checking a box updates the physical file.
 
-### 4. ✍️ Copywriting Studio & Hook Tray
+### 5. 📻 Retro Cassette Focus Radio & Studio Deck
+* **Tactile Mechanical Player**: Ported faithfully from the mechanical cassette player in SS-CAM Android.
+* **Skeuomorphic Cassette Chassis**: 4 corner silver screws, trapezoidal head/roller, Side A label badge, station frequency, and clear tape window.
+* **Dual Spinning Spools**: 6-spoke mechanical gear spool wheels rotating at 33 RPM via smooth CSS animation during audio playback.
+* **Curated Focus Streams**:
+  - ☕ **Chillhop Cafe** (Lofi beats & study vibes)
+  - 🌆 **Nightwave Plaza** (Vaporwave / Synthwave)
+  - 🌿 **SomaFM Groove Salad** (Downtempo ambient)
+  - 🎷 **Parisian Jazz Cafe** (Acoustic jazz & bossa nova)
+  - 🧘 **Zen Alpha Focus** (Deep work binaural drone)
+* **Dual Placement**: Full studio view under `Focus Radio` + persistent **40px Mini-Cassette Dock** in the sidebar footer with mini rotating spools and transport controls.
+* **Integrated Productivity**: 25-minute Pomodoro sprint timer and box breathing reset coach.
+
+### 6. ✍️ Copywriting Studio & Hook Tray
 * Dedicated editor writing directly to `03_COPY/COPY.md`.
 * Live telemetry: word count, character count, and estimated reading time.
 * **Atomic Hook Injector**: Insert tested hooks from your permanent notes drawer with one keystroke, or extract winning copy back into atomic notes.
 
-### 5. 🔍 4K Deliverables Lightbox & 1-Click ZIP Handover
+### 7. 🔍 4K Deliverables Lightbox & 1-Click ZIP Handover
 * High-res media reviewer for proofs, PNGs, MP4s, and renders.
+* Zoom and pan inspection for checking print bleeds and export quality.
 * Automated 1-click ZIP export packaging for clean client delivery.
-
-### 6. 🎧 Focus Studio & Lo-Fi Radio
-* Built-in low-latency lo-fi, chillhop, and ambient radio streams.
-* Pomodoro focus timer and box breathing reset coach to stay in the zone.
 
 ---
 
@@ -120,13 +164,65 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 Kanso Cre8 is styled with a bespoke dark/light studio design system inspired by Linear and Vercel Geist:
 
 ```text
-DARK MODE:  Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
-LIGHT MODE: Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
+DARK MODE (Default): Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
+LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
 ```
 
 * **Zero visual noise**: Pure matte canvas surfaces eliminate eye strain during long design sessions.
 * **Spatial precision**: 1px subtle hairline borders define cards and inputs without heavy drop shadows.
 * **Instant theme toggle**: Seamless switching between Dark Obsidian and Light Porcelain.
+
+---
+
+## 🗺️ Phased Implementation Roadmap
+
+Development is organized into 7 sequential phases strictly ranked by priority:
+
+| Phase | Module | Priority | Focus |
+| :--- | :--- | :--- | :--- |
+| **P1** | **Svelte 5 Shell & Markdown Vault Engine** | **CRITICAL** | Linear/Geist tokens, 3-zone shell, `vaultService.ts` local scanner, pure Markdown law. |
+| **P2** | **Multi-Client Hub & YAML Invoicing** | **HIGH** | Client profiles (ACME, NEX, LUM), brand color swatches, dual-pane invoice editor & PDF print. |
+| **P3** | **5-Folder Scaffolder & Kanban Board** | **HIGH** | Standardized project creator (`01_BRIEF` to `05_DELIVERABLES`), real-time Kanban sync. |
+| **P4** | **Zettelkasten Engine & Task Rollup** | **MED-HIGH** | 3-tier note classification, `[[WikiLinks]]` backlink crawler, `- [ ] #task` auto-rollup. |
+| **P5** | **Retro Cassette Focus Radio & Deck** | **MEDIUM** | Mechanical cassette player, rotating spools (33 RPM), live streams, Pomodoro timer, mini dock. |
+| **P6** | **Copywriting Studio & 4K Lightbox** | **MED-LOW** | `COPY.md` telemetry, Atomic Hook Injector, 4K proof reviewer, 1-click ZIP export. |
+| **P7** | **Multi-Platform Tauri v2 Packaging** | **DISTRIBUTION** | Windows (.msi/.exe), Linux (.deb/.AppImage), Android companion APK, multi-cloud sync audit. |
+
+For the complete living specification, see [ROADMAP.md](./ROADMAP.md).
+
+---
+
+## 🛠️ Quickstart & Development
+
+### Prerequisites
+* **Node.js**: `v20.0+` (LTS recommended)
+* **npm**: `v10.0+`
+* **Rust**: `1.75+` (for Tauri desktop builds)
+
+### Setup & Run
+
+```bash
+# Clone the repository
+git clone https://github.com/manaphassan/Kanso-Cre8.git
+cd Kanso-Cre8
+
+# Navigate to the modern frontend
+cd src/app
+
+# Install dependencies
+npm install
+
+# Run frontend in development mode
+npm run dev:client
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+To verify architecture and brand governance:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
+```
 
 ---
 
@@ -137,11 +233,10 @@ Kanso Cre8 is licensed under the **PolyForm Noncommercial License 1.0.0**.
 * **Permitted**: Personal use, freelance client work, educational study, independent research, and non-profit creative projects.
 * **Prohibited**: Commercial resale of the software, closed-source SaaS distribution, or charging users for access.
 
-See [LICENSE](./LICENSE) for the full legal terms.
+See [LICENSE](./LICENSE) for full legal terms.
 
 ---
 
 ## 👨‍💻 Author & Maintainer
 
 Created with care by **[harusssani.manaphassan](https://github.com/manaphassan)**.
-

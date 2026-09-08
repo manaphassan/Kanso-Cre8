@@ -1,6 +1,36 @@
 # Changelog
 
-All notable SS-CAM changes are documented here.
+All notable changes to Kanso Cre8 (簡素) are documented here.
+
+## [5.0.0-kanso] - 2026-09-09 (Evolution to Kanso Cre8 — The Mindful Creative Vault)
+
+### Added & Rebuilt — Rebirth as Kanso Cre8 (簡素)
+- **Product Identity & Creative Vault Philosophy**:
+  - Rebranded the platform to **Kanso Cre8** (簡素) — *The Mindful Creative Vault*.
+  - Eliminated enterprise bloated dependencies in favor of an offline-first, local-first personal studio for freelance designers.
+  - Adopted the **PolyForm Noncommercial License 1.0.0** authored by `harusssani.manaphassan`.
+  - Enforced strict client sanitization across public documentation using canonical sample profiles: **Acme Corp** (`ACME`), **Nexus Studio** (`NEX`), and **Lumina Labs** (`LUM`).
+- **Modern Unified Frontend & Desktop Core (`src/app/`)**:
+  - Promoted the lightweight Svelte 5 + Tailwind CSS application as the primary cross-platform core.
+  - Implemented **Linear / Geist Minimalist Studio Tokens** (`#09090B`, `#18181B`, `#27272A`, `#38BDF8`) with 1px hairline borders.
+  - Quarantined legacy .NET Framework 4.8 and Avalonia codebase to `archive/legacy-dotnet/`.
+- **Pure Markdown-as-Database Storage Engine (`vaultService.ts`)**:
+  - Implemented zero-database storage law: 100% human-readable UTF-8 `.md` and YAML frontmatter with zero SQL, SQLite, or Prisma dependencies.
+  - Universal cloud synchronization support for Dropbox, Google Drive, OneDrive, Synology Drive, and local NVMe storage.
+  - Standardized 8-folder vault layout: `_Clients/`, `_Finance/`, `_Zettelkasten/`, `[YYYY]/` projects, and `_Notes/`.
+- **Retro Cassette Focus Radio & Studio Deck**:
+  - Ported the mechanical cassette player from `SS-CAM.Android` (`StudioRadioScreen.kt`) into web standards.
+  - Built skeuomorphic cassette chassis with 4 corner silver screws, trapezoidal head/roller, Side A badge, and tape window (`CassetteTapeCard.svelte`).
+  - Added dual 6-spoke gear spool wheels spinning at 33 RPM via CSS animations (`CassetteSpoolWheel.svelte`).
+  - Created tactile transport deck (`CassetteDeck.svelte`) with live stream metadata ticker and 25-minute Pomodoro focus timer.
+  - Implemented persistent 40px `MiniCassetteDock.svelte` in the sidebar footer for uninterrupted background listening.
+- **Documentation & Governance Suite**:
+  - Master specification in `docs/KANSO_CRE8_MASTER_SPECIFICATION.md`.
+  - Architecture & Modularity guide in `docs/ARCHITECTURE_MODULARITY.md`.
+  - Standardized directory guide in `FOLDER-STRUCTURE.md`.
+  - Living prioritized roadmap in `ROADMAP.md`.
+  - Developer & contributor guide in `CONTRIBUTING.md`.
+  - Automated governance auditor script `verify-kanso.ps1` in `.agents/skills/kanso-guardian/`.
 
 ## [4.7.0] - 2026-09-08 (Velocity Navigation Engine, Canva Creative Cloud Bridge & Cross-Platform Alignment)
 

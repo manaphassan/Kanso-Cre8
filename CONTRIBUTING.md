@@ -1,385 +1,172 @@
-# Contributing & Developer Guide
+# Contributing to Kanso Cre8 (簡素)
 
-Technical reference for maintainers and contributors of **SS-CAM — SuamiSihat Creative Assets Management**. For the end-user deployment guide, refer to [README.md](./README.md).
+Thank you for your interest in contributing to **Kanso Cre8** — the mindful creative vault, client hub, and knowledge engine for freelance designers.
 
----
-
-## Table of Contents
-
-1. [Project Architecture](#1-project-architecture)
-2. [Repository Structure](#2-repository-structure)
-3. [Development Prerequisites](#3-development-prerequisites)
-4. [Building the Application](#4-building-the-application)
-5. [Running in Development Mode](#5-running-in-development-mode)
-6. [Testing & Verification](#6-testing--verification)
-7. [Branch & Release Workflow](#7-branch--release-workflow)
-8. [Release Lifecycle & Versioning](#8-release-lifecycle--versioning)
-9. [Code Standards & Security](#9-code-standards--security)
-10. [Branding & Design Tokens](#10-branding--design-tokens)
-11. [Extending the Payload](#11-extending-the-payload)
+Our mission is to build a calm, lightning-fast, tactile creative workstation that eliminates bloat, preserves user focus, and guarantees 100% data sovereignty.
 
 ---
 
-## 1. Project Architecture
+## 🏛️ Core Principles & Zen Ethos
 
-SS-CAM v2.0+ is a **native C# WPF application** targeting .NET Framework 4.8, distributed as a single self-contained executable. All dependencies are embedded at compile time using **Fody/Costura** assembly weaving.
+Before writing any code or proposing changes, understand the guiding philosophy of Kanso Cre8:
 
-```
-Application Stack
-─────────────────────────────────────────────────────
-UI Layer          WPF + WPF-UI (Fluent Design System)
-Business Logic    C# .NET Framework 4.8
-Data Storage      JSON (AppData/Local) + DPAPI encryption
-Build Pipeline    MSBuild + Fody/Costura (single-file EXE)
-Dependency Mgmt   NuGet (packages.config)
-```
-
-### Application Modules
-
-| Module | Namespace | Description |
-| --- | --- | --- |
-| **Dashboard** | `SS_CAM.Views.DashboardPage` | Workspace intelligence metrics, storage analytics, sub-brand charts, and Designer Inspiration widget |
-| **Project Creator** | `SS_CAM.Views.ProjectCreatorPage` | Standardized folder generator with auto Job ID, live preview, and Markdown brief editor |
-| **Search & Copy** | `SS_CAM.Views.SearchCopyPage` | Catalog-book workspace browser with rendered README preview, gallery, designer filter, and inline README editor |
-| **Task Manager** | `SS_CAM.Views.TaskManagerPage` | Project status board driven by YAML frontmatter in each project's `README.md` _(v2.5.0)_ |
-| **Quick Note** | `SS_CAM.Views.QuickNotePage` | Persistent Markdown scratchpad with two-panel layout and auto-save _(v2.5.0)_ |
-| **Radio Player** | `SS_CAM.Views.RadioPage` | Live Malaysian radio & lo-fi focus streams; card grid with cover art and genre filter tabs |
-| **Creative Wellbeing** | `SS_CAM.Views.WellbeingPage` | Focus timer, breathing guides, energy check-ins, DPAPI encrypted Mind Drops |
-| **Brand Assets** | `SS_CAM.Views.BrandAssetsPage` | Asset library, logo, palette, and report launcher |
-| **Settings** | `SS_CAM.Views.SettingsPage` | Designer identity, workspace config, update checker |
-| **Workstation Health** | `SS_CAM.Views.WorkstationHealthPage` | Font repair, software scanner, NAS diagnostics |
-
-### Core Services
-
-| Service | Description |
-| --- | --- |
-| `WorkspaceScanner` | Scans workspace directories, aggregates metrics, builds chart datasets, enumerates designer folders |
-| `UserProfileService` | Loads and persists designer identity, workspace root, avatar |
-| `AudioFeedbackService` | Plays ambient/interaction audio via MediaElement |
-| `WellbeingTimerService` | Monotonic focus session tracking with idle detection |
-| `WellbeingDataService` | DPAPI-encrypted Mind Drop storage and energy check-in persistence |
-| `PayloadInstallerService` | Deploys fonts and brand assets to the Windows user profile |
-| `QuickNoteService` | Creates, loads, saves, and deletes Markdown note files from `%LOCALAPPDATA%\SS-CAM\Notes\` _(v2.5.0)_ |
-| `FrontmatterService` | Parses and writes YAML frontmatter blocks from/to project `README.md` files _(v2.5.0)_ |
-| `TeamBoardService` | Reads/writes shared `_Team/team-notes.json` on NAS; provides polling for collaboration _(v2.5.0)_ |
-| `RadioStreamService` | Manages station list, `.pls`/`.m3u` import, playback control, and cover image download |
+1. **Simplicity Over Cleverness (簡素)**: Eliminate unnecessary chrome, modals, notifications, and animations. If a feature does not directly serve creative focus or client workflow, it does not belong.
+2. **Pure Markdown-as-Database**:
+   - **Zero SQL / SQLite**: We will NEVER introduce SQLite binaries, SQL servers, Prisma ORM, or cloud databases.
+   - **100% Filesystem Sovereignty**: All data lives as plain directories and UTF-8 `.md` files with YAML frontmatter.
+   - **Obsidian / VS Code Interoperability**: Every file created by Kanso Cre8 must open cleanly in external editors without broken syntax.
+3. **Strict Client Privacy Law**:
+   - **NEVER** use real client names in public git commits, mock datasets, tests, or documentation.
+   - Always use canonical sample profiles: **Acme Corp** (`ACME`), **Nexus Studio** (`NEX`), and **Lumina Labs** (`LUM`).
+4. **4-Layer Modular Architecture**:
+   - Keep boundaries strict: Vault Storage ➔ Domain Services ➔ Pluggable Views ➔ Atomic UI Primitives.
 
 ---
 
-## 2. Repository Structure
+## 🏗️ Technical Stack
 
-```
-SS-Brand-Assets/
+Kanso Cre8 is built on a modern, ultra-lightweight desktop stack:
+
+* **Desktop Core**: [Tauri v2](https://v2.tauri.app) (Rust runtime, native file system, global shortcuts)
+* **Frontend Framework**: [Svelte 5](https://svelte.dev) (Runes: `$state`, `$derived`, `$props`, `$effect`)
+* **Styling**: [Tailwind CSS](https://tailwindcss.com) + Linear / Geist Studio design tokens
+* **Build System**: [Vite](https://vitejs.dev)
+* **Audio Engine**: Native HTML5 Web Audio API (for Focus Radio & Cassette Deck)
+
+---
+
+## 📁 Repository Structure
+
+```text
+Kanso-Cre8/
 ├── src/
-│   └── SS-CAM/                        C# WPF application source
-│       ├── Models/                    Data models (Dashboard, UserProfile, Wellbeing, Radio, Team)
-│       ├── Services/                  Business logic and data access services
-│       ├── Views/                     XAML pages and code-behind
-│       ├── Properties/                Assembly metadata (version, GUID)
-│       ├── packages/                  NuGet restored dependencies
-│       ├── SS-CAM.csproj              MSBuild project file
-│       └── app.ico                    Application icon
-├── installer/
-│   ├── src/                           Legacy PowerShell setup scripts (v1.x)
-│   ├── bootstrapper/                  Legacy C# EXE bootstrapper (v1.x)
-│   ├── assets/                        Installer branding images
-│   ├── EULA.txt                       End User Licence Agreement
-│   └── Build-Installer.ps1            Versioned build script (supports v1.x and v2.x+)
-├── payload/
-│   ├── Fonts/                         Installable desktop typefaces and licences
-│   ├── Audio/                         Ambient and interaction sound effects
-│   └── Brand Assets/
-│       ├── Logos/                     SVG and PNG logo variants per sub-brand
-│       ├── Libraries/                 .afassets and .cclibs files
-│       └── Colour Palettes/           .afpalette and .ase swatch files
-├── tests/                             PowerShell smoke and integration tests
-├── docs/                              Application screenshot assets
-├── dist/                              Build output — not committed (see .gitignore)
-├── CHANGELOG.md                       Release history with integrity hashes
-├── CONTRIBUTING.md                    This document
-├── FOLDER-STRUCTURE.md                Workspace folder naming convention and frontmatter spec
-├── ROADMAP.md                         Living feature roadmap and version milestones
-└── README.md                          End-user deployment and setup guide
+│   ├── app/                              # Primary modern frontend & desktop app
+│   │   ├── client/                       # Svelte 5 + Tailwind client application
+│   │   │   ├── src/
+│   │   │   │   ├── lib/
+│   │   │   │   │   ├── components/       # UI primitives, markdown viewers, feature modals
+│   │   │   │   │   │   ├── features/     # Feature components (Kanban, Lightbox, Resizer)
+│   │   │   │   │   │   ├── markdown/     # Markdown editor and previewer
+│   │   │   │   │   │   ├── radio/        # Retro Cassette Deck & Spool components
+│   │   │   │   │   │   └── ui/           # Atomic UI primitives (Button, Card, Dialog)
+│   │   │   │   │   ├── services/         # Domain services (client, finance, zettel, radio)
+│   │   │   │   │   ├── stores/           # Svelte 5 reactive stores (appState, projectStore)
+│   │   │   │   │   ├── styles/           # Linear/Geist design tokens (kanso-tokens.css)
+│   │   │   │   │   ├── types/            # Strict TypeScript domain interfaces
+│   │   │   │   │   └── views/            # Pluggable route views (Clients, Invoices, Zettel)
+│   │   │   │   └── App.svelte            # 3-Zone studio shell & route dispatcher
+│   │   │   └── package.json              # Frontend dependencies
+│   │   └── package.json                  # Workspace package scripts
+│   └── src-tauri/                        # Tauri v2 native desktop runner
+├── docs/                                 # Architectural specifications & brand guides
+├── .agents/skills/                       # AI workspace skills & automated guardians
+│   └── kanso-guardian/                   # Architecture & brand governance auditor
+├── archive/                              # Quarantined legacy .NET 4.8 / Avalonia assets
+├── README.md                             # Project overview
+├── CONTRIBUTING.md                       # This guide
+├── FOLDER-STRUCTURE.md                   # Creative vault hierarchy specification
+├── ROADMAP.md                            # Living prioritized roadmap
+└── LICENSE                               # PolyForm Noncommercial License 1.0.0
 ```
 
 ---
 
-## 3. Development Prerequisites
+## 🛠️ Development Setup
 
-| Requirement | Minimum Version | Notes |
-| --- | --- | --- |
-| **Windows** | 10 (64-bit) | WPF requires Windows |
-| **.NET Framework** | 4.8 | Pre-installed on Windows 10 1903+ |
-| **Visual Studio** | 2019 or later | Community edition is sufficient |
-| **MSBuild** | 4.0 (bundled with .NET Framework) | Located at `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe` |
-| **NuGet** | Any | `src/nuget.exe` is committed for offline restore |
-| **PowerShell** | 5.1+ | Required to run `Build-Installer.ps1` and test scripts |
-| **Git** | Any | For version control and tagging |
-| **GitHub CLI (`gh`)** | Any | For publishing GitHub releases with assets |
+### Prerequisites
+1. **Node.js**: `v20.0+` (LTS recommended)
+2. **npm**: `v10.0+`
+3. **Rust & Cargo**: `1.75+` (only needed if building native Tauri desktop binaries)
+4. **Git**: Any modern version
 
-> **NuGet Restore**: Before building for the first time, restore packages by opening the solution in Visual Studio (it restores automatically), or run:
-> ```powershell
-> .\src\nuget.exe restore .\src\SS-CAM\SS-CAM.csproj -PackagesDirectory .\src\SS-CAM\packages
-> ```
+### Installation Steps
+
+```bash
+# 1. Clone your fork
+git clone https://github.com/<your-username>/Kanso-Cre8.git
+cd Kanso-Cre8
+
+# 2. Navigate to the app directory
+cd src/app
+
+# 3. Install dependencies
+npm install
+
+# 4. Launch development server
+npm run dev:client
+```
+
+The Vite dev server will start at `http://localhost:5173`.
 
 ---
 
-## 4. Building the Application
+## 🎨 Design System & Token Guidelines
 
-The build system uses MSBuild with a PowerShell wrapper. Two build paths exist depending on the version target.
+All user interfaces must conform to the **Linear / Geist Minimalist Studio System**:
 
-### v2.0+ Native WPF Build (Current)
+### Color Tokens
+**Never use raw arbitrary hex literals in components.** Always reference CSS custom properties:
+
+```css
+/* Dark Mode (Default) */
+--kanso-canvas:        #09090B;   /* Root background */
+--kanso-surface:       #18181B;   /* Cards, panels, sidebars */
+--kanso-surface-hover: #27272A;   /* Hover states */
+--kanso-border:        #27272A;   /* 1px subtle hairline borders */
+--kanso-text-primary:  #F4F4F5;   /* High-contrast readable text */
+--kanso-text-muted:    #71717A;   /* Secondary labels & timestamps */
+--kanso-accent:        #38BDF8;   /* Electric Sky primary CTA */
+--kanso-success:       #10B981;   /* Completed tasks & paid invoices */
+--kanso-warning:       #F59E0B;   /* Review queue & pending quotes */
+--kanso-danger:        #EF4444;   /* Overdue milestones & alerts */
+```
+
+### UI Rules
+* **Borders over Shadows**: Elevate surfaces using `1px solid var(--kanso-border)`. Do not use heavy, blurry drop shadows.
+* **Typography**:
+  - Primary text: `Geist Sans`, `Inter`, `system-ui`.
+  - Monospace: `Geist Mono`, `JetBrains Mono` (for invoice IDs, dates, YAML frontmatter).
+  - Page titles: `22px`, font-weight 700, letter-spacing `-0.02em`.
+* **Icons**: Clean monoline SVG geometry (1.5px continuous stroke weight, rounded joins).
+
+---
+
+## 🧪 Verification & Quality Control
+
+Before committing changes, run the automated governance script to verify brand, license, and architectural compliance:
 
 ```powershell
-# Build with default version
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1
-
-# Build with explicit version
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 2.5.0
+powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
 ```
 
-**Build output:**
-
-```
-dist\SS-CAM-v2.5.0.exe   (~5 MB, single-file, all dependencies embedded)
-```
-
-> **C# Language Version:** The MSBuild compiler at `C:\Windows\Microsoft.NET\Framework64\v4.0.30319` only accepts `/langversion:5` (C# 5). Do **not** add `<LangVersion>` to the `.csproj` or use features requiring C# 6+ (expression-bodied members, null-conditional operators, string interpolation). Use `string.Format()` and explicit null checks throughout.
-
-### Legacy v1.x Bootstrapper Build
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version 1.9.10
-```
-
-**Build output:**
-
-```
-dist\SS-CAM-v1.9.10.exe   (~48 MB, PowerShell wizard + payload ZIP)
-```
-
-### How the v2.0+ Build Works
-
-1. MSBuild compiles `SS-CAM.csproj` in `Release` configuration.
-2. **Fody/Costura** weaves all NuGet DLL dependencies (WPF-UI, Newtonsoft.Json, etc.) directly into the output EXE as compressed embedded resources.
-3. The build script copies `bin\Release\SS-CAM.exe` to `dist\SS-CAM-v{VERSION}.exe`.
-4. The result is a genuine single-file Windows executable — no runtime extraction required.
+The auditor checks:
+1. PolyForm Noncommercial 1.0.0 license integrity.
+2. Zero legacy enterprise references in `README.md`.
+3. Pure Markdown storage law (zero database packages in `package.json`).
+4. Linear / Geist token definitions.
+5. Client, finance, and Zettelkasten domain engine integrity.
 
 ---
 
-## 5. Running in Development Mode
+## 🌿 Git & Pull Request Workflow
 
-Open `src\SS-CAM\SS-CAM.csproj` in **Visual Studio** and press **F5** (Debug) or **Ctrl+F5** (Start without debugging).
-
-The app reads user settings from `%LOCALAPPDATA%\SuamiSihat\SS-CAM\` and workspace configuration from the same location.
-
-To reset to a clean state during development, delete:
-
-```
-%LOCALAPPDATA%\SuamiSihat\SS-CAM\
-```
-
----
-
-## 6. Testing & Verification
-
-All test scripts are located in `tests\`.
-
-### Smoke Test
-
-Validates that all WPF pages construct and render without errors:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tests\SmokeTest.ps1
-```
-
-Expected output: `[PASS] ALL SMOKE TESTS PASSED CLEANLY!`
-
-### Targeted Tests
-
-| Script | Purpose |
-| --- | --- |
-| `SmokeTest.ps1` | Full WPF page construction and navigation validation |
-| `TestNasConnection.ps1` | Synology DDNS health check probe |
-| `TestAudioSounds.ps1` | Audio playback and MediaElement verification |
-| `TestNavigationTimerPersistence.ps1` | Focus timer cross-page state persistence |
-| `TestResetDefaults.ps1` | User profile and settings reset validation |
-| `WellbeingTimer.tests.ps1` | Monotonic timer logic and idle detection |
-| `WellbeingMindDrop.tests.ps1` | DPAPI encryption and Mind Drop storage |
-| `WellbeingFatigue.tests.ps1` | Fatigue rule engine logic |
+1. **Branch Naming**:
+   - `feat/feature-name` (e.g. `feat/cassette-click-sound`)
+   - `fix/bug-description` (e.g. `fix/invoice-tax-rounding`)
+   - `docs/doc-update` (e.g. `docs/vault-spec-clarification`)
+2. **Commit Messages**: Follow Conventional Commits:
+   - `feat: add 25-minute Pomodoro chime to cassette deck`
+   - `fix: resolve backlink regex parsing on nested wikilinks`
+   - `docs: update client hub specification with Lumina Labs profile`
+3. **Submitting a PR**:
+   - Ensure `verify-kanso.ps1` passes with `0 warned / 0 failed`.
+   - Verify that no real client names exist in your code or documentation.
+   - Describe what changed and include screenshots for UI updates.
 
 ---
 
-## 7. Branch & Release Workflow
+## ⚖️ Licensing & Attribution
 
-### Branch Structure
+Kanso Cre8 is licensed under the **PolyForm Noncommercial License 1.0.0**. By contributing, you agree that your contributions will be licensed under this license.
 
-| Branch | Purpose |
-| --- | --- |
-| `SS-Master` | Production-stable code. All stable releases ship from here. |
-| `staging` | Integration testing before promotion to `SS-Master`. |
-| `feature/*` | Feature development branches, merged via pull request. |
-
-### Release Procedure
-
-```powershell
-# 1. Ensure all changes are on the feature branch and committed
-git checkout feature/my-feature
-git add .
-git commit -m "feat: describe the change"
-
-# 2. Merge into SS-Master
-git checkout SS-Master
-git merge feature/my-feature --no-ff -m "merge: feature/my-feature for vX.Y.Z"
-
-# 3. Build and verify
-powershell -ExecutionPolicy Bypass -File .\installer\Build-Installer.ps1 -Version X.Y.Z
-powershell -ExecutionPolicy Bypass -File .\tests\SmokeTest.ps1
-
-# 4. Tag the release
-git tag -a vX.Y.Z -m "Release vX.Y.Z — <brief description>"
-git push origin SS-Master --tags
-
-# 5. Update staging
-git checkout staging
-git merge SS-Master
-git push origin staging
-
-# 6. Create the GitHub release with asset
-gh release create vX.Y.Z dist\SS-CAM-vX.Y.Z.exe `
-  --title "SS-CAM vX.Y.Z" `
-  --notes-file CHANGELOG_SECTION.md `
-  --latest
-```
-
-### Pre-release Tagging
-
-For intermediate builds, append the `--prerelease` flag:
-
-```powershell
-gh release create vX.Y.Z dist\SS-CAM-vX.Y.Z.exe --prerelease --title "SS-CAM vX.Y.Z (Pre-release)"
-```
-
----
-
-## 8. Release Lifecycle & Versioning
-
-SS-CAM uses **Semantic Versioning**: `MAJOR.MINOR.PATCH`
-
-| Component | Increment When |
-| --- | --- |
-| **MAJOR** | Architectural overhaul (e.g., v1 PowerShell → v2 C# WPF) |
-| **MINOR** | New feature module or significant UI enhancement |
-| **PATCH** | Bug fix, text correction, or documentation update |
-
-### Current Release Matrix
-
-| Version | Status | Notes |
-| --- | --- | --- |
-| `v2.3.6` | **Latest Stable** | Fluent 2 full compliance — Segoe Fluent Icons, token colours |
-| `v2.1.0` | Stable | Radio & Focus Stream Player |
-| `v2.0.7` | Stable | Dashboard Intelligence Suite |
-| `v1.9.10` | Stable | Legacy PowerShell bootstrapper |
-| `v1.9.2` | Stable | Legacy PowerShell bootstrapper |
-| `v1.9.3` – `v1.9.9` | Pre-release | Intermediate builds |
-| `v2.0.0` – `v2.0.6` | Pre-release | C# WPF refactoring builds |
-| `v2.1.1` – `v2.3.5` | Pre-release | Incremental feature builds |
-
-Version strings must be updated consistently across:
-
-| File | Field |
-| --- | --- |
-| `src\SS-CAM\Properties\AssemblyInfo.cs` | `AssemblyVersion`, `AssemblyFileVersion` |
-| `src\SS-CAM\MainWindow.xaml` | `Title`, header `TextBlock` |
-| `src\SS-CAM\MainWindow.xaml.cs` | `CurrentVersion` constant |
-| `src\SS-CAM\Views\AboutWindow.xaml` | Version badge and changelog header |
-| `src\SS-CAM\Views\DashboardPage.xaml` | Version badge TextBlock fallback |
-| `src\SS-CAM\Views\SettingsPage.xaml.cs` | Update check fallback string |
-| `installer\Build-Installer.ps1` | Default `$Version` parameter |
-| `CHANGELOG.md` | New release section header |
-| `README.md` | Download link, version badge, and release table |
-
----
-
-## 9. Code Standards & Security
-
-### C# / WPF Guidelines
-
-- Follow the existing MVVM-lite pattern: page code-behind acts as the view-model controller.
-- Do not introduce new NuGet dependencies without team discussion.
-- Dispose `DispatcherTimer` instances on `Window.Closed` or page unload.
-- Use `try { } catch { }` defensively for all file system operations (workspace may be a NAS path with intermittent connectivity).
-
-### Security Practices
-
-| Area | Requirement |
-| --- | --- |
-| **Secrets** | No passwords, tokens, or credentials in source code, scripts, or the embedded payload |
-| **DPAPI** | Mind Drop notes are encrypted with `ProtectedData.Protect` (CurrentUser scope) — never stored as plain text |
-| **Execution Policy** | `Build-Installer.ps1` uses `-ExecutionPolicy Bypass` scoped to the build session only |
-| **Font Licensing** | Verify multi-seat licensing for commercial typefaces before distributing outside the internal team |
-| **Binary Exclusion** | `dist/` is `.gitignore`d — compiled EXEs are distributed via GitHub Releases only |
-| **Code Signing** | Sign release EXEs with the organisation OV certificate via `signtool.exe` to suppress Windows SmartScreen |
-
----
-
-## 10. Branding & Design Tokens
-
-All UI elements must conform to the SuamiSihat official brand palette.
-
-### Colour System
-
-All colours are defined as `SolidColorBrush` resources in `Styles/Fluent2Styles.xaml`. Always reference the named token — **never use raw hex literals in XAML**.
-
-| Token Key | Hex | Usage |
-| --- | --- | --- |
-| `FluentBrand80` | `#043388` | Primary headings, interactive elements, key metrics |
-| `FluentBrandTint` | `#21A1F7` | Supporting accent, badges, chart highlights |
-| `FluentBrandLight` | `#EFF6FF` | Tinted highlight backgrounds (info cards, selected rows) |
-| `FluentDarkCanvasBg` | `#022057` | App header background, dark hero surfaces |
-| `FluentLightTextPrimary` | (system) | Primary label text |
-| `FluentLightTextSecondary` | `#64748B` | Secondary text, metadata labels, column headers |
-| `FluentLightCardBg` | `#FFFFFF` | Card surface background |
-| `FluentLightCardSubBg` | `#F8FAFC` | Sub-card, alternating row, secondary surface |
-| `FluentLightStroke` | `#CBD5E1` | Border lines, dividers |
-| `FluentSuccess` | `#10B981` | Positive states (growth, active, online) |
-| `FluentWarning` | `#F59E0B` | Warning states, storage highlights |
-| `FluentDanger` | `#EF4444` | Error states, stale/offline indicators, stop buttons |
-
-### Icon System
-
-Use **Segoe Fluent Icons** exclusively for UI chrome icons. Set `FontFamily="Segoe Fluent Icons"` on a `TextBlock` with the Unicode glyph (e.g. `Text="&#xE72C;"`). Do **not** use emoji characters (`📁`, `🔄`, `📻`) in any button, header, or status element. Emoji are acceptable only in user-generated content contexts (e.g. radio station icons bound from user data).
-
-### Logo Usage
-
-- Use the **dark-background variant** on the `#022057` header.
-- Use the **light-background variant** on white/light surfaces.
-- Do not recolour, distort, apply effects, or alter the logo proportions.
-
----
-
-## 11. Extending the Payload
-
-### Adding Fonts
-
-1. Place font files in `payload\Fonts\` in the appropriate numbered sub-folder.
-2. Add a licence file alongside the fonts.
-3. Rebuild with `Build-Installer.ps1`.
-4. Update the typography table in [README.md](./README.md).
-
-### Adding Brand Assets
-
-1. Place logos in `payload\Brand Assets\Logos\`.
-2. Place design library files in `payload\Brand Assets\Libraries\`.
-3. Place colour palettes in `payload\Brand Assets\Colour Palettes\`.
-4. Rebuild the EXE with an incremented `PATCH` version.
-
-### Adding Audio
-
-1. Place `.mp3` and `.ogg` files in `payload\Audio\`.
-2. Reference the audio file path in `AudioFeedbackService.cs`.
-3. Test playback with `tests\TestAudioSounds.ps1`.
-
----
-
-*For user-facing documentation, see [README.md](./README.md). For the full version history, see [CHANGELOG.md](./CHANGELOG.md).*
+Author & Maintainer: **[harusssani.manaphassan](https://github.com/manaphassan)**

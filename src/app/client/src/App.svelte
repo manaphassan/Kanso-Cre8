@@ -14,6 +14,8 @@
   import ClientsView from '$lib/views/ClientsView.svelte';
   import InvoiceStudioView from '$lib/views/InvoiceStudioView.svelte';
   import ZettelView from '$lib/views/ZettelView.svelte';
+  import RadioView from '$lib/views/RadioView.svelte';
+  import MiniCassetteDock from '$lib/components/radio/MiniCassetteDock.svelte';
   import TeamView from '$lib/views/TeamView.svelte';
   import AdminView from '$lib/views/AdminView.svelte';
   import ProfileView from '$lib/views/ProfileView.svelte';
@@ -149,6 +151,7 @@
     clients:          { title: 'Clients & Brand Hub', layout: 'layout-full' },
     invoices:         { title: 'Quotes & Invoices',  layout: 'layout-full' },
     zettel:           { title: 'Atomic Notes & Zettelkasten', layout: 'layout-full' },
+    radio:            { title: 'Focus Radio & Cassette Deck', layout: 'layout-full' },
     'copy-studio':    { title: 'Copywriting Studio',  layout: 'layout-page' },
     'order-form':     { title: 'Creative Requests',   layout: 'layout-page' },
     team:             { title: 'Team & Workload',     layout: 'layout-page' },
@@ -178,6 +181,7 @@
   const dashIcon    = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
   const folderIcon  = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
   const reviewIcon  = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
+  const radioIcon   = `<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>`;
   const clientIcon  = `<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>`;
   const invoiceIcon = `<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>`;
   const zettelIcon  = `<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>`;
@@ -191,6 +195,7 @@
       { route: 'dashboard',    label: 'Dashboard',          icon: dashIcon },
       { route: 'projects',     label: 'Projects & Tasks',   icon: folderIcon, matchRoutes: ['projects','project-detail'] },
       { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
+      { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
     ]},
     { section: 'Knowledge & Second Brain', items: [
       { route: 'zettel',       label: 'Atomic Notes',       icon: zettelIcon },

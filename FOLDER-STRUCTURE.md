@@ -1,141 +1,226 @@
-# SuamiSihat Creative Directory Hierarchy Specification
+# Kanso Cre8 — Canonical Creative Vault Hierarchy Specification
 
-Official centralized folder structure and naming convention standard for SuamiSihat creative design projects, brand assets, and copywriting studios.
-
-This standard establishes a searchable, chronologically indexed directory hierarchy across local workstations and network storage (`SSNAS`).
-
-### Synology Drive Client Sync Specification
-Local workstations connect to SSNAS via **Synology Drive Client** using continuous two-way synchronization:
-- **Synology NAS Server Share**: `/Creative-Team` (or `/volume2/Creative-Team`)
-- **Local Workstation Sync Drive**: `E:\SynologyDrive\Creative-Team` (configured as `WorkspaceRoot` in SS-CAM)
-- **Windows Network Share (Direct UNC)**: `\\SSNAS\Creative-Team`
-
-For detailed step-by-step setup, see [SSNAS Setup Guide](./docs/SSNAS-SETUP.md).
+> **Standard Version**: 5.0.0-kanso  
+> **Product**: Kanso Cre8 (簡素)  
+> **Storage Paradigm**: Pure Markdown-as-Database (Zero SQL, SQLite, or proprietary binaries)  
+> **Interoperability**: 100% compliant with Obsidian, VS Code, and standard operating system file managers.
 
 ---
 
-## 🏛️ Centralized Directory Hierarchy Specification
+## 🏛️ 1. Overview & Universal Cloud Storage
 
-The official studio standard organizes all projects by **Year** and **Month**, maintaining a single source of truth across all designers and departments:
+Kanso Cre8 organizes your entire freelance creative business into a single standardized, local-first root directory called **The Creative Vault**.
+
+Because the vault contains only plain directories, UTF-8 `.md` files, and standard creative media assets (PSD, AI, PNG, MP4, PDF), it synchronizes transparently with any cloud storage engine:
+
+* **Dropbox**: `~/Dropbox/KansoCre8-Vault`
+* **Google Drive**: `G:\My Drive\KansoCre8-Vault`
+* **Microsoft OneDrive**: `~/OneDrive/KansoCre8-Vault`
+* **Synology Drive**: `~/SynologyDrive/KansoCre8-Vault`
+* **Nextcloud / WebDAV**: Private self-hosted cloud sync
+* **Local High-Speed NVMe**: 100% offline, zero-latency local storage
+
+---
+
+## 🗄️ 2. The Canonical Vault Root Layout
 
 ```text
-Creative-Team/                             ← WorkspaceRoot (E:\SynologyDrive\Creative-Team or \\SSNAS\Creative-Team)
+📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
-├── _Team/                                  ← Studio-wide shared governance, configs & logs
-│   ├── audit-log.jsonl                     ← Immutable security & activity trail
-│   ├── team-notes.json                     ← Team Board announcements & bulletin
-│   ├── companies.json                      ← Subsidiary master registry (SSH, SSC, SSW, SSE, SST)
-│   └── staff-roster.json                   ← Authenticated personnel credentials
+├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
+│   │   ├── 📄 client.md                 # YAML frontmatter: contacts, billing, palette, rates
+│   │   └── 📁 Assets/                   # Vector logos, brand guidelines PDF, fonts
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
+│   │   ├── 📄 client.md
+│   │   └── 📁 Assets/
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs)
+│       ├── 📄 client.md
+│       └── 📁 Assets/
 │
-└── [YYYY]/                                 ← Centralized Year Root (e.g. 2026)
-    ├── [YYYYMM_Month]/                     ← Chronological Month Container (e.g. 202608_August)
-    │   │
-    │   ├── [YYYYMM]_[JobID]_[Brand]_[Title]/ ← Canonical Project Directory (e.g. 202608_0085D_SS_Rejal_Packaging)
-    │   │   ├── README.md                   ← Creative brief & YAML frontmatter metadata
-    │   │   ├── _comments.jsonl             ← In-project contextual discussion thread
-    │   │   ├── 01_BRIEF_ASSETS/            ← Raw client references, moodboards, logos, fonts
-    │   │   ├── 02_SOURCE_FILES/            ← Working source files (.psd, .ai, .aep, .blend, .af)
-    │   │   ├── 03_COPYWRITING/             ← Dedicated COPY.md (scripts, hooks, headlines)
-    │   │   ├── 04_WORK_IN_PROGRESS/        ← Draft previews, WIP renders, review mockups
-    │   │   └── 05_DELIVERABLES/            ← Final approved client master files (PDF, PNG, MP4)
-    │   │
-    │   └── 202608_0086S_SSE_Merdeka_Promo/
-    │
-    └── 202607_July/
+├── 📁 _Finance/                          # 🧾 Financial Documents (Quotes & Invoices)
+│   ├── 📁 Quotes/                        # QUOTE-YYYY-XXX.md
+│   │   └── 📄 QUOTE-2026-001_AcmeCorp_BrandSystem.md
+│   └── 📁 Invoices/                      # INV-YYYY-XXX.md (Printable HTML/PDF)
+│       ├── 📄 INV-2026-001_AcmeCorp_Deposit.md
+│       └── 📄 INV-2026-002_NexusStudio_LaunchDesign.md
+│
+├── 📁 _Zettelkasten/                     # 🧠 Second Brain Knowledge Engine
+│   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
+│   │   └── 📄 20260908_Call_Notes_Acme_Kickoff.md
+│   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
+│   │   └── 📄 20260905_Dieter_Rams_Ten_Principles.md
+│   └── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+│       ├── 📄 Grid_Golden_Ratio_Typography.md
+│       └── 📄 Hook_Problem_Agitate_Solve.md
+│
+├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
+│   └── 📁 202609_September/
+│       └── 📁 202609_0001_ACME_MobileAppIllustration/
+│           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
+│           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
+│           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
+│           ├── 📁 04_WIP/                # Draft exports, test renders, review clips
+│           ├── 📁 05_DELIVERABLES/       # High-res exports ready for client handover
+│           └── 📄 README.md              # Project Master File (YAML Frontmatter)
+│
+└── 📁 _Notes/                            # 📝 Quick Scratchpad
+    └── 📄 Scratchpad.md
 ```
 
 ---
 
-## 🏷️ Project Directory Naming Convention
+## 🏷️ 3. Canonical Project Directory Naming
 
-Format:
-`YYYYMM_####X_BRAND_ProjectName`
+Project directories follow an ergonomic, chronological standard:
+
+```text
+YYYYMM_####X_CLIENT_ProjectTitle
+```
 
 | Component | Format | Description | Example |
-|---|---|---|---|
-| **Date Code** | `YYYYMM` | Four-digit year + two-digit month | `202608` |
-| **Job ID** | `####X` | Four-digit sequence followed by discipline preset code (`D`, `S`, `V`, `P`, `E`, `W`) | `0085D` |
-| **Sub-brand** | Identifier | Official business code (`SS`, `SSH`, `SSC`, `SSW`, `SSE`, `SST`) | `SSE` |
-| **Project Name** | Title | Concise description separated by underscores | `Rejal_Packaging` |
+| :--- | :--- | :--- | :--- |
+| **Date Code** | `YYYYMM` | Four-digit year + two-digit month | `202609` |
+| **Job ID** | `####X` | Four-digit sequence + discipline code | `0001D` |
+| **Client Code** | `[A-Z]{3,4}` | Short client identifier | `ACME`, `NEX`, `LUM` |
+| **Project Title**| Title | Concise description in CamelCase/Underscores | `MobileAppIllustration` |
 
-### Discipline Suffix Codes:
-- **`D`**: Graphic & Print Design
-- **`S`**: Social Media Content & Campaigns
-- **`V`**: Video Production & Motion Graphics
-- **`P`**: Brand Identity & Corporate Guidelines
-- **`E`**: E-Commerce & Marketplace Assets
-- **`W`**: Web Design & UI/UX
-
----
-
-## 📁 Standard 5 Sub-Directory Requirements
-
-Each canonical project directory contains 5 standardized numbered subfolders:
-
-| Sub-Directory | Required | Functional Purpose | File Types |
-|---|---|---|---|
-| `README.md` | ✅ Yes | Creative brief, checklist, and YAML frontmatter status | `.md` |
-| `01_BRIEF_ASSETS` | ✅ Yes | Brief documents, client moodboards, vector logos, raw reference photos | `.pdf`, `.png`, `.jpg`, `.otf`, `.ttf` |
-| `02_SOURCE_FILES` | ✅ Yes | Native working files and editable master artwork | `.psd`, `.ai`, `.afdesign`, `.blend`, `.prproj` |
-| `03_COPYWRITING` | ✅ Yes | Dedicated copy document (`COPY.md`) with video scripts and ad copy | `.md`, `.txt` |
-| `04_WORK_IN_PROGRESS` | ✅ Yes | Intermediate preview exports, WIP renderings, and review mockups | `.png`, `.jpg`, `.mp4` |
-| `05_DELIVERABLES` | ✅ Yes | Final sign-off master exports ready for print or web deployment | `.pdf` (300 DPI), `.png`, `.svg`, `.mp4` |
-| `Client_Revisions` | ⬜ Optional | Client feedback files and revision request documents | `.pdf`, `.docx`, `.jpg` |
-| `RAW_Media` | ⬜ Optional | Raw uncompressed video/photo footage from camera shoots | `.dng`, `.raw`, `.arw`, `.braw` |
+### Discipline Suffix Codes
+* **`D`**: Digital Illustration & Graphic Design
+* **`S`**: Social Media Campaign Assets
+* **`V`**: Video Production & Motion Graphics
+* **`P`**: Print Collateral, Packaging & Dielines
+* **`W`**: Web Design & UI/UX Design
 
 ---
 
-## 📄 README.md Frontmatter Specification
+## 📁 4. Standardized 5-Folder Project Anatomy
 
-Every project `README.md` includes an Obsidian-compatible YAML frontmatter header powering both the desktop **Task Manager** and the **Web Portal**:
+Every creative project generated by Kanso Cre8 contains 5 standardized subfolders and a master `README.md`:
+
+| Folder / File | Required | Purpose | Typical File Types |
+| :--- | :---: | :--- | :--- |
+| **`README.md`** | ✅ | Master project file with YAML frontmatter, checklist, and sprint status. | `.md` |
+| **`01_BRIEF/`** | ✅ | Client brief documents, references, moodboard images, and brand guidelines. | `.pdf`, `.png`, `.jpg`, `.fig` |
+| **`02_SOURCE/`** | ✅ | Editable master design source files. | `.psd`, `.ai`, `.afdesign`, `.blend`, `.c4d`, `.url` |
+| **`03_COPY/`** | ✅ | Dedicated copywriting studio file (`COPY.md`) with video scripts and ad hooks. | `.md`, `.txt` |
+| **`04_WIP/`** | ✅ | Work-in-progress exports, intermediate render previews, and client review drafts. | `.png`, `.jpg`, `.mp4` |
+| **`05_DELIVERABLES/`**| ✅ | Final approved high-res exports ready for delivery or printing. | `.pdf` (300 DPI), `.png`, `.svg`, `.mp4` |
+
+---
+
+## 📄 5. YAML Frontmatter Specifications
+
+### 5.1 Project Master File (`README.md`)
 
 ```yaml
 ---
-status: in-progress
-designer: 0001D
-designerName: Ahmad Faiz
-brand: SSE
-client: SuamiSihat Ecommerce Sdn. Bhd.
-deadline: 2026-09-30
-priority: high
-tags: [packaging, print, 3d-render]
+id: "202609_0001_ACME_MobileAppIllustration"
+title: "Acme Corp Mobile App Hero Illustrations"
+client: "ACME"
+clientName: "Acme Corporation"
+status: "in-progress" # backlog | in-progress | review-queue | revision-required | done
+priority: "high"       # low | normal | high | urgent
+deadline: "2026-09-25"
+budget: 3500.00
+currency: "USD"
+hourlyRate: 120.00
+tags: [illustration, mobile-ui, figma, blender]
 revision: 1
+canva_url: ""
+figma_url: "https://www.figma.com/file/sample-acme-illustrations"
 ---
 
-# 202608_0085D_SS_Rejal_Premium_Packaging
+# 202609_0001_ACME_MobileAppIllustration
 
 > [!NOTE]
-> Campaign specifications and print guidelines for Rejal packaging run.
+> Deliver 3 isometric hero illustrations for the Acme mobile banking launch.
 
-- [ ] Task 1: Complete die-cut dieline
-- [ ] Task 2: 3D render mockups
-- [ ] Task 3: Art Director sign-off
+## Sprint Checklist
+- [x] Initial sketches approved by Art Director 📅 2026-09-12
+- [ ] #task Finalize Blender clay render lighting 📅 2026-09-18 ⏫ high
+- [ ] #task Export 4K PNG assets with transparent alpha 📅 2026-09-22 ⏫ urgent
+- [ ] Client sign-off and invoice handover
+```
+
+### 5.2 Client Profile (`_Clients/[PREFIX]_[ClientName]/client.md`)
+
+```yaml
+---
+code: "ACME"
+name: "Acme Corporation"
+industry: "Fintech & SaaS"
+contactName: "Sarah Jenkins"
+contactEmail: "sarah.j@acmefintech.io"
+billingAddress: "100 Market St, Suite 400, San Francisco, CA"
+hourlyRate: 120.00
+currency: "USD"
+paymentTerms: "Net 15"
+colorPalette:
+  - name: "Acme Primary"
+    hex: "#0066FF"
+    rgb: "rgb(0, 102, 255)"
+    cmyk: "100, 60, 0, 0"
+  - name: "Acme Obsidian"
+    hex: "#0A0D14"
+    rgb: "rgb(10, 13, 20)"
+    cmyk: "50, 35, 0, 92"
+  - name: "Electric Cyan"
+    hex: "#00F0FF"
+    rgb: "rgb(0, 240, 255)"
+    cmyk: "65, 0, 0, 0"
+---
+
+# Acme Corporation — Client Brand Dossier
+```
+
+### 5.3 Invoice File (`_Finance/Invoices/INV-YYYY-XXX.md`)
+
+```yaml
+---
+invoiceNumber: "INV-2026-001"
+invoiceDate: "2026-09-15"
+dueDate: "2026-09-30"
+clientCode: "ACME"
+clientName: "Acme Corporation"
+clientEmail: "billing@acmefintech.io"
+currency: "USD"
+taxRate: 0.08
+items:
+  - description: "3x Isometric Hero 3D Illustrations"
+    quantity: 3
+    unitPrice: 1000.00
+  - description: "Vector App Icon Suite (8 Assets)"
+    quantity: 1
+    unitPrice: 500.00
+bankDetails:
+  bankName: "First Creative Bank"
+  accountName: "Harusssani Manaphassan"
+  accountNumber: "9876-5432-1098"
+  routingCode: "123456789"
+status: "sent" # draft | sent | paid | overdue
+---
 ```
 
 ---
 
-## ✍️ 03_COPYWRITING / COPY.md Specification
+## 🔍 6. Zettelkasten Knowledge Engine Structure
 
-The dedicated copywriting studio document is saved inside `03_COPYWRITING/COPY.md` and contains full Markdown support for video script tables and social copy angles:
-
-```markdown
-# Copywriting & Script Studio — Rejal Premium Packaging
-
-## 1. TikTok & Reels Video Scripts
-| Scene / Hook | Visual Action | Voiceover Hook | On-Screen Text |
-| :--- | :--- | :--- | :--- |
-| **01 (0-3s)** | Product unboxing hero | "Rahsia tenaga lelaki aktif..." | STAMINA MAKSIMUM |
-
-## 2. Meta Ad Copy Angles
-- **Angle A (Problem / Solution)**: Letih selepas seharian di pejabat?
-- **Angle B (Social Proof)**: Pilihan lebih 50,000 pengguna di Malaysia.
+```text
+_Zettelkasten/
+├── 01_Fleeting/       # Quick notes during calls (created via Ctrl+Space)
+├── 02_Literature/     # Summaries of articles, books, competitor teardowns
+└── 03_Permanent/      # Synthesized design principles & reusable copy formulas
 ```
+
+* **WikiLink Syntax**: Internal connections use `[[Note Title]]` or `[[ClientName]]`.
+* **Universal Task Syntax**: `- [ ] #task <Title> 📅 <YYYY-MM-DD> ⏫ <priority>` auto-rolls up to the master Kanban board.
 
 ---
 
-## 🔄 Legacy Backward Compatibility
+## 🎯 7. Zero-Database Interoperability Guarantee
 
-The SS-CAM scanner automatically recognizes legacy paths and alias folders:
-- Legacy root: `Creative-Team/[Staff_ID]/SS-[YYYY]/...`
-- Legacy folder aliases: `Artwork Design` → `02_SOURCE_FILES`, `Production` → `05_DELIVERABLES`, `Artwork Mockup` → `04_WORK_IN_PROGRESS`.
-- Legacy projects are indexed alongside centralized projects without data loss.
+Any folder in this vault can be opened directly in:
+* **Obsidian**: Full graph view, backlinks, and markdown rendering work out of the box.
+* **VS Code / Cursor**: Frontmatter, Markdown, and source files are directly editable.
+* **Finder / Windows Explorer**: Folders and files are logically grouped by Year, Month, and Client.
