@@ -1,0 +1,53 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-cli/schema.json",
+  "productName": "Kanso Cre8",
+  "version": "1.0.0",
+  "identifier": "com.kansocre8.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev:client",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build:client",
+    "frontendDist": "../client/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Kanso Cre8 (簡素)",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "backgroundColor": "#09090B"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "identifier": "com.kansocre8.desktop",
+    "publisher": "harusssani.manaphassan",
+    "copyright": "Copyright © 2026 harusssani.manaphassan. PolyForm Noncommercial License 1.0.0",
+    "category": "Productivity",
+    "shortDescription": "The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine",
+    "longDescription": "Kanso Cre8 (簡素) is an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  }
+}

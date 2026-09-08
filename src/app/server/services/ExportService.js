@@ -108,28 +108,28 @@ class ExportService {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SuamiSihat Creative Handover - ${projectName}</title>
+  <title>Kanso Cre8 Creative Handover - ${projectName}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0A0F1D; color: #E2E8F0; margin: 0; padding: 40px; }
-    .container { max-width: 800px; margin: 0 auto; background: #131B2E; border: 1px solid #1E293B; border-radius: 12px; padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-    .header { border-bottom: 1px solid #1E293B; padding-bottom: 20px; margin-bottom: 24px; }
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; background: #043388; color: #FFFFFF; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090B; color: #F4F4F5; margin: 0; padding: 40px; }
+    .container { max-width: 800px; margin: 0 auto; background: #18181B; border: 1px solid #27272A; border-radius: 12px; padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .header { border-bottom: 1px solid #27272A; padding-bottom: 20px; margin-bottom: 24px; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; background: #0284C7; color: #FFFFFF; }
     h1 { color: #FFFFFF; font-size: 24px; margin: 12px 0 6px 0; }
-    .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; background: #0A0F1D; padding: 16px; border-radius: 8px; border: 1px solid #1E293B; }
-    .meta-item span { color: #94A3B8; font-size: 13px; display: block; }
-    .meta-item strong { color: #F8FAFC; font-size: 15px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; background: #09090B; padding: 16px; border-radius: 8px; border: 1px solid #27272A; }
+    .meta-item span { color: #71717A; font-size: 13px; display: block; }
+    .meta-item strong { color: #F4F4F5; font-size: 15px; }
     .files-list { list-style: none; padding: 0; margin: 20px 0; }
-    .files-list li { padding: 10px 14px; border-bottom: 1px solid #1E293B; font-family: monospace; font-size: 13px; color: #CBD5E1; }
+    .files-list li { padding: 10px 14px; border-bottom: 1px solid #27272A; font-family: monospace; font-size: 13px; color: #A1A1AA; }
     .files-list li:last-child { border-bottom: none; }
-    .footer { text-align: center; color: #64748B; font-size: 12px; margin-top: 32px; border-top: 1px solid #1E293B; padding-top: 16px; }
+    .footer { text-align: center; color: #71717A; font-size: 12px; margin-top: 32px; border-top: 1px solid #27272A; padding-top: 16px; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <span class="badge">SuamiSihat Creative Handover</span>
+      <span class="badge">Kanso Cre8 Creative Handover</span>
       <h1>${projectName}</h1>
-      <p style="color: #94A3B8; margin: 0;">Package Generated: ${new Date().toISOString()}</p>
+      <p style="color: #71717A; margin: 0;">Package Generated: ${new Date().toISOString()}</p>
     </div>
 
     <div class="meta-grid">
@@ -145,7 +145,7 @@ class ExportService {
     </ul>
 
     <div class="footer">
-      SuamiSihat Creative Assets Management (SS-CAM) • Web Portal Export Service
+      Kanso Cre8 (簡素) • Mindful Creative Vault Export Engine
     </div>
   </div>
 </body>

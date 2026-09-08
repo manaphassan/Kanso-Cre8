@@ -41,7 +41,7 @@ class FrontmatterService {
         body = `# 🎨 ${cleanTitle}
 
 ## 🎯 Campaign & Objective Overview
-Deliver high-converting visual assets, compliant packaging, and campaign creatives according to SuamiSihat brand standards.
+Deliver high-converting visual assets, compliant packaging, and campaign creatives according to studio brand standards.
 
 ## 📋 Creative Deliverables & Milestones
 - [ ] 01. Packaging Box Dieline & Label (AI/PDF, CMYK 300 DPI)
@@ -50,8 +50,8 @@ Deliver high-converting visual assets, compliant packaging, and campaign creativ
 - [ ] 04. Short-form Video Hook (9:16, 15s)
 
 ## 🧭 Visual Direction & Brand Voice
-- **Tone**: Luxury, Trustworthy, Masculine, Premium Medical.
-- **Primary Palette**: Deep Royal Navy \`#043388\`, Gold Accent \`#D4AF37\`, Pure White \`#FFFFFF\`.
+- **Tone**: Clean, Minimalist, Precision Studio.
+- **Primary Palette**: Deep Canvas \`#09090B\`, Electric Sky \`#38BDF8\`, Pure Surface \`#18181B\`.
 
 ## 📊 Production & Review Flow
 \`\`\`mermaid

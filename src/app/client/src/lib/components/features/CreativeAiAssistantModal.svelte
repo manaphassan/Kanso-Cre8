@@ -224,8 +224,8 @@
           </div>
           <div>
             <div class="title-row">
-              <h2 class="modal-title">SuamiSihat Creative AI Studio</h2>
-              <span class="model-badge {aiStatus.configured ? 'ready' : 'required'}">
+              <h2 class="modal-title">Kanso Cre8 AI Studio</h2>
+              <span class="model-badge {aiStatus.configured ? 'ready' : 'ready'}">
                 <span class="status-dot"></span>
                 {aiStatus.configured ? aiStatus.preferredModel : 'API Key Required'}
               </span>
@@ -392,7 +392,7 @@
                 {:else if activeTab === 'ultra_prompt'}
                   <div class="ultra-info-box">
                     <span class="info-title">How to use with Gemini Ultra:</span>
-                    <p class="info-desc">Click "Copy Full Prompt" below, open your Gemini Ultra web session, and paste. It includes full SuamiSihat brand guidelines.</p>
+                    <p class="info-desc">Click "Copy Full Prompt" below, open your Gemini Ultra web session, and paste. It includes full client brand guidelines.</p>
                   </div>
                   <div class="btn-block">
                     <a href="https://gemini.google.com" target="_blank" rel="noreferrer" class="gemini-web-link">
@@ -446,7 +446,7 @@
 
       <!-- Footer -->
       <div class="ai-footer">
-        <span class="footer-tip">Powered by Google Gemini 1.5 Pro/Flash · SuamiSihat Brand Copywriting Engine</span>
+        <span class="footer-tip">Powered by Google Gemini 1.5 Pro/Flash · Kanso Cre8 Copywriting Engine</span>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
       </div>
     </div>

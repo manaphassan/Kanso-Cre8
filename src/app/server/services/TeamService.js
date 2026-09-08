@@ -18,12 +18,12 @@ class TeamService {
   static getStaffRoster() {
     const rosterPath = this.getRosterPath();
     const defaultTeam = [
-      { staffId: 'SS0004', username: 'harussani', name: 'Harussani', email: 'harussani.suamisihat@gmail.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'SS', avatarColor: '#0078D4', active: true },
-      { staffId: 'SS0035', username: 'haikal', name: 'Haikal', email: 'haikal.suamisihat@gmail.com', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'SS', avatarColor: '#106EBE', active: true },
-      { staffId: 'SS0037', username: 'aliff', name: 'Aliff', email: 'aliffnaz.suamisihat@gmail.com', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'SSE', avatarColor: '#7C3AED', active: true },
-      { staffId: 'SS0073', username: 'raihan', name: 'Raihan', email: 'raihan.suamisihat@gmail.com', role: 'Head of Marketing & Sale', department: 'Marketing & Sales', defaultBrand: 'SS', avatarColor: '#D97706', active: true },
-      { staffId: 'SS0001', username: 'hasan', name: 'Hasan', email: 'hasan@suamisihat.com', role: 'Chief Executive Officer', department: 'Executive Management', defaultBrand: 'SS', avatarColor: '#21A1F7', active: true },
-      { staffId: 'SS0071', username: 'gaddafi', name: 'Gaddafi', email: 'gaddafi@suamisihat.com', role: 'Co-Chief Executive Officer', department: 'Executive Management', defaultBrand: 'SS', avatarColor: '#059669', active: true }
+      { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
+      { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
+      { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
+      { staffId: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Lead Copywriter', department: 'Content & Copy', defaultBrand: 'ACME', avatarColor: '#F59E0B', active: true },
+      { staffId: 'NEX005', username: 'maya', name: 'Maya Lin', email: 'maya@nexusstudio.io', role: 'Senior Designer', department: 'Brand & Identity', defaultBrand: 'NEX', avatarColor: '#EC4899', active: true },
+      { staffId: 'LUM006', username: 'david', name: 'David Chen', email: 'david@luminalabs.dev', role: 'Motion Graphic Designer', department: 'Multimedia & Motion', defaultBrand: 'LUM', avatarColor: '#6366F1', active: true }
     ];
 
     if (!fs.existsSync(rosterPath)) {
@@ -38,7 +38,15 @@ class TeamService {
     try {
       const json = fs.readFileSync(rosterPath, 'utf8');
       const roster = JSON.parse(json);
-      return Array.isArray(roster) && roster.length > 0 ? roster : defaultTeam;
+      const hasLegacy = Array.isArray(roster) && (
+        roster.length < 6 ||
+        roster.some(m => (m.staffId && m.staffId.startsWith('SS')) || (m.email && m.email.includes('suamisihat')))
+      );
+      if (!hasLegacy && Array.isArray(roster) && roster.length >= 6) {
+        return roster;
+      }
+      this.saveStaffRoster(defaultTeam);
+      return defaultTeam;
     } catch (err) {
       console.error('[TeamService] Failed to parse staff_directory.json:', err.message);
       return defaultTeam;
@@ -92,13 +100,13 @@ class TeamService {
       staffId,
       username,
       name: member.name.trim(),
-      email: member.email ? member.email.trim() : `${username}@suamisihat.com`,
+      email: member.email ? member.email.trim() : `${username}@kansocre8.local`,
       role: roleString,
       roles: roles.length > 0 ? roles : ['Designer'],
       department: member.department ? member.department.trim() : 'Creative Production',
-      defaultBrand: (member.defaultBrand || 'SS').trim().toUpperCase(),
+      defaultBrand: (member.defaultBrand || 'ACME').trim().toUpperCase(),
       avatar: member.avatar || '',
-      avatarColor: member.avatarColor || '#0078D4',
+      avatarColor: member.avatarColor || '#38BDF8',
       active: member.active !== false
     };
 

@@ -14,9 +14,9 @@
   let department = $state<string>('');
   let role = $state<string>('');
   let email = $state<string>('');
-  let defaultBrand = $state<string>('SS');
+  let defaultBrand = $state<string>('ACME');
   let avatar = $state<string>('');
-  let avatarColor = $state<string>('#0078D4');
+  let avatarColor = $state<string>('#38BDF8');
   let isSavingProfile = $state<boolean>(false);
 
   // Staff directory list from Synology NAS
@@ -68,20 +68,17 @@
       console.warn('[ProfileView] loadBrands error:', e);
       if (brands.length === 0) {
         brands = [
-          { code: 'SS', name: 'SuamiSihat Core (SS)' },
-          { code: 'SSH', name: 'SuamiSihat Holding (SSH)' },
-          { code: 'SSC', name: 'SuamiSihat Healthcare (SSC)' },
-          { code: 'SSW', name: 'SuamiSihat Wellness (SSW)' },
-          { code: 'SSE', name: 'SuamiSihat Ecommerce (SSE)' },
-          { code: 'SST', name: 'SuamiSihat Technology (SST)' }
+          { code: 'ACME', name: 'Acme Corporation (ACME)' },
+          { code: 'NEX', name: 'Nexus Studio (NEX)' },
+          { code: 'LUM', name: 'Lumina Labs (LUM)' }
         ];
       }
     }
   }
 
   const themes: { id: ThemeName; name: string; desc: string; preview: string }[] = [
-    { id: 'falconia', name: 'Falconia (Light)', desc: 'Official SuamiSihat Clinical Blue Light Theme (60:30:10 Default)', preview: '#F3F4F6' },
-    { id: 'metamorphosis', name: 'Metamorphosis (Dark Glass)', desc: 'Midnight Deep Navy with Electric Cyan Accents', preview: '#080D1F' },
+    { id: 'falconia', name: 'Kanso Studio (Light)', desc: 'Clean Minimalist Geist Light Theme (#F8FAFC)', preview: '#F8FAFC' },
+    { id: 'metamorphosis', name: 'Kanso Zen (Dark)', desc: 'Deep Obsidian Black with Electric Sky Accent (#09090B)', preview: '#09090B' },
     { id: 'catppuccin', name: 'Catppuccin (Mocha Dark)', desc: 'Soothing Mocha Dark Palette with Mauve Accents', preview: '#1E1E2E' }
   ];
 
@@ -441,7 +438,7 @@
             label="Email Address"
             type="email"
             bind:value={email}
-            placeholder="e.g. name.suamisihat@gmail.com"
+            placeholder="e.g. harussani@acme.com"
           />
         </div>
 
