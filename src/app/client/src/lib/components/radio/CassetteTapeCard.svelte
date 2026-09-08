@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import type { CassetteRadioStation } from '$lib/types/radio';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
 
@@ -40,12 +40,12 @@
       border-color: rgba(255, 255, 255, 0.15);
     "
   >
-    <!-- Top 2 Screw Insets -->
-    <div class="absolute top-2 left-2 w-2 h-2 rounded-full bg-zinc-400/50 flex items-center justify-center">
-      <div class="w-1.5 h-0.5 bg-zinc-600"></div>
+    <!-- Top 2 Silver Corner Screws -->
+    <div class="absolute top-2 left-2 w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+      <div class="w-1.5 h-0.5 bg-zinc-600 rotate-45"></div>
     </div>
-    <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-zinc-400/50 flex items-center justify-center">
-      <div class="w-1.5 h-0.5 bg-zinc-600"></div>
+    <div class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+      <div class="w-1.5 h-0.5 bg-zinc-600 -rotate-45"></div>
     </div>
 
     <!-- Top Paper Sticker Label -->
@@ -93,6 +93,7 @@
       <div class="z-10 relative">
         <CassetteSpoolWheel
           size={32}
+          isSpinning={isPlaying && isSelected}
           rotationAngle={isPlaying && isSelected ? spoolRotation : 0}
           holeColor="#020617"
         />
@@ -102,16 +103,17 @@
       <div class="z-10 relative">
         <CassetteSpoolWheel
           size={32}
+          isSpinning={isPlaying && isSelected}
           rotationAngle={isPlaying && isSelected ? spoolRotation : 0}
           holeColor="#020617"
         />
       </div>
     </div>
 
-    <!-- Bottom Head-Reader Trapezoid & 2 Bottom Screws -->
+    <!-- Bottom Head-Reader Trapezoid & 2 Bottom Corner Screws -->
     <div class="w-full flex items-end justify-between px-2 pt-1">
-      <div class="w-2 h-2 rounded-full bg-zinc-400/50 flex items-center justify-center">
-        <div class="w-1.5 h-0.5 bg-zinc-600"></div>
+      <div class="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+        <div class="w-1.5 h-0.5 bg-zinc-600 rotate-12"></div>
       </div>
 
       <!-- Center Roller Inset Notch -->
@@ -120,8 +122,8 @@
         <div class="w-2 h-1 bg-amber-200/40 rounded-full"></div>
       </div>
 
-      <div class="w-2 h-2 rounded-full bg-zinc-400/50 flex items-center justify-center">
-        <div class="w-1.5 h-0.5 bg-zinc-600"></div>
+      <div class="w-2.5 h-2.5 rounded-full bg-zinc-300 border border-zinc-500/40 flex items-center justify-center shadow-sm">
+        <div class="w-1.5 h-0.5 bg-zinc-600 -rotate-12"></div>
       </div>
     </div>
   </div>
