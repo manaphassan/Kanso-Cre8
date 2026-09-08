@@ -1,6 +1,7 @@
-﻿<script lang="ts">
+<script lang="ts">
   interface Props {
     rotationAngle?: number;
+    isSpinning?: boolean;
     size?: number;
     wheelColor?: string;
     holeColor?: string;
@@ -8,6 +9,7 @@
 
   let {
     rotationAngle = 0,
+    isSpinning = false,
     size = 28,
     wheelColor = '#FFFFFF',
     holeColor = '#0F172A'
@@ -34,7 +36,8 @@
 
 <div
   class="inline-flex items-center justify-center select-none"
-  style="width: {size}px; height: {size}px; transform: rotate({rotationAngle}deg); will-change: transform;"
+  class:spool-spinning={isSpinning}
+  style="width: {size}px; height: {size}px; {isSpinning ? '' : `transform: rotate(${rotationAngle}deg);`} will-change: transform;"
   aria-hidden="true"
 >
   <svg
@@ -77,3 +80,18 @@
     />
   </svg>
 </div>
+
+<style>
+  @keyframes spool-rotate-33rpm {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .spool-spinning {
+    animation: spool-rotate-33rpm 1.818s linear infinite;
+  }
+</style>
