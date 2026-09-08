@@ -1,212 +1,94 @@
-# SS-CAM — SuamiSihat™ Creative Assets Management
+# Kanso Cre8 — Personal Creative Vault & Project Manager
 
-## Enterprise Creative Operations & Assets Management Platform
+## Offline-First Creative Operations & Client Manager for Freelance Designers
 
-Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
+**Standardized Project Vaults · Multi-Cloud Sync · Copywriting Studio · Client & Brand Hub · Kanban Task Flow · Multi-Platform**
 
-[![Release](https://img.shields.io/badge/release-v4.7.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.7.0)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
+[![License](https://img.shields.io/badge/licence-PolyForm%20Noncommercial%201.0.0-blue?style=flat-square)](./LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0%20%7C%20Compose-purple?style=flat-square)](https://dotnet.microsoft.com)
-[![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
-[![Design System](https://img.shields.io/badge/design-Fluent%202%20%2F%2060%3A30%3A10-0078D4?style=flat-square)](https://fluent2.microsoft.design)
-[![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
+[![Design System](https://img.shields.io/badge/design-Microsoft%20Fluent%202-0078D4?style=flat-square)](https://fluent2.microsoft.design)
 
 ---
 
-## 🚀 What's New in v4.7.0 ("Velocity Navigation & Canva Cloud Bridge")
+## 🌟 What is Kanso Cre8?
 
-* **⚡ Instantaneous Tab Navigation (0 ms)**:
-  * Enabled `NavigationCacheMode="Required"` across all 15 navigation views in the desktop application ([MainWindow.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/MainWindow.xaml)). Tab switching is now instantaneous with zero UI thread stutter, retaining search filters, active scroll positions, and loaded data.
-  * Completely eliminated blocking synchronous recursive filesystem crawls on the UI thread in Dashboard, Calendar, and Task Manager views.
-  * Resolved the `System.InvalidCastException` on the Order Requests page by statically isolating the card context menu.
-* **🎨 Canva Creative Cloud Bridge in Project Creator ([ProjectCreatorPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/ProjectCreatorPage.xaml))**:
-  * **Platform Auto-Size Deep Launcher**: 1-click **"Create on Canva (Auto-size)"** button dynamically opens Canva preconfigured with the exact dimensions of the selected platform preset (1:1 Feed 1080x1080, 9:16 Story 1080x1920, 16:9 Banner 1920x1080, A4/A3/A5 print dimensions).
-  * **Windows Shortcut Auto-Scaffolding**: Automatically generates `02_SOURCE/Open_In_Canva.url` inside newly scaffolded projects for instant 1-click browser launching.
-  * **Frontmatter Persistence**: Stores `canva_url: https://...` in `README.md` YAML frontmatter with automatic sync across Desktop and Web.
-* **📋 Task Manager & Kanban Canva Badges ([TaskManagerPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/TaskManagerPage.xaml))**:
-  * Prominent teal `[CANVA]` pill badge rendered on cards containing Canva design links.
-  * **"Open in Canva"** quick action integrated into Kanban card context menus and the project detail drawer.
-* **🌐 Web Management Portal Synchronization (`SS-CAM.Web`)**:
-  * Added Canva Creative Cloud link input and direct launch button to `FrontmatterPanel.svelte`.
-* **🖼️ Cross-Platform Profile Picture Auto-Sync**:
-  * Bi-directional avatar synchronization between Desktop (`user_profile.json` / local disk cache) and Web/Android (`staff_directory.json` Base64 Data URIs) with automatic local caching.
-* **📅 Visual Gantt Timeline Off-Day Shading, Day Labels & Conflict Prevention**:
-  * Two-tier stacked day headers (`M, T, W, T, F, S, Sun`) with color-coded status badges for Today, Weekends, and Malaysia Public Holidays.
-  * Full-height column background fills and boundary lines across all project rows for Saturdays & Sundays (slate wash) and official Malaysia Public Holidays (soft red wash).
-  * Business working day SLA engine skipping non-working days, plus active Gantt deadline conflict detection with `⚠️ Off-Day` badges and rescheduling alerts.
-  * Version bumped to `v4.7.0`.
-* **📱 Android Companion App Alignment (`SS-CAM.Android`)**:
-  * Version bumped to `v4.7.0` (build 471).
+**Kanso Cre8** is an offline-first, local-first creative operations and project management workspace created specifically for freelance designers, solo art directors, video editors, and digital creators. Inspired by the Japanese aesthetic philosophy of *Kanso* (簡素 — simplicity and eliminating unnecessary clutter), Kanso Cre8 brings calm and discipline to creative workflows without requiring complex database servers or proprietary cloud lock-in.
 
-## 🚀 What's New in v4.6.2
-
-* **🤝 Designer Task Handover ([TaskManagerPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/TaskManagerPage.xaml))**:
-  * **Right-Click Quick Handover**: Instant re-assignment of any project card to any team designer via the card context menu with instant YAML frontmatter update and success toast.
-  * **Detail Pane Task Owner Selection**: Dedicated editable designer combo box and "Hand Over Task" button in the project detail drawer for seamless workflow transfers.
-* **📂 Synology NAS `_Orders` Temporary Attachment Vault**:
-  * Dedicated temporary intake vault at `\\SSNAS\Creative-Team\_Orders\<ORDER_ID>\` for reference assets, briefs, logos, PDFs, and sketches.
-  * Underscore prefix (`_Orders`) ensures project directory scanners safely ignore temporary order folders, preventing collisions with official year project vaults (`2026/`).
-  * Realtime JSONL sync to `_Orders/creative-orders.jsonl` on the NAS.
-* **🌐 Web Management Portal (`SS-CAM.Web`)**:
-  * **Multi-File Upload Dropzone**: Modern Fluent 2 drag-and-drop file uploader in the "New Request" modal supporting multiple attachments up to 50MB per file.
-  * **Role Detection Fix**: Resolved role checking bug where composite roles like `"Admin, Designer"` were denied action buttons and status dropdowns.
-  * **Attachment Actions & Preview**: Direct preview, download, delete, and 1-click **"Copy NAS Folder Path"** to clipboard for opening in Windows Explorer.
-  * **1-Click Project Ingestion**: Ingests all order attachments directly into the linked project's `01_BRIEF_ASSETS` directory on the NAS.
-* **🪟 Desktop Standardized Project Creator ([ProjectCreatorPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/ProjectCreatorPage.xaml))**:
-  * **Order Discovery Dropdown**: Discovers active orders from `_Orders/creative-orders.jsonl` with live attachment counts (`[📎 N files]`) and instant Sync button.
-  * **Auto-Population**: Selecting an order auto-populates project title, sub-brand, and structured brief remarks.
-  * **Automatic Attachment Ingestion**: Copies all attachments into `01_BRIEF_ASSETS/`, sets `order_id` in `README.md` frontmatter, and updates order status to `in_progress`.
-* **🔄 Cross-Platform Creative Orders Real-Time Sync**:
-  * Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and the Web Management Portal (`/api/orders`).
-  * Dedicated Desktop Order Requests management page ([OrderRequestsPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/OrderRequestsPage.xaml)).
-* **📱 Android Native Studio Companion (v4.6.2, Build 466)**:
-  * Synchronized settings, metrics, and Creative Orders pipeline with signed Google Play AAB bundle & standalone APK.
+It operates on a pure **Markdown-as-Database** architecture: all project metadata, task statuses, client briefs, and copywriting notes are stored directly inside standard file system folders and YAML frontmatter.
 
 ---
 
-## 🚀 Overview
+## ☁️ Universal Cloud Save & Storage
 
-**SS-CAM** (SuamiSihat Creative Assets Management) is an enterprise creative operations and digital asset platform developed for **SuamiSihat™ Holding Sdn. Bhd.** It unifies creative workflows across native Windows/Linux workstations, Android mobile devices, and centralized Synology NAS network storage.
+Kanso Cre8 works with any storage backend of your choice:
 
-SS-CAM eliminates project disorganization, scattered copywriting drafts, inconsistent brand palettes, and untracked deliverable approvals by providing a standardized filesystem vault hierarchy, a Markdown-as-database architecture, an in-app Copywriting Studio, multi-platform collaboration tools, automated 1-click handover ZIP packaging, and live designer capacity analytics.
-
----
-
-## 📥 Multi-Platform Deployment Options
-
-SS-CAM provides a comprehensive multi-client ecosystem to support diverse creative studio environments:
-
-| Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
-|---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.7.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
-| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.2-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
-| 📱 **Android Native** | **Native Android App (`src/SS-CAM.Android`)** | [Google Play Store](https://play.google.com/store/apps/details?id=com.suamisihat.creative&hl=en-US&ah=4fxu9FCVL39aFVxQdNL2fGvtHd4&pli=1)<br>Direct APK: `.\dist\SS-CAM-v4.6.2-android-release.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
-| 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
+* **Dropbox**: Syncs automatically via your local Dropbox folder.
+* **Google Drive**: Works seamlessly with Google Drive for Desktop (`G:\My Drive`).
+* **Microsoft OneDrive**: Native Windows & macOS sync folder integration.
+* **Synology Drive / NAS**: Direct integration with local NAS or Synology Drive sync daemon.
+* **Nextcloud / ownCloud**: Self-hosted private cloud via local WebDAV / client mount.
+* **Local NVMe / SSD**: Blazing fast, 100% offline, zero-network dependency.
 
 ---
 
-## 🌟 Core Features & Capabilities
+## 📥 Multi-Platform Ecosystem
 
-### 1. Standardized 5-Folder Vault Hierarchy
-
-All creative projects follow a canonical directory structure on Synology NAS (`Creative-Team/[YYYY]/[YYYYMM_Month]/[ProjectFolder]`), preventing file clutter and missing assets:
-
-```text
-📁 YYYYMM_NNNNX_BRAND_ProjectTitle/
-├── 📁 01_BRIEF_ASSETS/        # Raw creative briefs, moodboards, reference imagery
-├── 📁 02_SOURCE_FILES/        # Working Affinity Designer (.afdesign), Photoshop (.psd), Illustrator (.ai)
-├── 📁 03_COPYWRITING/         # Dedicated COPY.md scripts, viral hook angles, and copy specs
-├── 📁 04_WORK_IN_PROGRESS/    # Intermediate drafts, work-in-progress exports, and test renders
-├── 📁 05_DELIVERABLES/        # Final approved mockups, high-res deliverables, and client exports
-└── 📄 README.md               # YAML frontmatter metadata (status, priority, designer, revision)
-```
-
-### 2. ClickUp 3.0-Style 2-Column Task Workspace
-
-* **Markdown Brief Canvas (68%)**: Full-featured GFM brief editor with live syntax highlighting, table rendering, callout alert blocks, and Mermaid diagrams.
-* **Right Inspector Panel (32%)**: Collapsible inspector panel displaying job ID, designer routing, priority, campaign deadlines, holding subsidiary metadata, and deliverable review actions.
-* **Deliverable Inspection & Review**: Lightbox modal with one-click `✓ Sign-Off` or `⚠️ Request Revision` actions that automatically increment revision rounds.
-
-### 3. Dedicated Copywriting Studio & Live Telemetry
-
-* **Direct NAS Persistence**: Automatically reads and writes to `03_COPYWRITING/COPY.md`.
-* **Live Copy Analytics**: Computes real-time word count, character count, and estimated reading time.
-* **Structured Hook Frameworks**: Pre-scaffolded templates for viral video hooks, product benefit scripts, and social ad copy.
-
-### 4. Contextual Discussions & Notification Feed
-
-* **NAS JSONL Discussion Engine**: Project-level comments stored in `_comments.jsonl` with support for `@mention` tags (e.g. `@hasan`, `@haikal`, `@harussani`).
-* **Notification Drawer**: Global activity feed tracking mentions, approvals, revision requests, and project assignments.
-
-### 5. Enterprise RBAC & Security Audit Logs
-
-* **Role-Based Permissions**: Granular roles for `Admin`, `Director`, `Lead`, `Manager`, `Designer`, and `Copywriter`.
-* **Permanent Audit Trail**: All critical operations (creations, deletions, sign-offs, role updates) are recorded to an immutable JSONL audit log (`_Team/_Audit/audit_log.jsonl`).
-* **Safe Administrative Project Deletion**: Authorized administrative deletion with boundary checks, system folder protections (`_Team`, `#recycle`), and recursive NAS subfolder removal.
-
-### 6. Minimal Brand Assets & Swatch Inspector
-
-* **Live Swatch Telemetry**: Live interactive explorer for SuamiSihat holding palettes (`SSH`, `SSC`, `SSW`, `SSE`, `SST`) displaying **HEX**, **RGB**, **CMYK**, and **Pantone** breakdowns with 1-click clipboard copying.
-* **Vector QR Code Studio**: Generate branded QR codes for URLs, Wi-Fi credentials, and vCards with high-resolution PNG export.
-
-### 7. Creative Wellbeing & Biometric Rhythm
-
-* **Real-Time 5-Axis Biometric Radar**: Live spider chart calculating creative flow, vitality, rest, focus, and pressure.
-* **Biometric Flow Calibrator & 1-Click Rebalancers**: Tactile 1–5 baseline rating matrix and instant cognitive reset shortcuts.
-* **30-Day Creative Focus Heatmap**: GitHub-style activity grid mapping daily deep work intensity and streaks.
-* **Interactive Vector Hydration Tracker**: Real-time water intake tracking with animated wave physics and 8 glass cup tiles.
-* **16-Second Box Breathing Coach**: Visual stress reset coach for high-intensity design sprints.
-* **JAKIM Waktu Solat**: Real-time prayer timetable for 41 Malaysian zones with live countdowns and adhan notifications.
-* **Focus Radio Player**: Low-latency stream player for Malaysian stations (BFM 89.9, Hitz, Era, Hot FM, Suria, THR Raaga) and lo-fi focus beats.
-
----
-
-## 🎨 Design System & Visual Hierarchy
-
-SS-CAM adheres to the **Microsoft Fluent 2** design language and the **SuamiSihat 60:30:10** color rule:
-
-| Visual Ratio | Scope | Palette Tokens | Purpose |
-|---|---|---|---|
-| **60% Dominant** | Application Surfaces | Deep Prussian Blue (`#022057`) / Clean Slate (`#F8FAFC`) | Clean background canvas and visual balance |
-| **30% Structure** | Structural Controls | SuamiSihat Azure (`#21A1F7`) & Royal Blue (`#043388`) | Navigation bars, cards, borders, text hierarchy |
-| **10% Accent** | Action Energy | Warm Gold (`#BD9A73`) & Success Green (`#107C10`) | Primary CTAs, status badges, alert highlights |
-
-### Available Desktop Themes
-
-1. **SS Default**: Deep navy sidebar with clean white content canvas.
-2. **Falconia**: Pure Fluent 2 Light mode with crisp typography and subtle card borders.
-3. **Metamorphosis**: Dark glassmorphic theme with cyan glowing accents and frosted surfaces.
-
----
-
-## 🏗️ Technical Architecture
-
-```text
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                                 SS-CAM ECOSYSTEM                                  │
-├─────────────────────────┬─────────────────────────┬───────────────────────────────┤
-│ 🖥️ WINDOWS WORKSTATION   │ 🐧 FEDORA WORKSTATION   │ 📱 ANDROID MOBILE COMPANION   │
-│ • C# WPF (.NET 4.8)     │ • Avalonia UI (.NET 8)  │ • Kotlin + Jetpack Compose    │
-│ • WPF-UI (Fluent 2)     │ • Native Skia Engine    │ • Coil / Hardware Bitmaps     │
-│ • Direct Local SSD I/O  │ • Local ~/SynologyDrive │ • Instant Push Alerts & Diff  │
-├─────────────────────────┴─────────────────────────┴───────────────────────────────┤
-│                          🌐 SYNOLOGY NAS ADMIN WEB PORTAL                         │
-│                          • Svelte 5 (Runes) + TypeScript                          │
-│                          • Node.js 20 Express + WebSocket + REST/SSE API          │
-│                          • Central Administration, Holdings Switcher & Audit Logs │
-│                          • Live Review Lightbox & Split Visual Comparison         │
-└─────────────────────────────────────────┬─────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ 📂 SYNOLOGY NAS FILE SYSTEM (Markdown-as-Database Storage)                        │
-│ • Canonical 5-Folder Hierarchy: \\SSNAS\Creative-Team\[YYYY]\[Month]\[Project]    │
-│ • YAML Frontmatter Project Metadata (README.md)                                   │
-│ • Markdown Copywriting Hooks (03_COPYWRITING/COPY.md)                             │
-│ • Immutable Audit Logs & Team Profiles (_Team/_Audit/audit_log.jsonl)             │
-│ • Cross-Platform Realtime Sync via Synology Drive & Chokidar File Watchers        │
-└───────────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 💻 System Requirements
-
-| Specification | Desktop Client Requirement | Web Portal Requirement |
+| Target Platform | Package / Variant | Role in Ecosystem |
 |---|---|---|
-| **Operating System** | Windows 10 (1903+) / Windows 11 / Linux (x64) | Synology DSM 7.x / Ubuntu 22.04+ / Docker |
-| **Runtime** | .NET Framework 4.8 (Windows) / .NET 8.0 (Linux) | Node.js 20 LTS or Docker Engine |
-| **Memory (RAM)** | 4 GB Minimum (8 GB+ Recommended) | 512 MB Container RAM |
-| **Storage Footprint**| ~5.7 MB (Single-File Portable Exe) | ~120 MB Docker Image |
-| **Network** | Synology Drive Client or SMB `\\SSNAS\Creative-Team` | Port 4000 (HTTPS via Reverse Proxy) |
+| 🪟 **Windows 10 / 11** | **Native WPF Desktop (`src/SS-CAM`)** | **Flagship Designer Workstation**: Fluent 2 dark/light mode, template generator, preflight quality auditor, Canva cloud bridge, copywriting studio, audio feedback. |
+| 🐧 **Linux Desktop** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | **Native Linux Client**: Ubuntu/Fedora/Debian/Arch support, Skia graphics engine, GNOME/KDE desktop integration. |
+| 📱 **Android Native** | **Native Android App (`src/SS-CAM.Android`)** | **Mobile Studio Companion**: Review deliverables on the go, sign-off proofs, track client tasks, desk standby mode. |
+| 🌐 **Web Portal (Optional)** | **Svelte 5 + Node.js (`src/SS-CAM.Web`)** | **Self-Hosted Web Hub**: Run in Docker on your local server or VPS for browser-based remote review. |
 
 ---
 
-## 📄 License & Governance
+## 📁 Standardized 5-Folder Creative Vault
 
-SS-CAM is an internal digital assets management platform created for **SuamiSihat™ Holding Sdn. Bhd.**
+All creative projects follow a clean 5-folder structure, preventing lost assets and scattered drafts:
 
-* **Organization**: SuamiSihat Digital & Creative Production Division
-* **Documentation**: [GitHub Pages Landing Page](https://suamisihat.github.io/ss_cam/)
-* **Repository**: [SuamiSihat/ss_cam](https://github.com/SuamiSihat/ss_cam)
-* **License**: Internal Commercial Use Only — see [EULA](./installer/EULA.txt)
+```text
+📁 [YYYY] / [YYYYMM]_[PREFIX]_[ProjectTitle] /
+├── 📁 01_BRIEF_ASSETS/        # Client briefs, moodboards, reference imagery, logo vector assets
+├── 📁 02_SOURCE_FILES/        # PSD, Illustrator (.ai), Affinity Designer (.afdesign), Blender, Canva links
+├── 📁 03_COPYWRITING/         # Dedicated COPY.md scripts, viral hook angles, and ad copy specs
+├── 📁 04_WORK_IN_PROGRESS/    # Drafts, work-in-progress exports, and intermediate renders
+├── 📁 05_DELIVERABLES/        # Final approved high-res exports, packaging files, and client mockups
+└── 📄 README.md               # YAML frontmatter metadata (status, client, priority, deadline, revision)
+```
+
+---
+
+## 🚀 Core Features for Freelance Designers
+
+### 1. Client & Brand Hub
+* Manage all your freelance clients in one place (client names, project code prefixes, contact info, hourly billing rates).
+* Live interactive color swatches (HEX, RGB, CMYK, Pantone) with 1-click clipboard copy.
+
+### 2. Kanban Task Flow & Big Calendar
+* 5-stage creative lifecycle: `Backlog` ➔ `In Progress` ➔ `Review Queue` ➔ `Revision Required` ➔ `Done & Approved`.
+* Visual calendar view mapping client deadlines, project milestones, and delivery dates.
+
+### 3. Copywriting Studio
+* In-app Markdown editor writing directly to `03_COPYWRITING/COPY.md`.
+* Live character count, word count, and reading time telemetry.
+* Pre-built frameworks for social ad hooks, landing page scripts, and video captions.
+
+### 4. Deliverable Inspector & 1-Click Handover
+* High-resolution image & video lightbox for instant review.
+* Automated 1-click ZIP export packaging for client delivery.
+
+### 5. Creative Focus & Lo-Fi Radio
+* Integrated low-latency radio player with chillhop, lo-fi beats, synthwave, and jazz streams.
+* Built-in Pomodoro focus timer and box breathing reset coach.
+
+---
+
+## ⚖️ License
+
+This project is licensed under the **PolyForm Noncommercial License 1.0.0**.
+
+* **Permitted**: Personal creative management, freelance project tracking, hobbyist work, educational study, and research.
+* **Prohibited**: Commercial resale of the software, SaaS redistribution, or charging users for access.
+
+See [LICENSE](./LICENSE) for full legal terms.
