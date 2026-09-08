@@ -150,7 +150,7 @@
       <div class="lightbox-sidebar">
         <div class="sidebar-top">
           <div class="header-row">
-            <span class="badge badge-brand">{deliverable.project?.brand || deliverable.projectBrand || 'SS'}</span>
+            <span class="badge badge-brand">{deliverable.project?.brand || deliverable.projectBrand || 'ACME'}</span>
             <button class="close-btn" onclick={onClose} aria-label="Close dialog">
               <FluentIcons name="close" size={14} />
               <span style="margin-left: 4px;">Close</span>

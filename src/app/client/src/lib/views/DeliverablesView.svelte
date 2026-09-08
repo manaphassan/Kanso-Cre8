@@ -90,7 +90,7 @@
   const filteredDeliverables = $derived(
     projectStore.deliverables.filter(d => {
       const status = d.status || 'pending';
-      const brand = d.project?.brand || d.projectBrand || 'SS';
+      const brand = d.project?.brand || d.projectBrand || 'ACME';
       const filename = d.filename || '';
       const projTitle = d.project?.title || d.projectTitle || '';
       const jobId = d.project?.jobId || d.projectJobId || '';
@@ -137,7 +137,7 @@
         map.set(pId, {
           projectId: pId,
           jobId: proj?.jobId || d.project?.jobId || d.projectJobId || '0000',
-          brand: proj?.brand || d.project?.brand || d.projectBrand || 'SS',
+          brand: proj?.brand || d.project?.brand || d.projectBrand || 'ACME',
           title: proj?.title || d.project?.title || d.projectTitle || 'Creative Deliverables',
           designer: proj?.designer || d.project?.designer || d.projectDesigner || 'Unassigned',
           status: proj?.status || d.status || 'in-progress',
@@ -156,7 +156,7 @@
   const pendingCount = $derived(projectStore.deliverables.filter(d => (d.status || 'pending') === 'pending').length);
   const revisionCount = $derived(projectStore.deliverables.filter(d => d.status === 'revision').length);
   const approvedCount = $derived(projectStore.deliverables.filter(d => d.status === 'approved').length);
-  const availableBrands = $derived(Array.from(new Set(projectStore.deliverables.map(d => d.project?.brand || d.projectBrand || 'SS'))).filter(Boolean));
+  const availableBrands = $derived(Array.from(new Set(projectStore.deliverables.map(d => d.project?.brand || d.projectBrand || 'ACME'))).filter(Boolean));
 </script>
 
 <div class="deliverables-view-container">
@@ -164,7 +164,7 @@
   <div class="view-header">
     <div class="header-left">
       <div class="header-tag">
-        <span class="badge-accent">Synology Vault</span>
+        <span class="badge-accent">Markdown Vault</span>
         <span class="header-meta">{projectStore.deliverables.length} Master Outputs</span>
       </div>
       <h1 class="view-title">Deliverables &amp; Assets</h1>
@@ -299,7 +299,7 @@
   {#if projectStore.isLoading}
     <div class="state-card">
       <div class="spinner-large"></div>
-      <p class="state-title">Scanning Synology Vault Deliverables...</p>
+      <p class="state-title">Scanning Markdown Vault Deliverables...</p>
       <p class="state-desc">Indexing high-resolution renders, mockups, and PDFs from active campaigns.</p>
     </div>
   {:else if filteredDeliverables.length === 0}
