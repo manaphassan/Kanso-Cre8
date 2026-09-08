@@ -42,12 +42,15 @@
   });
 
   // Selected Deliverable Versions
-  let afterDeliverable = $state<DeliverableItem>(currentDeliverable);
+  let afterDeliverable = $state<DeliverableItem | null>(null);
   let beforeDeliverable = $state<DeliverableItem | null>(null);
+
+  $effect(() => {
+    afterDeliverable = currentDeliverable;
+  });
 
   // Auto-detect companion "v1" or prior version
   onMount(() => {
-    afterDeliverable = currentDeliverable;
     
     // Attempt auto-match
     if (companionImages.length > 1) {

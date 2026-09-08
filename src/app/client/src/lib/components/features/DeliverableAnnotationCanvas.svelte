@@ -339,7 +339,6 @@
               placeholder="e.g. Adjust headline alignment by 12px, fix logo contrast..."
               class="composer-textarea"
               rows="3"
-              autofocus
             ></textarea>
 
             <div class="composer-footer">

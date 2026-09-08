@@ -30,20 +30,16 @@
   };
 
   const brandConfig = $derived.by(() => {
-    const code = (selectedProject?.brand || 'SS').toUpperCase();
+    const code = (selectedProject?.brand || 'ACME').toUpperCase();
     switch (code) {
-      case 'SSH':
-        return { code: 'SSH', name: 'SuamiSihat Health', initial: 'SSH', color: '#022057', handle: 'suamisihathealth' };
-      case 'SSC':
-        return { code: 'SSC', name: 'SuamiSihat Clinic', initial: 'SSC', color: '#043388', handle: 'suamisihatclinic' };
-      case 'SSW':
-        return { code: 'SSW', name: 'SuamiSihat Wellness', initial: 'SSW', color: '#21A1F7', handle: 'suamisihatwellness' };
-      case 'SSE':
-        return { code: 'SSE', name: 'SuamiSihat Ecommerce', initial: 'SSE', color: '#BD9A73', handle: 'suamisihatecom' };
-      case 'SST':
-        return { code: 'SST', name: 'SuamiSihat Technology', initial: 'SST', color: '#107C10', handle: 'suamisihattech' };
+      case 'ACME':
+        return { code: 'ACME', name: 'Acme Corporation', initial: 'ACME', color: '#0284C7', handle: 'acmecorp', domain: 'ACME.COM' };
+      case 'NEX':
+        return { code: 'NEX', name: 'Nexus Studio', initial: 'NEX', color: '#6366F1', handle: 'nexusstudio', domain: 'NEXUS.STUDIO' };
+      case 'LUM':
+        return { code: 'LUM', name: 'Lumina Labs', initial: 'LUM', color: '#10B981', handle: 'luminalabs', domain: 'LUMINA.DEV' };
       default:
-        return { code: 'SS', name: 'SuamiSihat Official', initial: 'SS', color: '#043388', handle: 'suamisihat.official' };
+        return { code: 'ACME', name: 'Acme Corporation', initial: 'ACME', color: '#0284C7', handle: 'acmecorp', domain: 'ACME.COM' };
     }
   });
 
@@ -55,7 +51,7 @@
     selectedProject = project;
     draftHeadline = project.copywriting?.headline || '';
     draftBodyCopy = project.copywriting?.body_copy || project.copywriting?.content || '';
-    draftCta = project.copywriting?.cta || 'Dapatkan Sekarang';
+    draftCta = project.copywriting?.cta || 'Review Deliverables & Deploy';
     activeMockupTab = 'whatsapp';
     metaSeeMoreExpanded = false;
     isEditorOpen = true;
@@ -81,7 +77,7 @@
         selectedProject.copywriting.status = 'ready';
       }
       
-      appState.addToast(`Copywriting saved to COPY.md on Synology NAS`, 'success', 'Saved');
+      appState.addToast(`Copywriting saved to COPY.md in project vault`, 'success', 'Saved');
       closeCopyEditor();
     } catch (err: any) {
       appState.addToast(`Failed to save copy: ${err.message}`, 'error');
@@ -92,15 +88,15 @@
 
   function insertSnippet(type: 'hook' | 'problem' | 'solution' | 'disclaimer' | 'cta') {
     if (type === 'hook') {
-      draftHeadline = '3 Tanda Tenaga Lelaki Merosot & Rawatan Pantas';
+      draftHeadline = 'Stop Buying Generic Stock Assets. Deploy Custom 3D Systems.';
     } else if (type === 'problem') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Ramai lelaki abaikan simptom awal seperti cepat letih, hilang fokus, dan prestasi menurun akibat tekanan kerja.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Most high-growth teams leak enterprise conversion by using disjointed, unoptimized template graphics.';
     } else if (type === 'solution') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Formula klinikal SuamiSihat dirumus khas dengan herba gred-A untuk menyokong kecergasan optimum secara 100% semulajadi.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + 'Our modular design system delivers precision 4K vector renders, cohesive brand tokens, and sub-16ms responsive UI components.';
     } else if (type === 'disclaimer') {
-      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '*Penafian*: Hasil rawatan mungkin berbeza mengikut individu. Disahkan bebas bahan kimia terlarang.';
+      draftBodyCopy += (draftBodyCopy ? '\n\n' : '') + '*Commercial License*: Standard commercial IP buyout included. 100% human-authored vector assets.';
     } else if (type === 'cta') {
-      draftCta = 'Tempah Sesi Konsultasi Percuma';
+      draftCta = 'Review Deliverables & Deploy';
     }
     appState.addToast('Snippet inserted into editor', 'info');
   }
@@ -108,11 +104,11 @@
   function copyPreset(template: 'tiktok' | 'facebook' | 'packaging') {
     let text = '';
     if (template === 'tiktok') {
-      text = `[HOOK (0-3s)]: "Stop ignoring this one warning sign in your daily routine..."\n[PROBLEM (3-15s)]: Most men suffer in silence without realizing how easy the clinic consultation is.\n[SOLUTION (15-45s)]: SuamiSihat specialized treatment protocols.\n[CTA (45-60s)]: Click the link in bio to book your private doctor consultation today.`;
+      text = `[HOOK (0-3s)]: "Stop ignoring this one friction point in your mobile onboarding..."\n[PROBLEM (3-15s)]: 68% of users drop off at screen 2 because generic stock UI destroys credibility.\n[SOLUTION (15-45s)]: Custom 3D isometric brand components engineered for speed.\n[CTA (45-60s)]: Click the link in bio to inspect the live design vault today.`;
     } else if (template === 'facebook') {
-      text = `Are you feeling fatigued, low on stamina, or struggling with performance?\n\nHere are 3 clinical reasons your hormone levels might be off:\n1. Chronic stress and elevated cortisol\n2. Nutrient depletion\n3. Untreated underlying conditions\n\nAt SuamiSihat Clinic, we specialize in discreet, evidence-based men's health.\n\nBook your consultation: https://suamisihat.clinic/`;
+      text = `Is your product losing enterprise deals to outdated visual presentations?\n\nHere are 3 architectural reasons modern SaaS leaders upgrade their design vault:\n1. Cohesive cross-platform design tokens\n2. High-performance offline-first asset pipelines\n3. Zero vendor-lock proprietary databases\n\nAt Acme Corp, we deliver tactile, high-contrast creative operations.\n\nInspect the vault: https://acme.com/`;
     } else if (template === 'packaging') {
-      text = `• Formulated with premium Grade-A clinical herbs\n• 100% natural stamina and vitality support\n• Lab tested for purity and zero synthetic adulterants\n• Directions: Take 1 sachet daily before breakfast`;
+      text = `• Precision engineered vector and 3D brand assets\n• 100% human-readable Markdown database sync\n• Pre-optimized for 4K displays and sub-16ms interactive renders\n• Specifications: UTF-8 plain text frontmatter + lossless PNG/SVG`;
     }
 
     navigator.clipboard.writeText(text);
@@ -144,7 +140,7 @@
   <div class="view-header">
     <div>
       <h1 class="view-title">Copywriting &amp; Script Studio</h1>
-      <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and Synology NAS <code>COPY.md</code> sync.</p>
+      <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and <code>03_COPY/COPY.md</code> markdown sync.</p>
     </div>
     <button class="ai-launch-btn" onclick={() => showAiModal = true}>
       <FluentIcons name="sparkles" size={14} color="#D4AF37" />
@@ -228,7 +224,7 @@
           <div>
             <div class="job-meta-row">
               <span class="job-id">{p.jobId}</span>
-              <span class="brand-chip brand-{(p.brand || 'SS').toLowerCase()}">{p.brand || 'SS'}</span>
+              <span class="brand-chip brand-{(p.brand || 'ACME').toLowerCase()}">{p.brand || 'ACME'}</span>
             </div>
             <h3 class="proj-title">{p.title}</h3>
           </div>
@@ -276,7 +272,7 @@
         <!-- Modal Top Header -->
         <div class="modal-header">
           <div class="modal-header-left">
-            <span class="badge-brand">{selectedProject.brand || 'SS'}</span>
+            <span class="badge-brand">{selectedProject.brand || 'ACME'}</span>
             <span class="job-id-lg">{selectedProject.jobId}</span>
             <h2 class="modal-title">{selectedProject.title}</h2>
           </div>
@@ -295,7 +291,7 @@
             <div class="pane-headline">
               <FluentIcons name="edit" size={14} />
               <span class="pane-title" style="margin-left: 5px;">COPYWRITING EDITOR</span>
-              <span class="pane-sub">Writes to <code>03_COPYWRITING/COPY.md</code></span>
+              <span class="pane-sub">Writes to <code>03_COPY/COPY.md</code></span>
             </div>
 
             <!-- Quick Snippet Inserters -->
@@ -329,7 +325,7 @@
                 id="headline-input"
                 type="text"
                 bind:value={draftHeadline}
-                placeholder="e.g. 3 Tanda Tenaga Menurun &amp; Rawatan Mudah di Klinik"
+                placeholder="e.g. Stop Buying Generic Stock Assets. Deploy Custom 3D Systems."
                 class="fluent-input"
               />
             </div>
@@ -363,7 +359,7 @@
                 id="cta-input"
                 type="text"
                 bind:value={draftCta}
-                placeholder="e.g. Tempah Sesi Konsultasi Percuma"
+                placeholder="e.g. Review Deliverables &amp; Deploy"
                 class="fluent-input"
               />
             </div>
@@ -459,7 +455,7 @@
 
                   <div class="meta-bottom-bar">
                     <div class="meta-text-col">
-                      <span class="meta-domain">SUAMISIHAT.COM</span>
+                      <span class="meta-domain">{brandConfig.domain || 'ACME.COM'}</span>
                       <div class="meta-headline">{draftHeadline || 'Campaign Headline'}</div>
                     </div>
                     <button class="meta-cta-btn">{draftCta || 'Learn More'}</button>
@@ -509,7 +505,7 @@
           </FluentButton>
           <FluentButton appearance="primary" loading={isSavingCopy} onclick={handleSaveCopy}>
             <FluentIcons name="save" size={14} />
-            <span style="margin-left: 5px;">Save COPY.md to Synology Vault</span>
+            <span style="margin-left: 5px;">Save COPY.md to Markdown Vault</span>
           </FluentButton>
         </div>
       </div>
@@ -519,7 +515,7 @@
   <!-- Creative AI Studio Modal -->
   <CreativeAiAssistantModal
     bind:open={showAiModal}
-    brand={selectedProject?.brand || 'SSH'}
+    brand={selectedProject?.brand || 'ACME'}
     projectTitle={selectedProject?.title}
     onInsertCopy={(text) => {
       draftBodyCopy += text;
