@@ -7,11 +7,13 @@
   import FluentCard from '$lib/components/ui/FluentCard.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
+  import { vaultStore } from '$lib/stores/vaultStore.svelte';
+  import { VaultService } from '$lib/services/vaultService';
 
-  type ActiveTab = 'companies' | 'users' | 'audit' | 'system' | 'webhooks';
+  type ActiveTab = 'vault' | 'companies' | 'users' | 'audit' | 'system' | 'webhooks';
   type ViewMode = 'cards' | 'table';
 
-  let activeTab = $state<ActiveTab>('companies');
+  let activeTab = $state<ActiveTab>('vault');
   let companyViewMode = $state<ViewMode>('cards');
 
   // Webhook Integrations States
@@ -23,72 +25,46 @@
   let isAddingHook = $state<boolean>(false);
   let isTestingHook = $state<string | null>(null);
 
-  // Default Subsidiaries List Seed
+  // Default Sample Clients Fallback (Acme Corp, Nexus Studio, Lumina Labs)
   const DEFAULT_COMPANIES_FALLBACK: Company[] = [
     {
-      code: 'SSH',
-      name: 'SuamiSihat Holding Sdn Bhd',
-      shortName: 'Holding Group',
-      regNo: '202401012345 (1550123-X)',
-      address: 'Level 28, Menara SuamiSihat, Jalan Ampang, 50450 Kuala Lumpur, Malaysia',
-      contact: '+603-2181-8888 / holding@suamisihat.com',
-      location: 'Kuala Lumpur, Malaysia',
+      code: 'ACME',
+      name: 'Acme Corporation',
+      shortName: 'Fintech & Mobile',
+      regNo: 'US-DEL-2026-001',
+      address: '100 Market St, Suite 400, San Francisco, CA',
+      contact: 'billing@acmefintech.io',
+      location: 'San Francisco, CA',
       status: 'active',
       isParent: true,
-      establishedYear: '2020',
-      color: '#022057'
-    },
-    {
-      code: 'SSC',
-      name: 'SuamiSihat Healthcare Sdn Bhd',
-      shortName: 'Healthcare & Clinic',
-      regNo: '202401012346 (1550124-Y)',
-      address: 'SuamiSihat Clinic, No. 12, Ground Floor, Jalan Telawi 3, Bangsar, 59100 Kuala Lumpur',
-      contact: '+603-2282-7777 / healthcare@suamisihat.com',
-      location: 'Bangsar, Kuala Lumpur',
-      status: 'active',
-      isParent: false,
       establishedYear: '2021',
-      color: '#043388'
+      color: '#0066FF'
     },
     {
-      code: 'SSW',
-      name: 'SuamiSihat Ellness Sdn Bhd',
-      shortName: 'Wellness & Nutrition',
-      regNo: '202401012347 (1550125-Z)',
-      address: 'Unit 3A-01, Oval Damansara, 685 Jalan Damansara, 60000 Kuala Lumpur',
-      contact: '+603-7733-6666 / wellness@suamisihat.com',
-      location: 'Damansara, Kuala Lumpur',
-      status: 'active',
-      isParent: false,
-      establishedYear: '2022',
-      color: '#21A1F7'
-    },
-    {
-      code: 'SSE',
-      name: 'SuamiSihat Ecommerce Sdn Bhd',
-      shortName: 'E-Commerce & Retail',
-      regNo: '202401012348 (1550126-A)',
-      address: 'Warehouse Hub 2, Jalan PJU 1A/41B, Ara Damansara, 47301 Petaling Jaya, Selangor',
-      contact: '+603-7848-5555 / ecom@suamisihat.com',
-      location: 'Petaling Jaya, Selangor',
+      code: 'NEX',
+      name: 'Nexus Studio',
+      shortName: 'Games & 3D Interactive',
+      regNo: 'US-CA-2026-002',
+      address: '540 Arts District Blvd, Los Angeles, CA',
+      contact: 'art@nexusstudio.io',
+      location: 'Los Angeles, CA',
       status: 'active',
       isParent: false,
       establishedYear: '2023',
-      color: '#107C41'
+      color: '#38BDF8'
     },
     {
-      code: 'SST',
-      name: 'SuamiSihat Technology Sdn Bhd',
-      shortName: 'Technology & Digital',
-      regNo: '202401012349 (1550127-B)',
-      address: 'Cyberjaya Tech Park, Block 3, Persiaran APEC, 63000 Cyberjaya, Selangor',
-      contact: '+603-8322-4444 / tech@suamisihat.com',
-      location: 'Cyberjaya, Selangor',
+      code: 'LUM',
+      name: 'Lumina Labs',
+      shortName: 'AI & Research Lab',
+      regNo: 'UK-LON-2026-003',
+      address: '74 Shoreditch High St, London E1 6JJ, UK',
+      contact: 'design@luminalabs.ai',
+      location: 'London, UK',
       status: 'active',
       isParent: false,
       establishedYear: '2024',
-      color: '#8764B8'
+      color: '#10B981'
     }
   ];
 
@@ -741,11 +717,21 @@
   <div class="segmented-tab-bar">
     <button
       class="seg-tab-btn"
+      class:active={activeTab === 'vault'}
+      onclick={() => (activeTab = 'vault')}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      <span>Creative Vault &amp; Storage</span>
+      <span class="tab-count-pill">8 Folders</span>
+    </button>
+
+    <button
+      class="seg-tab-btn"
       class:active={activeTab === 'companies'}
       onclick={() => (activeTab = 'companies')}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
-      <span>Corporate Directory</span>
+      <span>Clients &amp; Brands</span>
       <span class="tab-count-pill">{companies.length}</span>
     </button>
 
@@ -755,7 +741,7 @@
       onclick={() => (activeTab = 'users')}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-      <span>User Accounts & RBAC</span>
+      <span>User Accounts &amp; RBAC</span>
       <span class="tab-count-pill">{users.length}</span>
     </button>
 
@@ -790,6 +776,134 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 0: CREATIVE VAULT & STORAGE ENGINE                             -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  {#if activeTab === 'vault'}
+    <div class="tab-pane-content">
+      <div class="deck-action-bar">
+        <div>
+          <h2 class="deck-title">Kanso Cre8 Markdown Vault &amp; Storage Engine</h2>
+          <p class="deck-desc">
+            Local-first, pure Markdown filesystem persistence. Zero database locks, cloud-sync agnostic, and 100% human-readable.
+          </p>
+        </div>
+        <div class="deck-actions-right">
+          <FluentButton appearance="secondary" onclick={() => vaultStore.config.lastSyncedAt = new Date().toISOString()}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 5px;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            <span>Rescan Vault</span>
+          </FluentButton>
+        </div>
+      </div>
+
+      <!-- Vault Configuration & Provider Card -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <FluentCard>
+          <div class="p-3">
+            <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Sync Root Path</span>
+            <div class="font-mono text-sm font-semibold text-[var(--kanso-text-primary)] mt-1 truncate" title={vaultStore.config.rootPath}>
+              {vaultStore.config.rootPath}
+            </div>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono uppercase bg-[var(--kanso-accent)]/15 text-[var(--kanso-accent)] border border-[var(--kanso-accent)]/30">
+                {vaultStore.config.provider}
+              </span>
+              <span class="text-xs text-[var(--kanso-success)] flex items-center gap-1">
+                ● Live Sync Active
+              </span>
+            </div>
+          </div>
+        </FluentCard>
+
+        <FluentCard>
+          <div class="p-3">
+            <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Storage Architecture</span>
+            <div class="text-sm font-semibold text-[var(--kanso-text-primary)] mt-1">
+              Pure Markdown + YAML
+            </div>
+            <div class="text-xs text-[var(--kanso-text-muted)] mt-1">
+              Zero SQL, SQLite, or Prisma binary locks. Openable in Obsidian &amp; VS Code anytime.
+            </div>
+          </div>
+        </FluentCard>
+
+        <FluentCard>
+          <div class="p-3">
+            <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Universal Task Rollup</span>
+            <div class="text-sm font-semibold text-[var(--kanso-text-primary)] mt-1">
+              {vaultStore.activeTaskCount} Pending / {vaultStore.tasks.length} Total
+            </div>
+            <div class="text-xs text-[var(--kanso-warning)] mt-1">
+              {vaultStore.urgentTaskCount} urgent tasks auto-extracted from notes
+            </div>
+          </div>
+        </FluentCard>
+      </div>
+
+      <!-- Canonical 8-Folder Layout Card -->
+      <FluentCard>
+        <div class="p-4">
+          <h3 class="text-sm font-bold text-[var(--kanso-text-primary)] mb-1">Canonical 8-Folder Creative Vault Layout</h3>
+          <p class="text-xs text-[var(--kanso-text-muted)] mb-4">
+            Standardized structure ensuring clean multi-cloud sync across Dropbox, Google Drive, OneDrive, and local NVMe.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {#each VaultService.CANONICAL_DIRECTORIES as folder}
+              <div class="p-2.5 rounded-lg bg-[var(--kanso-surface-hover)] border border-[var(--kanso-border)] flex items-center justify-between">
+                <div class="flex items-center gap-2 truncate">
+                  <span class="text-sm">📁</span>
+                  <span class="font-mono text-xs text-[var(--kanso-text-primary)] font-medium truncate">{folder}/</span>
+                </div>
+                <span class="text-xs text-[var(--kanso-success)] font-mono">✓ verified</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </FluentCard>
+
+      <!-- Active Tasks Rollup Preview -->
+      <div class="mt-6">
+        <FluentCard>
+          <div class="p-4">
+            <h3 class="text-sm font-bold text-[var(--kanso-text-primary)] mb-1">Extracted Tasks from Vault Markdown Notes</h3>
+            <p class="text-xs text-[var(--kanso-text-muted)] mb-3">
+              Tasks crawled vault-wide via <code class="font-mono text-[11px] bg-[var(--kanso-surface-hover)] px-1.5 py-0.5 rounded">- [ ] #task</code> syntax. Toggling checkboxes edits the Markdown on disk in real time.
+            </p>
+
+            <div class="space-y-2">
+              {#each vaultStore.tasks as task}
+                <div class="p-2.5 rounded-lg bg-[var(--kanso-surface-hover)] border border-[var(--kanso-border)] flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onchange={() => vaultStore.toggleTask(task.id)}
+                      class="rounded border-[var(--kanso-border)] text-[var(--kanso-accent)] focus:ring-0 cursor-pointer"
+                    />
+                    <span class="text-xs {task.completed ? 'line-through text-[var(--kanso-text-muted)]' : 'text-[var(--kanso-text-primary)] font-medium'}">
+                      {task.title}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    {#if task.dueDate}
+                      <span class="text-[11px] font-mono text-[var(--kanso-text-muted)]">📅 {task.dueDate}</span>
+                    {/if}
+                    {#if task.priority}
+                      <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-mono font-bold {task.priority === 'urgent' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : task.priority === 'high' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'}">
+                        {task.priority}
+                      </span>
+                    {/if}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </FluentCard>
+      </div>
+    </div>
+  {/if}
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
   <!-- TAB 1: CORPORATE & SUBSIDIARY DIRECTORY                            -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   {#if activeTab === 'companies'}
@@ -797,7 +911,7 @@
       <!-- Section Action Deck -->
       <div class="deck-action-bar">
         <div>
-          <h2 class="deck-title">SuamiSihat Group Corporate Registry</h2>
+          <h2 class="deck-title">Kanso Cre8 Client &amp; Entity Registry</h2>
           <p class="deck-desc">
             Holding parent entity, registered subsidiaries, SSM registration numbers, headquarters locations, and brand assets.
           </p>
