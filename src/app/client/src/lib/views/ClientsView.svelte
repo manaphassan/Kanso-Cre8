@@ -302,7 +302,7 @@
               <input
                 type="text"
                 bind:value={formName}
-                placeholder="e.g. Govicle Sdn Bhd"
+                placeholder="e.g. Acme Corporation"
                 class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
               />
             </div>
@@ -311,7 +311,7 @@
               <input
                 type="text"
                 bind:value={formCode}
-                placeholder="GOV"
+                placeholder="ACME"
                 maxlength="5"
                 class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono uppercase focus:outline-none focus:border-primary"
               />
@@ -324,7 +324,7 @@
               <input
                 type="text"
                 bind:value={formContact}
-                placeholder="Amirul Haziq"
+                placeholder="Sarah Jenkins"
                 class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
               />
             </div>
@@ -333,7 +333,7 @@
               <input
                 type="email"
                 bind:value={formEmail}
-                placeholder="amirul@govicle.my"
+                placeholder="sarah.j@acmefintech.io"
                 class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
               />
             </div>
