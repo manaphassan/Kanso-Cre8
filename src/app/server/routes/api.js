@@ -1817,6 +1817,7 @@ router.post('/admin/restart', authenticateToken, (req, res) => {
     console.log('[Server] Graceful restart requested by', req.user?.name);
     process.exit(0);
   }, 300);
+});
 // ─── VAULT MIGRATION WIZARD (OBSIDIAN / NOTION) ──────────────────────
 
 // POST /api/migration/preview — Preview external vault migration mapping
