@@ -24,9 +24,11 @@
   import OrderFormView from '$lib/views/OrderFormView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
+  import ObsidianMigrationModal from '$lib/components/features/ObsidianMigrationModal.svelte';
 
   let showDownloadModal = $state(false);
   let commandPaletteOpen = $state(false);
+  let migrationWizardOpen = $state(false);
   let serverVersion = $state('4.6.2');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
@@ -138,7 +140,11 @@
       }
     });
 
+    const handleOpenMigration = () => { migrationWizardOpen = true; };
+    window.addEventListener('kanso:open-migration', handleOpenMigration);
+
     return () => {
+      window.removeEventListener('kanso:open-migration', handleOpenMigration);
       closeSse();
     };
   });
@@ -553,6 +559,11 @@
   <CommandPaletteModal
     bind:open={commandPaletteOpen}
     onClose={() => (commandPaletteOpen = false)}
+  />
+
+  <ObsidianMigrationModal
+    bind:open={migrationWizardOpen}
+    onClose={() => (migrationWizardOpen = false)}
   />
 
   <NotificationDrawer
