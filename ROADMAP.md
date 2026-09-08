@@ -1,127 +1,225 @@
-# SS-CAM Project Roadmap
+# Kanso Cre8 Living Roadmap — Phased Milestones (Priority-Ranked)
 
-> **Living document.** Updated with every release. Last updated: 2026-09-04.
-
----
-
-## ✅ Released Milestones
-
-| Version | Date | Highlights |
-|---------|------|-----------|
-| **v1.9.0** | 2024 | Initial internal release — Project Creator, basic dashboard |
-| **v2.0.0** | 2025-01 | WPF-UI Fluent 2 redesign, Wellbeing module, Mind Drop notes |
-| **v2.1.0** | 2025-03 | Radio player, Brand Assets vault |
-| **v2.2.0** | 2025-06 | Workstation Health scanner, dark mode tokens |
-| **v2.3.0** | 2026-01 | Search & Copy v1, Markdown README preview |
-| **v2.3.6** | 2026-08-06 | Version badge fix, AV metadata patch, stability improvements |
-| **v2.4.0** | 2026-08-10 | Dashboard Inspiration Widget (40 tips + RSS), Project Brief Markdown Editor, Search & Copy Catalog layout |
-| **v2.5.0** | 2026-08-10 | Quick Notes module, Task Manager Kanban, Team Board, Frontmatter injection in Project Creator |
-| **v2.6.0** | 2026-08-11 | Smoke-test bug-fix release: FrontmatterService P0 fix, theme toggle wired, dead code removed, dynamic rescan count, static HttpClient |
-| **v2.6.2** | 2026-08-11 | Creative Workflow Modernization: App bridge launcher, 1-Click ZIP Finalizer, Brand Kit Quick-Tray, Visual Asset Lightbox |
-| **v2.6.3** | 2026-08-11 | Audit Remediation & Diagnostic Logging: Dynamic token standardization across 4 modules, Segoe Fluent vector icon standardization |
-| **v3.0.0** | 2026-08-12 | Major Release: Full Fluent 2 overhaul across all 12 modules, 5 theme profiles (Falconia, Metamorphosis, Catppuccin, Rosé Pine, Nord) |
-| **v3.0.1** | 2026-08-12 | Categorized Fluent 2 sidebar navigation (5 visual categories + headers/separators), adaptive bottom live bar collapse state |
-| **v3.1.0** | 2026-08-12 | QR Code Studio & Generator module, Sound Engineer visualizer with floating Mars symbols, Radio studio polish |
-| **v3.1.2** | 2026-08-12 | Multi-user isolation on shared NAS drives (`_{username}` scoping), team-wide shared presets |
-| **v3.2.0** | 2026-08-12 | Big Calendar module (`CalendarPage`), Task Manager Calendar Date & FIFO Queue Order sorting, SSNAS Synology Drive Setup guide |
-| **v3.3.0** | 2026-08-13 | Fluent 2 Startup Splash Window, Centralized Notification & Clipboard Services, Task Manager queue & parser upgrades |
-| **v3.4.0** | 2026-08-13 | Starter Canvas Engine (.af/.psd/.ai), Web Design presets, Search Category Filter, Calendar Quick Actions |
-| **v3.5.0** | 2026-08-17 | In-App Project Brief Markdown Editor in Search & Copy, Workspace Designer Folder Scoping, Repository Hygiene & Architecture Cleanup |
-| **v3.5.0-linux** | 2026-08-14 | Linux Desktop Edition: Initial native Avalonia UI (.NET 8) port for Fedora Linux & Synology Drive Client (`~/SynologyDrive/`) |
-| **v3.6.0** | 2026-08-17 | Microsoft Fluent UI Web (`sscam-fluentui-web`) design tokens, 3-Tier F-Pattern Dashboard analytics, Copywriting AI script presets |
-| **v3.6.1** | 2026-08-17 | Metamorphosis theme solid surface opacity overhaul, legibility fixes for drawer panels & cards |
-| **v4.0.0** | 2026-08-18 | **Centralized Vault Hierarchy & ClickUp 3.0 Task Workspace**: Year-first NAS hierarchy (`Creative-Team/[YYYY]/[YYYYMM_Month]/[Project]`), 5-folder structure, 68%/32% 2-column task workspace, in-app Copywriting Studio (`03_COPYWRITING/COPY.md`), JSONL contextual comments (`_comments.jsonl`), enterprise RBAC & immutable audit logs |
-| **v4.0.1** | 2026-08-18 | **Patch Release**: Real async GitHub Releases API update checker with NAS `version.json` fallback, landing page synchronization |
-| **v4.1.0** | 2026-08-19 | **Desktop Feature Parity & Studio Overhaul**: Desktop Copywriting Studio (`CopywritingPage`), contextual discussions data layer (`ProjectCommentService`), and ClickUp 3.0-style 2-column task workspace |
-| **v4.2.0** | 2026-08-20 | **Desktop NAS Sync & Batch Operations + Web Real-Time SSE**: Background `WorkspaceWatcherService`, `ThumbnailCacheService`, UI virtualization, batch operations ribbon, and Web SSE event stream + HTTP 206 video range streaming |
-| **v4.3.0** | 2026-08-20 | **Asset Export, Packaging & Naming Engine**: Desktop `ExportPackagingService` (1-click ZIP with `HANDOVER_SUMMARY.html`), `AssetNamingService` canonical sanitizer, and Web `ExportService` ZIP streaming |
-| **v4.4.0** | 2026-08-20 | **Designer Workload Heatmaps & Creative SLA Analytics**: Live designer capacity radars (`WorkloadSlaService`), capacity progress meters, and operational SLA telemetry across Desktop and Web |
-| **v4.4.1** | 2026-08-26 | **Radio Stream, Deep Scanner & Copywriting FlowDocument Engine**: Official SuamiSihat Radio Stream preset `#1`, deep month-container project discovery, dynamic project ID auto-calculation, FlowDocument markdown rendering by default, sanitized designer catalog filtering |
-| **v4.4.2** | 2026-08-27 | **Art Director Polish & Live Ad/WhatsApp Preview Engine**: Live Split-View formatting preview (WhatsApp & Meta Ads), one-click Hook & CTA snippet drawer, dynamic status pill badges, polished vector empty states, and overline typographic rhythm |
-| **v4.4.3** | 2026-08-27 | **Radio Visualizer Overhaul & Station Upgrades**: Dynamic real-time playback gating for 69 Mars symbols & 6 SuamiSihat logomarks, song wavelength sinusoidal vertical oscillation & beat kick pulsing across all visualizer modes, curated Nightwave Plaza & SomaFM Groove Salad stations, Malaysia holidays calendar integration |
-| **v4.4.4** | 2026-08-27 | **Creative Wellbeing & Biometric Suite Overhaul**: Real-time 5-axis biometric spider radar, dynamic 30-day focus intensity heatmap, interactive vector water hydration tracker with sinusoidal waves, and burnout risk analytics |
-| **v4.5.0** | 2026-08-28 | **Master Brand System v3.5.1 Integration & Brand Assets Vault Modernization**: Full alignment with official SuamiSihat Master Brand System Guide, Multi-Format Color Matrix (BAL/RAL standard, CIE-Lab, Pantone, CSS tokens), 5 Corporate Sub-Brands Hub with 1-click folder launchers, interactive Surface Contrast Previewer ($L \ge 50\%$ rule), 4-tier typography scale reference |
-| **v4.5.1** | 2026-08-30 | **Cross-Platform Ecosystem Synchronization & Companion Harmonization**: Windows Desktop Client v4.5.1 (single-file executable, UTF-8 BOM, 100% theme-adaptive DynamicResource tokens), Web Management Portal Svelte 5 / Node.js 20 (zero-emoji Fluent 2 design, desktop mobile dock layout fix, 28/28 passed test suite), Android Companion App (Compose UI, Studio Lounge, and live NAS sync) |
-| **v4.6.0** | 2026-09-01 | **Beta Release — Android Native Companion Modernization, Live ICY Stream Metadata Engine, Preflight Quality Auditor & Desk Companion Standby Mode**: Desktop Preflight Quality Validator & Auto-Fix Scaffolding, Android 2×2 Bento KPI Telemetry & Persistent Local Caching (`ProjectCacheManager`), real-time AzuraCast/Laut.fm/SomaFM live song broadcasting metadata on TopAppBar & bottom cassette deck, interactive `SsHero` animated wave mesh splash screen, interactive `FluentMarkdownViewer` with live task checkbox syncing, OLED Desk Standby Mode, and Material You monochromatic icons |
-| **v4.6.1** | 2026-09-04 | **Multi-Platform Release — Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience**: Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and central Web Portal (`/api/orders`), automatic JWT authentication and live queue fetching with local Synology NAS ledger caching (`creative-orders.jsonl`), instant bidirectional status sync (`PATCH /api/orders/{id}`), 1-Click project vault scaffolding (`01_Brief_and_Copy/COPY.md` + frontmatter), startup splash hang resolution, task manager Kanban overdue suppression, frontmatter YAML quote sanitization, web creative direction matrix preview & auto-wrapping markdown editor, shared team board test isolation, Android Companion App release (v4.6.1, Code 462), and Linux Avalonia release package. |
-| **v4.6.2** | 2026-09-08 | **NAS Temporary Attachment Vault, Designer Task Handover, Web Multi-File Upload & Desktop Project Creator Auto-Ingestion**: Desktop Task Manager Kanban card task ownership handover & reassignment menu (`README.md` + frontmatter sync), Synology NAS temporary intake directory (`\\SSNAS\Creative-Team\_Orders\<ORDER_ID>\`) with JSONL persistence, Web Portal drag-and-drop multi-file upload dropzone, role detection fix for composite roles (`"Admin, Designer"`), 1-click project ingestion into `01_BRIEF_ASSETS`, and Desktop Project Creator live order discovery, auto-population, and automatic attachment copy |
+> **Product**: Kanso Cre8 (簡素)  
+> **Tagline**: The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine for Freelance Designers  
+> **Author**: `harusssani.manaphassan`  
+> **License**: PolyForm Noncommercial License 1.0.0  
+> **Primary Stack**: Tauri v2 + Svelte 5 + Tailwind CSS + Pure Markdown-as-Database  
+> **Local Workspace**: `D:\HaNa_Innovation\kansoCre8` (Tracking: `https://github.com/manaphassan/Kanso-Cre8.git`)
 
 ---
 
-## 🎯 Active Milestone — v4.7.0: Production Pipeline Intelligence (Target: Q4 2026)
+## 🎯 Prioritization Strategy
 
-### 1. Copywriting Studio Split-View Live Preview (Desktop)
-* **Live WhatsApp & Ad Message Card**: Real-time side-by-side rendering transforming structured Markdown into live WhatsApp bubbles (bold asterisks `*text*`, emoji spacing, call-to-action link previews) and Meta Ad primary text mockups.
-* **Instant Toggle Controls**: View mode switcher (`[Split View]`, `[Editor Only]`, `[Preview Only]`) with live character and word counters.
+To build a rock-solid, production-grade application for working freelance creators without feature bloat, engineering is structured into **7 sequential phases** strictly ordered from **Highest Priority (Foundational Core)** to **Lowest Priority (Packaging & Distribution)**:
 
-### 2. Creative Snippet & Hook Drawer
-* **1-Click Viral Hook & CTA Inserter**: Pre-approved medical disclaimers, viral hook formulas (Problem-Agitate-Solve, Before-After-Bridge), promo code snippets, and WhatsApp routing links inserted directly at cursor position.
-
-### 3. Visual Polish & Art Director Enhancements
-* **Dynamic Status Pill Badges**: Standardized visual indicators for campaign lifecycle (`Active`, `In Review`, `Archived`, `NAS Synced`).
-* **Polished Empty States**: Elegant vector empty states with helpful callouts for project selection across Copywriting, Search Copy, and Task Manager.
-* **Typographic Hierarchy & Overlines**: Consistent overlines (`11px Bold CharacterSpacing="50"`), 24px hero titles, and enhanced breathing room across cards.
-
----
-
-## 🔄 In Progress — v4.8.0: Visual Asset Revision Diff & Side-by-Side Comparison (Target: Q4 2026)
-
-### 1. Interactive Split-Slider Visual Diff (Desktop & Web)
-* Split-slider comparison between deliverable revisions (`_v1.png` vs `_v2.png`, or artwork mockup vs print dieline).
-* Synchronized zoom and pan for high-resolution print exports and packaging dielines.
-
-### 2. Copywriting & Brief Revision Diff Engine
-* Visual color-coded diff viewer (green additions / red deletions) for `COPY.md` scripts and `README.md` project briefs across revision cycles.
+```text
+[Priority 1: Core Vault & Studio Shell] 
+        ↓
+[Priority 2: Client Hub & YAML Invoicing] 
+        ↓
+[Priority 3: 5-Folder Project Scaffolder & Kanban] 
+        ↓
+[Priority 4: Zettelkasten Second Brain & Task Rollup] 
+        ↓
+[Priority 5: Retro Cassette Focus Radio (from SS-CAM Android)] 
+        ↓
+[Priority 6: Copywriting Studio & 4K Deliverables Lightbox] 
+        ↓
+[Priority 7: Multi-Platform Tauri v2 Packaging & Multi-Cloud Sync]
+```
 
 ---
 
-## 🔮 Planned — v4.9.0: Global Studio Command Palette & Ingester (Target: Q4 2026)
+## 🚦 Priority 1: Svelte 5 Minimalist Shell & Pure Markdown Vault Engine
+* **Priority Level**: **CRITICAL / HIGHEST**
+* **Status**: In Progress
+* **Impact**: Absolute foundation — everything depends on local filesystem I/O, cloud folder detection, and design tokens.
 
-### 1. Global Command Palette (`Ctrl + K`)
-* Universal keyboard launcher for jumping to projects, copying brand hex codes, searching snippets, or toggling radio stations without leaving the current view.
+### Key Deliverables
+1. **Linear / Geist Studio Design System**:
+   - Establish CSS variables for Dark Mode (`#09090B`, `#18181B`, `#27272A`, `#38BDF8`) and Light Mode (`#F8FAFC`, `#FFFFFF`, `#E2E8F0`, `#0078D4`).
+   - Strict 1px hairline border standard (`var(--kanso-border)`) with zero arbitrary drop shadows.
+2. **3-Zone Studio Shell (`App.svelte`)**:
+   - 44px Minimalist TitleBar with vault path status, breadcrumbs, search shortcut (`Ctrl+K`), and quick audio indicator.
+   - 210px Collapsible Sidebar with 4 ergonomic sections:
+     - `Creative Workspace` (Dashboard, Projects & Tasks, Review Queue, Focus Radio)
+     - `Knowledge & Second Brain` (Atomic Notes, Copywriting Studio)
+     - `Client & Business Ops` (Clients & Brands, Quotes & Invoices, Creative Requests)
+     - `System & Storage` (Settings & Vault)
+   - Fluid content canvas with `< 16ms` interaction speed.
+3. **Pure Markdown Storage Engine (`vaultService.ts`)**:
+   - **Absolute Law**: Zero SQL, SQLite binary files, Prisma ORM, or cloud databases. 100% human-readable UTF-8 `.md` and YAML frontmatter.
+   - Automatic detection of vault sync directories (Dropbox, Google Drive, OneDrive, Synology Drive, local NVMe).
+   - Real-time filesystem watcher for instant UI refresh when files are edited externally in Obsidian or VS Code.
 
-### 2. Drag-and-Drop Folder Ingester
-* Drag external assets directly onto project cards in Project Creator to automatically organize into `01_BRIEF_ASSETS`, `02_SOURCE_FILES`, etc.
-
----
-
-## 📱 & 🐧 Planned — v5.0.0: Multi-Platform Ecosystem Expansion (Target: Q1 2027)
-
-| Feature / Component | Target Stack | Description |
-|---|---|---|
-| **Linux Fedora Native Client (`src/SS-CAM.Linux`)** | C# / Avalonia UI 12.1 (.NET 8/10 LTS) | Complete feature parity for Fedora/Ubuntu workstations with Fluent 2 styling, local `~/SynologyDrive/` workspace integration, and native Skia desktop rendering. |
-| **Android Native Client (`src/SS-CAM.Android`)** | Kotlin + Jetpack Compose | Native mobile companion for creative leads & reviewers: instant deliverable review, 1-tap approvals/revisions, push notifications, task tracking, and brand color palette picker. |
-| **Web Portal Admin & Control Console (`src/SS-CAM.Web`)** | Svelte 5 + Node.js Express (Docker) | Central administration hub: corporate holding switcher (SSH, SSC, SSW, SSE, SST), user provisioning, immutable audit log explorer, webhook dispatch, and remote API gateway. |
-| **Multi-Workspace NAS Switching** | Cross-Platform | Fast switching between business unit shares (`Creative-Team`, `Video-Production`, `Marketing-Assets`). |
-
----
-
-## 🔮 Future Exploration — v5.0.0: Enterprise Intelligence & Asset Versioning (Target: Q2 2027)
-
-| Area | Idea |
-|------|------|
-| **Asset Revision Snapshots** | Visual diff timeline and rollback engine for `.afdesign` and `.psd` binaries |
-| **AI Creative Assistant** | Local/Offline LLM integration for generating ad hooks, drafting campaign briefs, and translating copy |
-| **Real-time Live Sync Hub** | High-throughput bi-directional synchronization bridge between native clients and NAS storage |
+### Acceptance Criteria
+* `verify-kanso.ps1` passes with `10 passed / 0 warned / 0 failed`.
+* Theme toggle switches instantly between Dark Obsidian and Light Porcelain.
+* Loading a local vault enumerates files without errors or binary database creation.
 
 ---
 
-## Architecture Constraints
+## 🚦 Priority 2: Multi-Client Hub & YAML Quote/Invoice Studio
+* **Priority Level**: **HIGH**
+* **Status**: In Progress
+* **Impact**: Core freelance business value — managing client relationships, brand guidelines, and getting paid.
 
-The following constraints apply to all versions and must be respected in planning:
+### Key Deliverables
+1. **Client & Brand Assets Hub (`ClientsView.svelte` & `clientService.ts`)**:
+   - Sanitized sample client dossiers: **Acme Corp** (`ACME`), **Nexus Studio** (`NEX`), and **Lumina Labs** (`LUM`).
+   - 1-Click creation of new custom clients in `_Clients/[PREFIX]_[ClientName]/client.md`.
+   - Interactive brand color palette tiles (`HEX`, `RGB`, `CMYK`) with 1-click clipboard copy.
+   - Rate cards (hourly billing rates, payment terms, contact details) stored in clean YAML frontmatter.
+2. **Dual-Pane Quote & Invoice Studio (`InvoiceStudioView.svelte` & `financeService.ts`)**:
+   - Left Pane: Clean YAML/Markdown line-item editor.
+   - Right Pane: Pixel-perfect, live-rendered invoice matching boutique design agency stationery.
+   - Real-time arithmetic: `Quantity × Unit Price = Subtotal + Custom Tax = Grand Total`.
+   - 1-Click native PDF export and system print dialog via `window.print()`.
+   - Invoices saved automatically to `_Finance/Invoices/INV-YYYY-XXX.md`.
 
-| Constraint | Reason |
-|-----------|--------|
-| **C# 5 syntax only** | MSBuild `v4.0.30319` on the build machine caps at `/langversion:5` |
-| **No new NuGet packages** | `Costura.Fody` single-file bundling makes adding packages complex and risky |
-| **`System.Net.Http`** | Already a framework assembly on .NET 4.8; use for all HTTP instead of `WebClient` |
-| **`System.Xml.Linq`** | Available; use for RSS/XML parsing |
-| **No WPF-UI breaking changes** | Locked to `WPF-UI 3.0.4` |
-| **JSON via Newtonsoft.Json** | Already bundled; use for all serialisation |
-| **NAS path separator** | Always use `Path.Combine` — never hardcode `\` or `/` |
+### Acceptance Criteria
+* Clicking any color tile copies the exact code to the clipboard with visual toast confirmation.
+* Modifying YAML invoice line items recalculates totals instantaneously.
+* Invoices print to PDF with correct agency margins, invoice ID, and banking details.
 
 ---
 
-## Contributing
+## 🚦 Priority 3: Standardized 5-Folder Project Scaffolder & Kanban Board
+* **Priority Level**: **HIGH**
+* **Status**: In Progress
+* **Impact**: Core creative project execution — organizing creative assets and keeping sprint deadlines on track.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for architecture, namespace conventions, and build instructions.
+### Key Deliverables
+1. **Standardized 5-Folder Project Vault Scaffolder**:
+   - 1-Click generator creating standardized project vaults under `[YYYY]/[YYYYMM]_[PREFIX]_[ProjectTitle]/`:
+     - `01_BRIEF/` (Client briefs, references, vector logos, moodboards)
+     - `02_SOURCE/` (PSD, AI, Affinity, Blender, Figma links)
+     - `03_COPY/` (Scripts, social hooks, COPY.md)
+     - `04_WIP/` (Draft renders, client review previews)
+     - `05_DELIVERABLES/` (Final high-res exports ready for client handover)
+     - `README.md` (Project master file with YAML frontmatter tracking status, budget, and deadline)
+2. **Interactive 5-Stage Kanban Board (`KanbanView.svelte`)**:
+   - Stages: `Backlog` ➔ `In Progress` ➔ `Review Queue` ➔ `Revision Required` ➔ `Approved & Done`.
+   - Drag-and-drop or 1-click stage transitions that update the project's `README.md` frontmatter on disk.
+   - Priority chips (`low`, `normal`, `high`, `urgent`) and deadline countdown tags.
+
+### Acceptance Criteria
+* Project generation creates all 5 folders and a valid `README.md` on disk within 50ms.
+* Moving a project card on the Kanban board updates the `status:` field in the target `README.md` file in real time.
+
+---
+
+## 🚦 Priority 4: Zettelkasten Knowledge Second Brain & Universal Task Rollup
+* **Priority Level**: **MEDIUM-HIGH**
+* **Status**: In Progress
+* **Impact**: Long-term creative leverage — synthesizing ideas, research, and project tasks into an interconnected graph.
+
+### Key Deliverables
+1. **3-Tier Note Classification Engine (`ZettelView.svelte` & `zettelService.ts`)**:
+   - `_Zettelkasten/01_Fleeting/`: Quick unedited thoughts and call minutes (`Ctrl+Space` quick capture).
+   - `_Zettelkasten/02_Literature/`: Book notes, competitor teardowns, swipe file references.
+   - `_Zettelkasten/03_Permanent/`: Synthesized atomic design rules, color formulas, and proven viral hooks.
+2. **Bi-Directional WikiLink Indexer**:
+   - Syntax: `[[Note Title]]` or `[[ClientName]]`.
+   - Automatic crawling of all `.md` files to build an in-memory graph of outgoing links and incoming backlinks without binary databases.
+3. **Universal Task Rollup Engine**:
+   - Regex crawler: `- \[( |x)\] #task (.+?)(?: 📅 (\d{4}-\d{2}-\d{2}))?`.
+   - Scans meeting notes and briefs vault-wide, automatically surfacing active tasks on the Kanban board.
+   - Toggling a checkbox in the Kanban board edits the physical Markdown file on disk in real time.
+
+### Acceptance Criteria
+* Clicking a `[[WikiLink]]` opens the target note immediately.
+* Adding `- [ ] #task Review packaging print bleed` in a fleeting note creates an actionable card on the Kanban board.
+
+---
+
+## 🚦 Priority 5: Retro Cassette Focus Radio & Studio Deck
+* **Priority Level**: **MEDIUM**
+* **Status**: In Progress
+* **Impact**: Tactile creator flow state — integrating the beloved mechanical cassette player from SS-CAM Android.
+
+### Key Deliverables
+1. **Physical Cassette Tape Card (`CassetteTapeCard.svelte`)**:
+   - Faithful web port of the Android Jetpack Compose cassette chassis.
+   - 4 corner silver screws, trapezoidal head/roller, Side A label badge, station frequency, and clear tape window.
+   - Dual 6-spoke gear spool wheels (`CassetteSpoolWheel.svelte`) that physically rotate via smooth CSS animation (`33 RPM`) during audio playback.
+2. **Tactile Mechanical Control Deck (`CassetteDeck.svelte`)**:
+   - Tactile transport controls: Play/Pause, Next/Prev tape, Eject, and Volume slider.
+   - Live ICY stream metadata marquee ticker (scrolling artist & track title).
+   - Curated streaming presets:
+     - ☕ **Chillhop Cafe** (Lofi beats & study vibes)
+     - 🌆 **Nightwave Plaza** (Vaporwave / Synthwave)
+     - 🌿 **SomaFM Groove Salad** (Downtempo ambient)
+     - 🎷 **Parisian Jazz Cafe** (Acoustic jazz & bossa nova)
+     - 🧘 **Zen Alpha Focus** (Deep work binaural drone)
+3. **Dual Placement**:
+   - Full Studio View under `Focus Radio`.
+   - Persistent **40px Mini-Cassette Dock** in the sidebar footer with mini rotating spools that keeps playing audio in the background while designing.
+   - Integrated 25-minute Pomodoro focus timer and box breathing reset coach.
+
+### Acceptance Criteria
+* Audio streams buffer and play without freezing the UI thread.
+* Spools start rotating when audio begins playing and stop smoothly on pause.
+* Navigating between pages does not interrupt playback.
+
+---
+
+## 🚦 Priority 6: Copywriting Studio & 4K Deliverables Lightbox
+* **Priority Level**: **MEDIUM-LOW**
+* **Status**: Planned
+* **Impact**: Polish and handover — copywriting assistance and client deliverable inspection.
+
+### Key Deliverables
+1. **Copywriting Studio (`CopyStudioView.svelte`)**:
+   - Focused Markdown editor writing directly to `03_COPY/COPY.md`.
+   - Live telemetry: word count, character count, and estimated reading time.
+   - **Atomic Hook Injector Drawer**: 1-click insertion of hooks from `_Zettelkasten/03_Permanent/`, and 1-click "Extract to Atomic Note" for winning copy.
+2. **Deliverables Review Lightbox (`DeliverablesView.svelte`)**:
+   - 4K proof viewer for high-res PNG, JPG, WebP, MP4, and PDF dielines in `05_DELIVERABLES/`.
+   - Zoom/pan inspection for checking print bleeds and export quality.
+   - Automated 1-click ZIP export packaging for clean client delivery.
+
+### Acceptance Criteria
+* Live telemetry updates instantly as user types.
+* Lightbox opens 4K images at native resolution with smooth pan/zoom.
+* 1-Click ZIP export packages all deliverables cleanly with a summary text manifest.
+
+---
+
+## 🚦 Priority 7: Multi-Platform Tauri v2 Packaging & Multi-Cloud Sync
+* **Priority Level**: **DISTRIBUTION (Final Step)**
+* **Status**: Planned
+* **Impact**: Packaging, cross-platform compilation, and multi-device parity.
+
+### Key Deliverables
+1. **Tauri v2 Native Rust Backend (`src-tauri/`)**:
+   - App identifier `com.kansocre8.desktop`.
+   - Native file system plugin (`@tauri-apps/plugin-fs`) for direct local disk access.
+   - Native file/folder picker (`@tauri-apps/plugin-dialog`).
+   - Global shortcuts (`@tauri-apps/plugin-global-shortcut`) for `Ctrl+Space` quick capture.
+2. **Cross-Platform Compilation**:
+   - Windows 11/10: Native 64-bit installer (`.msi` and portable `.exe`).
+   - Linux: Native package (`.deb` and standalone `.AppImage`).
+   - Android Mobile Companion: Tauri v2 Android APK targeting mobile review & task tracking.
+3. **Cloud Daemon Verification**:
+   - Verify conflict-free two-way file synchronization across Dropbox, Google Drive, OneDrive, and Synology Drive.
+
+### Acceptance Criteria
+* Windows and Linux executables build cleanly and run under ~35MB RAM.
+* Global shortcut `Ctrl+Space` brings up quick capture modal from anywhere in the OS.
+
+---
+
+## ⚖️ Non-Negotiable Architecture Constraints
+
+| Constraint | Rule | Reason |
+| :--- | :--- | :--- |
+| **No Database Server** | Zero SQL, SQLite, Prisma, or MongoDB | 100% data sovereignty and cloud-sync interoperability |
+| **Design Tokens Only** | No raw hex codes in Svelte components | Ensures flawless light/dark mode and brand consistency |
+| **Sanitized Clients** | Acme Corp, Nexus Studio, Lumina Labs only | Strict client privacy in public codebases |
+| **Quarantine Legacy** | All .NET 4.8 / Avalonia code in `archive/legacy-dotnet/` | Keeps modern Svelte 5 / Tauri codebase clean and lightweight |
+
+---
+
+*Last Updated: 2026-09-09. Maintained by [harusssani.manaphassan](https://github.com/manaphassan).*
