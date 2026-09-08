@@ -4,7 +4,7 @@ description: >
   Official governance and architecture steward skill for Kanso Cre8.
   Enforces the Kanso Zen brand identity, Linear/Geist studio design tokens,
   pure Markdown-as-Database storage engine, Zettelkasten knowledge integration,
-  multi-client management (Govicle, Jomparking, SuamiSihat), quote/invoice studio,
+  multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio,
   Tauri v2 + Svelte 5 structure, and phased roadmap milestones.
   Trigger: "kanso", "brand guideline", "kanso cre8", "design tokens", "zettelkasten",
   "vault structure", "client hub", "invoice studio", "kanso roadmap", "kanso architecture",
@@ -96,9 +96,9 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
 ├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
-│   ├── 📁 GOV_Govicle/                   # (Govicle Sdn Bhd)
-│   ├── 📁 JOM_Jomparking/                # (Jomparking Solutions)
-│   └── 📁 SSH_SuamiSihat/                # (SuamiSihat Brand Vault)
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs)
 │
 ├── 📁 _Finance/                          # 🧾 Markdown & YAML Quotes & Invoices
 │   ├── 📁 Quotes/                        # QUOTE-2026-xxx.md
@@ -111,7 +111,7 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 │
 ├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
 │   └── 📁 202609_September/
-│       └── 📁 202609_0001_GOV_FleetAppIllustration/
+│       └── 📁 202609_0001_ACME_MobileAppIllustration/
 │           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
 │           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
 │           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
@@ -143,11 +143,11 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 
 ## 🏢 5. Multi-Client Hub & Invoice Studio
 
-### 5.1 Mandatory Client Profiles
-The app must always ship with or automatically recognize default profiles for:
-1. **Govicle Sdn Bhd** (`GOV`)
-2. **Jomparking Solutions** (`JOM`)
-3. **SuamiSihat Creative Vault** (`SSH`)
+### 5.1 Sample Client Profiles
+The app includes mock profiles to demonstrate capability:
+1. **Acme Corporation** (`ACME`)
+2. **Nexus Studio** (`NEX`)
+3. **Lumina Labs** (`LUM`)
 
 ### 5.2 Brand Swatches & Invoicing
 * Client profiles store brand color palettes with 1-click clipboard copy (`HEX`, `RGB`, `CMYK`).
@@ -174,7 +174,7 @@ The app must always ship with or automatically recognize default profiles for:
   - 3-Zone responsive shell (44px TitleBar, 210px Collapsible Sidebar, Fluid Canvas).
 * **Phase 2: Core Markdown Vault Engine & Client Hub**
   - Local vault scanner and YAML parser.
-  - Client Hub with Govicle, Jomparking, SuamiSihat.
+  - Client Hub with sample profiles (Acme Corp, Nexus Studio, Lumina Labs).
   - Standardized 5-folder project scaffolder.
 * **Phase 3: Zettelkasten Knowledge Engine & Inline Task Rollup**
   - WikiLink indexer & backlink crawler.
