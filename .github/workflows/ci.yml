@@ -1,0 +1,40 @@
+name: CI Quality Gate & Architecture Auditor
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  governance-and-test:
+    name: Kanso Governance & Automated Test Suite
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: src/app/package-lock.json
+
+      - name: Run Kanso Brand & Architecture Auditor
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
+
+      - name: Install Node Dependencies
+        working-directory: src/app
+        run: npm ci
+
+      - name: Run Service & Backend Test Suite
+        working-directory: src/app
+        run: npm test
+
+      - name: Build Svelte 5 Frontend
+        working-directory: src/app
+        run: npm run build:client

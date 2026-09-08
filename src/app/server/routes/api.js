@@ -20,6 +20,7 @@ const GeminiService = require('../services/GeminiService');
 const SnapshotService = require('../services/SnapshotService');
 const WebhookService = require('../services/WebhookService');
 const OrderService = require('../services/OrderService');
+const MigrationService = require('../services/MigrationService');
 const multer = require('multer');
 const orderUpload = multer({
   storage: multer.memoryStorage(),
@@ -1816,6 +1817,42 @@ router.post('/admin/restart', authenticateToken, (req, res) => {
     console.log('[Server] Graceful restart requested by', req.user?.name);
     process.exit(0);
   }, 300);
+// ─── VAULT MIGRATION WIZARD (OBSIDIAN / NOTION) ──────────────────────
+
+// POST /api/migration/preview — Preview external vault migration mapping
+router.post('/migration/preview', authenticateToken, (req, res) => {
+  try {
+    const { sourceDir } = req.body;
+    if (!sourceDir) {
+      return res.status(400).json({ error: 'sourceDir is required.' });
+    }
+    const preview = MigrationService.preview(sourceDir);
+    res.json({ success: true, preview });
+  } catch (err) {
+    console.error('[Migration] preview error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/migration/execute — Ingest and sort files into canonical vault
+router.post('/migration/execute', authenticateToken, (req, res) => {
+  try {
+    const { sourceDir, targetDir, mode } = req.body;
+    if (!sourceDir) {
+      return res.status(400).json({ error: 'sourceDir is required.' });
+    }
+    const result = MigrationService.execute(sourceDir, targetDir, {
+      mode: mode || 'copy',
+      author: req.user?.name || 'User'
+    });
+    // Trigger workspace rescan if migrating to active vault
+    WorkspaceService.scan();
+    SseService.broadcast('vault:migrated', { result });
+    res.json({ success: true, result });
+  } catch (err) {
+    console.error('[Migration] execute error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
