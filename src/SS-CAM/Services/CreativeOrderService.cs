@@ -338,6 +338,43 @@ namespace SS_CAM.Services
         }
 
         /// <summary>
+        /// Cancels or rejects a creative order, updates the local NAS ledger, and synchronizes with Web Portal API.
+        /// </summary>
+        public static async Task<bool> CancelOrderAsync(string workspaceRoot, string orderId, string reason = null)
+        {
+            var orders = await LoadOrdersFromDiskAsync(workspaceRoot).ConfigureAwait(false);
+            var target = orders.FirstOrDefault(o => string.Equals(o.Id, orderId, StringComparison.OrdinalIgnoreCase));
+            if (target != null)
+            {
+                target.Status = "cancelled";
+                if (!string.IsNullOrWhiteSpace(reason)) target.InternalNote = reason;
+                target.UpdatedAt = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+
+                await SaveOrdersAsync(workspaceRoot, orders).ConfigureAwait(false);
+            }
+
+            // Sync cancel to Web Portal / Cloud API via DELETE /api/orders/:id
+            try
+            {
+                string token = await GetAuthTokenAsync(null).ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    using (var req = new HttpRequestMessage(HttpMethod.Delete, DefaultApiBaseUrl + "api/orders/" + orderId))
+                    {
+                        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                        await _httpClient.SendAsync(req).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[CreativeOrderService] Live API DELETE cancel sync failed: " + ex.Message);
+            }
+
+            return target != null;
+        }
+
+        /// <summary>
         /// Converts a Creative Order into a fully scaffolded SS-CAM Project folder on the NAS.
         /// Creates canonical monthly containers, standard subfolders, COPY.md with the order script,
         /// and README.md with YAML frontmatter linking the order ID.

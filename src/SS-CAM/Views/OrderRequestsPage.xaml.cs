@@ -70,18 +70,26 @@ namespace SS_CAM.Views
         {
             try
             {
-                List<string> designers = new List<string>
+                var staffList = UserProfileService.GetStaffDirectory(_workspaceRoot);
+                List<string> designers = new List<string>();
+
+                if (staffList != null && staffList.Count > 0)
                 {
-                    "0001D - Harussani",
-                    "0002S - Syahir",
-                    "0003V - Video Editor",
-                    "0004D - Junior Designer"
-                };
+                    foreach (var staff in staffList)
+                    {
+                        if (staff == null || !staff.Active) continue;
+                        string label = string.Format("{0} - {1}", staff.StaffId ?? "SS0000", staff.Name ?? "Staff");
+                        if (!designers.Contains(label))
+                        {
+                            designers.Add(label);
+                        }
+                    }
+                }
 
                 string loggedInUser = null;
                 if (_currentProfile != null && !string.IsNullOrWhiteSpace(_currentProfile.DesignerName))
                 {
-                    string id = _currentProfile.StaffId ?? "0001D";
+                    string id = _currentProfile.StaffId ?? "SS0004";
                     loggedInUser = string.Format("{0} - {1}", id, _currentProfile.DesignerName);
                     if (!designers.Contains(loggedInUser))
                     {
@@ -90,11 +98,12 @@ namespace SS_CAM.Views
                 }
 
                 CmbAssignee.ItemsSource = designers;
-                if (!string.IsNullOrEmpty(loggedInUser))
+
+                if (!string.IsNullOrEmpty(loggedInUser) && designers.Contains(loggedInUser))
                 {
                     CmbAssignee.SelectedItem = loggedInUser;
                 }
-                else
+                else if (designers.Count > 0)
                 {
                     CmbAssignee.SelectedIndex = 0;
                 }
@@ -415,9 +424,20 @@ namespace SS_CAM.Views
             ApplyFilters();
         }
 
-        private void OnAssigneeSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void OnAssigneeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Sync to selected order if needed
+            if (_selectedOrder == null || CmbAssignee == null || CmbAssignee.SelectedItem == null) return;
+            string selected = CmbAssignee.SelectedItem.ToString();
+            string assigneeName = selected;
+            var parts = selected.Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2) assigneeName = parts[1].Trim();
+
+            if (!string.Equals(_selectedOrder.AssignedTo, assigneeName, StringComparison.OrdinalIgnoreCase))
+            {
+                _selectedOrder.AssignedTo = assigneeName;
+                await CreativeOrderService.UpdateOrderAsync(_workspaceRoot, _selectedOrder.Id, null, assigneeName);
+                ShowStatusMessage(string.Format("Assigned to {0}.", assigneeName));
+            }
         }
 
         private async void OnRefreshQueueClicked(object sender, RoutedEventArgs e)
@@ -581,6 +601,64 @@ namespace SS_CAM.Views
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
                 );
+            }
+        }
+
+        private async void OnRejectOrderClicked(object sender, RoutedEventArgs e)
+        {
+            if (_selectedOrder == null) return;
+
+            var confirm = MessageBox.Show(
+                string.Format("Are you sure you want to reject and cancel this creative order request?\n\nTitle: {0}\nOrder ID: {1}\nRequester: {2}\n\nThis will mark the order as Cancelled and remove it from active processing.", 
+                    _selectedOrder.SafeTitle, _selectedOrder.Id, _selectedOrder.Requester ?? "Requester"),
+                "Reject / Cancel Order Request",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
+
+            if (confirm != MessageBoxResult.Yes) return;
+
+            try
+            {
+                await CreativeOrderService.CancelOrderAsync(_workspaceRoot, _selectedOrder.Id, "Cancelled by designer / admin in SS-CAM Desktop");
+                ShowStatusMessage(string.Format("Order {0} has been cancelled.", _selectedOrder.Id));
+                NotificationService.ShowWarning("Order Cancelled", string.Format("Order {0} has been cancelled.", _selectedOrder.Id));
+                await ReloadOrdersQueueAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[OrderRequestsPage] OnRejectOrderClicked error: " + ex.Message);
+                MessageBox.Show("Failed to cancel order: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnContextMenuAcceptClicked(object sender, RoutedEventArgs e)
+        {
+            OnMarkInProgressClicked(sender, e);
+        }
+
+        private void OnContextMenuConvertClicked(object sender, RoutedEventArgs e)
+        {
+            OnConvertOrderClicked(sender, e);
+        }
+
+        private void OnContextMenuCopyScriptClicked(object sender, RoutedEventArgs e)
+        {
+            OnCopyScriptClicked(sender, e);
+        }
+
+        private void OnContextMenuRejectClicked(object sender, RoutedEventArgs e)
+        {
+            OnRejectOrderClicked(sender, e);
+        }
+
+        private void OnListBoxItemPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListBoxItem;
+            if (item != null)
+            {
+                item.IsSelected = true;
+                item.Focus();
             }
         }
 

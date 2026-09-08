@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace SS_CAM.Models
@@ -182,6 +183,11 @@ namespace SS_CAM.Models
         public bool IsConverted
         {
             get { return !string.IsNullOrWhiteSpace(ProjectId); }
+        }
+
+        public Visibility ConvertedBannerVisibility
+        {
+            get { return IsConverted ? Visibility.Visible : Visibility.Collapsed; }
         }
 
         public string FormattedTargetDate

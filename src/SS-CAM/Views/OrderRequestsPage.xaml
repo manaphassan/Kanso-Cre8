@@ -185,6 +185,35 @@
                                             <Setter Property="Margin" Value="0,0,0,6"/>
                                             <Setter Property="Background" Value="Transparent"/>
                                             <Setter Property="BorderThickness" Value="0"/>
+                                            <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnListBoxItemPreviewMouseRightButtonDown"/>
+                                            <Setter Property="ContextMenu">
+                                                <Setter.Value>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Accept Brief (In Progress)" Click="OnContextMenuAcceptClicked">
+                                                            <MenuItem.Icon>
+                                                                <ui:SymbolIcon Symbol="Play24" FontSize="14"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Convert into Official Project" Click="OnContextMenuConvertClicked">
+                                                            <MenuItem.Icon>
+                                                                <ui:SymbolIcon Symbol="FolderAdd24" FontSize="14"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <Separator/>
+                                                        <MenuItem Header="Copy Script &amp; Angle Brief" Click="OnContextMenuCopyScriptClicked">
+                                                            <MenuItem.Icon>
+                                                                <ui:SymbolIcon Symbol="Copy24" FontSize="14"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <Separator/>
+                                                        <MenuItem Header="Reject / Cancel Order Request" Click="OnContextMenuRejectClicked">
+                                                            <MenuItem.Icon>
+                                                                <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Setter.Value>
+                                            </Setter>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ListBoxItem">
@@ -270,7 +299,7 @@
 
                                                 <!-- Converted Banner if already created -->
                                                 <Border Background="#ECFDF5" BorderBrush="#10B981" BorderThickness="1" CornerRadius="4" Padding="6,3" Margin="0,6,0,0"
-                                                        Visibility="{Binding ProjectId, Converter={x:Null}}">
+                                                        Visibility="{Binding ConvertedBannerVisibility}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ui:SymbolIcon Symbol="Checkmark24" FontSize="12" Foreground="#059669" Margin="0,0,4,0"/>
                                                         <ui:TextBlock Text="Project Scaffolded" FontSize="10.5" FontWeight="SemiBold" Foreground="#059669"/>
@@ -450,27 +479,29 @@
                             <!-- ── ACTION: PROJECT CONVERSION & NAS PROVISIONING ── -->
                             <ui:Card Padding="18">
                                 <StackPanel>
-                                    <Grid Margin="0,0,0,10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                                    <!-- Header Block -->
+                                    <StackPanel Margin="0,0,0,12">
+                                        <ui:TextBlock Text="PROJECT SCAFFOLDING &amp; NAS PROVISIONING" FontSize="10.5" FontWeight="Bold"
+                                                      Foreground="{DynamicResource FluentBrand80}"/>
+                                        <ui:TextBlock Text="Convert into Official Project" FontSize="16" FontWeight="Bold"
+                                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,10"/>
 
-                                        <StackPanel Grid.Column="0">
-                                            <ui:TextBlock Text="PROJECT SCAFFOLDING &amp; NAS PROVISIONING" FontSize="10.5" FontWeight="Bold"
-                                                          Foreground="{DynamicResource FluentBrand80}"/>
-                                            <ui:TextBlock Text="Convert into Official Project" FontSize="15" FontWeight="Bold"
-                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,0"/>
-                                        </StackPanel>
-
-                                        <!-- Assigned Designer Selector -->
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <ui:TextBlock Text="Assigned:" FontSize="11.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                          VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                            <ComboBox x:Name="CmbAssignee" Height="30" FontSize="11.5" Width="150"
+                                        <!-- Dedicated Assigned Designer Row with full width (never cropped or overlapped) -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                <ui:SymbolIcon Symbol="Person24" FontSize="14" Foreground="{DynamicResource FluentBrand80}" Margin="0,0,6,0"/>
+                                                <ui:TextBlock Text="Assigned Designer:" FontSize="12" FontWeight="SemiBold"
+                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <ComboBox x:Name="CmbAssignee" Grid.Column="1" Height="34" FontSize="12"
+                                                      HorizontalAlignment="Stretch" MinWidth="220"
                                                       SelectionChanged="OnAssigneeSelectionChanged"/>
-                                        </StackPanel>
-                                    </Grid>
+                                        </Grid>
+                                    </StackPanel>
 
                                     <!-- Unconverted State: Scaffolding Preview -->
                                     <StackPanel x:Name="PanelUnconvertedActions">
@@ -491,10 +522,11 @@
                                             </StackPanel>
                                         </Border>
 
-                                        <!-- Big Primary Conversion Button -->
+                                        <!-- Action Buttons Row (Convert, Accept, Reject/Cancel) -->
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
@@ -502,16 +534,26 @@
                                                        Click="OnConvertOrderClicked" Cursor="Hand" Margin="0,0,8,0">
                                                 <StackPanel Orientation="Horizontal">
                                                     <ui:SymbolIcon Symbol="FolderAdd24" FontSize="16" Margin="0,0,8,0"/>
-                                                    <ui:TextBlock Text="Convert into Project" FontSize="14" FontWeight="Bold"/>
+                                                    <ui:TextBlock Text="Convert into Project" FontSize="13.5" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </ui:Button>
 
                                             <!-- Mark In-Progress without scaffolding -->
                                             <ui:Button x:Name="BtnMarkInProgress" Grid.Column="1" Appearance="Secondary" Height="42"
-                                                       Click="OnMarkInProgressClicked" Cursor="Hand" ToolTip="Mark order status as in-progress">
+                                                       Click="OnMarkInProgressClicked" Cursor="Hand" ToolTip="Mark order status as in-progress"
+                                                       Margin="0,0,8,0">
                                                 <StackPanel Orientation="Horizontal">
                                                     <ui:SymbolIcon Symbol="Play24" FontSize="14" Margin="0,0,6,0"/>
                                                     <ui:TextBlock Text="Accept Brief"/>
+                                                </StackPanel>
+                                            </ui:Button>
+
+                                            <!-- Reject or Cancel Order -->
+                                            <ui:Button x:Name="BtnRejectOrder" Grid.Column="2" Appearance="Danger" Height="42"
+                                                       Click="OnRejectOrderClicked" Cursor="Hand" ToolTip="Reject or cancel this creative order request">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Margin="0,0,6,0"/>
+                                                    <ui:TextBlock Text="Reject / Cancel"/>
                                                 </StackPanel>
                                             </ui:Button>
                                         </Grid>
@@ -539,6 +581,8 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="8"/>
                                                 <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="8"/>
+                                                <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
                                             <ui:Button Grid.Column="0" Appearance="Primary" Height="38" Click="OnOpenExistingProjectClicked" Cursor="Hand">
@@ -552,6 +596,13 @@
                                                 <StackPanel Orientation="Horizontal">
                                                     <ui:SymbolIcon Symbol="Checkmark24" FontSize="14" Margin="0,0,6,0"/>
                                                     <ui:TextBlock Text="Mark Order Completed"/>
+                                                </StackPanel>
+                                            </ui:Button>
+
+                                            <ui:Button Grid.Column="4" Appearance="Danger" Height="38" Click="OnRejectOrderClicked" Cursor="Hand" ToolTip="Cancel this creative order">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ui:SymbolIcon Symbol="Dismiss24" FontSize="14" Margin="0,0,6,0"/>
+                                                    <ui:TextBlock Text="Cancel Order"/>
                                                 </StackPanel>
                                             </ui:Button>
                                         </Grid>
