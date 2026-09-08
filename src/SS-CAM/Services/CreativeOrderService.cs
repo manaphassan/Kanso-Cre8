@@ -226,7 +226,7 @@ namespace SS_CAM.Services
             try
             {
                 var liveOrders = await FetchOrdersFromApiAsync(designerUsername).ConfigureAwait(false);
-                if (liveOrders != null && liveOrders.Count > 0)
+                if (liveOrders != null)
                 {
                     // Cache to local NAS ledger file for offline resilience and local tool integration
                     string filePath = GetOrdersFilePath(workspaceRoot);

@@ -1783,5 +1783,31 @@ router.post('/orders/:id/import-to-project', authenticateToken, (req, res) => {
   }
 });
 
+// POST /api/admin/restart — Gracefully restart server process (Docker auto-restarts with updated code)
+router.post('/admin/restart', authenticateToken, (req, res) => {
+  const role = (req.user?.role || '').toLowerCase();
+  const roles = (req.user?.roles || []).map(r => r.toLowerCase());
+  if (!role.includes('admin') && !roles.some(r => r.includes('admin'))) {
+    return res.status(403).json({ error: 'Administrator access required.' });
+  }
+
+  AuditService.logEvent({
+    actor: req.user?.name || 'Administrator',
+    role: req.user?.role || 'Admin',
+    action: 'SERVER_RESTART_REQUESTED',
+    entityType: 'System',
+    entityId: 'portal',
+    details: { timestamp: new Date().toISOString() }
+  });
+
+  res.json({ success: true, message: 'Server restarting now...' });
+
+  setTimeout(() => {
+    console.log('[Server] Graceful restart requested by', req.user?.name);
+    process.exit(0);
+  }, 300);
+});
+
 module.exports = router;
+
 
