@@ -11,6 +11,9 @@
   import ProjectDetailView from '$lib/views/ProjectDetailView.svelte';
   import DeliverablesView from '$lib/views/DeliverablesView.svelte';
   import CopyStudioView from '$lib/views/CopyStudioView.svelte';
+  import ClientsView from '$lib/views/ClientsView.svelte';
+  import InvoiceStudioView from '$lib/views/InvoiceStudioView.svelte';
+  import ZettelView from '$lib/views/ZettelView.svelte';
   import TeamView from '$lib/views/TeamView.svelte';
   import AdminView from '$lib/views/AdminView.svelte';
   import ProfileView from '$lib/views/ProfileView.svelte';
@@ -143,14 +146,17 @@
     projects:         { title: 'Project Manager',    layout: 'layout-fluid' },
     'project-detail': { title: 'Project Workspace',  layout: 'layout-full', parent: 'projects' },
     deliverables:     { title: 'Review Queue',        layout: 'layout-page' },
-    team:             { title: 'Team & Workload',     layout: 'layout-page' },
+    clients:          { title: 'Clients & Brand Hub', layout: 'layout-full' },
+    invoices:         { title: 'Quotes & Invoices',  layout: 'layout-full' },
+    zettel:           { title: 'Atomic Notes & Zettelkasten', layout: 'layout-full' },
     'copy-studio':    { title: 'Copywriting Studio',  layout: 'layout-page' },
     'order-form':     { title: 'Creative Requests',   layout: 'layout-page' },
+    team:             { title: 'Team & Workload',     layout: 'layout-page' },
     admin:            { title: 'Administration',      layout: 'layout-full' },
     profile:          { title: 'My Profile',          layout: 'layout-full' },
   };
 
-  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'SS-CAM', layout: 'layout-page' });
+  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page' });
   const currentTitle  = $derived(
     appState.currentRoute === 'project-detail' && appState.routeParams.id
       ? appState.routeParams.id
@@ -158,7 +164,7 @@
   );
 
   const breadcrumbs = $derived.by(() => {
-    const crumbs: { label: string; route?: string }[] = [{ label: 'SS-CAM Portal' }];
+    const crumbs: { label: string; route?: string }[] = [{ label: 'Kanso Cre8' }];
     const cfg = pageConfig[appState.currentRoute];
     if (!cfg) return crumbs;
     if (cfg.parent) {
@@ -169,28 +175,35 @@
     return crumbs;
   });
 
-  const dashIcon   = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
-  const folderIcon = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
-  const reviewIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
-  const teamIcon   = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
-  const pencilIcon = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
-  const adminIcon  = `<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
-
-  const orderIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
+  const dashIcon    = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
+  const folderIcon  = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
+  const reviewIcon  = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
+  const clientIcon  = `<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>`;
+  const invoiceIcon = `<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>`;
+  const zettelIcon  = `<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>`;
+  const teamIcon    = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
+  const pencilIcon  = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
+  const adminIcon   = `<path d="M19 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
+  const orderIcon   = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
 
   const navGroups = [
-    { section: 'Management & Visibility', items: [
+    { section: 'Creative Workspace', items: [
       { route: 'dashboard',    label: 'Dashboard',          icon: dashIcon },
-      { route: 'projects',     label: 'Project Manager',    icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+      { route: 'projects',     label: 'Projects & Tasks',   icon: folderIcon, matchRoutes: ['projects','project-detail'] },
       { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
     ]},
-    { section: 'Coordination & Studio', items: [
-      { route: 'order-form',   label: 'Creative Requests',  icon: orderIcon },
-      { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
+    { section: 'Knowledge & Second Brain', items: [
+      { route: 'zettel',       label: 'Atomic Notes',       icon: zettelIcon },
       { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
     ]},
-    { section: 'System & Governance', items: [
-      { route: 'admin',        label: 'Administration',     icon: adminIcon },
+    { section: 'Client & Business Ops', items: [
+      { route: 'clients',      label: 'Clients & Brands',   icon: clientIcon },
+      { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon },
+      { route: 'order-form',   label: 'Creative Requests',  icon: orderIcon },
+      { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
+    ]},
+    { section: 'System & Storage', items: [
+      { route: 'admin',        label: 'Settings & Cloud',   icon: adminIcon },
     ]},
   ];
 
@@ -444,6 +457,12 @@
             <ProjectDetailView projectId={appState.routeParams.id} />
           {:else if appState.currentRoute === 'deliverables'}
             <DeliverablesView />
+          {:else if appState.currentRoute === 'clients'}
+            <ClientsView />
+          {:else if appState.currentRoute === 'invoices'}
+            <InvoiceStudioView />
+          {:else if appState.currentRoute === 'zettel'}
+            <ZettelView />
           {:else if appState.currentRoute === 'order-form'}
             <OrderFormView />
           {:else if appState.currentRoute === 'copy-studio'}

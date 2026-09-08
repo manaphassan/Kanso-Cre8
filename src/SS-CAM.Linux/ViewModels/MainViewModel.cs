@@ -22,17 +22,17 @@ namespace SS_CAM.Linux.ViewModels
         // ── Navigation & Page Routing ──────────────────────────────────────────
         [ObservableProperty] private object? _currentPage;
         [ObservableProperty] private string _currentTabName = "Dashboard";
-        [ObservableProperty] private string _appName = "SuamiSihat™ SS-CAM";
-        [ObservableProperty] private string _appVersion = "v4.6.2-linux";
+        [ObservableProperty] private string _appName = "Kanso Cre8";
+        [ObservableProperty] private string _appVersion = "v1.0.0-linux";
         [ObservableProperty] private string _statusMessage = "Ready.";
         [ObservableProperty] private string _currentTimeString = "";
         [ObservableProperty] private string _focusTimerText = "25:00 Focus";
-        [ObservableProperty] private string _activeThemeText = "SS Default";
-        [ObservableProperty] private string _nasStatusText = "Synology Drive Active";
+        [ObservableProperty] private string _activeThemeText = "Fluent Standard";
+        [ObservableProperty] private string _nasStatusText = "Cloud Vault Active";
         [ObservableProperty] private string _nasStatusColor = "#10B981";
 
         // Navigation Highlight Colors
-        [ObservableProperty] private string _navBgDashboard = "#043388";
+        [ObservableProperty] private string _navBgDashboard = "#0078D4";
         [ObservableProperty] private string _navFgDashboard = "#FFFFFF";
         [ObservableProperty] private string _navBgProjectCreator = "Transparent";
         [ObservableProperty] private string _navFgProjectCreator = "#94A3B8";
@@ -52,8 +52,6 @@ namespace SS_CAM.Linux.ViewModels
         [ObservableProperty] private string _navFgQuickNote = "#94A3B8";
         [ObservableProperty] private string _navBgWellbeing = "Transparent";
         [ObservableProperty] private string _navFgWellbeing = "#94A3B8";
-        [ObservableProperty] private string _navBgWaktuSolat = "Transparent";
-        [ObservableProperty] private string _navFgWaktuSolat = "#94A3B8";
         [ObservableProperty] private string _navBgRadio = "Transparent";
         [ObservableProperty] private string _navFgRadio = "#94A3B8";
         [ObservableProperty] private string _navBgQrCode = "Transparent";
