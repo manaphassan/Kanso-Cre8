@@ -576,20 +576,30 @@
           <div class="platform-icon android-icon">📱</div>
           <div class="platform-meta">
             <div class="platform-title">Android Mobile Studio Companion</div>
-            <div class="platform-desc">Jetpack Compose native APK with 2×2 Bento KPI & live ICY radio</div>
+            <div class="platform-desc">Jetpack Compose native app with 2×2 Bento KPI & live ICY radio</div>
           </div>
         </div>
-        <div class="platform-actions">
+        <div class="platform-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
           <a
-            href="https://github.com/SuamiSihat/ss_cam/releases/download/v{serverVersion}/SS-CAM-v{serverVersion}-android-release.apk"
+            href="https://play.google.com/store/apps/details?id=com.suamisihat.creative&hl=en-US&ah=4fxu9FCVL39aFVxQdNL2fGvtHd4&pli=1"
             class="platform-download-btn android-btn"
             target="_blank"
             rel="noreferrer"
+            style="background: #01875f; flex: 1; min-width: 150px;"
+          >
+            Google Play Store ↗
+          </a>
+          <a
+            href="https://github.com/SuamiSihat/ss_cam/releases/download/v{serverVersion}/SS-CAM-v{serverVersion}-android-release.apk"
+            class="platform-download-btn"
+            target="_blank"
+            rel="noreferrer"
+            style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
             </svg>
-            Download Release APK ↗
+            Direct APK ↗
           </a>
         </div>
       </div>
