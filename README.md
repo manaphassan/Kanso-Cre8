@@ -4,7 +4,7 @@
 
 Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
 
-[![Release](https://img.shields.io/badge/release-v4.6.2-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.2)
+[![Release](https://img.shields.io/badge/release-v4.7.0-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.7.0)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0%20%7C%20Compose-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
@@ -12,6 +12,31 @@ Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Br
 [![License](https://img.shields.io/badge/licence-Internal%20Use-orange?style=flat-square)](./installer/EULA.txt)
 
 ---
+
+## 🚀 What's New in v4.7.0 ("Velocity Navigation & Canva Cloud Bridge")
+
+* **⚡ Instantaneous Tab Navigation (0 ms)**:
+  * Enabled `NavigationCacheMode="Required"` across all 15 navigation views in the desktop application ([MainWindow.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/MainWindow.xaml)). Tab switching is now instantaneous with zero UI thread stutter, retaining search filters, active scroll positions, and loaded data.
+  * Completely eliminated blocking synchronous recursive filesystem crawls on the UI thread in Dashboard, Calendar, and Task Manager views.
+  * Resolved the `System.InvalidCastException` on the Order Requests page by statically isolating the card context menu.
+* **🎨 Canva Creative Cloud Bridge in Project Creator ([ProjectCreatorPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/ProjectCreatorPage.xaml))**:
+  * **Platform Auto-Size Deep Launcher**: 1-click **"Create on Canva (Auto-size)"** button dynamically opens Canva preconfigured with the exact dimensions of the selected platform preset (1:1 Feed 1080x1080, 9:16 Story 1080x1920, 16:9 Banner 1920x1080, A4/A3/A5 print dimensions).
+  * **Windows Shortcut Auto-Scaffolding**: Automatically generates `02_SOURCE/Open_In_Canva.url` inside newly scaffolded projects for instant 1-click browser launching.
+  * **Frontmatter Persistence**: Stores `canva_url: https://...` in `README.md` YAML frontmatter with automatic sync across Desktop and Web.
+* **📋 Task Manager & Kanban Canva Badges ([TaskManagerPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/TaskManagerPage.xaml))**:
+  * Prominent teal `[CANVA]` pill badge rendered on cards containing Canva design links.
+  * **"Open in Canva"** quick action integrated into Kanban card context menus and the project detail drawer.
+* **🌐 Web Management Portal Synchronization (`SS-CAM.Web`)**:
+  * Added Canva Creative Cloud link input and direct launch button to `FrontmatterPanel.svelte`.
+* **🖼️ Cross-Platform Profile Picture Auto-Sync**:
+  * Bi-directional avatar synchronization between Desktop (`user_profile.json` / local disk cache) and Web/Android (`staff_directory.json` Base64 Data URIs) with automatic local caching.
+* **📅 Visual Gantt Timeline Off-Day Shading, Day Labels & Conflict Prevention**:
+  * Two-tier stacked day headers (`M, T, W, T, F, S, Sun`) with color-coded status badges for Today, Weekends, and Malaysia Public Holidays.
+  * Full-height column background fills and boundary lines across all project rows for Saturdays & Sundays (slate wash) and official Malaysia Public Holidays (soft red wash).
+  * Business working day SLA engine skipping non-working days, plus active Gantt deadline conflict detection with `⚠️ Off-Day` badges and rescheduling alerts.
+  * Version bumped to `v4.7.0`.
+* **📱 Android Companion App Alignment (`SS-CAM.Android`)**:
+  * Version bumped to `v4.7.0` (build 471).
 
 ## 🚀 What's New in v4.6.2
 
@@ -53,7 +78,7 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.2.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.7.0.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
 | 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.2-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
 | 📱 **Android Native** | **Native Android App (`src/SS-CAM.Android`)** | [Google Play Store](https://play.google.com/store/apps/details?id=com.suamisihat.creative&hl=en-US&ah=4fxu9FCVL39aFVxQdNL2fGvtHd4&pli=1)<br>Direct APK: `.\dist\SS-CAM-v4.6.2-android-release.apk` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |

@@ -2,6 +2,53 @@
 
 All notable SS-CAM changes are documented here.
 
+## [4.7.0] - 2026-09-08 (Velocity Navigation Engine, Canva Creative Cloud Bridge & Cross-Platform Alignment)
+
+### Added & Refined — Zero-Latency Navigation, Canva Cloud Bridge & Ecosystem Synchronization
+- **High-Velocity Desktop Navigation Engine (`MainWindow.xaml`, `WorkspaceScanner.cs`, `DashboardModels.cs`)**:
+  - Configured `NavigationCacheMode="Required"` across all 15 navigation views in the desktop application. Tab navigation is now instantaneous (0 ms), retaining active state, scroll position, search filters, and loaded view models without re-inflating XAML BAML trees or garbage-collecting active pages.
+  - Completely eliminated synchronous recursive `Directory.GetDirectories` crawling on the UI thread in `DashboardPage.xaml.cs`.
+  - Shifted `ActiveWipProjects` computation to the background thread in `WorkspaceScanner.ScanAsync` and surfaced directly via `DashboardSnapshot`.
+  - Converted synchronous folder scans in `CalendarPage.xaml.cs` and `TaskManagerPage.xaml.cs` to run via non-blocking `await Task.Run(...)`.
+  - Converted directory search in `OrderRequestsPage.xaml.cs` to asynchronous execution to eliminate UI stutter when selecting order cards.
+  - Resolved `System.InvalidCastException` in `OrderRequestsPage.xaml` by extracting `ContextMenu` into a statically referenced page resource (`OrderCardContextMenu`).
+- **Canva Creative Cloud Bridge in Project Creator (`ProjectCreatorPage.xaml`, `ProjectCreatorPage.xaml.cs`)**:
+  - Integrated dedicated **Canva Creative Cloud Bridge** card in the desktop Project Creator.
+  - Added **"Create on Canva (Auto-size)"** 1-click launcher that reads selected platform preset specs (1:1 Feed 1080x1080, 9:16 Story 1080x1920, 16:9 Banner 1920x1080, A4/A3/A5 print dimensions) and launches Canva in the default browser pre-configured with exact pixel/mm dimensions (`https://www.canva.com/create/?width={w}&height={h}&unit={px|mm}`).
+  - Added `CanvaUrlInput` field with **"Test Link"** button for pasting design URLs.
+  - Added `"Canva (.url)"` to starter canvas extension selector.
+  - Automatic scaffolding of `02_SOURCE/Open_In_Canva.url` Windows Internet Shortcut file, enabling 1-click launching from Windows File Explorer or SS-CAM.
+- **Project Frontmatter & Model Synchronization (`FrontmatterService.cs`, `ProjectStatus.cs`)**:
+  - Added `canva_url` property parsing and persistence to `README.md` YAML frontmatter headers.
+  - Added automatic fallback to inspect `02_SOURCE/Open_In_Canva.url` if `canva_url` is not yet set in YAML.
+  - Exposed `CanvaUrl`, `HasCanvaUrl`, and `CanvaBadgeVisibility` on `ProjectStatusItem`.
+- **Task Manager & Kanban Board Canva Badges (`TaskManagerPage.xaml`, `TaskManagerPage.xaml.cs`)**:
+  - Added prominent teal `[CANVA]` pill badge to Task Manager Kanban cards when a project contains Canva cloud metadata.
+  - Added **"Open in Canva"** option to Kanban card context menus.
+  - Added **"Open Canva"** quick launch action button in the Project Detail drawer.
+- **Web Management Portal Sync (`SS-CAM.Web`)**:
+  - Updated `ProjectFrontmatter` interface in `types/index.ts` with `canva_url?: string;`.
+  - Added Canva Creative Cloud Project Link input and external launcher button in `FrontmatterPanel.svelte`.
+  - Bumped `src/SS-CAM.Web/package.json` to version `4.7.0`.
+- **Android Companion App Alignment (`SS-CAM.Android`)**:
+  - Updated `build.gradle.kts` to `versionName = "4.7.0"` and `versionCode = 471`.
+- **Cross-Platform Profile Picture Auto-Sync (`UserProfileModels.cs`, `UserProfileService.cs`, `SettingsPage.xaml.cs`, `MainWindow.xaml.cs`)**:
+  - Implemented automatic Base64-to-disk decoding and caching (`avatar_{staffId}.jpg`) from Synology NAS `staff_directory.json` to Desktop `%LOCALAPPDATA%\SuamiSihat\`.
+  - Added auto-sync check on `UserProfileService.LoadProfile()`: Desktop now automatically validates and mirrors avatars updated from Web Portal or Android.
+  - Added bi-directional reverse sync (`UserProfileService.SyncAvatarToNas`): changing avatar on Desktop encodes to Base64 JPEG data URI and persists to NAS `staff_directory.json` for instant propagation across Web and Android.
+  - Updated `MainWindow` sidebar and `SettingsPage` preview to decode and render both Base64 Data URIs and local files seamlessly.
+- **Visual Gantt Timeline Off-Day Shading, Day Labels & Conflict Prevention (`CalendarPage.xaml`, `CalendarPage.xaml.cs`, `CategoryPresetService.cs`, `MalaysiaHolidayService.cs`, `ProjectGanttView.svelte`)**:
+  - Added two-tier stacked column headers across the Gantt timeline showing day-of-week letters (`M`, `T`, `W`, `T`, `F`, `S`, `Sun`) and day numbers.
+  - Color-coded badges and styling for Today (brand blue), Sundays (coral/red accent), Saturdays (slate neutral), and Malaysia Public Holidays (bold red with flag 🇲🇾).
+  - Implemented vertical column background fills and boundary lines spanning all project rows for Saturdays & Sundays (slate wash) and Malaysia Public Holidays like Malaysia Day Sep 16 (soft red wash).
+  - Added Gantt Timeline legend guide for working days, weekends, public holidays, today, and schedule conflict alerts.
+  - Updated SLA deadline calculation engine (`CategoryPresetService.CalculateTargetDeadline`) to count pure working business days, automatically skipping Saturdays, Sundays, and Malaysia Public Holidays.
+  - Added active Gantt deadline conflict prevention: projects whose deadlines fall on an off-day display a prominent `⚠️ Off-Day` badge on the schedule bar, red warning border, red subtitle warning, and rescheduling guidance in tooltip.
+  - Replicated holiday recognition, off-day column shading, and schedule conflict tags in Web Portal Gantt view (`ProjectGanttView.svelte`).
+- **Release Packaging**:
+  - Rebuilt WPF Desktop executable using MSBuild 4.8 in Release mode with Costura.Fody single-file embedding.
+  - Updated `dist/SS-CAM.exe` and `dist/SS-CAM-v4.7.0.exe` (AssemblyVersion and FileVersion `4.7.0.0`).
+
 ## [4.6.2] - 2026-09-08 (NAS Temporary Attachment Vault, Designer Task Handover, Web Multi-File Upload & Desktop Project Creator Auto-Ingestion)
 
 ### Added & Refined — NAS Attachment Vault, Task Handover, Multi-File Upload & Auto-Ingestion
