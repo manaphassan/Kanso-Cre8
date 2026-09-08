@@ -50,6 +50,9 @@ node_modules/
 # and must NOT be committed or deployed — managed per-environment on the NAS directly.
 src/SS-CAM.Web/server/workspace_config.json
 src/SS-CAM.Web/server/ai-config.json
+src/app/server/workspace_config.json
+src/app/server/ai-config.json
+src/app/src-tauri/target/
 
 # ── Android build caches & capture ─────────────────────────────
 .gradle/

@@ -343,7 +343,7 @@
         <div class="card-section-header">
           <div>
             <h2>Brand Portfolio Allocation</h2>
-            <p>Asset distribution across SuamiSihat holding subsidiaries</p>
+            <p>Asset distribution across active client portfolios (ACME, NEX, LUM)</p>
           </div>
         </div>
 

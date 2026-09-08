@@ -21,15 +21,13 @@
 
   // Design Tokens & Brand Colors for 1-Click Copy
   const BRAND_PALETTE = [
-    { type: 'token', name: 'SS Prussian Blue (Brand Primary)', code: '#043388', brand: 'SS', description: 'Core Holding Primary Blue' },
-    { type: 'token', name: 'SS Sky Blue (Brand Accent)', code: '#21A1F7', brand: 'SS', description: 'High-contrast UI highlight & link' },
-    { type: 'token', name: 'SSH Royal Gold (Luxury)', code: '#D4AF37', brand: 'SSH', description: 'SuamiSihat Holding & Packaging Foil' },
-    { type: 'token', name: 'SSC Healthcare Emerald', code: '#10B981', brand: 'SSC', description: 'SuamiSihat Care & Clinic' },
-    { type: 'token', name: 'SSW Wellness Coral', code: '#F43F5E', brand: 'SSW', description: 'SuamiSihat Wellness & Spa' },
-    { type: 'token', name: 'SSE E-Commerce Violet', code: '#8B5CF6', brand: 'SSE', description: 'SuamiSihat E-Commerce' },
-    { type: 'token', name: 'SST Tech Cyan', code: '#06B6D4', brand: 'SST', description: 'SuamiSihat Technology' },
-    { type: 'token', name: 'Dark Surface Canvas', code: '#090D16', brand: 'DARK', description: 'OLED Master Slate Canvas' },
-    { type: 'token', name: 'Card Surface Glass', code: '#0F172A', brand: 'CARD', description: 'Elevated Fluent 2 container surface' },
+    { type: 'token', name: 'Kanso Canvas (#09090B)', code: '#09090B', brand: 'KANSO', description: 'Master Zen canvas background' },
+    { type: 'token', name: 'Kanso Surface (#18181B)', code: '#18181B', brand: 'KANSO', description: 'Studio card & panel surface' },
+    { type: 'token', name: 'Kanso Accent (#38BDF8)', code: '#38BDF8', brand: 'KANSO', description: 'Electric sky CTA & active focus' },
+    { type: 'token', name: 'Kanso Border (#27272A)', code: '#27272A', brand: 'KANSO', description: 'Hairline 1px border elevation' },
+    { type: 'token', name: 'Acme Blue (ACME)', code: '#0284C7', brand: 'ACME', description: 'Acme Corporation brand primary' },
+    { type: 'token', name: 'Nexus Violet (NEX)', code: '#8B5CF6', brand: 'NEX', description: 'Nexus Studio creative violet' },
+    { type: 'token', name: 'Lumina Emerald (LUM)', code: '#10B981', brand: 'LUM', description: 'Lumina Labs brand accent' },
   ];
 
   interface QuickAction {
@@ -50,9 +48,9 @@
     { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Navigation', execute: () => appState.navigate('team') },
     { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: 'edit', category: 'Navigation', execute: () => appState.navigate('copy-studio') },
     { type: 'action', id: 'nav-admin', label: 'Open Studio Administration', icon: 'settings', category: 'Governance', execute: () => appState.navigate('admin') },
-    { type: 'action', id: 'act-theme', label: 'Toggle Theme (Falconia / Metamorphosis)', icon: 'colorPalette', category: 'System', execute: () => toggleTheme() },
-    { type: 'action', id: 'act-rescan', label: 'Rescan Synology NAS Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
-    { type: 'action', id: 'act-download', label: 'Download SS-CAM Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://suamisihat.github.io/ss_cam/', '_blank') },
+    { type: 'action', id: 'act-theme', label: 'Toggle Theme (Studio Light / Zen Dark)', icon: 'colorPalette', category: 'System', execute: () => toggleTheme() },
+    { type: 'action', id: 'act-rescan', label: 'Rescan Markdown Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
+    { type: 'action', id: 'act-download', label: 'Download Kanso Cre8 Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://github.com/manaphassan/Kanso-Cre8/releases', '_blank') },
   ];
 
   function toggleTheme() {
@@ -180,7 +178,7 @@
           bind:this={inputRef}
           type="text" 
           class="palette-input" 
-          placeholder="Search projects (0085D), team (@haikal), brand colors (#043388), or actions..." 
+          placeholder="Search projects (0001D), team (@alex), brand colors (#0284C7), or actions..." 
           bind:value={query}
         />
         {#if query}
@@ -197,7 +195,7 @@
           <div class="palette-empty">
             <FluentIcons name="search" size={36} color="rgba(255,255,255,0.2)" />
             <p style="margin-top: 10px;">No matching projects, tokens, or actions found for "{query}"</p>
-            <span class="empty-hint">Try searching by Job ID (e.g. <code>0085D</code>), brand (<code>SSH</code>), or command (<code>review</code>).</span>
+            <span class="empty-hint">Try searching by Job ID (e.g. <code>0001D</code>), brand (<code>ACME</code>), or command (<code>review</code>).</span>
           </div>
         {:else}
           <div class="results-list">

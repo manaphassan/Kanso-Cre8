@@ -62,11 +62,9 @@
 
   // ─── Constants ─────────────────────────────────────────────────────────────
   const ENTITIES = [
-    { id: 'SSC', label: 'Clinic',    full: 'SuamiSihat Clinic'      },
-    { id: 'SSE', label: 'Commerce',  full: 'SuamiSihat E-Commerce'  },
-    { id: 'SSH', label: 'Holding',   full: 'SuamiSihat Holding'     },
-    { id: 'SST', label: 'Tech',      full: 'SuamiSihat Technology'  },
-    { id: 'SSW', label: 'Wellness',  full: 'SuamiSihat Wellness'    },
+    { id: 'ACME', label: 'Acme Corp',    full: 'Acme Corporation'    },
+    { id: 'NEX',  label: 'Nexus',        full: 'Nexus Studio'         },
+    { id: 'LUM',  label: 'Lumina',       full: 'Lumina Labs'          },
   ];
 
   const PRIORITIES = [

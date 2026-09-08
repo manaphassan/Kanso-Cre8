@@ -11,7 +11,7 @@
 
 .markdown-body h1,
 .markdown-body h2 {
-  color: #0284C7; /* SuamiSihat Royal Brand Blue (matches Desktop FluentBrand80) */
+  color: var(--kanso-accent, #0284C7); /* Kanso Studio Brand Accent */
   font-weight: 700;
   border-bottom: none;
 }

@@ -1,17 +1,17 @@
 /* ==========================================================================
-   Fluent 2 & SuamiSihat Brand Design Tokens for Web Portal
+   Linear / Geist & Kanso Studio Design Tokens for Web Portal
    Strict 60:30:10 Color Hierarchy:
-   - 60% Foundation Layer (Canvas & Clinical breathing room)
+   - 60% Foundation Layer (Canvas & Studio breathing room)
    - 30% Secondary Layer (Cards, sidebars, borders, modals, structural surfaces)
    - 10% Brand Accent Layer (Focal CTAs, active highlights, key metrics)
    - Isolated Semantic Layer (Micro-badges and status indicators)
    ========================================================================== */
 
 :root, [data-theme="falconia"] {
-  /* ─── OFFICIAL SUAMISIHAT BRAND SYSTEM (brand-system.html) ─── */
-  --ss-prussian-blue: #022057;       /* Deep Clinical Navy */
-  --ss-blue: #043388;                /* SuamiSihat Primary Blue */
-  --ss-azure: #21A1F7;               /* Azure Conversion Accent (10%) */
+  /* ─── KANSO STUDIO BRAND SYSTEM ─── */
+  --ss-prussian-blue: #022057;       /* Deep Studio Navy */
+  --ss-blue: #0284C7;                /* Studio Primary Blue */
+  --ss-azure: #38BDF8;               /* Azure Conversion Accent (10%) */
   --ss-malibu: #6DC6EC;              /* Light Sky Accent */
   --ss-neutral-black: #1C1C1C;        /* Strict Typography Anchor */
   --ss-lion: #BD9A73;                /* Secondary Warm Gold / Lion */
@@ -20,9 +20,9 @@
   --ss-banana: #FCE53D;              /* Banana Yellow */
 
   /* ─── 10% BRAND ACCENT LAYER (60:30:10) ─── */
-  --brand-primary: #043388;          /* SuamiSihat Deep Navy */
-  --brand-secondary: #0644B2;        /* Vibrant Royal Blue */
-  --brand-accent: #21A1F7;           /* Azure Sky Focus */
+  --brand-primary: #0284C7;          /* Studio Primary Blue */
+  --brand-secondary: #0369A1;        /* Vibrant Deep Blue */
+  --brand-accent: #38BDF8;           /* Azure Sky Focus */
   --brand-tint: #EBF4FE;             /* Subtle Azure Background Tint */
   --brand-gradient: linear-gradient(135deg, #022057 0%, #043388 50%, #21A1F7 100%);
   --brand-glow: 0 0 16px rgba(33, 161, 247, 0.35);

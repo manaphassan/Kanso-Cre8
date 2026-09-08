@@ -249,7 +249,7 @@
 
   let showPasswordModal = $state<boolean>(false);
   let resetTargetUser = $state<StaffAccount | null>(null);
-  let resetNewPassword = $state<string>('SuamiSihat123!');
+  let resetNewPassword = $state<string>('KansoCre8!');
   let isResettingPassword = $state<boolean>(false);
 
   // Workspace Path Mount Management
@@ -407,10 +407,10 @@
       role: 'Designer',
       roles: ['Designer'],
       department: 'Creative Production',
-      defaultBrand: 'SSH',
-      avatarColor: '#0078D4',
+      defaultBrand: 'ACME',
+      avatarColor: '#38BDF8',
       active: true,
-      password: 'SuamiSihat123!'
+      password: 'KansoCre8!'
     };
     showUserModal = true;
   }
@@ -491,7 +491,7 @@
 
   function openPasswordReset(user: StaffAccount) {
     resetTargetUser = user;
-    resetNewPassword = 'SuamiSihat123!';
+    resetNewPassword = 'KansoCre8!';
     showPasswordModal = true;
   }
 
@@ -1234,7 +1234,7 @@
                   <td>
                     <div class="credential-cell">
                       <code class="username-code">@{u.username || u.staffId.toLowerCase()}</code>
-                      <span class="email-text">{u.email || `${u.username || 'staff'}@suamisihat.com`}</span>
+                      <span class="email-text">{u.email || `${u.username || 'creator'}@kansocre8.local`}</span>
                     </div>
                   </td>
                   <td>
@@ -1634,7 +1634,7 @@
         type="text"
         class="field-input"
         bind:value={editingCompany.name}
-        placeholder="e.g. SuamiSihat Healthcare Sdn Bhd"
+        placeholder="e.g. Acme Corporation"
       />
     </div>
 
@@ -1665,7 +1665,7 @@
           type="text"
           class="field-input"
           bind:value={editingCompany.location}
-          placeholder="e.g. Bangsar, Kuala Lumpur"
+          placeholder="e.g. San Francisco, CA / London, UK"
         />
       </div>
 
@@ -1675,7 +1675,7 @@
           type="text"
           class="field-input"
           bind:value={editingCompany.contact}
-          placeholder="e.g. +603-2282-7777 / info@suamisihat.com"
+          placeholder="e.g. +1-555-0199 / operations@acme.com"
         />
       </div>
     </div>
@@ -1830,7 +1830,7 @@
           type="email"
           class="field-input"
           bind:value={editingUser.email}
-          placeholder="e.g. amirul@suamisihat.com"
+          placeholder="e.g. alex@nexusstudio.io"
         />
       </div>
     </div>
@@ -1884,7 +1884,7 @@
           type="text"
           class="field-input"
           bind:value={editingUser.password}
-          placeholder="Default: SuamiSihat123!"
+          placeholder="Default: KansoCre8!"
         />
       </div>
     {/if}
