@@ -1,5 +1,38 @@
 # SS-CAM FIX LOG
 
+## v4.6.2 — 2026-09-08 (NAS Temporary Attachment Vault, Designer Task Handover, Web Multi-File Upload & Desktop Auto-Ingestion)
+- **Assembly Version**: `4.6.2.0` / Android `versionCode = 466`, `versionName = "4.6.2"`
+- **Desktop Task Ownership Handover & Reassignment (`TaskManagerPage.xaml`, `TaskManagerPage.xaml.cs`)**:
+  - Added `DetailDesigner` editable ComboBox and `BtnDetailHandover` ("Hand Over Task") button in Row 6 of the Detail Drawer metadata grid.
+  - Added right-click Kanban card context menu with dynamic "Hand Over Task To..." submenu pre-populated with active team members (`staff_directory.json`).
+  - Seamless frontmatter persistence (`designer: <name>`) to `README.md`, instant notification dispatch, and real-time board/filter refreshing.
+- **Synology NAS `_Orders` Temporary Attachment Vault**:
+  - Implemented dedicated temporary intake directory `\\SSNAS\Creative-Team\_Orders\<ORDER_ID>\` acting as an asset staging vault for creative requests prior to project folder creation.
+  - Safe underscore prefix (`_Orders`) ensures directory scanners (`WorkspaceScanner.cs`, `WorkspaceService.js`) ignore temporary folders and never collide with year containers (`2026/`).
+  - Automatic JSON-Lines sync to `_Orders/creative-orders.jsonl` on the NAS with fallback redundancy.
+- **Web Portal Multi-File Upload Dropzone (`OrderFormView.svelte`, `api.js`)**:
+  - Integrated modern Fluent 2 drag-and-drop file uploader in the "New Creative Request" modal supporting multiple attachments up to 50MB per file (PNG, JPG, WebP, PDF, PSD, AI, ZIP, MP4, DOCX).
+  - Attached files stream to the server via `multipart/form-data` or base64 JSON payload and are written safely into the order's NAS vault.
+- **Role Detection & Action Visibility Fix (`OrderFormView.svelte`)**:
+  - Fixed role check bug where users with composite roles like `"Admin, Designer"` (e.g. Harussani) had action buttons, status dropdowns, and designer assignment controls hidden.
+  - Enhanced role matcher to check composite role strings, token arrays, and case-insensitivity.
+- **Order Details Drawer & Attachment Actions (`OrderFormView.svelte`)**:
+  - Added "Attached Reference Files" section listing all files with sizes, upload timestamps, and direct actions.
+  - 👁️ Preview / open media in browser, ⬇️ Download original file, and ❌ Safe delete.
+  - 📋 **"Copy NAS Folder Path"**: Copies `\\SSNAS\Creative-Team\_Orders\<ORDER_ID>` directly to clipboard for opening in Windows File Explorer.
+  - ➕ Upload additional reference files into the order vault at any time.
+  - 📥 **"Copy All Attachments to Project (01_BRIEF_ASSETS)"**: 1-click action to copy all staged assets into the linked project's brief folder on the NAS.
+- **Desktop Project Creator Order Discovery & Ingestion (`ProjectCreatorPage.xaml`, `ProjectCreatorPage.xaml.cs`, `CreativeOrderService.cs`)**:
+  - Added `LinkedOrderComboBox` to the desktop Project Creator page, automatically discovering pending orders from `_Orders/creative-orders.jsonl` with live attachment counts (`[📎 N files]`).
+  - Added **Sync** button for instant order list refreshing.
+  - Selecting an order automatically populates the project title, selects the matching sub-brand, populates the brief remarks with requester information, and displays an attachment count badge.
+  - Generating the project folder automatically copies all files from `_Orders/<ORDER_ID>/` into `targetDir\01_BRIEF_ASSETS\`, sets `order_id: <ORDER_ID>` in `README.md` frontmatter, and updates order status to `in_progress`.
+- **Ecosystem Test Suite & Build Verification**:
+  - Added Test 30 to Web Portal test suite verifying NAS attachment save, list, download, and project ingestion (30/30 passed, 100%).
+  - Verified Source Guardian (9/9 passed), compiled Release desktop binary (`5.42 MB`), and executed post-build Smoke Test suite cleanly.
+
+---
+
 ## v4.6.1 — 2026-09-04 (Cross-Platform Creative Orders Real-Time Sync, Order Requests Scaffolding Engine & Desktop Startup Resilience)
 - **Assembly Version**: `4.6.1.0` / Android `versionCode = 462`, `versionName = "4.6.1"`
 - **Cross-Platform Creative Orders Real-Time Sync**:

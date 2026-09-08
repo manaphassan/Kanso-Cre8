@@ -4,7 +4,7 @@
 
 Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Brand Asset Inspector · Synology NAS Native · Multi-Platform
 
-[![Release](https://img.shields.io/badge/release-v4.6.1-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.1)
+[![Release](https://img.shields.io/badge/release-v4.6.2-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam/releases/tag/v4.6.2)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux%20%7C%20Android%20%7C%20Docker-blue?style=flat-square)](https://github.com/SuamiSihat/ss_cam)
 [![Framework](https://img.shields.io/badge/.NET%20Framework-4.8%20%7C%20.NET%208.0%20%7C%20Compose-purple?style=flat-square)](https://dotnet.microsoft.com)
 [![Web Stack](https://img.shields.io/badge/web-Svelte%205%20%2B%20Node.js%2020-ff3e00?style=flat-square)](https://svelte.dev)
@@ -13,25 +13,29 @@ Standardized Project Vaults · ClickUp 3.0 Workspace · Copywriting Studio · Br
 
 ---
 
-## 🚀 What's New in v4.6.1
+## 🚀 What's New in v4.6.2
 
+* **🤝 Designer Task Handover ([TaskManagerPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/TaskManagerPage.xaml))**:
+  * **Right-Click Quick Handover**: Instant re-assignment of any project card to any team designer via the card context menu with instant YAML frontmatter update and success toast.
+  * **Detail Pane Task Owner Selection**: Dedicated editable designer combo box and "Hand Over Task" button in the project detail drawer for seamless workflow transfers.
+* **📂 Synology NAS `_Orders` Temporary Attachment Vault**:
+  * Dedicated temporary intake vault at `\\SSNAS\Creative-Team\_Orders\<ORDER_ID>\` for reference assets, briefs, logos, PDFs, and sketches.
+  * Underscore prefix (`_Orders`) ensures project directory scanners safely ignore temporary order folders, preventing collisions with official year project vaults (`2026/`).
+  * Realtime JSONL sync to `_Orders/creative-orders.jsonl` on the NAS.
+* **🌐 Web Management Portal (`SS-CAM.Web`)**:
+  * **Multi-File Upload Dropzone**: Modern Fluent 2 drag-and-drop file uploader in the "New Request" modal supporting multiple attachments up to 50MB per file.
+  * **Role Detection Fix**: Resolved role checking bug where composite roles like `"Admin, Designer"` were denied action buttons and status dropdowns.
+  * **Attachment Actions & Preview**: Direct preview, download, delete, and 1-click **"Copy NAS Folder Path"** to clipboard for opening in Windows Explorer.
+  * **1-Click Project Ingestion**: Ingests all order attachments directly into the linked project's `01_BRIEF_ASSETS` directory on the NAS.
+* **🪟 Desktop Standardized Project Creator ([ProjectCreatorPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/ProjectCreatorPage.xaml))**:
+  * **Order Discovery Dropdown**: Discovers active orders from `_Orders/creative-orders.jsonl` with live attachment counts (`[📎 N files]`) and instant Sync button.
+  * **Auto-Population**: Selecting an order auto-populates project title, sub-brand, and structured brief remarks.
+  * **Automatic Attachment Ingestion**: Copies all attachments into `01_BRIEF_ASSETS/`, sets `order_id` in `README.md` frontmatter, and updates order status to `in_progress`.
 * **🔄 Cross-Platform Creative Orders Real-Time Sync**:
   * Direct live REST API integration between Desktop (Windows WPF & Linux Avalonia) and the Web Management Portal (`/api/orders`).
-  * Automatic JWT authentication and live queue fetching ensuring Desktop, Web Portal, and Android Companion app display the exact same active orders in real time.
-  * Dual-layer persistence: live cloud orders are automatically cached to the local Synology NAS ledger (`_Team\Orders\creative-orders.jsonl`) for offline resilience.
-  * Instant bidirectional status propagation: converting or updating an order on Desktop immediately issues an HTTP `PATCH /api/orders/{id}` to the central cloud API.
-* **📦 Desktop 1-Click Project Scaffolding Engine**:
-  * Automatically calculates canonical next project ID (`NNNNX`), scaffolds standard 4-folder project vaults (`01_Brief_and_Copy`, `02_Source_Assets`, `03_Artwork_Design`, `04_Final_Exports`), auto-generates `01_Brief_and_Copy/COPY.md` with the approved brief, and writes `README.md` with YAML frontmatter.
-* **🛡️ Desktop Startup Sequence & Splash Screen Resilience**:
-  * Fixed WPF-UI icon symbol compilation clash (`ClipboardTasklist24` -> `ClipboardTask24`).
-  * High-speed in-process `WScript.Shell` COM shortcut registration, `OnLastWindowClose` shutdown mode, and diagnostic file logging.
-* **🪟 Desktop Task Manager Kanban Overdue Suppression**:
-  * Completed and approved projects (`done`, `approved`, `completed`) strictly suppress the red overdue badge (`IsOverdue = false`), rendering deadlines in clean emerald green (`#10B981`) text.
-* **🌐 Web Management Portal (`SS-CAM.Web`)**:
-  * **Creative Direction Matrix Preview & Header Toggle**: Defaults to clean formatted preview cards with live color swatch dots parsed from hex tokens.
-  * **Markdown Editor Auto-Wrapping**: Eliminated fixed 720px height restriction with sticky toolbar.
-* **📱 Android Native Studio Companion (v4.6.1, Code 462)**:
-  * Full real-time synchronization with Creative Orders pipeline, signed Google Play AAB bundle & standalone APK.
+  * Dedicated Desktop Order Requests management page ([OrderRequestsPage.xaml](file:///e:/Dev/Projects/SS-Brand-Assets/src/SS-CAM/Views/OrderRequestsPage.xaml)).
+* **📱 Android Native Studio Companion (v4.6.2, Build 466)**:
+  * Synchronized settings, metrics, and Creative Orders pipeline with signed Google Play AAB bundle & standalone APK.
 
 ---
 
@@ -49,9 +53,9 @@ SS-CAM provides a comprehensive multi-client ecosystem to support diverse creati
 
 | Target Platform | Package / Variant | Deployment / Execution | Role in Ecosystem |
 |---|---|---|---|
-| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.1.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
-| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.1-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
-| 📱 **Android Native** | **Native Android APK & AAB (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.1-android-release.apk`<br>Play Store Bundle: `.\dist\SS-CAM-v4.6.1-android-release.aab` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
+| 🪟 **Windows 10 / 11** | **Native WPF Single-File (`src/SS-CAM`)** | Portable executable: `.\dist\SS-CAM-v4.6.2.exe` | **Flagship Designer Client**: Offline-first, full Post Haste template generator, Preflight Quality Auditor, Direct Synology Drive I/O. |
+| 🐧 **Linux Desktop (Fedora/Ubuntu)** | **Native Avalonia UI (`src/SS-CAM.Linux`)** | Standalone Tarball: `.\dist\SS-CAM-v4.6.2-linux-x64.tar.gz`<br>1-Command: `curl -fsSL https://raw.githubusercontent.com/SuamiSihat/ss_cam/SS-Master/installer/install-linux.sh \| sudo bash` | **Native Linux Desktop Client**: Skia graphics engine, GNOME/KDE `.desktop` integration, direct `~/SynologyDrive/` I/O. |
+| 📱 **Android Native** | **Native Android APK & AAB (`src/SS-CAM.Android`)** | Portable package: `.\dist\SS-CAM-v4.6.2-android-release.apk`<br>Play Store Bundle: `.\dist\SS-CAM-v4.6.2-android-release.aab` | **Mobile Studio Companion**: 2×2 Bento KPI telemetry, 1-tap deliverable approvals, live ICY radio streaming, desk standby clock, push alerts. |
 | 🌐 **Admin Web Portal** | **Docker Web Container (`src/SS-CAM.Web`)** | Deploy on Synology NAS / Linux Server: `cd src/SS-CAM.Web && docker compose up -d` | **Admin & Central Control Plane**: User provisioning, holding switcher (SSH/SSC/SSW/SSE/SST), audit logs, API hub. |
 
 ---

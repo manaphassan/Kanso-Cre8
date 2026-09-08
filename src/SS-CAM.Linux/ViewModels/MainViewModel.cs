@@ -23,7 +23,7 @@ namespace SS_CAM.Linux.ViewModels
         [ObservableProperty] private object? _currentPage;
         [ObservableProperty] private string _currentTabName = "Dashboard";
         [ObservableProperty] private string _appName = "SuamiSihat™ SS-CAM";
-        [ObservableProperty] private string _appVersion = "v4.6.0-linux";
+        [ObservableProperty] private string _appVersion = "v4.6.2-linux";
         [ObservableProperty] private string _statusMessage = "Ready.";
         [ObservableProperty] private string _currentTimeString = "";
         [ObservableProperty] private string _focusTimerText = "25:00 Focus";
