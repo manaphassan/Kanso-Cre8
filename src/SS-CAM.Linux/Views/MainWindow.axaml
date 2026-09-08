@@ -7,7 +7,7 @@
         x:Class="SS_CAM.Linux.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SS-CAM — SuamiSihat™ Creative Assets Management (Linux Workstation Client)"
+        Title="Kanso Cre8 — Personal Creative Vault &amp; Project Manager (Linux Desktop)"
         Width="1280" Height="860"
         MinWidth="1024" MinHeight="680"
         WindowStartupLocation="CenterScreen"
@@ -23,9 +23,9 @@
             <Grid ColumnDefinitions="Auto, *, Auto">
                 <!-- Brand -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Background="#043388" CornerRadius="8" Width="36" Height="36"
-                            BorderBrush="#21A1F7" BorderThickness="1">
-                        <TextBlock Text="SS" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15"
+                    <Border Background="#0078D4" CornerRadius="8" Width="36" Height="36"
+                            BorderBrush="#60CDFF" BorderThickness="1">
+                        <TextBlock Text="K8" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel VerticalAlignment="Center">
@@ -35,7 +35,7 @@
                                 <TextBlock Text="{Binding AppVersion}" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8"/>
                             </Border>
                         </StackPanel>
-                        <TextBlock Text="Creative Operations &amp; Digital Assets Management Suite"
+                        <TextBlock Text="Personal Creative Vault, Project &amp; Client Manager"
                                    FontSize="11" Foreground="#64748B"/>
                     </StackPanel>
                 </StackPanel>
@@ -162,13 +162,6 @@
                                     Background="{Binding NavBgWellbeing}" Foreground="{Binding NavFgWellbeing}"
                                     CornerRadius="7">
                                 <TextBlock Text="🧘  Creative Wellbeing" FontSize="13"/>
-                            </Button>
-
-                            <Button Command="{Binding SelectTabCommand}" CommandParameter="Waktu Solat"
-                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="12,9"
-                                    Background="{Binding NavBgWaktuSolat}" Foreground="{Binding NavFgWaktuSolat}"
-                                    CornerRadius="7">
-                                <TextBlock Text="🕌  Waktu Solat" FontSize="13"/>
                             </Button>
 
                             <Button Command="{Binding SelectTabCommand}" CommandParameter="Radio Player"

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -9,11 +9,13 @@ namespace SS_CAM.Services
 {
     public enum AppTheme
     {
-        Falconia,        // Clean Fluent 2 Light Mode
-        Metamorphosis,   // Glassmorphism — deep navy + electric cyan + violet glow
-        Catppuccin,      // Soothing pastel dark (Mocha flavor — Mauve accent on Base dark background)
-        RosePine,        // All natural pine, warm rose, iris & gold aesthetic (rosepinetheme.com)
-        Nord             // Arctic, North-bluish color palette (nordtheme.com)
+        Light,           // Standard Fluent 2 Light Mode
+        Dark,            // Standard Fluent 2 Dark Mode
+        Falconia = Light,
+        Metamorphosis = Dark,
+        Catppuccin = Dark,
+        RosePine = Dark,
+        Nord = Light
     }
 
     public class ThemeColors
@@ -44,7 +46,7 @@ namespace SS_CAM.Services
         public string SearchText { get; set; }
         public string SearchPlaceholder { get; set; }
         
-        // Falconia-specific & Nav Tokens
+        // Fluent Nav Tokens
         public string NavIndicatorColor { get; set; }
         public string NavIconActive { get; set; }
         public string NavIconInactive { get; set; }
@@ -58,13 +60,13 @@ namespace SS_CAM.Services
 
         public ThemeConfig()
         {
-            SelectedTheme = AppTheme.Falconia;
+            SelectedTheme = AppTheme.Light;
         }
     }
 
     public class ThemeService
     {
-        private static AppTheme _currentTheme = AppTheme.Falconia;
+        private static AppTheme _currentTheme = AppTheme.Light;
         private static readonly string _configPath;
 
         static ThemeService()
@@ -108,71 +110,119 @@ namespace SS_CAM.Services
 
         public static ThemeColors GetColors(AppTheme theme)
         {
-            if (theme == AppTheme.Metamorphosis)
-                return GetMetamorphosisColors();
-            if (theme == AppTheme.Catppuccin)
-                return GetCatppuccinColors();
-            if (theme == AppTheme.RosePine)
-                return GetRosePineColors();
-            if (theme == AppTheme.Nord)
-                return GetNordColors();
+            if (theme == AppTheme.Dark)
+                return GetFluentDarkColors();
 
-            return GetFalconiaColors();
+            return GetFluentLightColors();
         }
 
-        private static ThemeColors GetFalconiaColors()
+        private static ThemeColors GetFluentLightColors()
         {
             return new ThemeColors
             {
                 IsLight = true,
                 FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
 
-                TitleBarForeground = "#FFFFFF",
+                TitleBarForeground = "#111827",
 
-                // Header & Canvas (SS Blue header)
-                HeaderBg        = "#043388",
-                HeaderBorder    = "#062E7A",
-                MainFrameBg     = "#FAFAFA",
+                // Header & Canvas
+                HeaderBg        = "#FFFFFF",
+                HeaderBorder    = "#E5E7EB",
+                MainFrameBg     = "#F8FAFC",
 
                 // Sidebar
-                SidebarBg       = "#043388",
-                SidebarBorder   = "#062E7A",
+                SidebarBg       = "#F1F5F9",
+                SidebarBorder   = "#E2E8F0",
 
                 // Global search in sidebar
-                SearchBg          = "#0644B2",
-                SearchBorder      = "#1B55C4",
-                SearchText        = "#FFFFFF",
-                SearchPlaceholder = "#8AAACF",
+                SearchBg          = "#FFFFFF",
+                SearchBorder      = "#CBD5E1",
+                SearchText        = "#0F172A",
+                SearchPlaceholder = "#64748B",
 
-                // Active nav item: text = SAME color as active icon (#21A1F7 Azure)
-                ActiveNavBg     = "#EBF4FE",              // subtle azure tint
-                ActiveNavText   = "#21A1F7",              // Azure Blue!
-                ActiveNavSubtext= "#0E84D3",
+                // Active nav item
+                ActiveNavBg     = "#E0EDFD",
+                ActiveNavText   = "#0078D4",
+                ActiveNavSubtext= "#005A9E",
 
-                // Inactive nav: dark grey text (#424242), grey icon (#616161)
-                InactiveNavText    = "#424242",           // turns grey when inactive
-                InactiveNavSubtext = "#616161",
+                // Inactive nav
+                InactiveNavText    = "#334155",
+                InactiveNavSubtext = "#64748B",
 
                 // Footer / status bar
-                FooterBg        = "#FFFFFF",
-                FooterBorder    = "#E0E0E0",
-                FooterText      = "#242424",
+                FooterBg        = "#F1F5F9",
+                FooterBorder    = "#E2E8F0",
+                FooterText      = "#475569",
                 FooterCardBg    = "#FFFFFF",
-                FooterCardBorder= "#E0E0E0",
+                FooterCardBorder= "#E2E8F0",
 
-                // Designer Profile card in sidebar
-                UserCardBg      = "#0644B2",
-                UserCardBorder  = "#1B55C4",
-                UserCardTitle   = "#FFFFFF",
-                UserCardSub     = "#21A1F7",
+                // User profile card in sidebar
+                UserCardBg      = "#FFFFFF",
+                UserCardBorder  = "#E2E8F0",
+                UserCardTitle   = "#0F172A",
+                UserCardSub     = "#0078D4",
 
-                // Nav indicator pill + icon tint (Azure #21A1F7)
-                NavIndicatorColor = "#21A1F7",
-                NavIconActive     = "#21A1F7",            // Azure blue active icon
-                NavIconInactive   = "#616161",            // grey inactive icon
+                // Nav indicator pill & icon tint
+                NavIndicatorColor = "#0078D4",
+                NavIconActive     = "#0078D4",
+                NavIconInactive   = "#64748B",
 
-                // Visualizer bar color for light mode
-                SpectrumBarColor  = "#21A1F7"
+                SpectrumBarColor  = "#0078D4"
+            };
+        }
+
+        private static ThemeColors GetFluentDarkColors()
+        {
+            return new ThemeColors
+            {
+                IsLight = false,
+                FontFamily = "Segoe UI Variable Text, Segoe UI Variable Display, Segoe UI, sans-serif",
+
+                TitleBarForeground = "#F8FAFC",
+
+                // Header & Canvas
+                HeaderBg        = "#18181B",
+                HeaderBorder    = "#27272A",
+                MainFrameBg     = "#09090B",
+
+                // Sidebar
+                SidebarBg       = "#121214",
+                SidebarBorder   = "#27272A",
+
+                // Global search in sidebar
+                SearchBg          = "#1E1E22",
+                SearchBorder      = "#2E2E33",
+                SearchText        = "#F8FAFC",
+                SearchPlaceholder = "#A1A1AA",
+
+                // Active nav item
+                ActiveNavBg     = "#1E293B",
+                ActiveNavText   = "#38BDF8",
+                ActiveNavSubtext= "#7DD3FC",
+
+                // Inactive nav
+                InactiveNavText    = "#CBD5E1",
+                InactiveNavSubtext = "#94A3B8",
+
+                // Footer / status bar
+                FooterBg        = "#121214",
+                FooterBorder    = "#27272A",
+                FooterText      = "#94A3B8",
+                FooterCardBg    = "#1E1E22",
+                FooterCardBorder= "#2E2E33",
+
+                // User profile card in sidebar
+                UserCardBg      = "#1E1E22",
+                UserCardBorder  = "#2E2E33",
+                UserCardTitle   = "#F8FAFC",
+                UserCardSub     = "#38BDF8",
+
+                // Nav indicator pill & icon tint
+                NavIndicatorColor = "#38BDF8",
+                NavIconActive     = "#38BDF8",
+                NavIconInactive   = "#94A3B8",
+
+                SpectrumBarColor  = "#38BDF8"
             };
         }
 
@@ -183,23 +233,15 @@ namespace SS_CAM.Services
 
             try
             {
-                var appTheme = (theme == AppTheme.Metamorphosis || theme == AppTheme.Catppuccin || theme == AppTheme.RosePine)
+                var appTheme = (theme == AppTheme.Dark)
                     ? Wpf.Ui.Appearance.ApplicationTheme.Dark
                     : Wpf.Ui.Appearance.ApplicationTheme.Light;
 
                 Wpf.Ui.Appearance.ApplicationThemeManager.Apply(appTheme);
 
-                Color accentColor;
-                if (theme == AppTheme.Metamorphosis)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#00CFFF");
-                else if (theme == AppTheme.Catppuccin)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#CBA6F7");
-                else if (theme == AppTheme.RosePine)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#EBBCBA");
-                else if (theme == AppTheme.Nord)
-                    accentColor = (Color)ColorConverter.ConvertFromString("#5E81AC");
-                else
-                    accentColor = (Color)ColorConverter.ConvertFromString("#FCE53D");
+                Color accentColor = (theme == AppTheme.Dark)
+                    ? (Color)ColorConverter.ConvertFromString("#38BDF8")
+                    : (Color)ColorConverter.ConvertFromString("#0078D4");
 
                 Wpf.Ui.Appearance.ApplicationAccentColorManager.Apply(accentColor, appTheme);
             }
