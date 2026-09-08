@@ -1,4 +1,4 @@
-﻿# Kanso Cre8 (簡素) — The Mindful Creative Vault
+# Kanso Cre8 (簡素) — The Mindful Creative Vault
 
 > **Offline-First Creative Operations, Client Hub & Knowledge Engine for Freelance Designers**  
 > *Zero bloat. Total data ownership. Pure creative flow.*
@@ -138,3 +138,10 @@ Kanso Cre8 is licensed under the **PolyForm Noncommercial License 1.0.0**.
 * **Prohibited**: Commercial resale of the software, closed-source SaaS distribution, or charging users for access.
 
 See [LICENSE](./LICENSE) for the full legal terms.
+
+---
+
+## 👨‍💻 Author & Maintainer
+
+Created with care by **[harusssani.manaphassan](https://github.com/manaphassan)**.
+
