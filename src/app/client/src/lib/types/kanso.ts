@@ -14,12 +14,12 @@ export interface ClientPalette {
 export interface ClientProfile {
   id: string;
   name: string;
-  code: string; // e.g. "GOV", "JOM", "SSH"
+  code: string; // e.g. "ACME", "NEX", "LUM"
   contactPerson: string;
   email: string;
   phone?: string;
   billingAddress: string;
-  currency: string; // "MYR", "USD", "SGD", etc.
+  currency: string; // "USD", "EUR", "MYR", etc.
   defaultHourlyRate: number;
   paymentTermsDays: number;
   palette: ClientPalette;
@@ -29,7 +29,7 @@ export interface ClientProfile {
 }
 
 export interface ProjectFrontmatter {
-  id: string; // e.g. "202609_0001_GOV"
+  id: string; // e.g. "202609_0001_ACME"
   title: string;
   client: string;
   client_code: string;
@@ -89,4 +89,35 @@ export interface InvoiceDocument {
   total: number;
   notes: string;
   linkedProjectId?: string;
+}
+
+export type SyncProvider = 'local' | 'dropbox' | 'gdrive' | 'onedrive' | 'synology' | 'unknown';
+
+export interface VaultConfig {
+  rootPath: string;
+  name: string;
+  provider: SyncProvider;
+  isOnline: boolean;
+  lastSyncedAt?: string;
+  autoWatch: boolean;
+}
+
+export interface VaultFile {
+  path: string;
+  relativePath: string;
+  filename: string;
+  extension: string;
+  sizeBytes: number;
+  modifiedAt: string;
+  frontmatter?: Record<string, any>;
+  content?: string;
+}
+
+export interface VaultStats {
+  clientCount: number;
+  projectCount: number;
+  invoiceCount: number;
+  zettelCount: number;
+  totalSizeBytes: number;
+  lastScannedAt: string;
 }
