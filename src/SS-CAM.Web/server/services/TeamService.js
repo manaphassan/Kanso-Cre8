@@ -248,38 +248,79 @@ class TeamService {
         };
       });
 
-      // Calculate Category-Weighted Active Load (Max safe studio capacity: 5.0 slot points)
+      // Helper to identify active in-flight projects
+      const isActiveStatus = (status) => {
+        const s = (status || '').toLowerCase();
+        return s === 'in-progress' || s === 'review' || s === 'revision';
+      };
+
+      // Calculate Category-Weighted Active In-Flight Load
+      // ONLY projects actively in-flight consume designer capacity: in-progress, review, revision
+      // Backlog (queued), on-hold (paused), done, approved, and cancelled do NOT consume active bandwidth
       let weightedLoad = 0;
-      memberProjects.filter(p => p.status !== 'done' && p.status !== 'approved').forEach(p => {
+      memberProjects.filter(p => isActiveStatus(p.status)).forEach(p => {
         weightedLoad += (p.slotWeight || 1.0);
       });
       weightedLoad = Math.round(weightedLoad * 10) / 10;
 
+      const activeCount = memberProjects.filter(p => isActiveStatus(p.status)).length;
+      const backlogCount = memberProjects.filter(p => (p.status || '').toLowerCase() === 'backlog').length;
+
+      // Studio Capacity scale (Max recommended studio bandwidth: 5.0 slot points)
+      // 0 pts = Available (ready for assignment)
+      // 0.1 - 3.5 pts = Normal (healthy active load)
+      // 3.6 - 4.4 pts = High Workload (heavy workload)
+      // 4.5 - 5.0 pts = At Capacity (maximum utilization)
+      // > 5.0 pts OR >= 5 active projects = Overloaded (exceeds capacity bottleneck)
       let capacityPercent = Math.min(100, Math.round((weightedLoad / 5.0) * 100));
       let capacityStatus = 'Normal';
       let capacityColor = '#10B981'; // Green
 
-      if (weightedLoad >= 4.5 || w.active >= 5) {
+      if (weightedLoad > 5.0 || (w.active && w.active >= 5) || activeCount >= 5) {
         capacityStatus = 'Overloaded';
         capacityColor = '#EF4444'; // Red
-      } else if (weightedLoad >= 2.5 || w.active >= 3) {
+      } else if (weightedLoad >= 4.5) {
+        capacityStatus = 'At Capacity';
+        capacityColor = '#F97316'; // Orange
+      } else if (weightedLoad >= 2.5 || (w.active && w.active >= 3) || activeCount >= 3) {
         capacityStatus = 'High Workload';
         capacityColor = '#F59E0B'; // Amber
-      } else if (w.active === 0 || weightedLoad === 0) {
+      } else if (weightedLoad === 0 && (!w.active || w.active === 0) && activeCount === 0) {
         capacityStatus = 'Available';
         capacityColor = '#21A1F7'; // Azure
       }
+
+      // Sort member projects: Active first (revision > in-progress > review), then backlog, then completed
+      const STATUS_SORT_WEIGHT = {
+        'revision': 1,
+        'in-progress': 2,
+        'review': 3,
+        'backlog': 4,
+        'on-hold': 5,
+        'done': 6,
+        'approved': 7,
+        'cancelled': 8
+      };
+
+      const sortedProjects = [...memberProjects].sort((a, b) => {
+        const rankA = STATUS_SORT_WEIGHT[(a.status || '').toLowerCase()] || 99;
+        const rankB = STATUS_SORT_WEIGHT[(b.status || '').toLowerCase()] || 99;
+        return rankA - rankB;
+      });
 
       return {
         ...member,
         workload: {
           ...w,
           weightedLoad,
-          capacityPercent
+          capacityPercent,
+          backlogCount
         },
         capacityStatus,
         capacityColor,
-        assignedProjects: memberProjects.slice(0, 6),
+        activeCount,
+        backlogCount,
+        assignedProjects: sortedProjects.slice(0, 6),
         totalAssignedCount: memberProjects.length
       };
     });

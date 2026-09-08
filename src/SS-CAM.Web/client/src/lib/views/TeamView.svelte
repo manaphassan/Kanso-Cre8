@@ -111,6 +111,7 @@
     let totalRevisions = 0;
     let totalCompleted = 0;
     let overloadedCount = 0;
+    let atCapacityCount = 0;
     let availableCount = 0;
 
     teamMembers.forEach(m => {
@@ -120,8 +121,10 @@
       totalRevisions += w.revision || 0;
       totalCompleted += w.completed || 0;
 
-      if (m.capacityStatus === 'Overloaded') overloadedCount++;
-      else if (m.capacityStatus === 'Available') availableCount++;
+      const cs = (m.capacityStatus || '').toLowerCase();
+      if (cs === 'overloaded') overloadedCount++;
+      else if (cs === 'at capacity') atCapacityCount++;
+      else if (cs === 'available') availableCount++;
     });
 
     const avgLoad = totalCreatives > 0 ? (totalActive / totalCreatives).toFixed(1) : '0';
@@ -131,6 +134,9 @@
     if (overloadedCount > 0) {
       healthStatus = `${overloadedCount} Overloaded`;
       healthColor = '#EF4444';
+    } else if (atCapacityCount > 0) {
+      healthStatus = `${atCapacityCount} At Capacity`;
+      healthColor = '#F97316';
     } else if (Number(avgLoad) >= 3.5) {
       healthStatus = 'Peak Capacity';
       healthColor = '#F59E0B';
@@ -146,6 +152,7 @@
       totalCompleted,
       avgLoad,
       overloadedCount,
+      atCapacityCount,
       availableCount,
       healthStatus,
       healthColor
@@ -177,7 +184,14 @@
 
     // 3. Capacity Status Filter
     if (selectedCapacity !== 'all') {
-      list = list.filter(m => (m.capacityStatus || '').toLowerCase() === selectedCapacity.toLowerCase());
+      const sel = selectedCapacity.toLowerCase();
+      list = list.filter(m => {
+        const cs = (m.capacityStatus || '').toLowerCase();
+        if (sel === 'high workload' || sel === 'high load') return cs === 'high workload' || cs === 'high load';
+        if (sel === 'overloaded') return cs === 'overloaded';
+        if (sel === 'at capacity') return cs === 'at capacity';
+        return cs === sel;
+      });
     }
 
     // 4. Sorting
@@ -423,6 +437,14 @@
         </button>
         <button
           type="button"
+          class="pill-btn status-cap"
+          class:active={selectedCapacity === 'at capacity'}
+          onclick={() => (selectedCapacity = 'at capacity')}
+        >
+          At Capacity
+        </button>
+        <button
+          type="button"
           class="pill-btn status-over"
           class:active={selectedCapacity === 'overloaded'}
           onclick={() => (selectedCapacity = 'overloaded')}
@@ -620,7 +642,14 @@
           {#if member.assignedProjects && member.assignedProjects.length > 0}
             <div class="assigned-projects-section">
               <div class="assigned-header">
-                <span class="assigned-title">Active Projects ({member.assignedProjects.length})</span>
+                {#if (member.workload?.active || 0) > 0}
+                  <span class="assigned-title">Active Projects ({member.workload.active})</span>
+                {:else if member.assignedProjects.some(p => p.status === 'backlog')}
+                  <span class="assigned-title">Queued / Backlog ({member.assignedProjects.filter(p => p.status === 'backlog').length})</span>
+                {:else}
+                  <span class="assigned-title">Recent Projects ({member.assignedProjects.length})</span>
+                {/if}
+
                 {#if (member.totalAssignedCount || 0) > member.assignedProjects.length}
                   <span class="assigned-more">+{member.totalAssignedCount! - member.assignedProjects.length} more</span>
                 {/if}
@@ -628,28 +657,53 @@
 
               <div class="projects-chip-list">
                 {#each member.assignedProjects as proj}
-                  <div class="project-chip-row">
+                  <div class="project-chip-card">
+                    <!-- Top row: Brand & Job on left, Status & Reassign on right -->
+                    <div class="project-chip-top">
+                      <div class="project-id-group">
+                        <span class="chip-brand">[{proj.brand}]</span>
+                        <span class="chip-job">{proj.jobId}</span>
+                      </div>
+                      <div class="project-actions-group">
+                        <span class="chip-status status-{proj.status}">{proj.status}</span>
+                        <button
+                          type="button"
+                          class="rebalance-chip-btn"
+                          title="Reassign / Rebalance this project to another designer"
+                          onclick={() => openReassignDialog(proj, member.name)}
+                        >
+                          <FluentIcons name="sparkles" size={11} color="#D4AF37" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Middle row: Title (clean wrap, legible, no overflow) -->
                     <a
                       href="#project-detail/{proj.id}"
-                      class="project-preview-chip"
-                      title="{proj.jobId}: {proj.title} · {proj.presetType || 'Graphic'} ({proj.slaDays || 3}d SLA)"
+                      class="project-title-link"
+                      title="{proj.jobId}: {proj.title}"
                     >
-                      <span class="chip-brand">[{proj.brand}]</span>
-                      <span class="chip-job">{proj.jobId}</span>
-                      <span class="chip-title">{proj.title}</span>
-                      {#if proj.shortLabel || proj.slaDays}
-                        <span class="chip-sla" title="Category SLA: {proj.slaDays || 3} days target">{proj.shortLabel || 'Graphic'} · {proj.slaDays || 3}d</span>
-                      {/if}
-                      <span class="chip-status status-{proj.status}">{proj.status}</span>
+                      <span class="project-title-text">{proj.title}</span>
                     </a>
-                    <button
-                      type="button"
-                      class="rebalance-chip-btn"
-                      title="Reassign / Rebalance this project to another designer"
-                      onclick={() => openReassignDialog(proj, member.name)}
-                    >
-                      <FluentIcons name="sparkles" size={12} color="#D4AF37" />
-                    </button>
+
+                    <!-- Bottom row: SLA & Weight metadata -->
+                    <div class="project-chip-meta">
+                      {#if proj.shortLabel || proj.slaDays}
+                        <span class="chip-sla" title="Category SLA: {proj.slaDays || 3} days target">
+                          {proj.shortLabel || 'Graphic'} · {proj.slaDays || 3}d SLA
+                        </span>
+                      {/if}
+                      {#if proj.slotWeight}
+                        <span class="chip-weight" title="Capacity Weight: {proj.slotWeight} slot pts">
+                          {proj.slotWeight} pt{proj.slotWeight > 1 ? 's' : ''}
+                        </span>
+                      {/if}
+                      {#if proj.deadline}
+                        <span class="chip-deadline" title="Target Deadline">
+                          Due {proj.deadline}
+                        </span>
+                      {/if}
+                    </div>
                   </div>
                 {/each}
               </div>
@@ -1273,7 +1327,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2px 2px;
+    justify-content: center;
+    min-height: 48px;
+    padding: 4px 2px;
     border-right: 1px solid var(--surface-card-border);
   }
   .matrix-cell:last-child {
@@ -1310,6 +1366,12 @@
     text-transform: uppercase;
     letter-spacing: 0.2px;
     margin-top: 3px;
+    line-height: 1.15;
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
   /* ═══ ASSIGNED PROJECTS PREVIEW ═══════════════════════════════ */
@@ -1328,7 +1390,7 @@
     color: var(--text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   .assigned-more {
@@ -1339,76 +1401,144 @@
   .projects-chip-list {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 7px;
   }
 
-  .project-preview-chip {
+  .project-chip-card {
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--surface-card-border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .project-chip-card:hover {
+    background: var(--surface-card-hover, rgba(255, 255, 255, 0.04));
+    border-color: rgba(33, 161, 247, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .project-chip-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .project-id-group {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px;
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
-    border-radius: 6px;
-    text-decoration: none;
-    color: var(--text-primary);
-    font-size: 12px;
-    transition: all 0.14s ease;
-  }
-  .project-preview-chip:hover {
-    background: var(--brand-tint);
-    border-color: var(--brand-accent);
-    transform: translateX(2px);
   }
 
   .chip-brand {
     font-size: 10.5px;
     font-weight: 800;
-    color: var(--brand-primary);
+    color: var(--brand-accent, #21A1F7);
+    letter-spacing: 0.2px;
   }
 
   .chip-job {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 11px;
     font-weight: 800;
-    color: var(--text-secondary);
+    color: var(--text-primary);
   }
 
-  .chip-title {
-    flex: 1;
-    white-space: nowrap;
+  .project-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .project-title-link {
+    text-decoration: none;
+    color: var(--text-primary);
+    display: block;
+    line-height: 1.35;
+  }
+
+  .project-title-link:hover .project-title-text {
+    color: var(--brand-accent, #21A1F7);
+  }
+
+  .project-title-text {
+    font-size: 12.5px;
+    font-weight: 600;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 600;
+  }
+
+  .project-chip-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 1px;
   }
 
   .chip-sla {
     font-size: 9.5px;
     font-weight: 700;
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(33, 161, 247, 0.12);
-    color: var(--brand-accent);
-    border: 1px solid rgba(33, 161, 247, 0.25);
+    background: rgba(33, 161, 247, 0.1);
+    color: var(--brand-accent, #21A1F7);
+    border: 1px solid rgba(33, 161, 247, 0.2);
+    white-space: nowrap;
+  }
+
+  .chip-weight {
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(168, 85, 247, 0.1);
+    color: #C084FC;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    white-space: nowrap;
+  }
+
+  .chip-deadline {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--text-tertiary);
     white-space: nowrap;
   }
 
   .chip-status {
     font-size: 9.5px;
     font-weight: 800;
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--text-secondary);
+    white-space: nowrap;
   }
 
-  .chip-status.status-in-progress { background: rgba(33, 161, 247, 0.15); color: #0284C7; }
-  .chip-status.status-review      { background: rgba(245, 158, 11, 0.15); color: #D97706; }
-  .chip-status.status-revision    { background: rgba(239, 68, 68, 0.15); color: #DC2626; }
+  .chip-status.status-in-progress { background: rgba(33, 161, 247, 0.15); color: #0284C7; border: 1px solid rgba(33, 161, 247, 0.3); }
+  .chip-status.status-review      { background: rgba(245, 158, 11, 0.15); color: #D97706; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .chip-status.status-revision    { background: rgba(239, 68, 68, 0.15); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .chip-status.status-backlog     { background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.25); }
   .chip-status.status-done,
-  .chip-status.status-approved    { background: rgba(16, 185, 129, 0.15); color: #059669; }
+  .chip-status.status-approved    { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
+  .chip-status.status-on-hold     { background: rgba(100, 116, 139, 0.15); color: #64748B; border: 1px solid rgba(100, 116, 139, 0.25); }
+
+  .status-cap {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+    color: #F97316 !important;
+  }
+  .status-cap.active {
+    background: #F97316 !important;
+    color: #FFFFFF !important;
+  }
 
   .no-projects-box {
     padding: 10px;
@@ -1525,12 +1655,6 @@
   .empty-desc { font-size: 13px; color: var(--text-secondary); margin: 0 0 8px 0; max-width: 400px; }
 
   /* ═══ REBALANCE CHIPS & MODAL STYLES ═════════════════════════ */
-  .project-chip-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    width: 100%;
-  }
 
   .rebalance-chip-btn {
     background: rgba(245, 158, 11, 0.15);

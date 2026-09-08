@@ -743,15 +743,21 @@ class WorkspaceService {
     const designerWorkload = Object.values(designerMap).filter(item => isAllowedWorkloadRole(item.designer)).map(item => {
       const active = item.active || 0;
       const capacityPercent = Math.min(100, Math.round((active / 4) * 100));
-      let capacityStatus = 'Optimal Bandwidth';
+      let capacityStatus = 'Normal';
       let capacityColor = '#10B981';
 
       if (active > 4) {
-        capacityStatus = 'At Capacity';
+        capacityStatus = 'Overloaded';
         capacityColor = '#EF4444';
+      } else if (active === 4) {
+        capacityStatus = 'At Capacity';
+        capacityColor = '#F97316';
       } else if (active > 2) {
         capacityStatus = 'High Load';
         capacityColor = '#F59E0B';
+      } else if (active === 0) {
+        capacityStatus = 'Available';
+        capacityColor = '#21A1F7';
       }
 
       const matched = staffRoster.find(s => 
