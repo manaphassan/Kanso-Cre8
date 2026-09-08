@@ -503,7 +503,7 @@ A feature is done when:
 
 # WORKSPACE AGENT SKILLS
 
-- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Zettelkasten knowledge integration, multi-client management (Govicle, Jomparking, SuamiSihat), quote/invoice studio, and phased roadmap milestones.
+- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Zettelkasten knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
 - `sscam-code-guardian`: Validates SS-CAM source before any edit or commit. Enforces UTF-8 BOM, checks Fluent 2 compliance, hardcoded paths, silent catches, and UI thread blocking.
 - `sscam-git-cleaner`: Automates post git pull/push cleanup, archiving unused/temporary files, organizing repository folder hierarchy, enforcing UTF-8 BOM encoding, and auditing project security.
 - `sscam-page-scaffold`: Generates a new SS-CAM page with correct Fluent 2 structure, ScrollViewer root, lifecycle error guards, and automatic MainWindow navigation.
