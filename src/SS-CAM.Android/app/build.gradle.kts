@@ -6,13 +6,13 @@ plugins {
 
 android {
     namespace = "com.suamisihat.sscam"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.suamisihat.creative"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 467
+        targetSdk = 36
+        versionCode = 468
         versionName = "4.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -35,6 +35,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
         }
     }
     compileOptions {
@@ -75,6 +78,7 @@ dependencies {
     implementation("androidx.biometric:biometric-ktx:1.2.0-alpha05")
     implementation("androidx.appcompat:appcompat:1.6.1")
 }
+
 
 
 
