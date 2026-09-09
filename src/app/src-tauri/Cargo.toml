@@ -1,6 +1,6 @@
-﻿[package]
+[package]
 name = "kanso-cre8"
-version = "1.0.0"
+version = "0.0.1"
 description = "The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine"
 authors = ["harusssani.manaphassan"]
 license = "PolyForm-Noncommercial-1.0.0"
