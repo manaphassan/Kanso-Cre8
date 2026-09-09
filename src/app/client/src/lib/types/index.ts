@@ -1,5 +1,5 @@
 /**
- * Core Type Definitions for SS-CAM Web Management Portal (Svelte 5)
+ * Core Type Definitions for Kanso Cre8 Desktop Application (Svelte 5)
  */
 
 export type ThemeName = 'falconia' | 'metamorphosis' | 'catppuccin';
