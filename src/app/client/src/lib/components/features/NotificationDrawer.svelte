@@ -10,7 +10,7 @@
     onclose?: () => void;
   }
 
-  let { open = false, onclose }: Props = $props();
+  let { open = $bindable(false), onclose }: Props = $props();
 
   let notifications = $state<ActivityNotification[]>([]);
   let isLoading = $state<boolean>(false);
