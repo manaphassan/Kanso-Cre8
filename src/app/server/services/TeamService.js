@@ -39,19 +39,7 @@ class TeamService {
     try {
       const json = fs.readFileSync(rosterPath, 'utf8');
       const roster = JSON.parse(json);
-      const hasLegacy = Array.isArray(roster) && (
-        roster.length < 6 ||
-        roster.some(m => (m.staffId && m.staffId.startsWith('SS')) || (m.email && m.email.includes('suamisihat')))
-      );
-      if (!hasLegacy && Array.isArray(roster) && roster.length >= 6) {
-        if (!roster.some(m => m.username === 'demo')) {
-          roster.unshift(defaultTeam[0]);
-          this.saveStaffRoster(roster);
-        }
-        return roster;
-      }
-      this.saveStaffRoster(defaultTeam);
-      return defaultTeam;
+      return Array.isArray(roster) && roster.length > 0 ? roster : defaultTeam;
     } catch (err) {
       console.error('[TeamService] Failed to parse staff_directory.json:', err.message);
       return defaultTeam;

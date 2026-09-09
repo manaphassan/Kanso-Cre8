@@ -132,6 +132,11 @@ export class ClientService {
     return this.clients.find(c => c.id === id);
   }
 
+  public getClientRate(code: string): number {
+    const client = this.getClientByCode(code);
+    return client?.defaultHourlyRate || 100;
+  }
+
   public addClient(client: ClientProfile): void {
     this.clients.push(client);
     this.saveClients();

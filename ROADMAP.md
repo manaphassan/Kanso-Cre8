@@ -92,7 +92,7 @@ To build a rock-solid, production-grade application for working freelance creato
 
 ### Key Deliverables
 1. **Standardized 5-Folder Project Vault Scaffolder**:
-   - 1-Click generator creating standardized project vaults under `[YYYY]/[YYYYMM]_[PREFIX]_[ProjectTitle]/`:
+   - 1-Click generator creating standardized project vaults under `_Projects/[YYYY]/[YYYYMM]_[PREFIX]_[ProjectTitle]/`:
      - `01_BRIEF/` (Client briefs, references, vector logos, moodboards)
      - `02_SOURCE/` (PSD, AI, Affinity, Blender, Figma links)
      - `03_COPY/` (Scripts, social hooks, COPY.md)
@@ -110,27 +110,31 @@ To build a rock-solid, production-grade application for working freelance creato
 
 ---
 
-## 🚦 Priority 4: Zettelkasten Knowledge Second Brain & Universal Task Rollup
+## 🚦 Priority 4: Bullet Journal (BuJo) & Atelier Notes Engine
 * **Priority Level**: **MEDIUM-HIGH**
-* **Status**: Completed (Production Ready)
-* **Impact**: Long-term creative leverage — synthesizing ideas, research, and project tasks into an interconnected graph.
+* **Status**: Active Evolution (v0.0.1-alpha)
+* **Impact**: Long-term creative leverage — daily rapid task logging, monthly reflections, and atomic knowledge management.
 
 ### Key Deliverables
-1. **3-Tier Note Classification Engine (`ZettelView.svelte` & `zettelService.ts`)**:
-   - `_Zettelkasten/01_Fleeting/`: Quick unedited thoughts and call minutes (`Ctrl+Space` quick capture).
-   - `_Zettelkasten/02_Literature/`: Book notes, competitor teardowns, swipe file references.
-   - `_Zettelkasten/03_Permanent/`: Synthesized atomic design rules, color formulas, and proven viral hooks.
-2. **Bi-Directional WikiLink Indexer**:
+1. **Bullet Journal System (`_Journal/` & `JournalView.svelte`)**:
+   - `_Journal/Daily/YYYY-MM-DD.md`: Daily rapid logs with design-native BuJo symbols (`• [ ]` Task, `• [x]` Done, `• [>]` Migrated, `o` Event, `-` Note, `*` Priority).
+   - `_Journal/Monthly/YYYY-MM.md`: Monthly review of deliverables, focus hours, billable totals, and creative reflections.
+   - `_Journal/Yearly/YYYY.md`: Annual retrospective, strategic vision, and portfolio evolution.
+2. **Atelier Notes Knowledge Engine (`_Notes/` & `ZettelView.svelte`)**:
+   - `_Notes/01_Fleeting/`: Quick unedited thoughts and call minutes (`Ctrl+Space` quick capture).
+   - `_Notes/02_Literature/`: Book notes, competitor teardowns, swipe file references.
+   - `_Notes/03_Permanent/`: Synthesized atomic design rules, color formulas, and proven viral hooks.
+   - `_Notes/Scratchpad.md`: Dedicated buffer for temporary quick notes, clipboard dumps, and instant scratchpad ideas.
+3. **Bi-Directional WikiLink Indexer**:
    - Syntax: `[[Note Title]]` or `[[ClientName]]`.
    - Automatic crawling of all `.md` files to build an in-memory graph of outgoing links and incoming backlinks without binary databases.
-3. **Universal Task Rollup Engine**:
+4. **Universal Task Rollup Engine**:
    - Regex crawler: `- \[( |x)\] #task (.+?)(?: 📅 (\d{4}-\d{2}-\d{2}))?`.
-   - Scans meeting notes and briefs vault-wide, automatically surfacing active tasks on the Kanban board.
-   - Toggling a checkbox in the Kanban board edits the physical Markdown file on disk in real time.
+   - Scans Daily Notes, briefs, and atomic notes vault-wide, automatically surfacing active tasks on the Studio Deck Today's Tasks deck.
 
 ### Acceptance Criteria
 * Clicking a `[[WikiLink]]` opens the target note immediately.
-* Adding `- [ ] #task Review packaging print bleed` in a fleeting note creates an actionable card on the Kanban board.
+* Adding `- [ ] #task Review packaging print bleed` in a daily note or fleeting note creates an actionable card on the Studio Deck.
 
 ---
 
@@ -207,7 +211,33 @@ To build a rock-solid, production-grade application for working freelance creato
 
 ### Acceptance Criteria
 * Windows and Linux executables build cleanly and run under ~35MB RAM.
-* Global shortcut `Ctrl+Space` brings up quick capture modal from anywhere in the OS.
+---
+
+## 🚦 Priority 8: Billable Chronometer & Executive Studio Deck
+* **Priority Level**: **HIGH (Current Sprint)**
+* **Status**: In Active Development (v0.0.1-alpha)
+* **Impact**: Tactile daily creative cashflow — header live timer, automated rate calculation, and studio health cockpit.
+
+### Key Deliverables
+1. **Header Billable Chronometer (`HeaderTimerWidget.svelte` & `timerStore.svelte.ts`)**:
+   - Tactile Play & Stop controls with live elapsed ticker (`HH:MM:SS`).
+   - Hourly design rate input / client selector (`$/hr`) with real-time earnings calculation (`+$...`).
+   - Active client swatch strip with 1-click HEX copy.
+   - 1-Click "Log to Invoice" pipeline on Stop prompt to write itemized hours directly to `_Finance/Invoices/`.
+   - Accurate state persistence across app reloads/restarts without losing seconds.
+2. **Executive Studio Deck (`DashboardView.svelte`)**:
+   - **Today's Tasks**: Daily task deck synced with BuJo Daily Notes with instant check-off.
+   - **Design Metrics Bento**: Focus hours logged today/week, billable velocity, first-time-right %, average turnaround velocity, revision rounds.
+   - **Project Status at a Glance**: Visual card deck with client color, progress bar, stage badge, deadline countdown.
+   - **Smart Suggestions**: Contextual alerts for unreviewed proofs, unbilled hours, approaching deadlines, and focus wellness.
+   - **Total Income**: Live aggregation of Paid Invoices + Pending Invoices + Today's Accrued Timer Earnings.
+3. **Settings Persistence Engine (`settingsStore.svelte.ts`)**:
+   - Persists default rate, currency, view preferences, theme, and timer auto-log settings to `localStorage`.
+
+### Acceptance Criteria
+* Clicking Play starts the timer and updates live earnings every second.
+* Closing and reopening the app restores the running timer with 100% elapsed time accuracy.
+* Stopping the timer prompts to append session to draft invoice and logs entry.
 
 ---
 

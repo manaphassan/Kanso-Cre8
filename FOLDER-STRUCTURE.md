@@ -22,50 +22,57 @@ Because the vault contains only plain directories, UTF-8 `.md` files, and standa
 
 ---
 
-## 🗄️ 2. The Canonical Vault Root Layout
+## 🗄️ 2. The Canonical Vault
 
 ```text
 📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
-├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
-│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
+├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Hub
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation · $125/hr)
 │   │   ├── 📄 client.md                 # YAML frontmatter: contacts, billing, palette, rates
 │   │   └── 📁 Assets/                   # Vector logos, brand guidelines PDF, fonts
-│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio · $110/hr)
 │   │   ├── 📄 client.md
 │   │   └── 📁 Assets/
-│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs)
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs · $140/hr)
 │       ├── 📄 client.md
 │       └── 📁 Assets/
 │
-├── 📁 _Finance/                          # 🧾 Financial Documents (Quotes & Invoices)
+├── 📁 _Finance/                          # 🧾 Cashflow & Invoice Studio (Quotes & Invoices)
 │   ├── 📁 Quotes/                        # QUOTE-YYYY-XXX.md
 │   │   └── 📄 QUOTE-2026-001_AcmeCorp_BrandSystem.md
 │   └── 📁 Invoices/                      # INV-YYYY-XXX.md (Printable HTML/PDF)
 │       ├── 📄 INV-2026-001_AcmeCorp_Deposit.md
 │       └── 📄 INV-2026-002_NexusStudio_LaunchDesign.md
 │
-├── 📁 _Zettelkasten/                     # 🧠 Second Brain Knowledge Engine
-│   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
-│   │   └── 📄 20260908_Call_Notes_Acme_Kickoff.md
-│   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
-│   │   └── 📄 20260905_Dieter_Rams_Ten_Principles.md
-│   └── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
-│       ├── 📄 Grid_Golden_Ratio_Typography.md
-│       └── 📄 Hook_Problem_Agitate_Solve.md
+├── 📁 _Projects/                         # 📁 All Client Project Vaults
+│   └── 📁 2026/                          # Standardized 5-Folder Project Vaults by Year
+│       └── 📁 202609_September/
+│           └── 📁 202609_0001_ACME_MobileAppIllustration/
+│               ├── 📁 01_BRIEF/          # Client briefs, references, moodboards
+│               ├── 📁 02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
+│               ├── 📁 03_COPY/           # COPY.md (scripts, hooks, specs)
+│               ├── 📁 04_WIP/            # Draft exports, test renders, review clips
+│               ├── 📁 05_DELIVERABLES/   # High-res exports ready for client handover
+│               └── 📄 README.md          # Project Master File (YAML Frontmatter)
 │
-├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
-│   └── 📁 202609_September/
-│       └── 📁 202609_0001_ACME_MobileAppIllustration/
-│           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
-│           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
-│           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
-│           ├── 📁 04_WIP/                # Draft exports, test renders, review clips
-│           ├── 📁 05_DELIVERABLES/       # High-res exports ready for client handover
-│           └── 📄 README.md              # Project Master File (YAML Frontmatter)
+├── 📁 _Journal/                          # 📔 Bullet Journal (BuJo) System
+│   ├── 📁 Daily/                         # YYYY-MM-DD.md (Daily rapid logging: tasks, events, notes)
+│   │   └── 📄 2026-09-09.md
+│   ├── 📁 Monthly/                       # YYYY-MM.md (Monthly review, deliverables, reflections)
+│   │   └── 📄 2026-09_September.md
+│   └── 📁 Yearly/                        # YYYY.md (Annual review, milestones, creative vision)
+│       └── 📄 2026_YearlyReview.md
 │
-└── 📁 _Notes/                            # 📝 Quick Scratchpad
-    └── 📄 Scratchpad.md
+└── 📁 _Notes/                            # 🧠 Atelier Notes & Second Brain Engine
+    ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
+    │   └── 📄 20260908_Call_Notes_Acme_Kickoff.md
+    ├── 📁 02_Literature/                 # Design references, book notes, teardowns
+    │   └── 📄 20260905_Dieter_Rams_Ten_Principles.md
+    ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+    │   ├── 📄 Grid_Golden_Ratio_Typography.md
+    │   └── 📄 Hook_Problem_Agitate_Solve.md
+    └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
 ```
 
 ---
@@ -204,17 +211,34 @@ status: "sent" # draft | sent | paid | overdue
 
 ---
 
-## 🔍 6. Zettelkasten Knowledge Engine Structure
+## 📔 6. Bullet Journal & Atelier Notes Structure
 
+### 6.1 Bullet Journal System (`_Journal/`)
 ```text
-_Zettelkasten/
-├── 01_Fleeting/       # Quick notes during calls (created via Ctrl+Space)
+_Journal/
+├── Daily/             # Rapid logging: tasks, events, reflections (YYYY-MM-DD.md)
+├── Monthly/           # Monthly retrospective & billable summary (YYYY-MM.md)
+└── Yearly/            # High-level vision & financial milestones (YYYY.md)
+```
+* **BuJo Rapid Log Notation**:
+  * `• [ ] <Task>`: Active actionable task
+  * `• [x] <Task>`: Completed task
+  * `• [>] <Task>`: Migrated to future date / sprint
+  * `o <Event>`: Client sync, design critique, deadline
+  * `- <Note>`: Observation, design idea, or meeting takeaway
+  * `* <Priority>`: High-importance focus item
+
+### 6.2 Atelier Notes & Second Brain (`_Notes/`)
+```text
+_Notes/
+├── 01_Fleeting/       # Quick raw captures (created via Ctrl+Space)
 ├── 02_Literature/     # Summaries of articles, books, competitor teardowns
-└── 03_Permanent/      # Synthesized design principles & reusable copy formulas
+├── 03_Permanent/      # Synthesized design principles & reusable copy formulas
+└── Scratchpad.md      # Temporary buffer for scratch notes & clipboard dumps
 ```
 
 * **WikiLink Syntax**: Internal connections use `[[Note Title]]` or `[[ClientName]]`.
-* **Universal Task Syntax**: `- [ ] #task <Title> 📅 <YYYY-MM-DD> ⏫ <priority>` auto-rolls up to the master Kanban board.
+* **Universal Task Syntax**: `- [ ] #task <Title> 📅 <YYYY-MM-DD> ⏫ <priority>` auto-rolls up to Studio Deck Today's Tasks.
 
 ---
 

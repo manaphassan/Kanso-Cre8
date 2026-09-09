@@ -6,6 +6,17 @@
 import type { ZettelNote, ZettelTask, ZettelType } from '../types/zettel';
 
 const STORAGE_KEY = 'kanso_cre8_zettelkasten';
+const SCRATCHPAD_KEY = 'kanso_cre8_scratchpad';
+
+const DEFAULT_SCRATCHPAD = `# Scratchpad (_Notes/Scratchpad.md)
+
+Use this space for instant clipboard dumps, fleeting ideas, temporary hex codes, or quick meeting scribbles.
+Everything here is saved automatically in real-time.
+
+- Quick hex: #38BDF8 (Electric Sky Accent)
+- Review brand tokens with [[ACME]] design lead
+- Check invoice draft for September design sprints
+`;
 
 export const DEFAULT_ZETTEL_NOTES: ZettelNote[] = [
   {
@@ -115,6 +126,23 @@ export class ZettelService {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.notes));
     } catch (e) {
       console.error('[ZettelService] Save error:', e);
+    }
+  }
+
+  public getScratchpad(): string {
+    try {
+      const stored = localStorage.getItem(SCRATCHPAD_KEY);
+      return stored !== null ? stored : DEFAULT_SCRATCHPAD;
+    } catch {
+      return DEFAULT_SCRATCHPAD;
+    }
+  }
+
+  public saveScratchpad(content: string): void {
+    try {
+      localStorage.setItem(SCRATCHPAD_KEY, content);
+    } catch (e) {
+      console.error('[ZettelService] Scratchpad save error:', e);
     }
   }
 

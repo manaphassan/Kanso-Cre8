@@ -20,13 +20,12 @@
   import AdminView from '$lib/views/AdminView.svelte';
   import ProfileView from '$lib/views/ProfileView.svelte';
   import ClientReviewView from '$lib/views/ClientReviewView.svelte';
-  import OrderFormView from '$lib/views/OrderFormView.svelte';
+  import JournalView from '$lib/views/JournalView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
-  import ObsidianMigrationModal from '$lib/components/features/ObsidianMigrationModal.svelte';
+  import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
 
   let commandPaletteOpen = $state(false);
-  let migrationWizardOpen = $state(false);
   let serverVersion = $state('0.0.1');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
@@ -137,29 +136,25 @@
       }
     });
 
-    const handleOpenMigration = () => { migrationWizardOpen = true; };
-    window.addEventListener('kanso:open-migration', handleOpenMigration);
-
     return () => {
-      window.removeEventListener('kanso:open-migration', handleOpenMigration);
       closeSse();
     };
   });
 
   const pageConfig: Record<string, { title: string; layout: string; parent?: string }> = {
-    dashboard:        { title: 'Dashboard',          layout: 'layout-full' },
-    projects:         { title: 'Project Manager',    layout: 'layout-fluid' },
-    'project-detail': { title: 'Project Workspace',  layout: 'layout-full', parent: 'projects' },
-    deliverables:     { title: 'Review Queue',        layout: 'layout-page' },
-    clients:          { title: 'Clients & Brand Hub', layout: 'layout-full' },
-    invoices:         { title: 'Quotes & Invoices',  layout: 'layout-full' },
-    zettel:           { title: 'Atomic Notes & Zettelkasten', layout: 'layout-full' },
+    dashboard:        { title: 'Studio Deck',          layout: 'layout-full' },
+    journal:          { title: 'Bullet Journal',       layout: 'layout-full' },
+    projects:         { title: 'Project Manager',      layout: 'layout-fluid' },
+    'project-detail': { title: 'Project Workspace',    layout: 'layout-full', parent: 'projects' },
+    deliverables:     { title: 'Review Queue',          layout: 'layout-page' },
+    clients:          { title: 'Clients & Brand Hub',   layout: 'layout-full' },
+    invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full' },
+    zettel:           { title: 'Atelier Notes & Knowledge', layout: 'layout-full' },
     radio:            { title: 'Focus Radio & Cassette Deck', layout: 'layout-full' },
-    'copy-studio':    { title: 'Copywriting Studio',  layout: 'layout-page' },
-    'order-form':     { title: 'Creative Requests',   layout: 'layout-page' },
-    team:             { title: 'Team & Workload',     layout: 'layout-page' },
-    admin:            { title: 'Administration',      layout: 'layout-full' },
-    profile:          { title: 'My Profile',          layout: 'layout-full' },
+    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-page' },
+    team:             { title: 'Team & Workload',       layout: 'layout-page' },
+    admin:            { title: 'Administration',        layout: 'layout-full' },
+    profile:          { title: 'My Profile',            layout: 'layout-full' },
   };
 
   const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page' });
@@ -182,6 +177,7 @@
   });
 
   const dashIcon    = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
+  const journalIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>`;
   const folderIcon  = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
   const reviewIcon  = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
   const radioIcon   = `<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>`;
@@ -191,23 +187,22 @@
   const teamIcon    = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
   const pencilIcon  = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
   const adminIcon   = `<path d="M19 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
-  const orderIcon   = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
 
   const navGroups = [
-    { section: 'Creative Workspace', items: [
-      { route: 'dashboard',    label: 'Dashboard',          icon: dashIcon },
-      { route: 'projects',     label: 'Projects & Tasks',   icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+    { section: 'Creative Operations', items: [
+      { route: 'dashboard',    label: 'Studio Deck',        icon: dashIcon },
+      { route: 'journal',      label: 'Bullet Journal',     icon: journalIcon },
+      { route: 'projects',     label: 'Project Vaults',     icon: folderIcon, matchRoutes: ['projects','project-detail'] },
       { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
       { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
     ]},
     { section: 'Knowledge & Second Brain', items: [
-      { route: 'zettel',       label: 'Atomic Notes',       icon: zettelIcon },
+      { route: 'zettel',       label: 'Atelier Notes',      icon: zettelIcon },
       { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
     ]},
     { section: 'Client & Business Ops', items: [
       { route: 'clients',      label: 'Clients & Brands',   icon: clientIcon },
       { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon },
-      { route: 'order-form',   label: 'Creative Requests',  icon: orderIcon },
       { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
     ]},
     { section: 'System & Storage', items: [
@@ -332,11 +327,12 @@
         </div>
 
         <div class="header-center">
+          <HeaderTimerWidget />
           <button class="header-search-btn" onclick={() => (commandPaletteOpen = true)} aria-label="Open Command Palette (Ctrl K)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="search-ico" aria-hidden="true">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <span class="search-placeholder">Search projects, colors, team, actions…</span>
+            <span class="search-placeholder">Search…</span>
             <kbd class="search-shortcut">Ctrl K</kbd>
           </button>
         </div>
@@ -444,6 +440,8 @@
         <section class="view-pane {currentConfig.layout}">
           {#if appState.currentRoute === 'dashboard'}
             <DashboardView />
+          {:else if appState.currentRoute === 'journal'}
+            <JournalView />
           {:else if appState.currentRoute === 'projects'}
             <ProjectsView />
           {:else if appState.currentRoute === 'project-detail'}
@@ -458,8 +456,6 @@
             <ZettelView />
           {:else if appState.currentRoute === 'radio'}
             <RadioView />
-          {:else if appState.currentRoute === 'order-form'}
-            <OrderFormView />
           {:else if appState.currentRoute === 'copy-studio'}
             <CopyStudioView />
           {:else if appState.currentRoute === 'team'}
@@ -549,11 +545,6 @@
   <CommandPaletteModal
     bind:open={commandPaletteOpen}
     onClose={() => (commandPaletteOpen = false)}
-  />
-
-  <ObsidianMigrationModal
-    bind:open={migrationWizardOpen}
-    onClose={() => (migrationWizardOpen = false)}
   />
 
   <NotificationDrawer

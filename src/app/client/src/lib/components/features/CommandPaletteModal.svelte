@@ -48,9 +48,9 @@
     { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Navigation', execute: () => appState.navigate('team') },
     { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: 'edit', category: 'Navigation', execute: () => appState.navigate('copy-studio') },
     { type: 'action', id: 'nav-admin', label: 'Open Studio Administration', icon: 'settings', category: 'Governance', execute: () => appState.navigate('admin') },
+    { type: 'action', id: 'nav-journal', label: 'Open Bullet Journal (BuJo Rapid Log)', icon: 'calendar', category: 'Navigation', execute: () => appState.navigate('journal') },
     { type: 'action', id: 'act-theme', label: 'Toggle Theme (Studio Light / Zen Dark)', icon: 'colorPalette', category: 'System', execute: () => toggleTheme() },
     { type: 'action', id: 'act-rescan', label: 'Rescan Markdown Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
-    { type: 'action', id: 'act-migrate', label: 'Migrate Vault (Obsidian / Notion)', icon: 'folder', category: 'Vault & Storage', execute: () => window.dispatchEvent(new CustomEvent('kanso:open-migration')) },
     { type: 'action', id: 'act-download', label: 'Download Kanso Cre8 Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://github.com/manaphassan/Kanso-Cre8/releases', '_blank') },
   ];
 
