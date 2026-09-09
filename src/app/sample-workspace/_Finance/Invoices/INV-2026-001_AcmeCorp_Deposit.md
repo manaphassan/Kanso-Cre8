@@ -11,7 +11,7 @@ paid_date: 2026-09-05
 currency: USD
 hourly_rate: 125
 items:
-  - description: 50% Upfront Milestone Deposit: 3D Isometric Mobile App Illustration
+  - description: "50% Upfront Milestone Deposit: 3D Isometric Mobile App Illustration"
     hours: 19
     rate: 125
     amount: 2375

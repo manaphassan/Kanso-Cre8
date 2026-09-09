@@ -4,6 +4,7 @@
  */
 
 import type { ZettelNote, ZettelTask, ZettelType } from '../types/zettel';
+import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_zettelkasten';
 const SCRATCHPAD_KEY = 'kanso_cre8_scratchpad';
@@ -101,6 +102,21 @@ export class ZettelService {
     return ZettelService.instance;
   }
 
+  public async loadNotesFromDisk(): Promise<ZettelNote[]> {
+    try {
+      const res = await ApiClient.getAtomicNotes();
+      if (res && res.success && Array.isArray(res.notes)) {
+        this.notes = res.notes;
+        this.reindexAll();
+        this.saveNotes();
+        return this.notes;
+      }
+    } catch (err) {
+      console.warn('[ZettelService] Remote disk sync error, falling back to local cache:', err);
+    }
+    return this.loadNotes();
+  }
+
   public loadNotes(): ZettelNote[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -129,6 +145,19 @@ export class ZettelService {
     }
   }
 
+  public async loadScratchpadFromDisk(): Promise<string> {
+    try {
+      const res = await ApiClient.getScratchpad();
+      if (res && res.success && res.content !== undefined) {
+        localStorage.setItem(SCRATCHPAD_KEY, res.content);
+        return res.content;
+      }
+    } catch (e) {
+      console.warn('[ZettelService] Scratchpad disk load error:', e);
+    }
+    return this.getScratchpad();
+  }
+
   public getScratchpad(): string {
     try {
       const stored = localStorage.getItem(SCRATCHPAD_KEY);
@@ -141,6 +170,9 @@ export class ZettelService {
   public saveScratchpad(content: string): void {
     try {
       localStorage.setItem(SCRATCHPAD_KEY, content);
+      ApiClient.saveScratchpad(content).catch(err => {
+        console.warn('[ZettelService] Remote scratchpad sync warning:', err);
+      });
     } catch (e) {
       console.error('[ZettelService] Scratchpad save error:', e);
     }
@@ -172,11 +204,22 @@ export class ZettelService {
       this.notes.unshift(note);
     }
     this.saveNotes();
+
+    // Sync to disk asynchronously
+    ApiClient.saveAtomicNote(note).catch(err => {
+      console.warn('[ZettelService] Disk save note warning:', err);
+    });
   }
 
-  public deleteNote(id: string): void {
+  public deleteNote(id: string, category?: string): void {
+    const existing = this.getNoteById(id);
+    const cat = category || existing?.type || 'permanent';
     this.notes = this.notes.filter(n => n.id !== id);
     this.saveNotes();
+
+    ApiClient.deleteAtomicNote(cat, id).catch(err => {
+      console.warn('[ZettelService] Disk delete note warning:', err);
+    });
   }
 
   /**
@@ -256,6 +299,30 @@ export class ZettelService {
 
     task.completed = !task.completed;
     this.saveNote(note);
+
+    ApiClient.toggleUniversalTask({
+      category: note.type || 'permanent',
+      noteId: note.id,
+      taskDescription: task.description,
+      completed: task.completed
+    }).catch(err => {
+      console.warn('[ZettelService] Remote toggle task warning:', err);
+    });
+  }
+
+  /**
+   * Retrieves all universal tasks directly from disk
+   */
+  public async loadUniversalTasksFromDisk(): Promise<ZettelTask[]> {
+    try {
+      const res = await ApiClient.getUniversalTasks();
+      if (res && res.success && Array.isArray(res.tasks)) {
+        return res.tasks;
+      }
+    } catch (e) {
+      console.warn('[ZettelService] Load universal tasks from disk warning:', e);
+    }
+    return this.getAllTasks();
   }
 
   /**

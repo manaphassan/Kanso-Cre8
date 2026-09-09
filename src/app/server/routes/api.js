@@ -21,6 +21,9 @@ const SnapshotService = require('../services/SnapshotService');
 const WebhookService = require('../services/WebhookService');
 const OrderService = require('../services/OrderService');
 const MigrationService = require('../services/MigrationService');
+const JournalVaultService = require('../services/JournalVaultService');
+const FinanceVaultService = require('../services/FinanceVaultService');
+const NotesVaultService = require('../services/NotesVaultService');
 const multer = require('multer');
 const orderUpload = multer({
   storage: multer.memoryStorage(),
@@ -31,6 +34,18 @@ const orderUpload = multer({
 
 router.get('/events', (req, res) => {
   SseService.addClient(req, res);
+});
+
+// ─── HEALTH & SYSTEM STATUS ROUTE ────────────────────────────────────
+
+router.get('/status', (req, res) => {
+  res.json({
+    success: true,
+    name: 'Kanso Cre8',
+    version: '0.1.0',
+    platform: process.platform,
+    uptime: process.uptime()
+  });
 });
 
 // ─── AUTHENTICATION ROUTES ──────────────────────────────────────────
@@ -1404,7 +1419,8 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
 // ─── QUICK NOTES (DESKTOP & MOBILE BI-DIRECTIONAL SYNC) ─────────────
 
 function getAllNotesDirs(targetUser = null) {
-  const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+  const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
+  const configDir = path.join(wsRoot, '_Team', '_Config');
   const dirs = [];
   
   if (fs.existsSync(configDir)) {
@@ -1445,7 +1461,8 @@ function getAllNotesDirs(targetUser = null) {
 }
 
 function getTargetWriteDir(targetUser = null) {
-  const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+  const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
+  const configDir = path.join(wsRoot, '_Team', '_Config');
   if (targetUser) {
     const userClean = String(targetUser).toLowerCase().replace(/[^a-z0-9_]/g, '');
     const userDir = path.join(configDir, `Notes_${userClean}`);
@@ -1853,6 +1870,377 @@ router.post('/migration/execute', authenticateToken, (req, res) => {
   } catch (err) {
     console.error('[Migration] execute error:', err.message);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── PURE MARKDOWN JOURNAL VAULT ROUTES (_Journal/) ─────────────────
+
+// GET /api/journal/daily/:date? — Retrieve daily BuJo note
+router.get('/journal/daily/:date?', (req, res) => {
+  try {
+    const targetDate = req.params.date || new Date().toISOString().split('T')[0];
+    const note = JournalVaultService.getDailyNote(targetDate);
+    res.json({ success: true, note });
+  } catch (err) {
+    console.error('[Journal] getDailyNote error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/daily-list — List available daily notes
+router.get('/journal/daily-list', (req, res) => {
+  try {
+    const notes = JournalVaultService.listDailyNotes();
+    res.json({ success: true, notes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/journal/daily — Save or update daily note
+router.post('/journal/daily', (req, res) => {
+  try {
+    const noteData = req.body;
+    const saved = JournalVaultService.saveDailyNote(noteData);
+    SseService.broadcast('journal:updated', { note: saved });
+    res.json({ success: true, note: saved });
+  } catch (err) {
+    console.error('[Journal] saveDailyNote error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/journal/migrate-tasks — Rollover uncompleted tasks to target day
+router.post('/journal/migrate-tasks', (req, res) => {
+  try {
+    const { fromDate, toDate } = req.body;
+    const today = new Date().toISOString().split('T')[0];
+    const targetToDate = toDate || today;
+
+    // If fromDate is not provided, default to yesterday
+    let targetFromDate = fromDate;
+    if (!targetFromDate) {
+      const d = new Date(targetToDate);
+      d.setDate(d.getDate() - 1);
+      targetFromDate = d.toISOString().split('T')[0];
+    }
+
+    const result = JournalVaultService.migrateTasks(targetFromDate, targetToDate);
+    if (result.success) {
+      SseService.broadcast('journal:migrated', { result });
+    }
+    res.json(result);
+  } catch (err) {
+    console.error('[Journal] migrateTasks error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/monthly — List all monthly reviews or get single by query
+router.get('/journal/monthly', (req, res) => {
+  try {
+    const reviews = JournalVaultService.getMonthlyReviews();
+    res.json({ success: true, reviews });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/monthly/:month — Retrieve monthly review
+router.get('/journal/monthly/:month', (req, res) => {
+  try {
+    const targetMonth = req.params.month || new Date().toISOString().slice(0, 7);
+    const review = JournalVaultService.getMonthlyReview(targetMonth);
+    res.json({ success: true, review });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/monthly/:month/telemetry — Retrieve monthly creative operations telemetry
+router.get('/journal/monthly/:month/telemetry', (req, res) => {
+  try {
+    const targetMonth = req.params.month || new Date().toISOString().slice(0, 7);
+    const telemetry = JournalVaultService.getMonthlyTelemetryRollup(targetMonth);
+    res.json({ success: true, telemetry });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/journal/monthly — Save monthly review
+router.post('/journal/monthly', (req, res) => {
+  try {
+    const reviewData = req.body;
+    const saved = JournalVaultService.saveMonthlyReview(reviewData);
+    SseService.broadcast('journal:monthly:saved', { review: saved });
+    res.json({ success: true, review: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/yearly — List all yearly indexes
+router.get('/journal/yearly', (req, res) => {
+  try {
+    const indexes = JournalVaultService.getYearlyIndexes();
+    res.json({ success: true, indexes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/yearly/:year — Retrieve yearly index
+router.get('/journal/yearly/:year', (req, res) => {
+  try {
+    const targetYear = req.params.year || String(new Date().getFullYear());
+    const review = JournalVaultService.getYearlyIndex(targetYear);
+    res.json({ success: true, review });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/yearly/:year/telemetry — Retrieve annual creative operations telemetry
+router.get('/journal/yearly/:year/telemetry', (req, res) => {
+  try {
+    const targetYear = req.params.year || String(new Date().getFullYear());
+    const telemetry = JournalVaultService.getYearlyTelemetryRollup(targetYear);
+    res.json({ success: true, telemetry });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/journal/yearly — Save yearly index
+router.post('/journal/yearly', (req, res) => {
+  try {
+    const yearlyData = req.body;
+    const saved = JournalVaultService.saveYearlyIndex(yearlyData);
+    SseService.broadcast('journal:yearly:saved', { review: saved });
+    res.json({ success: true, review: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─── PURE MARKDOWN FINANCE VAULT ROUTES (_Finance/) ─────────────────
+
+// GET /api/finance/invoices — List all markdown invoices
+router.get('/finance/invoices', (req, res) => {
+  try {
+    const invoices = FinanceVaultService.getInvoices();
+    res.json({ success: true, invoices });
+  } catch (err) {
+    console.error('[Finance] getInvoices error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/finance/invoices/:id — Retrieve single invoice
+router.get('/finance/invoices/:id', (req, res) => {
+  try {
+    const invoice = FinanceVaultService.getInvoice(req.params.id);
+    if (!invoice) return res.status(404).json({ error: 'Invoice not found on disk.' });
+    res.json({ success: true, invoice });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/finance/invoices — Save or create markdown invoice
+router.post('/finance/invoices', (req, res) => {
+  try {
+    const saved = FinanceVaultService.saveInvoice(req.body);
+    SseService.broadcast('finance:updated', { invoice: saved });
+    res.json({ success: true, invoice: saved });
+  } catch (err) {
+    console.error('[Finance] saveInvoice error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/finance/append-session — Append chronometer session to draft invoice
+router.post('/finance/append-session', (req, res) => {
+  try {
+    const { clientCode, sessionLog } = req.body;
+    if (!clientCode || !sessionLog) {
+      return res.status(400).json({ error: 'clientCode and sessionLog are required.' });
+    }
+    const updated = FinanceVaultService.appendSessionToInvoice(clientCode, sessionLog);
+    SseService.broadcast('finance:session-appended', { invoice: updated });
+    res.json({ success: true, invoice: updated });
+  } catch (err) {
+    console.error('[Finance] appendSession error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE /api/finance/invoices/:id — Delete invoice
+router.delete('/finance/invoices/:id', (req, res) => {
+  try {
+    const deleted = FinanceVaultService.deleteInvoice(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Invoice not found to delete.' });
+    SseService.broadcast('finance:invoice-deleted', { id: req.params.id });
+    res.json({ success: true, deleted: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/finance/quotes — List all markdown quotes
+router.get('/finance/quotes', (req, res) => {
+  try {
+    const quotes = FinanceVaultService.getQuotes();
+    res.json({ success: true, quotes });
+  } catch (err) {
+    console.error('[Finance] getQuotes error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/finance/quotes/:id — Retrieve single quote
+router.get('/finance/quotes/:id', (req, res) => {
+  try {
+    const quote = FinanceVaultService.getQuote(req.params.id);
+    if (!quote) return res.status(404).json({ error: 'Quote not found on disk.' });
+    res.json({ success: true, quote });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/finance/quotes — Save or create markdown quote
+router.post('/finance/quotes', (req, res) => {
+  try {
+    const saved = FinanceVaultService.saveQuote(req.body);
+    SseService.broadcast('finance:quote-saved', { quote: saved });
+    res.json({ success: true, quote: saved });
+  } catch (err) {
+    console.error('[Finance] saveQuote error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE /api/finance/quotes/:id — Delete quote
+router.delete('/finance/quotes/:id', (req, res) => {
+  try {
+    const deleted = FinanceVaultService.deleteQuote(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Quote not found to delete.' });
+    SseService.broadcast('finance:quote-deleted', { id: req.params.id });
+    res.json({ success: true, deleted: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/finance/convert-quote — Convert quote to invoice
+router.post('/finance/convert-quote', (req, res) => {
+  try {
+    const { quoteId } = req.body;
+    if (!quoteId) return res.status(400).json({ error: 'quoteId is required.' });
+    const result = FinanceVaultService.convertQuoteToInvoice(quoteId);
+    SseService.broadcast('finance:quote-converted', result);
+    res.json(result);
+  } catch (err) {
+    console.error('[Finance] convertQuote error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─── ATELIER KNOWLEDGE ENGINE ROUTES (_Notes/) ──────────────────────
+
+// GET /api/notes/atomic — List all atomic notes with backlinks and extracted tags
+router.get('/notes/atomic', (req, res) => {
+  try {
+    const notes = NotesVaultService.listNotes();
+    res.json({ success: true, notes });
+  } catch (err) {
+    console.error('[Notes] listNotes error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/notes/atomic/:category/:id — Retrieve single atomic note
+router.get('/notes/atomic/:category/:id', (req, res) => {
+  try {
+    const note = NotesVaultService.getNote(req.params.category, req.params.id);
+    if (!note) return res.status(404).json({ error: 'Note not found on disk.' });
+    res.json({ success: true, note });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/notes/atomic — Save or create atomic note on disk
+router.post('/notes/atomic', (req, res) => {
+  try {
+    const saved = NotesVaultService.saveNote(req.body);
+    SseService.broadcast('notes:atomic:saved', { note: saved });
+    res.json({ success: true, note: saved });
+  } catch (err) {
+    console.error('[Notes] saveNote error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE /api/notes/atomic/:category/:id — Delete atomic note
+router.delete('/notes/atomic/:category/:id', (req, res) => {
+  try {
+    const deleted = NotesVaultService.deleteNote(req.params.category, req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Note not found to delete.' });
+    SseService.broadcast('notes:atomic:deleted', { id: req.params.id, category: req.params.category });
+    res.json({ success: true, deleted: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/notes/scratchpad — Read Scratchpad.md
+router.get('/notes/scratchpad', (req, res) => {
+  try {
+    const content = NotesVaultService.getScratchpad();
+    res.json({ success: true, content });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/notes/scratchpad — Save Scratchpad.md
+router.post('/notes/scratchpad', (req, res) => {
+  try {
+    const { content } = req.body;
+    NotesVaultService.saveScratchpad(content);
+    SseService.broadcast('notes:scratchpad:saved', { updatedAt: new Date().toISOString() });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/notes/tasks — Universal task rollup across all notes
+router.get('/notes/tasks', (req, res) => {
+  try {
+    const tasks = NotesVaultService.getAllTasks();
+    res.json({ success: true, tasks });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/notes/tasks/toggle — Toggle inline task directly in note file
+router.post('/notes/tasks/toggle', (req, res) => {
+  try {
+    const { category, noteId, taskDescription, completed } = req.body;
+    if (!noteId || !taskDescription) {
+      return res.status(400).json({ error: 'noteId and taskDescription are required.' });
+    }
+    const result = NotesVaultService.toggleTask(category || 'permanent', noteId, taskDescription, completed);
+    SseService.broadcast('notes:task:toggled', { result });
+    res.json(result);
+  } catch (err) {
+    console.error('[Notes] toggleTask error:', err.message);
+    res.status(400).json({ error: err.message });
   }
 });
 

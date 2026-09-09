@@ -1,6 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { journalService, type DailyNote, type MonthlyReview, type YearlyReview, type BujoEntry } from '../services/journalService';
+  import {
+    journalService,
+    type DailyNote,
+    type MonthlyReview,
+    type YearlyReview,
+    type MonthlyTelemetry,
+    type YearlyTelemetry,
+    type BujoEntry
+  } from '../services/journalService';
   import { appState } from '$lib/stores/appState.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
 
@@ -18,15 +26,22 @@
   // Monthly State
   let currentMonth = $state(new Date().toISOString().slice(0, 7));
   let monthlyReview: MonthlyReview = $state(journalService.getMonthlyReview());
+  let monthlyTelemetry: MonthlyTelemetry | null = $state(null);
+  let showMonthlyRaw = $state(false);
+  let newGoalText = $state('');
+  let newDelivText = $state('');
 
   // Yearly State
   let currentYear = $state(new Date().getFullYear().toString());
   let yearlyReview: YearlyReview = $state(journalService.getYearlyReview());
+  let yearlyTelemetry: YearlyTelemetry | null = $state(null);
+  let showYearlyRaw = $state(false);
+  let newMilestoneText = $state('');
 
-  onMount(() => {
+  onMount(async () => {
     loadDailyNote(currentDate);
-    monthlyReview = journalService.getMonthlyReview(currentMonth);
-    yearlyReview = journalService.getYearlyReview(currentYear);
+    await loadMonthlyData(currentMonth);
+    await loadYearlyData(currentYear);
   });
 
   function loadDailyNote(date: string) {
@@ -39,6 +54,34 @@
     d.setDate(d.getDate() + days);
     const dateStr = d.toISOString().split('T')[0];
     loadDailyNote(dateStr);
+  }
+
+  async function loadMonthlyData(month: string) {
+    currentMonth = month;
+    monthlyReview = journalService.getMonthlyReview(month);
+    const disk = await journalService.fetchDiskMonthlyReview(month);
+    if (disk) monthlyReview = disk;
+    monthlyTelemetry = await journalService.getMonthlyTelemetry(month);
+  }
+
+  async function loadYearlyData(year: string) {
+    currentYear = year;
+    yearlyReview = journalService.getYearlyReview(year);
+    const disk = await journalService.fetchDiskYearlyReview(year);
+    if (disk) yearlyReview = disk;
+    yearlyTelemetry = await journalService.getYearlyTelemetry(year);
+  }
+
+  function shiftMonth(offset: number) {
+    const parts = currentMonth.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1 + offset, 1);
+    const nextMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    loadMonthlyData(nextMonth);
+  }
+
+  function shiftYear(offset: number) {
+    const nextYear = String(Number(currentYear) + offset);
+    loadYearlyData(nextYear);
   }
 
   function handleAddEntry() {
@@ -67,14 +110,50 @@
     journalService.saveDailyNote(dailyNote);
   }
 
+  function handleAddGoal() {
+    if (!newGoalText.trim()) return;
+    monthlyReview.goals = [...(monthlyReview.goals || []), newGoalText.trim()];
+    journalService.saveMonthlyReview(monthlyReview);
+    newGoalText = '';
+  }
+
+  function handleRemoveGoal(idx: number) {
+    monthlyReview.goals = (monthlyReview.goals || []).filter((_, i) => i !== idx);
+    journalService.saveMonthlyReview(monthlyReview);
+  }
+
+  function handleAddDeliverable() {
+    if (!newDelivText.trim()) return;
+    monthlyReview.deliverablesSummary = [...(monthlyReview.deliverablesSummary || []), newDelivText.trim()];
+    journalService.saveMonthlyReview(monthlyReview);
+    newDelivText = '';
+  }
+
+  function handleRemoveDeliverable(idx: number) {
+    monthlyReview.deliverablesSummary = (monthlyReview.deliverablesSummary || []).filter((_, i) => i !== idx);
+    journalService.saveMonthlyReview(monthlyReview);
+  }
+
+  function handleAddMilestone() {
+    if (!newMilestoneText.trim()) return;
+    yearlyReview.milestones = [...(yearlyReview.milestones || []), newMilestoneText.trim()];
+    journalService.saveYearlyReview(yearlyReview);
+    newMilestoneText = '';
+  }
+
+  function handleRemoveMilestone(idx: number) {
+    yearlyReview.milestones = (yearlyReview.milestones || []).filter((_, i) => i !== idx);
+    journalService.saveYearlyReview(yearlyReview);
+  }
+
   function handleSaveMonthly() {
     journalService.saveMonthlyReview(monthlyReview);
-    appState.addToast('Monthly review saved to _Journal/Monthly/', 'success');
+    appState.addToast(`Monthly review saved to _Journal/Monthly/${monthlyReview.month}.md`, 'success');
   }
 
   function handleSaveYearly() {
     journalService.saveYearlyReview(yearlyReview);
-    appState.addToast('Yearly review saved to _Journal/Yearly/', 'success');
+    appState.addToast(`Yearly review saved to _Journal/Yearly/${yearlyReview.year}.md`, 'success');
   }
 
   // Symbol styling helper
@@ -304,91 +383,313 @@
 
   <!-- ══════════ TAB 2: MONTHLY REVIEW ══════════ -->
   {:else if activeTab === 'monthly'}
-    <div class="review-panel-wrap">
-      <div class="review-card">
-        <div class="card-head">
-          <span class="chead-icon">📅</span>
-          <div>
-            <h3 class="chead-title">Monthly Retrospective &amp; Review ({monthlyReview.month})</h3>
-            <p class="chead-sub">_Journal/Monthly/{monthlyReview.month}.md</p>
-          </div>
-        </div>
+    <!-- Month Navigator Bar -->
+    <div class="date-navigator-bar">
+      <button class="nav-arrow-btn" onclick={() => shiftMonth(-1)} title="Previous Month">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
 
-        <div class="review-sections-grid">
-          <!-- Goals Section -->
-          <div class="rsection">
-            <h4 class="rsection-title">Core Monthly Deliverables</h4>
-            <div class="rlist">
-              {#each monthlyReview.deliverablesSummary as deliv}
-                <div class="rlist-item">✓ {deliv}</div>
-              {/each}
-            </div>
-          </div>
+      <div class="date-title-col">
+        <span class="date-label">📅 {monthlyReview.title || `Monthly Review: ${currentMonth}`}</span>
+        <span class="file-path-hint">_Journal/Monthly/{currentMonth}.md</span>
+      </div>
 
-          <!-- Billable Hours Stat -->
-          <div class="rsection">
-            <h4 class="rsection-title">Studio Billable Hours Logged</h4>
-            <div class="hours-val-display">
-              <span class="hval">{monthlyReview.billableHours} hrs</span>
-              <span class="hval-sub">Recorded via Billable Chronometer</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Reflections Input -->
-        <div class="reflection-box">
-          <label for="m-refl" class="rsection-title">Creative Reflection &amp; Studio Notes</label>
-          <textarea
-            id="m-refl"
-            bind:value={monthlyReview.reflections}
-            rows="5"
-            class="reflection-textarea"
-            placeholder="What went well this month? What can be simplified? Client feedback highlights..."
-          ></textarea>
-        </div>
-
-        <div class="card-footer">
-          <button class="save-btn" onclick={handleSaveMonthly}>Save Monthly Review</button>
-        </div>
+      <div class="nav-actions-right">
+        <button
+          class="today-btn"
+          onclick={() => loadMonthlyData(new Date().toISOString().slice(0, 7))}
+        >
+          This Month
+        </button>
+        <button class="nav-arrow-btn" onclick={() => shiftMonth(1)} title="Next Month">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+        <button
+          class="raw-toggle-btn"
+          class:active={showMonthlyRaw}
+          onclick={() => (showMonthlyRaw = !showMonthlyRaw)}
+          title="Toggle Raw Markdown Editor"
+        >
+          {showMonthlyRaw ? 'Studio Sheet' : 'Raw Markdown'}
+        </button>
       </div>
     </div>
+
+    {#if showMonthlyRaw}
+      <div class="raw-card">
+        <textarea
+          class="raw-textarea"
+          bind:value={monthlyReview.rawMarkdown}
+          rows="18"
+          onchange={() => journalService.saveMonthlyReview(monthlyReview)}
+        ></textarea>
+      </div>
+    {:else}
+      <!-- MONTHLY TELEMETRY BENTO -->
+      {#if monthlyTelemetry}
+        <div class="telemetry-bento-grid">
+          <div class="bento-card">
+            <span class="bento-icon">⏱️</span>
+            <div class="bento-content">
+              <span class="bento-val">{monthlyTelemetry.billableHours}h</span>
+              <span class="bento-label">Hours Logged</span>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <span class="bento-icon">💵</span>
+            <div class="bento-content">
+              <span class="bento-val">${monthlyTelemetry.totalRevenue.toLocaleString()}</span>
+              <span class="bento-label">
+                ${monthlyTelemetry.paidRevenue.toLocaleString()} paid • ${monthlyTelemetry.pendingRevenue.toLocaleString()} pending
+              </span>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <span class="bento-icon">📦</span>
+            <div class="bento-content">
+              <span class="bento-val">{monthlyTelemetry.deliverablesCount}</span>
+              <span class="bento-label">Deliverables Handed Over</span>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <span class="bento-icon">🔄</span>
+            <div class="bento-content">
+              <span class="bento-val">{monthlyTelemetry.avgRevisionRounds}x</span>
+              <span class="bento-label">Avg Revision Rounds</span>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <!-- TWO COLUMN MONTHLY STUDIO LAYOUT -->
+      <div class="review-sections-grid">
+        <!-- Left Column: Goals & Deliverables Checklist -->
+        <div class="review-col-left">
+          <!-- Monthly Focus Goals -->
+          <div class="rsection-box">
+            <div class="card-head">
+              <span class="chead-icon">🎯</span>
+              <h4 class="rsection-title">Core Monthly Focus &amp; Objectives</h4>
+            </div>
+            <div class="rlist">
+              {#each (monthlyReview.goals || []) as goal, idx}
+                <div class="rlist-item">
+                  <span>✓ {goal}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveGoal(idx)}>✕</button>
+                </div>
+              {/each}
+            </div>
+            <form class="add-mini-form" onsubmit={(e) => { e.preventDefault(); handleAddGoal(); }}>
+              <input type="text" bind:value={newGoalText} placeholder="Add focus goal..." class="mini-input" />
+              <button type="submit" class="mini-add-btn">+</button>
+            </form>
+          </div>
+
+          <!-- Deliverables Summary -->
+          <div class="rsection-box" style="margin-top: 16px;">
+            <div class="card-head">
+              <span class="chead-icon">✨</span>
+              <h4 class="rsection-title">Deliverables Summary</h4>
+            </div>
+            <div class="rlist">
+              {#each (monthlyReview.deliverablesSummary || []) as deliv, idx}
+                <div class="rlist-item">
+                  <span>📦 {deliv}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveDeliverable(idx)}>✕</button>
+                </div>
+              {/each}
+            </div>
+            <form class="add-mini-form" onsubmit={(e) => { e.preventDefault(); handleAddDeliverable(); }}>
+              <input type="text" bind:value={newDelivText} placeholder="Add completed deliverable..." class="mini-input" />
+              <button type="submit" class="mini-add-btn">+</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: Creative Reflection & Learnings -->
+        <div class="review-col-right">
+          <div class="rsection-box h-full flex flex-col">
+            <div class="card-head">
+              <span class="chead-icon">🌿</span>
+              <h4 class="rsection-title">Creative Reflection &amp; Atelier Retrospective</h4>
+            </div>
+            <p class="chead-sub">
+              Document design triumphs, workflow bottlenecks eliminated, client insights, and mindful creative adjustments.
+            </p>
+
+            <textarea
+              bind:value={monthlyReview.reflections}
+              rows="12"
+              class="reflection-textarea flex-1"
+              placeholder="What went well this month? Which client interactions were friction-free? What creative habits will you cultivate next month?"
+            ></textarea>
+
+            <div class="card-footer">
+              <button class="save-btn" onclick={handleSaveMonthly}>
+                Save Monthly Review (_Journal/Monthly/)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
 
   <!-- ══════════ TAB 3: YEARLY VISION ══════════ -->
   {:else if activeTab === 'yearly'}
-    <div class="review-panel-wrap">
-      <div class="review-card">
-        <div class="card-head">
-          <span class="chead-icon">🏔️</span>
-          <div>
-            <h3 class="chead-title">Annual Vision &amp; Retrospective ({yearlyReview.year})</h3>
-            <p class="chead-sub">_Journal/Yearly/{yearlyReview.year}.md</p>
-          </div>
-        </div>
+    <!-- Year Navigator Bar -->
+    <div class="date-navigator-bar">
+      <button class="nav-arrow-btn" onclick={() => shiftYear(-1)} title="Previous Year">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
 
-        <div class="reflection-box">
-          <label for="y-vision" class="rsection-title">Studio Manifesto &amp; Creative North Star</label>
-          <textarea
-            id="y-vision"
-            bind:value={yearlyReview.vision}
-            rows="4"
-            class="reflection-textarea"
-          ></textarea>
-        </div>
+      <div class="date-title-col">
+        <span class="date-label">🏔️ {yearlyReview.title || `${currentYear} Studio Vision & Annual Index`}</span>
+        <span class="file-path-hint">_Journal/Yearly/{currentYear}.md</span>
+      </div>
 
-        <div class="rsection" style="margin-top: 16px;">
-          <h4 class="rsection-title">Key Annual Milestones Achieved</h4>
-          <div class="rlist">
-            {#each yearlyReview.milestones as milestone}
-              <div class="rlist-item">🏆 {milestone}</div>
-            {/each}
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="save-btn" onclick={handleSaveYearly}>Save Yearly Vision</button>
-        </div>
+      <div class="nav-actions-right">
+        <button
+          class="today-btn"
+          onclick={() => loadYearlyData(new Date().getFullYear().toString())}
+        >
+          This Year
+        </button>
+        <button class="nav-arrow-btn" onclick={() => shiftYear(1)} title="Next Year">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+        <button
+          class="raw-toggle-btn"
+          class:active={showYearlyRaw}
+          onclick={() => (showYearlyRaw = !showYearlyRaw)}
+          title="Toggle Raw Markdown Editor"
+        >
+          {showYearlyRaw ? 'Studio Sheet' : 'Raw Markdown'}
+        </button>
       </div>
     </div>
+
+    {#if showYearlyRaw}
+      <div class="raw-card">
+        <textarea
+          class="raw-textarea"
+          bind:value={yearlyReview.rawMarkdown}
+          rows="18"
+          onchange={() => journalService.saveYearlyReview(yearlyReview)}
+        ></textarea>
+      </div>
+    {:else}
+      <!-- ANNUAL TELEMETRY BENTO -->
+      {#if yearlyTelemetry}
+        {@const revPercent = Math.min(100, Math.round((yearlyTelemetry.totalRevenue / (yearlyReview.revenueTarget || 150000)) * 100))}
+        <div class="telemetry-bento-grid">
+          <div class="bento-card bento-wide">
+            <span class="bento-icon">💰</span>
+            <div class="bento-content flex-1">
+              <div class="flex justify-between items-baseline mb-1">
+                <span class="bento-val">${yearlyTelemetry.totalRevenue.toLocaleString()}</span>
+                <span class="meta-txt">Target: ${(yearlyReview.revenueTarget || 150000).toLocaleString()} ({revPercent}%)</span>
+              </div>
+              <!-- Progress Bar -->
+              <div class="progress-track">
+                <div class="progress-bar" style="width: {revPercent}%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <span class="bento-icon">⏱️</span>
+            <div class="bento-content">
+              <span class="bento-val">{yearlyTelemetry.totalHours}h</span>
+              <span class="bento-label">Effective: ${yearlyTelemetry.effectiveRate}/hr</span>
+            </div>
+          </div>
+
+          <div class="bento-card">
+            <span class="bento-icon">📁</span>
+            <div class="bento-content">
+              <span class="bento-val">{yearlyTelemetry.completedProjects}</span>
+              <span class="bento-label">Completed Vaults ({yearlyTelemetry.projectsCount} total)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLIENT DISTRIBUTION STRIP -->
+        {#if yearlyTelemetry.clientDistribution && yearlyTelemetry.clientDistribution.length > 0}
+          <div class="rsection-box" style="margin-top: 16px;">
+            <h4 class="rsection-title">Client Revenue &amp; Project Distribution</h4>
+            <div class="client-dist-grid">
+              {#each yearlyTelemetry.clientDistribution as c}
+                <div class="client-dist-card">
+                  <div class="cdist-head">
+                    <span class="cdist-code">{c.clientCode}</span>
+                    <span class="cdist-pct">{c.percentage}%</span>
+                  </div>
+                  <span class="cdist-name">{c.clientName}</span>
+                  <div class="cdist-footer">
+                    <span class="cdist-rev">${c.revenue.toLocaleString()}</span>
+                    <span class="cdist-count">{c.count} invoices</span>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      {/if}
+
+      <!-- ANNUAL VISION & MILESTONES -->
+      <div class="review-sections-grid" style="margin-top: 16px;">
+        <!-- Left: Annual Milestones -->
+        <div class="review-col-left">
+          <div class="rsection-box">
+            <div class="card-head">
+              <span class="chead-icon">🏆</span>
+              <h4 class="rsection-title">Annual Milestones Achieved</h4>
+            </div>
+            <div class="rlist">
+              {#each (yearlyReview.milestones || []) as milestone, idx}
+                <div class="rlist-item">
+                  <span>🏆 {milestone}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveMilestone(idx)}>✕</button>
+                </div>
+              {/each}
+            </div>
+            <form class="add-mini-form" onsubmit={(e) => { e.preventDefault(); handleAddMilestone(); }}>
+              <input type="text" bind:value={newMilestoneText} placeholder="Add key milestone..." class="mini-input" />
+              <button type="submit" class="mini-add-btn">+</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Studio Manifesto & North Star -->
+        <div class="review-col-right">
+          <div class="rsection-box h-full flex flex-col">
+            <div class="card-head">
+              <span class="chead-icon">🌟</span>
+              <h4 class="rsection-title">Studio Manifesto &amp; Creative North Star</h4>
+            </div>
+            <p class="chead-sub">
+              Your guiding philosophy for the year: creative principles, client selectivity, craft focus, and studio evolution.
+            </p>
+
+            <textarea
+              bind:value={yearlyReview.vision}
+              rows="10"
+              class="reflection-textarea flex-1"
+              placeholder="What is your studio vision this year? What types of projects bring the most energy and creative flow?"
+            ></textarea>
+
+            <div class="card-footer">
+              <button class="save-btn" onclick={handleSaveYearly}>
+                Save Yearly Vision (_Journal/Yearly/)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -928,5 +1229,197 @@
 
   .save-btn:hover {
     filter: brightness(1.1);
+  }
+
+  /* Telemetry Bento Grid */
+  .telemetry-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  @media (min-width: 900px) {
+    .telemetry-bento-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .bento-card {
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bento-card.bento-wide {
+    grid-column: span 2;
+  }
+
+  .bento-icon {
+    font-size: 20px;
+  }
+
+  .bento-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bento-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-family: ui-monospace, monospace;
+    letter-spacing: -0.02em;
+  }
+
+  .bento-label {
+    font-size: 11px;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--kanso-accent, #38BDF8);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+
+  /* Review Section Boxes & Mini Forms */
+  .rsection-box {
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .review-col-left, .review-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .item-del-btn {
+    background: transparent;
+    border: none;
+    color: var(--kanso-text-muted, #71717A);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .item-del-btn:hover {
+    color: var(--kanso-danger, #EF4444);
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .add-mini-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .mini-input {
+    flex: 1;
+    background: #09090B;
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    outline: none;
+  }
+
+  .mini-input:focus {
+    border-color: var(--kanso-accent, #38BDF8);
+  }
+
+  .mini-add-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 6px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    padding: 0 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .mini-add-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  /* Client Distribution Grid */
+  .client-dist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .client-dist-card {
+    background: #09090B;
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cdist-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cdist-code {
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  .cdist-pct {
+    font-size: 11px;
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--kanso-accent, #38BDF8);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .cdist-name {
+    font-size: 12px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-weight: 600;
+  }
+
+  .cdist-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--kanso-text-muted, #71717A);
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .cdist-rev {
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-family: ui-monospace, monospace;
+    font-weight: 600;
   }
 </style>

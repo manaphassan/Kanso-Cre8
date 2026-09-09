@@ -3,8 +3,11 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { journalService, type DailyNote, type BujoEntry } from '$lib/services/journalService';
+  import { zettelService } from '$lib/services/zettelService';
+  import type { ZettelTask } from '$lib/types/zettel';
   import { financeService } from '$lib/services/financeService';
   import { clientService } from '$lib/services/clientService';
+  import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
 
   // --- STATE ---
@@ -12,12 +15,18 @@
   let newTaskInput = $state('');
   let incomeSummary = $state(financeService.getIncomeSummary());
   let clients = $state(clientService.getClients());
+  let hasPreviousTasks = $state(false);
+  let isMigrating = $state(false);
+  let taskMode = $state<'bujo' | 'universal'>('bujo');
+  let universalTasks = $state<ZettelTask[]>([]);
 
   onMount(async () => {
     await projectStore.loadProjects();
     dailyNote = journalService.getDailyNote();
     incomeSummary = financeService.getIncomeSummary();
     clients = clientService.getClients();
+    hasPreviousTasks = journalService.hasUnfinishedPreviousTasks(dailyNote.date);
+    universalTasks = await zettelService.loadUniversalTasksFromDisk();
   });
 
   // --- DERIVED METRICS ---
@@ -83,10 +92,34 @@
     dailyNote = journalService.toggleTask(dailyNote.date, entry.id);
   }
 
+  async function handleToggleUniversalTask(task: ZettelTask) {
+    try {
+      const updated = await zettelService.toggleTask(task.id);
+      universalTasks = universalTasks.map(t => t.id === task.id ? updated : t);
+    } catch (err: any) {
+      appState.addToast(`Failed to toggle task: ${err.message}`, 'error');
+    }
+  }
+
   function handleAddTask(e: KeyboardEvent) {
     if (e.key === 'Enter' && newTaskInput.trim()) {
       dailyNote = journalService.addEntry(dailyNote.date, 'task', newTaskInput.trim());
       newTaskInput = '';
+    }
+  }
+
+  async function handleMigrateTasks() {
+    if (isMigrating) return;
+    isMigrating = true;
+    try {
+      const res = await journalService.migratePreviousTasks(dailyNote.date);
+      dailyNote = res.note;
+      hasPreviousTasks = false;
+      appState.addToast(res.message, 'success');
+    } catch (err: any) {
+      appState.addToast(`Migration failed: ${err.message}`, 'error');
+    } finally {
+      isMigrating = false;
     }
   }
 
@@ -241,73 +274,161 @@
       <div class="flex items-center justify-between border-b border-border pb-4">
         <div>
           <h2 class="text-base font-bold text-foreground flex items-center gap-2">
-            <span>⚡ Today's Tasks</span>
-            <span class="text-xs font-mono font-normal text-muted-foreground">({dailyNote.date})</span>
+            <span>⚡ Tasks</span>
+            {#if taskMode === 'bujo'}
+              <span class="text-xs font-mono font-normal text-muted-foreground">({dailyNote.date})</span>
+            {:else}
+              <span class="text-xs font-mono font-normal text-muted-foreground">(_Notes/ Rollup)</span>
+            {/if}
           </h2>
           <p class="text-xs text-muted-foreground mt-0.5">
-            Synced in real-time with BuJo Daily Notes (<span class="font-mono text-primary">_Journal/Daily/</span>)
+            {#if taskMode === 'bujo'}
+              Synced in real-time with BuJo Daily Notes (<span class="font-mono text-primary">_Journal/Daily/</span>)
+            {:else}
+              Discovered from all atomic cards across <span class="font-mono text-primary">_Notes/</span>
+            {/if}
           </p>
         </div>
 
         <div class="flex items-center gap-2">
+          <div class="flex items-center p-0.5 rounded-lg border border-border bg-background">
+            <button
+              onclick={() => taskMode = 'bujo'}
+              class="px-2.5 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer {taskMode === 'bujo' ? 'bg-primary/20 text-primary font-bold shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+            >
+              Daily ({todayTasks.length})
+            </button>
+            <button
+              onclick={() => taskMode = 'universal'}
+              class="px-2.5 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer {taskMode === 'universal' ? 'bg-primary/20 text-primary font-bold shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+            >
+              Universal ({universalTasks.length})
+            </button>
+          </div>
           <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-mono font-bold">
-            {completedTaskCount}/{todayTasks.length} Completed
+            {#if taskMode === 'bujo'}
+              {completedTaskCount}/{todayTasks.length}
+            {:else}
+              {universalTasks.filter(t => t.completed).length}/{universalTasks.length}
+            {/if}
           </span>
         </div>
       </div>
 
-      <!-- Daily Intentions Chips -->
-      {#if dailyNote.focusIntentions && dailyNote.focusIntentions.length > 0}
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-[11px] font-semibold text-muted-foreground uppercase">🎯 Intentions:</span>
-          {#each dailyNote.focusIntentions as intention}
-            <span class="text-xs px-2.5 py-1 rounded-md bg-muted/40 border border-border/60 text-foreground font-medium">
-              {intention}
-            </span>
+      {#if taskMode === 'bujo'}
+        <!-- Daily Intentions Chips -->
+        {#if dailyNote.focusIntentions && dailyNote.focusIntentions.length > 0}
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] font-semibold text-muted-foreground uppercase">🎯 Intentions:</span>
+            {#each dailyNote.focusIntentions as intention}
+              <span class="text-xs px-2.5 py-1 rounded-md bg-muted/40 border border-border/60 text-foreground font-medium">
+                {intention}
+              </span>
+            {/each}
+          </div>
+        {/if}
+
+        <!-- Task Items List -->
+        {#if hasPreviousTasks}
+          <div class="flex items-center justify-between p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs text-amber-300 animate-fadeIn">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">• [>]</span>
+              <span>Unfinished tasks from yesterday detected</span>
+            </div>
+            <button
+              onclick={handleMigrateTasks}
+              disabled={isMigrating}
+              class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 font-semibold text-[11px] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {#if isMigrating}
+                <span>Migrating...</span>
+              {:else}
+                <span>Migrate to Today &rarr;</span>
+              {/if}
+            </button>
+          </div>
+        {/if}
+
+        <div class="space-y-2.5">
+          {#each todayTasks as entry (entry.id)}
+            <div class="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-background/50 hover:border-primary/40 transition-colors group">
+              <input
+                type="checkbox"
+                checked={entry.completed || entry.type === 'done'}
+                onchange={() => toggleTask(entry)}
+                class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer"
+              />
+              <span class="text-xs flex-1 {(entry.completed || entry.type === 'done') ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}">
+                {entry.text}
+              </span>
+              {#if entry.type === 'priority'}
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold">
+                  * Priority
+                </span>
+              {/if}
+            </div>
           {/each}
         </div>
-      {/if}
 
-      <!-- Task Items List -->
-      <div class="space-y-2.5">
-        {#each todayTasks as entry (entry.id)}
-          <div class="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-background/50 hover:border-primary/40 transition-colors group">
+        <!-- Quick Task Adder Input -->
+        <div class="pt-2">
+          <div class="relative">
             <input
-              type="checkbox"
-              checked={entry.completed || entry.type === 'done'}
-              onchange={() => toggleTask(entry)}
-              class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer"
+              type="text"
+              bind:value={newTaskInput}
+              onkeydown={handleAddTask}
+              placeholder="Add task to today's rapid log (Press Enter)..."
+              class="w-full px-3.5 py-2.5 pl-9 rounded-lg border border-border bg-background text-foreground text-xs focus:outline-none focus:border-primary transition-colors font-mono"
             />
-            <span class="text-xs flex-1 {(entry.completed || entry.type === 'done') ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}">
-              {entry.text}
+            <span class="text-muted-foreground text-xs absolute left-3 top-3">
+              • [ ]
             </span>
-            {#if entry.type === 'priority'}
-              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold">
-                * Priority
-              </span>
-            {/if}
           </div>
-        {/each}
-      </div>
-
-      <!-- Quick Task Adder Input -->
-      <div class="pt-2">
-        <div class="relative">
-          <input
-            type="text"
-            bind:value={newTaskInput}
-            onkeydown={handleAddTask}
-            placeholder="Add task to today's rapid log (Press Enter)..."
-            class="w-full px-3.5 py-2.5 pl-9 rounded-lg border border-border bg-background text-foreground text-xs focus:outline-none focus:border-primary transition-colors font-mono"
-          />
-          <span class="text-muted-foreground text-xs absolute left-3 top-3">
-            • [ ]
+          <span class="text-[10px] text-muted-foreground mt-1 block">
+            Uses standard BuJo notation: • Task, * Priority, o Event, - Note
           </span>
         </div>
-        <span class="text-[10px] text-muted-foreground mt-1 block">
-          Uses standard BuJo notation: • Task, * Priority, o Event, - Note
-        </span>
-      </div>
+      {:else}
+        <!-- Universal Notes Task Rollup List -->
+        {#if universalTasks.length === 0}
+          <div class="p-6 text-center text-xs text-muted-foreground border border-dashed border-border rounded-lg">
+            No active `#task` items found in <code class="font-mono text-primary">_Notes/</code>.
+          </div>
+        {:else}
+          <div class="space-y-2.5">
+            {#each universalTasks as uTask (uTask.id)}
+              <div class="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-background/50 hover:border-primary/40 transition-colors group">
+                <input
+                  type="checkbox"
+                  checked={uTask.completed}
+                  onchange={() => handleToggleUniversalTask(uTask)}
+                  class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer"
+                />
+                <span class="text-xs flex-1 {uTask.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}">
+                  {uTask.text}
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted/50 border border-border text-muted-foreground">
+                  [[{uTask.sourceTitle || uTask.sourceNoteId}]]
+                </span>
+                {#if uTask.priority === 'urgent' || uTask.priority === 'high'}
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold">
+                    * {uTask.priority}
+                  </span>
+                {/if}
+                {#if uTask.dueDate}
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-bold">
+                    📅 {uTask.dueDate}
+                  </span>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        {/if}
+        <div class="pt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+          <span>Synced directly to disk notes in <code class="font-mono text-primary">_Notes/</code></span>
+          <a href="#zettel" class="text-primary hover:underline">Open Atelier Notes &rarr;</a>
+        </div>
+      {/if}
     </div>
 
     <!-- RIGHT: DESIGN METRICS BENTO (5 Cols) -->
