@@ -540,6 +540,164 @@ export class ApiClient {
       body: JSON.stringify(payload)
     });
   }
+
+  // ─── Pure Markdown Journal Vault (_Journal/) ───
+  static getDailyNote(date?: string): Promise<{ success: boolean; note: any }> {
+    return this.request(`/journal/daily${date ? `/${encodeURIComponent(date)}` : ''}`);
+  }
+
+  static saveDailyNote(note: any): Promise<{ success: boolean; note: any }> {
+    return this.request('/journal/daily', {
+      method: 'POST',
+      body: JSON.stringify(note)
+    });
+  }
+
+  static migrateDailyTasks(fromDate?: string, toDate?: string): Promise<{ success: boolean; migratedCount: number; message: string; fromNote?: any; toNote?: any }> {
+    return this.request('/journal/migrate-tasks', {
+      method: 'POST',
+      body: JSON.stringify({ fromDate, toDate })
+    });
+  }
+
+  static getMonthlyReviews(): Promise<{ success: boolean; reviews: any[] }> {
+    return this.request('/journal/monthly');
+  }
+
+  static getMonthlyReview(month?: string): Promise<{ success: boolean; review: any }> {
+    return this.request(`/journal/monthly${month ? `/${encodeURIComponent(month)}` : ''}`);
+  }
+
+  static getMonthlyTelemetry(month?: string): Promise<{ success: boolean; telemetry: any }> {
+    return this.request(`/journal/monthly/${encodeURIComponent(month || new Date().toISOString().slice(0, 7))}/telemetry`);
+  }
+
+  static saveMonthlyReview(review: any): Promise<{ success: boolean; review: any }> {
+    return this.request('/journal/monthly', {
+      method: 'POST',
+      body: JSON.stringify(review)
+    });
+  }
+
+  static getYearlyIndexes(): Promise<{ success: boolean; indexes: any[] }> {
+    return this.request('/journal/yearly');
+  }
+
+  static getYearlyReview(year?: string): Promise<{ success: boolean; review: any }> {
+    return this.request(`/journal/yearly${year ? `/${encodeURIComponent(year)}` : ''}`);
+  }
+
+  static getYearlyTelemetry(year?: string): Promise<{ success: boolean; telemetry: any }> {
+    return this.request(`/journal/yearly/${encodeURIComponent(year || String(new Date().getFullYear()))}/telemetry`);
+  }
+
+  static saveYearlyReview(review: any): Promise<{ success: boolean; review: any }> {
+    return this.request('/journal/yearly', {
+      method: 'POST',
+      body: JSON.stringify(review)
+    });
+  }
+
+  // ─── Pure Markdown Finance Vault (_Finance/) ───
+  static getInvoices(): Promise<{ success: boolean; invoices: any[] }> {
+    return this.request('/finance/invoices');
+  }
+
+  static getInvoice(id: string): Promise<{ success: boolean; invoice: any }> {
+    return this.request(`/finance/invoices/${encodeURIComponent(id)}`);
+  }
+
+  static saveInvoice(invoice: any): Promise<{ success: boolean; invoice: any }> {
+    return this.request('/finance/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoice)
+    });
+  }
+
+  static appendSessionToInvoice(clientCode: string, sessionLog: any): Promise<{ success: boolean; invoice: any }> {
+    return this.request('/finance/append-session', {
+      method: 'POST',
+      body: JSON.stringify({ clientCode, sessionLog })
+    });
+  }
+
+  static deleteInvoice(id: string): Promise<{ success: boolean; deleted: boolean }> {
+    return this.request(`/finance/invoices/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static getQuotes(): Promise<{ success: boolean; quotes: any[] }> {
+    return this.request('/finance/quotes');
+  }
+
+  static getQuote(id: string): Promise<{ success: boolean; quote: any }> {
+    return this.request(`/finance/quotes/${encodeURIComponent(id)}`);
+  }
+
+  static saveQuote(quote: any): Promise<{ success: boolean; quote: any }> {
+    return this.request('/finance/quotes', {
+      method: 'POST',
+      body: JSON.stringify(quote)
+    });
+  }
+
+  static deleteQuote(id: string): Promise<{ success: boolean; deleted: boolean }> {
+    return this.request(`/finance/quotes/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static convertQuoteToInvoice(quoteId: string): Promise<{ success: boolean; quote: any; invoice: any }> {
+    return this.request('/finance/convert-quote', {
+      method: 'POST',
+      body: JSON.stringify({ quoteId })
+    });
+  }
+
+  // ─── Atelier Knowledge Engine (_Notes/) ───
+  static getAtomicNotes(): Promise<{ success: boolean; notes: any[] }> {
+    return this.request('/notes/atomic');
+  }
+
+  static getAtomicNote(category: string, id: string): Promise<{ success: boolean; note: any }> {
+    return this.request(`/notes/atomic/${encodeURIComponent(category)}/${encodeURIComponent(id)}`);
+  }
+
+  static saveAtomicNote(note: any): Promise<{ success: boolean; note: any }> {
+    return this.request('/notes/atomic', {
+      method: 'POST',
+      body: JSON.stringify(note)
+    });
+  }
+
+  static deleteAtomicNote(category: string, id: string): Promise<{ success: boolean; deleted: boolean }> {
+    return this.request(`/notes/atomic/${encodeURIComponent(category)}/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static getScratchpad(): Promise<{ success: boolean; content: string }> {
+    return this.request('/notes/scratchpad');
+  }
+
+  static saveScratchpad(content: string): Promise<{ success: boolean }> {
+    return this.request('/notes/scratchpad', {
+      method: 'POST',
+      body: JSON.stringify({ content })
+    });
+  }
+
+  static getUniversalTasks(): Promise<{ success: boolean; tasks: any[] }> {
+    return this.request('/notes/tasks');
+  }
+
+  static toggleUniversalTask(payload: { category?: string; noteId: string; taskDescription: string; completed?: boolean }): Promise<{ success: boolean; noteId: string; taskDescription: string; completed: boolean }> {
+    return this.request('/notes/tasks/toggle', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 

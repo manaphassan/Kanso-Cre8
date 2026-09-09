@@ -24,14 +24,61 @@
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
   import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
+  import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
+  import { timerStore } from '$lib/stores/timerStore.svelte';
 
   let commandPaletteOpen = $state(false);
-  let serverVersion = $state('0.0.1');
+  let scratchpadOpen = $state(false);
+  let serverVersion = $state('0.1.0');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    const isCmdOrCtrl = e.ctrlKey || e.metaKey;
+    if (!isCmdOrCtrl) return;
+
+    const key = e.key.toLowerCase();
+
+    // Ctrl+Shift+K: Quick Scratchpad
+    if (e.shiftKey && key === 'k') {
+      e.preventDefault();
+      scratchpadOpen = !scratchpadOpen;
+      return;
+    }
+
+    // Ctrl+K: Command Palette
+    if (!e.shiftKey && key === 'k') {
       e.preventDefault();
       commandPaletteOpen = !commandPaletteOpen;
+      return;
+    }
+
+    // Ctrl+Shift+J: Bullet Journal
+    if (e.shiftKey && key === 'j') {
+      e.preventDefault();
+      appState.navigate('journal');
+      return;
+    }
+
+    // Ctrl+Shift+I: Quotes & Invoices Studio
+    if (e.shiftKey && key === 'i') {
+      e.preventDefault();
+      appState.navigate('invoices');
+      return;
+    }
+
+    // Ctrl+Shift+T: Toggle Focus Chronometer
+    if (e.shiftKey && key === 't') {
+      e.preventDefault();
+      if (timerStore.isRunning) {
+        timerStore.stop();
+        appState.addToast('Focus chronometer stopped & session logged', 'info');
+      } else if (timerStore.isPaused) {
+        timerStore.resume();
+        appState.addToast('Focus chronometer resumed', 'info');
+      } else {
+        timerStore.start();
+        appState.addToast('Focus chronometer started', 'info');
+      }
+      return;
     }
   }
 
@@ -351,6 +398,18 @@
             </span>
           </div>
 
+          <!-- Quick Scratchpad Launcher -->
+          <button
+            class="icon-btn scratchpad-btn"
+            onclick={() => (scratchpadOpen = true)}
+            title="Quick Scratchpad (Ctrl+Shift+K)"
+            aria-label="Quick Scratchpad"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+          </button>
+
           <button
             class="icon-btn notif-btn"
             onclick={() => (appState.notificationDrawerOpen = !appState.notificationDrawerOpen)}
@@ -550,6 +609,11 @@
   <NotificationDrawer
     bind:open={appState.notificationDrawerOpen}
     onclose={() => (appState.notificationDrawerOpen = false)}
+  />
+
+  <QuickScratchpadModal
+    bind:open={scratchpadOpen}
+    onclose={() => (scratchpadOpen = false)}
   />
 
 
