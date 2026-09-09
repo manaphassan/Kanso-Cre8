@@ -1,5 +1,5 @@
 /**
- * Type-Safe API Client for SS-CAM Web Portal
+ * Type-Safe API Client for Kanso Cre8 Desktop Vault
  */
 import type { 
   Project, 
@@ -55,8 +55,6 @@ export class ApiClient {
       const data = await response.json().catch(() => ({}));
 
       if (response.status === 401 && endpoint !== '/auth/login') {
-        this.removeToken();
-        window.dispatchEvent(new CustomEvent('auth:required'));
         throw new Error(data.error || 'Authentication required');
       }
 

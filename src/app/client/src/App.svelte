@@ -19,14 +19,12 @@
   import TeamView from '$lib/views/TeamView.svelte';
   import AdminView from '$lib/views/AdminView.svelte';
   import ProfileView from '$lib/views/ProfileView.svelte';
-  import LoginView from '$lib/views/LoginView.svelte';
   import ClientReviewView from '$lib/views/ClientReviewView.svelte';
   import OrderFormView from '$lib/views/OrderFormView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
   import ObsidianMigrationModal from '$lib/components/features/ObsidianMigrationModal.svelte';
 
-  let showDownloadModal = $state(false);
   let commandPaletteOpen = $state(false);
   let migrationWizardOpen = $state(false);
   let serverVersion = $state('0.0.1');
@@ -45,11 +43,11 @@
         appState.currentRoute = 'review';
         return;
       }
-      if (!hash) { appState.currentRoute = 'dashboard'; return; }
+      if (!hash || hash === 'login') { appState.currentRoute = 'dashboard'; return; }
       const parts = hash.split('/');
       const route = parts[0];
       const id = parts[1] ? decodeURIComponent(parts[1]) : undefined;
-      appState.currentRoute = route || 'dashboard';
+      appState.currentRoute = (route && route !== 'login') ? route : 'dashboard';
       appState.routeParams = id ? { id } : {};
     }
 
@@ -68,8 +66,6 @@
         }
       } catch { /* non-critical */ }
     })();
-
-    window.addEventListener('auth:required', () => appState.navigate('login'));
 
     window.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -231,8 +227,6 @@
 
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
-{:else if !appState.currentUser}
-  <LoginView />
 {:else}
   <div
     class="app-shell"
@@ -250,11 +244,11 @@
             </div>
             <div class="flex flex-col">
               <span class="font-bold text-sm tracking-tight text-[var(--kanso-text-primary)]">Kanso Cre8</span>
-              <span class="text-[10px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Creative Vault</span>
+              <span class="text-[10px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Desktop Vault</span>
             </div>
           </div>
         {:else}
-          <div class="sidebar-logomark-wrap" title="Kanso Cre8 Vault">
+          <div class="sidebar-logomark-wrap" title="Kanso Cre8 Desktop Vault">
             <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
               K8
             </div>
@@ -437,12 +431,7 @@
                 </button>
                 <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('admin'); }} role="menuitem">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-                  Administration
-                </button>
-                <div class="dd-divider"></div>
-                <button class="dd-item danger" onclick={() => { appState.userMenuOpen = false; appState.logout(); }} role="menuitem">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                  Sign Out
+                  Administration & Vault
                 </button>
               </div>
             {/if}
@@ -572,113 +561,7 @@
     onclose={() => (appState.notificationDrawerOpen = false)}
   />
 
-  <FluentDialog
-    bind:open={showDownloadModal}
-    title="Download SS-CAM Clients (v{serverVersion})"
-    onClose={() => (showDownloadModal = false)}
-  >
-    <div class="download-modal-content">
-      <div class="download-platform-card">
-        <div class="platform-header">
-          <div class="platform-icon win-icon">🪟</div>
-          <div class="platform-meta">
-            <div class="platform-title">Windows Desktop (Tauri v2)</div>
-            <div class="platform-desc">High-performance Rust desktop runtime with Linear/Geist design (~12 MB)</div>
-          </div>
-        </div>
-        <div class="platform-actions">
-          <a
-            href="https://github.com/manaphassan/Kanso-Cre8/releases"
-            class="platform-download-btn win-btn"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            Download Kanso Cre8 Windows (GitHub) ↗
-          </a>
-        </div>
-      </div>
 
-      <div class="download-platform-card">
-        <div class="platform-header">
-          <div class="platform-icon android-icon">📱</div>
-          <div class="platform-meta">
-            <div class="platform-title">Android Mobile Studio Companion</div>
-            <div class="platform-desc">Companion app with 2×2 Bento KPI & live retro cassette player</div>
-          </div>
-        </div>
-        <div class="platform-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <a
-            href="https://github.com/manaphassan/Kanso-Cre8/releases"
-            class="platform-download-btn android-btn"
-            target="_blank"
-            rel="noreferrer"
-            style="background: #01875f; flex: 1; min-width: 150px;"
-          >
-            Google Play / Releases ↗
-          </a>
-          <a
-            href="https://github.com/manaphassan/Kanso-Cre8/releases/download/v1.0.0/kanso-cre8-android-release.apk"
-            class="platform-download-btn"
-            target="_blank"
-            rel="noreferrer"
-            style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            Direct APK ↗
-          </a>
-        </div>
-      </div>
-
-      <div class="download-platform-card">
-        <div class="platform-header">
-          <div class="platform-icon linux-icon">🐧</div>
-          <div class="platform-meta">
-            <div class="platform-title">Linux Desktop (Debian, Ubuntu, Arch, Fedora)</div>
-            <div class="platform-desc">Tauri v2 native client (.deb / .AppImage) with hardware acceleration</div>
-          </div>
-        </div>
-        <div class="linux-terminal-box">
-          <code>curl -fsSL https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/scripts/install-linux.sh | sudo bash</code>
-          <button
-            type="button"
-            class="copy-cmd-btn"
-            onclick={() => {
-              navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/scripts/install-linux.sh | sudo bash');
-              appState.addToast('Linux terminal installer command copied!', 'success');
-            }}
-          >
-            Copy Command
-          </button>
-        </div>
-      </div>
-
-      <div class="download-platform-card">
-        <div class="platform-header">
-          <div class="platform-icon web-icon">🌐</div>
-          <div class="platform-meta">
-            <div class="platform-title">Self-Hosted Docker Vault</div>
-            <div class="platform-desc">Run Kanso Cre8 inside Docker on local NAS, Synology, or private VPS</div>
-          </div>
-        </div>
-        <div class="platform-actions">
-          <a href="https://github.com/manaphassan/Kanso-Cre8#docker-deployment" class="platform-link-btn" target="_blank" rel="noreferrer">
-            View Docker Setup Guide ↗
-          </a>
-        </div>
-      </div>
-    </div>
-
-    {#snippet footer()}
-      <FluentButton appearance="ghost" onclick={() => (showDownloadModal = false)}>
-        Close
-      </FluentButton>
-    {/snippet}
-  </FluentDialog>
 {/if}
 
 <FluentToast />
