@@ -137,6 +137,14 @@ export class FinanceService {
     return this.documents;
   }
 
+  public getInvoices(): InvoiceDocument[] {
+    return this.getDocuments().filter(d => d.type === 'invoice');
+  }
+
+  public saveInvoice(doc: InvoiceDocument): void {
+    this.saveDocument(doc);
+  }
+
   public getDocumentById(id: string): InvoiceDocument | undefined {
     return this.documents.find(d => d.id === id);
   }
@@ -154,6 +162,13 @@ export class FinanceService {
   public deleteDocument(id: string): void {
     this.documents = this.documents.filter(d => d.id !== id);
     this.saveDocuments();
+  }
+
+  public getIncomeSummary(): { paid: number; pending: number; total: number } {
+    const invoices = this.getDocuments().filter(d => d.type === 'invoice');
+    const paid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.total || 0), 0);
+    const pending = invoices.filter(i => i.status === 'sent' || i.status === 'draft').reduce((s, i) => s + (i.total || 0), 0);
+    return { paid, pending, total: paid + pending };
   }
 
   /**

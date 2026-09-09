@@ -2,16 +2,10 @@ const path = require('path');
 const fs = require('fs');
 
 const envWorkspace = process.env.WORKSPACE_ROOT;
-const uncNasPath = '\\\\SSNAS\\Creative-Team';
-const localSyncCandidates = [
-  'D:\\SynologyDrive\\Creative-Team',
-  'C:\\SynologyDrive\\Creative-Team',
-  'E:\\SynologyDrive\\Creative-Team',
-  path.join(process.env.USERPROFILE || '', 'SynologyDrive', 'Creative-Team'),
-  path.join(process.env.USERPROFILE || '', 'Synology Drive', 'Creative-Team')
-];
-const linuxNasPath = '/volume1/Creative-Team';
-const linuxNasVolume2Path = '/volume2/Creative-Team';
+const uncNasPath = '';
+const localSyncCandidates = [];
+const linuxNasPath = '';
+const linuxNasVolume2Path = '';
 const fallbackLocalWorkspace = path.resolve(__dirname, '../sample-workspace');
 
 function isPathAccessible(dirPath) {

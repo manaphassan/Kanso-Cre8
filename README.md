@@ -28,14 +28,14 @@ Kanso Cre8 is architected as a strictly modular, decoupled system across **four 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. VAULT STORAGE LAYER (Zero-Database Markdown Engine)     │
-│    _Clients/    _Finance/    _Zettelkasten/    2026/Projects │
+│    _Clients/   _Finance/   _Projects/   _Journal/   _Notes/  │
 ├─────────────────────────────────────────────────────────────┤
 │ 2. DOMAIN SERVICES LAYER (Single-Responsibility Business)   │
-│    clientService   financeService   zettelService   radioService │
+│    clientService  financeService  journalService  zettelService │
 ├─────────────────────────────────────────────────────────────┤
 │ 3. UI VIEW & FEATURE LAYER (Pluggable Svelte 5 Views)        │
-│    ClientsView    InvoiceStudio    ZettelView    RadioView   │
-│    └─ KanbanView  └─ Lightbox      └─ CassetteDeck           │
+│    StudioDeck   ClientsView   JournalView   AtelierNotes    │
+│    └─ Chronometer  └─ InvoiceStudio  └─ CassetteDeck        │
 ├─────────────────────────────────────────────────────────────┤
 │ 4. ATOMIC DESIGN SYSTEM LAYER (Reusable Lego Primitives)    │
 │    Button · Card · Dialog · Input · Toast · CSS Tokens      │
@@ -82,80 +82,88 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 ```text
 📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
-├── 📁 _Clients/                          # 🏢 Multi-Client Profiles & Brand Assets
-│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation)
-│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio)
-│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs)
+├── 📁 _Clients/                          # 🏢 Client Dossiers & Brand Hub
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation · $125/hr)
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio · $110/hr)
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs · $140/hr)
 │
-├── 📁 _Finance/                          # 🧾 Markdown & YAML Quotes & Invoices
+├── 📁 _Finance/                          # 🧾 Cashflow & Invoice Studio (Quotes & Invoices)
 │   ├── 📁 Quotes/                        # QUOTE-2026-xxx.md
 │   └── 📁 Invoices/                      # INV-2026-xxx.md (Printable HTML/PDF)
 │
-├── 📁 _Zettelkasten/                     # 🧠 Second Brain Knowledge Engine
-│   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
-│   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
-│   └── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+├── 📁 _Projects/                         # 📁 Standardized Project Vaults
+│   └── 📁 2026/                          # Standardized 5-Folder Vaults by Year & Month
+│       └── 📁 202609_September/
+│           └── 📁 202609_0001_ACME_MobileAppIllustration/
+│               ├── 📁 01_BRIEF/          # Client briefs, references, moodboards
+│               ├── 📁 02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
+│               ├── 📁 03_COPY/           # COPY.md (scripts, hooks, specs)
+│               ├── 📁 04_WIP/            # Draft exports, test renders, review clips
+│               ├── 📁 05_DELIVERABLES/   # High-res exports ready for client handover
+│               └── 📄 README.md          # Project Master File (YAML Frontmatter)
 │
-├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
-│   └── 📁 202609_September/
-│       └── 📁 202609_0001_ACME_MobileAppIllustration/
-│           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
-│           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
-│           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
-│           ├── 📁 04_WIP/                # Draft exports, test renders, review clips
-│           ├── 📁 05_DELIVERABLES/       # High-res exports ready for client handover
-│           └── 📄 README.md              # Project Master File (YAML Frontmatter)
+├── 📁 _Journal/                          # 📔 Creator's BuJo (Bullet Journal System)
+│   ├── 📁 Daily/                         # YYYY-MM-DD.md (Rapid logging: tasks, events, notes)
+│   ├── 📁 Monthly/                       # YYYY-MM.md (Monthly review, deliverables, billable hours)
+│   └── 📁 Yearly/                        # YYYY.md (Annual vision, milestones, creative retrospective)
 │
-└── 📁 _Notes/                            # 📝 Quick Scratchpad
-    └── 📄 Scratchpad.md
+└── 📁 _Notes/                            # 🧠 Atelier Notes & Second Brain Engine
+    ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
+    ├── 📁 02_Literature/                 # Design references, book notes, teardowns
+    ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+    └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
 ```
 
 ---
 
 ## 🚀 Core Studio Features
 
-### 1. 🏢 Multi-Client Hub & Brand Palettes
-* Pre-configured profiles for sample clients (**Acme Corp**, **Nexus Studio**, **Lumina Labs**), plus 1-click addition of your own clients.
-* Instant interactive brand color swatches (`HEX`, `RGB`, `CMYK`) with 1-click clipboard copy.
-* Hourly rates, contact details, and client billing terms stored in clean YAML frontmatter.
+### 1. ⏱️ Billable Chronometer & Studio Pulse (Header Live Timer)
+* Real-time tactile **Play / Stop** controls in the header with live elapsed ticker (`HH:MM:SS`).
+* Dynamic hourly design rate input / client selector with instant earnings calculation (`+$...`).
+* **Active Client Swatch Strip**: 1-click clipboard copy for active client brand colors while working in design apps.
+* **1-Click Log to Invoice Pipeline**: Stop prompt offers to append completed session directly into `_Finance/Invoices/`.
+* Persistent state engine maintains timer progress with millisecond accuracy across app reloads.
 
-### 2. 🧾 Dual-Pane Quote & Invoice Studio
+### 2. 🎛️ Executive Studio Deck (Dashboard)
+* **Today's Tasks Deck**: Interactive daily task list synchronized directly with Bullet Journal Daily Notes (`_Journal/Daily/`).
+* **Design Metrics Bento**: Focus hours logged today & this week, billable velocity, first-time-right %, average turnaround days, and active revision rounds.
+* **Project Status at a Glance**: Visual card deck with client brand colors, stage progress bars, and deadline alerts.
+* **Smart Creative Suggestions**: Contextual alerts for stale proof reviews, unbilled hours ready to invoice, and focus wellness breaks.
+* **Total Income & Cashflow Summary**: Live aggregation of Paid Invoices + Pending Invoices + Today's Accrued Timer Earnings.
+
+### 3. 📔 Bullet Journal (BuJo) Creative Logging
+* **Daily Notes** (`_Journal/Daily/YYYY-MM-DD.md`): Rapid logging with design-native symbols (`• [ ]` Task, `• [x]` Done, `• [>]` Migrated, `o` Event, `-` Note, `*` Priority).
+* **Monthly Review** (`_Journal/Monthly/YYYY-MM.md`): Deliverables recap, billable hours breakdown, and creative reflections.
+* **Yearly Index** (`_Journal/Yearly/YYYY.md`): Annual financial goals, high-impact portfolio highlights, and strategic vision.
+
+### 4. 🏢 Client Dossiers & Brand Hub
+* Pre-configured profiles for sample clients (**Acme Corp**, **Nexus Studio**, **Lumina Labs**), with rates ($125, $110, $140), contact details, and payment terms.
+* Instant interactive brand color swatches (`HEX`, `RGB`, `CMYK`) with 1-click clipboard copy.
+* 1-Click **"Start Billable Timer"** launches the header chronometer pre-filled with the client's agreed rate and code.
+
+### 5. 🧠 Atelier Notes & Knowledge Engine
+* 3-tier knowledge categorization: **Fleeting Notes** (quick raw captures), **Literature Notes** (teardowns & references), and **Permanent Notes** (proven atomic design rules & hooks).
+* Bi-directional `[[WikiLinks]]` with real-time backlink indexing.
+* **Scratchpad Buffer** (`_Notes/Scratchpad.md`): Dedicated quick scratchpad for temporary notes and clipboard dumps.
+
+### 6. 🧾 Dual-Pane Quote & Invoice Studio
 * Write invoices in intuitive YAML line-items on the left; get a live, pixel-perfect printable invoice on the right.
 * Automated arithmetic for subtotals, custom tax rates, and grand totals.
 * 1-Click PDF export or print via system dialog (`window.print()`).
 
-### 3. 📁 Standardized 5-Folder Project Scaffolder & Kanban Board
-* 1-Click generator creating standardized project vaults (`01_BRIEF` to `05_DELIVERABLES`).
+### 7. 📁 Standardized 5-Folder Project Scaffolder & Kanban Board
+* 1-Click generator creating standardized project vaults (`01_BRIEF` to `05_DELIVERABLES`) under `_Projects/[YYYY]/`.
 * Interactive 5-stage Kanban board (`Backlog` ➔ `In Progress` ➔ `Review Queue` ➔ `Revision Required` ➔ `Approved & Done`).
 * Dragging cards or toggling stages directly updates the project's `README.md` frontmatter on disk.
 
-### 4. 🧠 Atomic Notes & Zettelkasten Second Brain
-* 3-tier knowledge categorization: **Fleeting Notes** (quick raw captures), **Literature Notes** (teardowns & references), and **Permanent Notes** (proven atomic design rules & hooks).
-* Bi-directional `[[WikiLinks]]` with real-time backlink indexing.
-* **Universal Task Rollup**: Any `- [ ] #task` written in meeting notes or fleeting files auto-populates the Kanban board; checking a box updates the physical file.
-
-### 5. 📻 Retro Cassette Focus Radio & Studio Deck
+### 8. 📻 Retro Cassette Focus Radio & Sanctuary
 * **Tactile Mechanical Player**: Ported faithfully from the mechanical cassette player in SS-CAM Android.
 * **Skeuomorphic Cassette Chassis**: 4 corner silver screws, trapezoidal head/roller, Side A label badge, station frequency, and clear tape window.
 * **Dual Spinning Spools**: 6-spoke mechanical gear spool wheels rotating at 33 RPM via smooth CSS animation during audio playback.
-* **Curated Focus Streams**:
-  - ☕ **Chillhop Cafe** (Lofi beats & study vibes)
-  - 🌆 **Nightwave Plaza** (Vaporwave / Synthwave)
-  - 🌿 **SomaFM Groove Salad** (Downtempo ambient)
-  - 🎷 **Parisian Jazz Cafe** (Acoustic jazz & bossa nova)
-  - 🧘 **Zen Alpha Focus** (Deep work binaural drone)
-* **Dual Placement**: Full studio view under `Focus Radio` + persistent **40px Mini-Cassette Dock** in the sidebar footer with mini rotating spools and transport controls.
-* **Integrated Productivity**: 25-minute Pomodoro sprint timer and box breathing reset coach.
-
-### 6. ✍️ Copywriting Studio & Hook Tray
-* Dedicated editor writing directly to `03_COPY/COPY.md`.
-* Live telemetry: word count, character count, and estimated reading time.
-* **Atomic Hook Injector**: Insert tested hooks from your permanent notes drawer with one keystroke, or extract winning copy back into atomic notes.
-
-### 7. 🔍 4K Deliverables Lightbox & 1-Click ZIP Handover
-* High-res media reviewer for proofs, PNGs, MP4s, and renders.
-* Zoom and pan inspection for checking print bleeds and export quality.
-* Automated 1-click ZIP export packaging for clean client delivery.
+* **Curated Focus Streams**: Chillhop Cafe, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus.
+* **Dual Placement**: Full studio view under `Focus Radio` + persistent **40px Mini-Cassette Dock** in the sidebar footer.
+* **Zen Focus Mode**: Distraction-free sanctuary with soft ambient sound and minimal UI.
 
 ---
 
