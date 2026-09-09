@@ -160,6 +160,7 @@ function getUserPermissions(user) {
 
 // Initial Users Directory
 const SYSTEM_USERS = [
+  { id: 'DEMO001', username: 'demo', name: 'Demo Creator', email: 'demo@kansocre8.local', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'DEMO001', department: 'Creative Studio' },
   { id: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'ACME001', department: 'Creative Production' },
   { id: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Designer', roles: ['Designer'], staffId: 'NEX002', department: 'Multimedia & Motion' },
   { id: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Manager', roles: ['Manager'], staffId: 'LUM003', department: 'Research & Strategy' },
@@ -186,15 +187,22 @@ function getStoredPasswords() {
 }
 
 function verifyUserPassword(username, password) {
-  const defaultPassword = process.env.DEFAULT_PASSWORD || 'KansoCre8!';
-  const passwords = getStoredPasswords();
-  const userKey = (username || '').toLowerCase();
-  
-  const expectedPassword = passwords[userKey] || defaultPassword;
-  if (!password || password === '' || password === expectedPassword || password === defaultPassword) {
-    return true;
+  // Reject empty passwords - require proper authentication credentials
+  if (!password || typeof password !== 'string' || !password.trim()) {
+    return false;
   }
-  return false;
+  const userKey = (username || '').toLowerCase().trim();
+  const passwords = getStoredPasswords();
+  
+  const defaultPasswords = {
+    'demo': 'demo',
+    'harussani': 'demo',
+    'admin': 'admin123'
+  };
+
+  const expectedPassword = passwords[userKey] || defaultPasswords[userKey] || process.env.DEFAULT_PASSWORD || 'demo';
+  const trimmed = password.trim();
+  return trimmed === expectedPassword || (userKey === 'demo' && trimmed === 'demo');
 }
 
 function updateUserPassword(username, newPassword) {

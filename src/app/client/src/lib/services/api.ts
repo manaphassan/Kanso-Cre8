@@ -14,9 +14,20 @@ import type {
   TeamMember
 } from '$lib/types';
 
-const API_BASE = '/api';
+const isTauri = typeof window !== 'undefined' && (
+  Boolean((window as any).__TAURI_INTERNALS__) ||
+  window.location.protocol === 'tauri:' ||
+  window.location.hostname === 'tauri.localhost' ||
+  window.location.origin.includes('tauri.localhost')
+);
+
+const API_BASE = isTauri ? 'http://localhost:4000/api' : '/api';
 
 export class ApiClient {
+  static getBaseUrl(): string {
+    return API_BASE;
+  }
+
   static getToken(): string {
     return localStorage.getItem('ss_cam_token') || '';
   }
