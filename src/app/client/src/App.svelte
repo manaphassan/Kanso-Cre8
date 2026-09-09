@@ -29,7 +29,7 @@
   let showDownloadModal = $state(false);
   let commandPaletteOpen = $state(false);
   let migrationWizardOpen = $state(false);
-  let serverVersion = $state('4.6.2');
+  let serverVersion = $state('0.0.1');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
