@@ -18,6 +18,7 @@ class TeamService {
   static getStaffRoster() {
     const rosterPath = this.getRosterPath();
     const defaultTeam = [
+      { staffId: 'DEMO001', username: 'demo', name: 'Demo Creator', email: 'demo@kansocre8.local', role: 'Lead Designer / Administrator', department: 'Creative Studio', defaultBrand: 'ACME', avatarColor: '#38BDF8', active: true },
       { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
       { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
       { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
@@ -43,6 +44,10 @@ class TeamService {
         roster.some(m => (m.staffId && m.staffId.startsWith('SS')) || (m.email && m.email.includes('suamisihat')))
       );
       if (!hasLegacy && Array.isArray(roster) && roster.length >= 6) {
+        if (!roster.some(m => m.username === 'demo')) {
+          roster.unshift(defaultTeam[0]);
+          this.saveStaffRoster(roster);
+        }
         return roster;
       }
       this.saveStaffRoster(defaultTeam);
