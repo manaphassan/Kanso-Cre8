@@ -139,8 +139,8 @@
         <div class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold shadow-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span>[{timerStore.clientCode}]</span>
-          <span>{timerStore.elapsedFormatted}</span>
-          <span class="text-emerald-300">(+${timerStore.earnings.toFixed(2)})</span>
+          <span>{timerStore.elapsedFormatted || '00:00:00'}</span>
+          <span class="text-emerald-300">(+${(timerStore.earnings || 0).toFixed(2)})</span>
         </div>
       {:else}
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card text-muted-foreground text-xs font-mono">
@@ -224,10 +224,10 @@
           {/if}
         </div>
         <div class="text-2xl font-bold font-mono text-sky-400 tracking-tight">
-          +${timerStore.earnings.toFixed(2)}
+          +${(timerStore.earnings || 0).toFixed(2)}
         </div>
         <p class="text-[11px] text-muted-foreground">
-          {timerStore.elapsedFormatted} logged today
+          {timerStore.elapsedFormatted || '00:00:00'} logged today
         </p>
       </div>
     </div>
