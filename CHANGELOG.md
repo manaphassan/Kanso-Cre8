@@ -2,7 +2,7 @@
 
 All notable changes to Kanso Cre8 (簡素) are documented here.
 
-## [5.0.0-kanso] - 2026-09-09 (Evolution to Kanso Cre8 — The Mindful Creative Vault)
+## [0.0.1-alpha] - 2026-09-09 (Rebirth as Kanso Cre8 — Initial Alpha Release)
 
 ### Added & Rebuilt — Rebirth as Kanso Cre8 (簡素)
 - **Product Identity & Creative Vault Philosophy**:
