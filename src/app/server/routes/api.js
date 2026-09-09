@@ -1807,7 +1807,7 @@ router.post('/admin/restart', authenticateToken, (req, res) => {
     role: req.user?.role || 'Admin',
     action: 'SERVER_RESTART_REQUESTED',
     entityType: 'System',
-    entityId: 'portal',
+    entityId: 'desktop-service',
     details: { timestamp: new Date().toISOString() }
   });
 

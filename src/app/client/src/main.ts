@@ -1,5 +1,5 @@
 /**
- * Application Bootstrap Entry for SS-CAM Web Portal (Svelte 5)
+ * Application Bootstrap Entry for Kanso Cre8 Desktop Application (Svelte 5)
  */
 import { mount } from 'svelte';
 import './lib/styles/fluent2-tokens.css';

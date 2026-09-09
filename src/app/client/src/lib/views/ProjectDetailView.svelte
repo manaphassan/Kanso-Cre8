@@ -362,7 +362,7 @@
     try {
       await ApiClient.submitDecision(p.id, {
         decision,
-        comment: decision === 'approved' ? 'Formal manager approval via portal.' : 'Revisions requested on creative deliverables.'
+        comment: decision === 'approved' ? 'Formal manager approval via studio dashboard.' : 'Revisions requested on creative deliverables.'
       });
       appState.addToast(
         decision === 'approved' ? 'Project Approved & Signed Off' : 'Revision Requested recorded in audit log',

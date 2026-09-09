@@ -87,7 +87,7 @@
 
   function shareViaWhatsApp(token: string) {
     const url = getShareUrl(token);
-    const text = encodeURIComponent(`Hi, please review and approve the creative deliverables for ${projectTitle || 'this project'} on Kanso Cre8 Client Portal:\n\n${url}`);
+    const text = encodeURIComponent(`Hi, please review and approve the creative deliverables for ${projectTitle || 'this project'} on Kanso Cre8 Client Review:\n\n${url}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   }
 

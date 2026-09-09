@@ -323,7 +323,7 @@
           </div>
           <div>
             <h3 class="card-title">Designer Profile</h3>
-            <p class="card-desc">Your identity across SS-CAM Web Portal &amp; Desktop App</p>
+            <p class="card-desc">Your creator identity in Kanso Cre8 Desktop Vault</p>
           </div>
         </div>
 
@@ -506,12 +506,6 @@
               onclick={handlePasswordChange}
             >
               Update Password
-            </FluentButton>
-            <FluentButton
-              appearance="danger"
-              onclick={() => appState.logout()}
-            >
-              Sign Out
             </FluentButton>
           </div>
         </div>
