@@ -78,9 +78,9 @@ if (Test-Path $readmePath) {
     Report-Check "Readme" "README.md missing" "FAIL"
 }
 
-# 2. REPOSITORY STRUCTURE & CODE QUARANTINE
+# 2. REPOSITORY STRUCTURE & SANITIZATION
 Write-Host ""
-Write-Host "[ 2. REPOSITORY STRUCTURE & REFACTORING ]" -ForegroundColor White
+Write-Host "[ 2. REPOSITORY STRUCTURE & SANITIZATION ]" -ForegroundColor White
 $appDir = Join-Path $repoRoot "src\app"
 if (Test-Path $appDir) {
     Report-Check "Structure" "Primary modern application located in src/app/" "PASS"
@@ -88,18 +88,27 @@ if (Test-Path $appDir) {
     Report-Check "Structure" "src/app/ directory not found" "FAIL"
 }
 
-$archiveDir = Join-Path $repoRoot "archive\legacy-dotnet"
-if (Test-Path $archiveDir) {
-    Report-Check "Structure" "Legacy .NET projects quarantined in archive/legacy-dotnet/" "PASS"
-} else {
-    Report-Check "Structure" "archive/legacy-dotnet/ missing" "WARN" "Legacy projects should be archived here."
-}
-
 $legacyInSrc = Test-Path "$repoRoot\src\SS-CAM"
 if (-not $legacyInSrc) {
     Report-Check "Structure" "src/ root is clean of legacy SS-CAM directories" "PASS"
 } else {
     Report-Check "Structure" "src/ still contains legacy SS-CAM folders" "FAIL"
+}
+
+$forbiddenArtifacts = @(
+    "$repoRoot\archive",
+    "$repoRoot\src\app\Dockerfile",
+    "$repoRoot\src\app\docker-compose.yml"
+)
+$foundForbidden = $false
+foreach ($item in $forbiddenArtifacts) {
+    if (Test-Path $item) {
+        Report-Check "Structure" "Unwanted legacy or container artifact found: $item" "FAIL"
+        $foundForbidden = $true
+    }
+}
+if (-not $foundForbidden) {
+    Report-Check "Structure" "Repository fully sanitized: zero legacy archive or Docker artifacts" "PASS"
 }
 
 # 3. PURE MARKDOWN DATABASE ENGINE (NO SQL / NO CLOUD DB)

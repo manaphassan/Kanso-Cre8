@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { clientService } from '../services/clientService';
+  import { timerStore } from '../stores/timerStore.svelte';
   import type { ClientProfile } from '../types/kanso';
 
   let clients: ClientProfile[] = $state([]);
@@ -264,6 +265,34 @@
               "{client.notes}"
             </div>
           {/if}
+
+          <!-- 1-Click Billable Chronometer Action -->
+          <div class="pt-2">
+            {#if timerStore.isRunning && timerStore.clientCode === client.code}
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-xs font-mono font-bold text-emerald-400 flex-1">
+                  Active: {timerStore.elapsedFormatted} (+${timerStore.earnings.toFixed(2)})
+                </span>
+                <button
+                  onclick={() => timerStore.stop()}
+                  class="px-2.5 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] font-bold rounded transition-colors"
+                >
+                  Stop
+                </button>
+              </div>
+            {:else}
+              <button
+                onclick={() => timerStore.start(client.code, client.defaultHourlyRate)}
+                class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-primary/40 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-all shadow-xs group-hover:border-primary"
+              >
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span>Start Billable Timer (${client.defaultHourlyRate}/hr)</span>
+              </button>
+            {/if}
+          </div>
         </div>
 
         <!-- Card Footer Quick Metrics -->

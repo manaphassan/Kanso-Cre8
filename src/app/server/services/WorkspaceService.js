@@ -39,7 +39,7 @@ class WorkspaceService {
       if (process.env.SEED_SAMPLES === 'true') {
         try {
           const items = fs.readdirSync(this.workspaceRoot);
-          const hasProjects = items.some(item => !item.startsWith('.') && !item.startsWith('_'));
+          const hasProjects = items.some(item => (!item.startsWith('.') && !item.startsWith('_')) || item === '_Projects');
           if (!hasProjects) {
             this.seedSampleProjects();
           }
@@ -138,7 +138,10 @@ class WorkspaceService {
     ];
 
     for (const s of samples) {
-      const projDir = path.join(this.workspaceRoot, s.year, s.folder);
+      const projectsBase = fs.existsSync(path.join(this.workspaceRoot, '_Projects'))
+        ? path.join(this.workspaceRoot, '_Projects')
+        : this.workspaceRoot;
+      const projDir = path.join(projectsBase, s.year, s.folder);
       fs.mkdirSync(projDir, { recursive: true });
 
       // Canonical 5-folder project vault hierarchy
@@ -258,7 +261,7 @@ class WorkspaceService {
     }
 
     for (const entry of entries) {
-      if (entry.name.startsWith('.') || entry.name.startsWith('_') || entry.name.startsWith('#') || entry.name.startsWith('@') || entry.name === 'node_modules' || entry.name === '$RECYCLE.BIN') {
+      if (entry.name.startsWith('.') || (entry.name.startsWith('_') && entry.name !== '_Projects') || entry.name.startsWith('#') || entry.name.startsWith('@') || entry.name === 'node_modules' || entry.name === '$RECYCLE.BIN') {
         continue;
       }
 
@@ -931,8 +934,11 @@ class WorkspaceService {
     const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'Creative_Project';
     const folderName = `${monthCode}_${jobId}_${clientCode}_${sanitizedTitle}`;
 
-    // Target folder under workspaceRoot:
-    const targetDir = path.join(this.workspaceRoot, year, folderName);
+    // Target folder under _Projects (or workspaceRoot if year folder already directly at root):
+    const projectsBase = fs.existsSync(path.join(this.workspaceRoot, '_Projects'))
+      ? path.join(this.workspaceRoot, '_Projects')
+      : (fs.existsSync(path.join(this.workspaceRoot, year)) ? this.workspaceRoot : path.join(this.workspaceRoot, '_Projects'));
+    const targetDir = path.join(projectsBase, year, folderName);
     if (fs.existsSync(targetDir)) {
       throw new Error(`Project folder "${folderName}" already exists.`);
     }

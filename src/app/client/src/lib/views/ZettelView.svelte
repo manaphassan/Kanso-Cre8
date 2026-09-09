@@ -10,6 +10,11 @@
   let isEditing = $state(false);
   let showTaskDrawer = $state(false);
 
+  // Atelier Notes vs Scratchpad
+  let activeTab: 'notes' | 'scratchpad' = $state('notes');
+  let scratchpadContent = $state('');
+  let scratchpadSaved = $state(false);
+
   // Form State
   let editTitle = $state('');
   let editType: ZettelType = $state('permanent');
@@ -21,7 +26,16 @@
     if (notes.length > 0) {
       selectNote(notes[0]);
     }
+    scratchpadContent = zettelService.getScratchpad();
   });
+
+  function handleScratchpadInput(e: Event) {
+    const target = e.target as HTMLTextAreaElement;
+    scratchpadContent = target.value;
+    zettelService.saveScratchpad(target.value);
+    scratchpadSaved = true;
+    setTimeout(() => { scratchpadSaved = false; }, 1500);
+  }
 
   function selectNote(note: ZettelNote) {
     activeNote = note;
@@ -99,35 +113,61 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
         </span>
-        Zettelkasten &amp; Atomic Knowledge
+        Atelier Notes &amp; Knowledge
       </h1>
       <p class="text-sm text-muted-foreground mt-1">
-        Interconnected creative second brain. Capture fleeting ideas, link clients via [[WikiLinks]], and extract actionable tasks automatically.
+        Interconnected creative second brain (<span class="font-mono text-xs text-primary">_Notes/</span>). Capture fleeting ideas, link clients via [[WikiLinks]], and rapid-scratch temporary notes.
       </p>
     </div>
 
     <div class="flex items-center gap-3">
-      <button
-        onclick={() => showTaskDrawer = !showTaskDrawer}
-        class="inline-flex items-center gap-2 px-3.5 py-2 border border-border bg-card hover:bg-muted/50 text-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
-      >
-        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-        Vault Tasks ({allTasks.filter(t => !t.completed).length})
-      </button>
+      <!-- Mode Toggle -->
+      <div class="flex items-center gap-1 p-1 bg-muted/40 rounded-lg border border-border">
+        <button
+          onclick={() => activeTab = 'notes'}
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all {activeTab === 'notes' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+        >
+          <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Atelier Notes
+        </button>
+        <button
+          onclick={() => activeTab = 'scratchpad'}
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all {activeTab === 'scratchpad' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+        >
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Scratchpad.md
+        </button>
+      </div>
 
-      <button
-        onclick={() => createNewNote('permanent')}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        New Atomic Note
-      </button>
+      {#if activeTab === 'notes'}
+        <button
+          onclick={() => showTaskDrawer = !showTaskDrawer}
+          class="inline-flex items-center gap-2 px-3.5 py-2 border border-border bg-card hover:bg-muted/50 text-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
+        >
+          <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          Vault Tasks ({allTasks.filter(t => !t.completed).length})
+        </button>
+
+        <button
+          onclick={() => createNewNote('permanent')}
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          New Atomic Note
+        </button>
+      {/if}
     </div>
   </div>
+
+  {#if activeTab === 'notes'}
 
   <!-- Main Split-Pane Workspace -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -380,6 +420,73 @@
     </div>
 
   </div>
+  {:else}
+  <!-- SCRATCHPAD VIEW (_Notes/Scratchpad.md) -->
+  <div class="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4 animate-fadeIn">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono text-xs font-semibold">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          _Notes/Scratchpad.md
+        </div>
+
+        <span class="text-xs font-mono text-muted-foreground">
+          {scratchpadContent.split(/\s+/).filter(Boolean).length} words · {scratchpadContent.split('\n').length} lines
+        </span>
+
+        {#if scratchpadSaved}
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded animate-pulse">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Auto-saved
+          </span>
+        {/if}
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          onclick={() => {
+            navigator.clipboard.writeText(scratchpadContent);
+            scratchpadSaved = true;
+            setTimeout(() => { scratchpadSaved = false; }, 1200);
+          }}
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted/50 text-foreground text-xs font-semibold rounded-md transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          Copy Content
+        </button>
+
+        <button
+          onclick={() => {
+            if (confirm('Clear Scratchpad content?')) {
+              scratchpadContent = '';
+              zettelService.saveScratchpad('');
+            }
+          }}
+          class="px-2.5 py-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 text-xs font-semibold rounded-md transition-colors"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <textarea
+      value={scratchpadContent}
+      oninput={handleScratchpadInput}
+      rows="20"
+      placeholder="Type instant thoughts, meeting scratch notes, clipboard dumps, or temporary hex codes..."
+      class="w-full p-5 rounded-lg border border-border bg-background text-foreground font-mono text-xs leading-relaxed focus:outline-none focus:border-primary shadow-inner"
+    ></textarea>
+
+    <div class="p-3 bg-muted/20 border border-border/50 rounded-lg flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+      <span>💡 Saved to local Markdown storage engine: <strong class="text-foreground">_Notes/Scratchpad.md</strong></span>
+      <span>Supports [[WikiLinks]] &amp; BuJo tasks</span>
+    </div>
+  </div>
+  {/if}
 
   <!-- Global Vault Task Drawer Modal -->
   {#if showTaskDrawer}

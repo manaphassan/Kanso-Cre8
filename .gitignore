@@ -1,63 +1,32 @@
-# ── Build outputs ──────────────────────────────────────────────
-[Bb]in/
-[Oo]bj/
-**/[Bb]in/
-**/[Oo]bj/
-**/build/
-/dist/
-*.pdb
-*.user
-src/SS-CAM/packages/
-packages/
-SS-CAM-v*.exe
-SS-CAM.exe
-nuget.exe
-src/nuget.exe
-*.nupkg
-
-# ── Scratch / temp test files ──────────────────────────────────
-test_*.cs
-test_*.exe
-src/SS-CAM/test_*.cs
-desktop_capture_*.png
-stdout.txt
-stderr.txt
-*.exe.old
-*.log
-scratch/
-QA/TestWorkspace/
-TestWorkspace/
-
-# ── Editor & OS ────────────────────────────────────────────────
-.vs/
-.vscode/
-*.suo
-Thumbs.db
-desktop.ini
-
-# ── Agent Temp / Wiki ─────────────────────────────────────────
-.agents/wiki/
-.agents/skills/sscam-release-publisher/scratch/
-
-# ── Web Portal dependencies & build ─────────────────────────────
+# ── Kanso Cre8 Desktop Application ─────────────────────────────
 node_modules/
 **/node_modules/
-**/.package-lock.json
+dist/
+**/dist/
 .vite/
-
-# ── Web Portal environment-specific server config ─────────────────
-# These files contain machine-local paths (Windows UNC vs Linux container mount)
-# and must NOT be committed or deployed — managed per-environment on the NAS directly.
-src/SS-CAM.Web/server/workspace_config.json
-src/SS-CAM.Web/server/ai-config.json
-src/app/server/workspace_config.json
-src/app/server/ai-config.json
 src/app/src-tauri/target/
 
-# ── Android build caches & capture ─────────────────────────────
-.gradle/
-**/.gradle/
-local.properties
-**/local.properties
-screenshot.png
+# ── Local Environment & Machine-Local Configuration ─────────────
+src/app/server/workspace_config.json
+src/app/server/ai-config.json
+*.env
+*.env.local
 
+# ── OS & Editor Metadata ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.log
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# ── Temporary / Scratch Files ────────────────────────────────────
+scratch/
+temp/
+tmp/
+*.tmp
+*.bak
+*.old
