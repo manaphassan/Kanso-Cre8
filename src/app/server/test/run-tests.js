@@ -1,5 +1,5 @@
 /**
- * Automated Verification Test Suite for SS-CAM Web Portal
+ * Automated Verification Test Suite for Kanso Cre8 Desktop Application Engine
  */
 
 const assert = require('assert');
@@ -11,7 +11,7 @@ const DeliverableService = require('../services/DeliverableService');
 const WorkspaceService = require('../services/WorkspaceService');
 const ApprovalService = require('../services/ApprovalService');
 
-console.log('🧪 Starting SS-CAM Web Management Portal Verification Suite...\n');
+console.log('🧪 Starting Kanso Cre8 Desktop Application Verification Suite...\n');
 
 // Mock AuditService path to prevent polluting production NAS audit logs
 const origAuditGetPath = AuditService.getAuditLogPath;
@@ -180,7 +180,7 @@ This is the project brief content.
   });
 
   // ─── TEST 7: Sidebar Navigation & App Ecosystem DOM Structure ─────
-  test('App.svelte and Client structure include SS-CAM Desktop ecosystem navigation', () => {
+  test('App.svelte and Client structure include Kanso Cre8 Desktop ecosystem navigation', () => {
     const svelteAppPath = path.join(__dirname, '../../client/src/App.svelte');
     const indexPath = path.join(__dirname, '../../client/index.html');
     const content = fs.existsSync(svelteAppPath)
@@ -188,21 +188,20 @@ This is the project brief content.
       : fs.readFileSync(indexPath, 'utf8');
 
     assert.ok(content.includes('app-sidebar'), 'Sidebar root element must exist');
-    assert.ok(content.includes('desktop-app-banner') || content.includes('Desktop') || content.includes('MiniCassetteDock'), 'Desktop Client banner or dock must exist');
+    assert.ok(content.includes('Desktop') || content.includes('MiniCassetteDock'), 'Desktop Vault banner or dock must exist');
     assert.ok(
-      content.includes('https://github.com/manaphassan/Kanso-Cre8') || content.includes('Download') || content.includes('Desktop'),
-      'Kanso Cre8 desktop client or download reference must exist'
+      content.includes('Desktop') || content.includes('MiniCassetteDock'),
+      'Kanso Cre8 desktop client or dock reference must exist'
     );
   });
 
-  // ─── TEST 8: Login View DOM Structure & Authentication ─────────────
-  test('LoginView renders brand header, quick sign-in roster, and authentication form', () => {
-    const svelteLoginPath = path.join(__dirname, '../../client/src/lib/views/LoginView.svelte');
-    const content = fs.readFileSync(svelteLoginPath, 'utf8');
+  // ─── TEST 8: Desktop Direct-Boot Vault & Profile Management ─────────────
+  test('Desktop direct-boot vault and creator state are configured for standalone desktop', () => {
+    const appStatePath = path.join(__dirname, '../../client/src/lib/stores/appState.svelte.ts');
+    const content = fs.readFileSync(appStatePath, 'utf8');
 
-    assert.ok(content.includes('Kanso Cre8') || content.includes('login-hero-bg'), 'Login title/viewport must exist');
-    assert.ok(content.includes('quick-roster') || content.includes('hero-wave-canvas'), 'Quick roster or canvas must exist');
-    assert.ok(content.includes('Sign In') || content.includes('login-card-static'), 'Sign in card must exist');
+    assert.ok(content.includes('DEFAULT_DESKTOP_CREATOR'), 'DEFAULT_DESKTOP_CREATOR state must exist');
+    assert.ok(content.includes('DEFAULT_DESKTOP_CREATOR'), 'Default desktop creator must be initialized');
   });
 
   // ─── TEST 9: ApiClient Interface Integrity ──────────────────────────

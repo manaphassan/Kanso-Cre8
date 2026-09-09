@@ -108,7 +108,7 @@
     <div class="header-content">
       <div class="brand-row">
         <img src="brand/kanso-logo.svg" alt="Kanso Cre8" class="portal-logo" style="height: 36px; width: auto;" />
-        <span class="portal-badge">CLIENT REVIEW PORTAL</span>
+        <span class="portal-badge">CLIENT PROOF REVIEW</span>
       </div>
       {#if reviewData?.shareInfo}
         <div class="header-perm-pill {reviewData.shareInfo.permissions}">

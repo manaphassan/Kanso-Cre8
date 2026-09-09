@@ -122,7 +122,7 @@ class ApprovalService {
 
       const newNote = {
         Id: `note_${Date.now()}`,
-        Author: `${reviewer} (Web Portal)`,
+        Author: `${reviewer} (Desktop Review)`,
         StaffId: 'MGMT',
         Content: content,
         Timestamp: new Date().toISOString(),
