@@ -272,7 +272,7 @@
               <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span class="text-xs font-mono font-bold text-emerald-400 flex-1">
-                  Active: {timerStore.elapsedFormatted} (+${timerStore.earnings.toFixed(2)})
+                  Active: {timerStore.elapsedFormatted || '00:00:00'} (+${(timerStore.earnings || 0).toFixed(2)})
                 </span>
                 <button
                   onclick={() => timerStore.stop()}

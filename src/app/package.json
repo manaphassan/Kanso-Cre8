@@ -44,6 +44,7 @@
     "@types/dompurify": "^3.0.5",
     "concurrently": "^10.0.5",
     "dompurify": "^3.4.13",
+    "jsdom": "^30.0.1",
     "marked": "^18.0.9",
     "mermaid": "^11.16.1",
     "svelte": "^5.56.9",
