@@ -62,7 +62,7 @@ export interface InvoiceDocument {
   documentNumber: string; // e.g. "INV-2026-001" or "QUOTE-2026-001"
   date: string;
   dueDate: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'accepted' | 'declined' | 'converted' | 'expired';
   
   // Client info
   clientCode: string;
@@ -82,6 +82,8 @@ export interface InvoiceDocument {
 
   // Items & Calculations
   currency: string;
+  hourlyRate?: number;
+  validUntil?: string;
   items: InvoiceLineItem[];
   taxRatePercent: number;
   subtotal: number;
@@ -89,6 +91,8 @@ export interface InvoiceDocument {
   total: number;
   notes: string;
   linkedProjectId?: string;
+  linkedQuoteId?: string;
+  linkedInvoiceId?: string;
 }
 
 export type SyncProvider = 'local' | 'dropbox' | 'gdrive' | 'onedrive' | 'synology' | 'unknown';

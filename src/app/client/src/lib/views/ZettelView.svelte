@@ -20,13 +20,16 @@
   let editType: ZettelType = $state('permanent');
   let editTags = $state('');
   let editContent = $state('');
+  let isDiskSyncing = $state(false);
 
-  onMount(() => {
-    notes = zettelService.getNotes();
+  onMount(async () => {
+    isDiskSyncing = true;
+    notes = await zettelService.loadNotesFromDisk();
     if (notes.length > 0) {
       selectNote(notes[0]);
     }
-    scratchpadContent = zettelService.getScratchpad();
+    scratchpadContent = await zettelService.loadScratchpadFromDisk();
+    isDiskSyncing = false;
   });
 
   function handleScratchpadInput(e: Event) {

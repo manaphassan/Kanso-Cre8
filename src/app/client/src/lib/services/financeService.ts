@@ -4,8 +4,57 @@
  */
 
 import type { InvoiceDocument, InvoiceLineItem } from '../types/kanso';
+import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_invoices';
+const QUOTES_STORAGE_KEY = 'kanso_cre8_quotes';
+
+export const SAMPLE_QUOTES: InvoiceDocument[] = [
+  {
+    id: 'qte-2026-001',
+    type: 'quote',
+    documentNumber: 'QTE-2026-001',
+    date: '2026-09-08',
+    dueDate: '2026-09-22',
+    validUntil: '2026-09-22',
+    status: 'draft',
+    clientCode: 'NEX',
+    clientName: 'Nexus Studio',
+    clientContact: 'Alex Rivera',
+    clientEmail: 'billing@nexusstudio.io',
+    clientAddress: '550 Howard St, San Francisco, CA 94105',
+    freelancerName: 'Harusssani Creative Vault',
+    freelancerEmail: 'contact@kansocre8.local',
+    freelancerPhone: '+1 (555) 019-2834',
+    freelancerAddress: 'San Francisco, CA',
+    paymentBank: 'First Creative Bank',
+    paymentAccount: '9876-5432-1098',
+    paymentAccountName: 'Harusssani Manaphassan',
+    currency: 'USD',
+    hourlyRate: 140,
+    items: [
+      {
+        id: 'it_1',
+        description: 'Cyberpunk Game Launch Key Visuals & Motion Blockout',
+        quantity: 20,
+        unitPrice: 140,
+        amount: 2800
+      },
+      {
+        id: 'it_2',
+        description: 'Kinetic Typography Teaser Reel (15s & 30s Deliverables)',
+        quantity: 15,
+        unitPrice: 140,
+        amount: 2100
+      }
+    ],
+    taxRatePercent: 0,
+    subtotal: 4900,
+    taxAmount: 0,
+    total: 4900,
+    notes: 'Estimate valid for 14 days from issue date. Includes 2 rounds of creative revisions.'
+  }
+];
 
 export const SAMPLE_INVOICES: InvoiceDocument[] = [
   {
@@ -92,9 +141,11 @@ export const SAMPLE_INVOICES: InvoiceDocument[] = [
 export class FinanceService {
   private static instance: FinanceService;
   private documents: InvoiceDocument[] = [];
+  private quotes: InvoiceDocument[] = [];
 
   private constructor() {
     this.loadDocuments();
+    this.loadQuotes();
   }
 
   public static getInstance(): FinanceService {
@@ -111,6 +162,7 @@ export class FinanceService {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
           this.documents = parsed;
+          this.fetchDiskInvoices();
           return this.documents;
         }
       }
@@ -119,6 +171,23 @@ export class FinanceService {
     }
     this.documents = [...SAMPLE_INVOICES];
     this.saveDocuments();
+    this.fetchDiskInvoices();
+    return this.documents;
+  }
+
+  public async fetchDiskInvoices(): Promise<InvoiceDocument[]> {
+    try {
+      const res = await ApiClient.getInvoices();
+      if (res && res.success && Array.isArray(res.invoices) && res.invoices.length > 0) {
+        this.documents = res.invoices as InvoiceDocument[];
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.documents));
+        }
+        return this.documents;
+      }
+    } catch (e) {
+      // Offline local-first fallback
+    }
     return this.documents;
   }
 
@@ -128,6 +197,46 @@ export class FinanceService {
     } catch (e) {
       console.error('[FinanceService] Save error:', e);
     }
+  }
+
+  public loadQuotes(): InvoiceDocument[] {
+    try {
+      const stored = localStorage.getItem(QUOTES_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.quotes = parsed;
+          this.fetchDiskQuotes();
+          return this.quotes;
+        }
+      }
+    } catch (e) {
+      console.warn('[FinanceService] Load quotes error, using sample data:', e);
+    }
+    this.quotes = [...SAMPLE_QUOTES];
+    this.saveQuotes();
+    this.fetchDiskQuotes();
+    return this.quotes;
+  }
+
+  public async fetchDiskQuotes(): Promise<InvoiceDocument[]> {
+    try {
+      const res = await ApiClient.getQuotes();
+      if (res && res.success && Array.isArray(res.quotes) && res.quotes.length > 0) {
+        this.quotes = res.quotes as InvoiceDocument[];
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(QUOTES_STORAGE_KEY, JSON.stringify(this.quotes));
+        }
+        return this.quotes;
+      }
+    } catch (e) {}
+    return this.quotes;
+  }
+
+  public saveQuotes(): void {
+    try {
+      localStorage.setItem(QUOTES_STORAGE_KEY, JSON.stringify(this.quotes));
+    } catch (e) {}
   }
 
   public getDocuments(): InvoiceDocument[] {
@@ -141,15 +250,41 @@ export class FinanceService {
     return this.getDocuments().filter(d => d.type === 'invoice');
   }
 
+  public getQuotes(): InvoiceDocument[] {
+    if (this.quotes.length === 0) {
+      this.loadQuotes();
+    }
+    return this.quotes;
+  }
+
+  public getQuoteById(id: string): InvoiceDocument | undefined {
+    return this.getQuotes().find(q => q.id === id || q.documentNumber === id);
+  }
+
   public saveInvoice(doc: InvoiceDocument): void {
     this.saveDocument(doc);
   }
 
+  public saveQuote(quote: InvoiceDocument): void {
+    quote.type = 'quote';
+    const idx = this.quotes.findIndex(q => q.id === quote.id || q.documentNumber === quote.documentNumber);
+    if (idx !== -1) {
+      this.quotes[idx] = quote;
+    } else {
+      this.quotes.unshift(quote);
+    }
+    this.saveQuotes();
+    ApiClient.saveQuote(quote).catch(() => {});
+  }
+
   public getDocumentById(id: string): InvoiceDocument | undefined {
-    return this.documents.find(d => d.id === id);
+    return this.documents.find(d => d.id === id) || this.quotes.find(q => q.id === id);
   }
 
   public saveDocument(doc: InvoiceDocument): void {
+    if (doc.type === 'quote') {
+      return this.saveQuote(doc);
+    }
     const index = this.documents.findIndex(d => d.id === doc.id);
     if (index !== -1) {
       this.documents[index] = doc;
@@ -157,11 +292,96 @@ export class FinanceService {
       this.documents.unshift(doc);
     }
     this.saveDocuments();
+
+    // Persist asynchronously to physical vault
+    ApiClient.saveInvoice(doc).catch(() => {});
+  }
+
+  public async deleteQuote(id: string): Promise<void> {
+    this.quotes = this.quotes.filter(q => q.id !== id && q.documentNumber !== id);
+    this.saveQuotes();
+    try {
+      await ApiClient.deleteQuote(id);
+    } catch (e) {}
+  }
+
+  public async deleteInvoice(id: string): Promise<void> {
+    this.documents = this.documents.filter(d => d.id !== id && d.documentNumber !== id);
+    this.saveDocuments();
+    try {
+      await ApiClient.deleteInvoice(id);
+    } catch (e) {}
+  }
+
+  public async convertQuoteToInvoice(quoteId: string): Promise<{ quote: InvoiceDocument; invoice: InvoiceDocument } | null> {
+    try {
+      const res = await ApiClient.convertQuoteToInvoice(quoteId);
+      if (res && res.success) {
+        const quote = res.quote as InvoiceDocument;
+        const invoice = res.invoice as InvoiceDocument;
+
+        const qIdx = this.quotes.findIndex(q => q.id === quote.id || q.documentNumber === quote.documentNumber);
+        if (qIdx !== -1) this.quotes[qIdx] = quote;
+        this.saveQuotes();
+
+        const invIdx = this.documents.findIndex(d => d.id === invoice.id || d.documentNumber === invoice.documentNumber);
+        if (invIdx !== -1) {
+          this.documents[invIdx] = invoice;
+        } else {
+          this.documents.unshift(invoice);
+        }
+        this.saveDocuments();
+
+        return { quote, invoice };
+      }
+    } catch (err) {
+      console.warn('[FinanceService] convertQuoteToInvoice failed:', err);
+    }
+    return null;
   }
 
   public deleteDocument(id: string): void {
-    this.documents = this.documents.filter(d => d.id !== id);
-    this.saveDocuments();
+    this.deleteInvoice(id);
+    this.deleteQuote(id);
+  }
+
+  public async appendSession(clientCode: string, sessionLog: any): Promise<InvoiceDocument | null> {
+    try {
+      const res = await ApiClient.appendSessionToInvoice(clientCode, sessionLog);
+      if (res && res.success && res.invoice) {
+        const inv = res.invoice as InvoiceDocument;
+        const idx = this.documents.findIndex(d => d.id === inv.id || d.documentNumber === inv.documentNumber);
+        if (idx !== -1) {
+          this.documents[idx] = inv;
+        } else {
+          this.documents.unshift(inv);
+        }
+        this.saveDocuments();
+        return inv;
+      }
+    } catch (err) {
+      console.warn('[FinanceService] Disk append failed, using local append fallback:', err);
+    }
+
+    // Local fallback
+    const draftInv = this.documents.find(inv => inv.clientCode === clientCode && (inv.status === 'draft' || inv.status === 'sent')) || this.documents[0];
+    if (draftInv) {
+      const durationHours = Math.max(0.1, Math.round((sessionLog.durationSeconds / 3600) * 100) / 100);
+      const lineAmount = Math.round(durationHours * (sessionLog.hourlyRate || draftInv.hourlyRate || 125) * 100) / 100;
+
+      draftInv.items.push({
+        id: `item_${Date.now()}`,
+        description: `${sessionLog.projectTitle || 'Design Sprint'}: ${sessionLog.note || 'Creative session'} (${sessionLog.durationFormatted || `${durationHours}h`})`,
+        quantity: durationHours,
+        unitPrice: sessionLog.hourlyRate || draftInv.hourlyRate || 125,
+        amount: lineAmount
+      });
+      draftInv.subtotal = draftInv.items.reduce((sum, item) => sum + (item.amount || 0), 0);
+      draftInv.total = draftInv.subtotal + (draftInv.taxAmount || 0);
+      this.saveDocument(draftInv);
+      return draftInv;
+    }
+    return null;
   }
 
   public getIncomeSummary(): { paid: number; pending: number; total: number } {
@@ -200,6 +420,9 @@ export class FinanceService {
       `tax_amount: ${doc.taxAmount}`,
       `total: ${doc.total}`,
       `notes: "${doc.notes.replace(/\n/g, ' ')}"`,
+      doc.validUntil ? `valid_until: ${doc.validUntil}` : '',
+      doc.linkedQuoteId ? `linked_quote_id: "${doc.linkedQuoteId}"` : '',
+      doc.linkedInvoiceId ? `linked_invoice_id: "${doc.linkedInvoiceId}"` : '',
       doc.linkedProjectId ? `linked_project_id: "${doc.linkedProjectId}"` : '',
       '---',
       '',

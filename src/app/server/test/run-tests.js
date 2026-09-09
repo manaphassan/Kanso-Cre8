@@ -10,6 +10,10 @@ const AuditService = require('../services/AuditService');
 const DeliverableService = require('../services/DeliverableService');
 const WorkspaceService = require('../services/WorkspaceService');
 const ApprovalService = require('../services/ApprovalService');
+const JournalVaultService = require('../services/JournalVaultService');
+const FinanceVaultService = require('../services/FinanceVaultService');
+const NotesVaultService = require('../services/NotesVaultService');
+const config = require('../config');
 
 console.log('🧪 Starting Kanso Cre8 Desktop Application Verification Suite...\n');
 
@@ -22,9 +26,10 @@ async function runTests() {
   let passed = 0;
   let failed = 0;
 
-  function test(name, fn) {
+  async function test(name, fn) {
     try {
-      fn();
+      const res = fn();
+      if (res && typeof res.then === 'function') await res;
       console.log(`  ✅ PASS: ${name}`);
       passed++;
     } catch (err) {
@@ -459,31 +464,32 @@ This is the project brief content.
   });
 
   // ─── TEST 18: Deliverable Media Partial Content (Range) Streaming ───
-  test('DeliverableService supports HTTP 206 Partial Content range requests for video media', () => {
+  await test('DeliverableService supports HTTP 206 Partial Content range requests for video media', async () => {
     const tempFile = path.join(__dirname, 'temp-video-stream.mp4');
     const dummyBuffer = Buffer.alloc(1024 * 10, 'A'); // 10 KB dummy video
     fs.writeFileSync(tempFile, dummyBuffer);
 
     let status = 200;
     let headers = {};
-    const mockRes = {
-      writeHead: (code, hdrs) => {
-        status = code;
-        headers = hdrs;
-      },
-      status: (code) => {
-        status = code;
-        return {
-          setHeader: (k, v) => { headers[k] = v; },
-          end: () => {}
-        };
-      },
-      write: () => {},
-      end: () => {},
-      on: () => {},
-      once: () => {},
-      emit: () => {}
+    const { Writable } = require('stream');
+    const mockRes = new Writable({
+      write(chunk, encoding, callback) {
+        callback();
+      }
+    });
+    mockRes.writeHead = (code, hdrs) => {
+      status = code;
+      headers = hdrs;
     };
+    mockRes.status = (code) => {
+      status = code;
+      return mockRes;
+    };
+
+    const streamFinishPromise = new Promise(resolve => {
+      mockRes.on('finish', resolve);
+      mockRes.on('close', resolve);
+    });
 
     const mockReq = {
       headers: {
@@ -498,7 +504,7 @@ This is the project brief content.
     assert.strictEqual(headers['Content-Length'], 1024);
     assert.strictEqual(headers['Content-Type'], 'video/mp4');
 
-    // Cleanup
+    await streamFinishPromise;
     try { fs.unlinkSync(tempFile); } catch (e) {}
   });
 
@@ -551,9 +557,9 @@ This is the project brief content.
   });
 
   // ─── TEST 20: Creative Handover Package Export (ZIP + HTML) ─────────
-  test('ExportService generates clean ZIP stream and HTML handover summary manifest', (done) => {
+  await test('ExportService generates clean ZIP stream and HTML handover summary manifest', async () => {
     const ExportService = require('../services/ExportService');
-    const testDir = path.join(__dirname, 'temp-export-project');
+    const testDir = path.join(__dirname, 'temp-export-project-runtime');
     const delivDir = path.join(testDir, '05_DELIVERABLES');
     const copyDir = path.join(testDir, '03_COPYWRITING');
 
@@ -568,27 +574,23 @@ This is the project brief content.
     const outStream = fs.createWriteStream(tempZipOut);
 
     let headers = {};
-    const mockRes = {
-      setHeader: (k, v) => { headers[k] = v; },
-      writeHead: () => {},
-      headersSent: false,
-      write: (c) => outStream.write(c),
-      end: (c) => outStream.end(c),
-      on: (e, cb) => outStream.on(e, cb),
-      once: (e, cb) => outStream.once(e, cb),
-      emit: (e, ...args) => outStream.emit(e, ...args)
-    };
+    outStream.setHeader = (k, v) => { headers[k] = v; };
+    outStream.writeHead = () => {};
+    outStream.headersSent = false;
 
-    ExportService.streamProjectHandover(testDir, '0085D', mockRes);
+    const streamFinishedPromise = new Promise(resolve => {
+      outStream.on('finish', resolve);
+      outStream.on('close', resolve);
+    });
+
+    ExportService.streamProjectHandover(testDir, '0085D', outStream);
 
     assert.strictEqual(headers['Content-Type'], 'application/zip');
     assert.ok(headers['Content-Disposition'].includes('Handover.zip'));
 
-    // Cleanup
-    setTimeout(() => {
-      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
-      try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
-    }, 500);
+    await streamFinishedPromise;
+    try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
   });
 
   // ─── TEST 20: Designer Capacity & Creative SLA Metrics Computation ──
@@ -621,7 +623,7 @@ This is the project brief content.
   });
 
   // ─── TEST 21: Workspace Mount Path Switching & Override Persistence ───
-  test('WorkspaceService dynamically switches workspace root path, restarts watcher, and persists override', () => {
+  await test('WorkspaceService dynamically switches workspace root path, restarts watcher, and persists override', async () => {
     const origRoot = WorkspaceService.workspaceRoot;
     const tempSwitchDir = path.join(__dirname, 'temp-workspace-switch-test');
     if (!fs.existsSync(tempSwitchDir)) {
@@ -646,6 +648,8 @@ This is the project brief content.
     } finally {
       // Restore original workspaceRoot
       WorkspaceService.setWorkspaceRoot(origRoot, 'TestAdmin');
+      // Allow Windows watcher handle to release before directory removal
+      await new Promise(resolve => setTimeout(resolve, 300));
       try {
         fs.rmdirSync(tempSwitchDir);
       } catch (e) {
@@ -883,7 +887,7 @@ This is the project brief content.
   });
 
   // ─── TEST 28: Quick Notes Multi-User Isolation & Sync ────────────────
-  test('Quick Notes discovers Notes and user-scoped Notes_* directories with UTF-8 BOM safety', async () => {
+  await test('Quick Notes discovers Notes and user-scoped Notes_* directories with UTF-8 BOM safety', async () => {
     const config = require('../config');
     const testDir = path.join(__dirname, 'temp-notes-workspace');
     const notesTeamDir = path.join(testDir, '_Team', '_Config', 'Notes');
@@ -892,43 +896,53 @@ This is the project brief content.
     fs.mkdirSync(notesBrandDir, { recursive: true });
 
     const origRoot = config.WORKSPACE_ROOT;
+    const origWsRoot = WorkspaceService.workspaceRoot;
     config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
 
     try {
       // 1. Write team note and user-scoped note with UTF-8 BOM
       fs.writeFileSync(path.join(notesTeamDir, 'team_note.md'), '---\npriority: high\n---\n# Team Overview\n\nAll designers briefing.');
       fs.writeFileSync(path.join(notesBrandDir, 'brand_note.md'), '\uFEFF---\npinned: true\n---\n# Madu Tualang Specs\n\n17x target sales.');
 
-      // 2. Query routes/api notes functions
+      // 2. Query routes/api notes functions using native fetch
       const express = require('express');
-      const request = require('supertest');
       const app = express();
       app.use(express.json());
       app.use('/api', require('../routes/api'));
 
-      const res = await request(app).get('/api/notes');
-      assert.strictEqual(res.status, 200);
-      assert.strictEqual(res.body.success, true);
-      assert.strictEqual(res.body.notes.length, 2);
+      const server = app.listen(0);
+      const port = server.address().port;
 
-      const brandNote = res.body.notes.find(n => n.id === 'brand_note');
-      assert.ok(brandNote, 'Brand note must be discovered from Notes_brand');
-      assert.strictEqual(brandNote.title, 'Madu Tualang Specs');
-      assert.strictEqual(brandNote.isPinned, true);
-      assert.strictEqual(brandNote.owner, 'brand');
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/api/notes`);
+        const resBody = await response.json();
+        assert.strictEqual(response.status, 200);
+        assert.strictEqual(resBody.success, true);
+        assert.strictEqual(resBody.notes.length, 2);
 
-      const teamNote = res.body.notes.find(n => n.id === 'team_note');
-      assert.ok(teamNote, 'Team note must be discovered from Notes');
-      assert.strictEqual(teamNote.title, 'Team Overview');
-      assert.strictEqual(teamNote.owner, 'team');
+        const brandNote = resBody.notes.find(n => n.id === 'brand_note');
+        assert.ok(brandNote, 'Brand note must be discovered from Notes_brand');
+        assert.strictEqual(brandNote.title, 'Madu Tualang Specs');
+        assert.strictEqual(brandNote.isPinned, true);
+        assert.strictEqual(brandNote.owner, 'brand');
+
+        const teamNote = resBody.notes.find(n => n.id === 'team_note');
+        assert.ok(teamNote, 'Team note must be discovered from Notes');
+        assert.strictEqual(teamNote.title, 'Team Overview');
+        assert.strictEqual(teamNote.owner, 'team');
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
     } finally {
       config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWsRoot;
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
     }
   });
 
-  // ─── TEST 30: OrderService NAS _Orders Attachment Vault & Ingestion ──
-  test('OrderService saves, lists, downloads attachments in NAS _Orders and ingests to 01_BRIEF_ASSETS', async () => {
+  // ─── TEST 29: OrderService NAS _Orders Attachment Vault & Ingestion ──
+  await test('OrderService saves, lists, downloads attachments in NAS _Orders and ingests to 01_BRIEF_ASSETS', async () => {
     const OrderService = require('../services/OrderService');
     const testDir = path.join(__dirname, 'temp-orders-workspace');
     const origRoot = config.WORKSPACE_ROOT;
@@ -973,6 +987,7 @@ This is the project brief content.
 
       const origWsRoot = WorkspaceService.workspaceRoot;
       WorkspaceService.workspaceRoot = testDir;
+      WorkspaceService.scan();
       try {
         const ingestRes = OrderService.copyAttachmentsToProject(order.id, '0091D', 'Designer');
         assert.strictEqual(ingestRes.count, 2, 'Must copy 2 files into 01_BRIEF_ASSETS');
@@ -980,6 +995,7 @@ This is the project brief content.
         assert.ok(fs.existsSync(path.join(projDir, '01_BRIEF_ASSETS', 'spec_sheet.pdf')), 'File must exist in 01_BRIEF_ASSETS');
       } finally {
         WorkspaceService.workspaceRoot = origWsRoot;
+        WorkspaceService.scan();
       }
     } finally {
       config.WORKSPACE_ROOT = origRoot;
@@ -988,7 +1004,7 @@ This is the project brief content.
   });
 
   // ─── TEST 30: Obsidian & Notion Vault Migration Wizard ─────────────
-  test('MigrationService previews, categorizes, and ingests external markdown vaults', () => {
+  await test('MigrationService previews, categorizes, and ingests external markdown vaults', () => {
     const MigrationService = require('../services/MigrationService');
     const sourceVault = path.join(__dirname, 'temp-source-obsidian');
     const destVault = path.join(__dirname, 'temp-dest-kanso');
@@ -1045,6 +1061,931 @@ This is the project brief content.
     }
   });
 
+  // ─── TEST 31: JournalVaultService BuJo Symbols & Task Rollover ──────
+  await test('JournalVaultService parses BuJo symbols, serializes markdown, and executes task rollover migration', async () => {
+    const testDir = path.join(__dirname, 'temp-journal-vault-test');
+    const dailyDir = path.join(testDir, '_Journal', 'Daily');
+    fs.mkdirSync(dailyDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Write sample day with various BuJo symbols
+      const day1Path = path.join(dailyDir, '2026-09-08.md');
+      const day1Content = `---
+date: 2026-09-08
+title: Tuesday, September 8, 2026
+tags: [journal, bujo, daily]
+---
+
+# 📔 Tuesday, September 8, 2026
+
+## Focus Intentions
+- [x] Initial design sprint
+
+## Rapid Log
+• [x] Completed logo vectorization
+• [ ] Unfinished packaging box dieline
+* Priority: Client contract review call
+o Meeting with Art Director
+- Note: Color preference is sky blue
+`;
+      fs.writeFileSync(day1Path, day1Content, 'utf8');
+
+      // 2. Parse daily note
+      const parsedNote = JournalVaultService.getDailyNote('2026-09-08');
+      assert.strictEqual(parsedNote.date, '2026-09-08');
+      assert.strictEqual(parsedNote.entries.length, 5);
+
+      const doneEntry = parsedNote.entries.find(e => e.type === 'done');
+      assert.ok(doneEntry, 'Done entry must be parsed');
+      assert.strictEqual(doneEntry.completed, true);
+
+      const taskEntry = parsedNote.entries.find(e => e.type === 'task');
+      assert.ok(taskEntry, 'Task entry must be parsed');
+      assert.strictEqual(taskEntry.completed, false);
+      assert.strictEqual(taskEntry.text, 'Unfinished packaging box dieline');
+
+      const priorityEntry = parsedNote.entries.find(e => e.type === 'priority');
+      assert.ok(priorityEntry, 'Priority entry must be parsed');
+      assert.strictEqual(priorityEntry.text, 'Client contract review call');
+
+      // 3. Migrate tasks to next day
+      const migrationRes = JournalVaultService.migrateTasks('2026-09-08', '2026-09-09');
+      assert.strictEqual(migrationRes.success, true);
+      assert.strictEqual(migrationRes.migratedCount, 2, 'Must migrate 2 incomplete tasks');
+
+      // Verify day 1 note has migrated entries marked as • [>]
+      const updatedDay1 = JournalVaultService.getDailyNote('2026-09-08');
+      const migratedEntriesDay1 = updatedDay1.entries.filter(e => e.type === 'migrated');
+      assert.strictEqual(migratedEntriesDay1.length, 2);
+
+      // Verify day 2 note has received migrated tasks
+      const day2 = JournalVaultService.getDailyNote('2026-09-09');
+      assert.ok(day2.entries.some(e => e.text === 'Unfinished packaging box dieline'), 'Day 2 must contain migrated task');
+      assert.ok(day2.entries.some(e => e.text === 'Client contract review call'), 'Day 2 must contain migrated priority');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 32: FinanceVaultService Invoice Persistence & Chronometer Append ─
+  await test('FinanceVaultService parses markdown invoices, calculates totals, and appends chronometer session', async () => {
+    const testDir = path.join(__dirname, 'temp-finance-vault-test');
+    const invoicesDir = path.join(testDir, '_Finance', 'Invoices');
+    fs.mkdirSync(invoicesDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Write sample invoice
+      const invPath = path.join(invoicesDir, 'INV-2026-100_ACME.md');
+      const invContent = `---
+id: inv-2026-100
+documentNumber: INV-2026-100
+client_code: ACME
+client_name: Acme Corporation
+date: 2026-09-01
+due_date: 2026-09-15
+status: draft
+currency: USD
+hourly_rate: 150
+items:
+  - description: 3D Isometric Key Visual
+    hours: 10
+    rate: 150
+    amount: 1500
+subtotal: 1500
+tax_percent: 10
+tax_amount: 150
+total: 1650
+notes: Initial deposit invoice.
+---
+
+# Invoice INV-2026-100: Acme Corporation
+`;
+      fs.writeFileSync(invPath, invContent, 'utf8');
+
+      // 2. Read invoices
+      const invoices = FinanceVaultService.getInvoices();
+      assert.strictEqual(invoices.length, 1);
+      assert.strictEqual(invoices[0].documentNumber, 'INV-2026-100');
+      assert.strictEqual(invoices[0].total, 1650);
+
+      // 3. Append chronometer session
+      const sessionLog = {
+        projectTitle: 'Mobile Banking Illustrations',
+        note: 'Camera framing and lighting',
+        durationSeconds: 3600, // 1 hour
+        durationFormatted: '01:00:00',
+        hourlyRate: 150,
+        earnedAmount: 150
+      };
+
+      const updated = FinanceVaultService.appendSessionToInvoice('ACME', sessionLog);
+      assert.strictEqual(updated.documentNumber, 'INV-2026-100');
+      assert.strictEqual(updated.items.length, 2);
+      assert.strictEqual(updated.subtotal, 1650);
+      assert.strictEqual(updated.total, 1815);
+
+      // Verify written to disk
+      assert.ok(fs.existsSync(invPath));
+      const readBack = FinanceVaultService.getInvoice('INV-2026-100');
+      assert.strictEqual(readBack.items.length, 2);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 33: REST API /api/journal and /api/finance Endpoints ───────
+  await test('REST API /api/journal and /api/finance endpoints return valid responses and sync to disk', async () => {
+    const testDir = path.join(__dirname, 'temp-api-vault-test');
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Daily'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const express = require('express');
+      const app = express();
+      app.use(express.json());
+      app.use('/api', require('../routes/api'));
+
+      const server = app.listen(0);
+      const port = server.address().port;
+      const baseUrl = `http://127.0.0.1:${port}`;
+
+      try {
+        // 1. GET /api/journal/daily/2026-09-09
+        const dailyRes = await fetch(`${baseUrl}/api/journal/daily/2026-09-09`);
+        const dailyBody = await dailyRes.json();
+        assert.strictEqual(dailyRes.status, 200);
+        assert.strictEqual(dailyBody.success, true);
+        assert.strictEqual(dailyBody.note.date, '2026-09-09');
+
+        // 2. POST /api/journal/daily
+        const saveRes = await fetch(`${baseUrl}/api/journal/daily`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date: '2026-09-09',
+            title: 'Custom Wednesday Log',
+            focusIntentions: ['Test intention'],
+            entries: [{ id: 'test_1', type: 'task', text: 'Brand guide audit', completed: false }]
+          })
+        });
+        const saveBody = await saveRes.json();
+        assert.strictEqual(saveRes.status, 200);
+        assert.strictEqual(saveBody.note.title, 'Custom Wednesday Log');
+
+        // 3. POST /api/journal/migrate-tasks
+        const migrateRes = await fetch(`${baseUrl}/api/journal/migrate-tasks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fromDate: '2026-09-09', toDate: '2026-09-10' })
+        });
+        const migrateBody = await migrateRes.json();
+        assert.strictEqual(migrateRes.status, 200);
+        assert.strictEqual(migrateBody.success, true);
+        assert.strictEqual(migrateBody.migratedCount, 1);
+
+        // 4. GET /api/finance/invoices
+        const invListRes = await fetch(`${baseUrl}/api/finance/invoices`);
+        const invListBody = await invListRes.json();
+        assert.strictEqual(invListRes.status, 200);
+        assert.strictEqual(invListBody.success, true);
+
+        // 5. POST /api/finance/append-session
+        const appendRes = await fetch(`${baseUrl}/api/finance/append-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientCode: 'ACME',
+            sessionLog: {
+              projectTitle: 'Fintech Sprint',
+              note: 'UI Icon Set',
+              durationSeconds: 1800,
+              durationFormatted: '00:30:00',
+              hourlyRate: 120,
+              earnedAmount: 60
+            }
+          })
+        });
+        const appendBody = await appendRes.json();
+        assert.strictEqual(appendRes.status, 200);
+        assert.strictEqual(appendBody.success, true);
+        assert.ok(appendBody.invoice.documentNumber);
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 35: NotesVaultService Atomic Notes & Scratchpad Disk Storage ───
+  await test('NotesVaultService reads/writes atomic notes with YAML frontmatter, WikiLinks and Scratchpad', async () => {
+    const testDir = path.join(__dirname, 'temp-notes-vault-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+
+    try {
+      if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+      fs.mkdirSync(testDir, { recursive: true });
+      config.WORKSPACE_ROOT = testDir;
+      WorkspaceService.workspaceRoot = testDir;
+
+      // 1. Save atomic note in permanent
+      const note1 = await NotesVaultService.saveAtomicNote({
+        id: '20260909120000',
+        title: 'Design System Principles',
+        category: 'permanent',
+        tags: ['design', 'systems', 'tokens'],
+        content: '# Design System Principles\n\nMust link to [[Color-Palette]] and [[Typography-Rules]].\n\n- [ ] #task Audit tokens'
+      });
+
+      assert.strictEqual(note1.title, 'Design System Principles');
+      assert.strictEqual(note1.category, 'permanent');
+      assert.ok(note1.links.includes('Color-Palette'));
+      assert.ok(note1.links.includes('Typography-Rules'));
+
+      // Check physical file on disk
+      const filePath = path.join(testDir, '_Notes', '03_Permanent', '20260909120000 - Design System Principles.md');
+      assert.ok(fs.existsSync(filePath), 'Note file should exist on disk in _Notes/03_Permanent');
+      const diskContent = fs.readFileSync(filePath, 'utf8');
+      assert.ok(diskContent.includes('category: permanent'));
+      assert.ok(diskContent.includes('Audit tokens'));
+
+      // 2. Save note in literature that links back
+      const note2 = await NotesVaultService.saveAtomicNote({
+        id: '20260909130000',
+        title: 'Color Palette Notes',
+        category: 'literature',
+        tags: ['color', 'research'],
+        content: '# Color Palette Notes\n\nReferenced by [[Design-System-Principles]].'
+      });
+      assert.strictEqual(note2.category, 'literature');
+
+      // 3. List all atomic notes
+      const notes = await NotesVaultService.getAtomicNotes();
+      assert.strictEqual(notes.length, 2);
+
+      // 4. Scratchpad test
+      const scratch = await NotesVaultService.saveScratchpad('# Scratchpad Header\n\nInstant dump of ideas.');
+      assert.strictEqual(scratch.content, '# Scratchpad Header\n\nInstant dump of ideas.');
+      const scratchFile = path.join(testDir, '_Notes', 'Scratchpad.md');
+      assert.ok(fs.existsSync(scratchFile));
+
+      const retrievedScratch = await NotesVaultService.getScratchpad();
+      assert.strictEqual(retrievedScratch.content, '# Scratchpad Header\n\nInstant dump of ideas.');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 36: NotesVaultService Universal Task Crawler & In-Place Toggle ───
+  await test('NotesVaultService extracts universal #task items and toggles directly on disk', async () => {
+    const testDir = path.join(__dirname, 'temp-notes-tasks-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+
+    try {
+      if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+      fs.mkdirSync(testDir, { recursive: true });
+      config.WORKSPACE_ROOT = testDir;
+      WorkspaceService.workspaceRoot = testDir;
+
+      // Create a note with multiple markdown tasks
+      await NotesVaultService.saveAtomicNote({
+        id: '20260909150000',
+        title: 'Client Review Prep',
+        category: 'fleeting',
+        tags: ['prep'],
+        content: '# Client Review Prep\n\n' +
+                 '- [ ] #task Export SVG proof sheet 📅 2026-09-20 ⏫ high\n' +
+                 '- [x] #task Email agenda to stakeholders\n' +
+                 '- [ ] Plain uncompleted note without hash'
+      });
+
+      // 1. Get universal tasks
+      const tasks = await NotesVaultService.getUniversalTasks();
+      assert.strictEqual(tasks.length, 2, 'Should find 2 #task items');
+
+      const task1 = tasks.find(t => t.text.includes('Export SVG proof sheet'));
+      assert.ok(task1, 'Export task found');
+      assert.strictEqual(task1.completed, false);
+      assert.strictEqual(task1.priority, 'high');
+      assert.strictEqual(task1.dueDate, '2026-09-20');
+
+      const task2 = tasks.find(t => t.text.includes('Email agenda'));
+      assert.ok(task2, 'Email task found');
+      assert.strictEqual(task2.completed, true);
+
+      // 2. Toggle task1 to completed
+      const toggled = await NotesVaultService.toggleTask('fleeting', '20260909150000', task1.text, true);
+      assert.strictEqual(toggled.completed, true);
+
+      // 3. Verify disk markdown reflection
+      const noteFiles = fs.readdirSync(path.join(testDir, '_Notes', '01_Fleeting'));
+      const noteContent = fs.readFileSync(path.join(testDir, '_Notes', '01_Fleeting', noteFiles[0]), 'utf8');
+      assert.ok(noteContent.includes('- [x] #task Export SVG proof sheet'), 'Markdown file on disk must be updated to [x]');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 37: Notes REST API Endpoints Integration ───────────────────
+  await test('Express API exposes /api/notes/atomic, /api/notes/scratchpad, and /api/notes/tasks endpoints', async () => {
+    const testDir = path.join(__dirname, 'temp-notes-api-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+
+    try {
+      if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+      fs.mkdirSync(testDir, { recursive: true });
+      config.WORKSPACE_ROOT = testDir;
+      WorkspaceService.workspaceRoot = testDir;
+
+      const express = require('express');
+      const apiRoutes = require('../routes/api');
+      const app = express();
+      app.use(express.json());
+      app.use('/api', apiRoutes);
+
+      const server = await new Promise(resolve => {
+        const s = app.listen(0, () => resolve(s));
+      });
+      const port = server.address().port;
+      const baseUrl = `http://127.0.0.1:${port}`;
+
+      try {
+        // 1. POST /api/notes/atomic
+        const saveRes = await fetch(`${baseUrl}/api/notes/atomic`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'API Test Note',
+            category: 'permanent',
+            tags: ['api', 'test'],
+            content: '# API Test Note\n\n- [ ] #task Verify API endpoints'
+          })
+        });
+        const saveBody = await saveRes.json();
+        assert.strictEqual(saveRes.status, 200);
+        assert.strictEqual(saveBody.success, true);
+        assert.strictEqual(saveBody.note.title, 'API Test Note');
+
+        // 2. GET /api/notes/atomic
+        const listRes = await fetch(`${baseUrl}/api/notes/atomic`);
+        const listBody = await listRes.json();
+        assert.strictEqual(listRes.status, 200);
+        assert.strictEqual(listBody.success, true);
+        assert.ok(listBody.notes.some(n => n.title === 'API Test Note'));
+
+        // 3. GET & POST /api/notes/scratchpad
+        const postScratchRes = await fetch(`${baseUrl}/api/notes/scratchpad`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: 'Quick note via API' })
+        });
+        const postScratchBody = await postScratchRes.json();
+        assert.strictEqual(postScratchRes.status, 200);
+        assert.strictEqual(postScratchBody.success, true);
+
+        const getScratchRes = await fetch(`${baseUrl}/api/notes/scratchpad`);
+        const getScratchBody = await getScratchRes.json();
+        assert.strictEqual(getScratchRes.status, 200);
+        assert.strictEqual(getScratchBody.content, 'Quick note via API');
+
+        // 4. GET /api/notes/tasks
+        const tasksRes = await fetch(`${baseUrl}/api/notes/tasks`);
+        const tasksBody = await tasksRes.json();
+        assert.strictEqual(tasksRes.status, 200);
+        assert.ok(tasksBody.tasks.length >= 1);
+        assert.ok(tasksBody.tasks.some(t => t.text.includes('Verify API endpoints')));
+
+        // 5. POST /api/notes/tasks/toggle
+        const toggleRes = await fetch(`${baseUrl}/api/notes/tasks/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: 'permanent',
+            noteId: saveBody.note.id,
+            taskDescription: 'Verify API endpoints',
+            completed: true
+          })
+        });
+        const toggleBody = await toggleRes.json();
+        assert.strictEqual(toggleRes.status, 200);
+        assert.strictEqual(toggleBody.success, true);
+        assert.strictEqual(toggleBody.completed, true);
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 38: FinanceVaultService Quote Storage & Markdown Serialization ───
+  await test('FinanceVaultService reads, writes, and lists Quotes in _Finance/Quotes/ with YAML frontmatter', async () => {
+    const testDir = path.join(__dirname, 'temp-finance-quotes-test');
+    const quotesDir = path.join(testDir, '_Finance', 'Quotes');
+    fs.mkdirSync(quotesDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Save quote
+      const sampleQuote = {
+        documentNumber: 'QTE-2026-042',
+        type: 'quote',
+        clientCode: 'LUM',
+        clientName: 'Lumina Labs',
+        clientEmail: 'contact@luminalabs.com',
+        date: '2026-09-09',
+        validUntil: '2026-09-23',
+        status: 'draft',
+        currency: 'USD',
+        hourlyRate: 160,
+        items: [
+          {
+            description: 'AI Interface Design System & Iconography',
+            quantity: 25,
+            unitPrice: 160,
+            amount: 4000
+          }
+        ],
+        subtotal: 4000,
+        taxRatePercent: 10,
+        taxAmount: 400,
+        total: 4400,
+        notes: 'Quote valid for 14 calendar days.'
+      };
+
+      const savedQuote = FinanceVaultService.saveQuote(sampleQuote);
+      assert.strictEqual(savedQuote.documentNumber, 'QTE-2026-042');
+      assert.strictEqual(savedQuote.type, 'quote');
+      assert.strictEqual(savedQuote.total, 4400);
+
+      // Verify file written to disk
+      const filePath = path.join(quotesDir, 'QTE-2026-042_LUM.md');
+      assert.ok(fs.existsSync(filePath), 'Physical quote file must exist in _Finance/Quotes/');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      assert.ok(fileContent.includes('type: quote'));
+      assert.ok(fileContent.includes('valid_until') && fileContent.includes('2026-09-23'));
+
+      // 2. Read quote list
+      const quotes = FinanceVaultService.getQuotes();
+      assert.ok(quotes.length >= 1, 'Should find at least 1 quote');
+      const retrieved = FinanceVaultService.getQuote('QTE-2026-042');
+      assert.ok(retrieved, 'Should retrieve quote by documentNumber');
+      assert.strictEqual(retrieved.clientCode, 'LUM');
+      assert.strictEqual(retrieved.items.length, 1);
+      assert.strictEqual(retrieved.items[0].description, 'AI Interface Design System & Iconography');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 39: FinanceVaultService Quote-to-Invoice Conversion ───────
+  await test('FinanceVaultService.convertQuoteToInvoice creates invoice in _Finance/Invoices/ and links documents', async () => {
+    const testDir = path.join(__dirname, 'temp-finance-convert-test');
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Quotes'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Save quote
+      const quote = FinanceVaultService.saveQuote({
+        documentNumber: 'QTE-2026-088',
+        clientCode: 'NEX',
+        clientName: 'Nexus Studio',
+        date: '2026-09-08',
+        validUntil: '2026-09-22',
+        status: 'draft',
+        currency: 'USD',
+        hourlyRate: 150,
+        items: [
+          { description: 'Motion Teaser Sequence', quantity: 10, unitPrice: 150, amount: 1500 }
+        ],
+        subtotal: 1500,
+        taxRatePercent: 0,
+        taxAmount: 0,
+        total: 1500,
+        notes: '2 revisions included.'
+      });
+
+      // 2. Convert quote to invoice
+      const conversion = FinanceVaultService.convertQuoteToInvoice(quote.documentNumber);
+      assert.strictEqual(conversion.success, true);
+      assert.ok(conversion.invoice, 'Created invoice must be returned');
+      assert.strictEqual(conversion.invoice.type, 'invoice');
+      assert.strictEqual(conversion.invoice.clientCode, 'NEX');
+      assert.strictEqual(conversion.invoice.linkedQuoteId, 'QTE-2026-088');
+      assert.strictEqual(conversion.invoice.total, 1500);
+
+      // Verify invoice file exists on disk in _Finance/Invoices/
+      const invFiles = fs.readdirSync(path.join(testDir, '_Finance', 'Invoices')).filter(f => f.endsWith('.md'));
+      assert.ok(invFiles.length >= 1, 'Invoice file must be created on disk');
+
+      // Verify quote updated to accepted and linked on disk
+      const updatedQuote = FinanceVaultService.getQuote(quote.documentNumber);
+      assert.strictEqual(updatedQuote.status, 'accepted');
+      assert.strictEqual(updatedQuote.linkedInvoiceId, conversion.invoice.documentNumber);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 40: Finance REST API Quotes & Conversion Endpoints ─────────
+  await test('Express API exposes /api/finance/quotes and /api/finance/convert-quote endpoints', async () => {
+    const testDir = path.join(__dirname, 'temp-finance-api-test');
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Quotes'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const express = require('express');
+      const apiRoutes = require('../routes/api');
+      const app = express();
+      app.use(express.json());
+      app.use('/api', apiRoutes);
+
+      const server = await new Promise(resolve => {
+        const s = app.listen(0, () => resolve(s));
+      });
+      const port = server.address().port;
+      const baseUrl = `http://127.0.0.1:${port}`;
+
+      try {
+        // 1. POST /api/finance/quotes
+        const createRes = await fetch(`${baseUrl}/api/finance/quotes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            documentNumber: 'QTE-2026-999',
+            clientCode: 'ACME',
+            clientName: 'Acme Corporation',
+            date: '2026-09-09',
+            validUntil: '2026-09-30',
+            status: 'draft',
+            currency: 'USD',
+            hourlyRate: 125,
+            items: [
+              { description: 'Annual Brand Refresh', quantity: 20, unitPrice: 125, amount: 2500 }
+            ],
+            subtotal: 2500,
+            taxRatePercent: 0,
+            taxAmount: 0,
+            total: 2500,
+            notes: 'Proposal for brand refresh'
+          })
+        });
+        const createBody = await createRes.json();
+        assert.strictEqual(createRes.status, 200);
+        assert.strictEqual(createBody.success, true);
+        assert.strictEqual(createBody.quote.documentNumber, 'QTE-2026-999');
+
+        // 2. GET /api/finance/quotes
+        const listRes = await fetch(`${baseUrl}/api/finance/quotes`);
+        const listBody = await listRes.json();
+        assert.strictEqual(listRes.status, 200);
+        assert.strictEqual(listBody.success, true);
+        assert.ok(listBody.quotes.some(q => q.documentNumber === 'QTE-2026-999'));
+
+        // 3. POST /api/finance/convert-quote
+        const convertRes = await fetch(`${baseUrl}/api/finance/convert-quote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quoteId: 'QTE-2026-999' })
+        });
+        const convertBody = await convertRes.json();
+        assert.strictEqual(convertRes.status, 200);
+        assert.strictEqual(convertBody.success, true);
+        assert.strictEqual(convertBody.invoice.linkedQuoteId, 'QTE-2026-999');
+        assert.strictEqual(convertBody.quote.status, 'accepted');
+
+        // 4. DELETE /api/finance/quotes/:id
+        const delRes = await fetch(`${baseUrl}/api/finance/quotes/QTE-2026-999`, {
+          method: 'DELETE'
+        });
+        const delBody = await delRes.json();
+        assert.strictEqual(delRes.status, 200);
+        assert.strictEqual(delBody.success, true);
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 41: JournalVaultService Monthly Reviews Storage & Listing ───
+  await test('JournalVaultService reads, writes, and lists Monthly reviews in _Journal/Monthly/ with YAML frontmatter', async () => {
+    const testDir = path.join(__dirname, 'temp-monthly-reviews-test');
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Monthly'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Save monthly review
+      const sampleReview = {
+        month: '2026-09',
+        title: 'September 2026 Creative Retrospective',
+        goals: ['Ship Design Tokens', 'Reduce revision rounds'],
+        deliverablesSummary: ['3D Asset Pack', 'Identity Guidelines'],
+        billableHours: 56,
+        reflections: 'Sublime focus cadence and seamless client approvals.'
+      };
+
+      const saved = JournalVaultService.saveMonthlyReview(sampleReview);
+      assert.strictEqual(saved.month, '2026-09');
+      assert.strictEqual(saved.billableHours, 56);
+      assert.strictEqual(saved.goals.length, 2);
+
+      // Verify file on disk
+      const filePath = path.join(testDir, '_Journal', 'Monthly', '2026-09.md');
+      assert.ok(fs.existsSync(filePath), 'Monthly review file must exist in _Journal/Monthly/');
+      const diskContent = fs.readFileSync(filePath, 'utf8');
+      assert.ok(diskContent.includes('September 2026 Creative Retrospective'));
+      assert.ok(diskContent.includes('Identity Guidelines'));
+
+      // 2. List reviews
+      const reviews = JournalVaultService.getMonthlyReviews();
+      assert.ok(reviews.length >= 1);
+      assert.ok(reviews.some(r => r.month === '2026-09'));
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 42: JournalVaultService Yearly Vision & Retrospective Index ──
+  await test('JournalVaultService reads, writes, and serializes Yearly reviews in _Journal/Yearly/ with YAML frontmatter', async () => {
+    const testDir = path.join(__dirname, 'temp-yearly-reviews-test');
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Yearly'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Save yearly review
+      const sampleYearly = {
+        year: '2026',
+        title: '2026 Studio Vision & Annual Index',
+        vision: 'Pure minimalist craft with 100% data sovereignty.',
+        milestones: ['Built Kanso Cre8 studio engine', 'Retainer with Acme Corp'],
+        revenueTarget: 180000,
+        revenueActual: 95000,
+        clientHighlights: ['Acme Corp', 'Nexus Studio']
+      };
+
+      const saved = JournalVaultService.saveYearlyIndex(sampleYearly);
+      assert.strictEqual(saved.year, '2026');
+      assert.strictEqual(saved.revenueTarget, 180000);
+      assert.strictEqual(saved.milestones.length, 2);
+
+      // Verify file on disk
+      const filePath = path.join(testDir, '_Journal', 'Yearly', '2026.md');
+      assert.ok(fs.existsSync(filePath), 'Yearly file must exist on disk in _Journal/Yearly/');
+      const diskContent = fs.readFileSync(filePath, 'utf8');
+      assert.ok(diskContent.includes('revenue_target: 180000'));
+      assert.ok(diskContent.includes('Built Kanso Cre8 studio engine'));
+
+      // 2. List indexes
+      const indexes = JournalVaultService.getYearlyIndexes();
+      assert.ok(indexes.length >= 1);
+      assert.ok(indexes.some(i => i.year === '2026'));
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 43: JournalVaultService Creative Operations Telemetry Rollups ───
+  await test('JournalVaultService computes monthly and yearly creative telemetry from workspace projects and invoices', async () => {
+    const testDir = path.join(__dirname, 'temp-journal-telemetry-test');
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Monthly'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Yearly'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Write an invoice for 2026-09
+      FinanceVaultService.saveInvoice({
+        documentNumber: 'INV-2026-701',
+        clientCode: 'ACME',
+        clientName: 'Acme Corporation',
+        date: '2026-09-05',
+        status: 'paid',
+        items: [
+          { description: 'Design Sprint', quantity: 20, unitPrice: 150, amount: 3000 }
+        ],
+        subtotal: 3000,
+        taxRatePercent: 0,
+        taxAmount: 0,
+        total: 3000
+      });
+
+      // 2. Compute monthly telemetry
+      const mTelemetry = JournalVaultService.getMonthlyTelemetryRollup('2026-09');
+      assert.strictEqual(mTelemetry.month, '2026-09');
+      assert.strictEqual(mTelemetry.totalRevenue, 3000);
+      assert.strictEqual(mTelemetry.paidRevenue, 3000);
+      assert.strictEqual(mTelemetry.billableHours, 20);
+      assert.ok(mTelemetry.activeClients.includes('ACME'));
+
+      // 3. Compute yearly telemetry
+      const yTelemetry = JournalVaultService.getYearlyTelemetryRollup('2026');
+      assert.strictEqual(yTelemetry.year, '2026');
+      assert.strictEqual(yTelemetry.totalRevenue, 3000);
+      assert.strictEqual(yTelemetry.totalHours, 20);
+      assert.strictEqual(yTelemetry.effectiveRate, 150);
+      assert.strictEqual(yTelemetry.monthlyCurve.length, 12);
+      assert.ok(yTelemetry.clientDistribution.some(c => c.clientCode === 'ACME'));
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 44: Express API Monthly/Yearly BuJo & Telemetry Endpoints ────
+  await test('Express API exposes /api/journal/monthly, /api/journal/yearly, and telemetry endpoints', async () => {
+    const testDir = path.join(__dirname, 'temp-journal-api-test');
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Monthly'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Journal', 'Yearly'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const express = require('express');
+      const apiRoutes = require('../routes/api');
+      const app = express();
+      app.use(express.json());
+      app.use('/api', apiRoutes);
+
+      const server = await new Promise(resolve => {
+        const s = app.listen(0, () => resolve(s));
+      });
+      const port = server.address().port;
+      const baseUrl = `http://127.0.0.1:${port}`;
+
+      try {
+        // 1. POST /api/journal/monthly
+        const postMonth = await fetch(`${baseUrl}/api/journal/monthly`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            month: '2026-08',
+            title: 'August Retrospective',
+            goals: ['Launch campaign'],
+            deliverablesSummary: ['Motion Cut'],
+            billableHours: 40,
+            reflections: 'Productive month'
+          })
+        });
+        const monthBody = await postMonth.json();
+        assert.strictEqual(postMonth.status, 200);
+        assert.strictEqual(monthBody.success, true);
+        assert.strictEqual(monthBody.review.month, '2026-08');
+
+        // 2. GET /api/journal/monthly/2026-08/telemetry
+        const monthTelem = await fetch(`${baseUrl}/api/journal/monthly/2026-08/telemetry`);
+        const telemBody = await monthTelem.json();
+        assert.strictEqual(monthTelem.status, 200);
+        assert.strictEqual(telemBody.success, true);
+        assert.strictEqual(telemBody.telemetry.month, '2026-08');
+
+        // 3. POST /api/journal/yearly
+        const postYear = await fetch(`${baseUrl}/api/journal/yearly`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            year: '2026',
+            title: '2026 Studio Vision',
+            vision: 'Craft-led design studio',
+            milestones: ['Milestone 1'],
+            revenueTarget: 160000,
+            revenueActual: 90000
+          })
+        });
+        const yearBody = await postYear.json();
+        assert.strictEqual(postYear.status, 200);
+        assert.strictEqual(yearBody.success, true);
+        assert.strictEqual(yearBody.review.year, '2026');
+
+        // 4. GET /api/journal/yearly/2026/telemetry
+        const yearTelem = await fetch(`${baseUrl}/api/journal/yearly/2026/telemetry`);
+        const yTelemBody = await yearTelem.json();
+        assert.strictEqual(yearTelem.status, 200);
+        assert.strictEqual(yTelemBody.success, true);
+        assert.strictEqual(yTelemBody.telemetry.year, '2026');
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 45: Tauri v2 Desktop Shell & Multi-Platform Packaging ───────────
+  await test('Tauri v2 desktop shell configuration, system tray icon, and packaging pipeline integrity', async () => {
+    const tauriConfPath = path.join(__dirname, '..', '..', 'src-tauri', 'tauri.conf.json');
+    const cargoTomlPath = path.join(__dirname, '..', '..', 'src-tauri', 'Cargo.toml');
+    const mainRsPath = path.join(__dirname, '..', '..', 'src-tauri', 'src', 'main.rs');
+    const workflowPath = path.resolve(__dirname, '../../../../.github/workflows/tauri-build.yml');
+
+    // 1. Verify tauri.conf.json
+    assert.ok(fs.existsSync(tauriConfPath), 'tauri.conf.json must exist');
+    const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
+    assert.strictEqual(tauriConf.productName, 'Kanso Cre8');
+    assert.strictEqual(tauriConf.identifier, 'com.kansocre8.desktop');
+    assert.ok(tauriConf.app?.windows?.length > 0, 'Must configure at least one main window');
+    assert.strictEqual(tauriConf.app.windows[0].backgroundColor, '#09090B');
+    assert.strictEqual(tauriConf.app.trayIcon?.iconPath, 'icons/32x32.png', 'Tray icon must be configured');
+    assert.ok(tauriConf.bundle?.active, 'Bundle must be active');
+    assert.strictEqual(tauriConf.bundle?.targets, 'all', 'Bundle targets must be set to all');
+    assert.ok(tauriConf.app.security?.csp, 'Security CSP must be defined');
+
+    // 2. Verify Cargo.toml
+    assert.ok(fs.existsSync(cargoTomlPath), 'Cargo.toml must exist');
+    const cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
+    assert.ok(cargoToml.includes('name = "kanso-cre8"'));
+    assert.ok(cargoToml.includes('tauri-plugin-fs'));
+    assert.ok(cargoToml.includes('tauri-plugin-dialog'));
+    assert.ok(cargoToml.includes('tauri-plugin-global-shortcut'));
+
+    // 3. Verify main.rs
+    assert.ok(fs.existsSync(mainRsPath), 'src/main.rs must exist');
+    const mainRs = fs.readFileSync(mainRsPath, 'utf8');
+    assert.ok(mainRs.includes('tauri_plugin_fs'));
+    assert.ok(mainRs.includes('tauri_plugin_dialog'));
+    assert.ok(mainRs.includes('tauri_plugin_global_shortcut'));
+
+    // 4. Verify GitHub Actions Packaging Workflow
+    assert.ok(fs.existsSync(workflowPath), 'GitHub Actions tauri-build.yml must exist');
+    const workflow = fs.readFileSync(workflowPath, 'utf8');
+    assert.ok(workflow.includes('tauri-action@v1'));
+    assert.ok(workflow.includes('windows-latest'));
+    assert.ok(workflow.includes('ubuntu-22.04'));
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
@@ -1052,6 +1993,10 @@ This is the project brief content.
   // Cleanup test audit log
   AuditService.getAuditLogPath = origAuditGetPath;
   try { if (fs.existsSync(tempAuditPath)) fs.unlinkSync(tempAuditPath); } catch (e) {}
+
+  if (WorkspaceService.watcher) {
+    try { await WorkspaceService.watcher.close(); } catch (e) {}
+  }
 
   if (failed > 0) {
     process.exit(1);

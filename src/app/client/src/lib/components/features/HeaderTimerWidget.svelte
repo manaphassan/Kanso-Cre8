@@ -44,26 +44,13 @@
       );
 
       if (appendToInvoiceChoice) {
-        try {
-          // Find or create draft invoice for this client
-          const invoices = financeService.getInvoices();
-          const draftInv = invoices.find(inv => inv.clientCode === log.clientCode && (inv.status === 'draft' || inv.status === 'sent')) || invoices[0];
-          if (draftInv) {
-            draftInv.items.push({
-              id: `item_${Date.now()}`,
-              description: `${log.projectTitle || 'Design Sprint'}: ${log.note || 'Creative session'} (${log.durationFormatted})`,
-              quantity: Math.max(0.1, Math.round((log.durationSeconds / 3600) * 100) / 100),
-              unitPrice: log.hourlyRate,
-              amount: log.earnedAmount
-            });
-            draftInv.subtotal = draftInv.items.reduce((sum, item) => sum + (item.amount || 0), 0);
-            draftInv.total = draftInv.subtotal + (draftInv.taxAmount || 0);
-            financeService.saveInvoice(draftInv);
-            appState.addToast(`Appended ${log.durationFormatted} to invoice ${draftInv.documentNumber}`, 'info');
+        financeService.appendSession(log.clientCode, log).then(inv => {
+          if (inv) {
+            appState.addToast(`Appended ${log.durationFormatted} to invoice ${inv.documentNumber}`, 'info');
           }
-        } catch (e) {
+        }).catch(e => {
           console.warn('[HeaderTimerWidget] Error appending to draft invoice:', e);
-        }
+        });
       }
     }
   }
