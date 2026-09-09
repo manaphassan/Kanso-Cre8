@@ -38,7 +38,7 @@
     }
   }
 
-  onMount(async () => {
+  onMount(() => {
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
       if (hash.startsWith('review') || window.location.search.includes('token=')) {
@@ -56,19 +56,20 @@
     window.addEventListener('hashchange', handleRouteFromHash);
     handleRouteFromHash();
 
-    if (appState.currentRoute !== 'review') {
-      await appState.loadCurrentUser();
-    }
-    window.addEventListener('auth:required', () => appState.navigate('login'));
-
-    // Fetch live server version for sidebar badge
-    try {
-      const statusRes = await fetch('/api/status');
-      if (statusRes.ok) {
-        const statusData = await statusRes.json();
-        if (statusData?.version) serverVersion = statusData.version;
+    (async () => {
+      if (appState.currentRoute !== 'review') {
+        await appState.loadCurrentUser();
       }
-    } catch { /* non-critical */ }
+      try {
+        const statusRes = await fetch('/api/status');
+        if (statusRes.ok) {
+          const statusData = await statusRes.json();
+          if (statusData?.version) serverVersion = statusData.version;
+        }
+      } catch { /* non-critical */ }
+    })();
+
+    window.addEventListener('auth:required', () => appState.navigate('login'));
 
     window.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -673,7 +674,7 @@
     </div>
 
     {#snippet footer()}
-      <FluentButton appearance="subtle" onclick={() => (showDownloadModal = false)}>
+      <FluentButton appearance="ghost" onclick={() => (showDownloadModal = false)}>
         Close
       </FluentButton>
     {/snippet}
