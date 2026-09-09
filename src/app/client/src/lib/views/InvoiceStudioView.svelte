@@ -405,10 +405,10 @@
       {#each filteredDocs as doc (doc.id)}
         <button
           onclick={() => selectDoc(doc)}
-          class="px-3 py-1.5 rounded-lg text-xs font-mono border transition-all flex-shrink-0 flex items-center gap-2 cursor-pointer {activeDoc?.id === doc.id ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm' : 'border-border/60 bg-card text-muted-foreground hover:text-foreground'}"
+          class="px-3 py-1.5 rounded-lg text-sm font-mono border transition-all flex-shrink-0 flex items-center gap-2 cursor-pointer {activeDoc?.id === doc.id ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm' : 'border-border/60 bg-card text-muted-foreground hover:text-foreground'}"
         >
           <span>{doc.documentNumber}</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded-full {doc.status === 'paid' || doc.status === 'accepted' ? 'bg-emerald-500/20 text-emerald-500' : doc.status === 'sent' ? 'bg-amber-500/20 text-amber-500' : 'bg-muted text-muted-foreground'}">
+          <span class="text-xs px-2 py-0.5 rounded-full {doc.status === 'paid' || doc.status === 'accepted' ? 'bg-emerald-500/20 text-emerald-500' : doc.status === 'sent' ? 'bg-amber-500/20 text-amber-500' : 'bg-muted text-muted-foreground'}">
             {doc.clientCode}
           </span>
         </button>
@@ -423,7 +423,7 @@
       <!-- LEFT PANE: Markdown & Frontmatter Editor (5 Cols) (Hidden in Print) -->
       <div class="lg:col-span-5 rounded-xl border border-border bg-card p-6 shadow-sm space-y-6 print:hidden">
         <div class="flex items-center justify-between border-b border-border pb-4">
-          <h2 class="text-sm font-bold text-foreground flex items-center gap-2">
+          <h2 class="text-base font-bold text-foreground flex items-center gap-2">
             <span>⚙️ Frontmatter Specs</span>
             <span class="text-xs font-mono text-muted-foreground">({activeDoc.documentNumber}.md)</span>
           </h2>
@@ -445,16 +445,16 @@
         </div>
 
         {#if viewMode === 'edit'}
-          <div class="space-y-4 text-xs">
+          <div class="space-y-4 text-sm">
             <!-- Quote Action Banner if viewing a Quote -->
             {#if activeDoc.type === 'quote'}
               <div class="p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between">
                 <div>
-                  <div class="text-xs font-bold text-foreground">Quote Actions</div>
-                  <div class="text-[11px] text-muted-foreground">Convert to draft invoice on client acceptance</div>
+                  <div class="text-sm font-bold text-foreground">Quote Actions</div>
+                  <div class="text-xs text-muted-foreground">Convert to draft invoice on client acceptance</div>
                 </div>
                 {#if activeDoc.linkedInvoiceId}
-                  <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold">
+                  <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold">
                     ✓ {activeDoc.linkedInvoiceId}
                   </span>
                 {:else}
@@ -472,7 +472,7 @@
             <!-- Doc Number, Type & Status -->
             <div class="grid grid-cols-3 gap-2">
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Number</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Number</label>
                 <input
                   type="text"
                   bind:value={activeDoc.documentNumber}
@@ -482,7 +482,7 @@
               </div>
 
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Doc Type</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Doc Type</label>
                 <select
                   bind:value={activeDoc.type}
                   onchange={persistActiveDoc}
@@ -494,7 +494,7 @@
               </div>
 
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Status</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Status</label>
                 <select
                   bind:value={activeDoc.status}
                   onchange={persistActiveDoc}
@@ -516,7 +516,7 @@
 
             <!-- Client Picker -->
             <div class="space-y-1">
-              <label class="text-[10px] font-semibold text-muted-foreground uppercase">Assign Client</label>
+              <label class="text-xs font-semibold text-muted-foreground uppercase">Assign Client</label>
               <select
                 value={activeDoc.clientCode}
                 onchange={handleClientSelect}
@@ -531,7 +531,7 @@
             <!-- Dates -->
             <div class="grid grid-cols-2 gap-2">
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Issue Date</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Issue Date</label>
                 <input
                   type="date"
                   bind:value={activeDoc.date}
@@ -540,7 +540,7 @@
                 />
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">
+                <label class="text-xs font-semibold text-muted-foreground uppercase">
                   {activeDoc.type === 'quote' ? 'Valid Until' : 'Payment Due Date'}
                 </label>
                 <input
@@ -555,10 +555,10 @@
             <!-- Line Items Builder -->
             <div class="space-y-2 pt-2 border-t border-border">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-semibold text-muted-foreground uppercase">Line Items</span>
+                <span class="text-xs font-semibold text-muted-foreground uppercase">Line Items</span>
                 <button
                   onclick={addLineItem}
-                  class="text-[11px] text-primary hover:underline font-semibold cursor-pointer"
+                  class="text-xs text-primary hover:underline font-semibold cursor-pointer"
                 >
                   + Add Item
                 </button>
@@ -585,26 +585,26 @@
 
                   <div class="grid grid-cols-3 gap-2">
                     <div>
-                      <span class="text-[9px] text-muted-foreground">Hours / Qty</span>
+                      <span class="text-xs text-muted-foreground font-semibold">Hours / Qty</span>
                       <input
                         type="number"
                         bind:value={item.quantity}
                         oninput={() => { recalcTotals(); persistActiveDoc(); }}
-                        class="w-full px-2 py-1 rounded border border-border bg-background text-foreground text-xs"
+                        class="w-full px-2.5 py-1.5 rounded border border-border bg-background text-foreground text-sm font-mono"
                       />
                     </div>
                     <div>
-                      <span class="text-[9px] text-muted-foreground">Rate ({activeDoc.currency})</span>
+                      <span class="text-xs text-muted-foreground font-semibold">Rate ({activeDoc.currency})</span>
                       <input
                         type="number"
                         bind:value={item.unitPrice}
                         oninput={() => { recalcTotals(); persistActiveDoc(); }}
-                        class="w-full px-2 py-1 rounded border border-border bg-background text-foreground text-xs"
+                        class="w-full px-2.5 py-1.5 rounded border border-border bg-background text-foreground text-sm font-mono"
                       />
                     </div>
                     <div>
-                      <span class="text-[9px] text-muted-foreground">Amount</span>
-                      <div class="px-2 py-1 bg-muted/40 rounded text-foreground font-mono text-xs font-semibold">
+                      <span class="text-xs text-muted-foreground font-semibold">Amount</span>
+                      <div class="px-2.5 py-1.5 bg-muted/40 rounded text-foreground font-mono text-sm font-semibold">
                         {item.amount.toFixed(2)}
                       </div>
                     </div>
@@ -616,7 +616,7 @@
             <!-- Tax Rate Input -->
             <div class="grid grid-cols-2 gap-2 pt-2 border-t border-border">
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Tax Rate (%)</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Tax Rate (%)</label>
                 <input
                   type="number"
                   bind:value={activeDoc.taxRatePercent}
@@ -625,7 +625,7 @@
                 />
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Hourly Rate Ref</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Hourly Rate Ref</label>
                 <input
                   type="number"
                   bind:value={activeDoc.hourlyRate}
@@ -637,14 +637,14 @@
 
             <!-- Notes & Terms Details -->
             <div class="space-y-1 pt-2 border-t border-border">
-              <label class="text-[10px] font-semibold text-muted-foreground uppercase">
+              <label class="text-xs font-semibold text-muted-foreground uppercase">
                 {activeDoc.type === 'quote' ? 'Proposal Validity & Revision Terms' : 'Payment Terms & Notes'}
               </label>
               <textarea
                 bind:value={activeDoc.notes}
                 rows="2"
                 oninput={persistActiveDoc}
-                class="w-full px-2.5 py-1.5 rounded-md border border-border bg-background text-foreground text-xs focus:outline-none focus:border-primary"
+                class="w-full px-2.5 py-1.5 rounded-md border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
               ></textarea>
             </div>
 
@@ -656,14 +656,14 @@
               >
                 Delete {activeDoc.type === 'quote' ? 'Quote' : 'Invoice'}
               </button>
-              <span class="text-[10px] text-muted-foreground font-mono">
+              <span class="text-xs text-muted-foreground font-mono">
                 {activeDoc.documentNumber}.md
               </span>
             </div>
           </div>
         {:else}
           <!-- RAW YAML PREVIEW -->
-          <pre class="p-4 bg-black/80 text-emerald-400 font-mono text-xs rounded-lg overflow-x-auto whitespace-pre leading-relaxed border border-border/40">
+          <pre class="p-4 bg-black/80 text-emerald-400 font-mono text-sm rounded-lg overflow-x-auto whitespace-pre leading-relaxed border border-border/40">
 {financeService.toMarkdown(activeDoc)}
           </pre>
         {/if}
@@ -675,32 +675,32 @@
         <!-- Document Header -->
         <div class="flex justify-between items-start border-b border-zinc-200 pb-6">
           <div>
-            <h2 class="text-xl font-bold text-zinc-950 tracking-tight">{activeDoc.freelancerName}</h2>
-            <p class="text-xs text-zinc-500 mt-1 leading-relaxed">
+            <h2 class="text-2xl font-bold text-zinc-950 tracking-tight">{activeDoc.freelancerName}</h2>
+            <p class="text-sm text-zinc-500 mt-1 leading-relaxed">
               {activeDoc.freelancerAddress}<br />
               {activeDoc.freelancerEmail} · {activeDoc.freelancerPhone}
             </p>
           </div>
 
           <div class="text-right">
-            <span class="text-xs font-bold font-mono tracking-widest uppercase" style="color: {getClientPalette(activeDoc.clientCode).primary}">
+            <span class="text-sm font-bold font-mono tracking-widest uppercase" style="color: {getClientPalette(activeDoc.clientCode).primary}">
               {activeDoc.type === 'quote' ? 'CREATIVE PROPOSAL & QUOTE' : 'COMMERCIAL INVOICE'}
             </span>
-            <div class="text-xl font-mono font-bold text-zinc-950 mt-0.5">{activeDoc.documentNumber}</div>
+            <div class="text-2xl font-mono font-bold text-zinc-950 mt-0.5">{activeDoc.documentNumber}</div>
             
             <div class="mt-2 flex flex-col items-end gap-1">
-              <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase {activeDoc.status === 'paid' || activeDoc.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' : activeDoc.status === 'sent' ? 'bg-amber-100 text-amber-800' : 'bg-zinc-100 text-zinc-800'}">
+              <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold font-mono uppercase {activeDoc.status === 'paid' || activeDoc.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' : activeDoc.status === 'sent' ? 'bg-amber-100 text-amber-800' : 'bg-zinc-100 text-zinc-800'}">
                 {activeDoc.status.toUpperCase()}
               </span>
 
               {#if activeDoc.linkedInvoiceId}
-                <span class="text-[10px] font-mono font-semibold text-emerald-700">
+                <span class="text-xs font-mono font-semibold text-emerald-700">
                   ✓ Generated: {activeDoc.linkedInvoiceId}
                 </span>
               {/if}
 
               {#if activeDoc.linkedQuoteId}
-                <span class="text-[10px] font-mono text-zinc-500">
+                <span class="text-xs font-mono text-zinc-500">
                   Quote Ref: {activeDoc.linkedQuoteId}
                 </span>
               {/if}
@@ -709,10 +709,10 @@
         </div>
 
         <!-- Billed To & Dates Grid -->
-        <div class="grid grid-cols-2 gap-8 text-xs">
+        <div class="grid grid-cols-2 gap-8 text-sm">
           <div>
-            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">Client / Recipient:</span>
-            <h3 class="font-bold text-zinc-900 text-sm mt-1">{activeDoc.clientName}</h3>
+            <span class="font-bold text-zinc-400 uppercase tracking-wider text-xs">Client / Recipient:</span>
+            <h3 class="font-bold text-zinc-900 text-base mt-1">{activeDoc.clientName}</h3>
             <p class="text-zinc-600 mt-0.5 leading-relaxed">
               Attn: {activeDoc.clientContact}<br />
               {activeDoc.clientEmail}<br />
@@ -722,11 +722,11 @@
 
           <div class="space-y-2 text-right">
             <div>
-              <span class="text-zinc-400 text-[10px] uppercase font-semibold">Date of Issue:</span>
+              <span class="text-zinc-400 text-xs uppercase font-semibold">Date of Issue:</span>
               <div class="font-mono font-medium text-zinc-900">{activeDoc.date}</div>
             </div>
             <div>
-              <span class="text-zinc-400 text-[10px] uppercase font-semibold">
+              <span class="text-zinc-400 text-xs uppercase font-semibold">
                 {activeDoc.type === 'quote' ? 'Proposal Valid Until:' : 'Payment Due Date:'}
               </span>
               <div class="font-mono font-bold text-zinc-950">{activeDoc.dueDate}</div>
@@ -736,9 +736,9 @@
 
         <!-- Line Items Table -->
         <div class="overflow-x-auto">
-          <table class="w-full text-xs text-left">
+          <table class="w-full text-sm text-left">
             <thead>
-              <tr class="border-b border-zinc-200 text-zinc-400 uppercase font-semibold text-[10px] tracking-wider">
+              <tr class="border-b border-zinc-200 text-zinc-400 uppercase font-semibold text-xs tracking-wider">
                 <th class="py-2.5">Scope &amp; Description</th>
                 <th class="py-2.5 text-center w-16">Hours / Qty</th>
                 <th class="py-2.5 text-right w-24">Rate</th>
@@ -759,8 +759,8 @@
         </div>
 
         <!-- Summary & Totals -->
-        <div class="flex justify-end pt-4 border-t border-zinc-200 text-xs">
-          <div class="w-56 space-y-2">
+        <div class="flex justify-end pt-4 border-t border-zinc-200 text-sm">
+          <div class="w-60 space-y-2">
             <div class="flex justify-between text-zinc-500">
               <span>Subtotal:</span>
               <span class="font-mono font-medium text-zinc-900">{activeDoc.currency} {activeDoc.subtotal.toFixed(2)}</span>
@@ -771,7 +771,7 @@
                 <span class="font-mono font-medium text-zinc-900">{activeDoc.currency} {activeDoc.taxAmount.toFixed(2)}</span>
               </div>
             {/if}
-            <div class="flex justify-between text-base font-bold text-zinc-950 pt-2 border-t border-zinc-300">
+            <div class="flex justify-between text-lg font-bold text-zinc-950 pt-2 border-t border-zinc-300">
               <span>Total:</span>
               <span class="font-mono">{activeDoc.currency} {activeDoc.total.toFixed(2)}</span>
             </div>
@@ -779,11 +779,11 @@
         </div>
 
         <!-- Terms, Banking & Instructions -->
-        <div class="pt-6 border-t border-zinc-200 text-xs text-zinc-600 space-y-3 bg-zinc-50 p-4 rounded-lg">
+        <div class="pt-6 border-t border-zinc-200 text-sm text-zinc-600 space-y-3 bg-zinc-50 p-5 rounded-lg">
           {#if activeDoc.type === 'invoice'}
             <div>
-              <span class="font-bold text-zinc-800 uppercase tracking-wider text-[10px]">Payment Settlement Instructions:</span>
-              <p class="font-mono text-zinc-700 mt-0.5">
+              <span class="font-bold text-zinc-800 uppercase tracking-wider text-xs">Payment Settlement Instructions:</span>
+              <p class="font-mono text-zinc-700 mt-1">
                 Bank: <strong>{activeDoc.paymentBank}</strong><br />
                 Account No: <strong>{activeDoc.paymentAccount}</strong><br />
                 Account Name: <strong>{activeDoc.paymentAccountName}</strong>
@@ -791,15 +791,15 @@
             </div>
           {:else}
             <div>
-              <span class="font-bold text-zinc-800 uppercase tracking-wider text-[10px]">Quote Acceptance Terms:</span>
-              <p class="text-zinc-700 mt-0.5 leading-relaxed">
+              <span class="font-bold text-zinc-800 uppercase tracking-wider text-xs">Quote Acceptance Terms:</span>
+              <p class="text-zinc-700 mt-1 leading-relaxed">
                 To accept this proposal, reply with formal approval or signed purchase order. Work begins upon deposit settlement.
               </p>
             </div>
           {/if}
 
           {#if activeDoc.notes}
-            <div class="text-[11px] text-zinc-500 border-t border-zinc-200/60 pt-2">
+            <div class="text-xs text-zinc-500 border-t border-zinc-200/60 pt-2">
               {activeDoc.notes}
             </div>
           {/if}

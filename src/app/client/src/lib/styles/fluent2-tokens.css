@@ -7,34 +7,122 @@
    - Isolated Semantic Layer (Micro-badges and status indicators)
    ========================================================================== */
 
-:root, [data-theme="falconia"] {
-  /* ─── KANSO STUDIO BRAND SYSTEM ─── */
-  --ss-prussian-blue: #022057;       /* Deep Studio Navy */
-  --ss-blue: #0284C7;                /* Studio Primary Blue */
-  --ss-azure: #38BDF8;               /* Azure Conversion Accent (10%) */
-  --ss-malibu: #6DC6EC;              /* Light Sky Accent */
-  --ss-neutral-black: #1C1C1C;        /* Strict Typography Anchor */
-  --ss-lion: #BD9A73;                /* Secondary Warm Gold / Lion */
-  --ss-fawn: #CCAC8D;                /* Secondary Fawn */
-  --ss-arylide: #E5D15C;             /* Arylide Yellow */
-  --ss-banana: #FCE53D;              /* Banana Yellow */
+:root, [data-theme="dark"] {
+  /* ─── KANSO STUDIO DARK MODE (STUDIO OBSIDIAN) ─── */
+  --brand-primary: var(--kanso-accent, #38BDF8);
+  --brand-secondary: #0284C7;
+  --brand-accent: var(--kanso-accent, #38BDF8);
+  --brand-tint: rgba(56, 189, 248, 0.12);
+  --brand-gradient: linear-gradient(135deg, #18181B 0%, #27272A 50%, #38BDF8 100%);
+  --brand-glow: 0 0 16px rgba(56, 189, 248, 0.35);
 
-  /* ─── 10% BRAND ACCENT LAYER (60:30:10) ─── */
-  --brand-primary: #0284C7;          /* Studio Primary Blue */
-  --brand-secondary: #0369A1;        /* Vibrant Deep Blue */
-  --brand-accent: #38BDF8;           /* Azure Sky Focus */
-  --brand-tint: #EBF4FE;             /* Subtle Azure Background Tint */
+  --bg-app: var(--kanso-canvas, #09090B);
+  --bg-canvas: var(--kanso-canvas, #09090B);
+  --bg-header: var(--kanso-surface, #18181B);
+  --header-text: var(--kanso-text-primary, #F4F4F5);
+  --bg-sidebar: var(--kanso-surface, #18181B);
+  --sidebar-border: var(--kanso-border, #27272A);
+  --sidebar-text: var(--kanso-text-primary, #F4F4F5);
+  --sidebar-text-muted: var(--kanso-text-muted, #A1A1AA);
+  --sidebar-active-bg: rgba(56, 189, 248, 0.12);
+  --sidebar-active-text: var(--kanso-accent, #38BDF8);
+  --sidebar-active-indicator: var(--kanso-accent, #38BDF8);
+
+  --surface-card: var(--kanso-surface, #18181B);
+  --surface-card-subtle: #141416;
+  --surface-card-elevated: #202024;
+  --surface-card-border: var(--kanso-border, #27272A);
+  --surface-card-hover: var(--kanso-surface-hover, #27272A);
+
+  --text-primary: var(--kanso-text-primary, #F4F4F5);
+  --text-secondary: var(--kanso-text-secondary, #D4D4D8);
+  --text-tertiary: var(--kanso-text-muted, #A1A1AA);
+  --text-inverted: #09090B;
+  --text-brand: var(--kanso-accent, #38BDF8);
+}
+
+[data-theme="light"] {
+  /* ─── KANSO STUDIO LIGHT MODE (ATELIER PAPER) ─── */
+  --brand-primary: var(--kanso-accent, #0078D4);
+  --brand-secondary: #0284C7;
+  --brand-accent: var(--kanso-accent, #0078D4);
+  --brand-tint: rgba(0, 120, 212, 0.08);
+  --brand-gradient: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #0078D4 100%);
+  --brand-glow: 0 0 16px rgba(0, 120, 212, 0.25);
+
+  --bg-app: var(--kanso-canvas, #F8FAFC);
+  --bg-canvas: var(--kanso-canvas, #F8FAFC);
+  --bg-header: var(--kanso-surface, #FFFFFF);
+  --header-text: var(--kanso-text-primary, #0F172A);
+  --bg-sidebar: var(--kanso-surface, #FFFFFF);
+  --sidebar-border: var(--kanso-border, #E2E8F0);
+  --sidebar-text: var(--kanso-text-primary, #0F172A);
+  --sidebar-text-muted: var(--kanso-text-muted, #64748B);
+  --sidebar-active-bg: rgba(0, 120, 212, 0.1);
+  --sidebar-active-text: var(--kanso-accent, #0078D4);
+  --sidebar-active-indicator: var(--kanso-accent, #0078D4);
+
+  --surface-card: var(--kanso-surface, #FFFFFF);
+  --surface-card-subtle: #F1F5F9;
+  --surface-card-elevated: #FFFFFF;
+  --surface-card-border: var(--kanso-border, #E2E8F0);
+  --surface-card-hover: var(--kanso-surface-hover, #F1F5F9);
+
+  --text-primary: var(--kanso-text-primary, #0F172A);
+  --text-secondary: var(--kanso-text-secondary, #334155);
+  --text-tertiary: var(--kanso-text-muted, #64748B);
+  --text-inverted: #FFFFFF;
+  --text-brand: var(--kanso-accent, #0078D4);
+}
+
+[data-theme="eink"] {
+  /* ─── KANSO STUDIO E-INK MODE (ZEN MONOCHROME) ─── */
+  --brand-primary: #000000;
+  --brand-secondary: #000000;
+  --brand-accent: #000000;
+  --brand-tint: #F4F4F5;
+  --brand-gradient: none;
+  --brand-glow: none;
+
+  --bg-app: #FFFFFF;
+  --bg-canvas: #FFFFFF;
+  --bg-header: #FFFFFF;
+  --header-text: #000000;
+  --bg-sidebar: #FFFFFF;
+  --sidebar-border: #000000;
+  --sidebar-text: #000000;
+  --sidebar-text-muted: #3F3F46;
+  --sidebar-active-bg: #000000;
+  --sidebar-active-text: #FFFFFF;
+  --sidebar-active-indicator: #000000;
+
+  --surface-card: #FFFFFF;
+  --surface-card-subtle: #F4F4F5;
+  --surface-card-elevated: #FFFFFF;
+  --surface-card-border: #000000;
+  --surface-card-hover: #F4F4F5;
+
+  --text-primary: #000000;
+  --text-secondary: #18181B;
+  --text-tertiary: #3F3F46;
+  --text-inverted: #FFFFFF;
+  --text-brand: #000000;
+}
+
+[data-theme="falconia"] {
+  /* Legacy Falconia mapping */
+  --brand-primary: #0284C7;
+  --brand-secondary: #0369A1;
+  --brand-accent: #38BDF8;
+  --brand-tint: #EBF4FE;
   --brand-gradient: linear-gradient(135deg, #022057 0%, #043388 50%, #21A1F7 100%);
   --brand-glow: 0 0 16px rgba(33, 161, 247, 0.35);
 
-  /* ─── 60% FOUNDATION CANVAS LAYER ─── */
-  --bg-app: #F3F4F6;                 /* Calm Clinical Canvas */
+  --bg-app: #F3F4F6;
   --bg-canvas: #F8FAFC;
-  
-  /* ─── 30% SECONDARY STRUCTURE LAYER ─── */
-  --bg-header: #022057;              /* Prussian Blue Header */
+  --bg-header: #022057;
   --header-text: #FFFFFF;
-  --bg-sidebar: #022057;             /* Prussian Blue Sidebar */
+  --bg-sidebar: #022057;
   --sidebar-border: #01163D;
   --sidebar-active-bg: rgba(255, 255, 255, 0.14);
   --sidebar-active-text: #FFFFFF;
@@ -45,6 +133,14 @@
   --surface-card-elevated: #FFFFFF;
   --surface-card-border: #E2E8F0;
   --surface-card-hover: #F1F5F9;
+
+  --text-primary: #1C1C1C;
+  --text-secondary: #475569;
+  --text-tertiary: #64748B;
+  --text-inverted: #FFFFFF;
+  --text-brand: #043388;
+  --sidebar-text: #F1F5F9;
+  --sidebar-text-muted: #CBD5E1;
 
   /* Typography (Strict Rule: Neutral Black #1C1C1C - No #000000 body text) */
   --text-primary: #1C1C1C;           /* Neutral Black (AAA Compliant) */
