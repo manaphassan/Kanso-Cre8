@@ -34,8 +34,25 @@
   function handleGlobalKeydown(e: KeyboardEvent) {
     const isCmdOrCtrl = e.ctrlKey || e.metaKey;
     if (!isCmdOrCtrl) return;
-
     const key = e.key.toLowerCase();
+
+    // Ctrl+1 to Ctrl+9: Command-First Instant View Jumps
+    if (key === '1') { e.preventDefault(); appState.navigate('dashboard'); return; }
+    if (key === '2') { e.preventDefault(); appState.navigate('projects'); return; }
+    if (key === '3') { e.preventDefault(); appState.navigate('journal'); return; }
+    if (key === '4') { e.preventDefault(); appState.navigate('deliverables'); return; }
+    if (key === '5') { e.preventDefault(); appState.navigate('invoices'); return; }
+    if (key === '6') { e.preventDefault(); appState.navigate('zettel'); return; }
+    if (key === '7') { e.preventDefault(); appState.navigate('clients'); return; }
+    if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
+    if (key === '9') { e.preventDefault(); appState.navigate('admin'); return; }
+
+    // Ctrl+\: Toggle Quick Vault Drawer
+    if (key === '\\') {
+      e.preventDefault();
+      appState.toggleSidebar();
+      return;
+    }
 
     // Ctrl+Shift+K: Quick Scratchpad
     if (e.shiftKey && key === 'k') {
@@ -118,6 +135,9 @@
       if (!target.closest('.user-menu-wrapper')) {
         appState.userMenuOpen = false;
       }
+      if (!target.closest('.view-switcher-wrapper')) {
+        appState.viewSwitcherOpen = false;
+      }
     });
 
     function handleResize() {
@@ -188,23 +208,35 @@
     };
   });
 
-  const pageConfig: Record<string, { title: string; layout: string; parent?: string }> = {
-    dashboard:        { title: 'Studio Deck',          layout: 'layout-full' },
-    journal:          { title: 'Bullet Journal',       layout: 'layout-full' },
-    projects:         { title: 'Project Manager',      layout: 'layout-fluid' },
-    'project-detail': { title: 'Project Workspace',    layout: 'layout-full', parent: 'projects' },
-    deliverables:     { title: 'Review Queue',          layout: 'layout-page' },
-    clients:          { title: 'Clients & Brand Hub',   layout: 'layout-full' },
-    invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full' },
-    zettel:           { title: 'Atelier Notes & Knowledge', layout: 'layout-full' },
-    radio:            { title: 'Focus Radio & Cassette Deck', layout: 'layout-full' },
-    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-page' },
-    team:             { title: 'Team & Workload',       layout: 'layout-page' },
-    admin:            { title: 'Administration',        layout: 'layout-full' },
-    profile:          { title: 'My Profile',            layout: 'layout-full' },
+  const dashIcon    = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
+  const journalIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>`;
+  const folderIcon  = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
+  const reviewIcon  = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
+  const radioIcon   = `<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>`;
+  const clientIcon  = `<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>`;
+  const invoiceIcon = `<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>`;
+  const zettelIcon  = `<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>`;
+  const teamIcon    = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
+  const pencilIcon  = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
+  const adminIcon   = `<path d="M19 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
+
+  const pageConfig: Record<string, { title: string; layout: string; icon: string; parent?: string }> = {
+    dashboard:        { title: 'Studio Deck',          layout: 'layout-full', icon: dashIcon },
+    journal:          { title: 'Bullet Journal',       layout: 'layout-full', icon: journalIcon },
+    projects:         { title: 'Project Manager',      layout: 'layout-fluid', icon: folderIcon },
+    'project-detail': { title: 'Project Workspace',    layout: 'layout-full', icon: folderIcon, parent: 'projects' },
+    deliverables:     { title: 'Review Queue',          layout: 'layout-page', icon: reviewIcon },
+    clients:          { title: 'Clients & Brand Hub',   layout: 'layout-full', icon: clientIcon },
+    invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full', icon: invoiceIcon },
+    zettel:           { title: 'Atelier Notes',        layout: 'layout-full', icon: zettelIcon },
+    radio:            { title: 'Focus Radio',          layout: 'layout-full', icon: radioIcon },
+    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-page', icon: pencilIcon },
+    team:             { title: 'Team & Workload',       layout: 'layout-page', icon: teamIcon },
+    admin:            { title: 'Administration',        layout: 'layout-full', icon: adminIcon },
+    profile:          { title: 'My Profile',            layout: 'layout-full', icon: adminIcon },
   };
 
-  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page' });
+  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page', icon: dashIcon });
   const currentTitle  = $derived(
     appState.currentRoute === 'project-detail' && appState.routeParams.id
       ? appState.routeParams.id
@@ -223,17 +255,20 @@
     return crumbs;
   });
 
-  const dashIcon    = `<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>`;
-  const journalIcon = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>`;
-  const folderIcon  = `<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>`;
-  const reviewIcon  = `<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>`;
-  const radioIcon   = `<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>`;
-  const clientIcon  = `<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>`;
-  const invoiceIcon = `<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>`;
-  const zettelIcon  = `<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>`;
-  const teamIcon    = `<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>`;
-  const pencilIcon  = `<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>`;
-  const adminIcon   = `<path d="M19 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>`;
+  function getShortcutBadge(route: string): string {
+    switch (route) {
+      case 'dashboard': return '⌘1';
+      case 'projects': return '⌘2';
+      case 'journal': return '⌘3';
+      case 'deliverables': return '⌘4';
+      case 'invoices': return '⌘5';
+      case 'zettel': return '⌘6';
+      case 'clients': return '⌘7';
+      case 'radio': return '⌘8';
+      case 'admin': return '⌘9';
+      default: return '';
+    }
+  }
 
   const navGroups = [
     { section: 'Creative Operations', items: [
@@ -272,58 +307,51 @@
 {:else}
   <div
     class="app-shell"
-    class:sidebar-rail={isRail}
-    class:sidebar-hidden={!appState.sidebarExpanded}
+    class:sidebar-open={appState.quickDrawerOpen || appState.sidebarExpanded}
+    class:sidebar-hidden={!appState.quickDrawerOpen && !appState.sidebarExpanded}
   >
-    <!-- ═══ SIDEBAR ════════════════════════════════════════════════ -->
-    <aside class="app-sidebar" class:is-rail={isRail}>
-
-      <div class="sidebar-header" class:rail-header={isRail}>
-        {#if !isRail}
-          <div class="flex items-center gap-2.5 px-3 py-2">
-            <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
-              K8
-            </div>
-            <div class="flex flex-col">
-              <span class="font-bold text-sm tracking-tight text-[var(--kanso-text-primary)]">Kanso Cre8</span>
-              <span class="text-[10px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Desktop Vault</span>
-            </div>
+    <!-- ═══ SLIDE-OVER QUICK DRAWER (Summonable via Ctrl+\ or menu button) ═══ -->
+    <aside class="app-sidebar" class:is-open={appState.quickDrawerOpen || appState.sidebarExpanded}>
+      <div class="sidebar-header">
+        <div class="flex items-center gap-2.5 px-2 py-2">
+          <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
+            K8
           </div>
-        {:else}
-          <div class="sidebar-logomark-wrap" title="Kanso Cre8 Desktop Vault">
-            <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
-              K8
-            </div>
+          <div class="flex flex-col">
+            <span class="font-bold text-sm tracking-tight text-[var(--kanso-text-primary)]">Kanso Cre8</span>
+            <span class="text-[11px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Desktop Vault</span>
           </div>
-        {/if}
+        </div>
+        <button class="icon-btn close-drawer-btn" onclick={() => appState.toggleSidebar()} title="Close Drawer (Esc / Ctrl+\)" aria-label="Close drawer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
       </div>
 
-      <nav class="sidebar-nav" class:rail-nav={isRail} aria-label="Main Navigation">
+      <nav class="sidebar-nav" aria-label="Main Navigation">
         {#each navGroups as group}
-          {#if !isRail}
-            <div class="nav-section-label">{group.section}</div>
-          {:else}
-            <div class="nav-section-divider"></div>
-          {/if}
+          <div class="nav-section-label">{group.section}</div>
           {#each group.items as item}
             {@const active = isActive(item)}
             {@const count  = item.badge ? projectStore.pendingReviewCount : 0}
+            {@const shortcut = getShortcutBadge(item.route)}
             <a
               href="#{item.route}"
               class="nav-link"
               class:active
-              class:rail-link={isRail}
-              title={isRail ? item.label : undefined}
               aria-current={active ? 'page' : undefined}
+              onclick={() => { appState.quickDrawerOpen = false; appState.sidebarExpanded = false; }}
             >
               <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 {@html item.icon}
               </svg>
-              {#if !isRail}
-                <span class="nav-label">{item.label}</span>
-              {/if}
+              <span class="nav-label">{item.label}</span>
               {#if count > 0}
-                <span class="nav-badge" class:rail-badge={isRail}>{count}</span>
+                <span class="nav-badge">{count}</span>
+              {/if}
+              {#if shortcut}
+                <kbd class="nav-kbd-hint">{shortcut}</kbd>
               {/if}
             </a>
           {/each}
@@ -331,60 +359,165 @@
 
         <div class="nav-spacer"></div>
 
-        {#if !isRail}
-          <div class="px-2 pb-2">
-            <MiniCassetteDock />
-          </div>
-        {:else}
-          <a
-            href="#radio"
-            class="nav-link rail-link"
-            class:active={appState.currentRoute === 'radio'}
-            title="Focus Radio"
-          >
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              {@html radioIcon}
-            </svg>
-          </a>
-        {/if}
+        <div class="px-2 pb-2">
+          <MiniCassetteDock />
+        </div>
       </nav>
     </aside>
 
-    <!-- ═══ MAIN ════════════════════════════════════════════════════ -->
+    {#if appState.quickDrawerOpen || appState.sidebarExpanded}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="quick-drawer-backdrop" onclick={() => appState.toggleSidebar()}></div>
+    {/if}
+
+    <!-- ═══ 100% CANVAS MAIN VIEWPORT ═══════════════════════════════════ -->
     <div class="app-main">
 
-      <!-- TOP HEADER -->
+      <!-- ═══ 48px PRECISION STUDIO INSTRUMENT HEADER ═════════════════ -->
       <header class="app-header">
         <div class="header-left">
-          <button class="icon-btn" onclick={() => appState.toggleSidebar()} title="Toggle Sidebar" aria-label="Toggle sidebar">
+          <!-- Tactile K8 Brand Badge -->
+          <button
+            class="k8-badge-btn"
+            onclick={() => appState.navigate('dashboard')}
+            title="Kanso Cre8 Studio Deck (⌘1)"
+            aria-label="Kanso Cre8 Home"
+          >
+            <span class="k8-text">K8</span>
+          </button>
+
+          <!-- Drawer Quick Summon Button -->
+          <button
+            class="icon-btn drawer-toggle-btn"
+            onclick={() => appState.toggleSidebar()}
+            title="Toggle Vault Drawer (Ctrl+\)"
+            aria-label="Toggle Vault Drawer"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
             </svg>
           </button>
-          <nav class="breadcrumb" aria-label="Breadcrumb">
-            {#each breadcrumbs as crumb, i}
-              {#if i > 0}<span class="bc-sep" aria-hidden="true">›</span>{/if}
-              {#if crumb.route && i < breadcrumbs.length - 1}
-                <a href="#{crumb.route}" class="bc-link">{crumb.label}</a>
-              {:else}
-                <span class="bc-current" aria-current="page">{crumb.label}</span>
-              {/if}
-            {/each}
-          </nav>
+
+          <!-- Interactive View Switcher Dropdown (Command-First HUD) -->
+          <div class="view-switcher-wrapper">
+            <button
+              class="view-switcher-trigger"
+              onclick={(e) => { e.stopPropagation(); appState.viewSwitcherOpen = !appState.viewSwitcherOpen; }}
+              aria-label="Switch active workspace view"
+              aria-expanded={appState.viewSwitcherOpen}
+            >
+              <span class="view-icon-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  {@html currentConfig.icon || dashIcon}
+                </svg>
+              </span>
+              <span class="view-title-text">{currentTitle}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="view-caret" class:open={appState.viewSwitcherOpen}>
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </button>
+
+            {#if appState.viewSwitcherOpen}
+              <!-- svelte-ignore a11y_no_static_element_interactions -->
+              <div class="view-switcher-dropdown" role="menu" onclick={(e) => e.stopPropagation()}>
+                <div class="dropdown-header">
+                  <span class="dropdown-header-title">Studio Views</span>
+                  <span class="dropdown-header-shortcut">⌘1 – ⌘9</span>
+                </div>
+                <div class="dropdown-grid">
+                  {#each navGroups as group}
+                    <div class="dropdown-group">
+                      <div class="dropdown-group-label">{group.section}</div>
+                      {#each group.items as item}
+                        {@const active = isActive(item)}
+                        {@const shortcut = getShortcutBadge(item.route)}
+                        {@const count = item.badge ? projectStore.pendingReviewCount : 0}
+                        <button
+                          class="dropdown-item-btn"
+                          class:active
+                          onclick={() => {
+                            appState.viewSwitcherOpen = false;
+                            appState.navigate(item.route);
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="dropdown-item-icon">
+                            {@html item.icon}
+                          </svg>
+                          <span class="dropdown-item-label">{item.label}</span>
+                          {#if count > 0}
+                            <span class="dropdown-item-count">{count}</span>
+                          {/if}
+                          {#if shortcut}
+                            <kbd class="dropdown-item-kbd">{shortcut}</kbd>
+                          {/if}
+                        </button>
+                      {/each}
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+          </div>
+
+          {#if appState.currentRoute === 'project-detail' && appState.routeParams.id}
+            <span class="bc-sep" aria-hidden="true">/</span>
+            <span class="bc-subview">{appState.routeParams.id}</span>
+          {/if}
         </div>
 
         <div class="header-center">
           <HeaderTimerWidget />
           <button class="header-search-btn" onclick={() => (commandPaletteOpen = true)} aria-label="Open Command Palette (Ctrl K)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="search-ico" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="search-ico" aria-hidden="true">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <span class="search-placeholder">Search…</span>
-            <kbd class="search-shortcut">Ctrl K</kbd>
+            <span class="search-placeholder">Jump to…</span>
+            <kbd class="search-shortcut">⌘K</kbd>
           </button>
         </div>
 
         <div class="header-right">
+          <!-- Tri-Theme Segmented Pill (Dark / Light / E-Ink) -->
+          <div class="tri-theme-pill" role="group" aria-label="Theme Switcher">
+            <button
+              class="theme-btn"
+              class:active={appState.theme === 'dark'}
+              onclick={() => appState.setTheme('dark')}
+              title="Studio Obsidian (Dark)"
+              aria-label="Dark Mode"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+              </svg>
+              <span class="theme-text">Dark</span>
+            </button>
+            <button
+              class="theme-btn"
+              class:active={appState.theme === 'light'}
+              onclick={() => appState.setTheme('light')}
+              title="Atelier Paper (Light)"
+              aria-label="Light Mode"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/>
+              </svg>
+              <span class="theme-text">Light</span>
+            </button>
+            <button
+              class="theme-btn"
+              class:active={appState.theme === 'eink'}
+              onclick={() => appState.setTheme('eink')}
+              title="Zen Monochrome (E-Ink)"
+              aria-label="E-Ink Mode"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+              <span class="theme-text">E-Ink</span>
+            </button>
+          </div>
+
           <!-- Real-Time Vault Live Sync Pill -->
           <div
             class="live-sync-pill"
@@ -410,6 +543,7 @@
             </svg>
           </button>
 
+          <!-- Notification Drawer Button -->
           <button
             class="icon-btn notif-btn"
             onclick={() => (appState.notificationDrawerOpen = !appState.notificationDrawerOpen)}
@@ -623,40 +757,66 @@
 
 <style>
   /* ═══ SHELL ════════════════════════════════════════════════════ */
+  /* ═══ COMMAND-FIRST ZEN HUD SHELL ══════════════════════════════════ */
   .app-shell {
-    display: grid;
-    grid-template-columns: 260px 1fr;
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    transition: grid-template-columns 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: var(--kanso-canvas);
+    color: var(--kanso-text-primary);
   }
-  .app-shell.sidebar-rail   { grid-template-columns: 68px 1fr; }
-  .app-shell.sidebar-hidden { grid-template-columns: 0px 1fr; }
 
-  /* ═══ SIDEBAR ══════════════════════════════════════════════════ */
+  /* ═══ SLIDE-OVER QUICK DRAWER (Summonable) ══════════════════════ */
   .app-sidebar {
-    background: var(--bg-sidebar);
-    color: var(--sidebar-text);
-    border-right: 1px solid var(--sidebar-border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    border-right: 1px solid var(--kanso-border);
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;
-    width: 100%;
+    z-index: 1000;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+    transform: translateX(-100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     box-sizing: border-box;
+  }
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .quick-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+  }
+  .close-drawer-btn {
+    color: var(--kanso-text-muted);
+  }
+  .close-drawer-btn:hover {
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
   }
 
   .sidebar-header {
-    height: 56px;
-    padding: 0 16px;
+    height: 52px;
+    padding: 0 14px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    border-bottom: 1px solid var(--sidebar-border);
+    border-bottom: 1px solid var(--kanso-border);
     box-sizing: border-box;
   }
   .sidebar-header.rail-header {
@@ -870,95 +1030,306 @@
   .app-main {
     display: flex;
     flex-direction: column;
+    flex: 1;
     height: 100vh;
     overflow: hidden;
     min-width: 0;
-    background: var(--bg-app);
+    background: var(--kanso-canvas);
   }
 
   /* ═══ HEADER ════════════════════════════════════════════════════ */
   .app-header {
-    height: 56px;
+    height: 52px;
     flex-shrink: 0;
-    background: var(--surface-card);
-    border-bottom: 1px solid var(--surface-card-border);
-    padding: 0 24px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    background: var(--kanso-surface);
+    border-bottom: 1px solid var(--kanso-border);
+    padding: 0 16px;
+    display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: space-between;
+    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 200;
     box-shadow: var(--shadow-sm);
+    box-sizing: border-box;
   }
-  .header-left  { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .header-center { min-width: 0; display: flex; justify-content: center; }
-  .header-right { display: flex; align-items: center; gap: 8px; }
+  .header-left  { display: flex; align-items: center; gap: 8px; min-width: 0; flex-shrink: 0; }
+  .header-center { min-width: 0; display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center; max-width: 720px; }
+  .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-  .breadcrumb {
+  /* Tactile K8 Brand Badge */
+  .k8-badge-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: var(--kanso-accent);
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    min-width: 0;
-    overflow: hidden;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.14s ease, border-color 0.14s ease;
+    flex-shrink: 0;
   }
-  .bc-sep     { color: var(--text-tertiary); font-size: 12px; }
-  .bc-link    { color: var(--text-secondary); text-decoration: none; font-weight: 600; white-space: nowrap; transition: color .14s; }
-  .bc-link:hover { color: var(--brand-accent); }
-  .bc-current {
-    color: var(--text-primary);
+  .k8-badge-btn:hover {
+    transform: scale(1.06);
+    border-color: var(--kanso-accent);
+  }
+  .k8-text {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  /* View Switcher */
+  .view-switcher-wrapper {
+    position: relative;
+  }
+  .view-switcher-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .view-switcher-trigger:hover {
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+  }
+  .view-icon-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--kanso-accent);
+  }
+  .view-title-text {
+    font-size: 15px;
     font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--kanso-text-primary);
+    white-space: nowrap;
+  }
+  .view-caret {
+    color: var(--kanso-text-muted);
+    transition: transform 0.2s ease;
+  }
+  .view-caret.open {
+    transform: rotate(180deg);
+  }
+
+  .bc-sep {
+    color: var(--kanso-text-muted);
+    font-size: 14px;
+    margin: 0 2px;
+  }
+  .bc-subview {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kanso-text-muted);
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* View Switcher Dropdown Popover */
+  .view-switcher-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 340px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    z-index: 600;
+    overflow: hidden;
+    animation: dropIn 0.15s ease;
+    padding: 8px;
+  }
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 10px;
+    border-bottom: 1px solid var(--kanso-border);
+    margin-bottom: 6px;
+  }
+  .dropdown-header-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--kanso-text-muted);
+  }
+  .dropdown-header-shortcut {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--kanso-accent);
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .dropdown-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  .dropdown-group-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--kanso-text-muted);
+    padding: 6px 10px 4px;
+  }
+  .dropdown-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--kanso-text-primary);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    font-family: inherit;
+    text-align: left;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+  .dropdown-item-btn:hover {
+    background: var(--kanso-surface-hover);
+  }
+  .dropdown-item-btn.active {
+    background: rgba(56, 189, 248, 0.14);
+    color: var(--kanso-accent);
+  }
+  .dropdown-item-icon {
+    flex-shrink: 0;
+  }
+  .dropdown-item-label {
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 280px;
+  }
+  .dropdown-item-count {
+    font-size: 12px;
+    font-weight: 700;
+    background: #EF4444;
+    color: #FFFFFF;
+    padding: 2px 7px;
+    border-radius: 9999px;
+  }
+  .dropdown-item-kbd {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
+  }
+
+  /* Tri-Theme Switcher Pill */
+  .tri-theme-pill {
+    display: inline-flex;
+    align-items: center;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 3px;
+    height: 38px;
+    box-sizing: border-box;
+  }
+  .theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.14s ease;
+  }
+  .theme-btn:hover {
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
+  }
+  .theme-btn.active {
+    background: var(--kanso-surface-active);
+    color: var(--kanso-text-primary);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  [data-theme="eink"] .theme-btn.active {
+    background: #000000;
+    color: #FFFFFF;
   }
 
   .header-search-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--bg-app);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
-    padding: 0 12px;
+    padding: 0 14px;
     width: 100%;
-    max-width: 460px;
-    height: 36px;
+    max-width: 320px;
+    height: 38px;
     cursor: pointer;
     text-align: left;
     transition: all .15s ease;
   }
   .header-search-btn:hover {
-    border-color: var(--brand-accent);
-    box-shadow: 0 0 0 3px rgba(33,161,247,.15);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--kanso-accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
   }
-  .search-ico { color: var(--text-tertiary); flex-shrink: 0; }
+  .search-ico { color: var(--kanso-text-muted); flex-shrink: 0; }
   .search-placeholder {
     flex: 1;
-    color: var(--text-tertiary);
-    font-size: 13px;
+    color: var(--kanso-text-muted);
+    font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .search-shortcut {
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 7px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--text-secondary);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
     font-family: inherit;
   }
 
   .icon-btn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -975,17 +1346,17 @@
   .notif-btn { position: relative; }
   .notif-count {
     position: absolute;
-    top: 3px;
-    right: 3px;
+    top: 2px;
+    right: 2px;
     background: #EF4444;
     color: #fff;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 800;
-    padding: 0 4px;
+    padding: 0 5px;
     border-radius: 9999px;
-    min-width: 14px;
-    height: 14px;
-    line-height: 14px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
     text-align: center;
     border: 1.5px solid var(--surface-card);
   }
@@ -1293,18 +1664,18 @@
       right: -8px;
       background: var(--color-danger);
       color: #FFFFFF;
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 800;
-      min-width: 15px;
-      height: 15px;
+      min-width: 17px;
+      height: 17px;
       border-radius: 9999px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 3px;
+      padding: 0 4px;
     }
     .dock-text {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.2px;
     }

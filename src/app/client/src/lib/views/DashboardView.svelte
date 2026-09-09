@@ -812,15 +812,15 @@
     justify-content: space-between;
   }
   .card-meta-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
   }
   .card-pill {
     font-family: var(--font-mono, monospace);
-    font-size: 9.5px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     letter-spacing: 0.04em;
   }
@@ -852,7 +852,7 @@
   }
   .card-amount {
     font-family: var(--font-mono, monospace);
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -862,7 +862,7 @@
   .card-amount.amber   { color: #F59E0B; }
   .card-amount.accent  { color: var(--kanso-accent, #38BDF8); }
   .card-sub {
-    font-size: 11.5px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     margin: 0;
   }
@@ -896,7 +896,7 @@
     gap: 12px;
   }
   .panel-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     margin: 0;
@@ -906,19 +906,19 @@
   }
   .panel-title-sub {
     font-family: var(--font-mono, monospace);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     color: var(--kanso-text-muted, #71717A);
   }
   .panel-subtitle {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     margin: 3px 0 0 0;
   }
   .path-code {
     font-family: var(--font-mono, monospace);
     color: var(--kanso-accent, #38BDF8);
-    font-size: 11px;
+    font-size: 12.5px;
   }
 
   .panel-header-controls {
@@ -937,9 +937,9 @@
   .mode-btn {
     border: none;
     background: transparent;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 6px;
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
     cursor: pointer;
@@ -952,7 +952,7 @@
   }
   .counter-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 800;
     padding: 3px 8px;
     border-radius: 6px;
@@ -969,14 +969,14 @@
     flex-wrap: wrap;
   }
   .intentions-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--kanso-text-muted, #71717A);
   }
   .intention-chip {
-    font-size: 12px;
-    padding: 3px 8px;
+    font-size: 13px;
+    padding: 4px 10px;
     border-radius: 6px;
     background: var(--kanso-canvas, #09090B);
     border: 1px solid var(--kanso-border, #27272A);
@@ -993,7 +993,7 @@
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.25);
     color: #FCD34D;
-    font-size: 12px;
+    font-size: 13px;
   }
   .rollover-text {
     display: flex;
@@ -1011,7 +1011,7 @@
     background: rgba(245, 158, 11, 0.15);
     border: 1px solid rgba(245, 158, 11, 0.35);
     color: #FDE68A;
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 700;
     padding: 5px 12px;
     border-radius: 6px;
@@ -1042,13 +1042,13 @@
     border-color: rgba(56, 189, 248, 0.3);
   }
   .task-check {
-    width: 16px;
-    height: 16px;
+    width: 17px;
+    height: 17px;
     accent-color: var(--kanso-accent, #38BDF8);
     cursor: pointer;
   }
   .task-label {
-    font-size: 12.5px;
+    font-size: 14px;
     color: var(--kanso-text-primary, #F4F4F5);
     flex: 1;
     font-weight: 500;
@@ -1059,9 +1059,9 @@
   }
   .priority-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     background: rgba(239, 68, 68, 0.12);
     color: #F87171;
@@ -1069,20 +1069,20 @@
   }
   .wikilink-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: 12px;
     color: var(--kanso-accent, #38BDF8);
     background: rgba(56, 189, 248, 0.08);
     border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
   .due-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: 12px;
     color: #F59E0B;
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.2);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
 
@@ -1102,7 +1102,7 @@
     position: absolute;
     left: 12px;
     font-family: var(--font-mono, monospace);
-    font-size: 12px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     pointer-events: none;
   }
@@ -1114,7 +1114,7 @@
     background: var(--kanso-canvas, #09090B);
     color: var(--kanso-text-primary, #F4F4F5);
     font-family: var(--font-mono, monospace);
-    font-size: 12px;
+    font-size: 14px;
     outline: none;
     transition: border-color 0.14s;
     box-sizing: border-box;
@@ -1123,14 +1123,14 @@
     border-color: var(--kanso-accent, #38BDF8);
   }
   .input-hint {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--kanso-text-muted, #71717A);
   }
 
   .empty-state-box {
     padding: 24px;
     text-align: center;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     border: 1px dashed var(--kanso-border, #27272A);
     border-radius: 8px;
@@ -1139,7 +1139,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 11.5px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     padding-top: 4px;
   }
@@ -1160,20 +1160,20 @@
     gap: 4px;
   }
   .metric-label {
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
   }
   .metric-value {
     font-family: var(--font-mono, monospace);
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--kanso-text-primary, #F4F4F5);
     letter-spacing: -0.02em;
   }
   .metric-value.emerald { color: #10B981; }
   .metric-sub {
-    font-size: 10.5px;
+    font-size: 12.5px;
     font-weight: 500;
   }
   .metric-sub.emerald { color: #10B981; }
@@ -1212,7 +1212,7 @@
   }
   .client-code-tag {
     font-family: var(--font-mono, monospace);
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 800;
     color: #FFFFFF;
     padding: 3px 8px;
@@ -1221,10 +1221,10 @@
   }
   .stage-tag {
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 4px;
   }
   .stage-tag.in-progress {
@@ -1253,7 +1253,7 @@
     gap: 4px;
   }
   .project-title {
-    font-size: 14px;
+    font-size: 15.5px;
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     margin: 0;
@@ -1261,7 +1261,7 @@
   }
   .project-job-id {
     font-family: var(--font-mono, monospace);
-    font-size: 10.5px;
+    font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
     margin: 0;
     overflow: hidden;
@@ -1277,7 +1277,7 @@
     display: flex;
     justify-content: space-between;
     font-family: var(--font-mono, monospace);
-    font-size: 11px;
+    font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
   }
   .progress-track {
@@ -1298,7 +1298,7 @@
     justify-content: space-between;
     border-top: 1px solid var(--kanso-border, #27272A);
     padding-top: 12px;
-    font-size: 11.5px;
+    font-size: 13px;
   }
   .deadline-label {
     color: var(--kanso-text-muted, #71717A);
@@ -1328,7 +1328,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 700;
   }
   .suggestion-header.sky     { color: #38BDF8; }
@@ -1337,14 +1337,14 @@
   .suggestion-header.emerald { color: #10B981; }
 
   .suggestion-body {
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--kanso-text-muted, #71717A);
     line-height: 1.5;
     margin: 0;
     flex: 1;
   }
   .suggestion-action {
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--kanso-accent, #38BDF8);
     text-decoration: none;
@@ -1357,7 +1357,7 @@
     border: none;
     background: transparent;
     padding: 0;
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--kanso-accent, #38BDF8);
     text-align: left;

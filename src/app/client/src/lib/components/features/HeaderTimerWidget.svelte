@@ -344,11 +344,12 @@
     display: flex;
     align-items: center;
     padding: 0 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 13px;
+    font-family: var(--kanso-font-mono, ui-monospace, monospace);
+    font-size: 15.5px;
     font-weight: 700;
     color: var(--kanso-text-muted, #71717A);
     letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
   }
 
   .ticker-display.pulse {
@@ -361,11 +362,12 @@
     background: rgba(16, 185, 129, 0.12);
     border: 1px solid rgba(16, 185, 129, 0.25);
     color: #10B981;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    padding: 2px 6px;
+    font-family: var(--kanso-font-mono, ui-monospace, monospace);
+    padding: 2px 8px;
     border-radius: 9999px;
+    font-variant-numeric: tabular-nums;
   }
 
   .client-rate-strip {
@@ -379,12 +381,12 @@
   .client-select {
     background: transparent;
     border: none;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     cursor: pointer;
     outline: none;
-    padding: 2px 4px;
+    padding: 3px 6px;
     border-radius: 4px;
   }
 
@@ -405,10 +407,10 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 4px;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
-    padding: 1px 5px;
+    padding: 2px 6px;
     cursor: pointer;
     transition: all 0.15s ease;
   }
@@ -439,7 +441,7 @@
   }
 
   .popover-title {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--kanso-text-muted, #71717A);
@@ -457,7 +459,7 @@
   }
 
   .curr-prefix, .curr-suffix {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
   }
 
@@ -466,7 +468,7 @@
     background: transparent;
     border: none;
     color: #F4F4F5;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     outline: none;
   }
@@ -483,9 +485,9 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 4px;
     color: var(--kanso-text-primary, #F4F4F5);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
-    padding: 3px 0;
+    padding: 4px 0;
     cursor: pointer;
   }
 
@@ -560,14 +562,14 @@
   }
 
   .stop-modal-title {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     margin: 0;
   }
 
   .stop-modal-sub {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     margin: 2px 0 0 0;
   }
@@ -589,14 +591,14 @@
   }
 
   .bbox-label {
-    font-size: 9px;
+    font-size: 11.5px;
     font-weight: 700;
     color: var(--kanso-text-muted, #71717A);
     letter-spacing: 0.05em;
   }
 
   .bbox-value {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     font-family: ui-monospace, SFMono-Regular, monospace;
     color: var(--kanso-text-primary, #F4F4F5);
@@ -613,7 +615,7 @@
   }
 
   .stop-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--kanso-text-primary, #F4F4F5);
   }

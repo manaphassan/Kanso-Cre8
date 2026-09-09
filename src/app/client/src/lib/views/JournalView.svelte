@@ -903,25 +903,25 @@
   .chead-icon { font-size: 18px; }
 
   .chead-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     margin: 0;
   }
 
   .chead-sub {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     margin: 0 0 16px 0;
   }
 
   .badge-count {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     background: rgba(255, 255, 255, 0.06);
     color: var(--kanso-text-muted, #71717A);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 9999px;
   }
 
@@ -940,8 +940,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 12px;
+    padding: 8px 12px;
+    font-size: 13.5px;
     color: var(--kanso-text-primary, #F4F4F5);
   }
 
@@ -957,7 +957,7 @@
     border: none;
     color: var(--kanso-text-muted, #71717A);
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12.5px;
     padding: 2px 4px;
     border-radius: 4px;
   }
@@ -976,8 +976,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 7px 12px;
+    font-size: 13.5px;
     color: #F4F4F5;
     outline: none;
   }
@@ -989,7 +989,7 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
     color: #F4F4F5;
-    width: 32px;
+    width: 34px;
     font-size: 16px;
     cursor: pointer;
   }
@@ -1006,9 +1006,9 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
     color: var(--kanso-text-primary, #F4F4F5);
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 600;
-    padding: 6px 8px;
+    padding: 7px 10px;
     outline: none;
     cursor: pointer;
   }
@@ -1018,8 +1018,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 7px 14px;
+    font-size: 14px;
     color: #F4F4F5;
     outline: none;
   }
@@ -1031,9 +1031,9 @@
     border: 1px solid var(--kanso-accent, #38BDF8);
     border-radius: 6px;
     color: #09090B;
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 700;
-    padding: 0 14px;
+    padding: 0 16px;
     cursor: pointer;
   }
 
@@ -1051,8 +1051,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 8px;
-    padding: 9px 12px;
-    font-size: 13px;
+    padding: 10px 14px;
+    font-size: 14px;
     color: var(--kanso-text-primary, #F4F4F5);
     transition: all 0.15s ease;
   }
@@ -1094,13 +1094,13 @@
   }
 
   .symbol-chip {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
   }
 
@@ -1110,7 +1110,7 @@
     padding: 30px 10px;
     text-align: center;
     color: var(--kanso-text-muted, #71717A);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .raw-textarea {
@@ -1120,7 +1120,7 @@
     border-radius: 8px;
     color: #F4F4F5;
     font-family: ui-monospace, monospace;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.6;
     padding: 14px;
     outline: none;
@@ -1148,7 +1148,7 @@
   }
 
   .rsection-title {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--kanso-text-muted, #71717A);
@@ -1165,8 +1165,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 13px;
+    padding: 9px 12px;
+    font-size: 14px;
     color: var(--kanso-text-primary, #F4F4F5);
   }
 
@@ -1181,13 +1181,13 @@
   }
 
   .hval {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 800;
     color: var(--kanso-accent, #38BDF8);
   }
 
   .hval-sub {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--kanso-text-muted, #71717A);
   }
 
@@ -1197,7 +1197,7 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
     padding: 10px 12px;
-    font-size: 13px;
+    font-size: 14px;
     color: #F4F4F5;
     outline: none;
     box-sizing: border-box;
@@ -1221,7 +1221,7 @@
     color: #09090B;
     border: 1px solid var(--kanso-accent, #38BDF8);
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 13.5px;
     font-weight: 700;
     padding: 8px 16px;
     cursor: pointer;
@@ -1270,7 +1270,7 @@
   }
 
   .bento-val {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
     color: var(--kanso-text-primary, #F4F4F5);
     font-family: ui-monospace, monospace;
@@ -1278,7 +1278,7 @@
   }
 
   .bento-label {
-    font-size: 11px;
+    font-size: 12.5px;
     color: var(--kanso-text-muted, #71717A);
   }
 
@@ -1316,7 +1316,7 @@
     border: none;
     color: var(--kanso-text-muted, #71717A);
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12.5px;
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -1337,8 +1337,8 @@
     background: #09090B;
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 7px 12px;
+    font-size: 13.5px;
     color: var(--kanso-text-primary, #F4F4F5);
     outline: none;
   }
@@ -1352,7 +1352,8 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
     color: var(--kanso-text-primary, #F4F4F5);
-    padding: 0 12px;
+    padding: 0 14px;
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
   }
