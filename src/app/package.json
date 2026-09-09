@@ -39,6 +39,8 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/cli": "^2.11.4",
     "@types/dompurify": "^3.0.5",
     "concurrently": "^10.0.5",
     "dompurify": "^3.4.13",

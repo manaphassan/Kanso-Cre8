@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Kanso Cre8 (簡素)",
         "width": 1280,
         "height": 800,
@@ -31,7 +32,6 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "identifier": "com.kansocre8.desktop",
     "publisher": "harusssani.manaphassan",
     "copyright": "Copyright © 2026 harusssani.manaphassan. PolyForm Noncommercial License 1.0.0",
     "category": "Productivity",
