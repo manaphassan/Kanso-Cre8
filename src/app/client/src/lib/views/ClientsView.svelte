@@ -224,7 +224,7 @@
                 title="Copy Primary: {client.palette.primary}"
               >
                 <div class="w-full h-7 rounded-md mb-1.5 shadow-inner" style="background-color: {client.palette.primary}"></div>
-                <span class="text-[10px] font-mono text-muted-foreground font-semibold">{client.palette.primary}</span>
+                <span class="text-xs font-mono text-muted-foreground font-semibold">{client.palette.primary}</span>
               </button>
 
               <!-- Secondary -->
@@ -234,7 +234,7 @@
                 title="Copy Secondary: {client.palette.secondary}"
               >
                 <div class="w-full h-7 rounded-md mb-1.5 shadow-inner" style="background-color: {client.palette.secondary}"></div>
-                <span class="text-[10px] font-mono text-muted-foreground font-semibold">{client.palette.secondary}</span>
+                <span class="text-xs font-mono text-muted-foreground font-semibold">{client.palette.secondary}</span>
               </button>
 
               <!-- Dark -->
@@ -244,7 +244,7 @@
                 title="Copy Dark: {client.palette.dark}"
               >
                 <div class="w-full h-7 rounded-md mb-1.5 shadow-inner" style="background-color: {client.palette.dark}"></div>
-                <span class="text-[10px] font-mono text-muted-foreground font-semibold">{client.palette.dark}</span>
+                <span class="text-xs font-mono text-muted-foreground font-semibold">{client.palette.dark}</span>
               </button>
 
               <!-- Accent -->
@@ -254,7 +254,7 @@
                 title="Copy Accent: {client.palette.accent}"
               >
                 <div class="w-full h-7 rounded-md mb-1.5 shadow-inner" style="background-color: {client.palette.accent}"></div>
-                <span class="text-[10px] font-mono text-muted-foreground font-semibold">{client.palette.accent}</span>
+                <span class="text-xs font-mono text-muted-foreground font-semibold">{client.palette.accent}</span>
               </button>
             </div>
           </div>
@@ -400,23 +400,23 @@
 
           <!-- Color Swatches Input -->
           <div class="space-y-2">
-            <label class="text-xs font-semibold text-muted-foreground">Brand Color Palette (HEX)</label>
+            <label class="text-sm font-semibold text-muted-foreground">Brand Color Palette (HEX)</label>
             <div class="grid grid-cols-4 gap-2">
               <div>
-                <span class="text-[10px] text-muted-foreground">Primary</span>
-                <input type="text" bind:value={formPrimary} class="w-full px-2 py-1 text-xs font-mono rounded border border-border bg-background" />
+                <span class="text-xs font-semibold text-muted-foreground">Primary</span>
+                <input type="text" bind:value={formPrimary} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
               </div>
               <div>
-                <span class="text-[10px] text-muted-foreground">Secondary</span>
-                <input type="text" bind:value={formSecondary} class="w-full px-2 py-1 text-xs font-mono rounded border border-border bg-background" />
+                <span class="text-xs font-semibold text-muted-foreground">Secondary</span>
+                <input type="text" bind:value={formSecondary} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
               </div>
               <div>
-                <span class="text-[10px] text-muted-foreground">Dark</span>
-                <input type="text" bind:value={formDark} class="w-full px-2 py-1 text-xs font-mono rounded border border-border bg-background" />
+                <span class="text-xs font-semibold text-muted-foreground">Dark</span>
+                <input type="text" bind:value={formDark} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
               </div>
               <div>
-                <span class="text-[10px] text-muted-foreground">Accent</span>
-                <input type="text" bind:value={formAccent} class="w-full px-2 py-1 text-xs font-mono rounded border border-border bg-background" />
+                <span class="text-xs font-semibold text-muted-foreground">Accent</span>
+                <input type="text" bind:value={formAccent} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
               </div>
             </div>
           </div>

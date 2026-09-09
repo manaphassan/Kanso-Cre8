@@ -31,14 +31,20 @@ class AppStateStore {
   currentUser = $state<User>(DEFAULT_DESKTOP_CREATOR);
   currentRoute = $state<string>('dashboard');
   routeParams = $state<Record<string, any>>({});
-  private static readonly VALID_THEMES: ThemeName[] = ['falconia', 'metamorphosis', 'catppuccin'];
+  private static readonly VALID_THEMES: ThemeName[] = ['dark', 'light', 'eink', 'falconia', 'metamorphosis', 'catppuccin'];
   private static getStoredTheme(): ThemeName {
-    const stored = localStorage.getItem('ss_cam_theme') as ThemeName;
-    return AppStateStore.VALID_THEMES.includes(stored) ? stored : 'falconia';
+    const stored = localStorage.getItem('kanso_theme') || localStorage.getItem('ss_cam_theme');
+    if (stored && AppStateStore.VALID_THEMES.includes(stored as ThemeName)) {
+      if (stored === 'falconia') return 'dark';
+      return stored as ThemeName;
+    }
+    return 'dark';
   }
   theme = $state<ThemeName>(AppStateStore.getStoredTheme());
-  sidebarExpanded = $state<boolean>(true);
-  sidebarRail = $state<boolean>(false); // icon-only rail mode
+  sidebarExpanded = $state<boolean>(false); // Command-First default: 100% full canvas width
+  sidebarRail = $state<boolean>(false);
+  quickDrawerOpen = $state<boolean>(false);
+  viewSwitcherOpen = $state<boolean>(false);
   toasts = $state<ToastMessage[]>([]);
   isRescanning = $state<boolean>(false);
   globalSearch = $state<string>('');
@@ -55,26 +61,37 @@ class AppStateStore {
 
   setTheme(newTheme: ThemeName) {
     this.theme = newTheme;
+    localStorage.setItem('kanso_theme', newTheme);
     localStorage.setItem('ss_cam_theme', newTheme);
     this.applyTheme(newTheme);
+  }
+
+  cycleTheme() {
+    const sequence: ThemeName[] = ['dark', 'light', 'eink'];
+    const currentIdx = sequence.indexOf(this.theme);
+    const nextTheme = sequence[(currentIdx + 1) % sequence.length] || 'dark';
+    this.setTheme(nextTheme);
+    return nextTheme;
   }
 
   applyTheme(themeName: ThemeName) {
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', themeName);
+      if (themeName === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }
 
   toggleSidebar() {
-    if (typeof window !== 'undefined' && window.innerWidth < 900) {
-      this.sidebarExpanded = !this.sidebarExpanded;
-    } else {
-      this.sidebarExpanded = true;
-      this.sidebarRail = !this.sidebarRail;
-    }
+    this.quickDrawerOpen = !this.quickDrawerOpen;
+    this.sidebarExpanded = this.quickDrawerOpen;
   }
 
   expandSidebar() {
+    this.quickDrawerOpen = true;
     this.sidebarExpanded = true;
     this.sidebarRail = false;
   }

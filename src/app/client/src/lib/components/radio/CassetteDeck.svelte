@@ -154,12 +154,12 @@
             style="background: {station.labelColor}; color: #0F172A;"
           >
             <div class="flex items-center gap-2">
-              <span class="px-1.5 py-0.5 text-[9px] font-black rounded text-white" style="background: {station.shellColor};">
+              <span class="px-2 py-0.5 text-xs font-black rounded text-white" style="background: {station.shellColor};">
                 SIDE A
               </span>
-              <span class="text-xs font-bold">{station.name}</span>
+              <span class="text-sm font-bold">{station.name}</span>
             </div>
-            <span class="text-xs font-mono font-bold" style="color: {station.accentColor};">
+            <span class="text-sm font-mono font-bold" style="color: {station.accentColor};">
               {station.frequency}
             </span>
           </div>
@@ -207,7 +207,7 @@
           </div>
 
           <!-- High Bias text ribbon -->
-          <div class="w-full flex items-center justify-between px-3 text-[9px] text-white/40 font-mono tracking-widest mt-1">
+          <div class="w-full flex items-center justify-between px-3 text-xs text-white/40 font-mono tracking-widest mt-1">
             <span>● HIGH BIAS 70µs</span>
             <span>JAPAN TYPE II ●</span>
           </div>
