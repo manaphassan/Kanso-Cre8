@@ -1,6 +1,6 @@
 # Kanso Cre8 — Canonical Creative Vault Hierarchy Specification
 
-> **Standard Version**: 5.0.0-kanso  
+> **Standard Version**: 0.0.1-alpha  
 > **Product**: Kanso Cre8 (簡素)  
 > **Storage Paradigm**: Pure Markdown-as-Database (Zero SQL, SQLite, or proprietary binaries)  
 > **Interoperability**: 100% compliant with Obsidian, VS Code, and standard operating system file managers.
