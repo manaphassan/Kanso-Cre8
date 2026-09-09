@@ -1,4 +1,4 @@
-﻿# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
+# Kanso Cre8 — Master Ecosystem Specification & Brand Identity Guide
 
 > **Product**: Kanso Cre8  
 > **Author**: harusssani.manaphassan  
@@ -80,44 +80,48 @@ LIGHT MODE: Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accen
 ```text
 📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
-├── 📁 _Clients/                          # 🏢 Client Database (Profiles & Brand Assets)
-│   ├── 📁 ACME_AcmeCorp/
+├── 📁 _Clients/                          # 🏢 Client Dossiers (Profiles, Rates & Brand Assets)
+│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation · $125/hr)
 │   │   ├── 📄 client.md                 # YAML frontmatter: contacts, billing, palette, rates
 │   │   └── 📁 Assets/                   # SVG logos, fonts, brand guidelines PDF
-│   ├── 📁 NEX_NexusStudio/
+│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio · $110/hr)
 │   │   ├── 📄 client.md
 │   │   └── 📁 Assets/
-│   └── 📁 LUM_LuminaLabs/
+│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs · $140/hr)
 │       ├── 📄 client.md
 │       └── 📁 Assets/
 │
-├── 📁 _Finance/                          # 🧾 Financial Documents (Quotes & Invoices)
+├── 📁 _Finance/                          # 🧾 Cashflow Studio (Quotes & Invoices)
 │   ├── 📁 Quotes/
 │   │   └── 📄 QUOTE-2026-001_AcmeCorp_BrandSystem.md
 │   └── 📁 Invoices/
 │       ├── 📄 INV-2026-001_AcmeCorp_Deposit.md
 │       └── 📄 INV-2026-002_NexusStudio_LaunchDesign.md
 │
-├── 📁 _Zettelkasten/                     # 🧠 Knowledge Engine & Second Brain
-│   ├── 📁 01_Fleeting/                   # Raw quick captures (e.g. 20260909_call_notes.md)
-│   ├── 📁 02_Literature/                 # Design teardowns, book notes, competitor swipe files
-│   └── 📁 03_Permanent/                  # Atomic creative assets & formulas
-│       ├── 📄 hook_curiosity_gap.md
-│       ├── 📄 rule_60_30_10_color.md
-│       └── 📄 b2b_saas_hero_formula.md
+├── 📁 _Projects/                         # 📁 Standardized Project Vaults
+│   └── 📁 2026/                          # Project Vaults (Year / Month / Project)
+│       └── 📁 202609_September/
+│           └── 📁 202609_0001_ACME_MobileAppIllustration/
+│               ├── 📁 01_BRIEF/          # Client briefs, references, moodboards
+│               ├── 📁 02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
+│               ├── 📁 03_COPY/           # COPY.md (scripts, social hooks, specs)
+│               ├── 📁 04_WIP/            # Draft exports, test renders, review clips
+│               ├── 📁 05_DELIVERABLES/   # High-res exports ready for client handover
+│               └── 📄 README.md          # Project Master File (Status, Tasks, Milestones, Budget)
 │
-├── 📁 2026/                              # 📁 Project Vaults (Year / Month / Project)
-│   └── 📁 202609_September/
-│       └── 📁 202609_0001_ACME_MobileAppIllustration/
-│           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
-│           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
-│           ├── 📁 03_COPY/               # COPY.md (scripts, social hooks, specs)
-│           ├── 📁 04_WIP/                # Draft exports, test renders, review clips
-│           ├── 📁 05_DELIVERABLES/       # High-res exports ready for client handover
-│           └── 📄 README.md              # Project Master File (Status, Tasks, Milestones, Budget)
+├── 📁 _Journal/                          # 📔 Creator's BuJo (Bullet Journal System)
+│   ├── 📁 Daily/                         # Daily rapid logs (e.g. 2026-09-09.md)
+│   ├── 📁 Monthly/                       # Monthly reviews & billable reflections (2026-09.md)
+│   └── 📁 Yearly/                        # Annual vision & milestone reviews (2026.md)
 │
-└── 📁 _Notes/                            # 📝 Scratchpad
-    └── 📄 Scratchpad.md
+└── 📁 _Notes/                            # 🧠 Atelier Notes & Knowledge Engine
+    ├── 📁 01_Fleeting/                   # Raw quick captures (e.g. 20260909_call_notes.md)
+    ├── 📁 02_Literature/                 # Design teardowns, book notes, competitor swipe files
+    ├── 📁 03_Permanent/                  # Atomic creative assets & formulas
+    │   ├── 📄 hook_curiosity_gap.md
+    │   ├── 📄 rule_60_30_10_color.md
+    │   └── 📄 b2b_saas_hero_formula.md
+    └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
 ```
 
 ---
