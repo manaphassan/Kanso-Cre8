@@ -229,10 +229,10 @@
             class="w-full text-left p-3 rounded-lg border transition-all space-y-1.5 {activeNote?.id === note.id ? 'border-primary bg-primary/5 shadow-xs' : 'border-border/60 hover:bg-muted/30'}"
           >
             <div class="flex items-center justify-between gap-2">
-              <span class="font-semibold text-foreground text-xs line-clamp-1">
+              <span class="font-semibold text-foreground text-sm line-clamp-1">
                 {note.title}
               </span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded font-mono uppercase font-bold {note.type === 'permanent' ? 'bg-sky-500/10 text-sky-400' : note.type === 'fleeting' ? 'bg-amber-500/10 text-amber-400' : 'bg-purple-500/10 text-purple-400'}">
+              <span class="text-xs px-2 py-0.5 rounded font-mono uppercase font-bold {note.type === 'permanent' ? 'bg-sky-500/10 text-sky-400' : note.type === 'fleeting' ? 'bg-amber-500/10 text-amber-400' : 'bg-purple-500/10 text-purple-400'}">
                 {note.type}
               </span>
             </div>
@@ -240,17 +240,17 @@
             <!-- Tags & Client Pills -->
             <div class="flex items-center gap-1.5 flex-wrap">
               {#each note.tags as tag}
-                <span class="text-[9px] font-mono text-muted-foreground bg-muted/50 px-1 rounded">#{tag}</span>
+                <span class="text-xs font-mono text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">#{tag}</span>
               {/each}
               {#if note.linkedClients && note.linkedClients.length > 0}
-                <span class="text-[9px] font-mono text-primary bg-primary/10 px-1 rounded font-bold">
+                <span class="text-xs font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded font-bold">
                   {note.linkedClients[0]}
                 </span>
               {/if}
             </div>
 
             <!-- Preview Snippet -->
-            <p class="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+            <p class="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
               {note.content.replace(/^#+ .*/gm, '').trim()}
             </p>
           </button>
@@ -306,7 +306,7 @@
           <div class="space-y-4">
             <div class="grid grid-cols-3 gap-3">
               <div class="col-span-2 space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Note Title</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Note Title</label>
                 <input
                   type="text"
                   bind:value={editTitle}
@@ -314,10 +314,10 @@
                 />
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-semibold text-muted-foreground uppercase">Classification</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Classification</label>
                 <select
                   bind:value={editType}
-                  class="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs focus:outline-none focus:border-primary"
+                  class="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
                 >
                   <option value="permanent">Permanent (Atomic)</option>
                   <option value="fleeting">Fleeting (Capture)</option>
@@ -327,37 +327,37 @@
             </div>
 
             <div class="space-y-1">
-              <label class="text-[10px] font-semibold text-muted-foreground uppercase">Tags (comma separated)</label>
+              <label class="text-xs font-semibold text-muted-foreground uppercase">Tags (comma separated)</label>
               <input
                 type="text"
                 bind:value={editTags}
                 placeholder="copywriting, hooks, branding..."
-                class="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-xs font-mono focus:outline-none focus:border-primary"
+                class="w-full px-3 py-1.5 rounded-md border border-border bg-background text-foreground text-sm font-mono focus:outline-none focus:border-primary"
               />
             </div>
 
             <div class="space-y-1">
-              <label class="text-[10px] font-semibold text-muted-foreground uppercase">Markdown Content</label>
+              <label class="text-xs font-semibold text-muted-foreground uppercase">Markdown Content</label>
               <textarea
                 bind:value={editContent}
                 rows="14"
-                class="w-full p-4 rounded-lg border border-border bg-background text-foreground font-mono text-xs leading-relaxed focus:outline-none focus:border-primary"
+                class="w-full p-4 rounded-lg border border-border bg-background text-foreground font-mono text-sm leading-relaxed focus:outline-none focus:border-primary"
               ></textarea>
             </div>
           </div>
         {:else}
           <!-- Rendered View -->
           <div class="space-y-6">
-            <h2 class="text-xl font-bold text-foreground">{activeNote.title}</h2>
+            <h2 class="text-2xl font-bold text-foreground">{activeNote.title}</h2>
 
             <!-- WikiLinks & Client Intelligence Tray -->
             {#if (activeNote.linkedClients && activeNote.linkedClients.length > 0) || (activeNote.relatedLinks && activeNote.relatedLinks.length > 0)}
-              <div class="p-3 bg-muted/20 border border-border/50 rounded-lg flex items-center gap-4 text-xs">
+              <div class="p-3 bg-muted/20 border border-border/50 rounded-lg flex items-center gap-4 text-sm">
                 {#if activeNote.linkedClients && activeNote.linkedClients.length > 0}
                   <div class="flex items-center gap-1.5">
                     <span class="text-muted-foreground font-semibold">Client:</span>
                     {#each activeNote.linkedClients as clientLink}
-                      <span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono font-bold">
+                      <span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono font-bold text-xs">
                         {clientLink}
                       </span>
                     {/each}
@@ -368,7 +368,7 @@
                   <div class="flex items-center gap-1.5">
                     <span class="text-muted-foreground font-semibold">Connected Notes:</span>
                     {#each activeNote.relatedLinks as rel}
-                      <span class="px-2 py-0.5 rounded bg-muted/60 text-foreground font-mono text-[11px]">
+                      <span class="px-2 py-0.5 rounded bg-muted/60 text-foreground font-mono text-xs">
                         {rel}
                       </span>
                     {/each}
@@ -378,37 +378,37 @@
             {/if}
 
             <!-- Note Content -->
-            <div class="prose prose-invert max-w-none text-xs text-foreground/90 font-mono leading-relaxed whitespace-pre-wrap bg-background/50 p-6 rounded-lg border border-border/40">
+            <div class="prose prose-invert max-w-none text-sm text-foreground/90 font-mono leading-relaxed whitespace-pre-wrap bg-background/50 p-6 rounded-lg border border-border/40">
 {activeNote.content}
             </div>
 
             <!-- Extracted Actionable Tasks Section -->
             {#if activeNote.extractedTasks && activeNote.extractedTasks.length > 0}
               <div class="p-4 bg-muted/30 border border-border/60 rounded-xl space-y-3">
-                <h3 class="text-xs font-bold text-foreground flex items-center gap-2">
+                <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
                   <span class="text-emerald-500">✓</span>
                   Extracted Actionable Tasks ({activeNote.extractedTasks.filter(t => t.completed).length}/{activeNote.extractedTasks.length})
                 </h3>
 
                 <div class="space-y-2">
                   {#each activeNote.extractedTasks as task}
-                    <label class="flex items-center gap-3 p-2 bg-card rounded-lg border border-border/40 cursor-pointer hover:border-primary/40 transition-colors">
+                    <label class="flex items-center gap-3 p-2.5 bg-card rounded-lg border border-border/40 cursor-pointer hover:border-primary/40 transition-colors">
                       <input
                         type="checkbox"
                         checked={task.completed}
                         onchange={() => toggleTaskCompletion(task)}
                         class="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer"
                       />
-                      <span class="text-xs {task.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'} flex-1">
+                      <span class="text-sm {task.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'} flex-1">
                         {task.description}
                       </span>
                       {#if task.dueDate}
-                        <span class="text-[10px] font-mono text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
+                        <span class="text-xs font-mono text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">
                           📅 {task.dueDate}
                         </span>
                       {/if}
                       {#if task.priority === 'high'}
-                        <span class="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded font-bold">
+                        <span class="text-xs font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded font-bold">
                           ⏫ high
                         </span>
                       {/if}
@@ -504,7 +504,7 @@
 
         <div class="space-y-2">
           {#each allTasks as task}
-            <div class="p-3 bg-background border border-border/60 rounded-lg flex items-center justify-between gap-3 text-xs">
+            <div class="p-3 bg-background border border-border/60 rounded-lg flex items-center justify-between gap-3 text-sm">
               <div class="flex items-center gap-3 flex-1">
                 <input
                   type="checkbox"
@@ -516,14 +516,14 @@
                   <div class="{task.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}">
                     {task.description}
                   </div>
-                  <div class="text-[10px] text-muted-foreground font-mono mt-0.5">
+                  <div class="text-xs text-muted-foreground font-mono mt-0.5">
                     Source: <span class="text-primary">{task.sourceNoteTitle}</span>
                   </div>
                 </div>
               </div>
 
               {#if task.dueDate}
-                <span class="text-[10px] font-mono text-muted-foreground bg-muted/40 px-2 py-0.5 rounded">
+                <span class="text-xs font-mono text-muted-foreground bg-muted/40 px-2 py-0.5 rounded">
                   {task.dueDate}
                 </span>
               {/if}

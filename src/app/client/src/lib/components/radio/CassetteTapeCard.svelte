@@ -56,17 +56,17 @@
       <div class="flex items-center gap-2 overflow-hidden">
         <!-- Side A Badge -->
         <span
-          class="px-1.5 py-0.5 text-[9px] font-black rounded tracking-widest text-white shrink-0"
+          class="px-2 py-0.5 text-xs font-black rounded tracking-widest text-white shrink-0"
           style="background: {station.shellColor};"
         >
           SIDE A
         </span>
-        <span class="text-xs font-bold truncate leading-tight tracking-tight">
+        <span class="text-sm font-bold truncate leading-tight tracking-tight">
           {station.name}
         </span>
       </div>
       <span
-        class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0"
+        class="text-xs font-mono font-bold px-2 py-0.5 rounded shrink-0"
         style="background: {station.accentColor}22; color: {station.accentColor};"
       >
         {station.frequency}
@@ -130,18 +130,18 @@
 
   <!-- Note Card Meta Below Cassette -->
   <div class="w-full mt-2.5 px-1 flex flex-col gap-1">
-    <div class="flex items-center justify-between text-xs font-semibold">
+    <div class="flex items-center justify-between text-sm font-semibold">
       <span style="color: var(--kanso-text-primary);">{station.genre}</span>
       {#if isSelected && isPlaying}
-        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+        <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-400">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           PLAYING
         </span>
       {:else if isSelected}
-        <span class="text-[10px] font-mono text-zinc-400">LOADED</span>
+        <span class="text-xs font-mono text-zinc-400">LOADED</span>
       {/if}
     </div>
-    <p class="text-[11px] leading-relaxed line-clamp-2" style="color: var(--kanso-text-muted);">
+    <p class="text-xs leading-relaxed line-clamp-2" style="color: var(--kanso-text-muted);">
       {station.description}
     </p>
   </div>

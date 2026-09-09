@@ -41,31 +41,39 @@
 
   // Quick Action Commands
   const QUICK_ACTIONS: QuickAction[] = [
+    { type: 'action', id: 'nav-dashboard', label: 'Go to Studio Deck', icon: 'dashboard', category: 'Navigation (⌘1)', execute: () => appState.navigate('dashboard') },
+    { type: 'action', id: 'nav-projects', label: 'Open Project Vaults', icon: 'folder', category: 'Navigation (⌘2)', execute: () => appState.navigate('projects') },
+    { type: 'action', id: 'nav-journal', label: 'Open Bullet Journal (BuJo Rapid Log)', icon: 'calendar', category: 'Navigation (⌘3)', execute: () => appState.navigate('journal') },
+    { type: 'action', id: 'nav-review', label: 'Go to Review Queue', icon: 'checkCircle', category: 'Navigation (⌘4)', execute: () => appState.navigate('deliverables') },
+    { type: 'action', id: 'nav-invoices', label: 'Open Quotes & Invoices Studio', icon: 'document', category: 'Navigation (⌘5)', execute: () => appState.navigate('invoices') },
+    { type: 'action', id: 'nav-zettel', label: 'Open Atelier Notes & Knowledge', icon: 'document', category: 'Navigation (⌘6)', execute: () => appState.navigate('zettel') },
+    { type: 'action', id: 'nav-clients', label: 'Open Clients & Brands Hub', icon: 'users', category: 'Navigation (⌘7)', execute: () => appState.navigate('clients') },
+    { type: 'action', id: 'nav-radio', label: 'Open Focus Radio & Cassette Deck', icon: 'colorPalette', category: 'Navigation (⌘8)', execute: () => appState.navigate('radio') },
+    { type: 'action', id: 'nav-admin', label: 'Open Studio Settings & Cloud', icon: 'settings', category: 'Governance (⌘9)', execute: () => appState.navigate('admin') },
     { type: 'action', id: 'nav-ai', label: 'Open Creative AI Studio (Gemini Assistant)', icon: 'sparkles', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
-    { type: 'action', id: 'nav-dashboard', label: 'Go to Dashboard', icon: 'dashboard', category: 'Navigation', execute: () => appState.navigate('dashboard') },
-    { type: 'action', id: 'nav-projects', label: 'Open Project Manager', icon: 'folder', category: 'Navigation', execute: () => appState.navigate('projects') },
-    { type: 'action', id: 'nav-review', label: 'Go to Review Queue', icon: 'checkCircle', category: 'Navigation', execute: () => appState.navigate('deliverables') },
-    { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Navigation', execute: () => appState.navigate('team') },
-    { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: 'edit', category: 'Navigation', execute: () => appState.navigate('copy-studio') },
-    { type: 'action', id: 'nav-admin', label: 'Open Studio Administration', icon: 'settings', category: 'Governance', execute: () => appState.navigate('admin') },
-    { type: 'action', id: 'nav-journal', label: 'Open Bullet Journal (BuJo Rapid Log)', icon: 'calendar', category: 'Navigation', execute: () => appState.navigate('journal') },
-    { type: 'action', id: 'act-theme', label: 'Toggle Theme (Studio Light / Zen Dark)', icon: 'colorPalette', category: 'System', execute: () => toggleTheme() },
+    { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Operations', execute: () => appState.navigate('team') },
+    { type: 'action', id: 'theme-dark', label: 'Switch to Dark Theme (Studio Obsidian)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('dark') },
+    { type: 'action', id: 'theme-light', label: 'Switch to Light Theme (Atelier Paper)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('light') },
+    { type: 'action', id: 'theme-eink', label: 'Switch to E-Ink Theme (Zen Monochrome)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('eink') },
+    { type: 'action', id: 'act-theme', label: 'Cycle Theme (Dark → Light → E-Ink)', icon: 'colorPalette', category: 'Theme', execute: () => toggleTheme() },
     { type: 'action', id: 'act-rescan', label: 'Rescan Markdown Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
     { type: 'action', id: 'act-download', label: 'Download Kanso Cre8 Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://github.com/manaphassan/Kanso-Cre8/releases', '_blank') },
   ];
 
+  function setAppTheme(theme: 'dark' | 'light' | 'eink') {
+    appState.setTheme(theme);
+    const names = { dark: 'Studio Obsidian (Dark)', light: 'Atelier Paper (Light)', eink: 'Zen Monochrome (E-Ink)' };
+    appState.addToast(`Theme set to ${names[theme]}`, 'info');
+  }
+
   function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') || 'falconia';
-    const validThemes = ['falconia', 'metamorphosis', 'catppuccin'] as const;
-    const idx = validThemes.indexOf(current as any);
-    const next = validThemes[(idx + 1) % validThemes.length];
-    document.documentElement.setAttribute('data-theme', next);
-    appState.setTheme(next as any);
-    appState.addToast(`Theme switched to ${next.charAt(0).toUpperCase() + next.slice(1)}`, 'info');
+    const next = appState.cycleTheme();
+    const names: Record<string, string> = { dark: 'Studio Obsidian (Dark)', light: 'Atelier Paper (Light)', eink: 'Zen Monochrome (E-Ink)' };
+    appState.addToast(`Theme switched to ${names[next] || next}`, 'info');
   }
 
   function rescanVault() {
-    appState.addToast('Rescanning Synology NAS workspace...', 'info');
+    appState.addToast('Rescanning workspace markdown vault...', 'info');
     projectStore.loadProjects();
     projectStore.loadDashboard();
   }
@@ -442,23 +450,23 @@
   }
 
   .badge-brand {
-    font-size: 10px;
+    font-size: 12.5px;
     font-weight: 800;
-    padding: 2px 5px;
+    padding: 3px 7px;
     border-radius: 4px;
     background: var(--brand-primary, #043388);
     color: #FFFFFF;
   }
 
   .job-id-tag {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #21A1F7;
     font-family: monospace;
   }
 
   .item-title {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     color: #F8FAFC;
     overflow: hidden;
@@ -467,16 +475,16 @@
   }
 
   .hex-badge {
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 700;
-    padding: 2px 6px;
+    padding: 2px 7px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 4px;
     color: #38BDF8;
   }
 
   .result-sub {
-    font-size: 11px;
+    font-size: 13.5px;
     color: #94A3B8;
     display: flex;
     align-items: center;
@@ -484,11 +492,11 @@
   }
 
   .status-pill {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 1px 5px;
-    border-radius: 3px;
+    padding: 2px 7px;
+    border-radius: 4px;
   }
 
   .status-in-progress { background: rgba(0, 120, 212, 0.2); color: #60A5FA; }
@@ -497,7 +505,7 @@
   .status-approved, .status-done { background: rgba(16, 185, 129, 0.2); color: #34D399; }
 
   .action-shortcut {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #64748B;
     opacity: 0;
@@ -526,7 +534,7 @@
   }
 
   .empty-hint {
-    font-size: 11px;
+    font-size: 13px;
     color: #64748B;
     margin-top: 4px;
   }
@@ -542,28 +550,28 @@
   .palette-footer {
     display: flex;
     align-items: center;
-    padding: 8px 16px;
+    padding: 10px 16px;
     background: rgba(11, 17, 33, 0.95);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     gap: 16px;
-    font-size: 11px;
-    color: #64748B;
+    font-size: 13px;
+    color: #94A3B8;
   }
 
   .footer-tip {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
   }
 
   .footer-tip kbd {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 3px;
-    padding: 1px 5px;
-    font-size: 10px;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 12px;
     font-family: inherit;
-    color: #94A3B8;
+    color: #CBD5E1;
   }
 
   .footer-sync {

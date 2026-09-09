@@ -2,7 +2,7 @@
  * Core Type Definitions for Kanso Cre8 Desktop Application (Svelte 5)
  */
 
-export type ThemeName = 'falconia' | 'metamorphosis' | 'catppuccin';
+export type ThemeName = 'dark' | 'light' | 'eink' | 'falconia' | 'metamorphosis' | 'catppuccin';
 
 export interface User {
   id: string;
