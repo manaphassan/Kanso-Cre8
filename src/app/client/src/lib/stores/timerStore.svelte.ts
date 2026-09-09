@@ -75,8 +75,17 @@ class TimerStore {
   });
 
   formattedEarned = $derived.by(() => {
-    const symbol = settingsStore.settings.currencySymbol || '$';
-    return `+${symbol}${this.earnedAmount.toFixed(2)}`;
+    const symbol = settingsStore?.settings?.currencySymbol || '$';
+    return `+${symbol}${(this.earnedAmount || 0).toFixed(2)}`;
+  });
+
+  // Template aliases
+  earnings = $derived.by(() => {
+    return this.earnedAmount || 0;
+  });
+
+  elapsedFormatted = $derived.by(() => {
+    return this.formattedTime || '00:00:00';
   });
 
   constructor() {
