@@ -178,6 +178,73 @@
       execute: () => radioService.toggle()
     },
 
+    // Studio Theme Switching (Kai-Zen / Dark / Light / E-Ink)
+    {
+      type: 'action',
+      id: 'theme-oceanic',
+      label: 'Switch Theme: Kai-Zen (海禅 — Oceanic Cerulean)',
+      sublabel: 'Deep Ocean #064169 with vibrant Cerulean #21A8C3 & Poppins typography',
+      icon: 'sparkles',
+      badge: 'Theme',
+      category: 'Appearance',
+      execute: () => {
+        appState.setTheme('oceanic');
+        appState.addToast('Switched to Kai-Zen (海禅 Oceanic Zen)', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-oceanic-light',
+      label: 'Switch Theme: Kai-Zen Daylight (Marina White)',
+      sublabel: 'Light blue-grey #F0F4F8 with Cerulean #21A8C3 & Ocean Navy titles',
+      icon: 'sparkles',
+      badge: 'Theme',
+      category: 'Appearance',
+      execute: () => {
+        appState.setTheme('oceanic-light');
+        appState.addToast('Switched to Kai-Zen Daylight', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-dark',
+      label: 'Switch Theme: Vorxs Olive Obsidian (Dark)',
+      sublabel: 'Organic olive obsidian canvas with tactical terracotta pops',
+      icon: 'colorPalette',
+      badge: 'Theme',
+      category: 'Appearance',
+      execute: () => {
+        appState.setTheme('dark');
+        appState.addToast('Switched to Vorxs Dark Mode', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-light',
+      label: 'Switch Theme: Vorxs Stone Paper (Light)',
+      sublabel: 'Scandinavian raw stone paper canvas with deep charcoal ink',
+      icon: 'colorPalette',
+      badge: 'Theme',
+      category: 'Appearance',
+      execute: () => {
+        appState.setTheme('light');
+        appState.addToast('Switched to Vorxs Light Mode', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-eink',
+      label: 'Switch Theme: Zen Monochrome (E-Ink)',
+      sublabel: 'Zero-eyestrain warm pulp paper with high-contrast ink borders',
+      icon: 'colorPalette',
+      badge: 'Theme',
+      category: 'Appearance',
+      execute: () => {
+        appState.setTheme('eink');
+        appState.addToast('Switched to Zen E-Ink Mode', 'success');
+      }
+    },
+
     // Strict Ascending Navigation (⌘1 to ⌘9)
     {
       type: 'nav',
