@@ -728,17 +728,17 @@
 
   .badge-zen {
     font-family: ui-monospace, monospace;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--kanso-accent, #38BDF8);
     background: rgba(56, 189, 248, 0.1);
     border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
 
   .meta-txt {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--kanso-text-muted, #71717A);
   }
 
@@ -751,7 +751,7 @@
   }
 
   .page-desc {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--kanso-text-muted, #71717A);
     margin: 4px 0 0 0;
   }
@@ -772,7 +772,7 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
     background: transparent;
@@ -831,7 +831,7 @@
   }
 
   .file-path-hint {
-    font-size: 10px;
+    font-size: 12px;
     font-family: ui-monospace, monospace;
     color: var(--kanso-text-muted, #71717A);
   }
@@ -843,8 +843,8 @@
   }
 
   .today-btn {
-    padding: 4px 10px;
-    font-size: 11px;
+    padding: 4px 12px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--kanso-text-primary, #F4F4F5);
     background: rgba(255, 255, 255, 0.06);
@@ -858,8 +858,8 @@
   }
 
   .raw-toggle-btn {
-    padding: 4px 10px;
-    font-size: 11px;
+    padding: 4px 12px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--kanso-text-muted, #71717A);
     background: transparent;
@@ -1393,17 +1393,17 @@
   }
 
   .cdist-pct {
-    font-size: 11px;
+    font-size: 12px;
     font-family: ui-monospace, monospace;
     font-weight: 700;
     background: rgba(56, 189, 248, 0.12);
     color: var(--kanso-accent, #38BDF8);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
 
   .cdist-name {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--kanso-text-primary, #F4F4F5);
     font-weight: 600;
   }
@@ -1411,7 +1411,7 @@
   .cdist-footer {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
     margin-top: 4px;
     padding-top: 4px;

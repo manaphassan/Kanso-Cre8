@@ -938,7 +938,7 @@
   }
 
   .kpi-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -959,13 +959,13 @@
   }
 
   .kpi-sub {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-secondary);
     font-weight: 600;
   }
 
   .kpi-footnote {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-tertiary);
     margin-top: 2px;
   }
@@ -1197,10 +1197,10 @@
     gap: 4px;
     background: var(--surface-card-subtle);
     border: 1px solid var(--surface-card-border);
-    padding: 1px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-secondary);
     cursor: pointer;
@@ -1220,7 +1220,7 @@
   }
 
   .role-pill {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--brand-primary);
     background: rgba(4, 51, 136, 0.08);
@@ -1232,7 +1232,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-tertiary);
     margin-top: 4px;
   }
@@ -1250,7 +1250,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     padding: 3px 8px;
     border-radius: 9999px;
@@ -1278,7 +1278,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
+    font-size: 12px;
     margin-bottom: 5px;
   }
 
@@ -1385,7 +1385,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-tertiary);
     text-transform: uppercase;
@@ -1395,7 +1395,7 @@
 
   .assigned-more {
     color: var(--brand-accent);
-    font-size: 10.5px;
+    font-size: 12px;
   }
 
   .projects-chip-list {
@@ -1435,7 +1435,7 @@
   }
 
   .chip-brand {
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 800;
     color: var(--brand-accent, #21A1F7);
     letter-spacing: 0.2px;
@@ -1443,7 +1443,7 @@
 
   .chip-job {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     color: var(--text-primary);
   }
@@ -1661,8 +1661,8 @@
     border: 1px solid rgba(245, 158, 11, 0.3);
     color: #F59E0B;
     border-radius: 4px;
-    padding: 3px 6px;
-    font-size: 11px;
+    padding: 3px 8px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -1718,7 +1718,7 @@
   }
 
   .reassign-field { display: flex; flex-direction: column; gap: 6px; }
-  .field-label { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
+  .field-label { font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
   .field-input, .field-select {
     background: #1E293B;
     border: 1px solid rgba(255, 255, 255, 0.15);

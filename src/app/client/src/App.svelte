@@ -487,58 +487,19 @@
             </svg>
           </button>
 
-          <!-- User Dropdown -->
-          <div class="user-menu-wrapper">
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <div
-              class="user-chip"
-              onclick={(e) => { e.stopPropagation(); appState.userMenuOpen = !appState.userMenuOpen; }}
-              onkeydown={(e) => e.key === 'Enter' && (appState.userMenuOpen = !appState.userMenuOpen)}
-              role="button"
-              tabindex="0"
-              aria-haspopup="menu"
-              aria-expanded={appState.userMenuOpen}
-            >
-              <div class="user-avatar" style="background: {appState.currentUser?.avatarColor || 'var(--brand-gradient)'};">
-                {#if appState.currentUser?.avatar}
-                  <img src={appState.currentUser.avatar} alt={appState.currentUser.name} class="avatar-photo" />
-                {:else}
-                  <span>{userInitial}</span>
-                {/if}
-              </div>
-              <div class="user-info">
-                <span class="user-name">{appState.currentUser?.name ?? 'User'}</span>
-                <span class="user-role-label">{appState.currentUser?.role}</span>
-              </div>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="chevron" class:open={appState.userMenuOpen} aria-hidden="true">
-                <path d="M7 10l5 5 5-5z"/>
-              </svg>
-            </div>
-
-            {#if appState.userMenuOpen}
-              <!-- svelte-ignore a11y_no_static_element_interactions -->
-              <div class="user-dropdown" role="menu" onclick={(e) => e.stopPropagation()}>
-                <div class="dd-header">
-                  <div class="dd-avatar" style="background: {appState.currentUser?.avatarColor || 'var(--brand-gradient)'};">
-                    {#if appState.currentUser?.avatar}
-                      <img src={appState.currentUser.avatar} alt={appState.currentUser.name} class="avatar-photo" />
-                    {:else}
-                      <span>{userInitial}</span>
-                    {/if}
-                  </div>
-                  <div>
-                    <div class="dd-name">{appState.currentUser?.name}</div>
-                    <div class="dd-meta">{appState.currentUser?.staffId} · {appState.currentUser?.role}</div>
-                  </div>
-                </div>
-                <div class="dd-divider"></div>
-                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('settings'); }} role="menuitem">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-                  Settings &amp; Preferences
-                </button>
-              </div>
-            {/if}
-          </div>
+          <!-- Settings Quick Action (⌘9) -->
+          <button
+            class="header-settings-btn"
+            class:active={appState.currentRoute === 'settings'}
+            onclick={() => appState.navigate('settings')}
+            title="Studio Settings & Workspace Preferences (⌘9)"
+            aria-label="Settings"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>
+            </svg>
+            <span class="settings-btn-label">Settings</span>
+          </button>
         </div>
       </header>
 
@@ -1100,109 +1061,35 @@
   }
   .vault-link:hover { background: #dbeeff; }
 
-  /* User Menu */
-  .user-menu-wrapper { position: relative; }
-  .user-chip {
-    display: flex;
+  /* Header Settings Action */
+  .header-settings-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 10px 4px 4px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background .14s;
-    border: 1px solid transparent;
-  }
-  .user-chip:hover { background: var(--surface-card-hover); border-color: var(--surface-card-border); }
-  .user-avatar {
-    width: 32px;
+    gap: 7px;
     height: 32px;
-    border-radius: 50%;
-    background: var(--brand-gradient);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-  .avatar-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .user-info  { display: flex; flex-direction: column; }
-  .user-name  { font-size: 12.5px; font-weight: 700; color: var(--text-primary); white-space: nowrap; }
-  .user-role-label { font-size: 10.5px; color: var(--text-tertiary); white-space: nowrap; }
-  .chevron { color: var(--text-tertiary); transition: transform .2s; flex-shrink: 0; }
-  .chevron.open { transform: rotate(180deg); }
-
-  .user-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: 10px;
-    box-shadow: var(--shadow-xl);
-    min-width: 220px;
-    z-index: 500;
-    overflow: hidden;
-    animation: dropIn .15s ease;
-  }
-  @keyframes dropIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .dd-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    background: var(--bg-app);
-  }
-  .dd-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--brand-gradient);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-  .dd-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
-  .dd-meta { font-size: 11px; color: var(--text-secondary); }
-  .dd-divider { height: 1px; background: var(--surface-card-border); }
-  .dd-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 14px;
-    border: none;
-    background: none;
-    font-size: 13px;
+    padding: 0 12px;
+    border-radius: 6px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-primary);
     cursor: pointer;
-    text-align: left;
-    transition: background .12s;
-    font-family: inherit;
+    transition: all 0.15s ease;
   }
-  .dd-item:hover { background: var(--surface-card-hover); }
-  .dd-item.danger { color: var(--color-danger); }
-  .dd-item.danger:hover { background: var(--color-danger-bg); }
+  .header-settings-btn:hover {
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .header-settings-btn.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
+  }
+  .settings-btn-label {
+    letter-spacing: -0.1px;
+  }
 
   /* ═══ PAGE BODY ═════════════════════════════════════════════════ */
   .page-body {
