@@ -123,6 +123,7 @@ export interface Project {
   isOverdue?: boolean;
   isDueSoon?: boolean;
   daysRemaining?: number | null;
+  progress?: number;
   tags: string[];
   folderPath?: string;
   fullPath?: string;
@@ -317,6 +318,7 @@ export interface TeamMember {
   roles?: string[];
   department: string;
   defaultBrand?: string;
+  avatar?: string;
   avatarColor?: string;
   active?: boolean;
   workload: {

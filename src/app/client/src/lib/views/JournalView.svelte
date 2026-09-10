@@ -886,7 +886,7 @@
     }
   }
 
-  .intentions-card, .rapid-log-card, .review-card, .raw-card {
+  .intentions-card, .rapid-log-card, .raw-card {
     background: var(--kanso-surface, #18181B);
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 12px;
@@ -1125,110 +1125,6 @@
     padding: 14px;
     outline: none;
     box-sizing: border-box;
-  }
-
-  /* Review Card Styles */
-  .review-panel-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .review-sections-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin: 16px 0;
-  }
-
-  @media (min-width: 768px) {
-    .review-sections-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  .rsection-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--kanso-text-muted, #71717A);
-    margin: 0 0 8px 0;
-  }
-
-  .rlist {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .rlist-item {
-    background: #09090B;
-    border: 1px solid var(--kanso-border, #27272A);
-    border-radius: 6px;
-    padding: 9px 12px;
-    font-size: 14px;
-    color: var(--kanso-text-primary, #F4F4F5);
-  }
-
-  .hours-val-display {
-    background: #09090B;
-    border: 1px solid var(--kanso-border, #27272A);
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .hval {
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--kanso-accent, #38BDF8);
-  }
-
-  .hval-sub {
-    font-size: 12.5px;
-    color: var(--kanso-text-muted, #71717A);
-  }
-
-  .reflection-textarea {
-    width: 100%;
-    background: #09090B;
-    border: 1px solid var(--kanso-border, #27272A);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 14px;
-    color: #F4F4F5;
-    outline: none;
-    box-sizing: border-box;
-    margin-top: 4px;
-  }
-
-  .reflection-textarea:focus {
-    border-color: var(--kanso-accent, #38BDF8);
-  }
-
-  .card-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--kanso-border, #27272A);
-  }
-
-  .save-btn {
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
-    border: 1px solid var(--kanso-accent, #38BDF8);
-    border-radius: 6px;
-    font-size: 13.5px;
-    font-weight: 700;
-    padding: 8px 16px;
-    cursor: pointer;
-  }
-
-  .save-btn:hover {
-    filter: brightness(1.1);
   }
 
   /* Telemetry Bento Grid */

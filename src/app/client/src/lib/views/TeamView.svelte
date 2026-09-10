@@ -792,7 +792,7 @@
         </div>
 
         <div class="reassign-footer">
-          <FluentButton appearance="subtle" onclick={() => (showReassignModal = false)}>Cancel</FluentButton>
+          <FluentButton appearance="secondary" onclick={() => (showReassignModal = false)}>Cancel</FluentButton>
           <FluentButton appearance="primary" loading={isReassigning} onclick={handleConfirmReassign}>
             <FluentIcons name="sparkles" size={13} />
             <span style="margin-left: 5px;">Confirm Reassignment</span>
@@ -1471,6 +1471,7 @@
     word-break: break-word;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
