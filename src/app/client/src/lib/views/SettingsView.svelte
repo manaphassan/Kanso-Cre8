@@ -1090,9 +1090,9 @@
   }
 
   .theme-tag {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.08);
     color: var(--kanso-text-muted);
