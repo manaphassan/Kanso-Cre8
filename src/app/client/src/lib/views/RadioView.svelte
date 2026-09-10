@@ -13,99 +13,200 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="flex flex-col gap-6 p-6 w-full max-w-6xl mx-auto">
+<div class="radio-page-container">
   <!-- Page Header -->
-  <div class="flex flex-col gap-2 border-b pb-5" style="border-color: var(--kanso-border);">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0"
-          style="
-            background: var(--kanso-surface);
-            border-color: var(--kanso-border);
-            color: var(--kanso-accent);
-          "
-        >
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="6" width="20" height="12" rx="2" />
-            <circle cx="8" cy="12" r="2.5" />
-            <circle cx="16" cy="12" r="2.5" />
-            <path d="M8 14.5h8" />
-          </svg>
+  <header class="radio-page-header">
+    <div class="header-left">
+      <div class="header-icon-box">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+          <circle cx="8" cy="12" r="2.5" />
+          <circle cx="16" cy="12" r="2.5" />
+          <path d="M8 14.5h8" />
+        </svg>
+      </div>
+      <div class="header-text-block">
+        <div class="header-title-row">
+          <h1 class="header-title">Focus Radio & Cassette Deck</h1>
+          <span class="header-badge">HI-FI ATELIER</span>
         </div>
-        <div>
-          <div class="flex items-center gap-2.5">
-            <h1 class="text-2xl font-bold tracking-tight" style="color: var(--kanso-text-primary);">
-              Focus Radio & Cassette Deck
-            </h1>
-            <span
-              class="px-2.5 py-0.5 rounded-md text-xs font-mono font-bold tracking-wider uppercase border"
-              style="
-                background: rgba(222, 105, 75, 0.12);
-                color: var(--kanso-accent);
-                border-color: rgba(222, 105, 75, 0.25);
-              "
-            >
-              HI-FI ATELIER
-            </span>
-          </div>
-          <p class="text-sm mt-0.5" style="color: var(--kanso-text-muted);">
-            Tactile mechanical cassette deck streaming curated lo-fi beats, synthwave, and ambient soundscapes.
-          </p>
-        </div>
+        <p class="header-subtitle">
+          Tactile mechanical cassette deck streaming curated lo-fi beats, synthwave, and ambient soundscapes.
+        </p>
       </div>
     </div>
-  </div>
+  </header>
 
   <!-- The Cassette Deck & Rack -->
   <CassetteDeck />
 
   <!-- Studio Hotkeys Footer Guide -->
-  <div
-    class="flex flex-wrap items-center justify-between gap-4 px-4 py-3 rounded-xl border text-xs font-mono"
-    style="
-      background: var(--kanso-surface);
-      border-color: var(--kanso-border);
-      color: var(--kanso-text-muted);
-    "
-  >
-    <div class="flex items-center gap-4">
-      <span class="inline-flex items-center gap-1.5">
-        <kbd
-          class="px-2 py-0.5 rounded text-xs font-mono font-semibold border shadow-sm"
-          style="
-            background: var(--kanso-surface-hover);
-            border-color: var(--kanso-border);
-            color: var(--kanso-text-primary);
-          "
-        >Space</kbd>
+  <footer class="radio-hotkeys-footer">
+    <div class="hotkeys-left">
+      <span class="hotkey-item">
+        <kbd class="hotkey-kbd">Space</kbd>
         <span>Play / Pause</span>
       </span>
-      <span class="inline-flex items-center gap-1.5">
-        <kbd
-          class="px-2 py-0.5 rounded text-xs font-mono font-semibold border shadow-sm"
-          style="
-            background: var(--kanso-surface-hover);
-            border-color: var(--kanso-border);
-            color: var(--kanso-text-primary);
-          "
-        >Next</kbd>
+      <span class="hotkey-item">
+        <kbd class="hotkey-kbd">Next</kbd>
         <span>Next Tape</span>
       </span>
-      <span class="inline-flex items-center gap-1.5">
-        <kbd
-          class="px-2 py-0.5 rounded text-xs font-mono font-semibold border shadow-sm"
-          style="
-            background: var(--kanso-surface-hover);
-            border-color: var(--kanso-border);
-            color: var(--kanso-text-primary);
-          "
-        >Prev</kbd>
+      <span class="hotkey-item">
+        <kbd class="hotkey-kbd">Prev</kbd>
         <span>Previous Tape</span>
       </span>
     </div>
-    <span class="text-xs font-mono" style="color: var(--kanso-text-muted);">
+    <span class="footer-meta">
       Kanso Zen Focus Engine · Zero-Latency Web Audio Stream
     </span>
-  </div>
+  </footer>
 </div>
+
+<style>
+  .radio-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .radio-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid var(--kanso-border);
+    padding-bottom: 20px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-accent);
+    flex-shrink: 0;
+  }
+
+  .header-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--kanso-text-primary);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .header-badge {
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: rgba(222, 105, 75, 0.12);
+    color: var(--kanso-accent);
+    border: 1px solid rgba(222, 105, 75, 0.25);
+  }
+
+  .header-subtitle {
+    font-size: 14px;
+    color: var(--kanso-text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .radio-hotkeys-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-muted);
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .hotkeys-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hotkey-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--kanso-text-muted);
+  }
+
+  .hotkey-kbd {
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .footer-meta {
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    color: var(--kanso-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .radio-page-container {
+      padding: 16px;
+      gap: 16px;
+    }
+    .header-title {
+      font-size: 20px;
+    }
+    .radio-hotkeys-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+</style>
