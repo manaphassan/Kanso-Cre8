@@ -1,10 +1,17 @@
 <script lang="ts">
   import { radioService, ALL_CASSETTE_STATIONS } from '$lib/services/radioService.svelte';
+  import { ambientAudioService } from '$lib/services/ambientAudioService';
+  import AnalogVuMeter from './AnalogVuMeter.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
   import CassetteTapeCard from './CassetteTapeCard.svelte';
 
   const station = $derived(radioService.currentStation);
   const state = $derived(radioService.state);
+  const reelProgress = $derived(radioService.reelProgress);
+
+  // Dynamic reel diameters based on listening session progress (winding from left to right)
+  const leftTapeDiameter = $derived(Math.round(56 + (1.0 - reelProgress) * 32));
+  const rightTapeDiameter = $derived(Math.round(56 + reelProgress * 32));
 
   // Focus Timer state (25min Pomodoro)
   let pomodoroSeconds = $state(25 * 60);
@@ -77,6 +84,11 @@
     pomodoroSeconds = 25 * 60;
   }
 
+  function handleFlipSide() {
+    playMechanicalClick();
+    radioService.flipTapeSide();
+  }
+
   const timerFormatted = $derived.by(() => {
     const mins = Math.floor(pomodoroSeconds / 60).toString().padStart(2, '0');
     const secs = (pomodoroSeconds % 60).toString().padStart(2, '0');
@@ -87,40 +99,40 @@
 <div class="deck-wrapper">
   <!-- ════ MAIN MECHANICAL CASSETTE DECK CONSOLE ════ -->
   <div class="deck-main-card">
-    <!-- Top Deck Header: Frequency Tuner & Status -->
+    <!-- Top Deck Header: Power, Tuner & Dual Analog VU Meters -->
     <div class="deck-top-bar">
-      <!-- Vintage Power LED -->
-      <div class="power-indicator">
-        <span
-          class="power-led"
-          style="
-            background: {state.isPlaying ? '#8FA683' : '#71717A'};
-            box-shadow: {state.isPlaying ? '0 0 10px rgba(143, 166, 131, 0.7)' : 'none'};
-          "
-        ></span>
-        <span class="power-label">
-          {state.isPlaying ? 'HI-FI STEREO // 33 RPM MOTOR ACTIVE' : 'STANDBY // MOTOR IDLE'}
-        </span>
-      </div>
-
-      <!-- Center Tuner Readout -->
-      <div class="tuner-box">
-        <span class="tuner-tag">TUNER</span>
-        <span class="tuner-freq">{station.frequency}</span>
-        <span class="tuner-genre">{station.genre}</span>
-      </div>
-
-      <!-- Live Track & VU Equalizer -->
-      <div class="marquee-box">
-        <div class="vu-meter-bars" aria-hidden="true">
-          <span class="vu-bar {state.isPlaying ? 'vu-bar-1' : ''}"></span>
-          <span class="vu-bar {state.isPlaying ? 'vu-bar-2' : ''}"></span>
-          <span class="vu-bar {state.isPlaying ? 'vu-bar-3' : ''}"></span>
-          <span class="vu-bar {state.isPlaying ? 'vu-bar-4' : ''}"></span>
+      <!-- Left: Vintage Power LED & Station Tuner -->
+      <div class="top-bar-left">
+        <div class="power-indicator">
+          <span
+            class="power-led"
+            style="
+              background: {state.isPlaying ? '#8FA683' : '#71717A'};
+              box-shadow: {state.isPlaying ? '0 0 10px rgba(143, 166, 131, 0.7)' : 'none'};
+            "
+          ></span>
+          <span class="power-label">
+            {state.isPlaying ? 'HI-FI 33 RPM MOTOR ACTIVE' : 'MOTOR IDLE // STANDBY'}
+          </span>
         </div>
-        <span class="track-title-text" title={state.currentTrackTitle}>
-          {state.currentTrackTitle}
-        </span>
+
+        <div class="tuner-box">
+          <span class="tuner-tag">TUNER</span>
+          <span class="tuner-freq">{station.frequency}</span>
+          <span class="tuner-genre">{station.genre}</span>
+        </div>
+
+        <div class="marquee-box">
+          <span class="tape-disc-icon">♫</span>
+          <span class="track-title-text" title={state.currentTrackTitle}>
+            {state.currentTrackTitle}
+          </span>
+        </div>
+      </div>
+
+      <!-- Right: Dual Backlit Analog Needle VU Meters -->
+      <div class="top-bar-right">
+        <AnalogVuMeter isPlaying={state.isPlaying} volume={state.volume} />
       </div>
     </div>
 
@@ -145,7 +157,15 @@
             style="background: {station.labelColor}; color: #151813;"
           >
             <div class="sticker-left">
-              <span class="sticker-side" style="background: {station.shellColor};">SIDE A</span>
+              <button
+                type="button"
+                class="sticker-side"
+                style="background: {station.shellColor};"
+                onclick={handleFlipSide}
+                title="Click to Flip to Side {state.tapeSide === 'A' ? 'B' : 'A'}"
+              >
+                SIDE {state.tapeSide} ⮂
+              </button>
               <span class="sticker-name">{station.name}</span>
             </div>
             <span class="sticker-freq" style="color: {station.accentColor};">
@@ -153,7 +173,7 @@
             </span>
           </div>
 
-          <!-- Giant Acrylic Tape Window -->
+          <!-- Giant Acrylic Tape Window with Dynamic Reel Tape Thickness -->
           <div class="acrylic-window">
             <!-- Magnetic Brown Tape Ribbon Strip -->
             <div class="tape-ribbon">
@@ -166,18 +186,33 @@
               </div>
             </div>
 
-            <!-- Left Spool Wheel (33 RPM rotating) -->
+            <!-- Left Spool Wheel with Dynamic Wound Tape Roll -->
             <div class="spool-slot">
+              <div
+                class="tape-roll-disc"
+                style="width: {leftTapeDiameter}px; height: {leftTapeDiameter}px;"
+                title="Supply Reel ({Math.round((1 - reelProgress) * 100)}% remaining)"
+              ></div>
               <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
 
-            <!-- Right Spool Wheel (33 RPM rotating) -->
+            <!-- Center Reel Tape Migration Meter -->
+            <div class="reel-migration-meter" title="Tape Migration ({Math.round(reelProgress * 100)}% wound)">
+              <div class="migration-bar-fill" style="width: {reelProgress * 100}%;"></div>
+            </div>
+
+            <!-- Right Spool Wheel with Dynamic Wound Tape Roll -->
             <div class="spool-slot">
+              <div
+                class="tape-roll-disc"
+                style="width: {rightTapeDiameter}px; height: {rightTapeDiameter}px;"
+                title="Take-Up Reel ({Math.round(reelProgress * 100)}% wound)"
+              ></div>
               <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
           </div>
 
-          <!-- Bottom Reader Trapezoid & 2 Bottom Screws -->
+          <!-- Bottom Reader Trapezoid, Flip Side CTA & Bottom Screws -->
           <div class="head-row">
             <div class="screw"><div class="screw-slot deg-12"></div></div>
             <div class="head-notch">
@@ -188,17 +223,25 @@
             <div class="screw"><div class="screw-slot deg-neg12"></div></div>
           </div>
 
-          <!-- High Bias Subtitle -->
+          <!-- High Bias Subtitle + Quick Flip -->
           <div class="tape-bias-text">
-            <span>● HIGH BIAS 70µs</span>
-            <span>JAPAN TYPE II ●</span>
+            <span>● HIGH BIAS 70µs JAPAN</span>
+            <button
+              type="button"
+              class="quick-flip-link"
+              onclick={handleFlipSide}
+              title="Flip Cassette to Side {state.tapeSide === 'A' ? 'B' : 'A'}"
+            >
+              FLIP TO SIDE {state.tapeSide === 'A' ? 'B' : 'A'} ⮂
+            </button>
+            <span>TYPE II CrO2 ●</span>
           </div>
         </div>
       </div>
 
-      <!-- Right: Transport Controls & Pomodoro -->
+      <!-- Right: Transport Controls, Atelier Acoustics & Pomodoro -->
       <div class="controls-column">
-        <!-- Transport Deck Controls -->
+        <!-- 1. Transport Deck Controls -->
         <div class="transport-panel">
           <span class="panel-title">Transport Deck</span>
           <div class="transport-buttons">
@@ -287,7 +330,77 @@
           </div>
         </div>
 
-        <!-- Integrated Pomodoro Sprint Coach -->
+        <!-- 2. Interactive Atelier Acoustics Studio (Vinyl Crackle & 40Hz Gamma) -->
+        <div class="acoustics-panel">
+          <div class="acoustics-header">
+            <span class="panel-title">Atelier Acoustics</span>
+            <span class="acoustics-badge">WEB AUDIO API</span>
+          </div>
+
+          <div class="acoustics-grid">
+            <!-- Vinyl Crackle & Surface Friction -->
+            <div class="acoustics-item">
+              <div class="item-head">
+                <button
+                  type="button"
+                  class="acoustic-toggle-btn"
+                  class:active={ambientAudioService.isCrackleActive}
+                  onclick={() => ambientAudioService.toggleCrackle()}
+                >
+                  <span class="toggle-dot"></span>
+                  <span>VINYL CRACKLE</span>
+                </button>
+                <span class="acoustic-vol-text">
+                  {ambientAudioService.isCrackleActive ? `${Math.round(ambientAudioService.crackleVolume * 100)}%` : 'OFF'}
+                </span>
+              </div>
+              {#if ambientAudioService.isCrackleActive}
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={ambientAudioService.crackleVolume}
+                  oninput={(e) => ambientAudioService.setCrackleVolume(parseFloat(e.currentTarget.value))}
+                  class="acoustic-slider"
+                  aria-label="Vinyl Crackle Volume"
+                />
+              {/if}
+            </div>
+
+            <!-- 40Hz Gamma Cognitive Wave -->
+            <div class="acoustics-item">
+              <div class="item-head">
+                <button
+                  type="button"
+                  class="acoustic-toggle-btn gamma"
+                  class:active={ambientAudioService.isGammaActive}
+                  onclick={() => ambientAudioService.toggleGamma()}
+                >
+                  <span class="toggle-dot gamma-dot"></span>
+                  <span>40Hz GAMMA FOCUS</span>
+                </button>
+                <span class="acoustic-vol-text">
+                  {ambientAudioService.isGammaActive ? 'ACTIVE' : 'OFF'}
+                </span>
+              </div>
+              {#if ambientAudioService.isGammaActive}
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={ambientAudioService.gammaVolume}
+                  oninput={(e) => ambientAudioService.setGammaVolume(parseFloat(e.currentTarget.value))}
+                  class="acoustic-slider"
+                  aria-label="40Hz Gamma Wave Volume"
+                />
+              {/if}
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Integrated Pomodoro Sprint Coach -->
         <div class="pomodoro-panel">
           <div class="pomo-meta">
             <span class="panel-title">Focus Sprint (25M)</span>
@@ -376,28 +489,44 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 20px;
     border-bottom: 1px solid var(--kanso-border);
-    padding-bottom: 16px;
+    padding-bottom: 18px;
     flex-wrap: wrap;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 320px;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
   }
 
   .power-indicator {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .power-led {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     transition: all 0.3s ease;
     flex-shrink: 0;
   }
 
   .power-label {
-    font-size: 12px;
+    font-size: 11px;
     font-family: var(--font-mono, monospace);
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -408,8 +537,8 @@
   .tuner-box {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
+    gap: 8px;
+    padding: 5px 12px;
     border-radius: 8px;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface-hover);
@@ -417,71 +546,51 @@
   }
 
   .tuner-tag {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 800;
     letter-spacing: 0.05em;
     color: var(--kanso-text-muted);
   }
 
   .tuner-freq {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 800;
     color: var(--kanso-accent);
     letter-spacing: 0.05em;
   }
 
   .tuner-genre {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 2px 7px;
+    padding: 2px 6px;
     border-radius: 4px;
     background: rgba(222, 105, 75, 0.1);
     color: var(--kanso-accent);
     border: 1px solid rgba(222, 105, 75, 0.2);
   }
 
-  /* Marquee Box + VU Equalizer */
+  /* Marquee Box */
   .marquee-box {
     display: flex;
     align-items: center;
-    gap: 10px;
-    max-width: 360px;
-    padding: 6px 14px;
+    gap: 8px;
+    max-width: 280px;
+    padding: 5px 12px;
     border-radius: 8px;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface-hover);
     overflow: hidden;
   }
 
-  .vu-meter-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 14px;
+  .tape-disc-icon {
+    font-size: 12px;
+    color: var(--kanso-accent);
     flex-shrink: 0;
   }
 
-  .vu-bar {
-    width: 2.5px;
-    height: 3px;
-    border-radius: 1px;
-    background: var(--kanso-accent);
-    transition: height 0.15s ease;
-  }
-
-  @keyframes vu-bounce {
-    0%, 100% { height: 3px; }
-    50% { height: 14px; }
-  }
-
-  .vu-bar-1 { animation: vu-bounce 0.8s ease-in-out infinite; }
-  .vu-bar-2 { animation: vu-bounce 0.6s ease-in-out infinite 0.15s; }
-  .vu-bar-3 { animation: vu-bounce 0.9s ease-in-out infinite 0.3s; }
-  .vu-bar-4 { animation: vu-bounce 0.7s ease-in-out infinite 0.1s; }
-
   .track-title-text {
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-mono, monospace);
     font-weight: 600;
     color: var(--kanso-text-primary);
@@ -500,7 +609,7 @@
     box-sizing: border-box;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .deck-main-grid {
       grid-template-columns: 1fr;
     }
@@ -525,7 +634,7 @@
   .chassis {
     width: 100%;
     max-width: 440px;
-    height: 216px;
+    height: 220px;
     border-radius: 12px;
     padding: 12px;
     display: flex;
@@ -590,13 +699,20 @@
   }
 
   .sticker-side {
-    padding: 2px 7px;
+    padding: 2px 8px;
     font-size: 11px;
     font-weight: 900;
     border-radius: 4px;
     color: #FFFFFF;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     flex-shrink: 0;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  .sticker-side:hover {
+    opacity: 0.85;
   }
 
   .sticker-name {
@@ -626,7 +742,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 40px;
+    padding: 0 36px;
     margin: auto 0;
     box-sizing: border-box;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
@@ -679,6 +795,40 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+
+  .tape-roll-disc {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, #3D2218 30%, #1A0D07 88%, #100804 100%);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    transition: width 0.3s ease, height 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Center Mini Reel Migration Progress Track */
+  .reel-migration-meter {
+    position: absolute;
+    bottom: 8px;
+    left: 110px;
+    right: 110px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 4;
+  }
+
+  .migration-bar-fill {
+    height: 100%;
+    background: var(--kanso-accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
   }
 
   /* Head Row */
@@ -727,18 +877,33 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
-    font-size: 11px;
+    font-size: 10.5px;
     color: rgba(255, 255, 255, 0.5);
     font-family: var(--font-mono, monospace);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     margin-top: 2px;
+  }
+
+  .quick-flip-link {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 10.5px;
+    font-family: var(--font-mono, monospace);
+    cursor: pointer;
+    transition: color 0.15s ease;
+    padding: 0 4px;
+  }
+
+  .quick-flip-link:hover {
+    color: var(--kanso-accent);
   }
 
   /* Right Controls Column */
   .controls-column {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     justify-content: space-between;
     height: 100%;
     box-sizing: border-box;
@@ -747,7 +912,7 @@
   .transport-panel {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     padding: 16px;
     border-radius: 12px;
     border: 1px solid var(--kanso-border);
@@ -756,7 +921,7 @@
   }
 
   .panel-title {
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-mono, monospace);
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -772,8 +937,8 @@
   }
 
   .arrow-btn {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface);
@@ -802,7 +967,7 @@
 
   .play-pause-btn {
     flex: 1;
-    height: 46px;
+    height: 44px;
     border-radius: 12px;
     font-weight: 700;
     display: flex;
@@ -826,7 +991,7 @@
   .volume-control {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding-top: 2px;
     width: 100%;
   }
@@ -849,13 +1014,13 @@
   }
 
   .mute-svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .vol-slider {
     flex: 1;
-    height: 6px;
+    height: 5px;
     border-radius: 4px;
     background: var(--kanso-border);
     accent-color: var(--kanso-accent);
@@ -864,12 +1029,129 @@
   }
 
   .vol-text {
-    font-size: 12px;
+    font-size: 11px;
     font-family: var(--font-mono, monospace);
     font-weight: 600;
     color: var(--kanso-text-muted);
-    width: 36px;
+    width: 34px;
     text-align: right;
+  }
+
+  /* Atelier Acoustics Studio Panel */
+  .acoustics-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface-hover);
+    box-sizing: border-box;
+  }
+
+  .acoustics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .acoustics-badge {
+    font-size: 9.5px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: rgba(222, 105, 75, 0.1);
+    color: var(--kanso-accent);
+    border: 1px solid rgba(222, 105, 75, 0.2);
+  }
+
+  .acoustics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .acoustics-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .acoustic-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    outline: none;
+  }
+
+  .acoustic-toggle-btn:hover {
+    color: var(--kanso-text-primary);
+  }
+
+  .acoustic-toggle-btn.active {
+    background: rgba(222, 105, 75, 0.14);
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
+  }
+
+  .acoustic-toggle-btn.gamma.active {
+    background: rgba(143, 166, 131, 0.18);
+    color: #8FA683;
+    border-color: #8FA683;
+  }
+
+  .toggle-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #71717A;
+    transition: all 0.2s ease;
+  }
+
+  .acoustic-toggle-btn.active .toggle-dot {
+    background: var(--kanso-accent);
+    box-shadow: 0 0 6px var(--kanso-accent);
+  }
+
+  .acoustic-toggle-btn.gamma.active .gamma-dot {
+    background: #8FA683;
+    box-shadow: 0 0 6px #8FA683;
+  }
+
+  .acoustic-vol-text {
+    font-size: 10px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: var(--kanso-text-muted);
+  }
+
+  .acoustic-slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--kanso-border);
+    accent-color: var(--kanso-accent);
+    cursor: pointer;
+    outline: none;
   }
 
   /* Pomodoro Panel */
@@ -877,7 +1159,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
+    padding: 14px 16px;
     border-radius: 12px;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface-hover);
@@ -891,7 +1173,7 @@
   }
 
   .timer-display {
-    font-size: 26px;
+    font-size: 24px;
     font-family: var(--font-mono, monospace);
     font-weight: 800;
     color: var(--kanso-text-primary);
@@ -906,9 +1188,9 @@
   }
 
   .pomo-btn {
-    padding: 8px 14px;
+    padding: 7px 12px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-mono, monospace);
     font-weight: 700;
     cursor: pointer;
@@ -921,8 +1203,8 @@
   }
 
   .pomo-reset-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface);
@@ -945,8 +1227,8 @@
   }
 
   .reset-svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 
   /* Studio Cassette Rack Container */
@@ -998,6 +1280,9 @@
   @media (max-width: 750px) {
     .rack-cards-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .acoustics-grid {
+      grid-template-columns: 1fr;
     }
   }
 

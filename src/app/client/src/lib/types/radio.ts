@@ -1,4 +1,4 @@
-﻿export interface CassetteRadioStation {
+export interface CassetteRadioStation {
   id: string;
   name: string;
   genre: string;
@@ -18,4 +18,6 @@ export interface RadioPlaybackState {
   isMuted: boolean;
   currentTrackTitle: string;
   spoolRotation: number;
+  tapeSide: 'A' | 'B';
+  sessionElapsedSeconds: number;
 }
