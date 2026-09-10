@@ -94,6 +94,32 @@
     const secs = (pomodoroSeconds % 60).toString().padStart(2, '0');
     return `${mins}:${secs}`;
   });
+
+  // Mechanical 4-Digit Tape Counter
+  let tapeCounter = $state(142);
+  let counterInterval: any = null;
+
+  $effect(() => {
+    if (state.isPlaying) {
+      counterInterval = setInterval(() => {
+        tapeCounter = (tapeCounter + 1) % 10000;
+      }, 1000);
+    } else {
+      if (counterInterval) clearInterval(counterInterval);
+    }
+    return () => {
+      if (counterInterval) clearInterval(counterInterval);
+    };
+  });
+
+  const counterDigits = $derived.by(() => {
+    return String(tapeCounter).padStart(4, '0').split('');
+  });
+
+  function resetTapeCounter() {
+    playMechanicalClick();
+    tapeCounter = 0;
+  }
 </script>
 
 <div class="deck-wrapper">
@@ -120,6 +146,17 @@
           <span class="tuner-tag">TUNER</span>
           <span class="tuner-freq">{station.frequency}</span>
           <span class="tuner-genre">{station.genre}</span>
+        </div>
+
+        <!-- Mechanical Tape Counter -->
+        <div class="tape-counter-box" title="Mechanical Tape Index Counter">
+          <span class="counter-tag">INDEX</span>
+          <div class="counter-digits">
+            {#each counterDigits as digit}
+              <span class="counter-digit">{digit}</span>
+            {/each}
+          </div>
+          <button type="button" class="counter-reset-btn" onclick={resetTapeCounter} title="Reset Index Counter">↺</button>
         </div>
 
         <div class="marquee-box">
@@ -173,10 +210,12 @@
             </span>
           </div>
 
-          <!-- Giant Acrylic Tape Window with Dynamic Reel Tape Thickness -->
+          <!-- Giant Acrylic Tape Window with Dynamic Reel Tape Thickness & Moving Magnetic Ribbon -->
           <div class="acrylic-window">
-            <!-- Magnetic Brown Tape Ribbon Strip -->
-            <div class="tape-ribbon">
+            <!-- Magnetic Brown Tape Ribbon Strip with Animated Travel Layer -->
+            <div class="tape-ribbon" class:is-moving={state.isPlaying}>
+              <div class="ribbon-travel-layer" class:is-moving={state.isPlaying}></div>
+              <div class="ribbon-glare-layer"></div>
               <div class="tape-gauge">
                 <div class="gauge-mark"></div>
                 <div class="gauge-mark sm"></div>
@@ -190,9 +229,12 @@
             <div class="spool-slot">
               <div
                 class="tape-roll-disc"
-                style="width: {leftTapeDiameter}px; height: {leftTapeDiameter}px;"
+                class:is-spinning={state.isPlaying}
+                style="width: {leftTapeDiameter}px; height: {leftTapeDiameter}px; transform: rotate({state.isPlaying ? state.spoolRotation : 0}deg);"
                 title="Supply Reel ({Math.round((1 - reelProgress) * 100)}% remaining)"
-              ></div>
+              >
+                <div class="tape-pack-layers"></div>
+              </div>
               <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
 
@@ -205,20 +247,28 @@
             <div class="spool-slot">
               <div
                 class="tape-roll-disc"
-                style="width: {rightTapeDiameter}px; height: {rightTapeDiameter}px;"
+                class:is-spinning={state.isPlaying}
+                style="width: {rightTapeDiameter}px; height: {rightTapeDiameter}px; transform: rotate({state.isPlaying ? state.spoolRotation : 0}deg);"
                 title="Take-Up Reel ({Math.round(reelProgress * 100)}% wound)"
-              ></div>
+              >
+                <div class="tape-pack-layers"></div>
+              </div>
               <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
             </div>
           </div>
 
-          <!-- Bottom Reader Trapezoid, Flip Side CTA & Bottom Screws -->
+          <!-- Bottom Reader Trapezoid, Moving Ribbon Track & Bottom Screws -->
           <div class="head-row">
             <div class="screw"><div class="screw-slot deg-12"></div></div>
             <div class="head-notch">
-              <div class="roller-dot"></div>
+              <div class="bottom-tape-track" class:is-moving={state.isPlaying}></div>
+              <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
+                <div class="roller-notch"></div>
+              </div>
               <div class="roller-center"></div>
-              <div class="roller-dot"></div>
+              <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
+                <div class="roller-notch"></div>
+              </div>
             </div>
             <div class="screw"><div class="screw-slot deg-neg12"></div></div>
           </div>
@@ -570,6 +620,76 @@
     border: 1px solid rgba(222, 105, 75, 0.2);
   }
 
+  /* Mechanical Index Tape Counter */
+  .tape-counter-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface-hover);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  .counter-tag {
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--kanso-text-muted);
+    font-family: var(--font-mono, monospace);
+  }
+
+  .counter-digits {
+    display: flex;
+    gap: 1.5px;
+    background: #09090B;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .counter-digit {
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+    font-weight: 800;
+    color: #FAFAFA;
+    width: 10px;
+    text-align: center;
+    line-height: 1;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .counter-digit:last-child {
+    border-right: none;
+    color: var(--kanso-accent);
+  }
+
+  .counter-reset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .counter-reset-btn:hover {
+    background: var(--kanso-accent);
+    color: #FFFFFF;
+    border-color: var(--kanso-accent);
+    transform: rotate(90deg);
+  }
+
   /* Marquee Box */
   .marquee-box {
     display: flex;
@@ -753,24 +873,74 @@
     left: 48px;
     right: 48px;
     height: 48px;
-    background: #2E1810;
+    background: linear-gradient(180deg, #1c0e08 0%, #2f170e 45%, #25120a 60%, #150a05 100%);
     border-radius: 4px;
-    border: 1px solid rgba(120, 53, 15, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+    border-left: 1px solid rgba(120, 53, 15, 0.6);
+    border-right: 1px solid rgba(120, 53, 15, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  .ribbon-travel-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1.5px,
+      transparent 1.5px,
+      transparent 12px,
+      rgba(0, 0, 0, 0.25) 12px,
+      rgba(0, 0, 0, 0.25) 15px,
+      transparent 15px,
+      transparent 32px
+    );
+    background-size: 64px 100%;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .ribbon-travel-layer.is-moving {
+    opacity: 0.9;
+    animation: tapeRibbonTravel 1.4s linear infinite;
+  }
+
+  .ribbon-glare-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, 0.07) 48%, rgba(255, 255, 255, 0.02) 52%, transparent 68%);
+    z-index: 1;
+  }
+
+  @keyframes tapeRibbonTravel {
+    0% {
+      background-position: 0px 0;
+    }
+    100% {
+      background-position: 64px 0;
+    }
   }
 
   .tape-gauge {
+    position: relative;
+    z-index: 2;
     width: 64px;
     height: 24px;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;
     justify-content: space-around;
     padding: 0 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   }
 
   .gauge-mark {
@@ -803,12 +973,27 @@
   .tape-roll-disc {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, #3D2218 30%, #1A0D07 88%, #100804 100%);
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    background: radial-gradient(circle, #3D2218 20%, #23110a 65%, #100804 100%);
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     transition: width 0.3s ease, height 0.3s ease;
     pointer-events: none;
     z-index: 1;
+    overflow: hidden;
+  }
+
+  .tape-pack-layers {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-image: repeating-radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 1.5px,
+      transparent 1.5px,
+      transparent 4px
+    );
+    opacity: 0.8;
   }
 
   /* Center Mini Reel Migration Progress Track */
@@ -843,8 +1028,8 @@
 
   .head-notch {
     width: 140px;
-    height: 12px;
-    background: rgba(0, 0, 0, 0.5);
+    height: 14px;
+    background: rgba(0, 0, 0, 0.65);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -853,22 +1038,62 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bottom-tape-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #1f0f08;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+  }
+
+  .bottom-tape-track.is-moving {
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      transparent 2px,
+      transparent 10px
+    );
+    background-size: 32px 100%;
+    animation: tapeRibbonTravel 0.8s linear infinite;
   }
 
   .roller-dot {
-    width: 10px;
-    height: 3.5px;
-    background: rgba(253, 230, 138, 0.4);
-    border-radius: 2px;
-    border: 1px solid rgba(254, 243, 199, 0.3);
+    width: 9px;
+    height: 9px;
+    background: radial-gradient(circle, #e2d9bc 35%, #8b7d5a 95%);
+    border-radius: 50%;
+    border: 1px solid rgba(254, 243, 199, 0.4);
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+
+  .roller-notch {
+    position: absolute;
+    top: 1px;
+    left: 3.5px;
+    width: 1.5px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 1px;
   }
 
   .roller-center {
-    width: 8px;
-    height: 5px;
-    background: #71717A;
+    width: 10px;
+    height: 7px;
+    background: #52525B;
     border-radius: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 2;
   }
 
   .tape-bias-text {
