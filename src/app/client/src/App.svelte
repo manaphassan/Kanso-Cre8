@@ -743,8 +743,8 @@
     width: 32px;
     height: 32px;
     border-radius: 7px;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: var(--kanso-accent-muted, rgba(222, 105, 75, 0.14));
+    border: 1px solid rgba(222, 105, 75, 0.35);
     color: var(--kanso-accent);
     display: flex;
     align-items: center;
