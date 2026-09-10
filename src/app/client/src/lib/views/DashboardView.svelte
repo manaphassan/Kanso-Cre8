@@ -94,8 +94,8 @@
 
   async function handleToggleUniversalTask(task: ZettelTask) {
     try {
-      const updated = await zettelService.toggleTask(task.id);
-      universalTasks = universalTasks.map(t => t.id === task.id ? updated : t);
+      zettelService.toggleTask(task);
+      universalTasks = [...universalTasks];
     } catch (err: any) {
       appState.addToast(`Failed to toggle task: ${err.message}`, 'error');
     }
@@ -388,10 +388,10 @@
                   class="task-check"
                 />
                 <span class="task-label" class:completed={uTask.completed}>
-                  {uTask.text}
+                  {uTask.description || uTask.rawText}
                 </span>
                 <span class="wikilink-badge">
-                  [[{uTask.sourceTitle || uTask.sourceNoteId}]]
+                  [[{uTask.sourceNoteTitle || uTask.sourceNoteId}]]
                 </span>
                 {#if uTask.priority === 'urgent' || uTask.priority === 'high'}
                   <span class="priority-badge">* {uTask.priority}</span>
@@ -511,12 +511,12 @@
             <div class="progress-wrap">
               <div class="progress-labels">
                 <span>Progress</span>
-                <span>{project.progress || 60}%</span>
+                <span>{project.progress ?? 60}%</span>
               </div>
               <div class="progress-track">
                 <div
                   class="progress-bar"
-                  style="width: {project.progress || 60}%; background-color: {getClientColor(project.brand)}"
+                  style="width: {project.progress ?? 60}%; background-color: {getClientColor(project.brand)}"
                 ></div>
               </div>
             </div>

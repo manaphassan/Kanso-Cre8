@@ -415,9 +415,9 @@
   <!-- Static Glassmorphism Card -->
   <div class="login-card-static">
     <!-- Official Kanso Cre8 Logo Header -->
-    <div class="card-header-logo-interactive" onclick={() => quickLogin('demo')} title="Click to quick login as demo">
+    <button type="button" class="card-header-logo-interactive" onclick={() => quickLogin('demo')} title="Click to quick login as demo" aria-label="Quick login as demo">
       <img src="brand/kanso-mark.svg" alt="Kanso Cre8" class="brand-logo-img" style="height: 52px; width: auto;" />
-    </div>
+    </button>
 
     <h1 class="portal-heading">Kanso Cre8</h1>
     <p class="portal-subheading">簡素 · The Mindful Creative Vault</p>
@@ -597,6 +597,9 @@
     justify-content: center;
     margin-bottom: 12px;
     cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
     transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1.0), filter 0.3s ease;
   }
 

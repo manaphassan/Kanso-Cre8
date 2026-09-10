@@ -243,6 +243,10 @@ class TimerStore {
     this.persistState();
   }
 
+  setHourlyRate(rate: number) {
+    this.setRate(rate);
+  }
+
   setClient(code: string, rate?: number) {
     this.clientCode = code;
     if (rate !== undefined && rate > 0) {

@@ -111,7 +111,7 @@
     { key: 'Space', label: 'Focus Radio Play/Pause', desc: 'Toggle lo-fi cassette stream on/off' }
   ];
 
-  let fileInput: HTMLInputElement;
+  let fileInput = $state<HTMLInputElement>();
 
   function populateFromCurrentUser() {
     if (appState.currentUser) {
@@ -230,7 +230,7 @@
 
     isSavingPassword = true;
     try {
-      await ApiClient.changePassword({ currentPassword, newPassword });
+      await ApiClient.changePassword(currentPassword, newPassword);
       appState.addToast('Password updated successfully.', 'success');
       currentPassword = '';
       newPassword = '';
@@ -815,7 +815,7 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
-  [data-theme="eink"] .tab-btn.active {
+  :global([data-theme="eink"]) .tab-btn.active {
     background: #000000;
     color: #FFFFFF;
   }
