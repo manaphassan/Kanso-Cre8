@@ -677,7 +677,7 @@
   }
   .deck-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     padding: 2px 8px;
     border-radius: 9999px;
@@ -687,7 +687,7 @@
     letter-spacing: 0.05em;
   }
   .deck-subtitle {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--kanso-text-muted, #71717A);
     margin: 0;
   }
@@ -705,7 +705,7 @@
     padding: 6px 12px;
     border-radius: 10px;
     font-family: var(--font-mono, monospace);
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
   }
   .timer-pill.running {
@@ -768,7 +768,7 @@
     gap: 8px;
   }
   .section-title {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;

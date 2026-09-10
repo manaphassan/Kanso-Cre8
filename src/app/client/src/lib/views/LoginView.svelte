@@ -431,7 +431,7 @@
       <div class="form-group">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
           <label for="login-username-field" class="field-label" style="margin-bottom: 0;">Username</label>
-          <span style="font-size: 11px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
+          <span style="font-size: 12px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
         </div>
         <input
           id="login-username-field"
@@ -445,8 +445,8 @@
 
       <!-- Quick Roster Profile Selector -->
       <div class="form-group" style="margin-top: -6px;">
-        <label for="login-account-select" class="field-label" style="font-size: 11px; color: var(--kanso-text-muted, #71717A);">Or select from workspace roster:</label>
-        <select id="login-account-select" class="field-select" style="font-size: 12px; padding: 6px 10px;" bind:value={username}>
+        <label for="login-account-select" class="field-label" style="font-size: 12px; color: var(--kanso-text-muted, #71717A);">Or select from workspace roster:</label>
+        <select id="login-account-select" class="field-select" style="font-size: 12.5px; padding: 6px 10px;" bind:value={username}>
           {#each sortedUsers as u}
             <option value={u.username}>
               {u.staffId} — {u.name} ({u.role})
@@ -459,7 +459,7 @@
       <div class="form-group">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
           <label for="login-password-field" class="field-label" style="margin-bottom: 0;">Password</label>
-          <span style="font-size: 11px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
+          <span style="font-size: 12px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
         </div>
         <div class="password-input-wrapper">
           <input
@@ -502,7 +502,7 @@
         {/if}
       </button>
 
-      <div class="login-credentials-hint" style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--kanso-text-muted, #71717A);">
+      <div class="login-credentials-hint" style="text-align: center; margin-top: 8px; font-size: 12px; color: var(--kanso-text-muted, #71717A);">
         Default credentials: <span style="color: var(--kanso-accent, #38BDF8); font-weight: 600;">demo</span> / <span style="color: var(--kanso-accent, #38BDF8); font-weight: 600;">demo</span>
       </div>
 
@@ -761,7 +761,7 @@
   }
 
   .roster-title {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: #666666;
     text-transform: uppercase;
@@ -780,7 +780,7 @@
     border: 1px solid #CBD5E1;
     border-radius: 9999px;
     padding: 4px 10px;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
     color: #334155;
     cursor: pointer;
@@ -799,13 +799,13 @@
     font-family: monospace;
     color: #043388;
     font-weight: 800;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .portal-footer-meta {
     margin-top: 22px;
     text-align: center;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
     color: #666666;
     border-top: 1px solid rgba(0, 0, 0, 0.08);

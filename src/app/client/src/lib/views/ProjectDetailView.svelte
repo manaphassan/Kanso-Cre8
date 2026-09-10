@@ -1320,10 +1320,10 @@
   }
 
   .view-chip {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     background: var(--bg-app);
-    padding: 1px 5px;
+    padding: 2px 7px;
     border-radius: 4px;
     color: var(--text-tertiary);
   }
@@ -1377,7 +1377,7 @@
     border: none;
     background: transparent;
     border-bottom: 2px solid transparent;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
@@ -1413,7 +1413,7 @@
   }
 
   .prop-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-tertiary);
     text-transform: uppercase;
@@ -1421,7 +1421,7 @@
   }
 
   .prop-value {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
     color: var(--text-primary);
     display: flex;
@@ -1436,12 +1436,12 @@
   }
 
   .user-avatar {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: var(--brand-primary, #043388);
     color: #FFFFFF;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -1495,19 +1495,19 @@
 
   .brand-chip {
     font-weight: 800;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-brand, #043388);
     background: var(--brand-tint, #EBF4FE);
-    padding: 1px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
-  .brand-full { font-size: 12px; color: var(--text-secondary); }
+  .brand-full { font-size: 12.5px; color: var(--text-secondary); }
 
   .priority-chip {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 4px;
   }
   .priority-urgent { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger, #EF4444); border: 1px solid rgba(239, 68, 68, 0.35); font-weight: 800; }
@@ -1537,13 +1537,13 @@
   .mini-app-header {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
   .decision-approved .mini-app-decision { color: #047857; }
   .decision-revision_requested .mini-app-decision { color: #B91C1C; }
-  .mini-app-time { font-size: 10px; color: var(--text-tertiary); font-weight: normal; }
-  .mini-app-actor { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .mini-app-time { font-size: 12px; color: var(--text-tertiary); font-weight: normal; }
+  .mini-app-actor { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
   .no-approvals-text { font-size: 12px; color: var(--text-tertiary); margin: 0; }
 
   /* Deliverables Gallery */
@@ -1636,9 +1636,9 @@
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.8);
     color: #FFFFFF;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(4px);
@@ -1648,7 +1648,7 @@
     margin-bottom: 2px;
   }
   .del-thumb-text {
-    font-size: 9.5px;
+    font-size: 12px;
     font-weight: 800;
     color: #94A3B8;
     letter-spacing: 0.5px;
@@ -1668,11 +1668,11 @@
     position: absolute;
     bottom: 6px;
     right: 6px;
-    font-size: 9.5px;
+    font-size: 12px;
     font-weight: 800;
     background: rgba(0, 0, 0, 0.7);
     color: #FFFFFF;
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
@@ -1683,7 +1683,7 @@
     gap: 4px;
   }
   .del-filename {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
@@ -1693,15 +1693,15 @@
   .del-meta-row {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-tertiary);
   }
 
   .status-tag {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 1px 5px;
+    padding: 2px 7px;
     border-radius: 3px;
   }
 
