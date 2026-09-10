@@ -271,15 +271,17 @@
       { route: 'dashboard',    label: 'Studio Deck',        icon: dashIcon },
       { route: 'projects',     label: 'Project Vaults',     icon: folderIcon, matchRoutes: ['projects','project-detail'] },
       { route: 'journal',      label: 'Bullet Journal',     icon: journalIcon },
-      { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
-    ]},
-    { section: 'Knowledge & Second Brain', items: [
-      { route: 'zettel',       label: 'Atelier Notes',      icon: zettelIcon },
-      { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
     ]},
     { section: 'Client & Business Ops', items: [
       { route: 'clients',      label: 'Clients & Brands',   icon: clientIcon },
       { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon },
+    ]},
+    { section: 'Knowledge & Atelier', items: [
+      { route: 'zettel',       label: 'Atelier Notes',      icon: zettelIcon },
+      { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
+    ]},
+    { section: 'Focus & Audio', items: [
+      { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
     ]},
     { section: 'System & Storage', items: [
       { route: 'settings',     label: 'Settings',           icon: adminIcon },

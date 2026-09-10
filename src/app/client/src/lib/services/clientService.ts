@@ -9,70 +9,70 @@ const STORAGE_KEY = 'kanso_cre8_clients';
 
 export const DEFAULT_CLIENTS: ClientProfile[] = [
   {
-    id: 'acmecorp',
-    name: 'Acme Corporation',
-    code: 'ACME',
-    contactPerson: 'Sarah Jenkins',
-    email: 'sarah.j@acmefintech.io',
-    phone: '+1 (555) 234-5678',
-    billingAddress: '100 Market St, Suite 400, San Francisco, CA 94105',
-    currency: 'USD',
-    defaultHourlyRate: 125,
-    paymentTermsDays: 15,
-    palette: {
-      primary: '#0066FF',   // Electric Blue
-      secondary: '#0052CC', // Deep Cobalt
-      dark: '#0A0D14',      // Obsidian
-      light: '#F8FAFC',     // Slate Light
-      accent: '#00F0FF'     // Cyber Cyan
-    },
-    notes: 'Tone: Modern, trustworthy, tech-forward fintech. Deliver 4K PNGs & vector SVGs.',
-    activeProjectsCount: 2,
-    totalInvoiced: 4750
-  },
-  {
-    id: 'nexusstudio',
-    name: 'Nexus Studio',
-    code: 'NEX',
-    contactPerson: 'Marcus Vance',
-    email: 'marcus@nexusstudio.io',
-    phone: '+1 (555) 876-5432',
-    billingAddress: '540 Arts District Blvd, Los Angeles, CA 90013',
-    currency: 'USD',
-    defaultHourlyRate: 110,
+    id: 'jomparking',
+    name: 'JomParking™',
+    code: 'JOM',
+    contactPerson: 'Dharma Syahril',
+    email: 'billing@jomparking.com',
+    phone: '+60 3-7887 8899',
+    billingAddress: 'Level 12, Menara LGB, Taman Tun Dr Ismail, 60000 Kuala Lumpur',
+    currency: 'MYR',
+    defaultHourlyRate: 180,
     paymentTermsDays: 14,
     palette: {
-      primary: '#10B981',   // Emerald Green
-      secondary: '#059669', // Forest
-      dark: '#18181B',      // Zinc Dark
-      light: '#F0FDF4',     // Emerald Wash
-      accent: '#38BDF8'     // Sky Accent
+      primary: '#FF6600',   // JomParking Orange
+      secondary: '#0A192F', // Deep Navy
+      dark: '#111827',      // Slate Obsidian
+      light: '#FFF7ED',     // Warm Papaya
+      accent: '#00C2FF'     // Parking Bay Cyan
     },
-    notes: 'Gaming UI/UX, key visual artwork, and high-impact social media campaign collateral.',
-    activeProjectsCount: 1,
-    totalInvoiced: 2200
+    notes: 'Smart city urban parking, IoT mobility solutions, contactless QR street parking & merchant dashboards.',
+    activeProjectsCount: 2,
+    totalInvoiced: 8500
   },
   {
-    id: 'luminalabs',
-    name: 'Lumina Labs',
-    code: 'LUM',
-    contactPerson: 'Elena Rostova',
-    email: 'elena@luminalabs.ai',
-    phone: '+44 20 7946 0912',
-    billingAddress: '74 Shoreditch High St, London E1 6JJ, United Kingdom',
-    currency: 'USD',
-    defaultHourlyRate: 140,
+    id: 'govicle',
+    name: 'Govicle®',
+    code: 'GOV',
+    contactPerson: 'Muhamad Hanif',
+    email: 'accounts@govicle.com',
+    phone: '+60 3-8322 6677',
+    billingAddress: 'Tech Hub Cyberjaya, Block 3502, Jalan Teknokrat 5, 63000 Cyberjaya, Selangor',
+    currency: 'MYR',
+    defaultHourlyRate: 220,
     paymentTermsDays: 30,
     palette: {
-      primary: '#8B5CF6',   // Deep Purple
-      secondary: '#6D28D9', // Violet
-      dark: '#09090B',      // Matte Obsidian
-      light: '#FAFAFA',     // Clean Porcelain
-      accent: '#F59E0B'     // Amber Gold
+      primary: '#1E40AF',   // Govicle Royal Blue
+      secondary: '#0D9488', // Tech Teal Fleet
+      dark: '#0F172A',      // Midnight Slate
+      light: '#F0F9FF',     // Sky Tint
+      accent: '#10B981'     // EV Emerald
     },
-    notes: 'AI research visual brand system, 3D interactive hero illustrations, and investor decks.',
+    notes: 'Enterprise fleet telematics, EV charging network UX, and automated road-tax compliance portals.',
     activeProjectsCount: 1,
-    totalInvoiced: 3500
+    totalInvoiced: 12400
+  },
+  {
+    id: 'suamisihat',
+    name: 'SuamiSihat™',
+    code: 'SS',
+    contactPerson: 'Harusssani Manaphassan',
+    email: 'creative@suamisihat.myds.me',
+    phone: '+60 12-345 6789',
+    billingAddress: 'Atelier 08, Bukit Damansara, 50490 Kuala Lumpur, Malaysia',
+    currency: 'MYR',
+    defaultHourlyRate: 160,
+    paymentTermsDays: 15,
+    palette: {
+      primary: '#059669',   // Forest Emerald
+      secondary: '#047857', // Deep Forest
+      dark: '#09090B',      // Atelier Obsidian
+      light: '#ECFDF5',     // Mint Silk
+      accent: '#F59E0B'     // Amber Vitality
+    },
+    notes: 'Men\'s holistic wellness, nutritional health supplement branding, discreet telehealth portal UI.',
+    activeProjectsCount: 1,
+    totalInvoiced: 6800
   }
 ];
 
@@ -97,8 +97,11 @@ export class ClientService {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          this.clients = parsed;
-          return this.clients;
+          const hasJom = parsed.some((c: any) => c.code === 'JOM' || c.code === 'GOV');
+          if (hasJom) {
+            this.clients = parsed;
+            return this.clients;
+          }
         }
       }
     } catch (e) {

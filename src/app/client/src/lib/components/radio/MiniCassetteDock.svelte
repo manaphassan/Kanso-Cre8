@@ -32,8 +32,9 @@
       holeColor="#020617"
     />
 
-    <!-- Center Mini Tape Window -->
-    <div class="mini-tape-window">
+    <!-- Center Mini Tape Window with Animated Moving Ribbon -->
+    <div class="mini-tape-window" class:is-moving={state.isPlaying}>
+      <div class="mini-ribbon" class:is-moving={state.isPlaying}></div>
       <div class="mini-red-dot"></div>
     </div>
 
@@ -165,21 +166,54 @@
   }
 
   .mini-tape-window {
-    width: 20px;
-    height: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    width: 22px;
+    height: 11px;
+    background: #1c0e08;
     border-radius: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mini-ribbon {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+    background-size: 16px 100%;
+    opacity: 0.35;
+  }
+
+  .mini-ribbon.is-moving {
+    opacity: 0.9;
+    animation: miniRibbonMove 0.8s linear infinite;
+  }
+
+  @keyframes miniRibbonMove {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 16px 0;
+    }
   }
 
   .mini-red-dot {
-    width: 6px;
-    height: 4px;
+    width: 5px;
+    height: 3.5px;
     background: #DE694B;
-    border-radius: 2px;
+    border-radius: 1px;
+    position: relative;
+    z-index: 2;
   }
 
   .mini-freq-badge {

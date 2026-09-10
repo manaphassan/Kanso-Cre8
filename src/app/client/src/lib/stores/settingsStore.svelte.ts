@@ -16,9 +16,9 @@ export interface StudioSettings {
 const STORAGE_KEY = 'kanso_studio_settings';
 
 const DEFAULT_SETTINGS: StudioSettings = {
-  defaultHourlyRate: 120,
-  currency: 'USD',
-  currencySymbol: '$',
+  defaultHourlyRate: 180,
+  currency: 'MYR',
+  currencySymbol: 'RM',
   defaultLens: 'studio',
   timerAutoLog: true,
   vaultAutoSave: true,
@@ -26,8 +26,8 @@ const DEFAULT_SETTINGS: StudioSettings = {
 };
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: '$',
   MYR: 'RM',
+  USD: '$',
   EUR: '€',
   GBP: '£'
 };
