@@ -110,6 +110,10 @@
     window.addEventListener('hashchange', handleRouteFromHash);
     handleRouteFromHash();
 
+    if (window.location.search.includes('nav=open')) {
+      appState.viewSwitcherOpen = true;
+    }
+
     (async () => {
       if (appState.currentRoute !== 'review') {
         await appState.loadCurrentUser();
@@ -313,14 +317,63 @@
             <span class="k8-text">K8</span>
           </button>
 
-          <!-- Elegant Breadcrumbs -->
-          <div class="header-breadcrumbs">
-            <span class="bc-root">Kanso Cre8</span>
-            <span class="bc-sep" aria-hidden="true">/</span>
-            <span class="bc-current">{currentTitle}</span>
-            {#if appState.currentRoute === 'project-detail' && appState.routeParams.id}
-              <span class="bc-sep" aria-hidden="true">/</span>
-              <span class="bc-subview">{appState.routeParams.id}</span>
+          <!-- Touch & Click Friendly Studio Navigator Dropdown & Breadcrumbs -->
+          <div class="view-switcher-wrapper">
+            <button
+              class="view-switcher-trigger"
+              class:active={appState.viewSwitcherOpen}
+              onclick={(e) => { e.stopPropagation(); appState.viewSwitcherOpen = !appState.viewSwitcherOpen; }}
+              title="Studio Navigation (Touch or Click to switch views)"
+              aria-label="Studio Navigation Menu"
+              aria-expanded={appState.viewSwitcherOpen}
+            >
+              <div class="header-breadcrumbs">
+                <span class="bc-root">Kanso Cre8</span>
+                <span class="bc-sep" aria-hidden="true">/</span>
+                <span class="bc-current">{currentTitle}</span>
+                {#if appState.currentRoute === 'project-detail' && appState.routeParams.id}
+                  <span class="bc-sep" aria-hidden="true">/</span>
+                  <span class="bc-subview">{appState.routeParams.id}</span>
+                {/if}
+              </div>
+              <svg class="view-caret" class:open={appState.viewSwitcherOpen} width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+              </svg>
+            </button>
+
+            {#if appState.viewSwitcherOpen}
+              <div class="view-switcher-dropdown" role="menu" aria-label="Studio Views">
+                <div class="dropdown-header">
+                  <span class="dropdown-header-title">Studio Navigation</span>
+                  <span class="dropdown-header-shortcut">Touch to Switch</span>
+                </div>
+                <div class="dropdown-grid">
+                  {#each navGroups as group}
+                    <div class="dropdown-group-label">{group.section}</div>
+                    {#each group.items as item}
+                      <button
+                        class="dropdown-item-btn"
+                        class:active={isActive(item)}
+                        onclick={() => {
+                          appState.navigate(item.route);
+                          appState.viewSwitcherOpen = false;
+                        }}
+                      >
+                        <span class="dropdown-item-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            {@html item.icon}
+                          </svg>
+                        </span>
+                        <span class="dropdown-item-label">{item.label}</span>
+                        {#if item.route === 'deliverables' && projectStore.pendingReviewCount > 0}
+                          <span class="dropdown-item-count">{projectStore.pendingReviewCount}</span>
+                        {/if}
+                        <kbd class="dropdown-item-kbd">{getShortcutBadge(item.route)}</kbd>
+                      </button>
+                    {/each}
+                  {/each}
+                </div>
+              </div>
             {/if}
           </div>
         </div>
@@ -665,10 +718,11 @@
     background: var(--kanso-surface);
     color: var(--kanso-text-primary);
     cursor: pointer;
+    touch-action: manipulation;
     transition: all 0.15s ease;
     font-family: inherit;
   }
-  .view-switcher-trigger:hover {
+  .view-switcher-trigger:hover, .view-switcher-trigger.active {
     background: var(--kanso-surface-hover);
     border-color: var(--kanso-accent);
   }
@@ -749,9 +803,11 @@
   .dropdown-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-height: 480px;
+    gap: 4px;
+    max-height: 520px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
   .dropdown-group-label {
     font-size: 12px;
@@ -759,19 +815,22 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--kanso-text-muted);
-    padding: 6px 10px 4px;
+    padding: 8px 10px 4px;
   }
   .dropdown-item-btn {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
-    padding: 9px 12px;
+    padding: 10px 12px;
+    min-height: 44px;
+    box-sizing: border-box;
     border-radius: 8px;
     border: none;
     background: transparent;
     color: var(--kanso-text-primary);
     cursor: pointer;
+    touch-action: manipulation;
     transition: background 0.12s, color 0.12s;
     font-family: inherit;
     text-align: left;
@@ -780,6 +839,9 @@
   }
   .dropdown-item-btn:hover {
     background: var(--kanso-surface-hover);
+  }
+  .dropdown-item-btn:active {
+    background: rgba(56, 189, 248, 0.2);
   }
   .dropdown-item-btn.active {
     background: rgba(56, 189, 248, 0.14);
