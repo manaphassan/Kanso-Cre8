@@ -6,6 +6,7 @@ import './lib/styles/kanso-tokens.css';
 import './lib/styles/fluent2-tokens.css';
 import './lib/styles/fluent2-base.css';
 import './lib/styles/markdown-obsidian.css';
+import './lib/styles/tailwind-compat.css';
 import App from './App.svelte';
 
 const target = document.getElementById('app');
