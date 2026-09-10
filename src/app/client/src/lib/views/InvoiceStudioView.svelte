@@ -116,13 +116,13 @@
 
   function createNewInvoice() {
     const defaultClient = clients[0] || {
-      code: 'ACME',
-      name: 'Acme Corporation',
-      contactPerson: 'Sarah Jenkins',
-      email: 'billing@acmefintech.io',
-      billingAddress: '100 Market St, Suite 400, San Francisco, CA 94105',
-      currency: 'USD',
-      defaultHourlyRate: 125
+      code: 'JOM',
+      name: 'JomParking™',
+      contactPerson: 'Dharma Syahril',
+      email: 'billing@jomparking.com',
+      billingAddress: 'Level 12, Menara LGB, Taman Tun Dr Ismail, 60000 Kuala Lumpur',
+      currency: 'MYR',
+      defaultHourlyRate: 180
     };
 
     const nextNum = invoices.length + 1;
@@ -140,27 +140,27 @@
       clientAddress: defaultClient.billingAddress,
       freelancerName: 'Harusssani Creative Vault',
       freelancerEmail: 'contact@kansocre8.local',
-      freelancerPhone: '+1 (555) 019-2834',
-      freelancerAddress: 'San Francisco, CA',
-      paymentBank: 'First Creative Bank',
-      paymentAccount: '9876-5432-1098',
+      freelancerPhone: '+60 12-345 6789',
+      freelancerAddress: 'Atelier 08, Bukit Damansara, 50490 Kuala Lumpur, Malaysia',
+      paymentBank: 'Maybank Berhad / CIMB Bank',
+      paymentAccount: '5141-8722-9018',
       paymentAccountName: 'Harusssani Manaphassan',
-      currency: defaultClient.currency || 'USD',
-      hourlyRate: defaultClient.defaultHourlyRate || 125,
+      currency: defaultClient.currency || 'MYR',
+      hourlyRate: defaultClient.defaultHourlyRate || 180,
       items: [
         {
           id: '1',
-          description: 'Brand Identity & Visual Asset Package',
+          description: 'Smart City Mobile UI Design & Interactive Proofs Package',
           quantity: 1,
-          unitPrice: 1500,
-          amount: 1500
+          unitPrice: 2800,
+          amount: 2800
         }
       ],
       taxRatePercent: 0,
-      subtotal: 1500,
+      subtotal: 2800,
       taxAmount: 0,
-      total: 1500,
-      notes: 'Payment due within 14 days of invoice date. Thank you for your partnership!'
+      total: 2800,
+      notes: 'Payment settlement via Instant DuitNow / IBG transfer within 14 days. Terima kasih!'
     };
 
     financeService.saveDocument(newDoc);
@@ -170,14 +170,14 @@
   }
 
   function createNewQuote() {
-    const defaultClient = clients.find(c => c.code === 'NEX') || clients[0] || {
-      code: 'NEX',
-      name: 'Nexus Studio',
-      contactPerson: 'Alex Rivera',
-      email: 'billing@nexusstudio.io',
-      billingAddress: '550 Howard St, San Francisco, CA 94105',
-      currency: 'USD',
-      defaultHourlyRate: 140
+    const defaultClient = clients.find(c => c.code === 'GOV') || clients[0] || {
+      code: 'GOV',
+      name: 'Govicle®',
+      contactPerson: 'Muhamad Hanif',
+      email: 'accounts@govicle.com',
+      billingAddress: 'Tech Hub Cyberjaya, Block 3502, Jalan Teknokrat 5, 63000 Cyberjaya, Selangor',
+      currency: 'MYR',
+      defaultHourlyRate: 220
     };
 
     const nextNum = quotes.length + 1;

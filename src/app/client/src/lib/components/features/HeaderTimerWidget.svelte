@@ -132,7 +132,7 @@
       title="Active Client Billing Profile"
     >
       {#each clientProfiles as client}
-        <option value={client.code}>{client.code} (${client.defaultHourlyRate}/h)</option>
+        <option value={client.code}>{client.code} ({settingsStore.settings.currencySymbol}{client.defaultHourlyRate}/h)</option>
       {/each}
     </select>
 
@@ -166,13 +166,13 @@
             <span class="curr-suffix">/ hour</span>
           </div>
           <div class="rate-presets">
-            {#each [80, 100, 110, 125, 140, 160] as preset}
+            {#each [100, 140, 160, 180, 200, 220] as preset}
               <button
                 class="preset-chip"
                 class:selected={timerStore.hourlyRate === preset}
                 onclick={() => { timerStore.setRate(preset); showRatePopover = false; }}
               >
-                ${preset}
+                {settingsStore.settings.currencySymbol}{preset}
               </button>
             {/each}
           </div>

@@ -345,16 +345,34 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
     return note;
   }
 
-  public addEntry(noteDate: string, type: BujoEntry['type'], text: string): DailyNote {
+  public addEntry(noteDate: string, typeOrText: BujoEntry['type'] | string, textArg?: string): DailyNote {
+    let type: BujoEntry['type'] = 'task';
+    let text = '';
+
+    const validTypes: BujoEntry['type'][] = ['task', 'priority', 'note', 'event', 'completed', 'migrated'];
+    if (textArg !== undefined) {
+      if (validTypes.includes(typeOrText as BujoEntry['type'])) {
+        type = typeOrText as BujoEntry['type'];
+        text = textArg;
+      } else {
+        text = typeOrText;
+        type = (validTypes.includes(textArg as BujoEntry['type']) ? textArg : 'task') as BujoEntry['type'];
+      }
+    } else {
+      text = typeOrText;
+      type = 'task';
+    }
+
     const note = this.getDailyNote(noteDate);
+    const prefix = type === 'priority' ? '* [ ] ' : (type === 'note' ? '- ' : (type === 'event' ? 'o ' : '• [ ] '));
     const newEntry: BujoEntry = {
       id: `bujo_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
       type,
-      raw: text,
+      raw: `${prefix}${text}`,
       text,
       completed: false
     };
-    note.entries = [...note.entries, newEntry];
+    note.entries = [newEntry, ...note.entries];
     this.saveDailyNote(note);
     return note;
   }
