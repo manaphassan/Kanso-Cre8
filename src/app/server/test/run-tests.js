@@ -184,7 +184,7 @@ This is the project brief content.
     }
   });
 
-  // ─── TEST 7: Sidebar Navigation & App Ecosystem DOM Structure ─────
+  // ─── TEST 7: Zen HUD Navigation & App Ecosystem DOM Structure ─────
   test('App.svelte and Client structure include Kanso Cre8 Desktop ecosystem navigation', () => {
     const svelteAppPath = path.join(__dirname, '../../client/src/App.svelte');
     const indexPath = path.join(__dirname, '../../client/index.html');
@@ -192,7 +192,7 @@ This is the project brief content.
       ? fs.readFileSync(svelteAppPath, 'utf8')
       : fs.readFileSync(indexPath, 'utf8');
 
-    assert.ok(content.includes('app-sidebar'), 'Sidebar root element must exist');
+    assert.ok(content.includes('view-switcher-wrapper') || content.includes('app-header'), 'Header HUD navigation must exist');
     assert.ok(content.includes('Desktop') || content.includes('MiniCassetteDock'), 'Desktop Vault banner or dock must exist');
     assert.ok(
       content.includes('Desktop') || content.includes('MiniCassetteDock'),

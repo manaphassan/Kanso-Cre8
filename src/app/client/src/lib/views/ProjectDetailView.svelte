@@ -404,7 +404,7 @@
 
 <svelte:window onclick={() => { showMoreMenu = false; }} />
 
-<div class="clickup-task-container">
+<div class="project-workspace-container">
   {#if projectStore.loadingDetail}
     <div class="loading-state">
       <div class="loading-spinner"></div>
@@ -422,9 +422,9 @@
     <!-- ═══════════ MINIMAL & MODERN COMMAND HEADER ═══════════ -->
     <header class="task-command-header">
       <div class="task-breadcrumbs">
-        <span class="crumb-link" onclick={() => appState.navigate('projects')}>Projects</span>
+        <button type="button" class="crumb-link" onclick={() => appState.navigate('projects')}>Projects</button>
         <span class="crumb-sep">/</span>
-        <span class="crumb-tag">{p.brand || 'SS'}</span>
+        <span class="crumb-tag">{p.brand || 'ACME'}</span>
         <span class="crumb-sep">/</span>
         <span class="crumb-current">{p.jobId || p.id}</span>
       </div>
@@ -1075,7 +1075,7 @@
 </div>
 
 <style>
-  .clickup-task-container {
+  .project-workspace-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1105,8 +1105,13 @@
     cursor: pointer;
     color: var(--text-secondary);
     font-weight: 600;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
   }
-  .crumb-link:hover { color: var(--text-brand, #043388); }
+  .crumb-link:hover { color: var(--kanso-accent, #0078D4); }
   .crumb-sep { opacity: 0.4; }
   .crumb-tag {
     font-weight: 700;
@@ -1275,12 +1280,12 @@
     outline: none;
     border: 1px solid var(--surface-card-border);
   }
-  .status-backlog { background: #F1F5F9; color: #475569; }
-  .status-in-progress { background: #EBF4FE; color: #043388; border-color: #BFDBFE; }
-  .status-review { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
-  .status-revision { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
-  .status-approved { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
-  .status-done { background: #F3E8FF; color: #7E22CE; border-color: #E9D5FF; }
+  .status-backlog { background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.3); }
+  .status-in-progress { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent, #38BDF8); border-color: rgba(56, 189, 248, 0.35); }
+  .status-review { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning, #F59E0B); border-color: rgba(245, 158, 11, 0.35); }
+  .status-revision { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger, #EF4444); border-color: rgba(239, 68, 68, 0.35); }
+  .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success, #10B981); border-color: rgba(16, 185, 129, 0.35); }
+  .status-done { background: rgba(168, 85, 247, 0.15); color: #C084FC; border-color: rgba(168, 85, 247, 0.35); }
 
   /* Segmented Nav */
   .canvas-segmented-nav {
@@ -1505,10 +1510,10 @@
     padding: 2px 7px;
     border-radius: 4px;
   }
-  .priority-urgent { background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; font-weight: 800; }
-  .priority-high { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
-  .priority-medium { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
-  .priority-low { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
+  .priority-urgent { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger, #EF4444); border: 1px solid rgba(239, 68, 68, 0.35); font-weight: 800; }
+  .priority-high { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning, #F59E0B); border: 1px solid rgba(245, 158, 11, 0.35); }
+  .priority-medium { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent, #38BDF8); border: 1px solid rgba(56, 189, 248, 0.35); }
+  .priority-low { background: var(--kanso-surface-hover, #27272A); color: var(--kanso-text-muted, #71717A); border: 1px solid var(--kanso-border, #3F3F46); font-weight: 700; }
 
   .approvals-mini-section {
     display: flex;
