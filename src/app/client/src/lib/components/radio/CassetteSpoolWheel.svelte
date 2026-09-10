@@ -35,7 +35,7 @@
 </script>
 
 <div
-  class="inline-flex items-center justify-center select-none"
+  class="spool-wheel-container"
   class:spool-spinning={isSpinning}
   style="width: {size}px; height: {size}px; {isSpinning ? '' : `transform: rotate(${rotationAngle}deg);`} will-change: transform;"
   aria-hidden="true"
@@ -82,6 +82,15 @@
 </div>
 
 <style>
+  .spool-wheel-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    flex-shrink: 0;
+    line-height: 0;
+  }
+
   @keyframes spool-rotate-33rpm {
     from {
       transform: rotate(0deg);
