@@ -695,12 +695,14 @@
 
 <style>
   .bujo-page-wrap {
-    padding: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0 0 48px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    box-sizing: border-box;
   }
 
   .bujo-header {

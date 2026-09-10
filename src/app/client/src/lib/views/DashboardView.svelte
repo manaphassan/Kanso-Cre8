@@ -157,7 +157,6 @@
           </svg>
         </div>
         <h1 class="deck-title">Studio Deck</h1>
-        <span class="deck-badge">EXECUTIVE VIEW</span>
       </div>
       <p class="deck-subtitle">
         Mindful creative operations — real-time billable pulse, BuJo task rapid log, and design metrics.
@@ -623,14 +622,14 @@
 </div>
 
 <style>
-  /* ═══ STUDIO DECK CONTAINER ════════════════════════════════════ */
+  /* ═══ STUDIO DECK CONTAINER: 100% FULL WIDTH ═════════════════════ */
   .deck-container {
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 24px 32px 48px;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 0 48px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
     box-sizing: border-box;
     width: 100%;
   }
@@ -1367,7 +1366,17 @@
     text-decoration: underline;
   }
 
-  /* ═══ RESPONSIVE BREAKPOINTS ═══════════════════════════════════ */
+  /* ═══ RESPONSIVE BREAKPOINTS: FULL-WIDTH SPACE SCALING ═════════ */
+  @media (min-width: 1440px) {
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+    .projects-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 1800px) {
+    .projects-grid { grid-template-columns: repeat(4, 1fr); }
+    .suggestions-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
   @media (max-width: 1100px) {
     .cashflow-grid { grid-template-columns: repeat(2, 1fr); }
     .main-two-col  { grid-template-columns: 1fr; }
@@ -1376,10 +1385,10 @@
   }
 
   @media (max-width: 700px) {
-    .deck-container { padding: 16px; gap: 20px; }
+    .deck-container { padding: 0 0 24px; gap: 20px; }
     .cashflow-grid  { grid-template-columns: 1fr; }
     .projects-grid  { grid-template-columns: 1fr; }
-    .suggestions-grid { grid-template-columns: 1fr; }
+    .suggestions-grid { grid-template-columns: repeat(2, 1fr); }
     .metrics-grid   { grid-template-columns: 1fr; }
   }
 </style>
