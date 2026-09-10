@@ -1,112 +1,113 @@
 /* ==========================================================================
-   Linear / Geist & Kanso Studio Design Tokens for Kanso Cre8 Desktop Application
+   Linear / Geist & Vorxs Scandinavian Studio Tokens for Kanso Cre8
    Strict 60:30:10 Color Hierarchy:
-   - 60% Foundation Layer (Canvas & Studio breathing room)
-   - 30% Secondary Layer (Cards, sidebars, borders, modals, structural surfaces)
-   - 10% Brand Accent Layer (Focal CTAs, active highlights, key metrics)
+   - 60% Foundation Layer (Vorxs Stone Paper / Organic Olive Obsidian)
+   - 30% Secondary Layer (Cards, borders, modals, structural surfaces)
+   - 10% Brand Accent Layer (Vorxs Terracotta Tangerine #DE694B)
    - Isolated Semantic Layer (Micro-badges and status indicators)
    ========================================================================== */
+@import './kanso-tokens.css';
 
 :root, [data-theme="dark"] {
-  /* ─── KANSO STUDIO DARK MODE (STUDIO OBSIDIAN) ─── */
-  --brand-primary: var(--kanso-accent, #38BDF8);
-  --brand-secondary: #0284C7;
-  --brand-accent: var(--kanso-accent, #38BDF8);
-  --brand-tint: rgba(56, 189, 248, 0.12);
-  --brand-gradient: linear-gradient(135deg, #18181B 0%, #27272A 50%, #38BDF8 100%);
-  --brand-glow: 0 0 16px rgba(56, 189, 248, 0.35);
+  /* ─── VORXS SCANDINAVIAN DARK MODE (ORGANIC OLIVE OBSIDIAN) ─── */
+  --brand-primary: var(--kanso-accent, #DE694B);
+  --brand-secondary: #E87A5E;
+  --brand-accent: var(--kanso-accent, #DE694B);
+  --brand-tint: rgba(222, 105, 75, 0.14);
+  --brand-gradient: linear-gradient(135deg, #1E251A 0%, #283223 50%, #DE694B 100%);
+  --brand-glow: 0 0 16px rgba(222, 105, 75, 0.35);
 
-  --bg-app: var(--kanso-canvas, #09090B);
-  --bg-canvas: var(--kanso-canvas, #09090B);
-  --bg-header: var(--kanso-surface, #18181B);
-  --header-text: var(--kanso-text-primary, #F4F4F5);
-  --bg-sidebar: var(--kanso-surface, #18181B);
-  --sidebar-border: var(--kanso-border, #27272A);
-  --sidebar-text: var(--kanso-text-primary, #F4F4F5);
-  --sidebar-text-muted: var(--kanso-text-muted, #A1A1AA);
-  --sidebar-active-bg: rgba(56, 189, 248, 0.12);
-  --sidebar-active-text: var(--kanso-accent, #38BDF8);
-  --sidebar-active-indicator: var(--kanso-accent, #38BDF8);
+  --bg-app: var(--kanso-canvas, #151813);
+  --bg-canvas: var(--kanso-canvas, #151813);
+  --bg-header: var(--kanso-surface, #1E251A);
+  --header-text: var(--kanso-text-primary, #EDE9DF);
+  --bg-sidebar: var(--kanso-surface, #1E251A);
+  --sidebar-border: var(--kanso-border, #2D3728);
+  --sidebar-text: var(--kanso-text-primary, #EDE9DF);
+  --sidebar-text-muted: var(--kanso-text-muted, #75816E);
+  --sidebar-active-bg: rgba(222, 105, 75, 0.14);
+  --sidebar-active-text: var(--kanso-accent, #DE694B);
+  --sidebar-active-indicator: var(--kanso-accent, #DE694B);
 
-  --surface-card: var(--kanso-surface, #18181B);
-  --surface-card-subtle: #141416;
-  --surface-card-elevated: #202024;
-  --surface-card-border: var(--kanso-border, #27272A);
-  --surface-card-hover: var(--kanso-surface-hover, #27272A);
+  --surface-card: var(--kanso-surface, #1E251A);
+  --surface-card-subtle: #192015;
+  --surface-card-elevated: #283223;
+  --surface-card-border: var(--kanso-border, #2D3728);
+  --surface-card-hover: var(--kanso-surface-hover, #283223);
 
-  --text-primary: var(--kanso-text-primary, #F4F4F5);
-  --text-secondary: var(--kanso-text-secondary, #D4D4D8);
-  --text-tertiary: var(--kanso-text-muted, #A1A1AA);
-  --text-inverted: #09090B;
-  --text-brand: var(--kanso-accent, #38BDF8);
+  --text-primary: var(--kanso-text-primary, #EDE9DF);
+  --text-secondary: var(--kanso-text-secondary, #B4BBAE);
+  --text-tertiary: var(--kanso-text-muted, #75816E);
+  --text-inverted: #151813;
+  --text-brand: var(--kanso-accent, #DE694B);
 }
 
 [data-theme="light"] {
-  /* ─── KANSO STUDIO LIGHT MODE (ATELIER PAPER) ─── */
-  --brand-primary: var(--kanso-accent, #0078D4);
-  --brand-secondary: #0284C7;
-  --brand-accent: var(--kanso-accent, #0078D4);
-  --brand-tint: rgba(0, 120, 212, 0.08);
-  --brand-gradient: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #0078D4 100%);
-  --brand-glow: 0 0 16px rgba(0, 120, 212, 0.25);
+  /* ─── VORXS SCANDINAVIAN LIGHT MODE (STONE PAPER & CHARCOAL INK) ─── */
+  --brand-primary: var(--kanso-accent, #DE694B);
+  --brand-secondary: #C95A3E;
+  --brand-accent: var(--kanso-accent, #DE694B);
+  --brand-tint: rgba(222, 105, 75, 0.12);
+  --brand-gradient: linear-gradient(135deg, #ECE8DF 0%, #E2DDD1 50%, #DE694B 100%);
+  --brand-glow: 0 0 16px rgba(222, 105, 75, 0.25);
 
-  --bg-app: var(--kanso-canvas, #F8FAFC);
-  --bg-canvas: var(--kanso-canvas, #F8FAFC);
-  --bg-header: var(--kanso-surface, #FFFFFF);
-  --header-text: var(--kanso-text-primary, #0F172A);
-  --bg-sidebar: var(--kanso-surface, #FFFFFF);
-  --sidebar-border: var(--kanso-border, #E2E8F0);
-  --sidebar-text: var(--kanso-text-primary, #0F172A);
-  --sidebar-text-muted: var(--kanso-text-muted, #64748B);
-  --sidebar-active-bg: rgba(0, 120, 212, 0.1);
-  --sidebar-active-text: var(--kanso-accent, #0078D4);
-  --sidebar-active-indicator: var(--kanso-accent, #0078D4);
+  --bg-app: var(--kanso-canvas, #ECE8DF);
+  --bg-canvas: var(--kanso-canvas, #ECE8DF);
+  --bg-header: var(--kanso-surface, #F7F5F0);
+  --header-text: var(--kanso-text-primary, #161913);
+  --bg-sidebar: var(--kanso-surface, #F7F5F0);
+  --sidebar-border: var(--kanso-border, #D3CEBF);
+  --sidebar-text: var(--kanso-text-primary, #161913);
+  --sidebar-text-muted: var(--kanso-text-muted, #6B7564);
+  --sidebar-active-bg: rgba(222, 105, 75, 0.12);
+  --sidebar-active-text: var(--kanso-accent, #DE694B);
+  --sidebar-active-indicator: var(--kanso-accent, #DE694B);
 
-  --surface-card: var(--kanso-surface, #FFFFFF);
-  --surface-card-subtle: #F1F5F9;
+  --surface-card: var(--kanso-surface, #F7F5F0);
+  --surface-card-subtle: #EBE7DD;
   --surface-card-elevated: #FFFFFF;
-  --surface-card-border: var(--kanso-border, #E2E8F0);
-  --surface-card-hover: var(--kanso-surface-hover, #F1F5F9);
+  --surface-card-border: var(--kanso-border, #D3CEBF);
+  --surface-card-hover: var(--kanso-surface-hover, #E2DDD1);
 
-  --text-primary: var(--kanso-text-primary, #0F172A);
-  --text-secondary: var(--kanso-text-secondary, #334155);
-  --text-tertiary: var(--kanso-text-muted, #64748B);
+  --text-primary: var(--kanso-text-primary, #161913);
+  --text-secondary: var(--kanso-text-secondary, #4A5445);
+  --text-tertiary: var(--kanso-text-muted, #6B7564);
   --text-inverted: #FFFFFF;
-  --text-brand: var(--kanso-accent, #0078D4);
+  --text-brand: var(--kanso-accent, #DE694B);
 }
 
 [data-theme="eink"] {
-  /* ─── KANSO STUDIO E-INK MODE (ZEN MONOCHROME) ─── */
-  --brand-primary: #000000;
-  --brand-secondary: #000000;
-  --brand-accent: #000000;
-  --brand-tint: #F4F4F5;
+  /* ─── VORXS TACTILE E-INK PAPER (RAW PULP & INK) ─── */
+  --brand-primary: var(--kanso-accent, #DE694B);
+  --brand-secondary: #161913;
+  --brand-accent: var(--kanso-accent, #DE694B);
+  --brand-tint: rgba(222, 105, 75, 0.12);
   --brand-gradient: none;
   --brand-glow: none;
 
-  --bg-app: #FFFFFF;
-  --bg-canvas: #FFFFFF;
-  --bg-header: #FFFFFF;
-  --header-text: #000000;
-  --bg-sidebar: #FFFFFF;
-  --sidebar-border: #000000;
-  --sidebar-text: #000000;
-  --sidebar-text-muted: #3F3F46;
-  --sidebar-active-bg: #000000;
-  --sidebar-active-text: #FFFFFF;
-  --sidebar-active-indicator: #000000;
+  --bg-app: var(--kanso-canvas, #F4F1EA);
+  --bg-canvas: var(--kanso-canvas, #F4F1EA);
+  --bg-header: var(--kanso-surface, #EAE5D9);
+  --header-text: var(--kanso-text-primary, #161913);
+  --bg-sidebar: var(--kanso-surface, #EAE5D9);
+  --sidebar-border: var(--kanso-border, #161913);
+  --sidebar-text: var(--kanso-text-primary, #161913);
+  --sidebar-text-muted: var(--kanso-text-muted, #505A4A);
+  --sidebar-active-bg: #161913;
+  --sidebar-active-text: #F4F1EA;
+  --sidebar-active-indicator: #DE694B;
 
-  --surface-card: #FFFFFF;
-  --surface-card-subtle: #F4F4F5;
-  --surface-card-elevated: #FFFFFF;
-  --surface-card-border: #000000;
-  --surface-card-hover: #F4F4F5;
+  --surface-card: var(--kanso-surface, #EAE5D9);
+  --surface-card-subtle: #DFD9CC;
+  --surface-card-elevated: #EAE5D9;
+  --surface-card-border: var(--kanso-border, #161913);
+  --surface-card-hover: var(--kanso-surface-hover, #DFD9CC);
 
-  --text-primary: #000000;
-  --text-secondary: #18181B;
-  --text-tertiary: #3F3F46;
-  --text-inverted: #FFFFFF;
-  --text-brand: #000000;
+  --text-primary: var(--kanso-text-primary, #161913);
+  --text-secondary: var(--kanso-text-secondary, #2A3026);
+  --text-tertiary: var(--kanso-text-muted, #505A4A);
+  --text-inverted: #F4F1EA;
+  --text-brand: var(--kanso-accent, #DE694B);
 }
 
 [data-theme="falconia"] {

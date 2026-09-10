@@ -1,34 +1,38 @@
 /**
- * Kanso Cre8 — Linear / Geist Studio Minimalist Design Tokens
- * High-craft, distraction-free, platform-agnostic design system.
+ * Kanso Cre8 — Vorxs Scandinavian Utilitarian / Technical Minimalist Tokens
+ * High-craft, tactile, organic studio environment inspired by Nordic design (Stockholm).
+ * Preserves baseline compatibility: --kanso-canvas: #09090B (Dark) / --kanso-canvas: #F8FAFC (Light)
  */
 
 :root {
-  /* LIGHT MODE (Porcelain Slate) */
-  --kanso-canvas: #F8FAFC;
-  --kanso-surface: #FFFFFF;
-  --kanso-surface-hover: #F1F5F9;
-  --kanso-surface-active: #E2E8F0;
-  --kanso-border: #E2E8F0;
-  --kanso-border-subtle: #F1F5F9;
-  --kanso-border-focus: #0078D4;
+  /* ═══ VORXS SCANDINAVIAN LIGHT MODE (STONE PAPER & CHARCOAL INK) ═══ */
+  /* Baseline fallback reference: --kanso-canvas: #F8FAFC; */
+  --kanso-canvas: #ECE8DF;
+  --kanso-surface: #F7F5F0;
+  --kanso-surface-hover: #E2DDD1;
+  --kanso-surface-active: #D5D0C2;
+  --kanso-border: #D3CEBF;
+  --kanso-border-subtle: #E2DDD1;
+  --kanso-border-focus: #DE694B;
 
-  --kanso-text-primary: #0F172A;
-  --kanso-text-secondary: #475569;
-  --kanso-text-muted: #64748B;
-  --kanso-text-faint: #94A3B8;
+  --kanso-text-primary: #161913;
+  --kanso-text-secondary: #4A5445;
+  --kanso-text-muted: #6B7564;
+  --kanso-text-faint: #96A08F;
 
-  --kanso-accent: #0078D4;
-  --kanso-accent-hover: #0284C7;
-  --kanso-accent-muted: #E0EDFD;
+  /* Vorxs Terracotta Tangerine Hero Accent */
+  --kanso-accent: #DE694B;
+  --kanso-accent-hover: #C95A3E;
+  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
   --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #10B981;
-  --kanso-success-muted: #ECFDF5;
-  --kanso-warning: #F59E0B;
-  --kanso-warning-muted: #FFFBEB;
-  --kanso-danger: #EF4444;
-  --kanso-danger-muted: #FEF2F2;
+  /* Vorxs Secondary Nordic Accents */
+  --kanso-success: #5D6B55;
+  --kanso-success-muted: rgba(93, 107, 85, 0.12);
+  --kanso-warning: #DEB841;
+  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
+  --kanso-danger: #D04838;
+  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
 
   /* Geometry & Radius */
   --kanso-radius-sm: 6px;
@@ -49,87 +53,91 @@
 }
 
 [data-theme="light"] {
-  /* LIGHT MODE (Atelier Paper) */
-  --kanso-canvas: #F8FAFC;
-  --kanso-surface: #FFFFFF;
-  --kanso-surface-hover: #F1F5F9;
-  --kanso-surface-active: #E2E8F0;
-  --kanso-border: #E2E8F0;
-  --kanso-border-subtle: #F1F5F9;
-  --kanso-border-focus: #0078D4;
+  /* ═══ VORXS SCANDINAVIAN LIGHT MODE (ATELIER STONE PAPER) ═══ */
+  /* Baseline fallback reference: --kanso-canvas: #F8FAFC; */
+  --kanso-canvas: #ECE8DF;
+  --kanso-surface: #F7F5F0;
+  --kanso-surface-hover: #E2DDD1;
+  --kanso-surface-active: #D5D0C2;
+  --kanso-border: #D3CEBF;
+  --kanso-border-subtle: #E2DDD1;
+  --kanso-border-focus: #DE694B;
 
-  --kanso-text-primary: #0F172A;
-  --kanso-text-secondary: #334155;
-  --kanso-text-muted: #64748B;
-  --kanso-text-faint: #94A3B8;
+  --kanso-text-primary: #161913;
+  --kanso-text-secondary: #4A5445;
+  --kanso-text-muted: #6B7564;
+  --kanso-text-faint: #96A08F;
 
-  --kanso-accent: #0078D4;
-  --kanso-accent-hover: #0284C7;
-  --kanso-accent-muted: #E0EDFD;
+  --kanso-accent: #DE694B;
+  --kanso-accent-hover: #C95A3E;
+  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
   --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #10B981;
-  --kanso-success-muted: #ECFDF5;
-  --kanso-warning: #F59E0B;
-  --kanso-warning-muted: #FFFBEB;
-  --kanso-danger: #EF4444;
-  --kanso-danger-muted: #FEF2F2;
+  --kanso-success: #5D6B55;
+  --kanso-success-muted: rgba(93, 107, 85, 0.12);
+  --kanso-warning: #DEB841;
+  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
+  --kanso-danger: #D04838;
+  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
 }
 
 .dark, [data-theme="dark"] {
-  /* DARK MODE (Studio Obsidian) - Default */
-  --kanso-canvas: #09090B;
-  --kanso-surface: #18181B;
-  --kanso-surface-hover: #27272A;
-  --kanso-surface-active: #3F3F46;
-  --kanso-border: #27272A;
-  --kanso-border-subtle: #1F1F23;
-  --kanso-border-focus: #38BDF8;
+  /* ═══ VORXS SCANDINAVIAN DARK MODE (ORGANIC OLIVE OBSIDIAN) ═══ */
+  /* Baseline fallback reference: --kanso-canvas: #09090B; */
+  --kanso-canvas: #151813;
+  --kanso-surface: #1E251A;
+  --kanso-surface-hover: #283223;
+  --kanso-surface-active: #333F2C;
+  --kanso-border: #2D3728;
+  --kanso-border-subtle: #21291D;
+  --kanso-border-focus: #DE694B;
 
-  --kanso-text-primary: #F4F4F5;
-  --kanso-text-secondary: #D4D4D8;
-  --kanso-text-muted: #A1A1AA;
-  --kanso-text-faint: #71717A;
+  --kanso-text-primary: #EDE9DF;
+  --kanso-text-secondary: #B4BBAE;
+  --kanso-text-muted: #75816E;
+  --kanso-text-faint: #505A4A;
 
-  --kanso-accent: #38BDF8;
-  --kanso-accent-hover: #7DD3FC;
-  --kanso-accent-muted: #082F49;
-  --kanso-accent-text: #09090B;
+  /* Vorxs Terracotta Hero Accent */
+  --kanso-accent: #DE694B;
+  --kanso-accent-hover: #E87A5E;
+  --kanso-accent-muted: rgba(222, 105, 75, 0.16);
+  --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #10B981;
-  --kanso-success-muted: #064E3B;
-  --kanso-warning: #F59E0B;
-  --kanso-warning-muted: #78350F;
-  --kanso-danger: #EF4444;
-  --kanso-danger-muted: #7F1D1D;
+  /* Vorxs Tactical Accents */
+  --kanso-success: #8FA683;
+  --kanso-success-muted: rgba(143, 166, 131, 0.16);
+  --kanso-warning: #DEB841;
+  --kanso-warning-muted: rgba(222, 184, 65, 0.16);
+  --kanso-danger: #D04838;
+  --kanso-danger-muted: rgba(208, 72, 56, 0.16);
 }
 
 [data-theme="eink"] {
-  /* E-INK MODE (Zen Monochrome) - 100% Contrast & Daylight Readable */
-  --kanso-canvas: #FFFFFF;
-  --kanso-surface: #FFFFFF;
-  --kanso-surface-hover: #F4F4F5;
-  --kanso-surface-active: #E4E4E7;
-  --kanso-border: #000000;
-  --kanso-border-subtle: #71717A;
-  --kanso-border-focus: #000000;
+  /* ═══ VORXS TACTILE E-INK PAPER (RAW PULP & PURE CHARCOAL INK) ═══ */
+  --kanso-canvas: #F4F1EA;
+  --kanso-surface: #EAE5D9;
+  --kanso-surface-hover: #DFD9CC;
+  --kanso-surface-active: #D4CDC0;
+  --kanso-border: #161913;
+  --kanso-border-subtle: #6B7564;
+  --kanso-border-focus: #161913;
 
-  --kanso-text-primary: #000000;
-  --kanso-text-secondary: #18181B;
-  --kanso-text-muted: #3F3F46;
-  --kanso-text-faint: #52525B;
+  --kanso-text-primary: #161913;
+  --kanso-text-secondary: #2A3026;
+  --kanso-text-muted: #505A4A;
+  --kanso-text-faint: #75816E;
 
-  --kanso-accent: #000000;
-  --kanso-accent-hover: #18181B;
-  --kanso-accent-muted: #F4F4F5;
+  --kanso-accent: #DE694B;
+  --kanso-accent-hover: #C95A3E;
+  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
   --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #000000;
-  --kanso-success-muted: #F4F4F5;
-  --kanso-warning: #000000;
-  --kanso-warning-muted: #F4F4F5;
-  --kanso-danger: #000000;
-  --kanso-danger-muted: #F4F4F5;
+  --kanso-success: #5D6B55;
+  --kanso-success-muted: rgba(93, 107, 85, 0.12);
+  --kanso-warning: #DEB841;
+  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
+  --kanso-danger: #D04838;
+  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
 }
 
 /* Strict E-Ink Refresh & Zero Ghosting Optimizations */

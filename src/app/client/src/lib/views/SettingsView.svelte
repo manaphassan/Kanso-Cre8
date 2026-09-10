@@ -58,30 +58,30 @@
   const themeCards: { id: ThemeName; name: string; tag: string; desc: string; canvasColor: string; surfaceColor: string; accentColor: string }[] = [
     {
       id: 'dark',
-      name: 'Studio Obsidian',
+      name: 'Vorxs Olive Obsidian',
       tag: 'DARK MODE',
-      desc: 'Deep OLED black canvas with electric cyan accents. Ideal for late-night creative flow.',
-      canvasColor: '#09090B',
-      surfaceColor: '#18181B',
-      accentColor: '#38BDF8'
+      desc: 'Organic olive obsidian canvas with tactical sage surfaces and terracotta pops. Deep, warm, zero eyestrain.',
+      canvasColor: '#151813',
+      surfaceColor: '#1E251A',
+      accentColor: '#DE694B'
     },
     {
       id: 'light',
-      name: 'Atelier Paper',
+      name: 'Vorxs Stone Paper',
       tag: 'LIGHT MODE',
-      desc: 'Crisp porcelain slate canvas inspired by fine Japanese print paper and Swiss typography.',
-      canvasColor: '#F8FAFC',
-      surfaceColor: '#FFFFFF',
-      accentColor: '#0078D4'
+      desc: 'Warm Scandinavian raw stone paper canvas with deep charcoal ink and terracotta CTAs.',
+      canvasColor: '#ECE8DF',
+      surfaceColor: '#F7F5F0',
+      accentColor: '#DE694B'
     },
     {
       id: 'eink',
-      name: 'Zen Monochrome',
+      name: 'Vorxs Tactile Paper',
       tag: 'E-INK MODE',
-      desc: 'High-contrast 100% monochrome layout with 1.5px ink borders. Zero eyestrain.',
-      canvasColor: '#FFFFFF',
-      surfaceColor: '#FFFFFF',
-      accentColor: '#000000'
+      desc: 'Zero-eyestrain warm recycled pulp with sharp pure ink borders and zero glare in bright studio daylight.',
+      canvasColor: '#F4F1EA',
+      surfaceColor: '#EAE5D9',
+      accentColor: '#DE694B'
     }
   ];
 
