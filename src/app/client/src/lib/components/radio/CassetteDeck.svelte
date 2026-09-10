@@ -1,6 +1,6 @@
 <script lang="ts">
   import { radioService, ALL_CASSETTE_STATIONS } from '$lib/services/radioService.svelte';
-  import { ambientAudioService } from '$lib/services/ambientAudioService';
+  import { ambientAudioService } from '$lib/services/ambientAudioService.svelte';
   import AnalogVuMeter from './AnalogVuMeter.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
   import CassetteTapeCard from './CassetteTapeCard.svelte';
