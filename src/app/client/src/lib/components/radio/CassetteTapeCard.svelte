@@ -360,7 +360,7 @@
   .card-tape-disc {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, #3D2218 30%, #1A0D07 88%, #100804 100%);
+    background: radial-gradient(circle, transparent 15px, #3D2218 16%, #1A0D07 88%, #100804 100%);
     border: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     transition: width 0.3s ease, height 0.3s ease;
