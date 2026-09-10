@@ -2,6 +2,7 @@
  * Application Bootstrap Entry for Kanso Cre8 Desktop Application (Svelte 5)
  */
 import { mount } from 'svelte';
+import './lib/styles/kanso-tokens.css';
 import './lib/styles/fluent2-tokens.css';
 import './lib/styles/fluent2-base.css';
 import './lib/styles/markdown-obsidian.css';
