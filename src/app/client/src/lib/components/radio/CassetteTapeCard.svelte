@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CassetteRadioStation } from '$lib/types/radio';
+  import { radioService } from '$lib/services/radioService.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
 
   interface Props {
@@ -17,6 +18,11 @@
     spoolRotation = 0,
     onclick
   }: Props = $props();
+
+  const currentSide = $derived(isSelected ? radioService.state.tapeSide : 'A');
+  const reelProgress = $derived(radioService.reelProgress);
+  const leftCardTapeDiameter = $derived(isSelected ? Math.round(36 + (1.0 - reelProgress) * 20) : 46);
+  const rightCardTapeDiameter = $derived(isSelected ? Math.round(36 + reelProgress * 20) : 40);
 </script>
 
 <button
@@ -52,7 +58,7 @@
           class="label-side-badge"
           style="background: {station.shellColor};"
         >
-          A
+          {currentSide}
         </span>
         <span class="label-station-name" title={station.name}>
           {station.name}
@@ -83,8 +89,12 @@
         </div>
       </div>
 
-      <!-- Left Supply Spool -->
+      <!-- Left Supply Spool with Dynamic Tape Roll -->
       <div class="spool-slot">
+        <div
+          class="card-tape-disc"
+          style="width: {leftCardTapeDiameter}px; height: {leftCardTapeDiameter}px;"
+        ></div>
         <CassetteSpoolWheel
           size={32}
           isSpinning={isPlaying && isSelected}
@@ -93,8 +103,12 @@
         />
       </div>
 
-      <!-- Right Take-Up Spool -->
+      <!-- Right Take-Up Spool with Dynamic Tape Roll -->
       <div class="spool-slot">
+        <div
+          class="card-tape-disc"
+          style="width: {rightCardTapeDiameter}px; height: {rightCardTapeDiameter}px;"
+        ></div>
         <CassetteSpoolWheel
           size={32}
           isSpinning={isPlaying && isSelected}
@@ -338,6 +352,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+  }
+
+  .card-tape-disc {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, #3D2218 30%, #1A0D07 88%, #100804 100%);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    transition: width 0.3s ease, height 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
   }
 
   /* Bottom Notch */

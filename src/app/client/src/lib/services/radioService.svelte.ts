@@ -66,11 +66,14 @@ class RadioService {
     volume: 0.8,
     isMuted: false,
     currentTrackTitle: 'Ready to Play',
-    spoolRotation: 0
+    spoolRotation: 0,
+    tapeSide: 'A',
+    sessionElapsedSeconds: 420 // Initial 7 min elapsed for authentic tape presence
   });
 
   private audio: HTMLAudioElement | null = null;
   private animFrameId: number | null = null;
+  private elapsedInterval: any = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -87,6 +90,7 @@ class RadioService {
       this.state.isPlaying = true;
       this.state.isBuffering = false;
       this.startSpoolAnimation();
+      this.startElapsedTimer();
     });
 
     this.audio.addEventListener('waiting', () => {
@@ -97,6 +101,7 @@ class RadioService {
       this.state.isPlaying = false;
       this.state.isBuffering = false;
       this.stopSpoolAnimation();
+      this.stopElapsedTimer();
     });
 
     this.audio.addEventListener('error', (e) => {
@@ -105,11 +110,23 @@ class RadioService {
       this.state.isBuffering = false;
       this.state.currentTrackTitle = 'Stream Unavailable (Click Next)';
       this.stopSpoolAnimation();
+      this.stopElapsedTimer();
     });
   }
 
   get currentStation(): CassetteRadioStation {
     return ALL_CASSETTE_STATIONS.find(s => s.id === this.state.currentStationId) ?? ALL_CASSETTE_STATIONS[0];
+  }
+
+  get reelProgress(): number {
+    // 45 minute standard C-90 tape side (2700 seconds)
+    const sideSeconds = 45 * 60;
+    const progress = Math.min(1.0, (this.state.sessionElapsedSeconds % sideSeconds) / sideSeconds);
+    return this.state.tapeSide === 'A' ? progress : 1.0 - progress;
+  }
+
+  flipTapeSide() {
+    this.state.tapeSide = this.state.tapeSide === 'A' ? 'B' : 'A';
   }
 
   play(stationId?: string) {
@@ -201,6 +218,22 @@ class RadioService {
     if (this.animFrameId !== null) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
+    }
+  }
+
+  private startElapsedTimer() {
+    if (this.elapsedInterval) return;
+    this.elapsedInterval = setInterval(() => {
+      if (this.state.isPlaying) {
+        this.state.sessionElapsedSeconds++;
+      }
+    }, 1000);
+  }
+
+  private stopElapsedTimer() {
+    if (this.elapsedInterval) {
+      clearInterval(this.elapsedInterval);
+      this.elapsedInterval = null;
     }
   }
 }
