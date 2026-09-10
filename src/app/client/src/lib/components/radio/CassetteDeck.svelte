@@ -87,7 +87,7 @@
 <div class="flex flex-col gap-6 max-w-5xl mx-auto w-full">
   <!-- ════ MAIN MECHANICAL CASSETTE DECK CONSOLE ════ -->
   <div
-    class="w-full rounded-2xl p-6 relative overflow-hidden border shadow-xl flex flex-col gap-6"
+    class="w-full rounded-2xl p-6 relative overflow-hidden border flex flex-col gap-6"
     style="
       background: var(--kanso-surface);
       border-color: var(--kanso-border);
@@ -99,45 +99,92 @@
         <!-- Vintage Power LED -->
         <div class="flex items-center gap-2">
           <span
-            class="w-2.5 h-2.5 rounded-full transition-colors duration-300"
-            style="background: {state.isPlaying ? '#10B981' : '#71717A'}; box-shadow: {state.isPlaying ? '0 0 8px #10B981' : 'none'};"
+            class="w-2.5 h-2.5 rounded-full transition-all duration-300"
+            style="
+              background: {state.isPlaying ? '#8FA683' : '#71717A'};
+              box-shadow: {state.isPlaying ? '0 0 10px rgba(143, 166, 131, 0.7)' : 'none'};
+            "
           ></span>
           <span class="text-xs font-mono font-bold tracking-wider" style="color: var(--kanso-text-muted);">
-            {state.isPlaying ? 'HI-FI STEREO // BROADCASTING' : 'STANDBY // MOTOR IDLE'}
+            {state.isPlaying ? 'HI-FI STEREO // 33 RPM MOTOR ACTIVE' : 'STANDBY // MOTOR IDLE'}
           </span>
         </div>
       </div>
 
       <!-- Frequency Tuner LCD Readout -->
-      <div class="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 font-mono">
-        <span class="text-[11px] text-zinc-400">TUNER</span>
-        <span class="text-sm font-bold text-sky-400 tracking-wider">
+      <div
+        class="flex items-center gap-3 px-3.5 py-1.5 rounded-lg border font-mono shadow-inner"
+        style="
+          background: var(--kanso-surface-hover);
+          border-color: var(--kanso-border);
+        "
+      >
+        <span class="text-xs font-mono font-bold tracking-wider" style="color: var(--kanso-text-muted);">TUNER</span>
+        <span class="text-sm font-bold tracking-wider" style="color: var(--kanso-accent);">
           {station.frequency}
         </span>
-        <span class="text-xs font-semibold text-zinc-300 uppercase">
+        <span
+          class="text-xs font-mono font-semibold uppercase px-2 py-0.5 rounded border"
+          style="
+            background: rgba(222, 105, 75, 0.1);
+            color: var(--kanso-accent);
+            border-color: rgba(222, 105, 75, 0.2);
+          "
+        >
           {station.genre}
         </span>
       </div>
 
-      <!-- Live Track Marquee Ribbon -->
-      <div class="flex items-center gap-2 max-w-sm overflow-hidden px-3 py-1.5 rounded-lg bg-zinc-950/60 border border-white/5">
-        <span class="text-xs text-amber-400 shrink-0">♫</span>
-        <span class="text-xs font-mono truncate" style="color: var(--kanso-text-primary);">
+      <!-- Live Track Marquee Ribbon + Animated VU Equalizer -->
+      <div
+        class="flex items-center gap-2.5 max-w-sm overflow-hidden px-3.5 py-1.5 rounded-lg border"
+        style="
+          background: var(--kanso-surface-hover);
+          border-color: var(--kanso-border);
+        "
+      >
+        <!-- Mini Animated VU Meter Bars -->
+        <div class="flex items-end gap-1 h-3.5 shrink-0" aria-hidden="true">
+          <span
+            class="w-0.5 rounded-full transition-all duration-150 {state.isPlaying ? 'vu-bar-1' : ''}"
+            style="background: var(--kanso-accent); height: {state.isPlaying ? '10px' : '3px'};"
+          ></span>
+          <span
+            class="w-0.5 rounded-full transition-all duration-150 {state.isPlaying ? 'vu-bar-2' : ''}"
+            style="background: var(--kanso-accent); height: {state.isPlaying ? '14px' : '4px'};"
+          ></span>
+          <span
+            class="w-0.5 rounded-full transition-all duration-150 {state.isPlaying ? 'vu-bar-3' : ''}"
+            style="background: var(--kanso-accent); height: {state.isPlaying ? '8px' : '3px'};"
+          ></span>
+          <span
+            class="w-0.5 rounded-full transition-all duration-150 {state.isPlaying ? 'vu-bar-4' : ''}"
+            style="background: var(--kanso-accent); height: {state.isPlaying ? '12px' : '4px'};"
+          ></span>
+        </div>
+
+        <span class="text-xs font-mono font-medium truncate" style="color: var(--kanso-text-primary);">
           {state.currentTrackTitle}
         </span>
       </div>
     </div>
 
-    <!-- Center Deck Chamber: Active Cassette Inset & Visualizer -->
+    <!-- Center Deck Chamber: Active Cassette Inset & Controls -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
       <!-- Left: Loaded Cassette Chamber Slot (7 Cols) -->
-      <div class="lg:col-span-7 flex flex-col items-center justify-center p-6 rounded-xl bg-black/40 border border-white/10 relative">
+      <div
+        class="lg:col-span-7 flex flex-col items-center justify-center p-6 rounded-xl border relative shadow-inner"
+        style="
+          background: var(--kanso-surface-hover);
+          border-color: var(--kanso-border);
+        "
+      >
         <!-- Mechanical Cassette Bay Recess -->
         <div
-          class="w-full max-w-md h-52 rounded-xl p-3 flex flex-col justify-between relative overflow-hidden shadow-2xl border"
+          class="w-full max-w-md h-52 rounded-xl p-3 flex flex-col justify-between relative overflow-hidden border shadow-lg"
           style="
             background: {station.shellColor};
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.18);
           "
         >
           <!-- Top 2 Silver Corner Screws -->
@@ -148,30 +195,33 @@
             <div class="w-1.5 h-0.5 bg-zinc-600 -rotate-45"></div>
           </div>
 
-          <!-- Tape Label Header -->
+          <!-- Tape Label Header (Paper Sticker) -->
           <div
-            class="w-full rounded-md px-3 py-2 flex items-center justify-between shadow z-10"
-            style="background: {station.labelColor}; color: #0F172A;"
+            class="w-full rounded-md px-3 py-2 flex items-center justify-between shadow-sm z-10 border border-black/10"
+            style="background: {station.labelColor}; color: #151813;"
           >
             <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 text-xs font-black rounded text-white" style="background: {station.shellColor};">
+              <span
+                class="px-2 py-0.5 text-xs font-black rounded text-white tracking-widest"
+                style="background: {station.shellColor};"
+              >
                 SIDE A
               </span>
-              <span class="text-sm font-bold">{station.name}</span>
+              <span class="text-sm font-bold truncate">{station.name}</span>
             </div>
-            <span class="text-sm font-mono font-bold" style="color: {station.accentColor};">
+            <span class="text-xs font-mono font-bold" style="color: {station.accentColor};">
               {station.frequency}
             </span>
           </div>
 
-          <!-- Giant Glass Tape Window with Rotating Spools -->
-          <div class="w-full h-24 rounded-lg bg-black/80 border border-white/15 relative flex items-center justify-between px-10 my-auto">
+          <!-- Giant Acrylic Tape Window with Rotating Spools -->
+          <div class="w-full h-24 rounded-lg bg-black/80 border border-white/15 relative flex items-center justify-between px-10 my-auto shadow-inner">
             <!-- Magnetic Brown Tape Ribbon Strip -->
             <div class="absolute inset-x-12 h-12 bg-[#2E1810] rounded border border-amber-950/70 flex items-center justify-center">
               <div class="w-16 h-6 bg-black/80 rounded border border-white/10 flex items-center justify-around px-2">
                 <div class="w-0.5 h-3 bg-white/40"></div>
                 <div class="w-0.5 h-2 bg-white/20"></div>
-                <div class="w-0.5 h-4 bg-red-500"></div>
+                <div class="w-0.5 h-4 bg-[#DE694B]"></div>
                 <div class="w-0.5 h-2 bg-white/20"></div>
                 <div class="w-0.5 h-3 bg-white/40"></div>
               </div>
@@ -207,7 +257,7 @@
           </div>
 
           <!-- High Bias text ribbon -->
-          <div class="w-full flex items-center justify-between px-3 text-xs text-white/40 font-mono tracking-widest mt-1">
+          <div class="w-full flex items-center justify-between px-3 text-xs text-white/50 font-mono tracking-widest mt-1">
             <span>● HIGH BIAS 70µs</span>
             <span>JAPAN TYPE II ●</span>
           </div>
@@ -215,17 +265,28 @@
       </div>
 
       <!-- Right: Transport Controls & Focus Pomodoro (5 Cols) -->
-      <div class="lg:col-span-5 flex flex-col gap-6 justify-between h-full">
-        <!-- Mechanical Transport Buttons Bar -->
-        <div class="flex flex-col gap-3 p-4 rounded-xl bg-zinc-950/40 border border-white/5">
-          <span class="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-            Transport Controls
+      <div class="lg:col-span-5 flex flex-col gap-5 justify-between h-full">
+        <!-- Mechanical Transport Controls Box -->
+        <div
+          class="flex flex-col gap-3.5 p-4 rounded-xl border shadow-sm"
+          style="
+            background: var(--kanso-surface-hover);
+            border-color: var(--kanso-border);
+          "
+        >
+          <span class="text-xs font-mono font-bold tracking-wider uppercase" style="color: var(--kanso-text-muted);">
+            Transport Deck
           </span>
           <div class="flex items-center gap-3">
             <!-- Prev Button -->
             <button
               type="button"
-              class="p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 transition text-white"
+              class="p-3 rounded-xl border transition active:scale-95 flex items-center justify-center shadow-sm"
+              style="
+                background: var(--kanso-surface);
+                border-color: var(--kanso-border);
+                color: var(--kanso-text-primary);
+              "
               onclick={() => radioService.prev()}
               aria-label="Previous Tape"
               title="Previous Tape"
@@ -238,10 +299,11 @@
             <!-- Main Play / Pause Button -->
             <button
               type="button"
-              class="flex-1 py-3 px-6 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition shadow-lg"
+              class="flex-1 py-3 px-6 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition shadow-md cursor-pointer"
               style="
-                background: {state.isPlaying ? '#EF4444' : 'var(--kanso-accent)'};
-                color: #FFFFFF;
+                background: {state.isPlaying ? 'var(--kanso-accent)' : 'var(--kanso-surface)'};
+                border: {state.isPlaying ? 'none' : '1px solid var(--kanso-accent)'};
+                color: {state.isPlaying ? '#FFFFFF' : 'var(--kanso-accent)'};
               "
               onclick={() => radioService.toggle()}
               aria-label={state.isPlaying ? 'Pause Audio' : 'Play Audio'}
@@ -250,19 +312,24 @@
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                 </svg>
-                <span>PAUSE MOTOR</span>
+                <span class="font-mono text-xs tracking-wider">PAUSE MOTOR</span>
               {:else}
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
-                <span>ENGAGE DECK</span>
+                <span class="font-mono text-xs tracking-wider">ENGAGE DECK</span>
               {/if}
             </button>
 
             <!-- Next Button -->
             <button
               type="button"
-              class="p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 transition text-white"
+              class="p-3 rounded-xl border transition active:scale-95 flex items-center justify-center shadow-sm"
+              style="
+                background: var(--kanso-surface);
+                border-color: var(--kanso-border);
+                color: var(--kanso-text-primary);
+              "
               onclick={() => radioService.next()}
               aria-label="Next Tape"
               title="Next Tape"
@@ -274,12 +341,14 @@
           </div>
 
           <!-- Volume Fader -->
-          <div class="flex items-center gap-3 pt-2">
+          <div class="flex items-center gap-3 pt-1">
             <button
               type="button"
-              class="text-zinc-400 hover:text-white"
+              class="transition p-1 rounded-md"
+              style="color: var(--kanso-text-muted);"
               onclick={() => radioService.toggleMute()}
-              aria-label="Mute"
+              aria-label="Mute / Unmute"
+              title={state.isMuted ? 'Unmute' : 'Mute'}
             >
               {#if state.isMuted || state.volume === 0}
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -298,33 +367,39 @@
               step="0.05"
               value={state.volume}
               oninput={(e) => radioService.setVolume(parseFloat(e.currentTarget.value))}
-              class="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sky-400"
+              class="w-full h-1.5 rounded-lg appearance-none cursor-pointer radio-vol-slider"
               aria-label="Radio Volume Slider"
             />
-            <span class="text-xs font-mono text-zinc-400 w-8 text-right">
+            <span class="text-xs font-mono font-medium w-9 text-right" style="color: var(--kanso-text-muted);">
               {Math.round(state.volume * 100)}%
             </span>
           </div>
         </div>
 
         <!-- Integrated Pomodoro Creative Sprint Coach -->
-        <div class="p-4 rounded-xl bg-zinc-950/40 border border-white/5 flex items-center justify-between">
+        <div
+          class="p-4 rounded-xl border flex items-center justify-between shadow-sm"
+          style="
+            background: var(--kanso-surface-hover);
+            border-color: var(--kanso-border);
+          "
+        >
           <div class="flex flex-col">
-            <span class="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-              Focus Sprint
+            <span class="text-xs font-mono font-bold tracking-wider uppercase" style="color: var(--kanso-text-muted);">
+              Focus Sprint (25M)
             </span>
-            <span class="text-2xl font-mono font-bold" style="color: var(--kanso-text-primary);">
+            <span class="text-2xl font-mono font-bold tracking-tight" style="color: var(--kanso-text-primary);">
               {timerFormatted}
             </span>
           </div>
           <div class="flex items-center gap-2">
             <button
               type="button"
-              class="px-3 py-1.5 rounded-lg text-xs font-bold border transition"
+              class="px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold border transition active:scale-95 cursor-pointer"
               style="
-                background: {isTimerRunning ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.2)'};
-                border-color: {isTimerRunning ? '#EF4444' : 'var(--kanso-accent)'};
-                color: {isTimerRunning ? '#EF4444' : 'var(--kanso-accent)'};
+                background: {isTimerRunning ? 'rgba(222, 105, 75, 0.15)' : 'rgba(222, 105, 75, 0.12)'};
+                border-color: var(--kanso-accent);
+                color: var(--kanso-accent);
               "
               onclick={toggleTimer}
             >
@@ -332,7 +407,12 @@
             </button>
             <button
               type="button"
-              class="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-zinc-400 hover:text-white transition"
+              class="p-2 rounded-lg border transition active:scale-95 cursor-pointer"
+              style="
+                background: var(--kanso-surface);
+                border-color: var(--kanso-border);
+                color: var(--kanso-text-muted);
+              "
               onclick={resetTimer}
               title="Reset Timer"
               aria-label="Reset Timer"
@@ -353,11 +433,13 @@
       <h2 class="text-sm font-bold uppercase tracking-wider" style="color: var(--kanso-text-primary);">
         📼 Studio Cassette Rack ({ALL_CASSETTE_STATIONS.length} Tapes)
       </h2>
-      <span class="text-xs text-zinc-400">Click any tape to load into deck</span>
+      <span class="text-xs font-mono" style="color: var(--kanso-text-muted);">
+        Click any tape to load into deck
+      </span>
     </div>
 
     <!-- Cassette Cards Grid / Rack -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full">
       {#each ALL_CASSETTE_STATIONS as st}
         <CassetteTapeCard
           station={st}
@@ -370,3 +452,33 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes vu-bounce {
+    0%, 100% {
+      height: 3px;
+    }
+    50% {
+      height: 14px;
+    }
+  }
+
+  .vu-bar-1 {
+    animation: vu-bounce 0.8s ease-in-out infinite;
+  }
+  .vu-bar-2 {
+    animation: vu-bounce 0.6s ease-in-out infinite 0.15s;
+  }
+  .vu-bar-3 {
+    animation: vu-bounce 0.9s ease-in-out infinite 0.3s;
+  }
+  .vu-bar-4 {
+    animation: vu-bounce 0.7s ease-in-out infinite 0.1s;
+  }
+
+  /* Range slider styling */
+  .radio-vol-slider {
+    background: var(--kanso-border);
+    accent-color: var(--kanso-accent);
+  }
+</style>
