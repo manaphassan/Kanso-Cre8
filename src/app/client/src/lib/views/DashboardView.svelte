@@ -8,6 +8,7 @@
   import { financeService } from '$lib/services/financeService';
   import { clientService } from '$lib/services/clientService';
   import { appState } from '$lib/stores/appState.svelte';
+  import { settingsStore } from '$lib/stores/settingsStore.svelte';
   import type { Project } from '$lib/types';
 
   // --- STATE ---
@@ -53,21 +54,21 @@
     return [
       {
         id: 'p1',
-        jobId: '202609_0001D_ACME_MobileAppIllustration',
-        title: 'Mobile Banking 3D Isometric Illustrations',
-        brand: 'ACME',
-        client: 'Acme Corporation',
+        jobId: '202609_0001D_JOM_SmartParkingApp',
+        title: 'Smart Street Parking App & Merchant QR UI',
+        brand: 'JOM',
+        client: 'JomParking™',
         status: 'in-progress',
         deadline: '2026-09-18',
-        progress: 65,
+        progress: 75,
         designer: '0001D'
       },
       {
         id: 'p2',
-        jobId: '202609_0002D_NEX_GameKeyVisual',
-        title: 'Cyberpunk Game Launch Key Visuals & Motion',
-        brand: 'NEX',
-        client: 'Nexus Studio',
+        jobId: '202609_0002D_GOV_FleetTelematics',
+        title: 'Enterprise Fleet Telematics & EV Charging UI',
+        brand: 'GOV',
+        client: 'Govicle®',
         status: 'review',
         deadline: '2026-09-22',
         progress: 85,
@@ -75,13 +76,13 @@
       },
       {
         id: 'p3',
-        jobId: '202609_0003D_LUM_SyntheticBrandSystem',
-        title: 'Synthetic Intelligence Brand Identity & Assets',
-        brand: 'LUM',
-        client: 'Lumina Labs',
+        jobId: '202609_0003D_SS_MenHealthPortal',
+        title: 'Men\'s Holistic Wellness & Supplement Brand Identity',
+        brand: 'SS',
+        client: 'SuamiSihat™',
         status: 'in-progress',
         deadline: '2026-09-28',
-        progress: 30,
+        progress: 40,
         designer: '0001D'
       }
     ];
@@ -205,7 +206,7 @@
           <span class="card-pill sky">ALL FUNDS</span>
         </div>
         <div class="card-amount primary">
-          ${totalIncomeWithTimer.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {settingsStore.settings.currencySymbol} {totalIncomeWithTimer.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <p class="card-sub">Settled + Pending + Accrued</p>
       </div>
@@ -217,7 +218,7 @@
           <span class="card-pill emerald">CLEARED</span>
         </div>
         <div class="card-amount emerald">
-          ${incomeSummary.paid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {settingsStore.settings.currencySymbol} {incomeSummary.paid.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <p class="card-sub">Deposited directly to studio bank</p>
       </div>
@@ -229,7 +230,7 @@
           <span class="card-pill amber">AWAITING</span>
         </div>
         <div class="card-amount amber">
-          ${incomeSummary.pending.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          {settingsStore.settings.currencySymbol} {incomeSummary.pending.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
         <p class="card-sub">Sent proofs &amp; signed drafts</p>
       </div>
@@ -245,7 +246,7 @@
           {/if}
         </div>
         <div class="card-amount accent">
-          +${(timerStore.earnings || 0).toFixed(2)}
+          +{settingsStore.settings.currencySymbol} {(timerStore.earnings || 0).toFixed(2)}
         </div>
         <p class="card-sub">{timerStore.elapsedFormatted || '00:00:00'} logged today</p>
       </div>
@@ -440,7 +441,7 @@
         <!-- Metric 3: Effective Rate -->
         <div class="metric-card">
           <span class="metric-label">Effective Rate</span>
-          <div class="metric-value">${timerStore.hourlyRate}/hr</div>
+          <div class="metric-value">{settingsStore.settings.currencySymbol || 'RM'} {timerStore.hourlyRate}/hr</div>
           <span class="metric-sub muted">Active client tier</span>
         </div>
 
