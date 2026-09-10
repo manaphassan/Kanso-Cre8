@@ -40,10 +40,10 @@
     if (key === '1') { e.preventDefault(); appState.navigate('dashboard'); return; }
     if (key === '2') { e.preventDefault(); appState.navigate('projects'); return; }
     if (key === '3') { e.preventDefault(); appState.navigate('journal'); return; }
-    if (key === '4') { e.preventDefault(); appState.navigate('deliverables'); return; }
+    if (key === '4') { e.preventDefault(); appState.navigate('clients'); return; }
     if (key === '5') { e.preventDefault(); appState.navigate('invoices'); return; }
     if (key === '6') { e.preventDefault(); appState.navigate('zettel'); return; }
-    if (key === '7') { e.preventDefault(); appState.navigate('clients'); return; }
+    if (key === '7') { e.preventDefault(); appState.navigate('copy-studio'); return; }
     if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
     if (key === '9') { e.preventDefault(); appState.navigate('settings'); return; }
 
@@ -256,10 +256,10 @@
       case 'dashboard': return '⌘1';
       case 'projects': return '⌘2';
       case 'journal': return '⌘3';
-      case 'deliverables': return '⌘4';
+      case 'clients': return '⌘4';
       case 'invoices': return '⌘5';
       case 'zettel': return '⌘6';
-      case 'clients': return '⌘7';
+      case 'copy-studio': return '⌘7';
       case 'radio': return '⌘8';
       case 'settings': return '⌘9';
       default: return '';
@@ -269,9 +269,8 @@
   const navGroups = [
     { section: 'Creative Operations', items: [
       { route: 'dashboard',    label: 'Studio Deck',        icon: dashIcon },
-      { route: 'journal',      label: 'Bullet Journal',     icon: journalIcon },
       { route: 'projects',     label: 'Project Vaults',     icon: folderIcon, matchRoutes: ['projects','project-detail'] },
-      { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon, badge: true },
+      { route: 'journal',      label: 'Bullet Journal',     icon: journalIcon },
       { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
     ]},
     { section: 'Knowledge & Second Brain', items: [
@@ -549,31 +548,26 @@
           <span class="dock-text">Projects</span>
         </a>
         <a
-          href="#deliverables"
+          href="#journal"
           class="dock-link"
-          class:active={appState.currentRoute === 'deliverables'}
-          aria-label="Review Queue"
-        >
-          <div class="dock-icon-wrap">
-            <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              {@html reviewIcon}
-            </svg>
-            {#if projectStore.pendingReviewCount > 0}
-              <span class="dock-badge">{projectStore.pendingReviewCount}</span>
-            {/if}
-          </div>
-          <span class="dock-text">Review</span>
-        </a>
-        <a
-          href="#team"
-          class="dock-link"
-          class:active={appState.currentRoute === 'team'}
-          aria-label="Team Workload"
+          class:active={appState.currentRoute === 'journal'}
+          aria-label="Bullet Journal"
         >
           <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            {@html teamIcon}
+            {@html journalIcon}
           </svg>
-          <span class="dock-text">Team</span>
+          <span class="dock-text">Journal</span>
+        </a>
+        <a
+          href="#invoices"
+          class="dock-link"
+          class:active={appState.currentRoute === 'invoices'}
+          aria-label="Quotes and Invoices"
+        >
+          <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            {@html invoiceIcon}
+          </svg>
+          <span class="dock-text">Invoices</span>
         </a>
         <a
           href="#settings"
