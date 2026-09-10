@@ -18,12 +18,13 @@
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
 
-  let defaultView = $state<ViewMode>(
-    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards'
-  );
+  const initialDefaultView: ViewMode =
+    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards';
+
+  let defaultView = $state<ViewMode>(initialDefaultView);
 
   let viewMode = $state<ViewMode>(
-    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_project_view') as ViewMode)) || defaultView
+    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_project_view') as ViewMode)) || initialDefaultView
   );
 
   let projectToDelete = $state<Project | null>(null);
@@ -687,11 +688,6 @@
     border: 1px solid var(--surface-card-border, #E5E7EB);
     border-radius: 9999px;
     color: var(--text-secondary, #6B7280);
-  }
-
-  .tag-more {
-    font-size: 12px;
-    color: var(--text-tertiary, #9CA3AF);
   }
 
   .loading-box {
