@@ -150,3 +150,74 @@
   animation-duration: 0s !important;
   backdrop-filter: none !important;
 }
+
+/* ═══ KAI-ZEN (海禅 — OCEANIC ZEN) DEEP OCEAN DARK MODE ═══ */
+[data-theme="oceanic"] {
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Foundation Layer (Dark Ocean Navy #064169 & Deep Marine Surface) */
+  --kanso-canvas: #064169;
+  --kanso-surface: #043150;
+  --kanso-surface-hover: #074570;
+  --kanso-surface-active: #095082;
+  --kanso-border: #094772;
+  --kanso-border-subtle: #0c568a;
+  --kanso-border-focus: #21A8C3;
+
+  /* Typography (White-Blue Primary / Slate Grey Secondary) */
+  --kanso-text-primary: #F0F4F8;
+  --kanso-text-secondary: #93A3BC;
+  --kanso-text-muted: #93A3BC;
+  --kanso-text-faint: #607594;
+
+  /* Cerulean Hero Accent (#21A8C3) */
+  --kanso-accent: #21A8C3;
+  --kanso-accent-hover: #2ec0df;
+  --kanso-accent-muted: rgba(33, 168, 195, 0.16);
+  --kanso-accent-text: #FFFFFF;
+
+  /* Exact Specification Status Colors */
+  --kanso-success: #43B75D;
+  --kanso-success-muted: rgba(67, 183, 93, 0.16);
+  --kanso-warning: #FFAA00;
+  --kanso-warning-muted: rgba(255, 170, 0, 0.16);
+  --kanso-danger: #E6534F;
+  --kanso-danger-muted: rgba(230, 83, 79, 0.16);
+}
+
+/* ═══ KAI-ZEN (海禅 — OCEANIC ZEN) DAYLIGHT LIGHT MODE ═══ */
+[data-theme="oceanic-light"] {
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Foundation Layer (Light Blue-Grey #F0F4F8 & Crisp White Card) */
+  --kanso-canvas: #F0F4F8;
+  --kanso-surface: #FFFFFF;
+  --kanso-surface-hover: #E4EBF2;
+  --kanso-surface-active: #D6E1EC;
+  --kanso-border: #ECEFF3;
+  --kanso-border-subtle: #DFE4EB;
+  --kanso-border-focus: #21A8C3;
+
+  /* Typography (Title Navy #064169 / Subtitle Slate Grey #93A3BC) */
+  --kanso-text-primary: #064169;
+  --kanso-text-secondary: #93A3BC;
+  --kanso-text-muted: #93A3BC;
+  --kanso-text-faint: #B0BECE;
+
+  /* Cerulean Hero Accent (#21A8C3) */
+  --kanso-accent: #21A8C3;
+  --kanso-accent-hover: #1b8ea6;
+  --kanso-accent-muted: rgba(33, 168, 195, 0.12);
+  --kanso-accent-text: #FFFFFF;
+
+  /* Exact Specification Status Colors */
+  --kanso-success: #43B75D;
+  --kanso-success-muted: rgba(67, 183, 93, 0.12);
+  --kanso-warning: #FFAA00;
+  --kanso-warning-muted: rgba(255, 170, 0, 0.14);
+  --kanso-danger: #E6534F;
+  --kanso-danger-muted: rgba(230, 83, 79, 0.12);
+}
+

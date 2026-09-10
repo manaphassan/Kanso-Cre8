@@ -336,6 +336,144 @@
   --glass-blur: blur(14px);
 }
 
+[data-theme="oceanic"] {
+  /* ─── KAI-ZEN (海禅 — OCEANIC ZEN) DEEP OCEAN STUDIO THEME ─── */
+  --brand-primary: #21A8C3;
+  --brand-secondary: #064169;
+  --brand-accent: #21A8C3;
+  --brand-tint: rgba(33, 168, 195, 0.16);
+  --brand-gradient: linear-gradient(135deg, #064169 0%, #094772 50%, #21A8C3 100%);
+  --brand-glow: 0 0 16px rgba(33, 168, 195, 0.35);
+
+  --bg-app: #064169;
+  --bg-canvas: #064169;
+  --bg-header: #043150;
+  --header-text: #F0F4F8;
+  --bg-sidebar: #043150;
+  --sidebar-border: #094772;
+  --sidebar-text: #F0F4F8;
+  --sidebar-text-muted: #93A3BC;
+  --sidebar-active-bg: rgba(33, 168, 195, 0.16);
+  --sidebar-active-text: #21A8C3;
+  --sidebar-active-indicator: #21A8C3;
+
+  --surface-card: #043150;
+  --surface-card-subtle: #032842;
+  --surface-card-elevated: #074570;
+  --surface-card-border: #094772;
+  --surface-card-hover: #074570;
+
+  --text-primary: #F0F4F8;
+  --text-secondary: #93A3BC;
+  --text-tertiary: #93A3BC;
+  --text-inverted: #064169;
+  --text-brand: #21A8C3;
+
+  --colorNeutralBackground1: #064169;
+  --colorNeutralBackground2: #043150;
+  --colorNeutralBackground3: #074570;
+  --colorNeutralForeground1: #F0F4F8;
+  --colorNeutralForeground2: #93A3BC;
+  --colorNeutralForegroundDisabled: #607594;
+  --colorBrandBackground: #21A8C3;
+  --colorBrandBackgroundHover: #2ec0df;
+  --colorBrandBackgroundInverted: rgba(33, 168, 195, 0.16);
+
+  --color-success: #43B75D;
+  --color-success-bg: rgba(67, 183, 93, 0.14);
+  --color-success-border: #43B75D;
+
+  --color-warning: #FFAA00;
+  --color-warning-bg: rgba(255, 170, 0, 0.14);
+  --color-warning-border: #FFAA00;
+
+  --color-danger: #E6534F;
+  --color-danger-bg: rgba(230, 83, 79, 0.14);
+  --color-danger-border: #E6534F;
+
+  --color-info: #21A8C3;
+  --color-info-bg: rgba(33, 168, 195, 0.14);
+  --color-info-border: #21A8C3;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.5);
+
+  --glass-bg: rgba(4, 49, 80, 0.85);
+  --glass-border: rgba(9, 71, 114, 0.6);
+  --glass-blur: blur(14px);
+}
+
+[data-theme="oceanic-light"] {
+  /* ─── KAI-ZEN (海禅 — OCEANIC ZEN) DAYLIGHT STUDIO THEME ─── */
+  --brand-primary: #21A8C3;
+  --brand-secondary: #064169;
+  --brand-accent: #21A8C3;
+  --brand-tint: rgba(33, 168, 195, 0.12);
+  --brand-gradient: linear-gradient(135deg, #F0F4F8 0%, #E4EBF2 50%, #21A8C3 100%);
+  --brand-glow: 0 0 16px rgba(33, 168, 195, 0.25);
+
+  --bg-app: #F0F4F8;
+  --bg-canvas: #F0F4F8;
+  --bg-header: #FFFFFF;
+  --header-text: #064169;
+  --bg-sidebar: #FFFFFF;
+  --sidebar-border: #ECEFF3;
+  --sidebar-text: #064169;
+  --sidebar-text-muted: #93A3BC;
+  --sidebar-active-bg: rgba(33, 168, 195, 0.12);
+  --sidebar-active-text: #21A8C3;
+  --sidebar-active-indicator: #21A8C3;
+
+  --surface-card: #FFFFFF;
+  --surface-card-subtle: #F6F8FA;
+  --surface-card-elevated: #FFFFFF;
+  --surface-card-border: #ECEFF3;
+  --surface-card-hover: #E4EBF2;
+
+  --text-primary: #064169;
+  --text-secondary: #93A3BC;
+  --text-tertiary: #93A3BC;
+  --text-inverted: #FFFFFF;
+  --text-brand: #21A8C3;
+
+  --colorNeutralBackground1: #F0F4F8;
+  --colorNeutralBackground2: #FFFFFF;
+  --colorNeutralBackground3: #FFFFFF;
+  --colorNeutralForeground1: #064169;
+  --colorNeutralForeground2: #93A3BC;
+  --colorNeutralForegroundDisabled: #B0BECE;
+  --colorBrandBackground: #21A8C3;
+  --colorBrandBackgroundHover: #1b8ea6;
+  --colorBrandBackgroundInverted: rgba(33, 168, 195, 0.12);
+
+  --color-success: #43B75D;
+  --color-success-bg: rgba(67, 183, 93, 0.1);
+  --color-success-border: #43B75D;
+
+  --color-warning: #FFAA00;
+  --color-warning-bg: rgba(255, 170, 0, 0.1);
+  --color-warning-border: #FFAA00;
+
+  --color-danger: #E6534F;
+  --color-danger-bg: rgba(230, 83, 79, 0.1);
+  --color-danger-border: #E6534F;
+
+  --color-info: #21A8C3;
+  --color-info-bg: rgba(33, 168, 195, 0.1);
+  --color-info-border: #21A8C3;
+
+  --shadow-sm: 0 1px 2px 0 rgba(6, 65, 105, 0.05);
+  --shadow-md: 0 4px 12px rgba(6, 65, 105, 0.08);
+  --shadow-lg: 0 10px 24px rgba(6, 65, 105, 0.12);
+  --shadow-xl: 0 20px 30px rgba(6, 65, 105, 0.16);
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(236, 239, 243, 0.8);
+  --glass-blur: blur(14px);
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    SUBSIDIARY BRAND ACCENT OVERRIDES (Dynamic Scoped Tinting)
    ══════════════════════════════════════════════════════════════════════════ */

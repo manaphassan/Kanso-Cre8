@@ -57,6 +57,24 @@
 
   const themeCards: { id: ThemeName; name: string; tag: string; desc: string; canvasColor: string; surfaceColor: string; accentColor: string }[] = [
     {
+      id: 'oceanic',
+      name: 'Kai-Zen (海禅 Oceanic Zen)',
+      tag: 'OCEANIC CERULEAN',
+      desc: 'Deep Ocean #064169 canvas with Cerulean #21A8C3 highlights, slate accents, and Poppins studio typography.',
+      canvasColor: '#064169',
+      surfaceColor: '#043150',
+      accentColor: '#21A8C3'
+    },
+    {
+      id: 'oceanic-light',
+      name: 'Kai-Zen Daylight Marina',
+      tag: 'OCEANIC LIGHT',
+      desc: 'Crisp light blue-grey #F0F4F8 canvas with deep ocean navy titles and Cerulean #21A8C3 actions.',
+      canvasColor: '#F0F4F8',
+      surfaceColor: '#FFFFFF',
+      accentColor: '#21A8C3'
+    },
+    {
       id: 'dark',
       name: 'Vorxs Olive Obsidian',
       tag: 'DARK MODE',
@@ -486,8 +504,8 @@
               <div class="theme-card-preview" style="background: {t.canvasColor}; border: 1px solid var(--kanso-border);">
                 <div class="preview-surface" style="background: {t.surfaceColor}; border: 1px solid {t.id === 'eink' ? '#000000' : 'rgba(255,255,255,0.1)'};">
                   <div class="preview-dot" style="background: {t.accentColor};"></div>
-                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#18181B' : '#FFFFFF'}; width: 45%;"></div>
-                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#64748B' : '#71717A'}; width: 70%;"></div>
+                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#18181B' : t.id === 'oceanic-light' ? '#064169' : '#FFFFFF'}; width: 45%;"></div>
+                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#64748B' : t.id === 'oceanic-light' ? '#93A3BC' : '#71717A'}; width: 70%;"></div>
                 </div>
               </div>
 
