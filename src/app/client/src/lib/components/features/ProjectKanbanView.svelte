@@ -380,7 +380,7 @@
                 </div>
 
                 <!-- Status Selector Menu -->
-                <div class="quick-status-selector-row" onclick={(e) => e.stopPropagation()}>
+                <div class="quick-status-selector-row" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
                   <label class="status-quick-label" for="move-status-{p.id}">Move:</label>
                   <select
                     id="move-status-{p.id}"
@@ -431,8 +431,8 @@
   }
 
   .kanban-column {
-    background: var(--surface-card-subtle, #F9FAFB);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface, var(--surface-card-subtle));
+    border: 1px solid var(--kanso-border, var(--surface-card-border));
     border-radius: 12px;
     padding: 12px;
     display: flex;
@@ -453,7 +453,7 @@
   .column-header {
     border-top: 3px solid transparent;
     padding-top: 8px;
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border, var(--surface-card-border));
     padding-bottom: 10px;
   }
 
@@ -524,8 +524,8 @@
 
   /* ─── Kanban Card ─── */
   .kanban-card {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface, var(--surface-card));
+    border: 1px solid var(--kanso-border, var(--surface-card-border));
     border-radius: 10px;
     padding: 12px 14px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);

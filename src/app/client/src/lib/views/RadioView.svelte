@@ -51,7 +51,7 @@
       <span><kbd class="px-1.5 py-0.5 rounded bg-black/40 border border-white/10 text-white">Prev</kbd> Previous Tape</span>
     </div>
     <span class="text-[11px] text-zinc-500">
-      Ported from SS-CAM Android · Zero-Latency Web Audio Stream
+      Kanso Zen Focus Engine · Zero-Latency Web Audio Stream
     </span>
   </div>
 </div>
