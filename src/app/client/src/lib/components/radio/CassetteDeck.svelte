@@ -225,8 +225,9 @@
               </div>
             </div>
 
-            <!-- Left Spool Wheel with Dynamic Wound Tape Roll -->
+            <!-- Left Spool Wheel with Mechanical Drive Spindle & Tape Roll -->
             <div class="spool-slot">
+              <div class="deck-spindle-well" title="Supply Reel Drive Motor Spindle Well"></div>
               <div
                 class="tape-roll-disc"
                 class:is-spinning={state.isPlaying}
@@ -235,7 +236,7 @@
               >
                 <div class="tape-pack-layers"></div>
               </div>
-              <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
+              <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} showSpindle={true} />
             </div>
 
             <!-- Center Reel Tape Migration Meter -->
@@ -243,8 +244,9 @@
               <div class="migration-bar-fill" style="width: {reelProgress * 100}%;"></div>
             </div>
 
-            <!-- Right Spool Wheel with Dynamic Wound Tape Roll -->
+            <!-- Right Spool Wheel with Mechanical Drive Spindle & Tape Roll -->
             <div class="spool-slot">
+              <div class="deck-spindle-well" title="Take-Up Reel Drive Motor Spindle Well"></div>
               <div
                 class="tape-roll-disc"
                 class:is-spinning={state.isPlaying}
@@ -253,21 +255,39 @@
               >
                 <div class="tape-pack-layers"></div>
               </div>
-              <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} />
+              <CassetteSpoolWheel size={48} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} showSpindle={true} />
             </div>
           </div>
 
-          <!-- Bottom Reader Trapezoid, Moving Ribbon Track & Bottom Screws -->
+          <!-- Bottom Reader Trapezoid, Moving Ribbon Track, Capstan Spindles & Bottom Screws -->
           <div class="head-row">
             <div class="screw"><div class="screw-slot deg-12"></div></div>
             <div class="head-notch">
               <div class="bottom-tape-track" class:is-moving={state.isPlaying}></div>
-              <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
-                <div class="roller-notch"></div>
+
+              <!-- Left Capstan Spindle & Pinch Roller Unit -->
+              <div class="spindle-roller-unit" title="Left Capstan Spindle & Rubber Pinch Roller">
+                <div class="capstan-spindle" title="Polished Steel Capstan Spindle">
+                  <div class="capstan-core"></div>
+                </div>
+                <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
+                  <div class="roller-notch"></div>
+                </div>
               </div>
-              <div class="roller-center"></div>
-              <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
-                <div class="roller-notch"></div>
+
+              <!-- Magnetic Permalloy Tape Head -->
+              <div class="roller-center" title="Permalloy Magnetic Tape Head">
+                <div class="head-core-line"></div>
+              </div>
+
+              <!-- Right Capstan Spindle & Pinch Roller Unit -->
+              <div class="spindle-roller-unit" title="Right Capstan Spindle & Rubber Pinch Roller">
+                <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);">
+                  <div class="roller-notch"></div>
+                </div>
+                <div class="capstan-spindle" title="Polished Steel Capstan Spindle">
+                  <div class="capstan-core"></div>
+                </div>
               </div>
             </div>
             <div class="screw"><div class="screw-slot deg-neg12"></div></div>
@@ -970,10 +990,22 @@
     flex-shrink: 0;
   }
 
+  .deck-spindle-well {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #09090B 35%, #18181B 80%, #27272A 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+    z-index: 0;
+    pointer-events: none;
+  }
+
   .tape-roll-disc {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, #3D2218 20%, #23110a 65%, #100804 100%);
+    background: radial-gradient(circle, transparent 23px, #3D2218 24%, #23110a 65%, #100804 100%);
     border: 1px solid rgba(0, 0, 0, 0.6);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     transition: width 0.3s ease, height 0.3s ease;
@@ -1028,7 +1060,7 @@
 
   .head-notch {
     width: 140px;
-    height: 14px;
+    height: 15px;
     background: rgba(0, 0, 0, 0.65);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
@@ -1038,7 +1070,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 12px;
     position: relative;
     overflow: hidden;
   }
@@ -1066,6 +1098,33 @@
     animation: tapeRibbonTravel 0.8s linear infinite;
   }
 
+  .spindle-roller-unit {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .capstan-spindle {
+    width: 3.5px;
+    height: 10px;
+    background: linear-gradient(90deg, #64748B 0%, #F8FAFC 40%, #E2E8F0 60%, #475569 100%);
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 2px rgba(255, 255, 255, 0.5);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .capstan-core {
+    position: absolute;
+    top: 0;
+    left: 1px;
+    width: 1px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
   .roller-dot {
     width: 9px;
     height: 9px;
@@ -1088,12 +1147,22 @@
   }
 
   .roller-center {
-    width: 10px;
-    height: 7px;
+    width: 11px;
+    height: 8px;
     background: #52525B;
     border-radius: 1px;
     border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 2;
+  }
+
+  .head-core-line {
+    width: 2px;
+    height: 5px;
+    background: #CA8A04;
+    border-radius: 0.5px;
   }
 
   .tape-bias-text {
