@@ -123,7 +123,7 @@
   }
 
   function formatWhatsAppText(text: string) {
-    if (!text) return '<i>Taipkan teks mesej di sebelah kiri...</i>';
+    if (!text) return '<i>Type message copy on the left to preview...</i>';
     return text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')

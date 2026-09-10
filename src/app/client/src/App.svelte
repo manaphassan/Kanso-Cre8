@@ -18,7 +18,7 @@
   import MiniCassetteDock from '$lib/components/radio/MiniCassetteDock.svelte';
   import TeamView from '$lib/views/TeamView.svelte';
   import AdminView from '$lib/views/AdminView.svelte';
-  import ProfileView from '$lib/views/ProfileView.svelte';
+  import SettingsView from '$lib/views/SettingsView.svelte';
   import ClientReviewView from '$lib/views/ClientReviewView.svelte';
   import JournalView from '$lib/views/JournalView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
@@ -45,14 +45,7 @@
     if (key === '6') { e.preventDefault(); appState.navigate('zettel'); return; }
     if (key === '7') { e.preventDefault(); appState.navigate('clients'); return; }
     if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
-    if (key === '9') { e.preventDefault(); appState.navigate('admin'); return; }
-
-    // Ctrl+\: Toggle Quick Vault Drawer
-    if (key === '\\') {
-      e.preventDefault();
-      appState.toggleSidebar();
-      return;
-    }
+    if (key === '9') { e.preventDefault(); appState.navigate('settings'); return; }
 
     // Ctrl+Shift+K: Quick Scratchpad
     if (e.shiftKey && key === 'k') {
@@ -232,8 +225,9 @@
     radio:            { title: 'Focus Radio',          layout: 'layout-full', icon: radioIcon },
     'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-page', icon: pencilIcon },
     team:             { title: 'Team & Workload',       layout: 'layout-page', icon: teamIcon },
+    settings:         { title: 'Settings',             layout: 'layout-page', icon: adminIcon },
     admin:            { title: 'Administration',        layout: 'layout-full', icon: adminIcon },
-    profile:          { title: 'My Profile',            layout: 'layout-full', icon: adminIcon },
+    profile:          { title: 'Settings',             layout: 'layout-page', icon: adminIcon },
   };
 
   const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page', icon: dashIcon });
@@ -265,6 +259,7 @@
       case 'zettel': return '⌘6';
       case 'clients': return '⌘7';
       case 'radio': return '⌘8';
+      case 'settings': return '⌘9';
       case 'admin': return '⌘9';
       default: return '';
     }
@@ -288,7 +283,7 @@
       { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
     ]},
     { section: 'System & Storage', items: [
-      { route: 'admin',        label: 'Settings & Cloud',   icon: adminIcon },
+      { route: 'settings',     label: 'Settings',           icon: adminIcon },
     ]},
   ];
 
@@ -305,76 +300,11 @@
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
 {:else}
-  <div
-    class="app-shell"
-    class:sidebar-open={appState.quickDrawerOpen || appState.sidebarExpanded}
-    class:sidebar-hidden={!appState.quickDrawerOpen && !appState.sidebarExpanded}
-  >
-    <!-- ═══ SLIDE-OVER QUICK DRAWER (Summonable via Ctrl+\ or menu button) ═══ -->
-    <aside class="app-sidebar" class:is-open={appState.quickDrawerOpen || appState.sidebarExpanded}>
-      <div class="sidebar-header">
-        <div class="flex items-center gap-2.5 px-2 py-2">
-          <div class="w-7 h-7 rounded-md bg-[var(--kanso-accent)]/10 border border-[var(--kanso-accent)]/30 flex items-center justify-center text-[var(--kanso-accent)] font-bold text-xs">
-            K8
-          </div>
-          <div class="flex flex-col">
-            <span class="font-bold text-sm tracking-tight text-[var(--kanso-text-primary)]">Kanso Cre8</span>
-            <span class="text-[11px] text-[var(--kanso-text-muted)] tracking-wider uppercase font-mono">Desktop Vault</span>
-          </div>
-        </div>
-        <button class="icon-btn close-drawer-btn" onclick={() => appState.toggleSidebar()} title="Close Drawer (Esc / Ctrl+\)" aria-label="Close drawer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
-        </button>
-      </div>
-
-      <nav class="sidebar-nav" aria-label="Main Navigation">
-        {#each navGroups as group}
-          <div class="nav-section-label">{group.section}</div>
-          {#each group.items as item}
-            {@const active = isActive(item)}
-            {@const count  = item.badge ? projectStore.pendingReviewCount : 0}
-            {@const shortcut = getShortcutBadge(item.route)}
-            <a
-              href="#{item.route}"
-              class="nav-link"
-              class:active
-              aria-current={active ? 'page' : undefined}
-              onclick={() => { appState.quickDrawerOpen = false; appState.sidebarExpanded = false; }}
-            >
-              <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                {@html item.icon}
-              </svg>
-              <span class="nav-label">{item.label}</span>
-              {#if count > 0}
-                <span class="nav-badge">{count}</span>
-              {/if}
-              {#if shortcut}
-                <kbd class="nav-kbd-hint">{shortcut}</kbd>
-              {/if}
-            </a>
-          {/each}
-        {/each}
-
-        <div class="nav-spacer"></div>
-
-        <div class="px-2 pb-2">
-          <MiniCassetteDock />
-        </div>
-      </nav>
-    </aside>
-
-    {#if appState.quickDrawerOpen || appState.sidebarExpanded}
-      <!-- svelte-ignore a11y_click_events_have_key_events -->
-      <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="quick-drawer-backdrop" onclick={() => appState.toggleSidebar()}></div>
-    {/if}
-
+  <div class="app-shell">
     <!-- ═══ 100% CANVAS MAIN VIEWPORT ═══════════════════════════════════ -->
     <div class="app-main">
 
-      <!-- ═══ 48px PRECISION STUDIO INSTRUMENT HEADER ═════════════════ -->
+      <!-- ═══ 50px PRECISION STUDIO INSTRUMENT HEADER ═════════════════ -->
       <header class="app-header">
         <div class="header-left">
           <!-- Tactile K8 Brand Badge -->
@@ -385,18 +315,6 @@
             aria-label="Kanso Cre8 Home"
           >
             <span class="k8-text">K8</span>
-          </button>
-
-          <!-- Drawer Quick Summon Button -->
-          <button
-            class="icon-btn drawer-toggle-btn"
-            onclick={() => appState.toggleSidebar()}
-            title="Toggle Vault Drawer (Ctrl+\)"
-            aria-label="Toggle Vault Drawer"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-            </svg>
           </button>
 
           <!-- Interactive View Switcher Dropdown (Command-First HUD) -->
@@ -614,13 +532,9 @@
                   </div>
                 </div>
                 <div class="dd-divider"></div>
-                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('profile'); }} role="menuitem">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                  My Profile & Themes
-                </button>
-                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('admin'); }} role="menuitem">
+                <button class="dd-item" onclick={() => { appState.userMenuOpen = false; appState.navigate('settings'); }} role="menuitem">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-                  Administration & Vault
+                  Settings &amp; Preferences
                 </button>
               </div>
             {/if}
@@ -655,12 +569,19 @@
             <TeamView />
           {:else if appState.currentRoute === 'admin'}
             <AdminView />
-          {:else if appState.currentRoute === 'profile'}
-            <ProfileView />
+          {:else if appState.currentRoute === 'settings' || appState.currentRoute === 'profile'}
+            <SettingsView />
           {:else}
             <DashboardView />
           {/if}
         </section>
+
+        <!-- Persistent Retro Mini Cassette Dock -->
+        {#if appState.currentRoute !== 'radio'}
+          <div class="mini-cassette-dock-wrap">
+            <MiniCassetteDock />
+          </div>
+        {/if}
       </div>
 
       <!-- ═══ MOBILE BOTTOM NAVIGATION DOCK (<768px) ═════════════════ -->
@@ -714,26 +635,20 @@
           </svg>
           <span class="dock-text">Team</span>
         </a>
-        <button
-          type="button"
-          class="dock-link dock-btn"
-          onclick={() => { appState.sidebarExpanded = !appState.sidebarExpanded; }}
-          aria-label="Toggle Full Menu"
+        <a
+          href="#settings"
+          class="dock-link"
+          class:active={appState.currentRoute === 'settings'}
+          aria-label="Settings"
         >
           <svg class="dock-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            {@html adminIcon}
           </svg>
-          <span class="dock-text">Menu</span>
-        </button>
+          <span class="dock-text">Settings</span>
+        </a>
       </nav>
     </div>
   </div>
-
-  {#if appState.sidebarExpanded && !isRail}
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="mobile-overlay" onclick={() => { appState.sidebarExpanded = false; }}></div>
-  {/if}
 
   <CommandPaletteModal
     bind:open={commandPaletteOpen}
@@ -769,261 +684,26 @@
     color: var(--kanso-text-primary);
   }
 
-  /* ═══ SLIDE-OVER QUICK DRAWER (Summonable) ══════════════════════ */
-  .app-sidebar {
+  /* ═══ FLOATING RETRO CASSETTE DOCK ═══════════════════════════════ */
+  .mini-cassette-dock-wrap {
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    background: var(--kanso-surface);
-    color: var(--kanso-text-primary);
-    border-right: 1px solid var(--kanso-border);
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 1000;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
-    transform: translateX(-100%);
-    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-    box-sizing: border-box;
-  }
-  .app-sidebar.is-open {
-    transform: translateX(0);
-  }
-  .quick-drawer-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 999;
-  }
-  .close-drawer-btn {
-    color: var(--kanso-text-muted);
-  }
-  .close-drawer-btn:hover {
-    color: var(--kanso-text-primary);
-    background: var(--kanso-surface-hover);
-  }
-
-  .sidebar-header {
-    height: 52px;
-    padding: 0 14px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    border-bottom: 1px solid var(--kanso-border);
-    box-sizing: border-box;
-  }
-  .sidebar-header.rail-header {
-    padding: 0;
-    justify-content: center;
-  }
-  .sidebar-logo {
-    height: 26px;
-    max-width: 148px;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
-  }
-  .sidebar-logomark-wrap {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sidebar-logomark-svg {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
-    transition: transform 0.15s ease;
-  }
-  .sidebar-logomark-svg:hover {
-    transform: scale(1.08);
-  }
-  .portal-pill {
-    font-size: 9.5px;
-    font-weight: 900;
-    letter-spacing: 0.8px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    background: rgba(33,161,247,.18);
-    color: #6DC6EC;
-    border: 1px solid rgba(33,161,247,.35);
-    white-space: nowrap;
-  }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 12px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-  .sidebar-nav.rail-nav {
-    padding: 12px 0;
-    align-items: center;
-  }
-  .nav-section-label {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--sidebar-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    padding: 14px 10px 4px 10px;
-    white-space: nowrap;
-  }
-  .nav-section-divider {
-    height: 1px;
-    width: 36px;
-    background: var(--sidebar-border);
-    margin: 8px auto;
-  }
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background .14s, color .14s;
-    position: relative;
-    white-space: nowrap;
-    box-sizing: border-box;
-  }
-  .nav-link:hover  {
-    background: rgba(255,255,255,.09);
-    color: #fff;
-  }
-  .nav-link.active {
-    background: var(--sidebar-active-bg);
-    color: var(--sidebar-active-text);
-    font-weight: 700;
-    border-left: 3px solid var(--sidebar-active-indicator);
-    padding-left: 9px;
-  }
-
-  /* Compact Mode Rail Item: perfectly centered 44x44 icon button with 12px margins */
-  .nav-link.rail-link {
-    width: 44px;
-    height: 44px;
-    margin: 3px auto;
-    padding: 0;
-    justify-content: center;
-    border-radius: 8px;
-    border-left: none !important;
-    gap: 0;
-  }
-  .nav-link.rail-link.active {
-    background: var(--sidebar-active-bg);
-    color: #fff;
-    box-shadow: 0 0 0 1px var(--sidebar-active-indicator);
-  }
-
-  .nav-icon  {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-  .nav-label {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .nav-badge {
-    margin-left: auto;
-    background: #EF4444;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 1px 6px;
-    border-radius: 9999px;
-    flex-shrink: 0;
-  }
-  .nav-badge.rail-badge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    padding: 0 4px;
-    font-size: 9px;
-    margin: 0;
-  }
-  .nav-spacer {
-    flex: 1;
-    min-height: 14px;
-  }
-
-  .desktop-banner {
-    margin: 6px 4px 10px;
-    padding: 12px 14px;
-    background: linear-gradient(145deg, rgba(2,32,87,.85), rgba(4,51,136,.65));
-    border: 1px solid rgba(33,161,247,.3);
+    bottom: 16px;
+    right: 20px;
+    z-index: 150;
+    max-width: 380px;
+    width: calc(100vw - 40px);
     border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    box-sizing: border-box;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .banner-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .banner-pill {
-    font-size: 9.5px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: rgba(33,161,247,.22);
-    color: #6DC6EC;
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-  .banner-ver {
-    font-size: 10.5px;
-    color: rgba(255,255,255,.65);
-    font-family: monospace;
-  }
-  .banner-title {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: #fff;
-  }
-  .banner-desc  {
-    font-size: 11px;
-    line-height: 1.35;
-    color: rgba(255,255,255,.75);
-    margin: 0 0 2px 0;
-  }
-  .banner-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    background: linear-gradient(90deg, #21A1F7, #0078D4);
-    color: #fff;
-    text-decoration: none;
-    font-size: 11.5px;
-    font-weight: 800;
-    padding: 7px 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(33,161,247,.35);
-    transition: transform .15s, box-shadow .15s;
-    margin-top: 2px;
-  }
-  .banner-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(33,161,247,.55);
+  @media (max-width: 768px) {
+    .mini-cassette-dock-wrap {
+      bottom: 68px; /* sits above mobile bottom dock (56px) */
+      right: 12px;
+      left: 12px;
+      width: auto;
+      max-width: none;
+    }
   }
 
   /* ═══ MAIN ══════════════════════════════════════════════════════ */
