@@ -21,7 +21,7 @@
   <!-- Mini Cassette Chamber Inset (Click to navigate to Radio Studio) -->
   <button
     type="button"
-    class="flex items-center gap-2 px-2 py-0.5 rounded-lg border text-left hover:brightness-110 active:scale-98 transition shrink-0"
+    class="flex items-center gap-2 px-2 py-0.5 rounded-lg border text-left hover:brightness-110 active:scale-98 transition shrink-0 cursor-pointer"
     style="
       background: {station.shellColor};
       border-color: rgba(255, 255, 255, 0.2);
@@ -40,7 +40,7 @@
 
     <!-- Center Mini Tape Window -->
     <div class="w-5 h-2.5 bg-black/60 rounded-sm border border-white/10 flex items-center justify-center">
-      <div class="w-1.5 h-1 bg-red-500/80 rounded-full"></div>
+      <div class="w-1.5 h-1 bg-[#DE694B] rounded-full"></div>
     </div>
 
     <!-- Right Mini Spool -->
@@ -52,7 +52,7 @@
     />
 
     <span
-      class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded text-white tracking-tight"
+      class="text-xs font-mono font-bold px-1.5 py-0.5 rounded text-white tracking-tight"
       style="background: {station.accentColor};"
     >
       {station.frequency}
@@ -68,13 +68,13 @@
   >
     <div class="flex items-center gap-2">
       <span
-        class="w-1.5 h-1.5 rounded-full shrink-0"
-        style="background: {state.isPlaying ? '#10B981' : '#71717A'};"
+        class="w-2 h-2 rounded-full shrink-0 transition-colors"
+        style="background: {state.isPlaying ? '#8FA683' : '#71717A'};"
       ></span>
       <span class="text-xs font-semibold truncate" style="color: var(--kanso-text-primary);">
         {station.name}
       </span>
-      <span class="text-[11px] font-mono truncate hidden md:inline" style="color: var(--kanso-text-muted);">
+      <span class="text-xs font-mono truncate hidden md:inline" style="color: var(--kanso-text-muted);">
         — {state.currentTrackTitle}
       </span>
     </div>
@@ -84,7 +84,8 @@
   <div class="flex items-center gap-1.5 shrink-0">
     <button
       type="button"
-      class="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 transition"
+      class="p-1 rounded-md transition cursor-pointer hover:bg-[var(--kanso-surface-hover)]"
+      style="color: var(--kanso-text-muted);"
       onclick={() => radioService.prev()}
       aria-label="Previous Station"
       title="Previous Tape"
@@ -97,10 +98,11 @@
     <!-- Play / Pause Pill -->
     <button
       type="button"
-      class="p-1.5 rounded-lg font-bold flex items-center justify-center active:scale-95 transition"
+      class="p-1.5 rounded-lg font-bold flex items-center justify-center active:scale-95 transition cursor-pointer shadow-sm"
       style="
-        background: {state.isPlaying ? '#EF4444' : 'var(--kanso-accent)'};
-        color: #FFFFFF;
+        background: {state.isPlaying ? 'var(--kanso-accent)' : 'var(--kanso-surface-hover)'};
+        border: 1px solid var(--kanso-accent);
+        color: {state.isPlaying ? '#FFFFFF' : 'var(--kanso-accent)'};
       "
       onclick={() => radioService.toggle()}
       aria-label={state.isPlaying ? 'Pause' : 'Play'}
@@ -118,7 +120,8 @@
 
     <button
       type="button"
-      class="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 transition"
+      class="p-1 rounded-md transition cursor-pointer hover:bg-[var(--kanso-surface-hover)]"
+      style="color: var(--kanso-text-muted);"
       onclick={() => radioService.next()}
       aria-label="Next Station"
       title="Next Tape"

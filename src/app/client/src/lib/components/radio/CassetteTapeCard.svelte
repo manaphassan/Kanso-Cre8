@@ -21,13 +21,11 @@
 
 <button
   type="button"
-  class="relative flex flex-col items-center p-3 rounded-2xl transition-all duration-200 text-left select-none cursor-pointer focus:outline-none"
+  class="relative flex flex-col items-center p-3 rounded-2xl transition-all duration-200 text-left select-none cursor-pointer focus:outline-none w-full border shadow-sm group hover:-translate-y-0.5"
   class:selected={isSelected}
   style="
-    background: var(--kanso-surface);
-    border: 1.5px solid {isSelected ? station.accentColor : 'var(--kanso-border)'};
-    box-shadow: {isSelected ? `0 0 16px ${station.accentColor}33` : 'none'};
-    width: 280px;
+    background: {isSelected ? 'var(--kanso-surface-hover)' : 'var(--kanso-surface)'};
+    border-color: {isSelected ? 'var(--kanso-accent)' : 'var(--kanso-border)'};
   "
   {onclick}
   aria-label="Select {station.name} Cassette"
@@ -51,7 +49,7 @@
     <!-- Top Paper Sticker Label -->
     <div
       class="w-full rounded-md px-2.5 py-1.5 flex items-center justify-between shadow-sm z-10 border border-black/10"
-      style="background: {station.labelColor}; color: #0F172A;"
+      style="background: {station.labelColor}; color: #151813;"
     >
       <div class="flex items-center gap-2 overflow-hidden">
         <!-- Side A Badge -->
@@ -66,8 +64,12 @@
         </span>
       </div>
       <span
-        class="text-xs font-mono font-bold px-2 py-0.5 rounded shrink-0"
-        style="background: {station.accentColor}22; color: {station.accentColor};"
+        class="text-xs font-mono font-bold px-2 py-0.5 rounded shrink-0 border"
+        style="
+          background: rgba(222, 105, 75, 0.12);
+          color: {station.accentColor};
+          border-color: rgba(222, 105, 75, 0.2);
+        "
       >
         {station.frequency}
       </span>
@@ -75,17 +77,17 @@
 
     <!-- Center Acrylic Tape Window & Spinning Spools -->
     <div
-      class="w-full h-16 rounded-lg bg-slate-950/90 border border-white/10 relative flex items-center justify-between px-6 overflow-hidden my-auto"
+      class="w-full h-16 rounded-lg bg-black/85 border border-white/12 relative flex items-center justify-between px-6 overflow-hidden my-auto shadow-inner"
     >
       <!-- Magnetic Brown Tape Ribbon Strip -->
-      <div class="absolute inset-x-8 h-8 bg-[#331D15] rounded border border-amber-950/60 opacity-90 flex items-center justify-center">
+      <div class="absolute inset-x-8 h-8 bg-[#2E1810] rounded border border-amber-950/60 opacity-95 flex items-center justify-center">
         <!-- Center Tape Level Gauge Ruler -->
-        <div class="w-10 h-4 bg-black/70 rounded-sm border border-white/10 flex items-center justify-around px-1">
+        <div class="w-10 h-4 bg-black/75 rounded-sm border border-white/10 flex items-center justify-around px-1">
           <div class="w-0.5 h-2 bg-white/30"></div>
           <div class="w-0.5 h-1.5 bg-white/20"></div>
-          <div class="w-0.5 h-2.5 bg-red-500/80"></div>
+          <div class="w-0.5 h-2.5 bg-[#DE694B]"></div>
           <div class="w-0.5 h-1.5 bg-white/20"></div>
-          <div class="w-0.5 h-2 bg-white/30"></div>
+          <div class="w-0.5 h-2.5 bg-white/30"></div>
         </div>
       </div>
 
@@ -129,16 +131,32 @@
   </div>
 
   <!-- Note Card Meta Below Cassette -->
-  <div class="w-full mt-2.5 px-1 flex flex-col gap-1">
+  <div class="w-full mt-3 px-1 flex flex-col gap-1.5">
     <div class="flex items-center justify-between text-sm font-semibold">
       <span style="color: var(--kanso-text-primary);">{station.genre}</span>
       {#if isSelected && isPlaying}
-        <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span
+          class="inline-flex items-center gap-1.5 text-xs font-mono font-bold px-2 py-0.5 rounded border"
+          style="
+            background: rgba(143, 166, 131, 0.15);
+            color: #8FA683;
+            border-color: rgba(143, 166, 131, 0.3);
+          "
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-[#8FA683] animate-pulse"></span>
           PLAYING
         </span>
       {:else if isSelected}
-        <span class="text-xs font-mono text-zinc-400">LOADED</span>
+        <span
+          class="text-xs font-mono font-bold px-2 py-0.5 rounded border"
+          style="
+            background: rgba(222, 105, 75, 0.1);
+            color: var(--kanso-accent);
+            border-color: rgba(222, 105, 75, 0.25);
+          "
+        >
+          LOADED
+        </span>
       {/if}
     </div>
     <p class="text-xs leading-relaxed line-clamp-2" style="color: var(--kanso-text-muted);">
@@ -146,9 +164,3 @@
     </p>
   </div>
 </button>
-
-<style>
-  .selected {
-    transform: translateY(-2px);
-  }
-</style>

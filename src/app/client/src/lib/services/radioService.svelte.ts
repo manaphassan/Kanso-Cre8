@@ -7,9 +7,9 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
     genre: 'Lo-Fi / Beats',
     frequency: '98.4 FM',
     streamUrl: 'https://stream.laut.fm/lofi',
-    shellColor: '#1E293B',    // Slate Dark
-    labelColor: '#F8FAFC',    // Paper Cream
-    accentColor: '#38BDF8',   // Sky Cyan
+    shellColor: '#242C20',    // Nordic Olive Obsidian
+    labelColor: '#F5F3EC',    // Warm Paper
+    accentColor: '#DE694B',   // Vorxs Terracotta
     description: 'Warm, vinyl-crackle hip-hop beats, mellow electric piano, and slow rhythms to maintain flow state.'
   },
   {
@@ -18,9 +18,9 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
     genre: 'Synthwave / Vapor',
     frequency: '102.1 FM',
     streamUrl: 'https://radio.plaza.one/mp3',
-    shellColor: '#1E1B4B',    // Neon Indigo
-    labelColor: '#FDF4FF',    // Neon Pink-White
-    accentColor: '#F43F5E',   // Rose Neon
+    shellColor: '#1E1B33',    // Deep Indigo Night
+    labelColor: '#FDF4FF',    // Vapor Frost
+    accentColor: '#E11D48',   // Neon Rose
     description: 'Nostalgic 80s synthesizers, aesthetic vaporwave, and retro Tokyo midnight driving soundscapes.'
   },
   {
@@ -29,9 +29,9 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
     genre: 'Downtempo / Ambient',
     frequency: '91.3 FM',
     streamUrl: 'https://ice6.somafm.com/groovesalad-256-mp3',
-    shellColor: '#064E3B',    // Forest Emerald
-    labelColor: '#ECFDF5',    // Mint White
-    accentColor: '#10B981',   // Emerald Green
+    shellColor: '#1A2920',    // Pine Forest
+    labelColor: '#EDF5EE',    // Sage Mist
+    accentColor: '#8FA683',   // Vorxs Sage Green
     description: 'A nicely chilled plate of ambient downtempo beats and lush sound textures for deep creative sessions.'
   },
   {
@@ -40,9 +40,9 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
     genre: 'Acoustic / Bossa',
     frequency: '88.5 FM',
     streamUrl: 'https://0nlineradio.radioho.st/0r-jazz?ref=radio-browser',
-    shellColor: '#451A03',    // Warm Walnut
-    labelColor: '#FEF3C7',    // Warm Amber
-    accentColor: '#F59E0B',   // Vintage Gold
+    shellColor: '#362216',    // Warm Cognac Walnut
+    labelColor: '#FEF6E4',    // Vintage Parchment
+    accentColor: '#D97706',   // Vintage Amber
     description: 'Intimate upright bass, acoustic guitar, soft brushes on snare, and smooth bossa nova melodies.'
   },
   {
@@ -51,9 +51,9 @@ export const ALL_CASSETTE_STATIONS: CassetteRadioStation[] = [
     genre: 'Ambient / Zen',
     frequency: '95.0 FM',
     streamUrl: 'https://stream.bigfm.de/lofifocus/mp3-128/radiobrowser',
-    shellColor: '#18181B',    // Matte Obsidian
-    labelColor: '#E4E4E7',    // Zinc 200
-    accentColor: '#A1A1AA',   // Minimalist Monolith
+    shellColor: '#191D17',    // Deep Olive Noir
+    labelColor: '#E6E4DC',    // Stone Muted
+    accentColor: '#9CA3AF',   // Scandinavian Zinc
     description: 'Continuous subtle alpha waves, organic textures, and zero-distraction ambient soundscapes.'
   }
 ];
