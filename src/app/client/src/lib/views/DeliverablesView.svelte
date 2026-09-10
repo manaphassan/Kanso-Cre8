@@ -755,7 +755,7 @@
   }
 
   .badge-accent {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -767,7 +767,7 @@
   }
 
   .header-meta {
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--text-tertiary);
   }
@@ -780,7 +780,7 @@
   }
 
   .view-subtitle {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--text-secondary);
     margin-top: 4px;
   }
@@ -821,9 +821,9 @@
 
   .kpi-count {
     background: var(--surface-card-subtle);
-    padding: 1px 7px;
+    padding: 2px 8px;
     border-radius: 10px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -873,7 +873,7 @@
     border: none;
     color: var(--text-tertiary);
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .filter-group {
@@ -992,26 +992,26 @@
 
   .group-job-badge {
     font-family: var(--font-mono, monospace);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     color: var(--brand-accent, #0078D4);
     background: var(--brand-tint, rgba(0, 120, 212, 0.1));
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
   .group-brand-badge {
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-secondary);
     background: var(--surface-card);
     border: 1px solid var(--surface-card-border);
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
   .group-title {
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 800;
     color: var(--text-primary);
     margin: 0;
@@ -1022,10 +1022,10 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 12px;
   }
 
@@ -1037,7 +1037,7 @@
   }
 
   .group-meta-summary {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--text-tertiary);
     font-weight: 500;
   }
@@ -1046,9 +1046,9 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-primary);
     background: var(--surface-card);
@@ -1165,7 +1165,7 @@
   }
 
   .sheet-type-tag {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.6px;
     color: var(--text-secondary);
@@ -1175,22 +1175,22 @@
     position: absolute;
     top: 6px;
     left: 6px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 2px 7px;
+    padding: 3px 8px;
     border-radius: 20px;
     backdrop-filter: blur(8px);
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   }
 
   .preview-status-badge .badge-dot {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: currentColor;
   }
@@ -1203,9 +1203,9 @@
     position: absolute;
     top: 6px;
     right: 6px;
-    font-size: 9.5px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.7);
     color: #F8FAFC;
@@ -1216,7 +1216,7 @@
   .del-body {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     flex: 1;
   }
 
@@ -1224,7 +1224,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .job-tag {
@@ -1232,7 +1232,7 @@
     font-weight: 700;
     color: var(--brand-accent, #0078D4);
     background: var(--brand-tint, rgba(0, 120, 212, 0.08));
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
@@ -1240,7 +1240,7 @@
     font-weight: 700;
     color: var(--text-secondary);
     background: var(--surface-card-subtle);
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
@@ -1253,7 +1253,7 @@
   }
 
   .del-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
@@ -1266,7 +1266,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-tertiary);
     font-weight: 500;
     padding: 3px 0 6px 0;
@@ -1291,9 +1291,9 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--brand-primary, #0078D4);
     background: var(--brand-tint, rgba(0, 120, 212, 0.08));
@@ -1409,9 +1409,9 @@
     left: 8px;
     background: rgba(0, 0, 0, 0.75);
     color: #38BDF8;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     border: 1px solid rgba(56, 189, 248, 0.4);
     font-family: monospace;
@@ -1428,7 +1428,7 @@
   .dam-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 13.5px;
     text-align: left;
   }
 
@@ -1436,7 +1436,7 @@
     padding: 12px 16px;
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     color: #94A3B8;
@@ -1465,22 +1465,22 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   .table-icon-pill {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
-    padding: 2px 6px;
+    padding: 2px 7px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
   }
 
   .table-filename { font-weight: 700; color: #FFF; }
   .table-proj-info { display: flex; flex-direction: column; gap: 2px; }
-  .job-id-sm { font-size: 11px; font-weight: 800; color: #38BDF8; font-family: monospace; }
-  .proj-title-sm { font-size: 11px; color: #94A3B8; }
+  .job-id-sm { font-size: 12px; font-weight: 800; color: #38BDF8; font-family: monospace; }
+  .proj-title-sm { font-size: 12px; color: #94A3B8; }
 
   .format-badge, .ratio-badge {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 4px;
     font-family: monospace;
@@ -1488,9 +1488,9 @@
   .ratio-badge { color: #38BDF8; }
 
   .status-badge {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
   .status-badge.status-pending { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }

@@ -681,8 +681,8 @@
   }
 
   .tag-pill {
-    font-size: 11px;
-    padding: 1px 6px;
+    font-size: 12px;
+    padding: 2px 7px;
     background: var(--surface-card-subtle, #F3F4F6);
     border: 1px solid var(--surface-card-border, #E5E7EB);
     border-radius: 9999px;
@@ -690,7 +690,7 @@
   }
 
   .tag-more {
-    font-size: 10.5px;
+    font-size: 12px;
     color: var(--text-tertiary, #9CA3AF);
   }
 
