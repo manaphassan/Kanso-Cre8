@@ -31,7 +31,7 @@ class AppStateStore {
   currentUser = $state<User>(DEFAULT_DESKTOP_CREATOR);
   currentRoute = $state<string>('dashboard');
   routeParams = $state<Record<string, any>>({});
-  private static readonly VALID_THEMES: ThemeName[] = ['dark', 'light', 'eink', 'falconia', 'metamorphosis', 'catppuccin'];
+  private static readonly VALID_THEMES: ThemeName[] = ['dark', 'light', 'eink', 'oceanic', 'oceanic-light', 'falconia', 'metamorphosis', 'catppuccin'];
   private static getStoredTheme(): ThemeName {
     const stored = localStorage.getItem('kanso_theme') || localStorage.getItem('ss_cam_theme');
     if (stored && AppStateStore.VALID_THEMES.includes(stored as ThemeName)) {
@@ -67,7 +67,7 @@ class AppStateStore {
   }
 
   cycleTheme() {
-    const sequence: ThemeName[] = ['dark', 'light', 'eink'];
+    const sequence: ThemeName[] = ['dark', 'light', 'oceanic', 'oceanic-light', 'eink'];
     const currentIdx = sequence.indexOf(this.theme);
     const nextTheme = sequence[(currentIdx + 1) % sequence.length] || 'dark';
     this.setTheme(nextTheme);
@@ -77,7 +77,7 @@ class AppStateStore {
   applyTheme(themeName: ThemeName) {
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', themeName);
-      if (themeName === 'dark') {
+      if (themeName === 'dark' || themeName === 'oceanic') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
