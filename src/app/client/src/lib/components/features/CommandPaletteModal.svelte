@@ -49,15 +49,13 @@
     { type: 'action', id: 'nav-zettel', label: 'Open Atelier Notes & Knowledge', icon: 'document', category: 'Navigation (⌘6)', execute: () => appState.navigate('zettel') },
     { type: 'action', id: 'nav-clients', label: 'Open Clients & Brands Hub', icon: 'users', category: 'Navigation (⌘7)', execute: () => appState.navigate('clients') },
     { type: 'action', id: 'nav-radio', label: 'Open Focus Radio & Cassette Deck', icon: 'colorPalette', category: 'Navigation (⌘8)', execute: () => appState.navigate('radio') },
-    { type: 'action', id: 'nav-admin', label: 'Open Studio Settings & Cloud', icon: 'settings', category: 'Governance (⌘9)', execute: () => appState.navigate('admin') },
-    { type: 'action', id: 'nav-ai', label: 'Open Creative AI Studio (Gemini Assistant)', icon: 'sparkles', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
-    { type: 'action', id: 'nav-team', label: 'View Team & Workload', icon: 'users', category: 'Operations', execute: () => appState.navigate('team') },
+    { type: 'action', id: 'nav-copy', label: 'Open Copywriting Studio', icon: 'sparkles', category: 'AI Tools', execute: () => appState.navigate('copy-studio') },
+    { type: 'action', id: 'nav-settings', label: 'Open Studio Settings & Storage', icon: 'settings', category: 'System (⌘9)', execute: () => appState.navigate('settings') },
     { type: 'action', id: 'theme-dark', label: 'Switch to Dark Theme (Studio Obsidian)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('dark') },
     { type: 'action', id: 'theme-light', label: 'Switch to Light Theme (Atelier Paper)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('light') },
     { type: 'action', id: 'theme-eink', label: 'Switch to E-Ink Theme (Zen Monochrome)', icon: 'colorPalette', category: 'Theme', execute: () => setAppTheme('eink') },
     { type: 'action', id: 'act-theme', label: 'Cycle Theme (Dark → Light → E-Ink)', icon: 'colorPalette', category: 'Theme', execute: () => toggleTheme() },
     { type: 'action', id: 'act-rescan', label: 'Rescan Markdown Vault', icon: 'history', category: 'System', execute: () => rescanVault() },
-    { type: 'action', id: 'act-download', label: 'Download Kanso Cre8 Desktop App', icon: 'desktop', category: 'Ecosystem', execute: () => window.open('https://github.com/manaphassan/Kanso-Cre8/releases', '_blank') },
   ];
 
   function setAppTheme(theme: 'dark' | 'light' | 'eink') {
@@ -107,13 +105,13 @@
       execute: () => copyToken(t.code, t.name)
     }));
 
-    // 3. Filter Actions
+    // 3. Filter Actions (all available when query empty for touch users)
     const actions = QUICK_ACTIONS.filter(a => {
-      if (!q) return true; // Show actions by default when query is empty
+      if (!q) return true; // Show all actions by default when query is empty
       return a.label.toLowerCase().includes(q) || a.category.toLowerCase().includes(q);
-    }).slice(0, 6);
+    });
 
-    return [...projects, ...tokens, ...actions];
+    return [...projects, ...tokens, ...(q ? actions.slice(0, 8) : actions)];
   });
 
   async function copyToken(code: string, name: string) {
