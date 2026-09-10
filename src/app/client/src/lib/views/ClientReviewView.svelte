@@ -299,8 +299,8 @@
   }
 
   .header-content {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -331,13 +331,14 @@
   /* Main */
   .portal-main {
     flex: 1;
-    max-width: 1200px;
+    max-width: 100%;
     width: 100%;
-    margin: 0 auto;
-    padding: 28px 24px;
+    margin: 0;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    box-sizing: border-box;
   }
 
   /* Hero */

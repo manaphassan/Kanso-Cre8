@@ -67,10 +67,10 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 24px;
+    padding: 0 0 48px;
     width: 100%;
-    max-width: 1120px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     box-sizing: border-box;
   }
 

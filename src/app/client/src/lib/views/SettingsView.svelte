@@ -702,8 +702,8 @@
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
   }
 
   .view-header {

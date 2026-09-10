@@ -216,21 +216,19 @@
   const pageConfig: Record<string, { title: string; layout: string; icon: string; parent?: string }> = {
     dashboard:        { title: 'Studio Deck',          layout: 'layout-full', icon: dashIcon },
     journal:          { title: 'Bullet Journal',       layout: 'layout-full', icon: journalIcon },
-    projects:         { title: 'Project Manager',      layout: 'layout-fluid', icon: folderIcon },
+    projects:         { title: 'Project Manager',      layout: 'layout-full', icon: folderIcon },
     'project-detail': { title: 'Project Workspace',    layout: 'layout-full', icon: folderIcon, parent: 'projects' },
-    deliverables:     { title: 'Review Queue',          layout: 'layout-page', icon: reviewIcon },
+    deliverables:     { title: 'Review Queue',          layout: 'layout-full', icon: reviewIcon },
     clients:          { title: 'Clients & Brand Hub',   layout: 'layout-full', icon: clientIcon },
     invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full', icon: invoiceIcon },
     zettel:           { title: 'Atelier Notes',        layout: 'layout-full', icon: zettelIcon },
     radio:            { title: 'Focus Radio',          layout: 'layout-full', icon: radioIcon },
-    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-page', icon: pencilIcon },
-    team:             { title: 'Team & Workload',       layout: 'layout-page', icon: teamIcon },
-    settings:         { title: 'Settings',             layout: 'layout-page', icon: adminIcon },
-    admin:            { title: 'Administration',        layout: 'layout-full', icon: adminIcon },
-    profile:          { title: 'Settings',             layout: 'layout-page', icon: adminIcon },
+    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-full', icon: pencilIcon },
+    settings:         { title: 'Settings',             layout: 'layout-full', icon: adminIcon },
+    profile:          { title: 'Settings',             layout: 'layout-full', icon: adminIcon },
   };
 
-  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-page', icon: dashIcon });
+  const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-full', icon: dashIcon });
   const currentTitle  = $derived(
     appState.currentRoute === 'project-detail' && appState.routeParams.id
       ? appState.routeParams.id
@@ -260,7 +258,6 @@
       case 'clients': return '⌘7';
       case 'radio': return '⌘8';
       case 'settings': return '⌘9';
-      case 'admin': return '⌘9';
       default: return '';
     }
   }
@@ -280,7 +277,6 @@
     { section: 'Client & Business Ops', items: [
       { route: 'clients',      label: 'Clients & Brands',   icon: clientIcon },
       { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon },
-      { route: 'team',         label: 'Team & Workload',    icon: teamIcon },
     ]},
     { section: 'System & Storage', items: [
       { route: 'settings',     label: 'Settings',           icon: adminIcon },
@@ -317,71 +313,16 @@
             <span class="k8-text">K8</span>
           </button>
 
-          <!-- Interactive View Switcher Dropdown (Command-First HUD) -->
-          <div class="view-switcher-wrapper">
-            <button
-              class="view-switcher-trigger"
-              onclick={(e) => { e.stopPropagation(); appState.viewSwitcherOpen = !appState.viewSwitcherOpen; }}
-              aria-label="Switch active workspace view"
-              aria-expanded={appState.viewSwitcherOpen}
-            >
-              <span class="view-icon-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  {@html currentConfig.icon || dashIcon}
-                </svg>
-              </span>
-              <span class="view-title-text">{currentTitle}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="view-caret" class:open={appState.viewSwitcherOpen}>
-                <path d="M7 10l5 5 5-5z"/>
-              </svg>
-            </button>
-
-            {#if appState.viewSwitcherOpen}
-              <!-- svelte-ignore a11y_no_static_element_interactions -->
-              <div class="view-switcher-dropdown" role="menu" onclick={(e) => e.stopPropagation()}>
-                <div class="dropdown-header">
-                  <span class="dropdown-header-title">Studio Views</span>
-                  <span class="dropdown-header-shortcut">⌘1 – ⌘9</span>
-                </div>
-                <div class="dropdown-grid">
-                  {#each navGroups as group}
-                    <div class="dropdown-group">
-                      <div class="dropdown-group-label">{group.section}</div>
-                      {#each group.items as item}
-                        {@const active = isActive(item)}
-                        {@const shortcut = getShortcutBadge(item.route)}
-                        {@const count = item.badge ? projectStore.pendingReviewCount : 0}
-                        <button
-                          class="dropdown-item-btn"
-                          class:active
-                          onclick={() => {
-                            appState.viewSwitcherOpen = false;
-                            appState.navigate(item.route);
-                          }}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="dropdown-item-icon">
-                            {@html item.icon}
-                          </svg>
-                          <span class="dropdown-item-label">{item.label}</span>
-                          {#if count > 0}
-                            <span class="dropdown-item-count">{count}</span>
-                          {/if}
-                          {#if shortcut}
-                            <kbd class="dropdown-item-kbd">{shortcut}</kbd>
-                          {/if}
-                        </button>
-                      {/each}
-                    </div>
-                  {/each}
-                </div>
-              </div>
+          <!-- Elegant Breadcrumbs -->
+          <div class="header-breadcrumbs">
+            <span class="bc-root">Kanso Cre8</span>
+            <span class="bc-sep" aria-hidden="true">/</span>
+            <span class="bc-current">{currentTitle}</span>
+            {#if appState.currentRoute === 'project-detail' && appState.routeParams.id}
+              <span class="bc-sep" aria-hidden="true">/</span>
+              <span class="bc-subview">{appState.routeParams.id}</span>
             {/if}
           </div>
-
-          {#if appState.currentRoute === 'project-detail' && appState.routeParams.id}
-            <span class="bc-sep" aria-hidden="true">/</span>
-            <span class="bc-subview">{appState.routeParams.id}</span>
-          {/if}
         </div>
 
         <div class="header-center">
@@ -459,21 +400,6 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
             </svg>
-          </button>
-
-          <!-- Notification Drawer Button -->
-          <button
-            class="icon-btn notif-btn"
-            onclick={() => (appState.notificationDrawerOpen = !appState.notificationDrawerOpen)}
-            title="Notifications & Activity"
-            aria-label="Notifications & Activity"
-          >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-            </svg>
-            {#if appState.notificationCount > 0}
-              <span class="notif-count">{appState.notificationCount > 9 ? '9+' : appState.notificationCount}</span>
-            {/if}
           </button>
 
           <button
@@ -886,6 +812,34 @@
     color: var(--kanso-text-muted);
   }
 
+  /* Elegant Header Breadcrumbs */
+  .header-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    user-select: none;
+  }
+  .bc-root {
+    color: var(--kanso-text-muted);
+    font-weight: 500;
+  }
+  .bc-sep {
+    color: var(--kanso-border);
+    font-size: 12px;
+  }
+  .bc-current {
+    color: var(--kanso-text-primary);
+    font-weight: 600;
+    letter-spacing: -0.1px;
+  }
+  .bc-subview {
+    color: var(--kanso-accent);
+    font-weight: 600;
+    font-family: var(--font-mono, monospace);
+    font-size: 12.5px;
+  }
+
   /* Tri-Theme Switcher Pill */
   .tri-theme-pill {
     display: inline-flex;
@@ -1099,12 +1053,22 @@
     min-height: 0;
   }
 
-  /* Layout Contracts with Generous Breathing Room */
+  /* Layout Contracts: 100% Full Width & Maximum Creative Workspace */
   .view-pane {
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - 52px);
     box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 20px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
-  .view-pane.layout-fluid {
+  .view-pane.layout-fluid,
+  .view-pane.layout-page,
+  .view-pane.layout-full,
+  .view-pane.layout-narrow {
     padding: 20px 24px;
     max-width: 100%;
     width: 100%;
@@ -1112,26 +1076,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - 52px);
     box-sizing: border-box;
-  }
-  .view-pane.layout-page {
-    padding: 28px 32px;
-    max-width: 1480px;
-    width: 100%;
-    margin: 0 auto;
-  }
-  .view-pane.layout-full {
-    padding: 24px 32px;
-    max-width: 100%;
-    width: 100%;
-    margin: 0;
-    box-sizing: border-box;
-  }
-  .view-pane.layout-narrow {
-    padding: 36px 48px;
-    max-width: 960px;
-    margin: 0 auto;
   }
 
   /* Mobile bottom dock - strictly hidden on desktop */

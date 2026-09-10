@@ -529,6 +529,8 @@
     flex-direction: column;
     gap: 20px;
     padding-bottom: 30px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .view-header {
@@ -699,9 +701,9 @@
   }
 
   .editor-modal-split {
-    width: 95%;
-    max-width: 1180px;
-    height: 88vh;
+    width: 98%;
+    max-width: 1780px;
+    height: 90vh;
     background: var(--surface-card, #FFFFFF);
     border: 1px solid var(--surface-card-border, #E2E8F0);
     border-radius: 16px;
