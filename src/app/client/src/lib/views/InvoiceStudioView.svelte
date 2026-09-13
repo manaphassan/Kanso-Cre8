@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { financeService } from '../services/financeService';
   import { clientService } from '../services/clientService';
+  import { studioService } from '../services/studioService.svelte';
+  import { licenseStore } from '../stores/licenseStore.svelte';
   import { appState } from '../stores/appState.svelte';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
@@ -15,6 +17,7 @@
   let isConverting = $state(false);
 
   onMount(async () => {
+    await studioService.init();
     clients = clientService.getClients();
     invoices = financeService.getDocuments();
     quotes = financeService.getQuotes();
@@ -115,16 +118,21 @@
   }
 
   function createNewInvoice() {
+    if (!licenseStore.isPro) {
+      licenseStore.requirePro('Custom YAML Invoices');
+      return;
+    }
     const defaultClient = clients[0] || {
-      code: 'JOM',
-      name: 'JomParking™',
-      contactPerson: 'Dharma Syahril',
-      email: 'billing@jomparking.com',
-      billingAddress: 'Level 12, Menara LGB, Taman Tun Dr Ismail, 60000 Kuala Lumpur',
-      currency: 'MYR',
-      defaultHourlyRate: 180
+      code: 'ACME',
+      name: 'Acme Corporation',
+      contactPerson: 'Sarah Jenkins',
+      email: 'operations@acme.com',
+      billingAddress: '100 Innovation Way, Suite 400, San Francisco, CA 94105',
+      currency: 'USD',
+      defaultHourlyRate: 150
     };
 
+    const sp = studioService.profile;
     const nextNum = invoices.length + 1;
     const newDoc: InvoiceDocument = {
       id: `inv-${Date.now()}`,
@@ -138,19 +146,19 @@
       clientContact: defaultClient.contactPerson,
       clientEmail: defaultClient.email,
       clientAddress: defaultClient.billingAddress,
-      freelancerName: 'Harusssani Creative Vault',
-      freelancerEmail: 'contact@kansocre8.local',
-      freelancerPhone: '+60 12-345 6789',
-      freelancerAddress: 'Atelier 08, Bukit Damansara, 50490 Kuala Lumpur, Malaysia',
-      paymentBank: 'Maybank Berhad / CIMB Bank',
-      paymentAccount: '5141-8722-9018',
-      paymentAccountName: 'Harusssani Manaphassan',
-      currency: defaultClient.currency || 'MYR',
-      hourlyRate: defaultClient.defaultHourlyRate || 180,
+      freelancerName: sp.studioName || 'HaNa Innovation',
+      freelancerEmail: sp.billingEmail || 'contact@kansocre8.local',
+      freelancerPhone: sp.phone || '+60 12-345 6789',
+      freelancerAddress: sp.studioAddress || 'Kuala Lumpur, Malaysia',
+      paymentBank: sp.paymentBank || 'Maybank (MBBEMYKL)',
+      paymentAccount: sp.paymentAccountNo || '5140-1234-5678',
+      paymentAccountName: sp.paymentAccountName || sp.studioName || 'HaNa Innovation',
+      currency: defaultClient.currency || sp.defaultCurrency || 'USD',
+      hourlyRate: defaultClient.defaultHourlyRate || 150,
       items: [
         {
           id: '1',
-          description: 'Smart City Mobile UI Design & Interactive Proofs Package',
+          description: 'Enterprise Cloud Dashboard UI Design & Design System Package',
           quantity: 1,
           unitPrice: 2800,
           amount: 2800
@@ -160,7 +168,7 @@
       subtotal: 2800,
       taxAmount: 0,
       total: 2800,
-      notes: 'Payment settlement via Instant DuitNow / IBG transfer within 14 days. Terima kasih!'
+      notes: sp.defaultPaymentTerms || 'Payment settlement via direct wire / ACH transfer within 14 days. Thank you!'
     };
 
     financeService.saveDocument(newDoc);
@@ -170,16 +178,21 @@
   }
 
   function createNewQuote() {
-    const defaultClient = clients.find(c => c.code === 'GOV') || clients[0] || {
-      code: 'GOV',
-      name: 'Govicle®',
-      contactPerson: 'Muhamad Hanif',
-      email: 'accounts@govicle.com',
-      billingAddress: 'Tech Hub Cyberjaya, Block 3502, Jalan Teknokrat 5, 63000 Cyberjaya, Selangor',
-      currency: 'MYR',
-      defaultHourlyRate: 220
+    if (!licenseStore.isPro) {
+      licenseStore.requirePro('Dual-Pane Quotes Studio');
+      return;
+    }
+    const defaultClient = clients.find(c => c.code === 'NEX') || clients[0] || {
+      code: 'NEX',
+      name: 'Nexus Studio',
+      contactPerson: 'Alex Vance',
+      email: 'hello@nexusstudio.io',
+      billingAddress: '42 Shoreditch High St, Hackney, London E1 6JJ, UK',
+      currency: 'GBP',
+      defaultHourlyRate: 140
     };
 
+    const sp = studioService.profile;
     const nextNum = quotes.length + 1;
     const newDoc: InvoiceDocument = {
       id: `qte-${Date.now()}`,
@@ -194,14 +207,14 @@
       clientContact: defaultClient.contactPerson,
       clientEmail: defaultClient.email,
       clientAddress: defaultClient.billingAddress,
-      freelancerName: 'Harusssani Creative Vault',
-      freelancerEmail: 'contact@kansocre8.local',
-      freelancerPhone: '+1 (555) 019-2834',
-      freelancerAddress: 'San Francisco, CA',
-      paymentBank: 'First Creative Bank',
-      paymentAccount: '9876-5432-1098',
-      paymentAccountName: 'Harusssani Manaphassan',
-      currency: defaultClient.currency || 'USD',
+      freelancerName: sp.studioName || 'HaNa Innovation',
+      freelancerEmail: sp.billingEmail || 'contact@kansocre8.local',
+      freelancerPhone: sp.phone || '+60 12-345 6789',
+      freelancerAddress: sp.studioAddress || 'Kuala Lumpur, Malaysia',
+      paymentBank: sp.paymentBank || 'Maybank (MBBEMYKL)',
+      paymentAccount: sp.paymentAccountNo || '5140-1234-5678',
+      paymentAccountName: sp.paymentAccountName || sp.studioName || 'HaNa Innovation',
+      currency: defaultClient.currency || sp.defaultCurrency || 'USD',
       hourlyRate: defaultClient.defaultHourlyRate || 140,
       items: [
         {
@@ -216,7 +229,7 @@
       subtotal: (defaultClient.defaultHourlyRate || 140) * 20,
       taxAmount: 0,
       total: (defaultClient.defaultHourlyRate || 140) * 20,
-      notes: 'Quote valid for 14 days from issue date. Includes 2 rounds of creative revisions.'
+      notes: sp.defaultPaymentTerms || 'Quote valid for 14 days from issue date. Includes 2 rounds of creative revisions.'
     };
 
     financeService.saveQuote(newDoc);
@@ -265,6 +278,10 @@
   }
 
   function triggerPrint() {
+    if (!licenseStore.isPro) {
+      licenseStore.requirePro('Print-Ready PDF Generation');
+      return;
+    }
     window.print();
   }
 
@@ -282,43 +299,40 @@
   );
 </script>
 
-<div class="p-8 max-w-7xl mx-auto space-y-6 animate-fadeIn print:p-0 print:m-0 print:max-w-none">
+<div class="invoice-studio-container space-y-6 animate-fadeIn print:p-0 print:m-0 print:max-w-none">
   <!-- Top Navigation & Actions (Hidden in Print) -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6 print:hidden">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-        <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
-          <svg width="24" height="24" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </span>
-        Quotes &amp; Invoice Studio
-      </h1>
-      <p class="text-sm text-muted-foreground mt-1">
+  <div class="view-header print:hidden">
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Finance/</span>
+        <span class="tag-meta">{invoices.length} Invoices · {quotes.length} Quotes · Pure Markdown Storage</span>
+      </div>
+      <h1 class="view-title">Quotes &amp; Invoices</h1>
+      <p class="view-subtitle">
         Offline-first Markdown financial desk. Pure <code class="font-mono text-primary text-xs">_Finance/Quotes/</code> &amp; <code class="font-mono text-primary text-xs">_Finance/Invoices/</code> storage.
       </p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="header-actions">
       {#if docType === 'invoices'}
         <button
           onclick={createNewInvoice}
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-lg transition-colors shadow-sm cursor-pointer"
+          class="action-cta-btn"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Invoice
+          <span>New Invoice</span>
         </button>
       {:else}
         <button
           onclick={createNewQuote}
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-lg transition-colors shadow-sm cursor-pointer"
+          class="action-cta-btn"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Quote
+          <span>New Quote</span>
         </button>
       {/if}
 
@@ -402,7 +416,7 @@
 
     <!-- Active Documents Quick Picker -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-xl">
-      {#each filteredDocs as doc (doc.id)}
+      {#each filteredDocs as doc, idx (doc.id ? `${doc.id}_${idx}` : idx)}
         <button
           onclick={() => selectDoc(doc)}
           class="px-3 py-1.5 rounded-lg text-sm font-mono border transition-all flex-shrink-0 flex items-center gap-2 cursor-pointer {activeDoc?.id === doc.id ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm' : 'border-border/60 bg-card text-muted-foreground hover:text-foreground'}"
@@ -674,12 +688,36 @@
         
         <!-- Document Header -->
         <div class="flex justify-between items-start border-b border-zinc-200 pb-6">
-          <div>
-            <h2 class="text-2xl font-bold text-zinc-950 tracking-tight">{activeDoc.freelancerName}</h2>
-            <p class="text-sm text-zinc-500 mt-1 leading-relaxed">
-              {activeDoc.freelancerAddress}<br />
-              {activeDoc.freelancerEmail} · {activeDoc.freelancerPhone}
-            </p>
+          <div class="flex items-start gap-4">
+            {#if studioService.profile.logo}
+              <img
+                src={studioService.profile.logo}
+                alt={activeDoc.freelancerName}
+                class="w-14 h-14 object-contain rounded-md border border-zinc-200 bg-zinc-50 p-1 flex-shrink-0"
+              />
+            {/if}
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-bold text-zinc-950 tracking-tight">{activeDoc.freelancerName}</h2>
+                {#if studioService.profile.businessRegNo}
+                  <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 border border-zinc-200">
+                    {studioService.profile.businessRegNo}
+                  </span>
+                {/if}
+              </div>
+              {#if studioService.profile.tagline}
+                <div class="text-xs text-zinc-600 font-medium tracking-wide mt-0.5">
+                  {studioService.profile.tagline}
+                </div>
+              {/if}
+              <p class="text-sm text-zinc-500 mt-1 leading-relaxed">
+                {activeDoc.freelancerAddress}<br />
+                {activeDoc.freelancerEmail} · {activeDoc.freelancerPhone}
+                {#if studioService.profile.website}
+                  · <span class="font-mono text-zinc-600">{studioService.profile.website}</span>
+                {/if}
+              </p>
+            </div>
           </div>
 
           <div class="text-right">
@@ -783,17 +821,20 @@
           {#if activeDoc.type === 'invoice'}
             <div>
               <span class="font-bold text-zinc-800 uppercase tracking-wider text-xs">Payment Settlement Instructions:</span>
-              <p class="font-mono text-zinc-700 mt-1">
-                Bank: <strong>{activeDoc.paymentBank}</strong><br />
-                Account No: <strong>{activeDoc.paymentAccount}</strong><br />
-                Account Name: <strong>{activeDoc.paymentAccountName}</strong>
+              <p class="font-mono text-zinc-700 mt-1 leading-relaxed">
+                Bank: <strong>{activeDoc.paymentBank || studioService.profile.paymentBank}</strong><br />
+                Account No: <strong>{activeDoc.paymentAccount || studioService.profile.paymentAccountNo}</strong><br />
+                Account Name: <strong>{activeDoc.paymentAccountName || studioService.profile.paymentAccountName || studioService.profile.studioName}</strong>
+                {#if studioService.profile.paymentSwiftOrQr}
+                  <br />Routing / Swift: <strong>{studioService.profile.paymentSwiftOrQr}</strong>
+                {/if}
               </p>
             </div>
           {:else}
             <div>
               <span class="font-bold text-zinc-800 uppercase tracking-wider text-xs">Quote Acceptance Terms:</span>
               <p class="text-zinc-700 mt-1 leading-relaxed">
-                To accept this proposal, reply with formal approval or signed purchase order. Work begins upon deposit settlement.
+                {studioService.profile.defaultPaymentTerms || 'To accept this proposal, reply with formal approval or signed purchase order. Work begins upon deposit settlement.'}
               </p>
             </div>
           {/if}
@@ -803,6 +844,45 @@
               {activeDoc.notes}
             </div>
           {/if}
+        </div>
+
+        <!-- Digital Signature & Document Colophon -->
+        <div class="pt-6 border-t border-zinc-200 flex items-end justify-between text-xs">
+          <div class="text-zinc-500 max-w-sm">
+            <div class="font-semibold uppercase tracking-wider text-zinc-600 text-[10px]">Document Colophon</div>
+            <p class="mt-0.5 text-zinc-600 font-serif italic leading-normal">
+              {studioService.profile.footerNotice || 'Crafted with mindful focus & precision in Kanso Cre8.'}
+            </p>
+          </div>
+
+          <div class="text-right flex flex-col items-end">
+            <div class="text-[10px] font-bold text-zinc-600 uppercase tracking-wider mb-1">
+              Authorized Signature &amp; Seal
+            </div>
+            {#if studioService.profile.digitalSignature}
+              {#if studioService.profile.digitalSignature.startsWith('data:image') || studioService.profile.digitalSignature.startsWith('http')}
+                <img
+                  src={studioService.profile.digitalSignature}
+                  alt="Signature"
+                  class="h-10 object-contain max-w-[140px] my-1"
+                />
+              {:else}
+                <div class="font-serif italic text-lg text-zinc-900 px-3 py-1 border-b border-zinc-400 min-w-[140px] text-center">
+                  {studioService.profile.digitalSignature}
+                </div>
+              {/if}
+            {:else}
+              <div class="font-serif italic text-lg text-zinc-900 px-3 py-1 border-b border-zinc-400 min-w-[140px] text-center">
+                {studioService.profile.principalName || 'Principal Director'}
+              </div>
+            {/if}
+            <div class="text-[11px] font-semibold text-zinc-800 mt-1">
+              {studioService.profile.principalName || activeDoc.freelancerName}
+            </div>
+            <div class="text-[10px] text-zinc-600">
+              {studioService.profile.professionalTitle || 'Principal Art Director'}
+            </div>
+          </div>
         </div>
 
       </div>

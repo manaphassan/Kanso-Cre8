@@ -25,7 +25,9 @@
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
   import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
+  import StudioProModal from '$lib/components/features/StudioProModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
 
   let commandPaletteOpen = $state(false);
   let scratchpadOpen = $state(false);
@@ -36,14 +38,14 @@
     if (!isCmdOrCtrl) return;
     const key = e.key.toLowerCase();
 
-    // Ctrl+1 to Ctrl+9: Command-First Instant View Jumps
+    // Ctrl+1 to Ctrl+9: Command-First Instant View Jumps (Synchronized 1 to 9)
     if (key === '1') { e.preventDefault(); appState.navigate('dashboard'); return; }
     if (key === '2') { e.preventDefault(); appState.navigate('projects'); return; }
-    if (key === '3') { e.preventDefault(); appState.navigate('journal'); return; }
-    if (key === '4') { e.preventDefault(); appState.navigate('clients'); return; }
-    if (key === '5') { e.preventDefault(); appState.navigate('invoices'); return; }
-    if (key === '6') { e.preventDefault(); appState.navigate('zettel'); return; }
-    if (key === '7') { e.preventDefault(); appState.navigate('copy-studio'); return; }
+    if (key === '3') { e.preventDefault(); appState.navigate('deliverables'); return; }
+    if (key === '4') { e.preventDefault(); appState.navigate('journal'); return; }
+    if (key === '5') { e.preventDefault(); appState.navigate('clients'); return; }
+    if (key === '6') { e.preventDefault(); appState.navigate('invoices'); return; }
+    if (key === '7') { e.preventDefault(); appState.navigate('zettel'); return; }
     if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
     if (key === '9') { e.preventDefault(); appState.navigate('settings'); return; }
 
@@ -220,17 +222,17 @@
 
   const pageConfig: Record<string, { title: string; layout: string; icon: string; parent?: string }> = {
     dashboard:        { title: 'Studio Deck',          layout: 'layout-full', icon: dashIcon },
-    journal:          { title: 'Bullet Journal',       layout: 'layout-full', icon: journalIcon },
     projects:         { title: 'Project Manager',      layout: 'layout-full', icon: folderIcon },
     'project-detail': { title: 'Project Workspace',    layout: 'layout-full', icon: folderIcon, parent: 'projects' },
-    deliverables:     { title: 'Review Queue',          layout: 'layout-full', icon: reviewIcon },
-    clients:          { title: 'Clients & Brand Hub',   layout: 'layout-full', icon: clientIcon },
+    deliverables:     { title: 'Review Queue',         layout: 'layout-full', icon: reviewIcon },
+    journal:          { title: 'Bullet Journal',       layout: 'layout-full', icon: journalIcon },
+    clients:          { title: 'Clients & Brand Hub',  layout: 'layout-full', icon: clientIcon },
     invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full', icon: invoiceIcon },
     zettel:           { title: 'Atelier Notes',        layout: 'layout-full', icon: zettelIcon },
     radio:            { title: 'Focus Radio',          layout: 'layout-full', icon: radioIcon },
-    'copy-studio':    { title: 'Copywriting Studio',    layout: 'layout-full', icon: pencilIcon },
-    settings:         { title: 'Settings',             layout: 'layout-full', icon: adminIcon },
-    profile:          { title: 'Settings',             layout: 'layout-full', icon: adminIcon },
+    'copy-studio':    { title: 'Copywriting Studio',   layout: 'layout-full', icon: pencilIcon },
+    settings:         { title: 'Studio Settings',      layout: 'layout-full', icon: adminIcon },
+    profile:          { title: 'Studio Settings',      layout: 'layout-full', icon: adminIcon },
   };
 
   const currentConfig = $derived(pageConfig[appState.currentRoute] ?? { title: 'Kanso Cre8', layout: 'layout-full', icon: dashIcon });
@@ -256,13 +258,14 @@
     switch (route) {
       case 'dashboard': return '⌘1';
       case 'projects': return '⌘2';
-      case 'journal': return '⌘3';
-      case 'clients': return '⌘4';
-      case 'invoices': return '⌘5';
-      case 'zettel': return '⌘6';
-      case 'copy-studio': return '⌘7';
+      case 'deliverables': return '⌘3';
+      case 'journal': return '⌘4';
+      case 'clients': return '⌘5';
+      case 'invoices': return '⌘6';
+      case 'zettel': return '⌘7';
       case 'radio': return '⌘8';
       case 'settings': return '⌘9';
+      case 'copy-studio': return '⌘⇧C';
       default: return '';
     }
   }
@@ -270,12 +273,13 @@
   const navGroups = [
     { section: 'Creative Operations', items: [
       { route: 'dashboard',    label: 'Studio Deck',        icon: dashIcon },
-      { route: 'projects',     label: 'Project Vaults',     icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+      { route: 'projects',     label: 'Project Manager',    icon: folderIcon, matchRoutes: ['projects','project-detail'] },
+      { route: 'deliverables', label: 'Review Queue',       icon: reviewIcon },
       { route: 'journal',      label: 'Bullet Journal',     icon: journalIcon },
     ]},
     { section: 'Client & Business Ops', items: [
-      { route: 'clients',      label: 'Clients & Brands',   icon: clientIcon },
-      { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon },
+      { route: 'clients',      label: 'Clients & Brand Hub', icon: clientIcon, pro: true },
+      { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon, pro: true },
     ]},
     { section: 'Knowledge & Atelier', items: [
       { route: 'zettel',       label: 'Atelier Notes',      icon: zettelIcon },
@@ -285,7 +289,7 @@
       { route: 'radio',        label: 'Focus Radio',        icon: radioIcon },
     ]},
     { section: 'System & Storage', items: [
-      { route: 'settings',     label: 'Settings',           icon: adminIcon },
+      { route: 'settings',     label: 'Studio Settings',    icon: adminIcon },
     ]},
   ];
 
@@ -357,6 +361,11 @@
                         class="dropdown-item-btn"
                         class:active={isActive(item)}
                         onclick={() => {
+                          if ((item as any).pro && !licenseStore.isPro) {
+                            licenseStore.requirePro(item.label);
+                            appState.viewSwitcherOpen = false;
+                            return;
+                          }
                           appState.navigate(item.route);
                           appState.viewSwitcherOpen = false;
                         }}
@@ -367,6 +376,9 @@
                           </svg>
                         </span>
                         <span class="dropdown-item-label">{item.label}</span>
+                        {#if (item as any).pro && !licenseStore.isPro}
+                          <span class="pro-badge-pill">PRO</span>
+                        {/if}
                         {#if item.route === 'deliverables' && projectStore.pendingReviewCount > 0}
                           <span class="dropdown-item-count">{projectStore.pendingReviewCount}</span>
                         {/if}
@@ -392,71 +404,6 @@
         </div>
 
         <div class="header-right">
-          <!-- Studio Theme Segmented Pill (Kai-Zen / Dark / Light / E-Ink) -->
-          <div class="tri-theme-pill" role="group" aria-label="Theme Switcher">
-            <button
-              class="theme-btn"
-              class:active={appState.theme === 'oceanic' || appState.theme === 'oceanic-light'}
-              onclick={() => appState.setTheme(appState.theme === 'oceanic' ? 'oceanic-light' : 'oceanic')}
-              title="Kai-Zen (海禅 — Oceanic Zen)"
-              aria-label="Kai-Zen Oceanic Theme"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 12c.6 0 1.2-.5 2-1 1.4-.9 2.8-.9 4.2 0 1.4.9 2.8.9 4.2 0 1.4-.9 2.8-.9 4.2 0 .8.5 1.4 1 2 1"/><path d="M2 17c.6 0 1.2-.5 2-1 1.4-.9 2.8-.9 4.2 0 1.4.9 2.8.9 4.2 0 1.4-.9 2.8-.9 4.2 0 .8.5 1.4 1 2 1"/>
-              </svg>
-              <span class="theme-text">Kai-Zen</span>
-            </button>
-            <button
-              class="theme-btn"
-              class:active={appState.theme === 'dark'}
-              onclick={() => appState.setTheme('dark')}
-              title="Studio Obsidian (Dark)"
-              aria-label="Dark Mode"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-              </svg>
-              <span class="theme-text">Dark</span>
-            </button>
-            <button
-              class="theme-btn"
-              class:active={appState.theme === 'light'}
-              onclick={() => appState.setTheme('light')}
-              title="Atelier Paper (Light)"
-              aria-label="Light Mode"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
-              </svg>
-              <span class="theme-text">Light</span>
-            </button>
-            <button
-              class="theme-btn"
-              class:active={appState.theme === 'eink'}
-              onclick={() => appState.setTheme('eink')}
-              title="Zen Monochrome (E-Ink)"
-              aria-label="E-Ink Mode"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-              </svg>
-              <span class="theme-text">E-Ink</span>
-            </button>
-          </div>
-
-          <!-- Real-Time Vault Live Sync Pill -->
-          <div
-            class="live-sync-pill"
-            class:connected={appState.sseStatus === 'connected'}
-            class:reconnecting={appState.sseStatus === 'reconnecting'}
-            title={appState.lastSyncedAt ? `Live SSE Synced with Synology Vault. Last event: ${appState.lastSyncedAt.toLocaleTimeString()}` : 'Connecting to live vault stream...'}
-          >
-            <span class="live-pulse-dot" aria-hidden="true"></span>
-            <span class="live-label">
-              {appState.sseStatus === 'connected' ? 'Live Synced' : appState.sseStatus === 'reconnecting' ? 'Reconnecting' : 'Syncing'}
-            </span>
-          </div>
-
           <!-- Quick Scratchpad Launcher -->
           <button
             class="icon-btn scratchpad-btn"
@@ -464,7 +411,7 @@
             title="Quick Scratchpad (Ctrl+Shift+K)"
             aria-label="Quick Scratchpad"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>
             </svg>
           </button>
@@ -480,18 +427,19 @@
             </svg>
           </button>
 
-          <!-- Settings Quick Action (⌘9) -->
+          <!-- Studio Settings Quick Action (⌘9) -->
           <button
             class="header-settings-btn"
             class:active={appState.currentRoute === 'settings'}
             onclick={() => appState.navigate('settings')}
             title="Studio Settings & Workspace Preferences (⌘9)"
-            aria-label="Settings"
+            aria-label="Studio Settings"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
             <span class="settings-btn-label">Settings</span>
+          </button>
         </div>
       </header>
 
@@ -577,11 +525,22 @@
           class="dock-link"
           class:active={appState.currentRoute === 'invoices'}
           aria-label="Quotes and Invoices"
+          onclick={(e) => {
+            if (!licenseStore.isPro) {
+              e.preventDefault();
+              licenseStore.requirePro('Quotes & Invoices Studio');
+            }
+          }}
         >
           <svg class="dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             {@html invoiceIcon}
           </svg>
-          <span class="dock-text">Invoices</span>
+          <span class="dock-text">
+            Invoices
+            {#if !licenseStore.isPro}
+              <span class="dock-pro-dot" title="Pro Feature"></span>
+            {/if}
+          </span>
         </a>
         <a
           href="#settings"
@@ -612,6 +571,8 @@
     bind:open={scratchpadOpen}
     onclose={() => (scratchpadOpen = false)}
   />
+
+  <StudioProModal />
 
 
 {/if}
@@ -667,15 +628,15 @@
 
   /* ═══ HEADER ════════════════════════════════════════════════════ */
   .app-header {
-    height: 52px;
+    height: 46px;
     flex-shrink: 0;
     background: var(--kanso-surface);
     border-bottom: 1px solid var(--kanso-border);
-    padding: 0 16px;
+    padding: 0 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     position: sticky;
     top: 0;
     z-index: 200;
@@ -706,9 +667,15 @@
     border-color: var(--kanso-accent);
   }
   .k8-text {
+    font-family: var(--font-display);
     font-size: 14px;
     font-weight: 800;
     letter-spacing: -0.02em;
+  }
+  .bc-root {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 
   /* View Switcher */
@@ -882,6 +849,27 @@
     color: var(--kanso-text-muted);
   }
 
+  .pro-badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 800;
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 1px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    margin-left: 6px;
+  }
+  .dock-pro-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #F59E0B;
+    vertical-align: super;
+  }
+
   /* Elegant Header Breadcrumbs */
   .header-breadcrumbs {
     display: flex;
@@ -910,86 +898,45 @@
     font-size: 12.5px;
   }
 
-  /* Tri-Theme Switcher Pill */
-  .tri-theme-pill {
-    display: inline-flex;
-    align-items: center;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 2px;
-    gap: 3px;
-    height: 38px;
-    box-sizing: border-box;
-  }
-  .theme-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 11px;
-    height: 32px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--kanso-text-muted);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.14s ease;
-  }
-  .theme-btn:hover {
-    color: var(--kanso-text-primary);
-    background: var(--kanso-surface-hover);
-  }
-  .theme-btn.active {
-    background: var(--kanso-surface-active);
-    color: var(--kanso-text-primary);
-    font-weight: 700;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
-  [data-theme="eink"] .theme-btn.active {
-    background: #000000;
-    color: #FFFFFF;
-  }
-
   .header-search-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     background: var(--kanso-canvas);
     border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 0 14px;
+    border-radius: 6px;
+    padding: 0 10px;
     width: 100%;
-    max-width: 320px;
-    height: 38px;
+    max-width: 200px;
+    height: 30px;
     cursor: pointer;
     text-align: left;
     transition: all .15s ease;
+    flex-shrink: 1;
   }
   .header-search-btn:hover {
     border-color: var(--kanso-accent);
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
   }
   .search-ico { color: var(--kanso-text-muted); flex-shrink: 0; }
   .search-placeholder {
     flex: 1;
     color: var(--kanso-text-muted);
-    font-size: 14px;
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .search-shortcut {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    padding: 2px 7px;
+    padding: 1px 5px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--kanso-border);
     color: var(--kanso-text-muted);
     font-family: inherit;
+    line-height: 1.2;
   }
 
   .icon-btn {
@@ -1024,48 +971,6 @@
     line-height: 16px;
     text-align: center;
     border: 1.5px solid var(--surface-card);
-  }
-
-  /* Live Sync Pill */
-  .live-sync-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: rgba(16, 185, 129, 0.08);
-    border: 1px solid rgba(16, 185, 129, 0.22);
-    border-radius: 9999px;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: #059669;
-    user-select: none;
-    transition: all 0.2s ease;
-  }
-  .live-sync-pill.reconnecting {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.25);
-    color: #D97706;
-  }
-  .live-pulse-dot {
-    width: 6.5px;
-    height: 6.5px;
-    border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-    animation: livePulse 2s infinite;
-  }
-  .live-sync-pill.reconnecting .live-pulse-dot {
-    background: #F59E0B;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
-    animation: livePulse 0.8s infinite;
-  }
-  @keyframes livePulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.25); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.8; }
-  }
-  .live-label {
-    letter-spacing: 0.2px;
   }
 
   .vault-link {

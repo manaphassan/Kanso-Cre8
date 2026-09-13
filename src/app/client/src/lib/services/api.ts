@@ -111,6 +111,29 @@ export class ApiClient {
     }
   }
 
+  // ─── Studio & Freelance Branding Profile ───
+  static async getStudioProfile(): Promise<{ success: boolean; profile: any }> {
+    return this.request('/system/studio-profile');
+  }
+
+  static async updateStudioProfile(data: any): Promise<{ success: boolean; profile: any }> {
+    return this.request('/system/studio-profile', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  static async getLicense(): Promise<{ success: boolean; license: string | null }> {
+    return this.request('/system/license');
+  }
+
+  static async saveLicense(licenseKey: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/system/license', {
+      method: 'PUT',
+      body: JSON.stringify({ licenseKey })
+    });
+  }
+
   // ─── Dashboard ───
   static getDashboard(params: { timeRange?: string; brand?: string } = {}): Promise<DashboardData> {
     const qs = new URLSearchParams();
@@ -387,15 +410,19 @@ export class ApiClient {
     return this.request('/system/status');
   }
 
-  static getWorkspaceCandidates(): Promise<{ success: boolean; candidates: Array<{ path: string; accessible: boolean; itemCount: number; isCurrent: boolean }>; current: string }> {
+  static getWorkspaceCandidates(): Promise<{ success: boolean; candidates: Array<{ path: string; accessible?: boolean; exists?: boolean; itemCount?: number; isCurrent: boolean }>; current: string }> {
     return this.request('/system/workspace-candidates');
   }
 
-  static updateWorkspaceRoot(workspacePath: string): Promise<{ success: boolean; workspaceRoot: string; cachedProjects: number; message: string }> {
+  static updateWorkspaceRoot(workspacePath: string, autoCreate: boolean = true): Promise<{ success: boolean; workspaceRoot: string; cachedProjects?: number; message?: string }> {
     return this.request('/system/workspace-root', {
       method: 'POST',
-      body: JSON.stringify({ workspacePath })
+      body: JSON.stringify({ workspacePath, autoCreate })
     });
+  }
+
+  static setWorkspaceRoot(workspacePath: string, autoCreate: boolean = true): Promise<{ success: boolean; workspaceRoot: string; cachedProjects?: number; message?: string }> {
+    return this.updateWorkspaceRoot(workspacePath, autoCreate);
   }
 
   // ─── Share & Public Review ───
@@ -697,6 +724,11 @@ export class ApiClient {
       method: 'POST',
       body: JSON.stringify(payload)
     });
+  }
+
+  // ─── Workspace & Vault Mount Management ───
+  static getSystemHealth(): Promise<{ success: boolean; workspaceRoot: string; workspaceExists: boolean; cachedProjects: number; lastScan: string }> {
+    return this.request('/system/health');
   }
 }
 

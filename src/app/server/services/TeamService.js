@@ -18,7 +18,6 @@ class TeamService {
   static getStaffRoster() {
     const rosterPath = this.getRosterPath();
     const defaultTeam = [
-      { staffId: 'DEMO001', username: 'demo', name: 'Demo Creator', email: 'demo@kansocre8.local', role: 'Lead Designer / Administrator', department: 'Creative Studio', defaultBrand: 'ACME', avatarColor: '#38BDF8', active: true },
       { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
       { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
       { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
@@ -325,6 +324,119 @@ class TeamService {
         totalAssignedCount: memberProjects.length
       };
     });
+  }
+
+  /**
+   * Path to the plain JSON studio and freelance branding profile.
+   */
+  static getStudioProfilePath() {
+    const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+    if (!fs.existsSync(configDir)) {
+      try { fs.mkdirSync(configDir, { recursive: true }); } catch (e) {}
+    }
+    return path.join(configDir, 'studio_profile.json');
+  }
+
+  /**
+   * Loads canonical studio & freelance branding profile, seeding sensible defaults if missing.
+   */
+  static getStudioProfile() {
+    const profilePath = this.getStudioProfilePath();
+    const defaultProfile = {
+      studioName: 'HaNa Innovation',
+      principalName: 'Harussani',
+      professionalTitle: 'Principal Art Director & Brand Architect',
+      tagline: 'Mindful Brand Systems & Digital Craft',
+      businessRegNo: '202601004829 (LLP-9921)',
+      billingEmail: 'harussani@hana-innovation.com',
+      studioAddress: 'Kuala Lumpur, Malaysia',
+      website: 'https://hana-innovation.com',
+      phone: '+60 12-345 6789',
+      paymentBank: 'Maybank (MBBEMYKL)',
+      paymentAccountNo: '5140-1234-5678',
+      paymentAccountName: 'HaNa Innovation',
+      paymentSwiftOrQr: 'DuitNow / SWIFT: MBBEMYKL',
+      defaultPaymentTerms: '50% Upfront Deposit • Net 14 Days • 2 Revision Rounds',
+      defaultCurrency: 'USD',
+      brandColor: '#0284C7',
+      logo: '',
+      digitalSignature: '',
+      footerNotice: 'Crafted with mindful focus & precision in Kanso Cre8.'
+    };
+
+    if (!fs.existsSync(profilePath)) {
+      try {
+        fs.writeFileSync(profilePath, JSON.stringify(defaultProfile, null, 2), 'utf8');
+        return defaultProfile;
+      } catch (err) {
+        return defaultProfile;
+      }
+    }
+
+    try {
+      const data = fs.readFileSync(profilePath, 'utf8');
+      const parsed = JSON.parse(data);
+      return { ...defaultProfile, ...parsed };
+    } catch (err) {
+      return defaultProfile;
+    }
+  }
+
+  /**
+   * Atomically saves updated studio branding profile to vault.
+   */
+  static saveStudioProfile(profile) {
+    const profilePath = this.getStudioProfilePath();
+    const current = this.getStudioProfile();
+    const updated = { ...current, ...profile };
+    try {
+      const tempFile = `${profilePath}.tmp.${Date.now()}`;
+      fs.writeFileSync(tempFile, JSON.stringify(updated, null, 2), 'utf8');
+      try {
+        fs.renameSync(tempFile, profilePath);
+      } catch (renameErr) {
+        fs.writeFileSync(profilePath, JSON.stringify(updated, null, 2), 'utf8');
+        try { fs.unlinkSync(tempFile); } catch (e) {}
+      }
+      return updated;
+    } catch (err) {
+      console.error('[TeamService] Failed to save studio_profile.json:', err.message);
+      return current;
+    }
+  }
+
+  /**
+   * Reads the offline license key from _Team/_Config/license.key
+   */
+  static getLicensePath() {
+    const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
+    if (!fs.existsSync(configDir)) {
+      try { fs.mkdirSync(configDir, { recursive: true }); } catch (e) {}
+    }
+    return path.join(configDir, 'license.key');
+  }
+
+  static getLicense() {
+    const licensePath = this.getLicensePath();
+    if (!fs.existsSync(licensePath)) {
+      return null;
+    }
+    try {
+      return fs.readFileSync(licensePath, 'utf8').trim();
+    } catch {
+      return null;
+    }
+  }
+
+  static saveLicense(licenseKey) {
+    const licensePath = this.getLicensePath();
+    try {
+      fs.writeFileSync(licensePath, (licenseKey || '').trim(), 'utf8');
+      return true;
+    } catch (err) {
+      console.error('[TeamService] Failed to save license.key:', err.message);
+      return false;
+    }
   }
 }
 

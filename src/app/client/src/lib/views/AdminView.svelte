@@ -256,23 +256,10 @@
   let showWorkspaceModal = $state<boolean>(false);
   let newWorkspacePath = $state<string>('');
   let isUpdatingWorkspace = $state<boolean>(false);
-  let workspaceCandidates = $state<Array<{ path: string; accessible: boolean; itemCount: number; isCurrent: boolean }>>([]);
-  let isLoadingCandidates = $state<boolean>(false);
 
-  async function openWorkspaceModal() {
+  function openWorkspaceModal() {
     newWorkspacePath = systemStatus?.workspaceRoot || '';
     showWorkspaceModal = true;
-    isLoadingCandidates = true;
-    try {
-      const res = await ApiClient.getWorkspaceCandidates();
-      if (res && res.candidates) {
-        workspaceCandidates = res.candidates;
-      }
-    } catch (e) {
-      workspaceCandidates = [];
-    } finally {
-      isLoadingCandidates = false;
-    }
   }
 
   async function handleUpdateWorkspace() {
@@ -1978,50 +1965,6 @@
       Specify the local or network share directory path to the active <b>Creative-Team</b> folder. The system will validate filesystem accessibility, bind real-time filesystem watchers, and rescan active production assets.
     </p>
 
-    {#if isLoadingCandidates}
-      <div style="padding: 16px; font-size: 13px; color: #0284C7; text-align: center; background: rgba(2, 132, 199, 0.08); border-radius: 8px; margin-bottom: 14px;">
-        🔍 Scanning local storage drives and candidate NAS mounts...
-      </div>
-    {:else if workspaceCandidates.length > 0}
-      <div class="form-group" style="margin-bottom: 16px;">
-        <label class="field-label">Detected / Suggested Mount Paths</label>
-        <div class="candidates-list-scroll" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px; max-height: 220px; overflow-y: auto; padding-right: 4px;">
-          {#each workspaceCandidates as cand}
-            <button
-              type="button"
-              class="workspace-cand-card"
-              class:is-active={cand.isCurrent}
-              class:is-selected={newWorkspacePath === cand.path}
-              onclick={() => (newWorkspacePath = cand.path)}
-            >
-              <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-                <span style="font-size: 16px;">{cand.accessible ? '📁' : '⚠️'}</span>
-                <div style="min-width: 0; text-align: left;">
-                  <div style="font-family: monospace; font-size: 12px; font-weight: 600; color: var(--text-primary, #111827); word-break: break-all;">
-                    {cand.path}
-                  </div>
-                  <div style="font-size: 11px; color: var(--text-secondary, #6B7280); margin-top: 2px;">
-                    {#if cand.accessible}
-                      <span style="color: #107C41; font-weight: 600;">✓ Accessible</span> ({cand.itemCount} items detected)
-                    {:else}
-                      <span style="color: #EF4444; font-weight: 500;">✗ Not mounted on this host</span>
-                    {/if}
-                  </div>
-                </div>
-              </div>
-              <div style="flex-shrink: 0; margin-left: 8px;">
-                {#if cand.isCurrent}
-                  <span class="cand-badge current-badge">CURRENT</span>
-                {:else if newWorkspacePath === cand.path}
-                  <span class="cand-badge selected-badge">SELECTED</span>
-                {/if}
-              </div>
-            </button>
-          {/each}
-        </div>
-      </div>
-    {/if}
-
     <div class="form-group">
       <label class="field-label">Target Workspace Directory Path</label>
       <input
@@ -3265,40 +3208,6 @@
   .empty-icon { font-size: 36px; margin-bottom: 8px; }
   .empty-state-banner h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0; }
   .empty-state-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
-
-  /* Workspace Candidates Selector */
-  .workspace-cand-card {
-    transition: all 0.15s ease;
-    border: 1px solid var(--surface-card-border, #E5E7EB);
-    background: var(--surface-card, #FFFFFF);
-  }
-  .workspace-cand-card:hover {
-    border-color: #0078D4 !important;
-    background: rgba(0, 120, 212, 0.04) !important;
-  }
-  .workspace-cand-card.is-selected {
-    border-color: #0078D4 !important;
-    background: rgba(0, 120, 212, 0.08) !important;
-  }
-  .workspace-cand-card.is-active {
-    border-left: 3px solid #107C41;
-  }
-
-  .cand-badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    letter-spacing: 0.5px;
-  }
-  .current-badge {
-    background: rgba(2, 132, 199, 0.15);
-    color: #0284C7;
-  }
-  .selected-badge {
-    background: #0078D4;
-    color: #FFFFFF;
-  }
 
   .edit-inline-btn:hover {
     background: rgba(0, 120, 212, 0.1) !important;

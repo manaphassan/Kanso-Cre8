@@ -1,4 +1,4 @@
-﻿---
+---
 name: kanso-guardian
 description: >
   Official governance and architecture steward skill for Kanso Cre8.
@@ -104,33 +104,42 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 │   ├── 📁 Quotes/                        # QUOTE-2026-xxx.md
 │   └── 📁 Invoices/                      # INV-2026-xxx.md (Printable HTML/PDF)
 │
-├── 📁 _Zettelkasten/                     # 🧠 Second Brain Knowledge Engine
+├── 📁 _Projects/                         # 📁 Standardized 5-Folder Project Vaults
+│   └── 📁 2026/
+│       └── 📁 202609_September/
+│           └── 📁 202609_0001_ACME_MobileAppIllustration/
+│               ├── 📁 01_BRIEF/          # Client briefs, references, moodboards
+│               ├── 📁 02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
+│               ├── 📁 03_COPY/           # COPY.md (scripts, hooks, specs)
+│               ├── 📁 04_WIP/            # Draft exports, test renders, review clips
+│               ├── 📁 05_DELIVERABLES/   # High-res exports ready for client handover
+│               └── 📄 README.md          # Project Master File (YAML Frontmatter)
+│
+├── 📁 _Journal/                          # 📔 Creator's Bullet Journal System
+│   ├── 📁 Daily/                         # Daily rapid logs (YYYY-MM-DD.md)
+│   ├── 📁 Monthly/                       # Monthly reflections & hours review
+│   └── 📁 Yearly/                        # Annual vision index
+│
+├── 📁 _Notes/                            # 🧠 Atelier Notes & Knowledge Engine
 │   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
 │   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
-│   └── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+│   ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+│   └── 📄 Scratchpad.md                  # Temporary quick notes buffer
 │
-├── 📁 2026/                              # 📁 Standardized 5-Folder Project Vaults
-│   └── 📁 202609_September/
-│       └── 📁 202609_0001_ACME_MobileAppIllustration/
-│           ├── 📁 01_BRIEF/              # Client briefs, references, moodboards
-│           ├── 📁 02_SOURCE/             # .psd, .ai, .afdesign, Blender, Figma links
-│           ├── 📁 03_COPY/               # COPY.md (scripts, hooks, specs)
-│           ├── 📁 04_WIP/                # Draft exports, test renders, review clips
-│           ├── 📁 05_DELIVERABLES/       # High-res exports ready for client handover
-│           └── 📄 README.md              # Project Master File (YAML Frontmatter)
-│
-└── 📁 _Notes/                            # 📝 Quick Scratchpad
-    └── 📄 Scratchpad.md
+└── 📁 _Team/                             # 💼 Atelier Settings & Studio Identity
+    └── 📁 _Config/                      # Vault-wide configuration
+        └── 📄 studio_profile.json       # Master Brand Dossier (Name, Reg No, Bank/SWIFT, DuitNow, Sig)
 ```
 
 ---
 
-## 🧠 4. Zettelkasten Knowledge Engine & Task Rollup
+## 🧠 4. Atelier Knowledge Engine & Task Rollup
 
 ### 4.1 3-Tier Note Classification
 1. **`01_Fleeting`**: Ephemeral, unedited quick thoughts captured during client meetings or sudden inspiration (`Ctrl+Space`).
 2. **`02_Literature`**: Summaries of books, competitor teardowns, swipe file references, and external tutorials.
 3. **`03_Permanent`**: Standalone, synthesized atomic ideas, reusable design formulas, and proven viral hooks.
+4. **`Scratchpad.md`**: Dedicated temporary buffer for raw clipboard dumps and scratch thoughts.
 
 ### 4.2 Bi-directional Linking & Task Rollup
 * **WikiLink Syntax**: Internal links use `[[note_title]]` or `[[ClientName]]`.
@@ -141,18 +150,25 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 
 ---
 
-## 🏢 5. Multi-Client Hub & Invoice Studio
+## 🏢 5. Studio Brand Dossier, Multi-Client Hub & Invoice Studio
 
-### 5.1 Sample Client Profiles
+### 5.1 Studio & Freelance Brand Dossier (`_Team/_Config/studio_profile.json`)
+* Master brand profile managed via `SettingsView.svelte` and `studioService.svelte.ts`.
+* Stores: Studio Name, Tagline, Freelancer Name, Business Registration Number (`registration_no`), Email, Phone, Address, Logo URL / Monogram, and Digital Signature (`signature_text`, `signature_url`).
+* Stores wire remittance details: Bank Name, Monospace Account Number, Account Holder, SWIFT/BIC Code, and DuitNow / QR identifier.
+* Master details are automatically stamped into new quotes and invoices, eliminating repetitive administrative data entry.
+
+### 5.2 Sample Client Profiles
 The app includes mock profiles to demonstrate capability:
 1. **Acme Corporation** (`ACME`)
 2. **Nexus Studio** (`NEX`)
 3. **Lumina Labs** (`LUM`)
 
-### 5.2 Brand Swatches & Invoicing
+### 5.3 Brand Swatches & Invoicing
 * Client profiles store brand color palettes with 1-click clipboard copy (`HEX`, `RGB`, `CMYK`).
-* Invoices are stored in `_Finance/Invoices/INV-YYYY-XXX.md` with YAML frontmatter specifying client code, line items, hourly rate, and bank details.
-* The Invoice Studio provides a split pane: YAML text editor on the left, live printable invoice on the right (triggerable via `window.print()`).
+* Invoices are stored in `_Finance/Invoices/INV-YYYY-XXX.md` with YAML frontmatter specifying client code, line items, hourly rate, bank details, SWIFT code, and digital signature.
+* Quotes are stored in `_Finance/Quotes/QUOTE-YYYY-XXX.md` with 1-click Quote-to-Invoice conversion.
+* The Invoice Studio provides a split pane: YAML text editor on the left (with Svelte 5 composite key collision prevention), live printable invoice on the right (triggerable via `window.print()`).
 
 ---
 
@@ -163,7 +179,7 @@ The app includes mock profiles to demonstrate capability:
 * **Frontend Location**: `src/app/`
 * **Desktop & Mobile Packaging**: `src-tauri/`
 * **Single Codebase**: Serves Windows (`.msi` / `.exe`), Linux (`.deb` / `.AppImage`), and Android (`.apk`).
-* **Archive Storage**: All legacy .NET 4.8 / Avalonia code MUST remain quarantined in `archive/legacy-dotnet/`. Do not pollute `src/` with legacy C# files.
+* **Zero Legacy Law**: All legacy .NET 4.8 / Avalonia code and container artifacts have been completely purged to ensure an ultra-lean repository.
 
 ---
 
@@ -176,6 +192,7 @@ The app includes mock profiles to demonstrate capability:
   - Local vault scanner and YAML parser.
   - Client Hub with sample profiles (Acme Corp, Nexus Studio, Lumina Labs).
   - Standardized 5-folder project scaffolder.
+  - Studio & Freelance Brand Dossier (`_Team/_Config/studio_profile.json` & `studioService.svelte.ts`) with logo, registration ID, SWIFT/DuitNow wire remittance, and authorized digital signature.
 * **Phase 3: Zettelkasten Knowledge Engine & Inline Task Rollup**
   - WikiLink indexer & backlink crawler.
   - 3-Tier note categorization.
@@ -183,17 +200,34 @@ The app includes mock profiles to demonstrate capability:
 * **Phase 4: Quote & Invoice Studio**
   - Dual-pane Markdown YAML editor + printable HTML/PDF.
   - Auto-calculation of subtotals and taxes.
-* **Phase 5: Copywriting Studio & Deliverables Review**
+  - 1-Click Quote-to-Invoice conversion pipeline.
+  - Brand stamping with studio logo, registration badge, SWIFT wire remittance deck, and digital signature colophon.
+* **Phase 5: Retro Cassette Focus Radio & Studio Sanctuary**
+  - Port mechanical cassette player with rotating spools (33 RPM) from SS-CAM Android.
+  - 5 curated streams, 40px Mini-Cassette Dock, and Pomodoro focus timer.
+  - Synchronized favorite presets rack (`validFavoriteStations.length`) and dynamic legacy station ID migration.
+* **Phase 6: Copywriting Studio & Deliverables Review**
   - `03_COPY/COPY.md` live telemetry (words, chars, read-time).
   - Atomic Hook Injector drawer.
   - 4K Lightbox deliverable review & 1-click ZIP export.
-* **Phase 6: Multi-Platform Tauri v2 Packaging**
+* **Phase 7: Multi-Platform Tauri v2 Packaging**
   - Tauri v2 builds for Windows, Linux, and Android Companion.
   - Multi-cloud sync verification (Dropbox, GDrive, OneDrive).
+* **Phase 8: Billable Chronometer & Executive Studio Deck**
+  - Header live timer with hourly rate selector & real-time accrued cash ticker (`+$...`).
+  - 1-click "Append to Invoice" pipeline and executive dashboard bento.
+* **Phase 9: Commercial Engine, One-Time Perpetual Licensing & Feature Gating**
+  - One-time perpetual license ($39–$49) based on the "Sanctuary vs. Commerce" split.
+  - Zero-database offline cryptographic verification (Ed25519) via native Tauri Rust backend.
+  - Merchant-of-record integration (Lemon Squeezy / Gumroad).
 
 ---
 
-## ⚖️ 8. License Governance
+## ⚖️ 8. License Governance & Commercial Architecture
 
 * **License**: **PolyForm Noncommercial License 1.0.0** (`LICENSE`).
-* **Policy**: Strictly free for personal use, freelance client work, and non-commercial creators. Commercial resale, white-labeling, or closed-source SaaS distribution is strictly prohibited.
+* **Commercial Model**: **One-Time Perpetual License (Pay Once, Own Forever)**.
+* **Policy**: 
+  - **Free Tier (Kanso Zen)**: Unconditionally free for personal use, creative journaling, atomic notes, copywriting, and focus audio.
+  - **Paid Tier (Kanso Studio Pro)**: Required for commercial freelance client operations (unlimited clients, YAML invoice generation, billable chronometer rate calculation, 5-folder project scaffolding, and client deliverables packaging).
+  - **Zero Phone-Home Law**: All license validation must execute 100% offline via local cryptographic signatures (Ed25519) in the Tauri Rust backend. Never introduce cloud auth servers, telemetry trackers, or database binary locks.

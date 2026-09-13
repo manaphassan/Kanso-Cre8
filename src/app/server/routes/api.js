@@ -1338,13 +1338,28 @@ router.get('/status', (req, res) => {
   });
 });
 
-router.get('/system/status', authenticateToken, (req, res) => {
+router.get('/system/health', authenticateToken, (req, res) => {
+  const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
   res.json({
+    success: true,
+    workspaceRoot: wsRoot,
+    workspaceExists: fs.existsSync(wsRoot),
+    cachedProjects: WorkspaceService.projectsCache ? WorkspaceService.projectsCache.length : 0,
+    lastScan: WorkspaceService.lastScanTime,
+    uptimeSeconds: Math.floor(process.uptime()),
+    platform: process.platform
+  });
+});
+
+router.get('/system/status', authenticateToken, (req, res) => {
+  const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
+  res.json({
+    success: true,
     app: config.APP_TITLE,
     version: config.VERSION,
-    workspaceRoot: config.WORKSPACE_ROOT,
-    workspaceExists: fs.existsSync(config.WORKSPACE_ROOT),
-    cachedProjects: WorkspaceService.projectsCache.length,
+    workspaceRoot: wsRoot,
+    workspaceExists: fs.existsSync(wsRoot),
+    cachedProjects: WorkspaceService.projectsCache ? WorkspaceService.projectsCache.length : 0,
     lastScan: WorkspaceService.lastScanTime,
     uptimeSeconds: Math.floor(process.uptime()),
     platform: process.platform
@@ -1352,18 +1367,17 @@ router.get('/system/status', authenticateToken, (req, res) => {
 });
 
 router.get('/system/workspace-candidates', authenticateToken, (req, res) => {
+  const userDocs = path.join(process.env.USERPROFILE || '', 'Documents', 'KansoCre8');
+  const userOneDriveDocs = path.join(process.env.USERPROFILE || '', 'OneDrive', 'Documents', 'KansoCre8');
   const candidates = [
-    'D:\\SynologyDrive\\Creative-Team',
-    'C:\\SynologyDrive\\Creative-Team',
-    'E:\\SynologyDrive\\Creative-Team',
-    path.join(process.env.USERPROFILE || '', 'SynologyDrive', 'Creative-Team'),
-    path.join(process.env.USERPROFILE || '', 'Synology Drive', 'Creative-Team'),
-    '\\\\SSNAS\\Creative-Team',
-    '/volume1/Creative-Team',
-    '/volume2/Creative-Team',
+    userDocs,
+    userOneDriveDocs,
+    'D:\\KansoCre8',
+    'D:\\OneDrive\\Völundr',
     path.resolve(__dirname, '../sample-workspace')
   ];
 
+  const currentRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
   const results = candidates.map(p => {
     let accessible = false;
     let count = 0;
@@ -1379,13 +1393,63 @@ router.get('/system/workspace-candidates', authenticateToken, (req, res) => {
     return {
       path: p,
       accessible,
+      exists: accessible,
       itemCount: count,
-      isCurrent: path.resolve(p) === path.resolve(config.WORKSPACE_ROOT)
+      isCurrent: path.resolve(p) === path.resolve(currentRoot)
     };
   });
 
-  res.json({ success: true, candidates: results, current: config.WORKSPACE_ROOT });
+  res.json({ success: true, candidates: results, current: currentRoot });
 });
+
+// ─── STUDIO & FREELANCER BRANDING DOSSIER ───────────────────────────
+
+router.get('/system/studio-profile', authenticateToken, (req, res) => {
+  try {
+    const profile = TeamService.getStudioProfile();
+    res.json({ success: true, profile });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/system/studio-profile', authenticateToken, (req, res) => {
+  try {
+    const updated = TeamService.saveStudioProfile(req.body);
+    AuditService.logEvent({
+      actor: req.user.name,
+      role: req.user.role,
+      action: 'STUDIO_PROFILE_UPDATED',
+      entityType: 'StudioBranding',
+      entityId: 'studio_profile',
+      details: { studioName: updated.studioName, principalName: updated.principalName }
+    });
+    SseService.broadcast('studio:updated', { profile: updated });
+    res.json({ success: true, profile: updated });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/system/license', (req, res) => {
+  try {
+    const license = TeamService.getLicense();
+    res.json({ success: true, license });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/system/license', (req, res) => {
+  try {
+    const { licenseKey } = req.body || {};
+    const success = TeamService.saveLicense(licenseKey);
+    res.json({ success, message: success ? 'License updated on disk' : 'Failed to save license' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 
 router.post('/system/workspace-root', authenticateToken, (req, res) => {
   try {
@@ -1396,14 +1460,15 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
       return res.status(403).json({ error: 'Permission Denied. System Administrator or Executive privileges required.' });
     }
 
-    const { workspacePath } = req.body;
+    const { workspacePath, autoCreate } = req.body;
     if (!workspacePath || typeof workspacePath !== 'string' || !workspacePath.trim()) {
       return res.status(400).json({ error: 'Valid workspace path is required.' });
     }
 
     const result = WorkspaceService.setWorkspaceRoot(
       workspacePath,
-      req.user?.name || req.user?.username || 'Administrator'
+      req.user?.name || req.user?.username || 'Administrator',
+      autoCreate === true || autoCreate === 'true'
     );
 
     res.json({
@@ -1411,6 +1476,161 @@ router.post('/system/workspace-root', authenticateToken, (req, res) => {
       message: 'Workspace root mount path updated and rescan initiated successfully.',
       ...result
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── RADIO REAL-TIME METADATA API ────────────────────────────────────
+router.get('/radio/now-playing', async (req, res) => {
+  const { streamUrl, stationId } = req.query;
+  if (!streamUrl && !stationId) {
+    return res.status(400).json({ error: 'streamUrl or stationId is required' });
+  }
+
+  try {
+    const url = String(streamUrl || '');
+    const id = String(stationId || '');
+
+    // 1. Laut.fm streams (AnimeFM, Initial D / Eurobeat, Synthwave, Lofi)
+    if (url.includes('laut.fm') || id === 'anime-fm' || id === 'initial-d-world' || id === 'dragon-beats' || id === 'lofi-cafe') {
+      let stName = 'animefm';
+      if (id === 'initial-d-world' || url.includes('eurobeat')) stName = 'eurobeat';
+      else if (id === 'dragon-beats' || url.includes('synthwave')) stName = 'synthwave';
+      else if (id === 'lofi-cafe' || url.includes('lofi')) stName = 'lofi';
+      else if (url.includes('laut.fm')) {
+        const parts = url.split('/');
+        stName = parts[parts.length - 1] || parts[parts.length - 2];
+      }
+
+      try {
+        const lautRes = await fetch(`https://api.laut.fm/station/${encodeURIComponent(stName)}/current_song`, {
+          headers: { 'User-Agent': 'KansoCre8/0.1' },
+          signal: AbortSignal.timeout(3500)
+        });
+        if (lautRes.ok) {
+          const data = await lautRes.json();
+          if (data?.title) {
+            const artist = data.artist?.name || '';
+            const trackTitle = artist ? `${artist} — ${data.title}` : data.title;
+            return res.json({ success: true, trackTitle, artist, title: data.title, source: 'laut.fm' });
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 2. Nightwave Plaza
+    if (url.includes('plaza.one') || id === 'nightwave-plaza') {
+      try {
+        const plazaRes = await fetch('https://api.plaza.one/status', {
+          headers: { 'User-Agent': 'KansoCre8/0.1' },
+          signal: AbortSignal.timeout(3500)
+        });
+        if (plazaRes.ok) {
+          const data = await plazaRes.json();
+          if (data?.song?.title) {
+            const artist = data.song.artist || '';
+            const trackTitle = artist ? `${artist} — ${data.song.title}` : data.song.title;
+            return res.json({ success: true, trackTitle, artist, title: data.song.title, source: 'plaza.one' });
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3. SomaFM streams
+    if (url.includes('somafm.com') || id === 'groove-salad') {
+      try {
+        const match = url.match(/somafm\.com\/([a-zA-Z0-9]+)/);
+        const channel = match ? match[1].replace('-256-mp3', '').replace('-128-mp3', '') : 'groovesalad';
+        const somaRes = await fetch(`https://somafm.com/songs/${encodeURIComponent(channel)}.json`, {
+          headers: { 'User-Agent': 'KansoCre8/0.1' },
+          signal: AbortSignal.timeout(3500)
+        });
+        if (somaRes.ok) {
+          const data = await somaRes.json();
+          const song = data?.songs?.[0];
+          if (song?.title) {
+            const artist = song.artist || '';
+            const trackTitle = artist ? `${artist} — ${song.title}` : song.title;
+            return res.json({ success: true, trackTitle, artist, title: song.title, source: 'somafm' });
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 4. ICY metadata reader for generic Icecast / Shoutcast streams
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      const httpLib = url.startsWith('https') ? require('https') : require('http');
+      const icyPromise = new Promise((resolve) => {
+        const request = httpLib.get(url, {
+          headers: { 'Icy-MetaData': '1', 'User-Agent': 'KansoCre8/0.1' },
+          timeout: 4000
+        }, (streamRes) => {
+          if ([301, 302, 307, 308].includes(streamRes.statusCode) && streamRes.headers.location) {
+            streamRes.destroy();
+            return resolve(null);
+          }
+          const metaint = parseInt(streamRes.headers['icy-metaint']);
+          if (!metaint || isNaN(metaint)) {
+            streamRes.destroy();
+            return resolve(null);
+          }
+          let bytesRead = 0;
+          let metaLength = 0;
+          let metaBuffer = Buffer.alloc(0);
+          let state = 'audio';
+
+          streamRes.on('data', (chunk) => {
+            let offset = 0;
+            while (offset < chunk.length) {
+              if (state === 'audio') {
+                const needed = metaint - bytesRead;
+                const available = chunk.length - offset;
+                if (available < needed) {
+                  bytesRead += available;
+                  offset = chunk.length;
+                } else {
+                  bytesRead = 0;
+                  offset += needed;
+                  state = 'metaLength';
+                }
+              } else if (state === 'metaLength') {
+                metaLength = chunk[offset] * 16;
+                offset++;
+                metaBuffer = Buffer.alloc(0);
+                if (metaLength === 0) {
+                  state = 'audio';
+                } else {
+                  state = 'meta';
+                }
+              } else if (state === 'meta') {
+                const needed = metaLength - metaBuffer.length;
+                const available = chunk.length - offset;
+                const toRead = Math.min(needed, available);
+                metaBuffer = Buffer.concat([metaBuffer, chunk.slice(offset, offset + toRead)]);
+                offset += toRead;
+                if (metaBuffer.length >= metaLength) {
+                  const str = metaBuffer.toString('utf8');
+                  const match = str.match(/StreamTitle='([^']*)'/);
+                  streamRes.destroy();
+                  return resolve(match ? match[1] : null);
+                }
+              }
+            }
+          });
+        });
+
+        request.on('error', () => resolve(null));
+        request.on('timeout', () => { request.destroy(); resolve(null); });
+      });
+
+      const icyTitle = await icyPromise;
+      if (icyTitle) {
+        return res.json({ success: true, trackTitle: icyTitle, source: 'icy' });
+      }
+    }
+
+    res.json({ success: true, trackTitle: null, message: 'No live ICY or station metadata stream found' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

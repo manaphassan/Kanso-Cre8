@@ -2,6 +2,66 @@
 
 All notable changes to Kanso Cre8 (簡素) are documented here.
 
+## [0.2.0] - 2026-09-14 (Zero-Database Offline Perpetual Licensing, Bi-Directional Backlinks & Craft Metrics Bento)
+
+### Added — Priority 9 Commercial Engine & 100% Offline Perpetual Licensing
+- **Zero-Database Offline Licensing Store (`licenseStore.svelte.ts`)**:
+  - Implemented the **Sanctuary vs. Commerce Split**: Free tier (*Kanso Zen*) remains 100% unconditionally free forever for personal journaling (BuJo), atomic notes, copywriting studio, and retro focus radio.
+  - Commercial tier (*Kanso Studio Pro — $39 One-Time Perpetual*) unlocks business operations: unlimited client hub, dual-pane YAML invoice studio, print-ready PDF generation, billable chronometer rate counter, 5-folder project scaffolder, and deliverables packaging.
+  - **100% Offline Cryptographic Validation Law**: Zero cloud authentication servers, zero telemetry pings, zero phone-home tracking, zero database locks. Deterministic checksum validator verifies keys purely on the client and local filesystem.
+  - Vault persistence in `_Team/_Config/license.key` via REST endpoints (`GET`/`PUT` `/api/system/license`) and `localStorage` zero-latency boot caching.
+  - Included canonical master alpha studio license key: `KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED`.
+- **Minimalist Studio Upgrade Modal (`StudioProModal.svelte`)**:
+  - Linear/Geist dark/light styling with feature comparison matrix, offline key activation input, sample key quick-fill, and lifetime license link.
+- **Studio Edition & Offline License Settings (`SettingsView.svelte`)**:
+  - Dedicated settings tab displaying active edition status, registered licensee, key preview, and 1-click activation/deactivation.
+- **Graceful UI Feature Gating (`App.svelte`, `ClientsView.svelte`, `InvoiceStudioView.svelte`, `ProjectsView.svelte`)**:
+  - Subtle `PRO` badge indicators in dropdown switcher and bottom navigation dock.
+  - Respectful upgrade dialogs when attempting to add >1 client, create invoices without Pro, or scaffold projects beyond the free tier.
+
+### Added — Priority 4 Bi-Directional Backlinks in Atelier Notes (`zettelService.ts`, `ZettelView.svelte`)
+- **Incoming Backlinks & Graph Indexer**:
+  - Enhanced `getBacklinks()` to search the entire atomic note library for incoming WikiLink mentions (`[[Note-Title]]`), excluding self-references.
+  - Contextual 1-line snippet extraction highlighting the surrounding sentence where the note was referenced.
+  - Tactile **Incoming Backlinks & Bi-Directional Graph Connections** panel in `ZettelView.svelte` with 1-click concept jumping.
+
+### Enhanced — Priority 8 Studio Deck & Dynamic Craft Metrics Bento (`DashboardView.svelte`)
+- **Executive Craft Metrics Bento**:
+  - Replaced static placeholder values with dynamic computations from workspace projects, deliverables, and timer logs.
+  - Metrics: Focus Today (`HH:MM`), Weekly Velocity (`X hrs`), Effective Rate (`$X/hr`), First-Time-Right (`%`), Turnaround Velocity (`X days`), and Avg Revision Rounds.
+- **Contextual Smart Suggestions**:
+  - Real-time studio pulse suggestions: Unbilled Timer Sessions (1-click append to invoice), Proofs Awaiting Review (1-click review queue jump), Approaching Deadlines, and Focus Wellness reminders.
+- **Total Income & Studio Cashflow**:
+  - Real-time aggregate ticker: Paid Invoices + Pending Invoices + Live Accrued Chronometer Earnings.
+
+## [0.1.0] - 2026-09-11 (Studio Brand Dossier, Synchronized Presets & Branded Commercial Desk)
+
+### Added & Re-Architected — Studio & Freelance Brand Dossier
+- **Atelier Commercial Master Profile (`SettingsView.svelte`, `studioService.svelte.ts`)**:
+  - Replaced legacy internal staff HR profile with a comprehensive **Studio & Freelance Brand Dossier** designed specifically for visual art directors, creative freelancers, and studio principals.
+  - **Visual & Creative Identity**: Studio trade name, principal designer/director, practice title, studio tagline, brand accent swatches, and high-res logo upload.
+  - **Business Registry & Contact**: Official Business Registration / Tax ID (SSM, VAT, EIN, ABN), billing email, physical atelier base, website/portfolio URL, direct phone/WhatsApp, and default invoicing currency.
+  - **Remittance & Payment Coordinates**: Bank name & SWIFT/BIC, bank account number / IBAN, beneficiary name, DuitNow / QR reference, and standard payment terms.
+  - **Digital Seal & Colophon**: Digital signature / seal (image upload or calligraphic typeface) and customizable colophon notice.
+  - **Live Stationery & Commercial Manifest Banner**: Real-time visual mockup previewing how the studio identity is auto-stamped onto client-facing collateral.
+  - **Zero-Binary Local Persistence**: Stored directly in `_Team/_Config/studio_profile.json` with REST endpoints (`GET`/`PUT` `/api/system/studio-profile`) and local-first caching.
+
+### Enhanced — Quotes & Invoices Studio (`InvoiceStudioView.svelte`, `financeService.ts`)
+- **Master Profile Integration**:
+  - Automatically initializes new invoices and quotes with the master studio branding, business registration number, settlement banking info, and terms.
+  - Printable document sheet renders studio logo, business registration badge, designer contact coordinates, and portfolio link.
+  - Wire instructions display remittance bank, account number, payee name, and SWIFT/DuitNow routing codes.
+  - Official authorized signature and document colophon rendered at the footer of the invoice.
+- **Robustness & Svelte 5 Protection**:
+  - Resolved `https://svelte.dev/e/each_key_duplicate` crash by generating unique composite keys for documents and line items.
+  - Fixed YAML date parsing where unquoted date strings in frontmatter became JavaScript `Date` objects, preventing `.localeCompare` sorting failures.
+
+### Fixed & Refined — Retro Cassette Focus Radio (`CassetteDeck.svelte`)
+- **Favorite Presets Counter Synchronization**:
+  - Synchronized header presets badge (`FAVORITE STATIONS X PRESETS`) and tab counter (`★ FAV (X)`) with the actual active stations rendered via `$derived(validFavoriteStations.length)`.
+  - Added automatic legacy station migration map (`LEGACY_STATION_ID_MAP`), seamlessly translating legacy keys (`chillhop`, `nightwave`) to canonical stations (`lofi-cafe`, `nightwave-plaza`).
+  - Updated `DEFAULT_FAVORITE_IDS` to include canonical stations: Chillhop Cafe, Nightwave Plaza, AnimeFM, Initial D Broadcast, and Soma Groove Salad.
+
 ## [0.0.1-alpha] - 2026-09-09 (Rebirth as Kanso Cre8 — Initial Alpha Release)
 
 ### Added & Rebuilt — Rebirth as Kanso Cre8 (簡素)

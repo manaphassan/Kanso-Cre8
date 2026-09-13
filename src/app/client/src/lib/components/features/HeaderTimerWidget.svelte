@@ -6,6 +6,7 @@
   import { financeService } from '$lib/services/financeService';
 
   let showRatePopover = $state(false);
+  let showClientPopover = $state(false);
   let showStopModal = $state(false);
   let stopSessionNote = $state('');
   let appendToInvoiceChoice = $state(true);
@@ -89,12 +90,12 @@
     >
       {#if timerStore.isRunning}
         <!-- Pause Icon -->
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
         </svg>
       {:else}
         <!-- Play Icon -->
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <path d="M8 5v14l11-7z"/>
         </svg>
       {/if}
@@ -107,7 +108,7 @@
       title="Stop & Log Session"
       aria-label="Stop timer"
     >
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
         <path d="M6 6h12v12H6z"/>
       </svg>
     </button>
@@ -123,24 +124,56 @@
     <span class="earned-amount">{timerStore.formattedEarned}</span>
   </div>
 
+  <!-- Subtle divider between chronometer and billing -->
+  <div class="strip-divider" aria-hidden="true"></div>
+
   <!-- Client & Hourly Rate Selector Strip -->
   <div class="client-rate-strip">
-    <select
-      class="client-select"
-      value={timerStore.clientCode}
-      onchange={(e) => selectClient((e.target as HTMLSelectElement).value)}
-      title="Active Client Billing Profile"
-    >
-      {#each clientProfiles as client}
-        <option value={client.code}>{client.code} ({settingsStore.settings.currencySymbol}{client.defaultHourlyRate}/h)</option>
-      {/each}
-    </select>
+    <!-- Client Selector Popover Trigger -->
+    <div class="client-picker-wrap">
+      <button
+        class="client-trigger-btn"
+        onclick={() => { showClientPopover = !showClientPopover; showRatePopover = false; }}
+        title="Active Client Billing Profile: {activeClient?.name || timerStore.clientCode}"
+        aria-label="Select client profile"
+      >
+        <span class="client-code-badge">{activeClient?.code || timerStore.clientCode}</span>
+        <svg class="client-caret" width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 10l5 5 5-5z"/>
+        </svg>
+      </button>
+
+      {#if showClientPopover}
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="client-popover-backdrop" onclick={() => (showClientPopover = false)}></div>
+        <div class="client-popover" role="menu">
+          <div class="popover-title">Active Client</div>
+          <div class="client-list">
+            {#each clientProfiles as client}
+              <button
+                class="client-option-btn"
+                class:selected={client.code === timerStore.clientCode}
+                onclick={() => {
+                  selectClient(client.code);
+                  showClientPopover = false;
+                }}
+              >
+                <span class="client-opt-code">{client.code}</span>
+                <span class="client-opt-name">{client.name}</span>
+                <span class="client-opt-rate">{settingsStore.settings.currencySymbol}{client.defaultHourlyRate}/h</span>
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    </div>
 
     <!-- Inline Rate Trigger -->
     <div class="rate-badge-wrap">
       <button
         class="rate-trigger"
-        onclick={() => (showRatePopover = !showRatePopover)}
+        onclick={() => { showRatePopover = !showRatePopover; showClientPopover = false; }}
         title="Click to edit design hourly rate"
       >
         @{settingsStore.settings.currencySymbol}{timerStore.hourlyRate}/h
@@ -182,6 +215,7 @@
 
     <!-- Active Client Swatch Strip with 1-Click Hex Copy -->
     {#if activeClient?.palette}
+      <div class="strip-divider" aria-hidden="true"></div>
       <div class="client-swatches" title="1-Click copy {activeClient.name} brand color">
         <button
           class="swatch-dot"
@@ -267,11 +301,15 @@
   .timer-widget-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    height: 30px;
     background: var(--kanso-surface, #18181B);
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 9999px;
-    padding: 3px 8px 3px 4px;
+    padding: 2px 8px 2px 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-sizing: border-box;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
@@ -283,23 +321,26 @@
   }
 
   .transport-buttons {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 3px;
+    flex-shrink: 0;
   }
 
   .transport-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.15s ease;
     color: var(--kanso-text-primary, #F4F4F5);
     background: transparent;
+    flex-shrink: 0;
+    padding: 0;
   }
 
   .transport-btn.play-btn {
@@ -341,15 +382,18 @@
   }
 
   .ticker-display {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    padding: 0 4px;
+    padding: 0 3px;
     font-family: var(--kanso-font-mono, ui-monospace, monospace);
-    font-size: 15.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--kanso-text-muted, #71717A);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1;
   }
 
   .ticker-display.pulse {
@@ -359,60 +403,187 @@
   .earned-badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     background: rgba(16, 185, 129, 0.12);
     border: 1px solid rgba(16, 185, 129, 0.25);
     color: #10B981;
-    font-size: 13px;
+    font-size: 11.5px;
     font-weight: 700;
     font-family: var(--kanso-font-mono, ui-monospace, monospace);
-    padding: 2px 8px;
-    border-radius: 9999px;
+    padding: 0 7px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 4px;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  .earned-amount {
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-block;
+  }
+
+  .strip-divider {
+    width: 1px;
+    height: 14px;
+    background: var(--kanso-border, #27272A);
+    margin: 0 2px;
+    flex-shrink: 0;
+    opacity: 0.7;
   }
 
   .client-rate-strip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Client Picker Popover */
+  .client-picker-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .client-trigger-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 4px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: var(--kanso-font-mono, monospace);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .client-trigger-btn:hover {
+    background: var(--kanso-surface-hover, #27272A);
+    border-color: var(--kanso-accent, #38BDF8);
+  }
+
+  .client-caret {
+    color: var(--kanso-text-muted, #71717A);
+    transition: transform 0.15s ease;
+  }
+
+  .client-popover-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+  }
+
+  .client-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 240px;
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+  }
+
+  .client-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .client-option-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding-left: 4px;
-    border-left: 1px solid var(--kanso-border, #27272A);
-  }
-
-  .client-select {
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 5px;
     background: transparent;
     border: none;
-    font-size: 13px;
-    font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
     cursor: pointer;
-    outline: none;
-    padding: 3px 6px;
-    border-radius: 4px;
+    font-size: 12px;
+    text-align: left;
+    transition: background 0.12s ease;
   }
 
-  .client-select:hover {
+  .client-option-btn:hover {
     background: var(--kanso-surface-hover, #27272A);
   }
 
-  .client-select option {
-    background: #18181B;
-    color: #F4F4F5;
+  .client-option-btn.selected {
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--kanso-accent, #38BDF8);
   }
 
+  .client-opt-code {
+    font-weight: 700;
+    font-family: var(--kanso-font-mono, monospace);
+    font-size: 12px;
+    width: 44px;
+    flex-shrink: 0;
+  }
+
+  .client-opt-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 12px;
+  }
+
+  .client-option-btn.selected .client-opt-name {
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .client-opt-rate {
+    font-family: var(--kanso-font-mono, monospace);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--kanso-text-muted, #71717A);
+    flex-shrink: 0;
+  }
+
+  /* Rate Trigger */
   .rate-badge-wrap {
     position: relative;
+    display: inline-flex;
+    align-items: center;
   }
 
   .rate-trigger {
-    background: rgba(255, 255, 255, 0.05);
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 11.5px;
     font-weight: 600;
+    font-family: var(--kanso-font-mono, monospace);
     color: var(--kanso-text-muted, #71717A);
-    padding: 2px 6px;
+    padding: 0 6px;
     cursor: pointer;
     transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1;
   }
 
   .rate-trigger:hover {
@@ -428,22 +599,22 @@
 
   .rate-popover {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 6px);
     right: 0;
-    margin-top: 6px;
     width: 210px;
     background: var(--kanso-surface, #18181B);
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 8px;
     padding: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     z-index: 100;
   }
 
   .popover-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--kanso-text-muted, #71717A);
     margin-bottom: 6px;
   }
@@ -498,24 +669,26 @@
   }
 
   .client-swatches {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 4px;
     padding-left: 2px;
+    flex-shrink: 0;
   }
 
   .swatch-dot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     cursor: pointer;
     transition: transform 0.15s ease;
     padding: 0;
+    flex-shrink: 0;
   }
 
   .swatch-dot:hover {
-    transform: scale(1.3);
+    transform: scale(1.35);
     border-color: #FFFFFF;
   }
 

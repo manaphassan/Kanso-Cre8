@@ -3,7 +3,7 @@
  * In-memory indexer for [[WikiLinks]], backlinks, and inline `- [ ] #task` extraction.
  */
 
-import type { ZettelNote, ZettelTask, ZettelType } from '../types/zettel';
+import type { ZettelNote, ZettelTask, ZettelType, BacklinkItem } from '../types/zettel';
 import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_zettelkasten';
@@ -326,11 +326,34 @@ export class ZettelService {
   }
 
   /**
-   * Finds all backlinks pointing to a given title or client
+   * Finds all backlinks pointing to a given title or ID, excluding self-references
    */
-  public getBacklinks(target: string): ZettelNote[] {
-    const term = target.startsWith('[[') ? target : `[[${target}]]`;
-    return this.notes.filter(n => n.content.includes(term));
+  public getBacklinks(target: string, excludeNoteId?: string): BacklinkItem[] {
+    if (!target) return [];
+    const rawTarget = target.replace(/^\[\[|\]\]$/g, '').trim().toLowerCase();
+    const termWithBrackets = `[[${rawTarget}]]`;
+    const results: BacklinkItem[] = [];
+
+    for (const n of this.notes) {
+      if (excludeNoteId && n.id === excludeNoteId) continue;
+      const contentLower = n.content.toLowerCase();
+      if (contentLower.includes(termWithBrackets)) {
+        // Extract a clean 1-line snippet around the mention
+        const lines = n.content.split('\n');
+        let snippet = '';
+        for (const line of lines) {
+          if (line.toLowerCase().includes(termWithBrackets)) {
+            snippet = line.replace(/^#+\s*/, '').replace(/^- \[(?: |x)\]\s*/, '').trim();
+            break;
+          }
+        }
+        results.push({
+          note: n,
+          snippet: snippet || n.title
+        });
+      }
+    }
+    return results;
   }
 
   private escapeRegExp(str: string): string {

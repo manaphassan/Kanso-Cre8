@@ -15,25 +15,16 @@
 
 <div class="radio-page-container">
   <!-- Page Header -->
-  <header class="radio-page-header">
-    <div class="header-left">
-      <div class="header-icon-box">
-        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="6" width="20" height="12" rx="2" />
-          <circle cx="8" cy="12" r="2.5" />
-          <circle cx="16" cy="12" r="2.5" />
-          <path d="M8 14.5h8" />
-        </svg>
+  <header class="view-header">
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Radio/</span>
+        <span class="tag-meta">Mechanical Hi-Fi Focus Deck · 33 RPM</span>
       </div>
-      <div class="header-text-block">
-        <div class="header-title-row">
-          <h1 class="header-title">Focus Radio & Cassette Deck</h1>
-          <span class="header-badge">HI-FI ATELIER</span>
-        </div>
-        <p class="header-subtitle">
-          Tactile mechanical cassette deck streaming curated lo-fi beats, synthwave, and ambient soundscapes.
-        </p>
-      </div>
+      <h1 class="view-title">Focus Radio</h1>
+      <p class="view-subtitle">
+        Tactile mechanical cassette deck streaming curated lo-fi beats, synthwave, and ambient soundscapes.
+      </p>
     </div>
   </header>
 

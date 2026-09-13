@@ -138,14 +138,20 @@
 <div class="copy-studio-container">
   <!-- View Header -->
   <div class="view-header">
-    <div>
-      <h1 class="view-title">Copywriting &amp; Script Studio</h1>
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Copy/</span>
+        <span class="tag-meta">Campaign Copywriting Desk &amp; Markdown Sync</span>
+      </div>
+      <h1 class="view-title">Copywriting Studio</h1>
       <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and <code>03_COPY/COPY.md</code> markdown sync.</p>
     </div>
-    <button class="ai-launch-btn" onclick={() => showAiModal = true}>
-      <FluentIcons name="sparkles" size={14} color="#D4AF37" />
-      <span style="margin-left: 5px;">Gemini Creative AI</span>
-    </button>
+    <div class="header-actions">
+      <button class="ai-launch-btn" onclick={() => showAiModal = true}>
+        <FluentIcons name="sparkles" size={14} color="#D4AF37" />
+        <span style="margin-left: 5px;">Gemini Creative AI</span>
+      </button>
+    </div>
   </div>
 
   <!-- Social Ad SLA Platform Limits Bar -->
@@ -539,7 +545,7 @@
     align-items: center;
     margin-bottom: 2px;
   }
-  .view-title { font-size: 26px; font-weight: 800; color: var(--text-primary); }
+  .view-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--text-primary); }
   .view-subtitle { font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; }
 
   .ai-launch-btn {

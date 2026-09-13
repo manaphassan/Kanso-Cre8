@@ -5,15 +5,15 @@ import type { User, ThemeName, ToastMessage } from '$lib/types';
 import { ApiClient } from '$lib/services/api';
 
 export const DEFAULT_DESKTOP_CREATOR: User = {
-  id: 'CREATOR01',
-  username: 'creator',
-  name: 'Studio Creator',
-  email: 'creator@kansocre8.local',
-  role: 'Administrator, Designer',
+  id: 'ACME001',
+  username: 'harussani',
+  name: 'Harussani',
+  email: 'harussani@acme.com',
+  role: 'Art Director / Administrator',
   roles: ['Administrator', 'Designer'],
-  staffId: 'CREATOR01',
-  department: 'Creative Studio',
-  avatarColor: '#38BDF8',
+  staffId: 'ACME001',
+  department: 'Creative Production',
+  avatarColor: '#0284C7',
   defaultBrand: 'ACME',
   permissions: [
     'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
