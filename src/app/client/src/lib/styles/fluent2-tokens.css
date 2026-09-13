@@ -77,37 +77,37 @@
 }
 
 [data-theme="eink"] {
-  /* ─── VORXS TACTILE E-INK PAPER (RAW PULP & INK) ─── */
-  --brand-primary: var(--kanso-accent, #DE694B);
-  --brand-secondary: #161913;
-  --brand-accent: var(--kanso-accent, #DE694B);
-  --brand-tint: rgba(222, 105, 75, 0.12);
+  /* ─── AMPRESENT E-INK 100% STRICT MONOCHROME ─── */
+  --brand-primary: var(--kanso-accent, #000000);
+  --brand-secondary: #222222;
+  --brand-accent: var(--kanso-accent, #000000);
+  --brand-tint: #F0F0F0;
   --brand-gradient: none;
   --brand-glow: none;
 
-  --bg-app: var(--kanso-canvas, #F4F1EA);
-  --bg-canvas: var(--kanso-canvas, #F4F1EA);
-  --bg-header: var(--kanso-surface, #EAE5D9);
-  --header-text: var(--kanso-text-primary, #161913);
-  --bg-sidebar: var(--kanso-surface, #EAE5D9);
-  --sidebar-border: var(--kanso-border, #161913);
-  --sidebar-text: var(--kanso-text-primary, #161913);
-  --sidebar-text-muted: var(--kanso-text-muted, #505A4A);
-  --sidebar-active-bg: #161913;
-  --sidebar-active-text: #F4F1EA;
-  --sidebar-active-indicator: #DE694B;
+  --bg-app: var(--kanso-canvas, #FFFFFF);
+  --bg-canvas: var(--kanso-canvas, #FFFFFF);
+  --bg-header: var(--kanso-surface, #FFFFFF);
+  --header-text: var(--kanso-text-primary, #000000);
+  --bg-sidebar: var(--kanso-surface, #FFFFFF);
+  --sidebar-border: var(--kanso-border, #000000);
+  --sidebar-text: var(--kanso-text-primary, #000000);
+  --sidebar-text-muted: var(--kanso-text-muted, #555555);
+  --sidebar-active-bg: #000000;
+  --sidebar-active-text: #FFFFFF;
+  --sidebar-active-indicator: #000000;
 
-  --surface-card: var(--kanso-surface, #EAE5D9);
-  --surface-card-subtle: #DFD9CC;
-  --surface-card-elevated: #EAE5D9;
-  --surface-card-border: var(--kanso-border, #161913);
-  --surface-card-hover: var(--kanso-surface-hover, #DFD9CC);
+  --surface-card: var(--kanso-surface, #FFFFFF);
+  --surface-card-subtle: #F6F6F6;
+  --surface-card-elevated: #FFFFFF;
+  --surface-card-border: var(--kanso-border, #000000);
+  --surface-card-hover: var(--kanso-surface-hover, #F0F0F0);
 
-  --text-primary: var(--kanso-text-primary, #161913);
-  --text-secondary: var(--kanso-text-secondary, #2A3026);
-  --text-tertiary: var(--kanso-text-muted, #505A4A);
-  --text-inverted: #F4F1EA;
-  --text-brand: var(--kanso-accent, #DE694B);
+  --text-primary: var(--kanso-text-primary, #000000);
+  --text-secondary: var(--kanso-text-secondary, #222222);
+  --text-tertiary: var(--kanso-text-muted, #555555);
+  --text-inverted: #FFFFFF;
+  --text-brand: var(--kanso-accent, #000000);
 }
 
 [data-theme="falconia"] {

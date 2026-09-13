@@ -11,21 +11,21 @@
 **Yes, fundamentally.** Kanso Cre8 is architected so that each layer functions as an independent, replaceable subsystem. Changes in one layer do not cause cascading breaking changes in other layers:
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. VAULT STORAGE LAYER (Pure Markdown-as-Database)              │
-│    _Clients/       _Finance/       _Zettelkasten/    2026/      │
-│    Plain directories, UTF-8 Markdown, YAML Frontmatter, Media   │
-├─────────────────────────────────────────────────────────────────┤
-│ 2. DOMAIN SERVICES LAYER (Single-Responsibility Engines)        │
-│    clientService   financeService   zettelService   radioService│
-├─────────────────────────────────────────────────────────────────┤
-│ 3. PLUGGABLE VIEW LAYER (Autonomous Svelte 5 Views)             │
-│    ClientsView    InvoiceStudio    ZettelView       RadioView   │
-│    ├─ KanbanView  ├─ Lightbox      ├─ HookDrawer    └─ Deck     │
-├─────────────────────────────────────────────────────────────────┤
-│ 4. ATOMIC DESIGN SYSTEM LAYER (Linear / Geist Lego Primitives)  │
-│    FluentButton   FluentCard       FluentDialog     Tokens CSS  │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ 1. VAULT STORAGE LAYER (Pure Markdown-as-Database)                              │
+│    _Clients/       _Finance/       _Notes/         _Journal/       _Team/       │
+│    Plain directories, UTF-8 Markdown, YAML Frontmatter, JSON Config, Media      │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│ 2. DOMAIN SERVICES LAYER (Single-Responsibility Engines)                        │
+│    clientService   financeService  zettelService   studioService   radioService │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│ 3. PLUGGABLE VIEW LAYER (Autonomous Svelte 5 Views)                             │
+│    ClientsView     InvoiceStudio   ZettelView      SettingsView    RadioView    │
+│    ├─ KanbanView   ├─ Lightbox     ├─ HookDrawer   ├─ JournalView  └─ Deck      │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│ 4. ATOMIC DESIGN SYSTEM LAYER (Linear / Geist Lego Primitives)                  │
+│    FluentButton    FluentCard      FluentDialog    FluentInput     Tokens CSS   │
+└─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -37,8 +37,10 @@ Unlike conventional creative management software that locks project metadata int
 
 1. **`_Clients/`**: Client dossiers (`client.md`), color swatches, contact information. Can be browsed and edited without the application running.
 2. **`_Finance/`**: Independent quotes and invoices (`INV-2026-xxx.md`) stored as human-readable YAML documents.
-3. **`_Zettelkasten/`**: 3-Tier atomic knowledge notes (`01_Fleeting`, `02_Literature`, `03_Permanent`). Completely decoupled from projects and clients.
-4. **`[YYYY]/`**: Standardized 5-folder project vaults (`01_BRIEF` to `05_DELIVERABLES`).
+3. **`_Notes/`**: 3-Tier atomic knowledge notes (`01_Fleeting`, `02_Literature`, `03_Permanent`) and `Scratchpad.md`. Completely decoupled from projects and clients.
+4. **`_Journal/`**: Daily rapid log (`YYYY-MM-DD.md`), monthly review (`YYYY-MM.md`), and yearly index (`YYYY.md`).
+5. **`_Projects/[YYYY]/`**: Standardized 5-folder project vaults (`01_BRIEF` to `05_DELIVERABLES`).
+6. **`_Team/_Config/`**: Master Studio Brand Dossier (`studio_profile.json`) defining official atelier branding, registration ID, digital signature, and wire remittance instructions.
 
 ### External Interoperability
 Because storage is pure directories and files:
@@ -57,10 +59,11 @@ Each domain is encapsulated in an isolated TypeScript service with clean input/o
 | **Client Engine** | [`clientService.ts`](file:///src/app/client/src/lib/services/clientService.ts) | Parse client YAML frontmatter, manage brand color palettes (HEX, RGB, CMYK) | Pure data parsing |
 | **Finance Engine** | [`financeService.ts`](file:///src/app/client/src/lib/services/financeService.ts) | Real-time invoice arithmetic, subtotal/tax calculations, PDF generation | Pure data arithmetic |
 | **Knowledge Engine** | [`zettelService.ts`](file:///src/app/client/src/lib/services/zettelService.ts) | Bi-directional WikiLink indexer, `- [ ] #task` crawler and status toggle | Markdown parser |
+| **Studio Brand Engine** | [`studioService.svelte.ts`](file:///src/app/client/src/lib/services/studioService.svelte.ts) | Master atelier brand profile persistence, registration ID, digital signature & remittance config | Local filesystem / JSON |
 | **Radio Engine** | [`radioService.svelte.ts`](file:///src/app/client/src/lib/services/radioService.svelte.ts) | Web Audio controller, station streaming, 33 RPM spool animation ticker | Web Audio API |
 
 ### Modularity in Practice
-If the Focus Radio is streaming audio, it has zero dependencies on `zettelService.ts` or `clientService.ts`. You can refactor or replace one service without risking regressions in another.
+If the Focus Radio is streaming audio, it has zero dependencies on `zettelService.ts`, `studioService.svelte.ts`, or `clientService.ts`. You can refactor or replace one service without risking regressions in another.
 
 ---
 

@@ -12,7 +12,11 @@
     "test": "node server/test/run-tests.js",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "package:all": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform All",
+    "package:windows": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform Windows",
+    "package:linux": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform Linux",
+    "package:android": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform Android"
   },
   "dependencies": {
     "archiver": "^8.0.0",

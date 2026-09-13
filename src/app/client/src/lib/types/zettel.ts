@@ -29,3 +29,10 @@ export interface ZettelTask {
   dueDate?: string;
   linkedProject?: string;
 }
+
+export interface BacklinkItem {
+  note: ZettelNote;
+  snippet: string;
+}
+
+

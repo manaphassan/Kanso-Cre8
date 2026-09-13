@@ -11,7 +11,7 @@
 
 ## 🎯 Prioritization Strategy
 
-To build a rock-solid, production-grade application for working freelance creators without feature bloat, engineering is structured into **7 sequential phases** strictly ordered from **Highest Priority (Foundational Core)** to **Lowest Priority (Packaging & Distribution)**:
+To build a rock-solid, production-grade application for working freelance creators without feature bloat, engineering is structured into **9 sequential phases** strictly ordered from **Highest Priority (Foundational Core)** to **Commercial Packaging & Distribution**:
 
 ```text
 [Priority 1: Core Vault & Studio Shell] 
@@ -27,6 +27,10 @@ To build a rock-solid, production-grade application for working freelance creato
 [Priority 6: Copywriting Studio & 4K Deliverables Lightbox] 
         ↓
 [Priority 7: Multi-Platform Tauri v2 Packaging & Multi-Cloud Sync]
+        ↓
+[Priority 8: Billable Chronometer & Executive Studio Deck]
+        ↓
+[Priority 9: Commercial Engine, One-Time Perpetual Licensing & Feature Gating]
 ```
 
 ---
@@ -66,22 +70,28 @@ To build a rock-solid, production-grade application for working freelance creato
 * **Impact**: Core freelance business value — managing client relationships, brand guidelines, and getting paid.
 
 ### Key Deliverables
-1. **Client & Brand Assets Hub (`ClientsView.svelte` & `clientService.ts`)**:
+1. **Studio & Freelance Brand Dossier (`SettingsView.svelte` & `studioService.svelte.ts`)**:
+   - Master studio branding stored in `_Team/_Config/studio_profile.json` (Studio Name, Tagline, Registration No, Logo/Monogram, Email, Phone, Address, Bank Name, Monospace Account No, Account Holder, SWIFT/BIC Code, DuitNow ID, Default Hourly Rate, Currency, Payment Terms).
+   - Authorized Digital Signature configuration (signature text, visual signature preview, and colophon stamping).
+   - Real-time auto-population of master studio details when generating or converting commercial documents.
+2. **Client & Brand Assets Hub (`ClientsView.svelte` & `clientService.ts`)**:
    - Sanitized sample client dossiers: **Acme Corp** (`ACME`), **Nexus Studio** (`NEX`), and **Lumina Labs** (`LUM`).
    - 1-Click creation of new custom clients in `_Clients/[PREFIX]_[ClientName]/client.md`.
    - Interactive brand color palette tiles (`HEX`, `RGB`, `CMYK`) with 1-click clipboard copy.
    - Rate cards (hourly billing rates, payment terms, contact details) stored in clean YAML frontmatter.
-2. **Dual-Pane Quote & Invoice Studio (`InvoiceStudioView.svelte` & `financeService.ts`)**:
-   - Left Pane: Clean YAML/Markdown line-item editor.
-   - Right Pane: Pixel-perfect, live-rendered invoice matching boutique design agency stationery.
+3. **Dual-Pane Quote & Invoice Studio (`InvoiceStudioView.svelte` & `financeService.ts`)**:
+   - Left Pane: Clean YAML/Markdown line-item editor with resilient composite key rendering preventing Svelte 5 duplicate key collisions.
+   - Right Pane: Pixel-perfect, live-rendered invoice matching boutique design agency stationery with official studio logo, business registration badge, wire remittance deck (SWIFT / DuitNow), and authorized digital signature colophon.
+   - 1-Click Quote-to-Invoice conversion pipeline creating draft invoices with one click.
    - Real-time arithmetic: `Quantity × Unit Price = Subtotal + Custom Tax = Grand Total`.
    - 1-Click native PDF export and system print dialog via `window.print()`.
-   - Invoices saved automatically to `_Finance/Invoices/INV-YYYY-XXX.md`.
+   - Invoices saved automatically to `_Finance/Invoices/INV-YYYY-XXX.md` and Quotes to `_Finance/Quotes/QUOTE-YYYY-XXX.md`.
 
 ### Acceptance Criteria
 * Clicking any color tile copies the exact code to the clipboard with visual toast confirmation.
 * Modifying YAML invoice line items recalculates totals instantaneously.
-* Invoices print to PDF with correct agency margins, invoice ID, and banking details.
+* Invoices and quotes auto-populate freelancer and banking details from master studio profile.
+* Invoices print to PDF with correct agency margins, invoice ID, wire remittance details, and digital signature colophon.
 
 ---
 
@@ -157,8 +167,10 @@ To build a rock-solid, production-grade application for working freelance creato
      - 🌿 **SomaFM Groove Salad** (Downtempo ambient)
      - 🎷 **Parisian Jazz Cafe** (Acoustic jazz & bossa nova)
      - 🧘 **Zen Alpha Focus** (Deep work binaural drone)
-3. **Dual Placement**:
+3. **Dual Placement & Favorite Presets Rack**:
    - Full Studio View under `Focus Radio`.
+   - Synchronized Favorite Presets Rack displaying only valid registered stations (`validFavoriteStations.length`) with live playing indicator and 1-click star toggle.
+   - Dynamic legacy station ID migration (`nightwave-plaza` ➔ `nightwave`, `somafm-groovesalad` ➔ `somafm`).
    - Persistent **40px Mini-Cassette Dock** in the sidebar footer with mini rotating spools that keeps playing audio in the background while designing.
    - Integrated 25-minute Pomodoro focus timer and box breathing reset coach.
 
@@ -166,6 +178,7 @@ To build a rock-solid, production-grade application for working freelance creato
 * Audio streams buffer and play without freezing the UI thread.
 * Spools start rotating when audio begins playing and stop smoothly on pause.
 * Navigating between pages does not interrupt playback.
+* Favorite stations count accurately reflects active valid presets, and legacy IDs migrate seamlessly.
 
 ---
 
@@ -234,10 +247,73 @@ To build a rock-solid, production-grade application for working freelance creato
 3. **Settings Persistence Engine (`settingsStore.svelte.ts`)**:
    - Persists default rate, currency, view preferences, theme, and timer auto-log settings to `localStorage`.
 
+## 🚦 Priority 8: Header Billable Chronometer & Executive Studio Deck
+* **Priority Level**: **ATELIER OPERATIONS**
+* **Status**: Completed (Production Ready)
+* **Impact**: Direct revenue attribution — transforms Kanso from a passive note-taker into an active billing instrument for working designers.
+
+### Key Deliverables
+1. **Header Billable Chronometer (`HeaderTimerWidget.svelte`, `timerStore.svelte.ts`)**:
+   - Live elapsed ticker (`HH:MM:SS`), play/pause/stop tactile buttons, and hourly design rate input ($/hr).
+   - Real-time earnings calculation (`+$XX.XX`) updated every 1000ms.
+   - Millisecond-accurate timestamp persistence across app reloads and system sleep.
+   - Active client swatch pill with 1-click HEX/RGB copy to clipboard.
+   - 1-Click "Append to Draft Invoice" pipeline upon stopping.
+2. **Executive Studio Deck Bento (`DashboardView.svelte`)**:
+   - Total Income & Cashflow tracker: Paid invoices + Pending invoices + Live accrued earnings.
+   - Craft Metrics Bento: Focus hours today/week, effective design rate, first-time-right %, turnaround speed, and revision rounds.
+   - Contextual Smart Suggestions: Unreviewed proofs, unbilled sessions, approaching deadlines, and focus wellness alerts.
+
 ### Acceptance Criteria
 * Clicking Play starts the timer and updates live earnings every second.
 * Closing and reopening the app restores the running timer with 100% elapsed time accuracy.
 * Stopping the timer prompts to append session to draft invoice and logs entry.
+
+---
+
+## 🚦 Priority 9: Commercial Engine, One-Time Perpetual Licensing & Feature Gating
+* **Priority Level**: **COMMERCIAL ENGINE & LICENSING**
+* **Status**: Completed (Production Ready)
+* **Impact**: Sustainable independence — one-time payment monetization ($39 perpetual) that respects user privacy and data ownership with zero database/auth servers.
+
+### 1. The Core Philosophy: "Sanctuary vs. Commerce" Split
+* **Free Tier (Kanso Zen)**: The personal creative sanctuary. Deep work, personal journaling, atomic note-taking, and focus music are 100% free forever. Acts as the zero-friction viral adoption loop.
+* **Paid Tier (Kanso Studio Pro — $39–$49 One-Time Perpetual)**: The commercial operations engine. The moment a designer uses Kanso to manage paying clients, calculate billable hours, generate invoices, or package deliverables, they invest in a business license that pays for itself in their very first project.
+
+### 2. Feature Separation Matrix
+
+| Module / Feature | Kanso Zen (Free Edition) | Kanso Studio Pro (One-Time Purchase) |
+| :--- | :--- | :--- |
+| **Vault Storage** | Pure Markdown, 100% offline, local disk | Pure Markdown, 100% offline, local disk |
+| **Focus Radio** | Full retro cassette player, all 5 audio streams, Pomodoro | Full retro cassette player + mini dock |
+| **Bullet Journal** | Daily rapid logs, monthly reviews, yearly index | Full BuJo + automatic task rollup to client projects |
+| **Atelier Notes** | Unlimited Fleeting, Literature, Permanent notes, WikiLinks | Unlimited notes + Atomic Hook Injector |
+| **Copywriting Studio** | Full Markdown editor, word counts, telemetry | Full editor + client copy handoff |
+| **Project Manager** | Up to **2 active personal projects** (basic folders) | **Unlimited projects** + 1-click 5-folder scaffolding (`01_BRIEF`–`05_DELIVERABLES`) |
+| **Clients & Brand Hub** | 1 sample client dossier (view-only demo) | **Unlimited client dossiers**, brand color swatches (1-click HEX/RGB/CMYK copy), rate cards |
+| **Quotes & Invoices** | View demo invoice template only | **Full Invoice Studio**: YAML editor, auto tax arithmetic, boutique agency PDF export |
+| **Billable Chronometer** | Focus stopwatch / Pomodoro mode | **Hourly design rate selector**, live accrued earnings ticker (`+$...`), 1-click **"Append to Invoice"** |
+| **Deliverables Lightbox** | Basic image viewer | **4K proof viewer**, visual diff slider, annotation canvas, **1-click ZIP handover packaging** |
+| **Studio Deck** | Today's tasks + personal focus hours | **Executive Bento**: Billable velocity, first-time-right %, **Total Cashflow (Paid + Pending + Live timer)** |
+
+### 3. Key Deliverables
+1. **Zero-Database Offline Licensing Engine (`licenseStore.svelte.ts`)**:
+   - Stores license state in local storage / vault configuration file (`_kanso_vault/license.key`).
+   - Validates license keys locally without requiring an internet connection or phone-home tracking.
+   - Cryptographic verification via Tauri v2 Rust backend (`ed25519` public key signature verification).
+2. **Tactile Non-Intrusive UI Gating**:
+   - Subtle hairline `[PRO]` badges on commercial navigation items (`invoices`, `clients`, `deliverables`).
+   - Interactive preview mode for `Quotes & Invoices` (free users can test the YAML arithmetic on sample data before upgrading).
+   - Clean, respectful upgrade dialog when attempting to create a 2nd client or 3rd project: *"Ready to bill clients? Unlock Kanso Studio Pro. One-time $39. Own it forever."*
+   - Header Chronometer toggles smoothly: free focus stopwatch vs pro billable rate counter.
+3. **Merchant of Record Integration (Lemon Squeezy / Gumroad)**:
+   - Automated checkout handling global VAT, local sales tax, and currency conversion.
+   - Webhook generates cryptographically signed offline license key delivered directly via email.
+
+### Acceptance Criteria
+* Free users can use all note-taking, journaling, and cassette focus radio features indefinitely without nags.
+* Entering a valid offline license key unlocks all Pro features instantly without requiring an internet connection or server restart.
+* Zero external database, user account server, or telemetry dependencies added to the repository.
 
 ---
 
@@ -248,8 +324,8 @@ To build a rock-solid, production-grade application for working freelance creato
 | **No Database Server** | Zero SQL, SQLite, Prisma, or MongoDB | 100% data sovereignty and cloud-sync interoperability |
 | **Design Tokens Only** | No raw hex codes in Svelte components | Ensures flawless light/dark mode and brand consistency |
 | **Sanitized Clients** | Acme Corp, Nexus Studio, Lumina Labs only | Strict client privacy in public codebases |
-| **Quarantine Legacy** | All .NET 4.8 / Avalonia code in `archive/legacy-dotnet/` | Keeps modern Svelte 5 / Tauri codebase clean and lightweight |
+| **Zero Legacy Code** | Zero .NET 4.8, Avalonia, or Docker files | Keeps repository pristine, ultra-lean, and purely Svelte 5 / Tauri v2 |
 
 ---
 
-*Last Updated: 2026-09-09. Maintained by [harusssani.manaphassan](https://github.com/manaphassan).*
+*Last Updated: 2026-09-11. Maintained by [harusssani.manaphassan](https://github.com/manaphassan).*

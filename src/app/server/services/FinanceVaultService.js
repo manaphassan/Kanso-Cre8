@@ -69,13 +69,28 @@ class FinanceVaultService {
     const taxAmount = Number(fm.taxAmount !== undefined ? fm.taxAmount : (fm.tax_amount !== undefined ? fm.tax_amount : (subtotal * taxRatePercent / 100)));
     const total = Number(fm.total !== undefined ? fm.total : (subtotal + taxAmount));
 
+    const normalizeDate = (d, fallback) => {
+      if (!d) return fallback || new Date().toISOString().split('T')[0];
+      if (d instanceof Date) return d.toISOString().split('T')[0];
+      const s = String(d).trim();
+      return s.includes('T') ? s.split('T')[0] : s;
+    };
+
+    const dateStr = normalizeDate(fm.date);
+    const dueDateStr = normalizeDate(fm.dueDate || fm.due_date || fm.validUntil || fm.valid_until, dateStr);
+    const validUntilStr = normalizeDate(fm.validUntil || fm.valid_until || fm.dueDate || fm.due_date, dateStr);
+
+    const fileBase = path.basename(filename || '', '.md');
+    const rawId = fm.id || docNumber.toLowerCase();
+    const docId = fileBase && fileBase !== rawId ? `${rawId}__${fileBase}` : rawId;
+
     return {
-      id: fm.id || docNumber.toLowerCase(),
+      id: docId,
       type: fm.type || (docNumber.startsWith('QTE') ? 'quote' : 'invoice'),
       documentNumber: docNumber,
-      date: fm.date || new Date().toISOString().split('T')[0],
-      dueDate: fm.dueDate || fm.due_date || fm.validUntil || fm.valid_until || new Date().toISOString().split('T')[0],
-      validUntil: fm.validUntil || fm.valid_until || fm.dueDate || fm.due_date || new Date().toISOString().split('T')[0],
+      date: dateStr,
+      dueDate: dueDateStr,
+      validUntil: validUntilStr,
       status: fm.status || 'draft',
       clientCode: fm.clientCode || fm.client_code || 'ACME',
       clientName: fm.clientName || fm.client_name || 'Acme Corporation',
@@ -175,8 +190,9 @@ class FinanceVaultService {
         }
       }
 
-      return invoices.sort((a, b) => b.date.localeCompare(a.date));
+      return invoices.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
     } catch (e) {
+      console.warn('[FinanceVaultService] getInvoices error:', e.message);
       return [];
     }
   }
@@ -329,8 +345,9 @@ class FinanceVaultService {
         }
       }
 
-      return quotes.sort((a, b) => b.date.localeCompare(a.date));
+      return quotes.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
     } catch (e) {
+      console.warn('[FinanceVaultService] getQuotes error:', e.message);
       return [];
     }
   }

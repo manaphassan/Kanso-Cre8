@@ -6,8 +6,6 @@ const uncNasPath = '';
 const localSyncCandidates = [];
 const linuxNasPath = '';
 const linuxNasVolume2Path = '';
-const fallbackLocalWorkspace = path.resolve(__dirname, '../sample-workspace');
-
 function isPathAccessible(dirPath) {
   try {
     if (!dirPath) return false;
@@ -17,6 +15,14 @@ function isPathAccessible(dirPath) {
     return false;
   }
 }
+
+const sampleCandidates = [
+  path.resolve(__dirname, 'sample-workspace'),
+  path.resolve(__dirname, '../sample-workspace'),
+  path.resolve(process.cwd(), 'sample-workspace')
+];
+const fallbackLocalWorkspace = sampleCandidates.find(p => isPathAccessible(p)) || path.resolve(__dirname, '../sample-workspace');
+
 
 const overrideConfigPath = path.resolve(__dirname, 'workspace_config.json');
 let userOverridePath = null;
@@ -31,10 +37,17 @@ if (fs.existsSync(overrideConfigPath)) {
 
 let resolvedWorkspace = fallbackLocalWorkspace;
 
+const defaultWindowsDocumentsVault = path.join(process.env.USERPROFILE || '', 'Documents', 'KansoCre8');
+const oneDriveWindowsDocumentsVault = path.join(process.env.USERPROFILE || '', 'OneDrive', 'Documents', 'KansoCre8');
+
 if (userOverridePath) {
   resolvedWorkspace = userOverridePath;
 } else if (envWorkspace && isPathAccessible(envWorkspace)) {
   resolvedWorkspace = envWorkspace;
+} else if (process.platform === 'win32' && isPathAccessible(defaultWindowsDocumentsVault)) {
+  resolvedWorkspace = defaultWindowsDocumentsVault;
+} else if (process.platform === 'win32' && isPathAccessible(oneDriveWindowsDocumentsVault)) {
+  resolvedWorkspace = oneDriveWindowsDocumentsVault;
 } else if (process.platform === 'win32' && isPathAccessible(uncNasPath)) {
   resolvedWorkspace = uncNasPath;
 } else if (process.platform === 'win32') {

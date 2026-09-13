@@ -29,33 +29,53 @@ class VaultStore {
   tasks = $state<ExtractedTask[]>([
     {
       id: 'task-1',
-      title: 'Review packaging dieline print bleed',
-      completed: false,
-      dueDate: '2026-09-20',
+      title: 'Finalize Acme Corp design system vector components',
+      completed: true,
+      dueDate: '2026-08-20',
       priority: 'high',
-      sourceFile: '2026/202609_September/202609_0001_ACME_MobileAppIllustration/README.md',
-      lineIndex: 12,
-      rawLine: '- [ ] #task Review packaging dieline print bleed 📅 2026-09-20 ⏫ high'
+      sourceFile: '_Projects/2026/202609_0001D_ACME_MobileAppIllustration/README.md',
+      lineIndex: 38,
+      rawLine: '- [x] #task Finalize Acme Corp design system vector components 📅 2026-08-20 ⏫ high'
     },
     {
       id: 'task-2',
-      title: 'Extract high-contrast viral hooks into 03_Permanent',
+      title: 'Prepare Nexus Studio 3D motion keyframe concepts',
       completed: false,
-      dueDate: '2026-09-22',
+      dueDate: '2026-10-31',
       priority: 'urgent',
-      sourceFile: '_Zettelkasten/01_Fleeting/20260908_Call_Notes.md',
-      lineIndex: 5,
-      rawLine: '- [ ] #task Extract high-contrast viral hooks into 03_Permanent 📅 2026-09-22 ⏫ urgent'
+      sourceFile: '_Projects/2026/202609_0002S_NEX_GameKeyVisual/README.md',
+      lineIndex: 43,
+      rawLine: '- [ ] #task Prepare Nexus Studio 3D motion keyframe concepts 📅 2026-10-31 ⏫ urgent'
     },
     {
       id: 'task-3',
-      title: 'Send deposit invoice to Nexus Studio',
+      title: 'Draft Lumina Labs research portal data visualization specs',
+      completed: false,
+      dueDate: '2026-09-25',
+      priority: 'high',
+      sourceFile: '_Projects/2026/202609_0003P_LUM_BrandIdentity/README.md',
+      lineIndex: 40,
+      rawLine: '- [ ] #task Draft Lumina Labs research portal data visualization specs 📅 2026-09-25 ⏫ high'
+    },
+    {
+      id: 'task-4',
+      title: 'Deliver Acme Corp mobile app splash screen illustrations',
+      completed: false,
+      dueDate: '2026-10-15',
+      priority: 'urgent',
+      sourceFile: '_Projects/2026/202609_0001D_ACME_MobileAppIllustration/README.md',
+      lineIndex: 42,
+      rawLine: '- [ ] #task Deliver Acme Corp mobile app splash screen illustrations 📅 2026-10-15 ⏫ urgent'
+    },
+    {
+      id: 'task-5',
+      title: 'Send deposit invoice INV-2026-001 to Acme Corp',
       completed: true,
       dueDate: '2026-09-15',
       priority: 'normal',
-      sourceFile: '_Finance/Invoices/INV-2026-002_NexusStudio_LaunchDesign.md',
+      sourceFile: '_Finance/Invoices/INV-2026-001_ACME.md',
       lineIndex: 8,
-      rawLine: '- [x] #task Send deposit invoice to Nexus Studio 📅 2026-09-15 ⏫ normal'
+      rawLine: '- [x] #task Send deposit invoice INV-2026-001 to Acme Corp 📅 2026-09-15 ⏫ normal'
     }
   ]);
 

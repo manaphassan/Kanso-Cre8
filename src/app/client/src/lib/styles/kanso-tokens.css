@@ -40,6 +40,15 @@
   --kanso-radius-lg: 14px;
   --kanso-radius-full: 9999px;
 
+  /* ═══ TYPOGRAPHY TOKENS ═══ */
+  /* Primary Display Font: Red Hat Display (Wordmark, display headlines, section openers, marketing hero, >= 24pt) */
+  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Accent / App UI & Body Font: Nunito (App UI, body copy, buttons, form inputs, pills/badges, prices, captions, tables, < 24pt) */
+  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: var(--font-ui);
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
   /* Generous Legible Typography Scale (Zero micro-text, high legibility) */
   --kanso-text-2xs: 12px;
   --kanso-text-xs: 13px;
@@ -113,31 +122,47 @@
 }
 
 [data-theme="eink"] {
-  /* ═══ VORXS TACTILE E-INK PAPER (RAW PULP & PURE CHARCOAL INK) ═══ */
-  --kanso-canvas: #F4F1EA;
-  --kanso-surface: #EAE5D9;
-  --kanso-surface-hover: #DFD9CC;
-  --kanso-surface-active: #D4CDC0;
-  --kanso-border: #161913;
-  --kanso-border-subtle: #6B7564;
-  --kanso-border-focus: #161913;
+  /* ═══ STRICT 100% MONOCHROME E-INK (PURE INK & CLEAN PAPER) ═══ */
+  /* Spec: ampresent/e-ink-colorschemes zero-jitter high-contrast monochrome */
 
-  --kanso-text-primary: #161913;
-  --kanso-text-secondary: #2A3026;
-  --kanso-text-muted: #505A4A;
-  --kanso-text-faint: #75816E;
+  /* Pure White Canvas (#FFFFFF) eliminates dark-area refresh jitter on all e-ink monitors */
+  --kanso-canvas: #FFFFFF;
+  /* Clean White Paper surface with crisp 1px solid black border */
+  --kanso-surface: #FFFFFF;
+  --kanso-surface-hover: #F0F0F0;
+  --kanso-surface-active: #000000;
 
-  --kanso-accent: #DE694B;
-  --kanso-accent-hover: #C95A3E;
-  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
+  /* Strict solid black borders for razor-sharp physical ink separation */
+  --kanso-border: #000000;
+  --kanso-border-subtle: #777777;
+  --kanso-border-focus: #000000;
+
+  /* Pure pitch-black typography for maximum 21:1 contrast ratio and zero ghosting */
+  --kanso-text-primary: #000000;
+  --kanso-text-secondary: #222222;
+  --kanso-text-muted: #555555;
+  --kanso-text-faint: #777777;
+
+  /* 100% Monochrome High-Contrast Accent (Solid Black CTA with White Text) */
+  --kanso-accent: #000000;
+  --kanso-accent-hover: #222222;
+  --kanso-accent-muted: #EAEAEA;
   --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #5D6B55;
-  --kanso-success-muted: rgba(93, 107, 85, 0.12);
-  --kanso-warning: #DEB841;
-  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
-  --kanso-danger: #D04838;
-  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
+  /* Strict Monochrome Status Signals (Zero red, green, or yellow) */
+  --kanso-success: #000000;
+  --kanso-success-muted: #F0F0F0;
+  --kanso-warning: #333333;
+  --kanso-warning-muted: #EAEAEA;
+  --kanso-danger: #000000;
+  --kanso-danger-muted: #EAEAEA;
+}
+
+/* ═══ UNIVERSAL 100% MONOCHROME E-INK ENFORCEMENT FILTER ═══ */
+html[data-theme="eink"],
+[data-theme="eink"] {
+  filter: grayscale(100%) contrast(108%) !important;
+  color-scheme: light !important;
 }
 
 /* Strict E-Ink Refresh & Zero Ghosting Optimizations */
@@ -151,10 +176,126 @@
   backdrop-filter: none !important;
 }
 
+/* E-Ink High Legibility Font Enhancement */
+[data-theme="eink"] body,
+[data-theme="eink"] input,
+[data-theme="eink"] textarea,
+[data-theme="eink"] select,
+[data-theme="eink"] button {
+  font-weight: 550 !important;
+}
+
+/* ─── E-INK COMPONENT-LEVEL STRICT MONOCHROME GUARDS ─── */
+
+/* 1. Header Timer Earned Badge & Live Synced Dot */
+[data-theme="eink"] .earned-badge {
+  background: #F0F0F0 !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+}
+[data-theme="eink"] .live-pulse-dot {
+  background: #000000 !important;
+  box-shadow: none !important;
+}
+[data-theme="eink"] .live-sync-pill {
+  border-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* 2. Mini Cassette Dock (Sidebar Footer) */
+[data-theme="eink"] .mini-chamber-btn {
+  background: #F4F4F4 !important;
+  border: 1px solid #000000 !important;
+}
+[data-theme="eink"] .mini-freq-badge {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+}
+[data-theme="eink"] .mini-power-dot {
+  background: #000000 !important;
+}
+[data-theme="eink"] .mini-play-btn {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+/* 3. Hero Mastering Cassette Deck */
+[data-theme="eink"] .chassis {
+  background: #F5F5F5 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: none !important;
+}
+[data-theme="eink"] .sticker-label {
+  background: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+}
+[data-theme="eink"] .sticker-side {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+[data-theme="eink"] .sticker-palette-tag {
+  background: #F0F0F0 !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+}
+[data-theme="eink"] .sticker-freq {
+  color: #000000 !important;
+}
+[data-theme="eink"] .piano-key.is-active {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+[data-theme="eink"] .tuner-needle {
+  background: #000000 !important;
+}
+[data-theme="eink"] .tuner-lock-pill {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+/* 4. Universal Status Badges, Pills & Tags Across All Pages */
+[data-theme="eink"] .badge,
+[data-theme="eink"] [class*="-badge"],
+[data-theme="eink"] [class*="-tag"],
+[data-theme="eink"] .pill,
+[data-theme="eink"] [class*="-pill"],
+[data-theme="eink"] .tab-chip,
+[data-theme="eink"] .status-chip {
+  border: 1px solid #000000 !important;
+}
+
+/* 5. Progress Bars & Schedule Tracks */
+[data-theme="eink"] progress,
+[data-theme="eink"] .progress-bar,
+[data-theme="eink"] [class*="progress-fill"],
+[data-theme="eink"] [class*="bar-fill"],
+[data-theme="eink"] [class*="meter-fill"] {
+  background: #000000 !important;
+}
+[data-theme="eink"] [class*="progress-track"],
+[data-theme="eink"] [class*="bar-track"],
+[data-theme="eink"] [class*="meter-track"] {
+  background: #EAEAEA !important;
+  border: 1px solid #000000 !important;
+}
+
+/* 6. Active Project Cards & Stage Badges */
+[data-theme="eink"] .client-code-pill,
+[data-theme="eink"] .stage-badge {
+  background: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+}
+
 /* ═══ KAI-ZEN (海禅 — OCEANIC ZEN) DEEP OCEAN DARK MODE ═══ */
 [data-theme="oceanic"] {
-  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: var(--font-ui);
 
   /* Foundation Layer (Dark Ocean Navy #064169 & Deep Marine Surface) */
   --kanso-canvas: #064169;
@@ -188,8 +329,10 @@
 
 /* ═══ KAI-ZEN (海禅 — OCEANIC ZEN) DAYLIGHT LIGHT MODE ═══ */
 [data-theme="oceanic-light"] {
-  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: var(--font-ui);
 
   /* Foundation Layer (Light Blue-Grey #F0F4F8 & Crisp White Card) */
   --kanso-canvas: #F0F4F8;

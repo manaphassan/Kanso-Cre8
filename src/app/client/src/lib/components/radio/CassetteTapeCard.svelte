@@ -9,6 +9,9 @@
     isPlaying?: boolean;
     spoolRotation?: number;
     onclick?: () => void;
+    onedit?: () => void;
+    ondelete?: () => void;
+    showManageButtons?: boolean;
   }
 
   let {
@@ -16,7 +19,10 @@
     isSelected = false,
     isPlaying = false,
     spoolRotation = 0,
-    onclick
+    onclick,
+    onedit,
+    ondelete,
+    showManageButtons = false
   }: Props = $props();
 
   const currentSide = $derived(isSelected ? radioService.state.tapeSide : 'A');
@@ -25,15 +31,18 @@
   const rightCardTapeDiameter = $derived(isSelected ? Math.round(36 + reelProgress * 20) : 40);
 </script>
 
-<button
-  type="button"
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<div
   class="tape-card-btn"
   class:selected={isSelected}
   style="
     background: {isSelected ? 'var(--kanso-surface-hover)' : 'var(--kanso-surface)'};
     border-color: {isSelected ? 'var(--kanso-accent)' : 'var(--kanso-border)'};
   "
+  role="button"
+  tabindex="0"
   {onclick}
+  onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { onclick?.(); } }}
   aria-label="Select {station.name} Cassette"
 >
   <!-- Physical Cassette Chassis Shell -->
@@ -67,9 +76,9 @@
       <span
         class="label-freq-badge"
         style="
-          background: rgba(222, 105, 75, 0.12);
+          background: {station.accentColor}18;
           color: {station.accentColor};
-          border-color: rgba(222, 105, 75, 0.2);
+          border-color: {station.accentColor}33;
         "
       >
         {station.frequency}
@@ -132,23 +141,56 @@
   <!-- Note Card Meta Below Cassette -->
   <div class="card-meta-block">
     <div class="meta-title-row">
-      <span class="meta-genre">{station.genre}</span>
-      {#if isSelected && isPlaying}
-        <span class="status-badge playing">
-          <span class="status-dot"></span>
-          PLAYING
-        </span>
-      {:else if isSelected}
-        <span class="status-badge loaded">
-          LOADED
-        </span>
-      {/if}
+      <div class="meta-title-left">
+        <span class="meta-genre">{station.genre}</span>
+        {#if station.isCustom}
+          <span class="custom-badge" title="User Custom Recorded Cassette">REC</span>
+        {/if}
+      </div>
+      <div class="meta-title-right">
+        {#if isSelected && isPlaying}
+          <span class="status-badge playing">
+            <span class="status-dot"></span>
+            PLAYING
+          </span>
+        {:else if isSelected}
+          <span class="status-badge loaded">
+            LOADED
+          </span>
+        {/if}
+      </div>
     </div>
     <p class="meta-desc">
       {station.description}
     </p>
+
+    <!-- Quick Manage / Edit / Delete Actions -->
+    {#if onedit || ondelete || showManageButtons}
+      <div class="card-manage-bar" class:visible={showManageButtons}>
+        {#if onedit}
+          <button
+            type="button"
+            class="card-action-btn edit-btn"
+            onclick={(e) => { e.stopPropagation(); onedit?.(); }}
+            title="Edit {station.name} Tape"
+          >
+            ✎ Edit
+          </button>
+        {/if}
+        {#if ondelete}
+          <button
+            type="button"
+            class="card-action-btn delete-btn"
+            onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
+            title="Erase & Eject {station.name} Tape"
+          >
+            🗑 Erase
+          </button>
+        {/if}
+      </div>
+    {/if}
   </div>
-</button>
+</div>
 
 <style>
   .tape-card-btn {
@@ -416,6 +458,77 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+  }
+
+  .meta-title-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .meta-title-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .custom-badge {
+    font-size: 9px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--kanso-accent);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .card-manage-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .tape-card-btn:hover .card-manage-bar,
+  .card-manage-bar.visible {
+    opacity: 1;
+  }
+
+  .card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .card-action-btn:hover {
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-text-muted);
+    background: var(--kanso-surface-hover);
+  }
+
+  .card-action-btn.delete-btn:hover {
+    color: var(--kanso-danger);
+    border-color: var(--kanso-danger);
+    background: rgba(229, 56, 59, 0.12);
   }
 
   .meta-genre {

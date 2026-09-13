@@ -162,12 +162,12 @@
 <div class="deliverables-view-container">
   <!-- View Header -->
   <div class="view-header">
-    <div class="header-left">
+    <div class="header-titles">
       <div class="header-tag">
-        <span class="badge-accent">Markdown Vault</span>
-        <span class="header-meta">{projectStore.deliverables.length} Master Outputs</span>
+        <span class="tag-badge">_Review/</span>
+        <span class="tag-meta">{projectStore.deliverables.length} Master Deliverables · Proof Lightbox</span>
       </div>
-      <h1 class="view-title">Deliverables &amp; Assets</h1>
+      <h1 class="view-title">Review Queue</h1>
       <p class="view-subtitle">Inspect, approve, and manage creative outputs across campaign projects in real time.</p>
     </div>
 

@@ -2,12 +2,13 @@
 id: zettel_003
 title: 'Client Intake Call: Sarah Jenkins ([[ACME]])'
 type: fleeting
+category: fleeting
 tags:
   - client-meeting
   - brief-intake
   - fintech
 created: '2026-09-09'
-updated: '2026-09-09'
+updated: '2026-09-10'
 ---
 
 # Client Intake Call: Sarah Jenkins ([[ACME]])

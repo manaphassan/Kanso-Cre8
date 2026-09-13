@@ -4,45 +4,6 @@ const config = require('../config');
 
 const DEFAULT_COMPANIES = [
   {
-    code: 'JOM',
-    name: 'JomParking™',
-    shortName: 'JomParking',
-    regNo: 'MY-KL-1149201',
-    address: 'Level 12, Menara LGB, Taman Tun Dr Ismail, 60000 Kuala Lumpur, Malaysia',
-    contact: '+60-3-7887-8899 / billing@jomparking.com',
-    location: 'Kuala Lumpur, Malaysia',
-    status: 'active',
-    isParent: true,
-    establishedYear: '2016',
-    color: '#FF6600'
-  },
-  {
-    code: 'GOV',
-    name: 'Govicle®',
-    shortName: 'Govicle Mobility',
-    regNo: 'MY-SEL-992834',
-    address: 'Tech Hub Cyberjaya, Block 3502, Jalan Teknokrat 5, 63000 Cyberjaya, Selangor',
-    contact: '+60-3-8322-6677 / accounts@govicle.com',
-    location: 'Cyberjaya, Malaysia',
-    status: 'active',
-    isParent: false,
-    establishedYear: '2021',
-    color: '#1E40AF'
-  },
-  {
-    code: 'SS',
-    name: 'SuamiSihat™',
-    shortName: 'SuamiSihat',
-    regNo: 'MY-KL-772810',
-    address: 'Atelier 08, Bukit Damansara, 50490 Kuala Lumpur, Malaysia',
-    contact: '+60-12-345-6789 / creative@suamisihat.myds.me',
-    location: 'Kuala Lumpur, Malaysia',
-    status: 'active',
-    isParent: false,
-    establishedYear: '2023',
-    color: '#059669'
-  },
-  {
     code: 'ACME',
     name: 'Acme Corporation',
     shortName: 'Acme Corp',
@@ -51,7 +12,7 @@ const DEFAULT_COMPANIES = [
     contact: '+1-555-0199 / operations@acme.com',
     location: 'San Francisco, CA',
     status: 'active',
-    isParent: false,
+    isParent: true,
     establishedYear: '2020',
     color: '#0284C7'
   },
@@ -107,7 +68,7 @@ class CompanyService {
         const raw = fs.readFileSync(p, 'utf8');
         const data = JSON.parse(raw);
         if (Array.isArray(data) && data.length > 0) {
-          const hasLegacy = data.some(c => c.code === 'SS' || c.code === 'SSH' || (c.name && c.name.toLowerCase().includes('suamisihat')));
+          const hasLegacy = data.some(c => !['ACME', 'NEX', 'LUM'].includes(c.code));
           if (!hasLegacy) {
             this.memoryCompanies = data;
             return this.memoryCompanies;

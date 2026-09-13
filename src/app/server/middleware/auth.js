@@ -160,7 +160,6 @@ function getUserPermissions(user) {
 
 // Initial Users Directory
 const SYSTEM_USERS = [
-  { id: 'DEMO001', username: 'demo', name: 'Demo Creator', email: 'demo@kansocre8.local', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'DEMO001', department: 'Creative Studio' },
   { id: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'ACME001', department: 'Creative Production' },
   { id: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Designer', roles: ['Designer'], staffId: 'NEX002', department: 'Multimedia & Motion' },
   { id: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Manager', roles: ['Manager'], staffId: 'LUM003', department: 'Research & Strategy' },
@@ -195,14 +194,13 @@ function verifyUserPassword(username, password) {
   const passwords = getStoredPasswords();
   
   const defaultPasswords = {
-    'demo': 'demo',
-    'harussani': 'demo',
+    'harussani': 'kanso123',
     'admin': 'admin123'
   };
 
-  const expectedPassword = passwords[userKey] || defaultPasswords[userKey] || process.env.DEFAULT_PASSWORD || 'demo';
+  const expectedPassword = passwords[userKey] || defaultPasswords[userKey] || process.env.DEFAULT_PASSWORD || 'kanso123';
   const trimmed = password.trim();
-  return trimmed === expectedPassword || (userKey === 'demo' && trimmed === 'demo');
+  return trimmed === expectedPassword;
 }
 
 function updateUserPassword(username, newPassword) {
@@ -244,14 +242,16 @@ function generateToken(user) {
 }
 
 const DEFAULT_DESKTOP_USER = {
-  id: 'CREATOR01',
-  username: 'creator',
-  name: 'Studio Creator',
-  email: 'creator@kansocre8.local',
-  role: 'Administrator, Designer',
+  id: 'ACME001',
+  username: 'harussani',
+  name: 'Harussani',
+  email: 'harussani@acme.com',
+  role: 'Art Director / Administrator',
   roles: ['Administrator', 'Designer'],
-  staffId: 'CREATOR01',
-  department: 'Creative Studio',
+  staffId: 'ACME001',
+  department: 'Creative Production',
+  avatarColor: '#0284C7',
+  defaultBrand: 'ACME',
   permissions: [
     'project:view', 'project:create', 'project:edit', 'project:assign', 'project:archive',
     'brief:view', 'brief:edit',
