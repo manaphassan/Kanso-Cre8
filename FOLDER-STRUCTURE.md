@@ -64,15 +64,19 @@ Because the vault contains only plain directories, UTF-8 `.md` files, and standa
 │   └── 📁 Yearly/                        # YYYY.md (Annual review, milestones, creative vision)
 │       └── 📄 2026_YearlyReview.md
 │
-└── 📁 _Notes/                            # 🧠 Atelier Notes & Second Brain Engine
-    ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
-    │   └── 📄 20260908_Call_Notes_Acme_Kickoff.md
-    ├── 📁 02_Literature/                 # Design references, book notes, teardowns
-    │   └── 📄 20260905_Dieter_Rams_Ten_Principles.md
-    ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
-    │   ├── 📄 Grid_Golden_Ratio_Typography.md
-    │   └── 📄 Hook_Problem_Agitate_Solve.md
-    └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
+├── 📁 _Notes/                            # 🧠 Atelier Notes & Second Brain Engine
+│   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
+│   │   └── 📄 20260908_Call_Notes_Acme_Kickoff.md
+│   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
+│   │   └── 📄 20260905_Dieter_Rams_Ten_Principles.md
+│   ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks
+│   │   ├── 📄 Grid_Golden_Ratio_Typography.md
+│   │   └── 📄 Hook_Problem_Agitate_Solve.md
+│   └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
+│
+└── 📁 _Team/                             # ⚙️ Studio Environment & Configuration
+    └── 📁 _Config/
+        └── 📄 studio_profile.json        # 🎨 Master Studio & Freelance Brand Dossier
 ```
 
 ---
@@ -207,6 +211,34 @@ bankDetails:
   routingCode: "123456789"
 status: "sent" # draft | sent | paid | overdue
 ---
+```
+
+### 5.4 Studio & Freelance Brand Dossier (`_Team/_Config/studio_profile.json`)
+
+The master commercial profile for freelance designers and art directors, auto-stamped across all quotes, invoices, and deliverable manifests:
+
+```json
+{
+  "studioName": "HaNa Innovation",
+  "principalName": "Harussani",
+  "professionalTitle": "Principal Art Director & Brand Architect",
+  "tagline": "Mindful Brand Systems & Digital Craft",
+  "businessRegNo": "202601004829 (LLP-9921)",
+  "billingEmail": "harussani@hana-innovation.com",
+  "studioAddress": "Kuala Lumpur, Malaysia",
+  "website": "https://hana-innovation.com",
+  "phone": "+60 12-345 6789",
+  "paymentBank": "Maybank (MBBEMYKL)",
+  "paymentAccountNo": "5140-1234-5678",
+  "paymentAccountName": "HaNa Innovation",
+  "paymentSwiftOrQr": "DuitNow / SWIFT: MBBEMYKL",
+  "defaultPaymentTerms": "50% Upfront Deposit • Net 14 Days • 2 Revision Rounds",
+  "defaultCurrency": "USD",
+  "brandColor": "#0284C7",
+  "logo": "",
+  "digitalSignature": "",
+  "footerNotice": "Crafted with mindful focus & precision in Kanso Cre8."
+}
 ```
 
 ---

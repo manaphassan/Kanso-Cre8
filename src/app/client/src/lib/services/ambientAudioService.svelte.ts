@@ -14,6 +14,9 @@ class AmbientAudioService {
   isGammaActive = $state(false);
   gammaVolume = $state(0.20);
 
+  isRainActive = $state(false);
+  rainVolume = $state(0.30);
+
   private ctx: AudioContext | null = null;
 
   // Vinyl Crackle Nodes
@@ -24,6 +27,11 @@ class AmbientAudioService {
   // 40Hz Gamma Oscillator Nodes
   private gammaOsc: OscillatorNode | null = null;
   private gammaGain: GainNode | null = null;
+
+  // Studio Rain Nodes
+  private rainSource: AudioBufferSourceNode | null = null;
+  private rainGain: GainNode | null = null;
+  private rainFilter: BiquadFilterNode | null = null;
 
   private initContext(): boolean {
     if (typeof window === 'undefined') return false;
@@ -119,6 +127,33 @@ class AmbientAudioService {
     this.isCrackleActive = false;
   }
 
+  applyTapeFormulationAndDolby(formulation: 'TYPE I' | 'TYPE II' | 'TYPE IV', dolby: 'OFF' | 'DOLBY B' | 'DOLBY C') {
+    if (!this.ctx || !this.crackleFilter || !this.crackleGain) return;
+
+    let targetFreq = 2400;
+    let targetQ = 1.2;
+    if (formulation === 'TYPE I') {
+      targetFreq = 2000;
+      targetQ = 0.9;
+    } else if (formulation === 'TYPE IV') {
+      targetFreq = 2800;
+      targetQ = 1.5;
+    }
+
+    let dolbyGainMult = 1.0;
+    if (dolby === 'DOLBY B') {
+      targetFreq *= 0.75;
+      dolbyGainMult = 0.6; // -40% hiss
+    } else if (dolby === 'DOLBY C') {
+      targetFreq *= 0.5;
+      dolbyGainMult = 0.3; // -70% hiss
+    }
+
+    this.crackleFilter.frequency.setTargetAtTime(targetFreq, this.ctx.currentTime, 0.08);
+    this.crackleFilter.Q.setTargetAtTime(targetQ, this.ctx.currentTime, 0.08);
+    this.crackleGain.gain.setTargetAtTime(this.crackleVolume * 0.4 * dolbyGainMult, this.ctx.currentTime, 0.08);
+  }
+
   // --- 40Hz GAMMA FOCUS WAVE ---
   toggleGamma() {
     if (!this.initContext() || !this.ctx) return;
@@ -169,6 +204,87 @@ class AmbientAudioService {
       }, 200);
     }
     this.isGammaActive = false;
+  }
+
+  // --- STUDIO RAIN ON GLASS ---
+  toggleRain() {
+    if (!this.initContext() || !this.ctx) return;
+
+    if (this.isRainActive) {
+      this.stopRain();
+    } else {
+      this.startRain();
+    }
+  }
+
+  setRainVolume(val: number) {
+    this.rainVolume = Math.max(0, Math.min(1, val));
+    if (this.rainGain && this.ctx) {
+      this.rainGain.gain.setTargetAtTime(this.rainVolume * 0.35, this.ctx.currentTime, 0.05);
+    }
+  }
+
+  private startRain() {
+    if (!this.ctx) return;
+
+    const sampleRate = this.ctx.sampleRate;
+    const bufferLength = sampleRate * 4; // 4 seconds loop
+    const buffer = this.ctx.createBuffer(1, bufferLength, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    let b0 = 0, b1 = 0, b2 = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const white = Math.random() * 2 - 1;
+      // Pink noise filter approximation
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      let pink = b0 + b1 + b2 + white * 0.5362;
+
+      // Soft droplets modulation
+      if (Math.random() < 0.0003) {
+        pink += (Math.random() * 2 - 1) * 0.6;
+      }
+      data[i] = pink * 0.12;
+    }
+
+    this.rainSource = this.ctx.createBufferSource();
+    this.rainSource.buffer = buffer;
+    this.rainSource.loop = true;
+
+    this.rainFilter = this.ctx.createBiquadFilter();
+    this.rainFilter.type = 'lowpass';
+    this.rainFilter.frequency.setValueAtTime(950, this.ctx.currentTime); // Gentle rain through studio glass
+    this.rainFilter.Q.setValueAtTime(0.8, this.ctx.currentTime);
+
+    this.rainGain = this.ctx.createGain();
+    this.rainGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+    this.rainGain.gain.exponentialRampToValueAtTime(this.rainVolume * 0.35, this.ctx.currentTime + 0.5);
+
+    this.rainSource.connect(this.rainFilter);
+    this.rainFilter.connect(this.rainGain);
+    this.rainGain.connect(this.ctx.destination);
+
+    this.rainSource.start();
+    this.isRainActive = true;
+  }
+
+  private stopRain() {
+    if (this.rainGain && this.ctx) {
+      this.rainGain.gain.setTargetAtTime(0.001, this.ctx.currentTime, 0.15);
+      setTimeout(() => {
+        try {
+          this.rainSource?.stop();
+          this.rainSource?.disconnect();
+          this.rainFilter?.disconnect();
+          this.rainGain?.disconnect();
+        } catch {}
+        this.rainSource = null;
+        this.rainFilter = null;
+        this.rainGain = null;
+      }, 200);
+    }
+    this.isRainActive = false;
   }
 }
 

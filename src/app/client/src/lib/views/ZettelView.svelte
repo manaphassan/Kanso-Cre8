@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { zettelService } from '../services/zettelService';
-  import type { ZettelNote, ZettelType, ZettelTask } from '../types/zettel';
+  import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/zettel';
 
   let notes: ZettelNote[] = $state([]);
   let activeNote: ZettelNote = $state(zettelService.getNotes()[0]);
@@ -104,26 +104,27 @@
   );
 
   let allTasks = $derived(zettelService.getAllTasks());
+
+  let incomingBacklinks = $derived(
+    activeNote ? zettelService.getBacklinks(activeNote.title, activeNote.id) : []
+  );
 </script>
 
-<div class="p-8 max-w-7xl mx-auto space-y-8 animate-fadeIn">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-        <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400">
-          <svg width="24" height="24" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-        </span>
-        Atelier Notes &amp; Knowledge
-      </h1>
-      <p class="text-sm text-muted-foreground mt-1">
+<div class="zettel-view-container space-y-8 animate-fadeIn">
+  <!-- Standard Canonical Atelier Header -->
+  <div class="view-header">
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Notes/</span>
+        <span class="tag-meta">Atelier Zettelkasten · {notes.length} Atomic Notes · Universal Tasks</span>
+      </div>
+      <h1 class="view-title">Atelier Notes</h1>
+      <p class="view-subtitle">
         Interconnected creative second brain (<span class="font-mono text-xs text-primary">_Notes/</span>). Capture fleeting ideas, link clients via [[WikiLinks]], and rapid-scratch temporary notes.
       </p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="header-actions">
       <!-- Mode Toggle -->
       <div class="flex items-center gap-1 p-1 bg-muted/40 rounded-lg border border-border">
         <button
@@ -133,7 +134,7 @@
           <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
-          Atelier Notes
+          <span>Atelier Notes</span>
         </button>
         <button
           onclick={() => activeTab = 'scratchpad'}
@@ -142,14 +143,14 @@
           <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
-          Scratchpad.md
+          <span>Scratchpad.md</span>
         </button>
       </div>
 
       {#if activeTab === 'notes'}
         <button
           onclick={() => showTaskDrawer = !showTaskDrawer}
-          class="inline-flex items-center gap-2 px-3.5 py-2 border border-border bg-card hover:bg-muted/50 text-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
+          class="inline-flex items-center gap-2 px-3.5 py-2 border border-border bg-card hover:bg-muted/50 text-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm cursor-pointer"
         >
           <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -159,12 +160,12 @@
 
         <button
           onclick={() => createNewNote('permanent')}
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg transition-colors shadow-sm"
+          class="action-cta-btn text-xs font-semibold"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Atomic Note
+          <span>New Note</span>
         </button>
       {/if}
     </div>
@@ -417,6 +418,45 @@
                 </div>
               </div>
             {/if}
+
+            <!-- Incoming Backlinks & Bi-Directional Graph Connections -->
+            <div class="p-4 bg-muted/20 border border-border/60 rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
+                  <span class="text-sky-400">⚡</span>
+                  Incoming Backlinks ({incomingBacklinks.length})
+                </h3>
+                <span class="text-[11px] font-mono text-muted-foreground">Bi-directional Graph Index</span>
+              </div>
+
+              {#if incomingBacklinks.length === 0}
+                <p class="text-xs text-muted-foreground font-mono italic">
+                  Zero incoming backlinks. Reference <code class="text-sky-400">[[{activeNote.title}]]</code> in other atomic notes or journals to interlink concepts.
+                </p>
+              {:else}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {#each incomingBacklinks as bl}
+                    <button
+                      type="button"
+                      onclick={() => selectNote(bl.note)}
+                      class="text-left p-3 rounded-lg border border-border/50 bg-card hover:border-sky-500/40 hover:bg-muted/30 transition-all flex flex-col gap-1 cursor-pointer group"
+                    >
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-foreground group-hover:text-sky-400 transition-colors truncate">
+                          {bl.note.title}
+                        </span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.2 rounded uppercase {bl.note.type === 'permanent' ? 'bg-sky-500/10 text-sky-400' : bl.note.type === 'literature' ? 'bg-purple-500/10 text-purple-400' : 'bg-amber-500/10 text-amber-400'}">
+                          {bl.note.type}
+                        </span>
+                      </div>
+                      <p class="text-[11px] font-mono text-muted-foreground truncate">
+                        "{bl.snippet}"
+                      </p>
+                    </button>
+                  {/each}
+                </div>
+              {/if}
+            </div>
           </div>
         {/if}
       {/if}

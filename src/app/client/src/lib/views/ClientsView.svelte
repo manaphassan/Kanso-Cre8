@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { clientService } from '../services/clientService';
   import { timerStore } from '../stores/timerStore.svelte';
+  import { licenseStore } from '../stores/licenseStore.svelte';
   import type { ClientProfile } from '../types/kanso';
 
   let clients: ClientProfile[] = $state([]);
@@ -37,6 +38,10 @@
   }
 
   function openNewClientModal() {
+    if (!licenseStore.isPro && clients.length >= 1) {
+      licenseStore.requirePro('Unlimited Clients Hub');
+      return;
+    }
     selectedClient = null;
     formName = '';
     formCode = '';
@@ -115,32 +120,31 @@
   }
 </script>
 
-<div class="p-8 max-w-7xl mx-auto space-y-8 animate-fadeIn">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-        <span class="p-2 rounded-lg bg-primary/10 text-primary">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-        </span>
-        Clients &amp; Brand Hub
-      </h1>
-      <p class="text-sm text-muted-foreground mt-1">
+<div class="clients-view-container space-y-8 animate-fadeIn">
+  <!-- Standard Canonical Atelier Header -->
+  <div class="view-header">
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Clients/</span>
+        <span class="tag-meta">{clients.length} Client Dossiers &amp; Brand Swatches</span>
+      </div>
+      <h1 class="view-title">Clients &amp; Brand Hub</h1>
+      <p class="view-subtitle">
         Manage your freelance client profiles, brand color swatches, contact info, and billing rates.
       </p>
     </div>
 
-    <button
-      onclick={openNewClientModal}
-      class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-lg transition-colors shadow-sm"
-    >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      Add New Client
-    </button>
+    <div class="header-actions">
+      <button
+        onclick={openNewClientModal}
+        class="action-cta-btn"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Add New Client</span>
+      </button>
+    </div>
   </div>
 
   <!-- Toast Notification for Copied Swatch -->

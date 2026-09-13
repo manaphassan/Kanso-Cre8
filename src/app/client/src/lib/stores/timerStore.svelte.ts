@@ -47,8 +47,8 @@ class TimerStore {
 
   projectId = $state<string>('');
   projectTitle = $state<string>('');
-  clientCode = $state<string>('JOM');
-  hourlyRate = $state<number>(180);
+  clientCode = $state<string>('ACME');
+  hourlyRate = $state<number>(150);
   sessionNote = $state<string>('');
 
   timeLogs = $state<TimeSessionLog[]>([]);
@@ -76,7 +76,7 @@ class TimerStore {
 
   formattedEarned = $derived.by(() => {
     const symbol = settingsStore?.settings?.currencySymbol || 'RM';
-    return `+${symbol} ${(this.earnedAmount || 0).toFixed(2)}`;
+    return `+${symbol}\u00A0${(this.earnedAmount || 0).toFixed(2)}`;
   });
 
   // Template aliases

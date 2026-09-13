@@ -9,70 +9,70 @@ const STORAGE_KEY = 'kanso_cre8_clients';
 
 export const DEFAULT_CLIENTS: ClientProfile[] = [
   {
-    id: 'jomparking',
-    name: 'JomParking™',
-    code: 'JOM',
-    contactPerson: 'Dharma Syahril',
-    email: 'billing@jomparking.com',
-    phone: '+60 3-7887 8899',
-    billingAddress: 'Level 12, Menara LGB, Taman Tun Dr Ismail, 60000 Kuala Lumpur',
-    currency: 'MYR',
-    defaultHourlyRate: 180,
+    id: 'acme',
+    name: 'Acme Corporation',
+    code: 'ACME',
+    contactPerson: 'Sarah Jenkins',
+    email: 'operations@acme.com',
+    phone: '+1 555-0199',
+    billingAddress: '100 Innovation Way, Suite 400, San Francisco, CA 94105',
+    currency: 'USD',
+    defaultHourlyRate: 150,
     paymentTermsDays: 14,
     palette: {
-      primary: '#FF6600',   // JomParking Orange
-      secondary: '#0A192F', // Deep Navy
-      dark: '#111827',      // Slate Obsidian
-      light: '#FFF7ED',     // Warm Papaya
-      accent: '#00C2FF'     // Parking Bay Cyan
+      primary: '#0284C7',   // Ocean Blue
+      secondary: '#0369A1', // Deep Sky
+      dark: '#0B192C',      // Obsidian Ink
+      light: '#F0F9FF',     // Sky Tint
+      accent: '#38BDF8'     // Electric Cyan
     },
-    notes: 'Smart city urban parking, IoT mobility solutions, contactless QR street parking & merchant dashboards.',
+    notes: 'Enterprise cloud infrastructure, design systems, and cross-platform creative operations.',
     activeProjectsCount: 2,
-    totalInvoiced: 8500
+    totalInvoiced: 14200
   },
   {
-    id: 'govicle',
-    name: 'Govicle®',
-    code: 'GOV',
-    contactPerson: 'Muhamad Hanif',
-    email: 'accounts@govicle.com',
-    phone: '+60 3-8322 6677',
-    billingAddress: 'Tech Hub Cyberjaya, Block 3502, Jalan Teknokrat 5, 63000 Cyberjaya, Selangor',
-    currency: 'MYR',
-    defaultHourlyRate: 220,
+    id: 'nexus',
+    name: 'Nexus Studio',
+    code: 'NEX',
+    contactPerson: 'Alex Vance',
+    email: 'hello@nexusstudio.io',
+    phone: '+44 20-7946-0912',
+    billingAddress: '42 Shoreditch High St, Hackney, London E1 6JJ, UK',
+    currency: 'GBP',
+    defaultHourlyRate: 140,
     paymentTermsDays: 30,
     palette: {
-      primary: '#1E40AF',   // Govicle Royal Blue
-      secondary: '#0D9488', // Tech Teal Fleet
-      dark: '#0F172A',      // Midnight Slate
-      light: '#F0F9FF',     // Sky Tint
-      accent: '#10B981'     // EV Emerald
+      primary: '#8B5CF6',   // Purple Haze
+      secondary: '#6D28D9', // Deep Violet
+      dark: '#18181B',      // Zinc Obsidian
+      light: '#FAF5FF',     // Lavender Tint
+      accent: '#A855F7'     // Electric Violet
     },
-    notes: 'Enterprise fleet telematics, EV charging network UX, and automated road-tax compliance portals.',
+    notes: 'Multimedia motion design, 3D visual campaigns, and interactive digital experiences.',
     activeProjectsCount: 1,
-    totalInvoiced: 12400
+    totalInvoiced: 9800
   },
   {
-    id: 'suamisihat',
-    name: 'SuamiSihat™',
-    code: 'SS',
-    contactPerson: 'Harusssani Manaphassan',
-    email: 'creative@suamisihat.myds.me',
-    phone: '+60 12-345 6789',
-    billingAddress: 'Atelier 08, Bukit Damansara, 50490 Kuala Lumpur, Malaysia',
-    currency: 'MYR',
+    id: 'lumina',
+    name: 'Lumina Labs',
+    code: 'LUM',
+    contactPerson: 'Elena Rostova',
+    email: 'contact@luminalabs.dev',
+    phone: '+65 6789-0123',
+    billingAddress: '71 Ayer Rajah Crescent, #03-01, Singapore 139951',
+    currency: 'SGD',
     defaultHourlyRate: 160,
     paymentTermsDays: 15,
     palette: {
-      primary: '#059669',   // Forest Emerald
-      secondary: '#047857', // Deep Forest
-      dark: '#09090B',      // Atelier Obsidian
+      primary: '#10B981',   // Emerald Mint
+      secondary: '#047857', // Forest Deep
+      dark: '#09090B',      // Kanso Canvas
       light: '#ECFDF5',     // Mint Silk
-      accent: '#F59E0B'     // Amber Vitality
+      accent: '#F59E0B'     // Amber Gold
     },
-    notes: 'Men\'s holistic wellness, nutritional health supplement branding, discreet telehealth portal UI.',
+    notes: 'Biotech intelligence, generative research interfaces, and data visualization design.',
     activeProjectsCount: 1,
-    totalInvoiced: 6800
+    totalInvoiced: 11500
   }
 ];
 
@@ -97,8 +97,9 @@ export class ClientService {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const hasJom = parsed.some((c: any) => c.code === 'JOM' || c.code === 'GOV');
-          if (hasJom) {
+          const hasLegacy = parsed.some((c: any) => ['JOM', 'GOV', 'SS', 'JP', 'GV'].includes(c.code));
+          const hasCanonical = parsed.some((c: any) => ['ACME', 'NEX', 'LUM'].includes(c.code));
+          if (hasCanonical && !hasLegacy) {
             this.clients = parsed;
             return this.clients;
           }

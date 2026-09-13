@@ -171,52 +171,54 @@
 
 <div class="bujo-page-wrap animate-fadeIn">
   <!-- Page Header -->
-  <div class="bujo-header">
-    <div>
-      <div class="tag-row">
-        <span class="badge-zen">_Journal/</span>
-        <span class="meta-txt">Bullet Journal &amp; Creator's Log</span>
+  <div class="view-header">
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Journal/</span>
+        <span class="tag-meta">Bullet Journal &amp; Creator's Log</span>
       </div>
-      <h1 class="page-title">Creator's BuJo Sanctuary</h1>
-      <p class="page-desc">
+      <h1 class="view-title">Bullet Journal</h1>
+      <p class="view-subtitle">
         Rapid daily logging, task migration, monthly deliverable reviews, and yearly studio vision.
       </p>
     </div>
 
     <!-- Tab Switcher -->
-    <div class="tab-switcher">
-      <button
-        class="tab-btn"
-        class:active={activeTab === 'daily'}
-        onclick={() => (activeTab = 'daily')}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
-        </svg>
-        Daily Rapid Log
-      </button>
+    <div class="header-actions">
+      <div class="tab-switcher">
+        <button
+          class="tab-btn"
+          class:active={activeTab === 'daily'}
+          onclick={() => (activeTab = 'daily')}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+          </svg>
+          Daily Rapid Log
+        </button>
 
-      <button
-        class="tab-btn"
-        class:active={activeTab === 'monthly'}
-        onclick={() => (activeTab = 'monthly')}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
-        </svg>
-        Monthly Review
-      </button>
+        <button
+          class="tab-btn"
+          class:active={activeTab === 'monthly'}
+          onclick={() => (activeTab = 'monthly')}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+          </svg>
+          Monthly Review
+        </button>
 
-      <button
-        class="tab-btn"
-        class:active={activeTab === 'yearly'}
-        onclick={() => (activeTab = 'yearly')}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L1 21h22L12 2zm0 3.84L20.13 19H3.87L12 5.84zM11 10h2v4h-2zm0 6h2v2h-2z"/>
-        </svg>
-        Yearly Vision
-      </button>
+        <button
+          class="tab-btn"
+          class:active={activeTab === 'yearly'}
+          onclick={() => (activeTab = 'yearly')}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L1 21h22L12 2zm0 3.84L20.13 19H3.87L12 5.84zM11 10h2v4h-2zm0 6h2v2h-2z"/>
+          </svg>
+          Yearly Vision
+        </button>
+      </div>
     </div>
   </div>
 
