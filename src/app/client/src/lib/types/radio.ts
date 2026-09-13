@@ -8,6 +8,8 @@ export interface CassetteRadioStation {
   labelColor: string;
   accentColor: string;
   description: string;
+  featuredTrack?: string;
+  isCustom?: boolean;
 }
 
 export interface RadioPlaybackState {

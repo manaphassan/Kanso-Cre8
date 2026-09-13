@@ -54,6 +54,7 @@ Always use canonical sample profiles:
   - `_Projects/` (`[YYYY]/` e.g. `2026/` standardized 5-folder project vaults)
   - `_Journal/` (Bullet Journal system: `Daily/`, `Monthly/`, `Yearly/`)
   - `_Notes/` (Atelier knowledge base: `01_Fleeting/`, `02_Literature/`, `03_Permanent/`, and `Scratchpad.md` for temporary quick notes)
+  - `_Team/` (`_Config/studio_profile.json` for Studio Master Profile & Brand Dossier)
 
 ---
 
@@ -85,6 +86,11 @@ Always use canonical sample profiles:
 5. **Clean Deprecation Rule**:
    - Creative Requests (`OrderFormView`) and Vault Migration Wizard (`ObsidianMigrationModal`) are permanently removed to eliminate clutter.
 
+6. **Studio & Freelance Brand Dossier (`_Team/_Config/studio_profile.json`)**:
+   - Stores the master atelier profile: Studio Name, Tagline, Freelancer Name, Business Registration No (`registration_no`), Email, Phone, Address, Official Logo (`logo_url`), and Authorized Digital Signature (`signature_text`, `signature_url`).
+   - Stores default wire remittance instructions: Bank Name, Monospace Account Number, Account Holder, SWIFT/BIC Code, and DuitNow ID.
+   - Automatically stamps and auto-populates master identity across new quotes and invoices (`_Finance/`), eliminating repetitive administrative data entry.
+
 ---
 
 # UI/UX RULES: LINEAR / GEIST STUDIO SYSTEM
@@ -113,6 +119,7 @@ The Retro Cassette Focus Radio is ported faithfully from the mechanical cassette
 - 4 corner silver screws, trapezoidal head/roller, Side A label badge, clear tape window.
 - Dual 6-spoke gear spool wheels rotating at 33 RPM via smooth CSS animations during playback.
 - Curated focus streams (Chillhop Cafe, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus).
+- Synchronized favorite presets rack with active station indicator and automated migration of legacy station IDs.
 - Persistent 40px Mini-Cassette Dock in the sidebar footer.
 - 25-minute Pomodoro focus timer.
 

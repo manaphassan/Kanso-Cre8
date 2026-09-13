@@ -1100,7 +1100,7 @@ class WorkspaceService {
     };
   }
 
-  setWorkspaceRoot(newPath, actor = 'Administrator') {
+  setWorkspaceRoot(newPath, actor = 'Administrator', autoCreate = false) {
     if (!newPath || typeof newPath !== 'string' || !newPath.trim()) {
       throw new Error('A valid workspace path must be provided.');
     }
@@ -1109,7 +1109,35 @@ class WorkspaceService {
     const targetPath = path.resolve(trimmedPath);
 
     if (!fs.existsSync(targetPath)) {
-      throw new Error(`Path does not exist on the filesystem: ${targetPath}`);
+      if (!autoCreate) {
+        throw new Error(`Path does not exist on the filesystem: ${targetPath}`);
+      }
+      try {
+        fs.mkdirSync(targetPath, { recursive: true });
+        console.log(`[WorkspaceService] Provisioned new vault directory at: ${targetPath}`);
+        // Provision canonical 5 folders
+        const canonicalDirs = [
+          '_Clients',
+          '_Finance/Quotes',
+          '_Finance/Invoices',
+          `_Projects/${new Date().getFullYear()}`,
+          '_Journal/Daily',
+          '_Journal/Monthly',
+          '_Journal/Yearly',
+          '_Notes/01_Fleeting',
+          '_Notes/02_Literature',
+          '_Notes/03_Permanent'
+        ];
+        canonicalDirs.forEach(dir => {
+          fs.mkdirSync(path.join(targetPath, dir), { recursive: true });
+        });
+        const scratchpadPath = path.join(targetPath, '_Notes', 'Scratchpad.md');
+        if (!fs.existsSync(scratchpadPath)) {
+          fs.writeFileSync(scratchpadPath, '# Atelier Scratchpad\n\nTransient capture buffer for clipboard snippets and scratch ideas.\n', 'utf8');
+        }
+      } catch (err) {
+        throw new Error(`Path does not exist and could not be created at ${targetPath}: ${err.message}`);
+      }
     }
 
     try {

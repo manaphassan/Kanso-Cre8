@@ -14,6 +14,7 @@
   import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import { clientService } from '$lib/services/clientService';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import type { ClientProfile } from '$lib/types/kanso';
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
@@ -95,6 +96,10 @@
   }
 
   function openNewProjectModal() {
+    if (!licenseStore.isPro && projectStore.projects.length >= 2) {
+      licenseStore.requirePro('Unlimited 5-Folder Project Scaffolding');
+      return;
+    }
     clientsList = clientService.getClients();
     if (clientsList.length > 0 && !clientsList.some(c => c.code === npClientCode)) {
       npClientCode = clientsList[0].code;
@@ -141,6 +146,10 @@
   <!-- View Header & View Switcher -->
   <div class="view-header">
     <div class="header-titles">
+      <div class="header-tag">
+        <span class="tag-badge">_Projects/</span>
+        <span class="tag-meta">Active Vaults &amp; Schedules</span>
+      </div>
       <h1 class="view-title">Project Manager</h1>
       <p class="view-subtitle">Coordinate creative campaigns, Kanban pipelines, Gantt timelines, and production schedules</p>
     </div>

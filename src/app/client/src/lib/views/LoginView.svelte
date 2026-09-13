@@ -20,10 +20,10 @@
   ]);
 
   const defaultStaffList: UserProfile[] = [
-    { username: 'demo', name: 'Demo Creator', staffId: 'DEMO001', role: 'Lead Designer / Administrator' },
-    { username: 'harussani', name: 'Harussani', staffId: 'ACME001', role: 'Art Director' },
+    { username: 'harussani', name: 'Harussani', staffId: 'ACME001', role: 'Art Director / Administrator' },
     { username: 'alex', name: 'Alex Vance', staffId: 'NEX002', role: 'Designer' },
-    { username: 'elena', name: 'Elena Rostova', staffId: 'LUM003', role: 'Creative Strategist' }
+    { username: 'elena', name: 'Elena Rostova', staffId: 'LUM003', role: 'Creative Strategist' },
+    { username: 'marcus', name: 'Marcus Brody', staffId: 'ACME004', role: 'Copywriter' }
   ];
 
   let staffProfiles = $state<UserProfile[]>(defaultStaffList);
@@ -39,14 +39,14 @@
 
   // Recent Active Logins (Dynamic, strictly limited to 3)
   function getStoredRecentUsers(): string[] {
-    if (typeof localStorage === 'undefined') return ['demo', 'harussani', 'alex'];
+    if (typeof localStorage === 'undefined') return ['harussani', 'alex'];
     try {
       const stored = JSON.parse(localStorage.getItem('kanso_recent_users') || '[]');
       if (Array.isArray(stored) && stored.length > 0) {
         return stored.slice(0, 3);
       }
     } catch {}
-    return ['demo', 'harussani', 'alex'];
+    return ['harussani', 'alex'];
   }
 
   let recentUsernames = $state<string[]>(getStoredRecentUsers());
@@ -70,9 +70,9 @@
     return list;
   });
 
-  // Reactive credentials (default: demo / demo)
-  let username = $state<string>(savedUser || 'demo');
-  let password = $state<string>('demo');
+  // Reactive credentials
+  let username = $state<string>(savedUser || 'harussani');
+  let password = $state<string>('');
   let rememberMe = $state<boolean>(isRemembered);
   let showPassword = $state<boolean>(false);
   let isLoading = $state<boolean>(false);
@@ -400,7 +400,7 @@
 
   function quickLogin(user: string) {
     username = user;
-    password = 'demo';
+    password = 'kanso123';
     handleLogin();
   }
 </script>
@@ -415,9 +415,9 @@
   <!-- Static Glassmorphism Card -->
   <div class="login-card-static">
     <!-- Official Kanso Cre8 Logo Header -->
-    <button type="button" class="card-header-logo-interactive" onclick={() => quickLogin('demo')} title="Click to quick login as demo" aria-label="Quick login as demo">
-      <img src="brand/kanso-mark.svg" alt="Kanso Cre8" class="brand-logo-img" style="height: 52px; width: auto;" />
-    </button>
+    <div class="card-header-logo" style="display: flex; justify-content: center; margin-bottom: 12px;">
+      <img src="brand/kanso-mark.svg" alt="Kanso Cre8" style="height: 52px; width: auto;" />
+    </div>
 
     <h1 class="portal-heading">Kanso Cre8</h1>
     <p class="portal-subheading">簡素 · The Mindful Creative Vault</p>
@@ -429,16 +429,13 @@
     <form onsubmit={handleLogin} class="login-form-body">
       <!-- Username Field -->
       <div class="form-group">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-          <label for="login-username-field" class="field-label" style="margin-bottom: 0;">Username</label>
-          <span style="font-size: 12px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
-        </div>
+        <label for="login-username-field" class="field-label">Username</label>
         <input
           id="login-username-field"
           type="text"
           class="field-input"
           bind:value={username}
-          placeholder="Enter username (default: demo)"
+          placeholder="Enter username"
           required
         />
       </div>
@@ -457,17 +454,14 @@
 
       <!-- Password Field -->
       <div class="form-group">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-          <label for="login-password-field" class="field-label" style="margin-bottom: 0;">Password</label>
-          <span style="font-size: 12px; color: var(--kanso-accent, #38BDF8);">Default: <strong>demo</strong></span>
-        </div>
+        <label for="login-password-field" class="field-label">Password</label>
         <div class="password-input-wrapper">
           <input
             id="login-password-field"
             type={showPassword ? 'text' : 'password'}
             class="field-input"
             bind:value={password}
-            placeholder="Enter password (default: demo)"
+            placeholder="Enter password"
             required
           />
           <button
@@ -501,10 +495,6 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         {/if}
       </button>
-
-      <div class="login-credentials-hint" style="text-align: center; margin-top: 8px; font-size: 12px; color: var(--kanso-text-muted, #71717A);">
-        Default credentials: <span style="color: var(--kanso-accent, #38BDF8); font-weight: 600;">demo</span> / <span style="color: var(--kanso-accent, #38BDF8); font-weight: 600;">demo</span>
-      </div>
 
       <!-- Quick Sign-in Section (Recent Active Logins - Strictly Limit to 3) -->
       <div class="quick-roster-section">

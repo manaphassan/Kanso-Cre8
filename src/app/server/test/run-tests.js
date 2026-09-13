@@ -13,6 +13,7 @@ const ApprovalService = require('../services/ApprovalService');
 const JournalVaultService = require('../services/JournalVaultService');
 const FinanceVaultService = require('../services/FinanceVaultService');
 const NotesVaultService = require('../services/NotesVaultService');
+const TeamService = require('../services/TeamService');
 const config = require('../config');
 
 console.log('🧪 Starting Kanso Cre8 Desktop Application Verification Suite...\n');
@@ -23,6 +24,9 @@ const tempAuditPath = path.join(__dirname, 'temp-test-audit.jsonl');
 AuditService.getAuditLogPath = () => tempAuditPath;
 
 async function runTests() {
+  const sampleWsRoot = path.resolve(__dirname, '../../sample-workspace');
+  WorkspaceService.setWorkspaceRoot(sampleWsRoot, 'TestRunner');
+
   let passed = 0;
   let failed = 0;
 
@@ -1984,6 +1988,64 @@ notes: Initial deposit invoice.
     assert.ok(workflow.includes('tauri-action@v1'));
     assert.ok(workflow.includes('windows-latest'));
     assert.ok(workflow.includes('ubuntu-22.04'));
+  });
+
+  // ─── TEST 46: TeamService & REST API Offline Perpetual Licensing ────
+  await test('TeamService and REST API manage offline perpetual license key in _Team/_Config/license.key with zero telemetry', async () => {
+    const testDir = path.join(__dirname, 'temp-license-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testDir;
+
+    try {
+      // 1. Initial state should be null
+      assert.strictEqual(TeamService.getLicense(), null);
+
+      // 2. Save license key
+      const testKey = 'KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED';
+      const saved = TeamService.saveLicense(testKey);
+      assert.strictEqual(saved, true);
+      assert.strictEqual(TeamService.getLicense(), testKey);
+
+      // 3. Verify physical file exists on disk
+      const licensePath = path.join(testDir, '_Team', '_Config', 'license.key');
+      assert.ok(fs.existsSync(licensePath), 'license.key must exist on disk');
+      assert.strictEqual(fs.readFileSync(licensePath, 'utf8').trim(), testKey);
+
+      // 4. Test REST API endpoint using local express server
+      const express = require('express');
+      const testApp = express();
+      testApp.use(express.json());
+      testApp.use('/api', require('../routes/api'));
+
+      const server = testApp.listen(0);
+      const port = server.address().port;
+      const baseUrl = `http://127.0.0.1:${port}`;
+
+      try {
+        const getRes = await fetch(`${baseUrl}/api/system/license`);
+        const getBody = await getRes.json();
+        assert.strictEqual(getRes.status, 200);
+        assert.strictEqual(getBody.success, true);
+        assert.strictEqual(getBody.license, testKey);
+
+        // 5. Test updating via PUT
+        const newKey = 'KANSO-PRO-CUSTOM-TEST-VERIFIED';
+        const putRes = await fetch(`${baseUrl}/api/system/license`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenseKey: newKey })
+        });
+        const putBody = await putRes.json();
+        assert.strictEqual(putRes.status, 200);
+        assert.strictEqual(putBody.success, true);
+        assert.strictEqual(TeamService.getLicense(), newKey);
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
   });
 
   console.log(`\n========================================================`);
