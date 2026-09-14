@@ -14,6 +14,9 @@
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
   import ProjectVersionTimelineModal from '$lib/components/features/ProjectVersionTimelineModal.svelte';
   import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
+  import { clientService } from '$lib/services/clientService';
+  import { timerStore } from '$lib/stores/timerStore.svelte';
+  import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
 
   interface Props {
     projectId?: string;
@@ -24,7 +27,6 @@
   // View state
   type MainCanvasView = 'brief' | 'copywriting' | 'deliverables' | 'direction';
   let activeCanvasView = $state<MainCanvasView>('brief');
-  let inspectorTab = $state<'properties' | 'discussion'>('properties');
   let inspectorOpen = $state<boolean>(true);
   let showIngesterModal = $state<boolean>(false);
   let showShareModal = $state<boolean>(false);
@@ -75,6 +77,50 @@
   let lastLoadedHash = $state<string | null>(null);
 
   const p = $derived(projectStore.selectedProject);
+
+  const clientProfile = $derived.by(() => {
+    if (!p) return null;
+    return clientService.getClientByCode(p.brand || (p as any).clientCode || 'ACME') || null;
+  });
+
+  const projectLoggedHours = $derived.by(() => {
+    const activeCurrency = clientProfile?.currency || settingsStore.settings.currency || 'MYR';
+    const symbol = getCurrencySymbol(activeCurrency);
+    if (!p) return { totalSeconds: 0, formatted: '0h 0m', totalEarned: 0, formattedEarned: `${symbol} 0.00`, symbol };
+    const logs = timerStore.timeLogs.filter(l => l.projectId === p.id || l.clientCode === p.brand);
+    const totalSecs = logs.reduce((acc, l) => acc + (l.durationSeconds || 0), 0);
+    const totalEarned = logs.reduce((acc, l) => acc + (l.earnedAmount || 0), 0);
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    return {
+      totalSeconds: totalSecs,
+      formatted: `${hrs}h ${mins}m`,
+      totalEarned,
+      formattedEarned: `${symbol} ${totalEarned.toFixed(2)}`,
+      symbol
+    };
+  });
+
+  function toggleProjectTimer() {
+    if (!p) return;
+    if (timerStore.isRunning && timerStore.projectId === p.id) {
+      const log = timerStore.stop();
+      if (log) {
+        appState.addToast(`Logged ${log.durationFormatted} (${log.earnedFormatted}) for "${p.title}"`, 'success');
+      }
+    } else {
+      const rate = clientProfile?.defaultHourlyRate || 120;
+      timerStore.start({
+        projectId: p.id,
+        projectTitle: p.title,
+        clientCode: p.brand || 'ACME',
+        hourlyRate: rate
+      });
+      appState.addToast(`Started live timer for "${p.title}"`, 'info');
+    }
+  }
+
+  const isTimerActive = $derived(Boolean(p && timerStore.isRunning && timerStore.projectId === p.id));
 
   // Real-time synchronization when SSE or store updates selectedProject
   $effect(() => {
@@ -290,7 +336,7 @@
     try {
       const hash = p.versionHash || null;
       const res = await ApiClient.updateBrief(p.id, newBody, hash);
-      appState.addToast('Creative Brief saved to Synology NAS (README.md)', 'success');
+      appState.addToast('Creative Brief saved to Vault (README.md)', 'success');
       currentReadmeBody = newBody;
       if (projectStore.selectedProject) {
         projectStore.selectedProject.readmeBody = newBody;
@@ -309,7 +355,7 @@
     if (!p) return;
     try {
       const res = await ApiClient.updateCopywritingMarkdown(p.id, newBody);
-      appState.addToast('Copywriting saved to NAS (03_COPYWRITING/COPY.md)', 'success');
+      appState.addToast('Copywriting saved to Vault (03_COPY/COPY.md)', 'success');
       currentCopyBody = newBody;
       if (res.copywriting?.stats) {
         copyStats = res.copywriting.stats;
@@ -436,7 +482,7 @@
         </div>
 
         <div class="headline-actions">
-          <!-- Status Dropdown Pill -->
+          <!-- Freelance Client Status Selector -->
           <div class="status-selector-wrap">
             <select
               class="status-select status-{currentFrontmatter.status || 'review'}"
@@ -444,52 +490,34 @@
               onchange={(e) => updateStatus((e.target as HTMLSelectElement).value)}
             >
               <option value="backlog">Backlog</option>
-              <option value="in-progress">In Progress</option>
-              <option value="review">In Review</option>
-              <option value="revision">Revision Required</option>
-              <option value="approved">Approved</option>
-              <option value="done">Completed</option>
+              <option value="in-progress">In Production</option>
+              <option value="review">Client Proofing</option>
+              <option value="revision">Revision Pending</option>
+              <option value="approved">Client Approved</option>
+              <option value="done">Delivered &amp; Invoiced</option>
             </select>
           </div>
 
-          <!-- Reviewer Decision Actions -->
-          {#if (currentFrontmatter.status || '').toLowerCase() === 'approved'}
-            <div class="approved-tag">
-              <FluentIcons name="checkCircle" size={13} color="#10B981" />
-              <span>Approved &amp; Ready</span>
-            </div>
-            <FluentButton
-              appearance="secondary"
-              size="sm"
-              loading={isSubmittingDecision}
-              onclick={() => handleQuickDecision('revision_requested')}
-            >
-              <FluentIcons name="warning" size={13} color="#F59E0B" />
-              <span style="margin-left: 5px;">Request Revision</span>
-            </FluentButton>
-          {:else}
-            <FluentButton
-              appearance="primary"
-              size="sm"
-              loading={isSubmittingDecision}
-              onclick={() => handleQuickDecision('approved')}
-            >
-              <FluentIcons name="checkCircle" size={13} />
-              <span style="margin-left: 5px;">Sign-Off</span>
-            </FluentButton>
+          <!-- Tactile Billable Chronometer Trigger -->
+          <button
+            type="button"
+            class="header-chronometer-btn"
+            class:is-active={isTimerActive}
+            onclick={toggleProjectTimer}
+            title={isTimerActive ? 'Stop Live Timer' : 'Start Live Timer for this project'}
+          >
+            {#if isTimerActive}
+              <span class="pulsing-record-dot"></span>
+              <span class="ticker-text">{timerStore.formattedTime}</span>
+              <span class="ticker-earned">({timerStore.formattedEarned})</span>
+              <span class="btn-stop-text">■ Stop</span>
+            {:else}
+              <span class="btn-play-icon">▶</span>
+              <span>Start Timer</span>
+            {/if}
+          </button>
 
-            <FluentButton
-              appearance="secondary"
-              size="sm"
-              loading={isSubmittingDecision}
-              onclick={() => handleQuickDecision('revision_requested')}
-            >
-              <FluentIcons name="warning" size={13} color="#F59E0B" />
-              <span style="margin-left: 5px;">Request Revision</span>
-            </FluentButton>
-          {/if}
-
-          <!-- Clean Action Outlines Group -->
+          <!-- Action Outlines Group -->
           <div class="action-btn-group">
             <button
               class="action-btn-clean"
@@ -598,7 +626,7 @@
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
           <span>Copywriting Studio</span>
-          <span class="view-chip">{copyStats.words}w</span>
+          <span class="view-chip" title="{copyStats.words} words in 03_COPY/COPY.md">{copyStats.words} words</span>
         </button>
 
         <button
@@ -629,18 +657,18 @@
           <!-- Creative Brief Markdown Editor with full toolbar -->
           <MarkdownEditor
             title="README.md"
-            saveLabel="Save Brief to NAS"
+            saveLabel="Save Brief to Vault"
             bind:value={currentReadmeBody}
             onSave={saveMarkdownBrief}
           />
         {:else if activeCanvasView === 'copywriting'}
           <!-- Dedicated Copywriting Studio Markdown Editor -->
           {#if isLoadingCopy}
-            <div class="loading-state">Loading 03_COPYWRITING/COPY.md from NAS…</div>
+            <div class="loading-state">Loading 03_COPY/COPY.md from Vault…</div>
           {:else}
             <MarkdownEditor
-              title="03_COPYWRITING / COPY.md"
-              saveLabel="Save Copy to NAS"
+              title="03_COPY / COPY.md"
+              saveLabel="Save Copy to Vault"
               bind:value={currentCopyBody}
               onSave={saveCopywritingMarkdown}
             />
@@ -651,7 +679,7 @@
             <div class="gallery-header">
               <div class="gallery-title-group">
                 <h3>Production Output Assets</h3>
-                <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> or <code>04_Production/</code> on Synology NAS</span>
+                <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> in local creative vault</span>
               </div>
             </div>
 
@@ -837,161 +865,178 @@
         {/if}
       </main>
 
-      <!-- ─── RIGHT INSPECTOR PANEL (32%) ─── -->
+      <!-- ─── RIGHT INSPECTOR PANEL: CLIENT & PRODUCTION SPECS (32%) ─── -->
       {#if inspectorOpen}
         <aside class="task-inspector-panel">
-          <!-- Inspector Tabs -->
-          <div class="inspector-tabs">
+          <div class="inspector-zen-header">
+            <div class="zen-header-titles">
+              <span class="zen-title">Production &amp; Client Specs</span>
+              <span class="zen-subtitle">Local Vault &amp; Direct Billing</span>
+            </div>
             <button
-              class="inspector-tab"
-              class:active={inspectorTab === 'properties'}
-              onclick={() => (inspectorTab = 'properties')}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
-              <span>Properties</span>
-            </button>
-
-            <button
-              class="inspector-tab"
-              class:active={inspectorTab === 'discussion'}
-              onclick={() => (inspectorTab = 'discussion')}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-              <span>Discussion ({projectComments.length})</span>
-            </button>
+              type="button"
+              class="close-inspector-x"
+              onclick={() => (inspectorOpen = false)}
+              title="Collapse Inspector"
+            >✕</button>
           </div>
 
           <div class="inspector-content">
-            {#if inspectorTab === 'properties'}
-              <!-- Properties Form -->
-              <div class="properties-sheet">
-                <div class="prop-group">
-                  <span class="prop-label">Assignee (Designer)</span>
-                  <div class="prop-value user-val">
-                    <div class="user-avatar" style="background: {designerInfo?.avatarColor || 'var(--brand-primary, #043388)'};">
-                      {#if designerAvatarSrc}
-                        <img
-                          src={designerAvatarSrc}
-                          alt={p.designerName || p.designer}
-                          class="avatar-photo"
-                          onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
-                        />
-                      {:else}
-                        {getInitials(p.designerName || p.designer || 'DS')}
-                      {/if}
+            <div class="properties-sheet">
+              <!-- Client Dossier Card -->
+              <div class="spec-card">
+                <div class="spec-card-header">
+                  <span class="spec-card-title">Client Account</span>
+                  <button
+                    type="button"
+                    class="spec-link-btn"
+                    onclick={() => appState.navigate('clients')}
+                    title="View client profile"
+                  >
+                    Client Profile →
+                  </button>
+                </div>
+                <div class="client-dossier-box">
+                  <div class="client-dossier-top">
+                    <span class="client-color-circle" style="background-color: {clientProfile?.palette?.primary || 'var(--kanso-accent)'};"></span>
+                    <div class="client-names">
+                      <span class="client-full-name">{clientProfile?.name || p.brand || 'Acme Corporation'}</span>
+                      <span class="client-code-tag">[{clientProfile?.code || p.brand || 'ACME'}]</span>
                     </div>
-                    <span class="user-name">{designerInfo?.name || p.designerName || p.designer || 'Unassigned'}</span>
                   </div>
-                </div>
-
-                <div class="prop-group">
-                  <span class="prop-label">Reviewer</span>
-                  <div class="prop-value user-val-selectable">
-                    <div class="user-avatar mgr-avatar" style="background: {managerInfo?.avatarColor || '#0284C7'};">
-                      {#if managerAvatarSrc}
-                        <img
-                          src={managerAvatarSrc}
-                          alt={selectedManager}
-                          class="avatar-photo"
-                          onerror={(e) => ((e.currentTarget as HTMLElement).style.display = 'none')}
-                        />
-                      {:else}
-                        {getInitials(selectedManager && selectedManager !== 'Unassigned' ? selectedManager : 'AD')}
-                      {/if}
+                  {#if clientProfile?.contactPerson}
+                    <div class="client-contact-row">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      <span>{clientProfile.contactPerson}</span>
                     </div>
-                    <select
-                      class="prop-manager-select"
-                      bind:value={selectedManager}
-                      disabled={isUpdatingManager}
-                      onchange={() => handleManagerChange(selectedManager)}
-                      aria-label="Select Reviewer"
-                    >
-                      <option value="Unassigned">-- Unassigned --</option>
-                      {#if managerList.length === 0}
-                        {#if selectedManager && selectedManager !== 'Unassigned'}
-                          <option value={selectedManager}>{selectedManager}</option>
-                        {/if}
-                      {:else}
-                        {#each managerList as mgr}
-                          <option value={mgr.name}>
-                            {mgr.name} {mgr.role ? `· ${mgr.role}` : ''}
-                          </option>
-                        {/each}
-                        {#if selectedManager && selectedManager !== 'Unassigned' && !managerList.some(m => m.name.toLowerCase() === selectedManager.toLowerCase())}
-                          <option value={selectedManager}>{selectedManager} (Current)</option>
-                        {/if}
-                      {/if}
-                    </select>
-                  </div>
-                </div>
-
-                <div class="prop-group">
-                  <span class="prop-label">Corporate Brand / Subsidiary</span>
-                  <div class="prop-value">
-                    <span class="brand-chip">{p.brand || 'SS'}</span>
-                    <span class="brand-full">{getCompanyFullName(p.brand || p.client)}</span>
-                  </div>
-                </div>
-
-                <div class="prop-group">
-                  <span class="prop-label">Priority Level</span>
-                  <div class="prop-value">
-                    {#if (p.priority || '').toLowerCase() === 'urgent'}
-                      <span class="priority-chip priority-urgent">P3 (Urgent)</span>
-                    {:else if (p.priority || '').toLowerCase() === 'high'}
-                      <span class="priority-chip priority-high">P2 (High)</span>
-                    {:else if (p.priority || '').toLowerCase() === 'medium' || (p.priority || '').toLowerCase() === 'standard'}
-                      <span class="priority-chip priority-medium">P1 (Medium)</span>
-                    {:else}
-                      <span class="prop-empty">— (Low / No Badge)</span>
-                    {/if}
-                  </div>
-                </div>
-
-                <div class="prop-group">
-                  <span class="prop-label">Campaign Deadline</span>
-                  <div class="prop-value">
-                    <FluentIcons name="calendar" size={13} />
-                    <span style="margin-left: 6px;">{p.deadline ? String(p.deadline).split('T')[0] : '2026-08-30'}</span>
-                  </div>
-                </div>
-
-                <div class="prop-group">
-                  <span class="prop-label">Deliverables Storage</span>
-                  <div class="prop-value">
-                    <FluentIcons name="folder" size={13} />
-                    <code style="margin-left: 6px;">{projectStore.activeDeliverables.length} files</code>
-                  </div>
-                </div>
-
-                <!-- Approval Trail Summary -->
-                <div class="approvals-mini-section">
-                  <span class="prop-label">Recent Approvals &amp; Sign-Offs</span>
-                  {#if p.approvals && p.approvals.length > 0}
-                    <div class="mini-app-list">
-                      {#each p.approvals.slice(0, 3) as a}
-                        <div class="mini-app-card decision-{a.decision}">
-                          <div class="mini-app-header">
-                            <span class="mini-app-decision">{a.decision.replace('_', ' ').toUpperCase()}</span>
-                            <span class="mini-app-time">{new Date(a.timestamp).toLocaleDateString()}</span>
-                          </div>
-                          <div class="mini-app-actor">{a.reviewer} ({a.role})</div>
-                        </div>
-                      {/each}
+                  {/if}
+                  {#if clientProfile?.email}
+                    <div class="client-contact-row">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                      <a href={`mailto:${clientProfile.email}`} class="client-email-link">{clientProfile.email}</a>
                     </div>
-                  {:else}
-                    <p class="no-approvals-text">No approval records yet.</p>
                   {/if}
                 </div>
               </div>
-            {:else}
-              <!-- Threaded In-Project Comments inside Inspector -->
-              <ProjectComments
-                projectId={p.id}
-                deliverables={projectStore.activeDeliverables}
-                bind:comments={projectComments}
-              />
-            {/if}
+
+              <!-- Billable Chronometer & Rate Card -->
+              <div class="spec-card">
+                <div class="spec-card-header">
+                  <span class="spec-card-title">Time &amp; Direct Billing</span>
+                  <span class="rate-badge">{projectLoggedHours.symbol} {clientProfile?.defaultHourlyRate || 150}/hr</span>
+                </div>
+                <div class="billing-summary-grid">
+                  <div class="bill-stat">
+                    <span class="bill-stat-label">Logged Time</span>
+                    <span class="bill-stat-val">{projectLoggedHours.formatted}</span>
+                  </div>
+                  <div class="bill-stat">
+                    <span class="bill-stat-label">Accrued Earned</span>
+                    <span class="bill-stat-val font-mono highlight-earnings">{projectLoggedHours.formattedEarned}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="spec-timer-toggle-btn"
+                  class:is-active={isTimerActive}
+                  onclick={toggleProjectTimer}
+                >
+                  {#if isTimerActive}
+                    <span class="pulsing-record-dot"></span>
+                    <span>Tracking: {timerStore.formattedTime} · Stop</span>
+                  {:else}
+                    <span>▶ Start Live Timer</span>
+                  {/if}
+                </button>
+              </div>
+
+              <!-- Deliverables & Vault Assets Card -->
+              <div class="spec-card">
+                <div class="spec-card-header">
+                  <span class="spec-card-title">Deliverables Scope</span>
+                  <button
+                    type="button"
+                    class="spec-link-btn"
+                    onclick={() => (activeCanvasView = 'deliverables')}
+                  >
+                    View Files ({projectStore.activeDeliverables.length}) →
+                  </button>
+                </div>
+                <div class="scope-status-row">
+                  <div class="scope-count-badge">
+                    <FluentIcons name="folder" size={13} />
+                    <span>{projectStore.activeDeliverables.length} files in <code>05_DELIVERABLES/</code></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Canonical 5-Folder Vault Directory -->
+              <div class="spec-card">
+                <div class="spec-card-header">
+                  <span class="spec-card-title">Canonical 5-Folder Vault</span>
+                  <span class="vault-local-badge">Local Filesystem</span>
+                </div>
+                <div class="vault-directory-tree">
+                  <div class="tree-item active-link" onclick={() => (activeCanvasView = 'brief')} role="button" tabindex="0">
+                    <span class="tree-icon">📄</span>
+                    <span class="tree-name">README.md</span>
+                    <span class="tree-tag">YAML Specs</span>
+                  </div>
+                  <div class="tree-item">
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-name">01_BRIEF/</span>
+                    <span class="tree-tag">Assets &amp; Brief</span>
+                  </div>
+                  <div class="tree-item">
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-name">02_SOURCE/</span>
+                    <span class="tree-tag">Design Masters</span>
+                  </div>
+                  <div class="tree-item active-link" onclick={() => (activeCanvasView = 'copywriting')} role="button" tabindex="0">
+                    <span class="tree-icon">📝</span>
+                    <span class="tree-name">03_COPY/COPY.md</span>
+                    <span class="tree-tag">Headlines</span>
+                  </div>
+                  <div class="tree-item">
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-name">04_WIP/</span>
+                    <span class="tree-tag">Draft Renders</span>
+                  </div>
+                  <div class="tree-item active-link" onclick={() => (activeCanvasView = 'deliverables')} role="button" tabindex="0">
+                    <span class="tree-icon">📦</span>
+                    <span class="tree-name">05_DELIVERABLES/</span>
+                    <span class="tree-tag">{projectStore.activeDeliverables.length} exports</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Client Review & Invoice Actions -->
+              <div class="spec-card">
+                <div class="spec-card-header">
+                  <span class="spec-card-title">Client Review &amp; Settlement</span>
+                </div>
+                <div class="pipeline-actions-group">
+                  <button
+                    type="button"
+                    class="pipeline-action-btn primary"
+                    onclick={() => (showShareModal = true)}
+                  >
+                    <FluentIcons name="link" size={13} />
+                    <span>Share Client Proof Link</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="pipeline-action-btn secondary"
+                    onclick={() => appState.navigate('invoice-studio')}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                    <span>Generate Client Invoice</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </aside>
       {/if}
@@ -1031,7 +1076,7 @@
             <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
           </div>
           <p class="warning-text">
-            This will permanently delete the project folder and <strong>all 5 subdirectories</strong> on Synology NAS storage:
+            This will permanently delete the project folder and <strong>all 5 subdirectories</strong> in the local creative vault:
           </p>
           <ul class="subfolder-list">
             <li><code>01_BRIEF_ASSETS/</code></li>
@@ -1361,47 +1406,361 @@
     max-height: calc(100vh - 100px);
   }
 
-  .inspector-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--surface-card-border);
-    background: var(--surface-card-subtle, #F8FAFC);
+  /* Header Chronometer Button */
+  .header-chronometer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--radius-md, 6px);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
   }
 
-  .inspector-tab {
-    flex: 1;
+  .header-chronometer-btn:hover {
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
+  }
+
+  .header-chronometer-btn.is-active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: #10B981;
+    color: #10B981;
+  }
+
+  .header-chronometer-btn .ticker-text {
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+  }
+
+  .header-chronometer-btn .ticker-earned {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  .header-chronometer-btn .btn-stop-text {
+    font-size: 11px;
+    font-weight: 800;
+    margin-left: 2px;
+  }
+
+  .pulsing-record-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    animation: pulse 1.2s infinite;
+  }
+
+  /* Zen Inspector Header */
+  .inspector-zen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--kanso-surface-hover);
+    border-bottom: 1px solid var(--kanso-border);
+  }
+
+  .zen-header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .zen-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--kanso-text-primary);
+  }
+
+  .zen-subtitle {
+    font-size: 11px;
+    color: var(--kanso-text-muted);
+  }
+
+  .close-inspector-x {
+    border: none;
+    background: transparent;
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
+  .close-inspector-x:hover {
+    color: var(--kanso-text-primary);
+  }
+
+  /* Spec Cards inside Inspector */
+  .spec-card {
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--radius-md, 8px);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .spec-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .spec-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--kanso-text-muted);
+  }
+
+  .spec-link-btn {
+    border: none;
+    background: transparent;
+    color: var(--kanso-accent);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .spec-link-btn:hover {
+    text-decoration: underline;
+  }
+
+  .rate-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 700;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .vault-local-badge {
+    font-size: 10.5px;
+    color: var(--kanso-text-muted);
+    background: var(--kanso-surface);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--kanso-border);
+  }
+
+  /* Client Dossier Box */
+  .client-dossier-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .client-dossier-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .client-color-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .client-names {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .client-full-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--kanso-text-primary);
+  }
+
+  .client-code-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    color: var(--kanso-text-muted);
+  }
+
+  .client-contact-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--kanso-text-muted);
+  }
+
+  .client-email-link {
+    color: var(--kanso-accent);
+    text-decoration: none;
+  }
+
+  .client-email-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Billing Summary Grid */
+  .billing-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .bill-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bill-stat-label {
+    font-size: 10.5px;
+    color: var(--kanso-text-muted);
+  }
+
+  .bill-stat-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--kanso-text-primary);
+  }
+
+  .highlight-earnings {
+    color: #10B981;
+  }
+
+  .spec-timer-toggle-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 10px;
-    border: none;
-    background: transparent;
-    border-bottom: 2px solid transparent;
-    font-size: 12.5px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
+    font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.12s;
-    font-family: inherit;
-  }
-  .inspector-tab:hover { color: var(--text-primary); }
-  .inspector-tab.active {
-    color: var(--brand-primary, #043388);
-    border-bottom-color: var(--brand-primary, #043388);
-    font-weight: 700;
-    background: var(--surface-card);
+    transition: all 0.15s ease;
   }
 
-  .inspector-content {
-    padding: 16px;
-    overflow-y: auto;
+  .spec-timer-toggle-btn:hover {
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
-  /* Properties Sheet */
-  .properties-sheet {
+  .spec-timer-toggle-btn.is-active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: #10B981;
+    color: #10B981;
+  }
+
+  /* Scope row */
+  .scope-status-row {
+    font-size: 12px;
+  }
+
+  .scope-count-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--kanso-text-primary);
+  }
+
+  /* Vault Directory Tree */
+  .vault-directory-tree {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 4px;
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+  }
+
+  .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--kanso-text-muted);
+  }
+
+  .tree-item.active-link {
+    cursor: pointer;
+    color: var(--kanso-text-primary);
+  }
+
+  .tree-item.active-link:hover {
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-accent);
+  }
+
+  .tree-name {
+    flex: 1;
+  }
+
+  .tree-tag {
+    font-size: 10px;
+    color: var(--kanso-text-muted);
+    font-family: inherit;
+  }
+
+  /* Pipeline Action Buttons */
+  .pipeline-actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .pipeline-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+  }
+
+  .pipeline-action-btn.primary {
+    background: var(--kanso-accent);
+    color: #09090B;
+  }
+
+  .pipeline-action-btn.primary:hover {
+    filter: brightness(1.1);
+  }
+
+  .pipeline-action-btn.secondary {
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
+  }
+
+  .pipeline-action-btn.secondary:hover {
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
   }
 
   .prop-group {

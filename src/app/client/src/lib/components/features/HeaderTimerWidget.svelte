@@ -124,7 +124,7 @@
     <span class="earned-amount">{timerStore.formattedEarned}</span>
   </div>
 
-  <!-- Subtle divider between chronometer and billing -->
+  <!-- Subtle divider between timer and billing -->
   <div class="strip-divider" aria-hidden="true"></div>
 
   <!-- Client & Hourly Rate Selector Strip -->
@@ -161,7 +161,7 @@
               >
                 <span class="client-opt-code">{client.code}</span>
                 <span class="client-opt-name">{client.name}</span>
-                <span class="client-opt-rate">{settingsStore.settings.currencySymbol}{client.defaultHourlyRate}/h</span>
+                <span class="client-opt-rate">{settingsStore.settings.currencySymbol} {client.defaultHourlyRate}/h</span>
               </button>
             {/each}
           </div>
@@ -176,7 +176,7 @@
         onclick={() => { showRatePopover = !showRatePopover; showClientPopover = false; }}
         title="Click to edit design hourly rate"
       >
-        @{settingsStore.settings.currencySymbol}{timerStore.hourlyRate}/h
+        @{settingsStore.settings.currencySymbol} {timerStore.hourlyRate}/h
       </button>
 
       {#if showRatePopover}
@@ -205,7 +205,7 @@
                 class:selected={timerStore.hourlyRate === preset}
                 onclick={() => { timerStore.setRate(preset); showRatePopover = false; }}
               >
-                {settingsStore.settings.currencySymbol}{preset}
+                {settingsStore.settings.currencySymbol} {preset}
               </button>
             {/each}
           </div>

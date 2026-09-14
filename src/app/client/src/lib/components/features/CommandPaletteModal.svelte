@@ -119,7 +119,7 @@
       sublabel: '$150/hr · Enterprise cloud & creative operations',
       icon: 'history',
       badge: '$150/h',
-      category: 'Billable Chronometer',
+      category: 'Billable Timer',
       execute: () => {
         timerStore.setClient('ACME', 150);
         timerStore.start();
@@ -133,7 +133,7 @@
       sublabel: '£140/hr · Motion design & interactive 3D visual campaigns',
       icon: 'history',
       badge: '£140/h',
-      category: 'Billable Chronometer',
+      category: 'Billable Timer',
       execute: () => {
         timerStore.setClient('NEX', 140);
         timerStore.start();
@@ -147,7 +147,7 @@
       sublabel: 'S$160/hr · Biotech intelligence & generative research UI',
       icon: 'history',
       badge: 'S$160/h',
-      category: 'Billable Chronometer',
+      category: 'Billable Timer',
       execute: () => {
         timerStore.setClient('LUM', 160);
         timerStore.start();
@@ -161,7 +161,7 @@
       sublabel: 'Save session & append to draft invoice',
       icon: 'history',
       badge: 'Stop',
-      category: 'Billable Chronometer',
+      category: 'Billable Timer',
       execute: () => {
         if (timerStore.isRunning || timerStore.isPaused) {
           const log = timerStore.stop();
@@ -376,7 +376,7 @@
       type: 'nav',
       id: 'nav-5-clients',
       label: 'Open Clients & Brand Hub',
-      sublabel: 'Client dossiers, brand palettes & billing rates',
+      sublabel: 'Client profiles, brand palettes & billing rates',
       icon: 'users',
       badge: '⌘5',
       category: 'Navigation',
