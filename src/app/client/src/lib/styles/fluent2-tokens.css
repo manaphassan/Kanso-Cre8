@@ -474,6 +474,144 @@
   --glass-blur: blur(14px);
 }
 
+[data-theme="neumorphic"] {
+  /* ─── NEUMORPHIC LIGHT (SOFT CLAY & ALABASTER) ─── */
+  --brand-primary: #3B82F6;
+  --brand-secondary: #2563EB;
+  --brand-accent: #3B82F6;
+  --brand-tint: rgba(59, 130, 246, 0.12);
+  --brand-gradient: linear-gradient(135deg, #E0E5EC 0%, #E8ECF2 100%);
+  --brand-glow: 0 0 16px rgba(59, 130, 246, 0.25);
+
+  --bg-app: #E0E5EC;
+  --bg-canvas: #E0E5EC;
+  --bg-header: #E0E5EC;
+  --header-text: #1E293B;
+  --bg-sidebar: #E0E5EC;
+  --sidebar-border: rgba(163, 177, 198, 0.35);
+  --sidebar-text: #1E293B;
+  --sidebar-text-muted: #64748B;
+  --sidebar-active-bg: rgba(59, 130, 246, 0.12);
+  --sidebar-active-text: #3B82F6;
+  --sidebar-active-indicator: #3B82F6;
+
+  --surface-card: #E0E5EC;
+  --surface-card-subtle: #E8ECF2;
+  --surface-card-elevated: #E0E5EC;
+  --surface-card-border: rgba(255, 255, 255, 0.6);
+  --surface-card-hover: #E8ECF2;
+
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-tertiary: #64748B;
+  --text-inverted: #FFFFFF;
+  --text-brand: #3B82F6;
+
+  --colorNeutralBackground1: #E0E5EC;
+  --colorNeutralBackground2: #E0E5EC;
+  --colorNeutralBackground3: #E8ECF2;
+  --colorNeutralForeground1: #1E293B;
+  --colorNeutralForeground2: #475569;
+  --colorNeutralForegroundDisabled: #94A3B8;
+  --colorBrandBackground: #3B82F6;
+  --colorBrandBackgroundHover: #2563EB;
+  --colorBrandBackgroundInverted: rgba(59, 130, 246, 0.12);
+
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: #10B981;
+
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: #F59E0B;
+
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+  --color-danger-border: #EF4444;
+
+  --color-info: #3B82F6;
+  --color-info-bg: rgba(59, 130, 246, 0.12);
+  --color-info-border: #3B82F6;
+
+  --shadow-sm: 3px 3px 6px #A3B1C6, -3px -3px 6px #FFFFFF;
+  --shadow-md: 6px 6px 14px #A3B1C6, -6px -6px 14px #FFFFFF;
+  --shadow-lg: 10px 10px 22px #A3B1C6, -10px -10px 22px #FFFFFF;
+  --shadow-xl: 14px 14px 30px #A3B1C6, -14px -14px 30px #FFFFFF;
+
+  --glass-bg: rgba(224, 229, 236, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-blur: blur(14px);
+}
+
+[data-theme="neumorphic-dark"] {
+  /* ─── NEUMORPHIC DARK (SOFT OBSIDIAN & GRAPHITE) ─── */
+  --brand-primary: #38BDF8;
+  --brand-secondary: #0EA5E9;
+  --brand-accent: #38BDF8;
+  --brand-tint: rgba(56, 189, 248, 0.16);
+  --brand-gradient: linear-gradient(135deg, #1E2026 0%, #262930 100%);
+  --brand-glow: 0 0 16px rgba(56, 189, 248, 0.25);
+
+  --bg-app: #1E2026;
+  --bg-canvas: #1E2026;
+  --bg-header: #1E2026;
+  --header-text: #F1F5F9;
+  --bg-sidebar: #1E2026;
+  --sidebar-border: rgba(0, 0, 0, 0.4);
+  --sidebar-text: #F1F5F9;
+  --sidebar-text-muted: #94A3BC;
+  --sidebar-active-bg: rgba(56, 189, 248, 0.16);
+  --sidebar-active-text: #38BDF8;
+  --sidebar-active-indicator: #38BDF8;
+
+  --surface-card: #1E2026;
+  --surface-card-subtle: #262930;
+  --surface-card-elevated: #1E2026;
+  --surface-card-border: rgba(255, 255, 255, 0.06);
+  --surface-card-hover: #262930;
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3BC;
+  --text-tertiary: #64748B;
+  --text-inverted: #09090B;
+  --text-brand: #38BDF8;
+
+  --colorNeutralBackground1: #1E2026;
+  --colorNeutralBackground2: #1E2026;
+  --colorNeutralBackground3: #262930;
+  --colorNeutralForeground1: #F1F5F9;
+  --colorNeutralForeground2: #94A3BC;
+  --colorNeutralForegroundDisabled: #475569;
+  --colorBrandBackground: #38BDF8;
+  --colorBrandBackgroundHover: #0EA5E9;
+  --colorBrandBackgroundInverted: rgba(56, 189, 248, 0.16);
+
+  --color-success: #34D399;
+  --color-success-bg: rgba(52, 211, 153, 0.14);
+  --color-success-border: #34D399;
+
+  --color-warning: #FBBF24;
+  --color-warning-bg: rgba(251, 191, 36, 0.14);
+  --color-warning-border: #FBBF24;
+
+  --color-danger: #F87171;
+  --color-danger-bg: rgba(248, 113, 113, 0.14);
+  --color-danger-border: #F87171;
+
+  --color-info: #38BDF8;
+  --color-info-bg: rgba(56, 189, 248, 0.14);
+  --color-info-border: #38BDF8;
+
+  --shadow-sm: 3px 3px 6px rgba(0, 0, 0, 0.55), -2px -2px 5px rgba(255, 255, 255, 0.03);
+  --shadow-md: 6px 6px 14px rgba(0, 0, 0, 0.65), -5px -5px 12px rgba(255, 255, 255, 0.04);
+  --shadow-lg: 10px 10px 22px rgba(0, 0, 0, 0.75), -7px -7px 18px rgba(255, 255, 255, 0.05);
+  --shadow-xl: 14px 14px 30px rgba(0, 0, 0, 0.85), -10px -10px 24px rgba(255, 255, 255, 0.06);
+
+  --glass-bg: rgba(30, 32, 38, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(14px);
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    SUBSIDIARY BRAND ACCENT OVERRIDES (Dynamic Scoped Tinting)
    ══════════════════════════════════════════════════════════════════════════ */

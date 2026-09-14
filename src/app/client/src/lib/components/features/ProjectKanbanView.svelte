@@ -674,33 +674,7 @@
     max-width: 130px;
   }
 
-  .designer-avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-  }
 
-  .designer-initial-fallback,
-  .designer-initial-text {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    font-weight: 800;
-  }
-
-  .designer-name {
-    font-weight: 600;
-    color: var(--text-primary, #374151);
-    max-width: 90px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
   .deadline-block {
     display: flex;

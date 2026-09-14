@@ -48,8 +48,12 @@ Any agent, assistant, or contributor working on this repository **MUST** adhere 
 Kanso Cre8 replaces Microsoft Fluent 2 with a bespoke studio palette inspired by Linear and Vercel Geist:
 
 ```text
-DARK MODE (Default): Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
-LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
+DARK MODE (Default):     Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
+LIGHT MODE:              Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
+NEUMORPHIC CLAY:         Canvas [#E0E5EC] · Surface [#E0E5EC] · Dual Shadow [Soft UI] · Accent [#3B82F6]
+NEUMORPHIC OBSIDIAN:     Canvas [#1E2026] · Surface [#1E2026] · Ambient Glow [Soft UI] · Accent [#38BDF8]
+PAPERLIKE E-INK:         Canvas [#FFFFFF] · Surface [#FFFFF0] · Pure Ink [#000000] · Accent [#2424D9]
+KAI-ZEN OCEANIC:         Canvas [#064169] · Surface [#043150] · Cerulean [#21A8C3] · Accent [#21A8C3]
 ```
 
 | CSS Token | Dark Mode (Default) | Light Mode | Purpose |
@@ -67,7 +71,9 @@ LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0]
 
 ### 2.2 Strict UI/UX Rules
 1. **Zero Arbitrary Colors**: Never use random hardcoded HEX codes in templates. All surfaces and text MUST use `var(--kanso-*)` tokens.
-2. **Hairline Borders Over Heavy Shadows**: Elevate surfaces using `1px solid var(--kanso-border)` instead of blurry drop shadows.
+2. **Hairline Borders & Tactile Neumorphic Extrusion**:
+   - Flat modes elevate surfaces using `1px solid var(--kanso-border)` instead of heavy blurry drop shadows.
+   - Neumorphic modes (`neumorphic`, `neumorphic-dark`) use physical dual-shadow extrusion (`var(--neu-shadow-raised)`) and debossed concave inputs (`var(--neu-shadow-inset)`) with high-contrast Slate typography.
 3. **Typography**:
    - Primary: `Geist Sans`, `Inter`, `-apple-system`, `sans-serif`.
    - Monospace: `Geist Mono`, `JetBrains Mono` (for invoice IDs, currency, dates, frontmatter).
@@ -187,6 +193,8 @@ The app includes mock profiles to demonstrate capability:
 
 * **Phase 1: Brand System & Design Tokens Foundation**
   - Linear/Geist dark/light tokens in CSS.
+  - Tactile Neumorphism (Soft UI) dual-shadow physical extrusion engines (`neumorphic` & `neumorphic-dark`).
+  - High-contrast Paperlike E-Ink monochrome and Kai-Zen Oceanic environments.
   - 3-Zone responsive shell (44px TitleBar, 210px Collapsible Sidebar, Fluid Canvas).
 * **Phase 2: Core Markdown Vault Engine & Client Hub**
   - Local vault scanner and YAML parser.

@@ -182,18 +182,23 @@ Never search for missing fonts, lost PSDs, or scattered client briefs again:
 
 ---
 
-## 🎨 Linear / Geist Design System
+## 🎨 Linear / Geist Design System & Tactile Studio Atmospheres
 
-Kanso Cre8 is styled with a bespoke dark/light studio design system inspired by Linear and Vercel Geist:
+Kanso Cre8 is styled with a bespoke minimalist studio design system inspired by Linear and Vercel Geist, paired with tactile physical surface engines:
 
 ```text
-DARK MODE (Default): Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
-LIGHT MODE:          Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
+DARK OBSIDIAN (Default): Canvas [#09090B] · Surface [#18181B] · Hairline [#27272A] · Accent [#38BDF8]
+STONE PAPER (Light):     Canvas [#F8FAFC] · Surface [#FFFFFF] · Hairline [#E2E8F0] · Accent [#0078D4]
+NEUMORPHIC CLAY:         Canvas [#E0E5EC] · Surface [#E0E5EC] · Dual Shadow [Soft UI] · Accent [#3B82F6]
+NEUMORPHIC OBSIDIAN:     Canvas [#1E2026] · Surface [#1E2026] · Ambient Glow [Soft UI] · Accent [#38BDF8]
+PAPERLIKE E-INK:         Canvas [#FFFFFF] · Surface [#FFFFF0] · Pure Ink [#000000] · Accent [#2424D9]
+KAI-ZEN OCEANIC:         Canvas [#064169] · Surface [#043150] · Cerulean [#21A8C3] · Accent [#21A8C3]
 ```
 
-* **Zero visual noise**: Pure matte canvas surfaces eliminate eye strain during long design sessions.
-* **Spatial precision**: 1px subtle hairline borders define cards and inputs without heavy drop shadows.
-* **Instant theme toggle**: Seamless switching between Dark Obsidian and Light Porcelain.
+* **Tactile Neumorphism (Soft UI)**: Physics-based dual-shadow extrusion (`-6px -6px 14px #FFFFFF`, `6px 6px 14px #A3B1C6`), debossed concave wells for inputs and search bars, and high-contrast Slate typography (`#1E293B` / `#F1F5F9`) that avoids classic low-contrast usability pitfalls.
+* **Zero visual noise**: Pure matte canvas surfaces eliminate eye strain during long creative sessions.
+* **Spatial precision**: Subtle 1px hairline borders define cards and inputs without heavy blurry drop shadows in flat modes.
+* **Instant theme switching**: 1-click switcher in Studio Settings (⌘9) and Command Palette (⌘K).
 
 ---
 

@@ -41,9 +41,16 @@ To build a rock-solid, production-grade application for working freelance creato
 * **Impact**: Absolute foundation — everything depends on local filesystem I/O, cloud folder detection, and design tokens.
 
 ### Key Deliverables
-1. **Linear / Geist Studio Design System**:
-   - Establish CSS variables for Dark Mode (`#09090B`, `#18181B`, `#27272A`, `#38BDF8`) and Light Mode (`#F8FAFC`, `#FFFFFF`, `#E2E8F0`, `#0078D4`).
+1. **Linear / Geist Studio Design System & Visual Atmospheres**:
+   - Establish baseline CSS variables for Dark Mode (`#09090B`, `#18181B`, `#27272A`, `#38BDF8`) and Light Mode (`#F8FAFC`, `#FFFFFF`, `#E2E8F0`, `#0078D4`).
    - Strict 1px hairline border standard (`var(--kanso-border)`) with zero arbitrary drop shadows.
+   - **Tactile Neumorphism (Soft UI) Dual-Shadow Engine**:
+     - **Neumorphic Clay** (`[data-theme="neumorphic"]`): Soft alabaster clay (`#E0E5EC`) with physical dual-shadow extrusion (`-6px -6px 14px #FFFFFF`, `6px 6px 14px #A3B1C6`), debossed concave inputs (`inset 3px 3px 6px #A3B1C6, inset -3px -3px 6px #FFFFFF`), high-contrast Slate text (`#1E293B`), and electric azure CTAs (`#3B82F6`).
+     - **Neumorphic Obsidian** (`[data-theme="neumorphic-dark"]`): Deep charcoal slate (`#1E2026`) with ambient extruded shadows (`6px 6px 14px rgba(0,0,0,0.65)`), subtle light specular highlights (`-5px -5px 12px rgba(255,255,255,0.04)`), and electric sky CTAs (`#38BDF8`).
+     - Debossed progress bar tracks, pressed-state button feedback (`:active { box-shadow: var(--neu-shadow-active); }`), and seamless canvas blending.
+   - **Extended Studio Atmospheres**:
+     - **Paperlike E-Ink** (`[data-theme="eink"]`): 100% monochrome `#FFFFFF` canvas, pure `#000000` ink, zero-jitter, 0ms latency for e-ink monitors.
+     - **Kai-Zen (海禅)** (`[data-theme="oceanic"]` & `[data-theme="oceanic-light"]`): Deep Ocean Navy (`#064169`) and Daylight Marina (`#F0F4F8`) with Cerulean accents (`#21A8C3`).
 2. **3-Zone Studio Shell (`App.svelte`)**:
    - 44px Minimalist TitleBar with vault path status, breadcrumbs, search shortcut (`Ctrl+K`), and quick audio indicator.
    - 210px Collapsible Sidebar with 4 ergonomic sections:
@@ -59,7 +66,8 @@ To build a rock-solid, production-grade application for working freelance creato
 
 ### Acceptance Criteria
 * `verify-kanso.ps1` passes with `10 passed / 0 warned / 0 failed`.
-* Theme toggle switches instantly between Dark Obsidian and Light Porcelain.
+* Theme switching (Settings ⌘9, Command Palette ⌘K, or hotkey cycle) instantly applies themes across the entire UI.
+* Neumorphic Clay and Obsidian render tactile extruded surfaces and debossed inputs without contrast degradation.
 * Loading a local vault enumerates files without errors or binary database creation.
 
 ---
@@ -226,43 +234,25 @@ To build a rock-solid, production-grade application for working freelance creato
 * Windows and Linux executables build cleanly and run under ~35MB RAM.
 ---
 
-## 🚦 Priority 8: Billable Chronometer & Executive Studio Deck
-* **Priority Level**: **HIGH (Current Sprint)**
-* **Status**: In Active Development (v0.0.1-alpha)
-* **Impact**: Tactile daily creative cashflow — header live timer, automated rate calculation, and studio health cockpit.
+## 🚦 Priority 8: Header Billable Chronometer & Executive Studio Deck
+* **Priority Level**: **ATELIER OPERATIONS & LIVE CASHFLOW**
+* **Status**: Completed (Production Ready)
+* **Impact**: Direct revenue attribution — transforms Kanso from a passive note-taker into an active billing instrument and health cockpit for working designers.
 
 ### Key Deliverables
 1. **Header Billable Chronometer (`HeaderTimerWidget.svelte` & `timerStore.svelte.ts`)**:
-   - Tactile Play & Stop controls with live elapsed ticker (`HH:MM:SS`).
-   - Hourly design rate input / client selector (`$/hr`) with real-time earnings calculation (`+$...`).
-   - Active client swatch strip with 1-click HEX copy.
-   - 1-Click "Log to Invoice" pipeline on Stop prompt to write itemized hours directly to `_Finance/Invoices/`.
-   - Accurate state persistence across app reloads/restarts without losing seconds.
-2. **Executive Studio Deck (`DashboardView.svelte`)**:
-   - **Today's Tasks**: Daily task deck synced with BuJo Daily Notes with instant check-off.
-   - **Design Metrics Bento**: Focus hours logged today/week, billable velocity, first-time-right %, average turnaround velocity, revision rounds.
-   - **Project Status at a Glance**: Visual card deck with client color, progress bar, stage badge, deadline countdown.
-   - **Smart Suggestions**: Contextual alerts for unreviewed proofs, unbilled hours, approaching deadlines, and focus wellness.
-   - **Total Income**: Live aggregation of Paid Invoices + Pending Invoices + Today's Accrued Timer Earnings.
-3. **Settings Persistence Engine (`settingsStore.svelte.ts`)**:
-   - Persists default rate, currency, view preferences, theme, and timer auto-log settings to `localStorage`.
-
-## 🚦 Priority 8: Header Billable Chronometer & Executive Studio Deck
-* **Priority Level**: **ATELIER OPERATIONS**
-* **Status**: Completed (Production Ready)
-* **Impact**: Direct revenue attribution — transforms Kanso from a passive note-taker into an active billing instrument for working designers.
-
-### Key Deliverables
-1. **Header Billable Chronometer (`HeaderTimerWidget.svelte`, `timerStore.svelte.ts`)**:
-   - Live elapsed ticker (`HH:MM:SS`), play/pause/stop tactile buttons, and hourly design rate input ($/hr).
-   - Real-time earnings calculation (`+$XX.XX`) updated every 1000ms.
+   - Live elapsed ticker (`HH:MM:SS`), tactile Play/Pause/Stop controls, and hourly design rate input ($/hr).
+   - Real-time earnings calculation (`+$...`) updated continuously.
    - Millisecond-accurate timestamp persistence across app reloads and system sleep.
    - Active client swatch pill with 1-click HEX/RGB copy to clipboard.
    - 1-Click "Append to Draft Invoice" pipeline upon stopping.
 2. **Executive Studio Deck Bento (`DashboardView.svelte`)**:
-   - Total Income & Cashflow tracker: Paid invoices + Pending invoices + Live accrued earnings.
-   - Craft Metrics Bento: Focus hours today/week, effective design rate, first-time-right %, turnaround speed, and revision rounds.
-   - Contextual Smart Suggestions: Unreviewed proofs, unbilled sessions, approaching deadlines, and focus wellness alerts.
+   - **Today's Tasks**: Daily task deck synced with BuJo Daily Notes with instant check-off.
+   - **Total Income & Studio Cashflow**: Live aggregation of Paid Invoices + Pending Invoices + Live Accrued Timer Earnings.
+   - **Design & Craft Metrics Bento**: Focus hours today/week, effective design rate, first-time-right %, turnaround velocity, and revision rounds.
+   - **Contextual Smart Suggestions**: Unreviewed proofs, unbilled sessions ready to invoice, approaching deadlines, and focus wellness alerts.
+3. **Settings Persistence Engine (`settingsStore.svelte.ts`)**:
+   - Persists default rate, currency, view preferences, theme, and timer auto-log settings to `localStorage`.
 
 ### Acceptance Criteria
 * Clicking Play starts the timer and updates live earnings every second.
@@ -328,4 +318,4 @@ To build a rock-solid, production-grade application for working freelance creato
 
 ---
 
-*Last Updated: 2026-09-11. Maintained by [harusssani.manaphassan](https://github.com/manaphassan).*
+*Last Updated: 2026-09-15. Maintained by [harusssani.manaphassan](https://github.com/manaphassan).*

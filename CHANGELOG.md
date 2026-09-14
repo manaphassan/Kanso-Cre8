@@ -2,6 +2,28 @@
 
 All notable changes to Kanso Cre8 (簡素) are documented here.
 
+## [0.2.2] - 2026-09-15 (Tactile Neumorphic Studio Themes, Dual-Shadow Extrusion & Debossed Input Architecture)
+
+### Added — Tactile Neumorphism (Soft UI) Physical Surface Engines
+- **Neumorphic Clay Theme (`neumorphic`)**:
+  - Soft Alabaster Clay canvas & surface (`#E0E5EC`) with physical dual-shadow extrusion (`-6px -6px 14px #FFFFFF`, `6px 6px 14px #A3B1C6`).
+  - Debossed concave form inputs, textareas, selects, and header search (`inset 3px 3px 6px #A3B1C6, inset -3px -3px 6px #FFFFFF`).
+  - High-contrast Slate typography (`#1E293B` Slate 800) and Electric Azure CTAs (`#3B82F6`), eliminating the classic low-contrast readability flaw of legacy Neumorphism.
+- **Neumorphic Obsidian Theme (`neumorphic-dark`)**:
+  - Deep Charcoal Slate canvas & surface (`#1E2026`) with ambient dark drop shadows (`6px 6px 14px rgba(0, 0, 0, 0.65)`), subtle specular light glints (`-5px -5px 12px rgba(255, 255, 255, 0.04)`), and Electric Sky CTAs (`#38BDF8`).
+- **Physical Elevation Architecture (`kanso-tokens.css`)**:
+  - Defined physics-based tokens: `--neu-shadow-raised`, `--neu-shadow-raised-sm`, `--neu-shadow-raised-lg`, `--neu-shadow-inset`, `--neu-shadow-inset-sm`, `--neu-shadow-hover`, `--neu-shadow-active`, and `--neu-glow`.
+  - Component elevation rules for `.fluent-card`, `.card-surface`, `.bento-card`, `.theme-card`, `.download-platform-card`, tactile button active-press sinking, and debossed progress tracks.
+  - Svelte 5 & fallback compatibility tokens in `fluent2-tokens.css`.
+- **Studio Settings & Command Palette Integration**:
+  - Added live preview cards for Neumorphic Clay and Neumorphic Obsidian in `SettingsView.svelte` under `Appearance & Themes`.
+  - Added **Soft Clay** and **Soft Obsidian** chips to the 1-click theme strip and direct search actions in `CommandPaletteModal.svelte`.
+  - Added flash-free boot splash screen support in `index.html`.
+- **Standalone Windows Desktop Packaging & Version Synchronization**:
+  - Synchronized workspace versioning across `package.json`, `tauri.conf.json`, `Program.cs` (`v0.2.2 • Zen Atelier`), and `build-windows.ps1`.
+  - Compiled portable Windows distribution package `dist/windows/kanso-cre8-v0.2.2-windows-x64.zip` (36.62 MB) with bundled self-contained backend and native WebView2 WPF launcher.
+  - Automated smoke test suite verified 24/24 points passing including self-healing isolated test server bootstrap.
+
 ## [0.2.1] - 2026-09-14 (Instant Zero-Blank Boot Flow, Win32 High-DPI Icons & Clean Zero-Data Vault Mount)
 
 ### Added

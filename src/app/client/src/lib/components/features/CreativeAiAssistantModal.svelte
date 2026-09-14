@@ -498,7 +498,6 @@
   }
 
   .header-left { display: flex; align-items: center; gap: 12px; }
-  .ai-icon { font-size: 24px; }
   .title-row { display: flex; align-items: center; gap: 10px; }
   .modal-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
   .model-badge { font-size: 10px; font-weight: 800; background: rgba(33, 161, 247, 0.15); color: #38BDF8; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(33, 161, 247, 0.3); }
@@ -654,7 +653,6 @@
     font-size: 13px;
     padding: 20px;
   }
-  .empty-sparkle { font-size: 32px; margin-bottom: 8px; }
 
   .gemini-spinner {
     width: 36px;
