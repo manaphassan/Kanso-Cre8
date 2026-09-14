@@ -5,6 +5,7 @@
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
   import { studioService, type StudioProfile } from '$lib/services/studioService.svelte';
+  import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import type { ThemeName } from '$lib/types';
 
@@ -31,7 +32,7 @@
   let paymentAccountName = $state(studioService.profile.paymentAccountName);
   let paymentSwiftOrQr = $state(studioService.profile.paymentSwiftOrQr);
   let defaultPaymentTerms = $state(studioService.profile.defaultPaymentTerms);
-  let defaultCurrency = $state(studioService.profile.defaultCurrency);
+  let defaultCurrency = $state(studioService.profile.defaultCurrency || settingsStore.settings.currency || 'MYR');
 
   let digitalSignature = $state(studioService.profile.digitalSignature);
   let footerNotice = $state(studioService.profile.footerNotice);
@@ -195,13 +196,13 @@
     { key: '⌘ 2', label: 'Project Manager', desc: 'Coordinate campaigns, Kanban, Gantt & schedules' },
     { key: '⌘ 3', label: 'Review Queue', desc: 'Deliverables inspection & lightbox approval' },
     { key: '⌘ 4', label: 'Bullet Journal', desc: 'BuJo rapid log, monthly & yearly review' },
-    { key: '⌘ 5', label: 'Clients & Brand Hub', desc: 'Client dossiers & HEX brand swatches' },
+    { key: '⌘ 5', label: 'Clients & Brand Hub', desc: 'Client profiles & brand color palettes' },
     { key: '⌘ 6', label: 'Quotes & Invoices', desc: 'Dual-pane markdown invoice studio' },
     { key: '⌘ 7', label: 'Atelier Notes', desc: 'Zettelkasten knowledge base & tasks' },
     { key: '⌘ 8', label: 'Focus Radio', desc: 'Mechanical retro cassette focus deck' },
     { key: '⌘ 9', label: 'Studio Settings', desc: 'Studio preferences, themes & vault' },
     { key: '⌘ K', label: 'Command Palette', desc: 'Instant search across entire creative vault' },
-    { key: '⌘ ⇧ T', label: 'Toggle Chronometer', desc: 'Start, pause, or resume billable timer' },
+    { key: '⌘ ⇧ T', label: 'Toggle Billable Timer', desc: 'Start, pause, or resume billable timer' },
     { key: '⌘ ⇧ K', label: 'Quick Scratchpad', desc: 'Instant clipboard capture into Scratchpad.md' },
     { key: '⌘ ⇧ J', label: 'Open Journal', desc: 'Direct shortcut to today’s rapid log' },
     { key: '⌘ ⇧ I', label: 'Open Invoices', desc: 'Direct shortcut to Quotes & Invoices Studio' },
@@ -230,7 +231,7 @@
     paymentAccountName = studioService.profile.paymentAccountName;
     paymentSwiftOrQr = studioService.profile.paymentSwiftOrQr;
     defaultPaymentTerms = studioService.profile.defaultPaymentTerms;
-    defaultCurrency = studioService.profile.defaultCurrency;
+    defaultCurrency = studioService.profile.defaultCurrency || settingsStore.settings.currency || 'MYR';
     digitalSignature = studioService.profile.digitalSignature;
     footerNotice = studioService.profile.footerNotice;
   }
@@ -252,7 +253,7 @@
     const reader = new FileReader();
     reader.onload = (e) => {
       logo = (e.target?.result as string) || '';
-      appState.addToast('Studio Logo loaded. Click "Save Studio Brand Dossier" to apply.', 'success');
+      appState.addToast('Studio Logo loaded. Click "Save Studio Profile" to apply.', 'success');
     };
     reader.readAsDataURL(file);
   }
@@ -279,14 +280,14 @@
     const reader = new FileReader();
     reader.onload = (e) => {
       digitalSignature = (e.target?.result as string) || '';
-      appState.addToast('Digital Signature / Seal loaded.', 'success');
+      appState.addToast('Digital Signature loaded.', 'success');
     };
     reader.readAsDataURL(file);
   }
 
   function removeSignature() {
     digitalSignature = '';
-    appState.addToast('Digital Signature / Seal removed.', 'info');
+    appState.addToast('Digital Signature removed.', 'info');
   }
 
   async function handleProfileSave() {
@@ -314,6 +315,11 @@
         footerNotice: footerNotice.trim()
       });
 
+      // Synchronize across whole app dynamically
+      settingsStore.updateSettings({
+        currency: defaultCurrency.trim() as any
+      });
+
       // Synchronize with desktop current user so header and user menu update
       if (appState.currentUser) {
         appState.currentUser.name = principalName.trim() || studioName.trim();
@@ -323,12 +329,19 @@
         appState.currentUser.avatarColor = brandColor || '#0284C7';
       }
 
-      appState.addToast('Studio & Freelance Brand Dossier saved and synchronized.', 'success', 'Brand Dossier Updated');
+      appState.addToast('Studio and brand profile saved successfully.', 'success', 'Profile Updated');
     } catch (err: any) {
-      appState.addToast(`Failed to save studio dossier: ${err.message}`, 'error');
+      appState.addToast(`Failed to save studio profile: ${err.message}`, 'error');
     } finally {
       isSavingProfile = false;
     }
+  }
+
+  function onCurrencyChange(newVal: string) {
+    defaultCurrency = newVal;
+    settingsStore.updateSettings({
+      currency: newVal.trim() as any
+    });
   }
 
   function handleSavePreferences() {
@@ -336,7 +349,12 @@
       localStorage.setItem('ss_cam_default_project_view', defaultProjectView);
       localStorage.setItem('ss_cam_project_view', defaultProjectView);
     }
-    timerStore.setHourlyRate(Number(hourlyRate) || 125);
+    const numRate = Number(hourlyRate) || 125;
+    timerStore.setHourlyRate(numRate);
+    settingsStore.updateSettings({
+      defaultHourlyRate: numRate,
+      currency: defaultCurrency.trim() as any
+    });
     appState.addToast('Studio preferences saved successfully.', 'success');
   }
 
@@ -400,7 +418,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
       </svg>
-      <span>Studio Brand Dossier</span>
+      <span>Studio &amp; Brand Profile</span>
     </button>
 
     <button
@@ -411,7 +429,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
       </svg>
-      <span>Lighting &amp; Themes</span>
+      <span>Themes &amp; Appearance</span>
     </button>
 
     <button
@@ -422,7 +440,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
       </svg>
-      <span>Vault &amp; File Path</span>
+      <span>Vault &amp; Storage Location</span>
     </button>
 
     <button
@@ -433,7 +451,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>
       </svg>
-      <span>Studio Production</span>
+      <span>Production Preferences</span>
     </button>
 
     <button
@@ -444,7 +462,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/>
       </svg>
-      <span>Accelerators</span>
+      <span>Keyboard Shortcuts</span>
     </button>
 
     <button
@@ -456,7 +474,7 @@
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
       </svg>
-      <span>Studio Edition &amp; License</span>
+      <span>Edition &amp; License</span>
       {#if licenseStore.isPro}
         <span class="tab-pro-pill">PRO</span>
       {/if}
@@ -470,7 +488,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
       </svg>
-      <span>Studio Key</span>
+      <span>Password &amp; Security</span>
     </button>
 
     <button
@@ -487,7 +505,7 @@
 
   <!-- TAB CONTENT -->
   <div class="tab-body">
-    <!-- ═══════════ TAB 1: STUDIO & FREELANCE BRAND DOSSIER ═══════════ -->
+    <!-- ═══════════ TAB 1: STUDIO & FREELANCE BRAND PROFILE ═══════════ -->
     {#if activeTab === 'profile'}
       <div class="settings-grid">
 
@@ -495,10 +513,10 @@
         <div class="card-surface stationery-preview-card">
           <div class="stationery-preview-header">
             <div class="preview-title-row">
-              <span class="preview-badge">LIVE STATIONERY PREVIEW</span>
+              <span class="preview-badge">LIVE INVOICE &amp; LETTERHEAD PREVIEW</span>
               <span class="preview-sub">Master identity auto-stamped on Invoices, Quotations, and Approval packages</span>
             </div>
-            <span class="currency-badge">{defaultCurrency || 'USD'} BASE</span>
+            <span class="currency-badge">{defaultCurrency || settingsStore.settings.currency || 'MYR'} BASE</span>
           </div>
 
           <div class="stationery-sheet-preview">
@@ -526,7 +544,7 @@
             </div>
 
             <div class="sheet-header-right">
-              <div class="doc-type-pill">COMMERCIAL MANIFEST</div>
+              <div class="doc-type-pill">OFFICIAL INVOICE PREVIEW</div>
               <div class="sheet-doc-no font-mono">INV-2026-001</div>
               {#if paymentBank}
                 <div class="sheet-bank-pill font-mono text-xs">
@@ -649,13 +667,20 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="currency-select">Default Invoicing Currency</label>
-              <select id="currency-select" class="form-select font-mono" bind:value={defaultCurrency}>
-                <option value="USD">USD ($) — United States Dollar</option>
+              <select
+                id="currency-select"
+                class="form-select font-mono"
+                bind:value={defaultCurrency}
+                onchange={(e) => onCurrencyChange((e.target as HTMLSelectElement).value)}
+              >
                 <option value="MYR">MYR (RM) — Malaysian Ringgit</option>
+                <option value="USD">USD ($) — United States Dollar</option>
                 <option value="SGD">SGD (S$) — Singapore Dollar</option>
                 <option value="GBP">GBP (£) — British Pound Sterling</option>
                 <option value="EUR">EUR (€) — Euro</option>
                 <option value="AUD">AUD (A$) — Australian Dollar</option>
+                <option value="CAD">CAD (CA$) — Canadian Dollar</option>
+                <option value="JPY">JPY (¥) — Japanese Yen</option>
               </select>
             </div>
           </div>
@@ -664,13 +689,13 @@
         <!-- 3. Payment Remittance & Document Sign-Off Seal -->
         <div class="card-surface">
           <div class="card-header">
-            <h2 class="card-title">3. Settlement Remittance &amp; Authorized Seal</h2>
-            <p class="card-subtitle">Wire transfer instructions, bank routing, standard payment terms, and your digital approval chop.</p>
+            <h2 class="card-title">3. Bank &amp; Payment Details</h2>
+            <p class="card-subtitle">Bank transfer instructions, account numbers, payment terms, and your digital signature or stamp.</p>
           </div>
 
           <div class="form-grid-2">
             <div class="form-group">
-              <label class="form-label" for="bank-input">Remittance Bank Name &amp; SWIFT/BIC</label>
+              <label class="form-label" for="bank-input">Bank Name &amp; SWIFT/BIC</label>
               <input id="bank-input" type="text" class="form-input" bind:value={paymentBank} placeholder="e.g. Maybank (SWIFT: MBBEMYKL)" />
             </div>
             <div class="form-group">
@@ -682,11 +707,11 @@
               <input id="acc-name-input" type="text" class="form-input" bind:value={paymentAccountName} placeholder="e.g. HaNa Innovation" />
             </div>
             <div class="form-group">
-              <label class="form-label" for="swift-qr-input">Direct Remittance QR / Payment Reference</label>
+              <label class="form-label" for="swift-qr-input">Payment QR Code / Reference (e.g. DuitNow, Zelle, IBAN)</label>
               <input id="swift-qr-input" type="text" class="form-input font-mono" bind:value={paymentSwiftOrQr} placeholder="e.g. DuitNow QR / Wise: payment@studio.com" />
             </div>
             <div class="form-group" style="grid-column: span 2;">
-              <label class="form-label" for="terms-input">Standard Payment &amp; Settlement Terms</label>
+              <label class="form-label" for="terms-input">Standard Payment Terms</label>
               <input id="terms-input" type="text" class="form-input" bind:value={defaultPaymentTerms} placeholder="e.g. 50% Upfront Deposit • Net 14 Days • 2 Revision Rounds included" />
             </div>
           </div>
@@ -713,11 +738,11 @@
                   style="display: none;"
                 />
                 <button type="button" class="btn-secondary" onclick={triggerSignatureUpload}>
-                  Upload Digital Signature / Chop
+                  Upload Digital Signature or Stamp
                 </button>
                 {#if digitalSignature}
                   <button type="button" class="btn-secondary danger" onclick={removeSignature}>
-                    Remove Seal
+                    Remove Signature
                   </button>
                 {/if}
               </div>
@@ -727,7 +752,7 @@
 
           <!-- Document Footer Notice -->
           <div class="form-group" style="margin-top: 16px;">
-            <label class="form-label" for="footer-notice-input">Document Footer Watermark / Atelier Colophon</label>
+            <label class="form-label" for="footer-notice-input">Invoice Footer Note &amp; Watermark</label>
             <input id="footer-notice-input" type="text" class="form-input" bind:value={footerNotice} placeholder="e.g. Crafted with mindful focus & precision in Kanso Cre8." />
           </div>
 
@@ -738,7 +763,7 @@
               onclick={handleProfileSave}
               disabled={isSavingProfile}
             >
-              {isSavingProfile ? 'Synchronizing with Vault...' : 'Save Studio Brand Dossier'}
+              {isSavingProfile ? 'Synchronizing with Vault...' : 'Save Studio Profile'}
             </button>
           </div>
         </div>
@@ -852,7 +877,7 @@
               </button>
             </div>
             <p class="mount-hint">
-              Kanso Cre8 will instantly re-index all Markdown dossiers, project vaults, and bullet journals in real-time. Zero server migrations required.
+              Kanso Cre8 will instantly re-index all Markdown client profiles, project folders, and bullet journals in real-time. Zero server migrations required.
             </p>
           </div>
         </div>
@@ -864,7 +889,7 @@
               <h2 class="card-title">Canonical Kanso Zen Vault Layout</h2>
               <span class="storage-pill">Filesystem Architecture</span>
             </div>
-            <p class="card-subtitle">Strict 5-domain pure Markdown structure. Every dossier, deliverable proof, quote, and note lives as a readable UTF-8 document.</p>
+            <p class="card-subtitle">Strict 5-domain pure Markdown structure. Every client profile, deliverable proof, quote, and note lives as a readable UTF-8 document.</p>
           </div>
 
           <div class="vault-tree-view">
@@ -886,25 +911,25 @@
                   <span class="tree-chevron" class:expanded={expandedNodes['clients']}>▶</span>
                   <span class="folder-glyph">📁</span>
                   <span class="folder-name">_Clients/</span>
-                  <span class="folder-role">Multi-Client Dossiers &amp; Brand Hub</span>
-                  <span class="folder-count">5 Dossiers</span>
+                  <span class="folder-role">Client Profiles &amp; Brand Hub</span>
+                  <span class="folder-count">5 Clients</span>
                 </button>
                 {#if expandedNodes['clients']}
                   <div class="tree-children">
                     <div class="tree-leaf">
                       <span class="file-glyph">📁</span>
                       <span class="leaf-name">ACME_AcmeCorp/</span>
-                      <span class="leaf-desc">Acme Corporation dossier (HEX #38BDF8 · client.md)</span>
+                      <span class="leaf-desc">Acme Corporation profile (HEX #38BDF8 · client.md)</span>
                     </div>
                     <div class="tree-leaf">
                       <span class="file-glyph">📁</span>
                       <span class="leaf-name">NEX_NexusStudio/</span>
-                      <span class="leaf-desc">Nexus Studio dossier (HEX #8B5CF6 · client.md)</span>
+                      <span class="leaf-desc">Nexus Studio profile (HEX #8B5CF6 · client.md)</span>
                     </div>
                     <div class="tree-leaf">
                       <span class="file-glyph">📁</span>
                       <span class="leaf-name">LUM_LuminaLabs/</span>
-                      <span class="leaf-desc">Lumina Labs dossier (HEX #10B981 · client.md)</span>
+                      <span class="leaf-desc">Lumina Labs profile (HEX #10B981 · client.md)</span>
                     </div>
                   </div>
                 {/if}
@@ -933,7 +958,7 @@
                     <div class="tree-leaf">
                       <span class="file-glyph">📁</span>
                       <span class="leaf-name">Invoices/</span>
-                      <span class="leaf-desc">Plain markdown invoices synced with header billable chronometer</span>
+                      <span class="leaf-desc">Plain markdown invoices synced with header billable timer</span>
                     </div>
                   </div>
                 {/if}
@@ -1067,8 +1092,8 @@
     {:else if activeTab === 'preferences'}
       <div class="card-surface">
         <div class="card-header">
-          <h2 class="card-title">Studio Production Defaults</h2>
-          <p class="card-subtitle">Configure opening workspace views, baseline hourly billing velocity, and creative chronometer behavior.</p>
+          <h2 class="card-title">Production Preferences &amp; Rates</h2>
+          <p class="card-subtitle">Configure opening workspace views, baseline hourly billing velocity, and billable timer behavior.</p>
         </div>
 
         <div class="form-group">
@@ -1093,7 +1118,7 @@
         </div>
 
         <div class="form-group" style="max-width: 340px; margin-top: 16px;">
-          <label class="form-label" for="rate-input">Baseline Hourly Billing Rate ($ USD / hr)</label>
+          <label class="form-label" for="rate-input">Baseline Hourly Billing Rate ({settingsStore.settings.currencySymbol || 'RM'} {settingsStore.settings.currency || 'MYR'} / hr)</label>
           <input
             id="rate-input"
             type="number"
@@ -1107,7 +1132,7 @@
 
         <div class="form-actions-row">
           <button type="button" class="btn-primary" onclick={handleSavePreferences}>
-            Save Studio Defaults
+            Save Preferences
           </button>
         </div>
       </div>
@@ -1116,15 +1141,15 @@
     {:else if activeTab === 'shortcuts'}
       <div class="card-surface">
         <div class="card-header">
-          <h2 class="card-title">Keyboard Accelerators &amp; HUD Hotkeys</h2>
-          <p class="card-subtitle">Tactile keyboard shortcuts designed for flow state and zero-clutter execution.</p>
+          <h2 class="card-title">Keyboard Shortcuts &amp; Hotkeys</h2>
+          <p class="card-subtitle">Tactile keyboard shortcuts designed for flow state and fast, seamless navigation.</p>
         </div>
 
         <div class="shortcuts-table-wrap">
           <table class="shortcuts-table">
             <thead>
               <tr>
-                <th style="width: 160px;">Accelerator</th>
+                <th style="width: 160px;">Shortcut</th>
                 <th style="width: 200px;">Action</th>
                 <th>Description</th>
               </tr>
@@ -1334,11 +1359,11 @@
                   </div>
                   <ul class="matrix-list">
                     <li>✓ Everything in Kanso Zen</li>
-                    <li>✓ <strong>Unlimited Client Dossiers &amp; Hub</strong></li>
+                    <li>✓ <strong>Unlimited Client Profiles &amp; Brand Hub</strong></li>
                     <li>✓ <strong>Dual-Pane YAML Invoice &amp; Quote Studio</strong></li>
                     <li>✓ <strong>Print-Ready A4/Letter PDF Generation</strong></li>
-                    <li>✓ <strong>Tactile Billable Chronometer &amp; Earnings Ticker</strong></li>
-                    <li>✓ <strong>Standardized 5-Folder Project Scaffolding</strong></li>
+                    <li>✓ <strong>Live Billable Timer &amp; Earnings Tracker</strong></li>
+                    <li>✓ <strong>Standardized 5-Folder Project Folders</strong></li>
                     <li>✓ <strong>Studio Brand Profile Auto-Stamping</strong></li>
                     <li>✓ <strong>100% Offline Forever — Zero Subscriptions</strong></li>
                   </ul>
@@ -1354,14 +1379,19 @@
       <div class="settings-grid">
         <!-- Hero Card -->
         <div class="card-surface about-hero-card">
+          <!-- Calligraphy Logo Banner -->
+          <div class="about-calligraphy-banner-container">
+            <img
+              src={appState.theme === 'light' || appState.theme === 'oceanic-light' ? 'brand/kanso-calligraphy-light.png' : 'brand/kanso-calligraphy-dark.png'}
+              alt="簡素Cre8 Calligraphy Logo"
+              class="about-calligraphy-banner"
+            />
+          </div>
+
           <div class="about-hero-content">
-            <div class="about-emblem-badge">
-              <span class="emblem-kanji">簡素</span>
-              <span class="emblem-tag">ZEN VAULT</span>
-            </div>
             <div class="about-titles">
               <div class="about-title-row">
-                <h2 class="about-hero-title">Kanso Cre8</h2>
+                <h2 class="about-hero-title">簡素Cre8</h2>
                 <span class="version-badge">v0.1.0-zen</span>
               </div>
               <p class="about-hero-subtitle">The Mindful Creative Vault — an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.</p>
@@ -1417,8 +1447,8 @@
 
           <div class="pillar-card">
             <div class="pillar-icon">⏱️</div>
-            <h3 class="pillar-title">Tactile Billable Chronometer</h3>
-            <p class="pillar-desc">Real-time design rate chronometer with live accrued dollar ticker, active client swatch 1-click copy, and seamless 1-click append to draft invoice markdown manifests.</p>
+            <h3 class="pillar-title">Live Billable Timer</h3>
+            <p class="pillar-desc">Real-time design rate timer with live accrued earnings, active client color palette 1-click copy, and seamless 1-click logging to draft invoice markdown files.</p>
           </div>
 
           <div class="pillar-card">
@@ -2542,15 +2572,33 @@
 
   /* About Kanso Cre8 Page */
   .about-hero-card {
-    gap: 24px;
-    padding: 32px 28px;
+    gap: 20px;
+    padding: 28px 24px;
     border: 1px solid var(--kanso-border);
+  }
+
+  .about-calligraphy-banner-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: 12px;
+  }
+
+  .about-calligraphy-banner {
+    max-width: 440px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
 
   .about-hero-content {
     display: flex;
     align-items: flex-start;
-    gap: 24px;
+    gap: 20px;
     flex-wrap: wrap;
   }
 

@@ -5,6 +5,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import { clientService } from '$lib/services/clientService';
 
   interface Props {
     projects: Project[];
@@ -166,16 +167,13 @@
             {/if}
           </th>
           <th class="th-sortable" onclick={() => toggleSort('brand')}>
-            <span>Brand</span>
+            <span>Client</span>
             {#if sortKey === 'brand'}
               <span class="sort-arrow">{sortAsc ? '▲' : '▼'}</span>
             {/if}
           </th>
-          <th class="th-sortable" onclick={() => toggleSort('designer')}>
-            <span>Designer</span>
-            {#if sortKey === 'designer'}
-              <span class="sort-arrow">{sortAsc ? '▲' : '▼'}</span>
-            {/if}
+          <th>
+            <span>Deliverables</span>
           </th>
           <th class="th-sortable" onclick={() => toggleSort('priority')}>
             <span>Priority</span>
@@ -214,6 +212,7 @@
         {:else}
           {#each sortedProjects as p (p.id)}
             {@const dMeta = getDesignerMeta(p.designer)}
+            {@const client = clientService.getClientByCode(p.brand || 'ACME')}
             <tr
               class="table-row-item"
               onclick={() => appState.navigate('project-detail', { id: p.id })}
@@ -234,34 +233,18 @@
                 </div>
               </td>
 
-              <!-- Brand -->
+              <!-- Client -->
               <td>
-                <FluentBadge type="brand" value={p.brand || 'SS'} />
+                <div class="table-client-cell" title="Client: {client?.name || p.brand}">
+                  <span class="table-client-dot" style="background-color: {client?.palette?.primary || 'var(--kanso-accent)'};"></span>
+                  <span class="table-client-name">{client?.name || p.brand || 'Client'}</span>
+                  <span class="table-client-code">[{p.brand || 'ACME'}]</span>
+                </div>
               </td>
 
-              <!-- Designer -->
+              <!-- Deliverables -->
               <td>
-                <div class="designer-cell-wrap" title="Assigned Designer: {dMeta.name}">
-                  <div class="avatar-tiny" style="background: {dMeta.avatarColor};">
-                    {#if dMeta.avatar}
-                      <img
-                        src={dMeta.avatar}
-                        alt={dMeta.name}
-                        class="designer-avatar-img"
-                        onerror={(e) => {
-                          const target = e.currentTarget as HTMLElement;
-                          target.style.display = 'none';
-                          const fallback = target.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = 'flex';
-                        }}
-                      />
-                      <span class="designer-initial-fallback" style="display: none;">{dMeta.initial}</span>
-                    {:else}
-                      <span class="designer-initial-text">{dMeta.initial}</span>
-                    {/if}
-                  </div>
-                  <span class="designer-text">{dMeta.name}</span>
-                </div>
+                <span class="table-deliverables-chip">{p.deliverablesCount ? `${p.deliverablesCount} files` : '1 ready'}</span>
               </td>
 
               <!-- Priority -->
@@ -459,6 +442,43 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 180px;
+  }
+
+  .table-client-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .table-client-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .table-client-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--kanso-text-primary);
+    white-space: nowrap;
+  }
+
+  .table-client-code {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    color: var(--kanso-text-muted);
+  }
+
+  .table-deliverables-chip {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: 4px;
+    color: var(--kanso-text-muted);
   }
 
   .designer-cell-wrap {

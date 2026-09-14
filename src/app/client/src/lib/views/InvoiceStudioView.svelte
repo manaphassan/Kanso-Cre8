@@ -4,6 +4,7 @@
   import { clientService } from '../services/clientService';
   import { studioService } from '../services/studioService.svelte';
   import { licenseStore } from '../stores/licenseStore.svelte';
+  import { settingsStore } from '../stores/settingsStore.svelte';
   import { appState } from '../stores/appState.svelte';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
@@ -128,8 +129,8 @@
       contactPerson: 'Sarah Jenkins',
       email: 'operations@acme.com',
       billingAddress: '100 Innovation Way, Suite 400, San Francisco, CA 94105',
-      currency: 'USD',
-      defaultHourlyRate: 150
+      currency: settingsStore.settings.currency || 'MYR',
+      defaultHourlyRate: 180
     };
 
     const sp = studioService.profile;
@@ -153,8 +154,8 @@
       paymentBank: sp.paymentBank || 'Maybank (MBBEMYKL)',
       paymentAccount: sp.paymentAccountNo || '5140-1234-5678',
       paymentAccountName: sp.paymentAccountName || sp.studioName || 'HaNa Innovation',
-      currency: defaultClient.currency || sp.defaultCurrency || 'USD',
-      hourlyRate: defaultClient.defaultHourlyRate || 150,
+      currency: defaultClient.currency || sp.defaultCurrency || settingsStore.settings.currency || 'MYR',
+      hourlyRate: defaultClient.defaultHourlyRate || 180,
       items: [
         {
           id: '1',
@@ -188,8 +189,8 @@
       contactPerson: 'Alex Vance',
       email: 'hello@nexusstudio.io',
       billingAddress: '42 Shoreditch High St, Hackney, London E1 6JJ, UK',
-      currency: 'GBP',
-      defaultHourlyRate: 140
+      currency: settingsStore.settings.currency || 'MYR',
+      defaultHourlyRate: 150
     };
 
     const sp = studioService.profile;
@@ -214,8 +215,8 @@
       paymentBank: sp.paymentBank || 'Maybank (MBBEMYKL)',
       paymentAccount: sp.paymentAccountNo || '5140-1234-5678',
       paymentAccountName: sp.paymentAccountName || sp.studioName || 'HaNa Innovation',
-      currency: defaultClient.currency || sp.defaultCurrency || 'USD',
-      hourlyRate: defaultClient.defaultHourlyRate || 140,
+      currency: defaultClient.currency || sp.defaultCurrency || settingsStore.settings.currency || 'MYR',
+      hourlyRate: defaultClient.defaultHourlyRate || 150,
       items: [
         {
           id: '1',
@@ -483,8 +484,8 @@
               </div>
             {/if}
 
-            <!-- Doc Number, Type & Status -->
-            <div class="grid grid-cols-3 gap-2">
+            <!-- Doc Number, Type, Status & Currency -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div class="space-y-1">
                 <label class="text-xs font-semibold text-muted-foreground uppercase">Number</label>
                 <input
@@ -524,6 +525,24 @@
                     <option value="paid">Paid</option>
                     <option value="overdue">Overdue</option>
                   {/if}
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-xs font-semibold text-muted-foreground uppercase">Currency</label>
+                <select
+                  bind:value={activeDoc.currency}
+                  onchange={() => { recalcTotals(); persistActiveDoc(); }}
+                  class="w-full px-2 py-1.5 rounded-md border border-border bg-background text-foreground font-mono focus:outline-none focus:border-primary"
+                >
+                  <option value="MYR">MYR (RM)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="SGD">SGD (S$)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="AUD">AUD (A$)</option>
+                  <option value="CAD">CAD (CA$)</option>
+                  <option value="JPY">JPY (¥)</option>
                 </select>
               </div>
             </div>
@@ -846,10 +865,10 @@
           {/if}
         </div>
 
-        <!-- Digital Signature & Document Colophon -->
+        <!-- Digital Signature & Footer Note -->
         <div class="pt-6 border-t border-zinc-200 flex items-end justify-between text-xs">
           <div class="text-zinc-500 max-w-sm">
-            <div class="font-semibold uppercase tracking-wider text-zinc-600 text-[10px]">Document Colophon</div>
+            <div class="font-semibold uppercase tracking-wider text-zinc-600 text-[10px]">Footer Note</div>
             <p class="mt-0.5 text-zinc-600 font-serif italic leading-normal">
               {studioService.profile.footerNotice || 'Crafted with mindful focus & precision in Kanso Cre8.'}
             </p>

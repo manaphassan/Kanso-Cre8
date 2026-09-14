@@ -49,7 +49,7 @@ export const DEFAULT_STUDIO_PROFILE: StudioProfile = {
   paymentAccountName: 'HaNa Innovation',
   paymentSwiftOrQr: 'DuitNow / SWIFT: MBBEMYKL',
   defaultPaymentTerms: '50% Upfront Deposit • Net 14 Days • 2 Revision Rounds',
-  defaultCurrency: 'USD',
+  defaultCurrency: 'MYR',
   brandColor: '#0284C7',
   logo: '',
   digitalSignature: '',

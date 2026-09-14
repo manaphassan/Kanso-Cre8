@@ -497,8 +497,8 @@
   open={showGuideModal}
   title="Art Director Skill Competency Matrix Guide"
   confirmText="Got It"
-  onClose={() => (showGuideModal = false)}
-  onConfirm={() => (showGuideModal = false)}
+  onClose={() => { showGuideModal = false; }}
+  onConfirm={() => { showGuideModal = false; }}
 >
   <div class="guide-modal-content">
     <div class="guide-lead-banner">
