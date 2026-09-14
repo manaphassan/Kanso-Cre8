@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +20,9 @@ namespace KansoCre8.Native
 {
     public class App : Application
     {
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool SetDllDirectory(string lpPathName);
+
         [STAThread]
         public static void Main()
         {
@@ -27,17 +32,50 @@ namespace KansoCre8.Native
                 {
                     string assemblyName = new AssemblyName(args.Name).Name + ".dll";
                     string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    string[] searchPaths = new string[]
+                    List<string> searchPaths = new List<string>
                     {
                         Path.Combine(baseDir, assemblyName),
                         Path.Combine(baseDir, "lib", assemblyName),
                         Path.Combine(baseDir, "app", assemblyName)
                     };
+
+                    // Search subdirectories of baseDir (e.g. dist\windows\KansoCre8-*\)
+                    string windowsSub = Path.Combine(baseDir, "windows");
+                    if (Directory.Exists(windowsSub))
+                    {
+                        foreach (string dir in Directory.GetDirectories(windowsSub, "KansoCre8-*"))
+                        {
+                            searchPaths.Add(Path.Combine(dir, assemblyName));
+                            searchPaths.Add(Path.Combine(dir, "lib", assemblyName));
+                        }
+                    }
+
+                    // Search parent directories & source tree
+                    searchPaths.Add(Path.Combine(baseDir, "..", "src", "windows-launcher", assemblyName));
+                    searchPaths.Add(Path.Combine(baseDir, "..", "src", "windows-launcher", "lib", assemblyName));
+                    searchPaths.Add(Path.Combine(baseDir, "..", "lib", assemblyName));
+
+                    string parentDistWin = Path.Combine(baseDir, "..", "dist", "windows");
+                    if (Directory.Exists(parentDistWin))
+                    {
+                        foreach (string dir in Directory.GetDirectories(parentDistWin, "KansoCre8-*"))
+                        {
+                            searchPaths.Add(Path.Combine(dir, assemblyName));
+                            searchPaths.Add(Path.Combine(dir, "lib", assemblyName));
+                        }
+                    }
+
                     foreach (string path in searchPaths)
                     {
                         if (File.Exists(path))
                         {
-                            return Assembly.LoadFrom(path);
+                            try
+                            {
+                                string dir = Path.GetDirectoryName(path);
+                                SetDllDirectory(dir);
+                            }
+                            catch { }
+                            return Assembly.LoadFrom(Path.GetFullPath(path));
                         }
                     }
                 }
@@ -47,7 +85,13 @@ namespace KansoCre8.Native
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                KansoMainWindow.StaticLog("UnhandledException: " + e.ExceptionObject);
+                string msg = "Kanso Cre8 encountered an unhandled startup exception:\n\n" + e.ExceptionObject;
+                KansoMainWindow.StaticLog(msg);
+                try
+                {
+                    MessageBox.Show(msg, "Kanso Cre8 (簡素) — Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch { }
             };
 
             RunApp();
@@ -59,7 +103,13 @@ namespace KansoCre8.Native
             App app = new App();
             app.DispatcherUnhandledException += (s, e) =>
             {
-                KansoMainWindow.StaticLog("DispatcherUnhandledException: " + e.Exception);
+                string msg = "Kanso Cre8 encountered a runtime error:\n\n" + e.Exception;
+                KansoMainWindow.StaticLog(msg);
+                try
+                {
+                    MessageBox.Show(msg, "Kanso Cre8 (簡素) — Runtime Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch { }
             };
             app.Run(new KansoMainWindow());
         }
@@ -92,12 +142,30 @@ namespace KansoCre8.Native
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            appDir = Path.Combine(baseDir, "app");
-            if (!Directory.Exists(appDir))
+            appDir = ResolveAppDir(baseDir);
+
+            string localAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KansoCre8");
+            try { Directory.CreateDirectory(localAppData); } catch { }
+            logFilePath = Path.Combine(localAppData, "launcher.log");
+
+            // Ensure native DLL path is configured for WebView2Loader.dll
+            try
             {
-                appDir = baseDir;
+                if (Directory.Exists(baseDir)) App.SetDllDirectory(baseDir);
+                string winDir = Path.Combine(baseDir, "windows");
+                if (Directory.Exists(winDir))
+                {
+                    foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                    {
+                        if (File.Exists(Path.Combine(sub, "WebView2Loader.dll")))
+                        {
+                            App.SetDllDirectory(sub);
+                            break;
+                        }
+                    }
+                }
             }
-            logFilePath = Path.Combine(appDir, "launcher.log");
+            catch { }
 
             // Read user theme preference (light vs dark vs neumorphic)
             string savedTheme = ReadSavedTheme();
@@ -121,10 +189,22 @@ namespace KansoCre8.Native
 
             // Set Application Icon if present
             string iconPath = Path.Combine(appDir, "icon.ico");
+            if (!File.Exists(iconPath)) iconPath = Path.Combine(baseDir, "icon.ico");
+            if (!File.Exists(iconPath)) iconPath = Path.Combine(baseDir, "app", "icon.ico");
             if (!File.Exists(iconPath))
             {
-                iconPath = Path.Combine(baseDir, "icon.ico");
+                string winDir = Path.Combine(baseDir, "windows");
+                if (Directory.Exists(winDir))
+                {
+                    foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                    {
+                        string candidate = Path.Combine(sub, "app", "icon.ico");
+                        if (File.Exists(candidate)) { iconPath = candidate; break; }
+                    }
+                }
             }
+            if (!File.Exists(iconPath)) iconPath = Path.Combine(baseDir, "..", "src", "app", "src-tauri", "icons", "icon.ico");
+
             if (File.Exists(iconPath))
             {
                 try
@@ -391,16 +471,28 @@ namespace KansoCre8.Native
         private string FindCalligraphyBanner(bool light)
         {
             string fileName = light ? "kanso-calligraphy-light.png" : "kanso-calligraphy-dark.png";
-            string[] searchPaths = new string[]
+            List<string> searchPaths = new List<string>
             {
                 Path.Combine(appDir, "client", "dist", "brand", fileName),
                 Path.Combine(baseDir, "app", "client", "dist", "brand", fileName),
                 Path.Combine(baseDir, "brand", fileName),
-                Path.Combine(appDir, "brand", fileName),
-                Path.Combine(baseDir, "..", "src", "app", "client", "public", "brand", fileName),
-                Path.Combine(baseDir, "..", "..", "src", "app", "client", "public", "brand", fileName),
-                Path.Combine(baseDir, "..", "src", "app", "client", "dist", "brand", fileName)
+                Path.Combine(appDir, "brand", fileName)
             };
+
+            string winDir = Path.Combine(baseDir, "windows");
+            if (Directory.Exists(winDir))
+            {
+                foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                {
+                    searchPaths.Add(Path.Combine(sub, "brand", fileName));
+                    searchPaths.Add(Path.Combine(sub, "app", "client", "dist", "brand", fileName));
+                }
+            }
+
+            searchPaths.Add(Path.Combine(baseDir, "..", "src", "app", "client", "public", "brand", fileName));
+            searchPaths.Add(Path.Combine(baseDir, "..", "src", "app", "client", "dist", "brand", fileName));
+            searchPaths.Add(Path.Combine(baseDir, "..", "..", "src", "app", "client", "public", "brand", fileName));
+
             foreach (string p in searchPaths)
             {
                 if (File.Exists(p)) return Path.GetFullPath(p);
@@ -439,7 +531,7 @@ namespace KansoCre8.Native
 
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 string appDir = Path.Combine(baseDir, "app");
-                string[] candidates = new string[]
+                List<string> candidates = new List<string>
                 {
                     Path.Combine(appDir, "sample-workspace", "_Team", "_Config", "theme.txt"),
                     Path.Combine(baseDir, "sample-workspace", "_Team", "_Config", "theme.txt"),
@@ -447,6 +539,16 @@ namespace KansoCre8.Native
                     Path.Combine(appDir, "theme.txt"),
                     Path.Combine(baseDir, "theme.txt")
                 };
+
+                string winDir = Path.Combine(baseDir, "windows");
+                if (Directory.Exists(winDir))
+                {
+                    foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                    {
+                        candidates.Add(Path.Combine(sub, "app", "sample-workspace", "_Team", "_Config", "theme.txt"));
+                    }
+                }
+
                 foreach (string candidate in candidates)
                 {
                     if (File.Exists(candidate))
@@ -458,6 +560,67 @@ namespace KansoCre8.Native
             }
             catch { }
             return "dark";
+        }
+
+        private static string ResolveAppDir(string baseDir)
+        {
+            // 1. Direct baseDir/app
+            string directApp = Path.Combine(baseDir, "app");
+            if (Directory.Exists(directApp) && (File.Exists(Path.Combine(directApp, "server.bundle.cjs")) || File.Exists(Path.Combine(directApp, "package.json"))))
+            {
+                return Path.GetFullPath(directApp);
+            }
+
+            // 2. Check windows distribution bundle inside baseDir (e.g. dist\windows\KansoCre8-*\app)
+            string winDir = Path.Combine(baseDir, "windows");
+            if (Directory.Exists(winDir))
+            {
+                string[] subs = Directory.GetDirectories(winDir, "KansoCre8-*");
+                Array.Sort(subs);
+                Array.Reverse(subs);
+                foreach (string sub in subs)
+                {
+                    string subApp = Path.Combine(sub, "app");
+                    if (Directory.Exists(subApp) && File.Exists(Path.Combine(subApp, "server.bundle.cjs")))
+                    {
+                        return Path.GetFullPath(subApp);
+                    }
+                }
+            }
+
+            // 3. Check parent dist/windows (e.g. when run from src/windows-launcher)
+            string parentWinDir = Path.Combine(baseDir, "..", "dist", "windows");
+            if (Directory.Exists(parentWinDir))
+            {
+                string[] subs = Directory.GetDirectories(parentWinDir, "KansoCre8-*");
+                Array.Sort(subs);
+                Array.Reverse(subs);
+                foreach (string sub in subs)
+                {
+                    string subApp = Path.Combine(sub, "app");
+                    if (Directory.Exists(subApp) && File.Exists(Path.Combine(subApp, "server.bundle.cjs")))
+                    {
+                        return Path.GetFullPath(subApp);
+                    }
+                }
+            }
+
+            // 4. Check repo source tree: src\app
+            string[] srcCandidates = new string[]
+            {
+                Path.Combine(baseDir, "..", "src", "app"),
+                Path.Combine(baseDir, "..", "..", "src", "app"),
+                Path.Combine(baseDir, "src", "app")
+            };
+            foreach (string sc in srcCandidates)
+            {
+                if (Directory.Exists(sc) && (File.Exists(Path.Combine(sc, "server", "index.js")) || File.Exists(Path.Combine(sc, "package.json"))))
+                {
+                    return Path.GetFullPath(sc);
+                }
+            }
+
+            return Directory.Exists(directApp) ? Path.GetFullPath(directApp) : Path.GetFullPath(baseDir);
         }
 
         private static void SaveThemePref(string json)
@@ -484,8 +647,18 @@ namespace KansoCre8.Native
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await Task.Run(() => EnsureServerReady());
-            await MountWebViewAsync();
+            try
+            {
+                Activate();
+                Focus();
+                await Task.Run(() => EnsureServerReady());
+                await MountWebViewAsync();
+            }
+            catch (Exception ex)
+            {
+                Log("MainWindow_Loaded exception: " + ex);
+                ShowError("Failed to initialize desktop window: " + ex.Message);
+            }
         }
 
         private void EnsureServerReady()
@@ -612,7 +785,7 @@ namespace KansoCre8.Native
             }
 
             string scriptPath = null;
-            string[] candidates = new string[]
+            List<string> candidates = new List<string>
             {
                 Path.Combine(appDir, "server.bundle.cjs"),
                 Path.Combine(baseDir, "app", "server.bundle.cjs"),
@@ -621,6 +794,25 @@ namespace KansoCre8.Native
                 Path.Combine(baseDir, "..", "app", "server", "index.js"),
                 Path.Combine(baseDir, "..", "..", "src", "app", "server", "index.js")
             };
+
+            string winDir = Path.Combine(baseDir, "windows");
+            if (Directory.Exists(winDir))
+            {
+                foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                {
+                    candidates.Add(Path.Combine(sub, "app", "server.bundle.cjs"));
+                    candidates.Add(Path.Combine(sub, "app", "server", "index.js"));
+                }
+            }
+            string parentWinDir = Path.Combine(baseDir, "..", "dist", "windows");
+            if (Directory.Exists(parentWinDir))
+            {
+                foreach (string sub in Directory.GetDirectories(parentWinDir, "KansoCre8-*"))
+                {
+                    candidates.Add(Path.Combine(sub, "app", "server.bundle.cjs"));
+                    candidates.Add(Path.Combine(sub, "app", "server", "index.js"));
+                }
+            }
 
             foreach (string candidate in candidates)
             {
@@ -708,19 +900,37 @@ namespace KansoCre8.Native
 
         private string FindNodeRuntime()
         {
-            string[] directCandidates = new string[]
+            List<string> directCandidates = new List<string>
             {
                 Path.Combine(appDir, "runtime", "node.exe"),
                 Path.Combine(baseDir, "runtime", "node.exe"),
-                Path.Combine(baseDir, "app", "runtime", "node.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"nodejs\node.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"nodejs\node.exe"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Programs\node\node.exe")
+                Path.Combine(baseDir, "app", "runtime", "node.exe")
             };
+
+            string winDir = Path.Combine(baseDir, "windows");
+            if (Directory.Exists(winDir))
+            {
+                foreach (string sub in Directory.GetDirectories(winDir, "KansoCre8-*"))
+                {
+                    directCandidates.Add(Path.Combine(sub, "app", "runtime", "node.exe"));
+                }
+            }
+            string parentWinDir = Path.Combine(baseDir, "..", "dist", "windows");
+            if (Directory.Exists(parentWinDir))
+            {
+                foreach (string sub in Directory.GetDirectories(parentWinDir, "KansoCre8-*"))
+                {
+                    directCandidates.Add(Path.Combine(sub, "app", "runtime", "node.exe"));
+                }
+            }
+
+            directCandidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"nodejs\node.exe"));
+            directCandidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"nodejs\node.exe"));
+            directCandidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Programs\node\node.exe"));
 
             foreach (string candidate in directCandidates)
             {
-                if (File.Exists(candidate)) return candidate;
+                if (File.Exists(candidate)) return Path.GetFullPath(candidate);
             }
 
             return FindInPath("node.exe");
@@ -787,6 +997,8 @@ namespace KansoCre8.Native
                 if (webView != null) webView.Visibility = Visibility.Collapsed;
                 if (errorDetailText != null) errorDetailText.Text = message;
                 if (errorGrid != null) errorGrid.Visibility = Visibility.Visible;
+                Activate();
+                Focus();
             });
             Log("[Error] " + message);
         }
@@ -815,10 +1027,18 @@ namespace KansoCre8.Native
         {
             try
             {
+                string entry = string.Format("[{0:yyyy-MM-dd HH:mm:ss.fff}] {1}\r\n", DateTime.Now, message);
                 if (!string.IsNullOrEmpty(logFilePath))
                 {
-                    string entry = string.Format("[{0:yyyy-MM-dd HH:mm:ss.fff}] {1}\r\n", DateTime.Now, message);
                     File.AppendAllText(logFilePath, entry);
+                }
+                if (!string.IsNullOrEmpty(appDir) && Directory.Exists(appDir))
+                {
+                    string mirrorLog = Path.Combine(appDir, "launcher.log");
+                    if (mirrorLog != logFilePath)
+                    {
+                        File.AppendAllText(mirrorLog, entry);
+                    }
                 }
             }
             catch { }
@@ -828,10 +1048,18 @@ namespace KansoCre8.Native
         {
             try
             {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string logPath = Path.Combine(baseDir, "app", "launcher.log");
+                string localAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KansoCre8");
+                Directory.CreateDirectory(localAppData);
+                string logPath = Path.Combine(localAppData, "launcher.log");
                 string entry = string.Format("[{0:yyyy-MM-dd HH:mm:ss.fff}] {1}\r\n", DateTime.Now, message);
                 File.AppendAllText(logPath, entry);
+
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string baseApp = Path.Combine(baseDir, "app");
+                if (Directory.Exists(baseApp))
+                {
+                    File.AppendAllText(Path.Combine(baseApp, "launcher.log"), entry);
+                }
             }
             catch { }
         }
