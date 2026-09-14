@@ -245,7 +245,13 @@
       {:else}
         {#each projects as p (p.id)}
           {@const bar = getProjectBarMetrics(p)}
-          <div class="gantt-row project-data-row" onclick={() => appState.navigate('project-detail', { id: p.id })}>
+          <div
+            class="gantt-row project-data-row"
+            role="button"
+            tabindex="0"
+            onclick={() => appState.navigate('project-detail', { id: p.id })}
+            onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); appState.navigate('project-detail', { id: p.id }); } }}
+          >
             <!-- Left Info Column -->
             <div class="gantt-col-left">
               <div class="project-id-title-wrap">
@@ -566,34 +572,8 @@
     font-size: 13px;
   }
 
-  .day-head-cell.is-holiday {
-    background: rgba(239, 68, 68, 0.14) !important;
-    color: #DC2626 !important;
-    font-weight: 800;
-  }
-
-  .day-head-cell.is-sunday {
-    color: #EF4444;
-  }
-
   .timeline-grid-col.is-holiday {
     background: rgba(239, 68, 68, 0.08) !important;
     border-right: 1px solid rgba(239, 68, 68, 0.25);
   }
-
-  .gantt-schedule-bar.is-conflict {
-    outline: 2px solid #EF4444;
-    outline-offset: 1px;
-  }
-
-  .conflict-badge {
-    background: #DC2626;
-    color: #FFFFFF;
-    font-size: 9px;
-    font-weight: 800;
-    padding: 1px 4px;
-    border-radius: 3px;
-    white-space: nowrap;
-  }
-
 </style>

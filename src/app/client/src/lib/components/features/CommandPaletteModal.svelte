@@ -79,6 +79,24 @@
       swatchBg: '#FFFFFF',
       swatchBorder: '#000000',
       swatchAccent: '#000000'
+    },
+    {
+      id: 'neumorphic',
+      name: 'Soft Clay',
+      label: 'Neumorphic Clay',
+      sublabel: 'Tactile Soft UI Light',
+      swatchBg: '#E0E5EC',
+      swatchBorder: '#CBD5E1',
+      swatchAccent: '#3B82F6'
+    },
+    {
+      id: 'neumorphic-dark',
+      name: 'Soft Obsidian',
+      label: 'Neumorphic Obsidian',
+      sublabel: 'Tactile Soft UI Dark',
+      swatchBg: '#1E2026',
+      swatchBorder: '#333742',
+      swatchAccent: '#38BDF8'
     }
   ];
 
@@ -328,6 +346,32 @@
       execute: () => {
         appState.setTheme('eink');
         appState.addToast('Switched to Paperlike E-Ink Mode', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-neumorphic',
+      label: 'Switch Theme: Neumorphic Clay (Soft UI Light)',
+      sublabel: 'Tactile extruded surfaces in soft alabaster clay with electric azure CTAs',
+      icon: 'colorPalette',
+      badge: 'Theme',
+      category: 'Themes',
+      execute: () => {
+        appState.setTheme('neumorphic');
+        appState.addToast('Switched to Neumorphic Clay Mode', 'success');
+      }
+    },
+    {
+      type: 'action',
+      id: 'theme-neumorphic-dark',
+      label: 'Switch Theme: Neumorphic Obsidian (Soft UI Dark)',
+      sublabel: 'Deep charcoal slate with ambient extruded shadows and electric sky glints',
+      icon: 'colorPalette',
+      badge: 'Theme',
+      category: 'Themes',
+      execute: () => {
+        appState.setTheme('neumorphic-dark');
+        appState.addToast('Switched to Neumorphic Obsidian Mode', 'success');
       }
     },
 

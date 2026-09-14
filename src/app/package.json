@@ -1,6 +1,6 @@
 {
   "name": "kanso-cre8",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "description": "The Mindful Creative Vault — Local-First Project, Client & Knowledge Engine for Freelance Designers",
   "main": "server/index.js",
   "scripts": {

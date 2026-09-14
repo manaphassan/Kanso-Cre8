@@ -44,12 +44,20 @@
     [data-theme="oceanic-light"] #kanso-boot-splash {
       background: #ECE8DF;
     }
+    [data-theme="neumorphic"] #kanso-boot-splash {
+      background: #E0E5EC;
+    }
+    [data-theme="neumorphic-dark"] #kanso-boot-splash {
+      background: #1E2026;
+    }
     .dark-logo { display: block; }
     .light-logo { display: none; }
     [data-theme="light"] .dark-logo,
-    [data-theme="oceanic-light"] .dark-logo { display: none; }
+    [data-theme="oceanic-light"] .dark-logo,
+    [data-theme="neumorphic"] .dark-logo { display: none; }
     [data-theme="light"] .light-logo,
-    [data-theme="oceanic-light"] .light-logo { display: block; }
+    [data-theme="oceanic-light"] .light-logo,
+    [data-theme="neumorphic"] .light-logo { display: block; }
 
     .splash-ambient-glow {
       position: absolute;
@@ -103,8 +111,12 @@
       font-family: 'Red Hat Display', sans-serif;
     }
     [data-theme="light"] .splash-tagline,
-    [data-theme="oceanic-light"] .splash-tagline {
-      color: #6B7564;
+    [data-theme="oceanic-light"] .splash-tagline,
+    [data-theme="neumorphic"] .splash-tagline {
+      color: #64748B;
+    }
+    [data-theme="neumorphic-dark"] .splash-tagline {
+      color: #94A3BC;
     }
     .splash-pulse-row {
       display: flex;
@@ -123,6 +135,18 @@
       border: 1px solid #D3CEBF;
       color: #4A5445;
     }
+    [data-theme="neumorphic"] .splash-pulse-row {
+      background: #E0E5EC;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 3px 3px 6px #A3B1C6, -3px -3px 6px #FFFFFF;
+      color: #1E293B;
+    }
+    [data-theme="neumorphic-dark"] .splash-pulse-row {
+      background: #1E2026;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6), -2px -2px 5px rgba(255, 255, 255, 0.04);
+      color: #F1F5F9;
+    }
     .splash-pulse-dot {
       width: 6px;
       height: 6px;
@@ -135,6 +159,14 @@
     [data-theme="oceanic-light"] .splash-pulse-dot {
       background: #DE694B;
       box-shadow: 0 0 8px #DE694B;
+    }
+    [data-theme="neumorphic"] .splash-pulse-dot {
+      background: #3B82F6;
+      box-shadow: 0 0 8px #3B82F6;
+    }
+    [data-theme="neumorphic-dark"] .splash-pulse-dot {
+      background: #38BDF8;
+      box-shadow: 0 0 8px #38BDF8;
     }
     .splash-version-badge {
       display: inline-flex;
@@ -157,12 +189,24 @@
       border: 1px solid #D3CEBF;
       color: #DE694B;
     }
+    [data-theme="neumorphic"] .splash-version-badge {
+      background: #E0E5EC;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 2px 2px 4px #A3B1C6, -2px -2px 4px #FFFFFF;
+      color: #3B82F6;
+    }
+    [data-theme="neumorphic-dark"] .splash-version-badge {
+      background: #1E2026;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6), -2px -2px 4px rgba(255, 255, 255, 0.04);
+      color: #38BDF8;
+    }
   </style>
-  <script type="module" crossorigin src="/assets/index-Dl4a_43O.js"></script>
+  <script type="module" crossorigin src="/assets/index-Bk9jKCL6.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-svelte-L94QIE-6.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-markdown-JY-h4uY2.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-mermaid-BcNYInVa.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CoUytFgL.css">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-mermaid-BOW5bggG.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-CDrsL6SB.css">
 </head>
 <body>
   <!-- ═══════════ 簡素CRE8 ZEN BOOT SPLASH (Smoothly dissolves once app mounts) ═══════════ -->

@@ -366,7 +366,7 @@
       <div class="tool-sep"></div>
 
       <!-- Notion Callout Dropdown -->
-      <div class="dropdown-wrapper" onclick={(e) => e.stopPropagation()}>
+      <div class="dropdown-wrapper" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
         <button
           type="button"
           class="n-dropdown-trigger"
@@ -420,7 +420,7 @@
       </div>
 
       <!-- Mermaid Diagram Dropdown -->
-      <div class="dropdown-wrapper" onclick={(e) => e.stopPropagation()}>
+      <div class="dropdown-wrapper" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
         <button
           type="button"
           class="n-dropdown-trigger"
