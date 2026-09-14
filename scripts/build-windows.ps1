@@ -178,7 +178,30 @@ Mindful Creative Vault — Local-First Project, Client & Knowledge Workstation.
 "@
 Set-Content -Path (Join-Path $bundleDir "README.txt") -Value $readmeContent
 
+# Also populate dist/ root with Launcher, companion assemblies, native runtimes and convenient root launcher
+$distRoot = Join-Path $repoRoot "dist"
+New-Item -ItemType Directory -Path (Join-Path $distRoot "runtimes\win-x64\native") -Force | Out-Null
+Copy-Item -Force $launcherOut (Join-Path $distRoot "KansoCre8.exe")
+Copy-Item -Force $wv2Wpf (Join-Path $distRoot "Microsoft.Web.WebView2.Wpf.dll")
+Copy-Item -Force $wv2Core (Join-Path $distRoot "Microsoft.Web.WebView2.Core.dll")
+Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") (Join-Path $distRoot "WebView2Loader.dll")
+Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") (Join-Path $distRoot "runtimes\win-x64\native\WebView2Loader.dll")
+
+$rootBatContent = @"
+@echo off
+title Kanso Cre8 (簡素)
+setlocal
+cd /d "%~dp0"
+if exist "windows\KansoCre8-v$appVersion-windows-x64\KansoCre8.exe" (
+    start "" "windows\KansoCre8-v$appVersion-windows-x64\KansoCre8.exe"
+) else (
+    start "" "KansoCre8.exe"
+)
+"@
+Set-Content -Path (Join-Path $distRoot "Start-KansoCre8.bat") -Value $rootBatContent
+
 Write-Host "  [OK] Assembled files into: $bundleDir" -ForegroundColor Green
+Write-Host "  [OK] Populated companion DLLs and root launcher in: $distRoot" -ForegroundColor Green
 
 # 5. Create ZIP Distribution Archive
 Write-Host "`n[5/6] Packaging Portable ZIP Archive..." -ForegroundColor Yellow
