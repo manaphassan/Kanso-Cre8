@@ -271,18 +271,12 @@ export class JournalService {
       day: 'numeric'
     });
 
-    const entries: BujoEntry[] = [
-      { id: '1', type: 'priority', raw: '* Finalize mobile illustrations for Acme Corp', text: 'Finalize mobile illustrations for Acme Corp' },
-      { id: '2', type: 'task', raw: '• [ ] Export 4K PNG assets with transparent alpha', text: 'Export 4K PNG assets with transparent alpha', completed: false },
-      { id: '3', type: 'task', raw: '• [ ] Send invoice draft INV-2026-001 to Nexus Studio', text: 'Send invoice draft INV-2026-001 to Nexus Studio', completed: false },
-      { id: '4', type: 'event', raw: 'o 2:00 PM - Art Director preflight review call', text: '2:00 PM - Art Director preflight review call', time: '14:00' },
-      { id: '5', type: 'note', raw: '- Note: Client preferred deeper cobalt blue on card gradients', text: 'Client preferred deeper cobalt blue on card gradients' }
-    ];
+    const entries: BujoEntry[] = [];
 
     const note: DailyNote = {
       date,
       title: formattedDate,
-      focusIntentions: ['Deep visual craft', 'Zero distraction sprint', 'On-time proof delivery'],
+      focusIntentions: ['Deep visual craft', 'Zero distraction sprint'],
       entries,
       rawMarkdown: '',
       updatedAt: new Date().toISOString()
@@ -290,6 +284,24 @@ export class JournalService {
 
     note.rawMarkdown = this.serializeDailyNote(note);
     return note;
+  }
+
+  public purgeCache(): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith(DAILY_STORAGE_PREFIX) || key.startsWith(MONTHLY_STORAGE_PREFIX) || key.startsWith(YEARLY_STORAGE_PREFIX))) {
+          keysToRemove.push(key);
+        }
+      }
+      for (const k of keysToRemove) {
+        localStorage.removeItem(k);
+      }
+    } catch (e) {
+      console.warn('[JournalService] Purge cache error:', e);
+    }
   }
 
   private serializeDailyNote(note: DailyNote): string {

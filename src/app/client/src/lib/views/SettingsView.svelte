@@ -7,6 +7,9 @@
   import { studioService, type StudioProfile } from '$lib/services/studioService.svelte';
   import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
+  import { journalService } from '$lib/services/journalService';
+  import { financeService } from '$lib/services/financeService';
+  import { projectStore } from '$lib/stores/projectStore.svelte';
   import type { ThemeName } from '$lib/types';
 
   type SettingsTab = 'profile' | 'appearance' | 'vault' | 'preferences' | 'shortcuts' | 'license' | 'security' | 'about';
@@ -97,11 +100,18 @@
     try {
       const res = await ApiClient.setWorkspaceRoot(targetPath.trim());
       if (res && res.success) {
-        appState.addToast(`Active vault mounted at ${res.workspaceRoot}`, 'success', 'Vault Mounted');
         currentVaultRoot = res.workspaceRoot;
         customVaultInput = res.workspaceRoot;
+
+        // Purge client-side cached notes and finance documents
+        journalService.purgeCache();
+        await financeService.resetToDisk();
+        await projectStore.loadProjects();
+        await projectStore.loadDashboard();
         await loadVaultStatus();
         await vaultStore.scanVault();
+
+        appState.addToast(`Active vault mounted at ${res.workspaceRoot}`, 'success', 'Vault Mounted');
       } else {
         appState.addToast(res?.message || 'Failed to mount vault directory.', 'error');
       }
