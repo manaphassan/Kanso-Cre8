@@ -2244,6 +2244,18 @@ router.post('/journal/yearly', (req, res) => {
   }
 });
 
+// GET /api/journal/weekly — Retrieve weekly BuJo & atelier telemetry rollup
+router.get('/journal/weekly', (req, res) => {
+  try {
+    const targetDate = req.query.date || new Date().toISOString().split('T')[0];
+    const telemetry = JournalVaultService.getWeeklyTelemetryRollup(targetDate);
+    res.json({ success: true, telemetry });
+  } catch (err) {
+    console.error('[Journal] getWeeklyTelemetryRollup error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── PURE MARKDOWN FINANCE VAULT ROUTES (_Finance/) ─────────────────
 
 // GET /api/finance/invoices — List all markdown invoices

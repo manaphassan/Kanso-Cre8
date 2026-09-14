@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
-  import { journalService, type DailyNote, type BujoEntry } from '$lib/services/journalService';
+  import { journalService, type DailyNote, type BujoEntry, type WeeklyTelemetry } from '$lib/services/journalService';
   import { zettelService } from '$lib/services/zettelService';
   import type { ZettelTask } from '$lib/types/zettel';
   import { financeService } from '$lib/services/financeService';
@@ -16,10 +16,12 @@
   let newTaskInput = $state('');
   let incomeSummary = $state(financeService.getIncomeSummary());
   let clients = $state(clientService.getClients());
+  let previousTaskInfo = $state<{ hasTasks: boolean; fromDate: string; count: number; tasks: BujoEntry[] }>({ hasTasks: false, fromDate: '', count: 0, tasks: [] });
   let hasPreviousTasks = $state(false);
   let isMigrating = $state(false);
   let taskMode = $state<'bujo' | 'universal'>('bujo');
   let universalTasks = $state<ZettelTask[]>([]);
+  let weeklyTelemetry = $state<WeeklyTelemetry | null>(null);
 
   onMount(async () => {
     await projectStore.loadProjects();
@@ -27,8 +29,10 @@
     dailyNote = journalService.getDailyNote();
     incomeSummary = financeService.getIncomeSummary();
     clients = clientService.getClients();
-    hasPreviousTasks = journalService.hasUnfinishedPreviousTasks(dailyNote.date);
+    previousTaskInfo = journalService.checkUnfinishedPreviousTasks(dailyNote.date);
+    hasPreviousTasks = previousTaskInfo.hasTasks;
     universalTasks = await zettelService.loadUniversalTasksFromDisk();
+    weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
   });
 
   // --- DERIVED METRICS ---
@@ -276,9 +280,11 @@
     if (isMigrating) return;
     isMigrating = true;
     try {
-      const res = await journalService.migratePreviousTasks(dailyNote.date);
+      const res = await journalService.migratePreviousTasks(dailyNote.date, previousTaskInfo.fromDate);
       dailyNote = res.note;
       hasPreviousTasks = false;
+      previousTaskInfo = { hasTasks: false, fromDate: '', count: 0, tasks: [] };
+      weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
       appState.addToast(res.message, 'success');
     } catch (err: any) {
       appState.addToast(`Migration failed: ${err.message}`, 'error');
@@ -472,22 +478,33 @@
           </div>
         {/if}
 
-        <!-- Rollover banner -->
+        <!-- Morning Rollover banner -->
         {#if hasPreviousTasks}
           <div class="rollover-banner">
-            <div class="rollover-text">
+            <div class="rollover-icon-badge">
               <span class="bujo-symbol">• [>]</span>
-              <span>Unfinished tasks from yesterday detected</span>
+            </div>
+            <div class="rollover-text-wrap">
+              <div class="rollover-title">
+                Unfinished Tasks Rollover
+                {#if previousTaskInfo.fromDate}
+                  <span class="rollover-date">({previousTaskInfo.fromDate})</span>
+                {/if}
+              </div>
+              <p class="rollover-desc">
+                {previousTaskInfo.count > 0 ? `${previousTaskInfo.count} open task${previousTaskInfo.count > 1 ? 's' : ''}` : 'Unfinished tasks'} carried forward from previous session. Keep rapid log momentum moving.
+              </p>
             </div>
             <button
               onclick={handleMigrateTasks}
               disabled={isMigrating}
               class="migrate-btn"
+              title="Migrate open tasks to today's rapid log"
             >
               {#if isMigrating}
                 <span>Migrating...</span>
               {:else}
-                <span>Migrate to Today &rarr;</span>
+                <span>• [>] Migrate to Today &rarr;</span>
               {/if}
             </button>
           </div>
@@ -645,6 +662,107 @@
       </div>
     </div>
   </div>
+
+  <!-- WEEKLY BUJO SYNTHESIS & RETROSPECTIVE DECK -->
+  <section class="bento-section weekly-synthesis-section">
+    <div class="section-header-row">
+      <div>
+        <h2 class="section-title">
+          <span>📓 Weekly BuJo Synthesis &amp; Momentum</span>
+          {#if weeklyTelemetry}
+            <span class="panel-title-sub">({weeklyTelemetry.weekStart} &rarr; {weeklyTelemetry.weekEnd})</span>
+          {/if}
+        </h2>
+        <p class="panel-subtitle">
+          Weekly creative cadence, rapid log task clearance, and multi-client time distribution.
+        </p>
+      </div>
+
+      <a href="#journal" class="section-link">
+        Open BuJo Journal &rarr;
+      </a>
+    </div>
+
+    <div class="weekly-synthesis-grid">
+      <!-- Card 1: Task Completion & Momentum -->
+      <div class="synthesis-card">
+        <div class="synthesis-card-header">
+          <span class="card-meta-label">Task Clearance Velocity</span>
+          <span class="card-pill {weeklyTelemetry && weeklyTelemetry.completionRate >= 80 ? 'emerald' : 'sky'}">
+            {weeklyTelemetry ? `${weeklyTelemetry.completionRate}% CLEARED` : 'MOMENTUM'}
+          </span>
+        </div>
+
+        <div class="momentum-bar-wrap">
+          <div class="momentum-bar-track">
+            {#if weeklyTelemetry && weeklyTelemetry.tasksTotal > 0}
+              <div 
+                class="momentum-segment completed" 
+                style="width: {(weeklyTelemetry.tasksCompleted / weeklyTelemetry.tasksTotal) * 100}%"
+                title="{weeklyTelemetry.tasksCompleted} Completed"
+              ></div>
+              <div 
+                class="momentum-segment migrated" 
+                style="width: {(weeklyTelemetry.tasksMigrated / weeklyTelemetry.tasksTotal) * 100}%"
+                title="{weeklyTelemetry.tasksMigrated} Migrated"
+              ></div>
+            {:else}
+              <div class="momentum-segment empty" style="width: 100%;"></div>
+            {/if}
+          </div>
+        </div>
+
+        <div class="momentum-legend">
+          <div class="legend-item">
+            <span class="legend-dot emerald"></span>
+            <span class="legend-text">{weeklyTelemetry?.tasksCompleted ?? 0} Done</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot sky"></span>
+            <span class="legend-text">{weeklyTelemetry?.tasksMigrated ?? 0} Migrated</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot muted"></span>
+            <span class="legend-text">{Math.max(0, (weeklyTelemetry?.tasksTotal ?? 0) - (weeklyTelemetry?.tasksCompleted ?? 0) - (weeklyTelemetry?.tasksMigrated ?? 0))} Open</span>
+          </div>
+          <span class="total-tasks-pill">{weeklyTelemetry?.tasksTotal ?? 0} Total Logged</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Atelier Weekly Billable Velocity -->
+      <div class="synthesis-card">
+        <div class="synthesis-card-header">
+          <span class="card-meta-label">Weekly Studio Production</span>
+          <span class="card-pill emerald">LIVE ROLLUP</span>
+        </div>
+        <div class="synthesis-metrics-split">
+          <div class="split-col">
+            <div class="split-value">{weeklyTelemetry?.billableHours ?? 0}h</div>
+            <div class="split-label">Billable Craft Logged</div>
+          </div>
+          <div class="split-divider"></div>
+          <div class="split-col">
+            <div class="split-value accent">
+              {settingsStore.settings.currencySymbol || 'RM'} {weeklyTelemetry?.totalRevenue?.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00'}
+            </div>
+            <div class="split-label">Week Production Pipeline</div>
+          </div>
+        </div>
+        <div class="client-focus-tags">
+          <span class="focus-label">Client Focus:</span>
+          {#if weeklyTelemetry && weeklyTelemetry.activeClients && weeklyTelemetry.activeClients.length > 0}
+            {#each weeklyTelemetry.activeClients as cCode}
+              <span class="client-mini-tag" style="border-left-color: {getClientColor(cCode)};">
+                {cCode}
+              </span>
+            {/each}
+          {:else}
+            <span class="client-mini-tag muted">General Atelier</span>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- 3. PROJECT STATUS AT A GLANCE (Visual Card Deck) -->
   <section class="bento-section">
@@ -1193,38 +1311,67 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 12px 16px;
     border-radius: 8px;
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.25);
     color: #FCD34D;
     font-size: 13px;
+    gap: 12px;
   }
-  .rollover-text {
+  .rollover-icon-badge {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
   }
   .bujo-symbol {
     font-family: var(--font-mono, monospace);
     font-weight: 800;
     background: rgba(245, 158, 11, 0.2);
-    padding: 2px 6px;
+    padding: 3px 7px;
     border-radius: 4px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .rollover-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+  .rollover-title {
+    font-weight: 700;
+    color: #FDE68A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rollover-date {
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #FBBF24;
+  }
+  .rollover-desc {
+    margin: 0;
+    font-size: 12px;
+    color: #FCD34D;
+    opacity: 0.9;
   }
   .migrate-btn {
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    color: #FDE68A;
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #FFFBEB;
     font-size: 12.5px;
     font-weight: 700;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.15s;
+    white-space: nowrap;
   }
   .migrate-btn:hover {
-    background: rgba(245, 158, 11, 0.25);
+    background: rgba(245, 158, 11, 0.3);
+    border-color: rgba(245, 158, 11, 0.6);
   }
 
   /* Task lists */
@@ -1666,5 +1813,145 @@
   }
   .metric-value.muted {
     color: var(--kanso-text-muted, #71717A) !important;
+  }
+
+  /* ═══ WEEKLY BUJO SYNTHESIS SECTION ═══════════════════════════════ */
+  .weekly-synthesis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .weekly-synthesis-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .synthesis-card {
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .synthesis-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .momentum-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .momentum-bar-track {
+    height: 10px;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    width: 100%;
+  }
+  .momentum-segment.completed {
+    background: #10B981;
+    transition: width 0.3s ease;
+  }
+  .momentum-segment.migrated {
+    background: var(--kanso-accent, #38BDF8);
+    transition: width 0.3s ease;
+  }
+  .momentum-segment.empty {
+    background: var(--kanso-surface-hover, #27272A);
+  }
+  .momentum-legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--kanso-text-muted, #71717A);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .legend-dot.emerald { background: #10B981; }
+  .legend-dot.sky { background: var(--kanso-accent, #38BDF8); }
+  .legend-dot.muted { background: var(--kanso-text-muted, #71717A); }
+  .total-tasks-pill {
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .synthesis-metrics-split {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .split-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .split-value {
+    font-family: var(--font-mono, monospace);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .split-value.accent {
+    color: var(--kanso-accent, #38BDF8);
+  }
+  .split-label {
+    font-size: 12px;
+    color: var(--kanso-text-muted, #71717A);
+  }
+  .split-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--kanso-border, #27272A);
+  }
+  .client-focus-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    border-top: 1px solid var(--kanso-border, #27272A);
+    padding-top: 12px;
+  }
+  .focus-label {
+    color: var(--kanso-text-muted, #71717A);
+    font-weight: 600;
+  }
+  .client-mini-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-left-width: 3px;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .client-mini-tag.muted {
+    border-left-color: var(--kanso-border, #27272A);
+    color: var(--kanso-text-muted, #71717A);
   }
 </style>

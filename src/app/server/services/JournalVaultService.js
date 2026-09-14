@@ -515,6 +515,87 @@ class JournalVaultService {
 
   // ─── CREATIVE OPERATIONS TELEMETRY ROLLUPS ──────────────────────────
 
+  static getWeeklyTelemetryRollup(targetDateStr) {
+    const today = new Date();
+    const d = targetDateStr ? new Date(targetDateStr) : today;
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday is start of week
+    const monday = new Date(d);
+    monday.setDate(diff);
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const cur = new Date(monday);
+      cur.setDate(monday.getDate() + i);
+      weekDates.push(cur.toISOString().split('T')[0]);
+    }
+
+    const weekStart = weekDates[0];
+    const weekEnd = weekDates[6];
+
+    let tasksTotal = 0;
+    let tasksCompleted = 0;
+    let tasksMigrated = 0;
+    const activeClientsSet = new Set();
+
+    weekDates.forEach(dateStr => {
+      const dailyPath = this.getDailyPath(dateStr);
+      if (fs.existsSync(dailyPath)) {
+        try {
+          const note = this.getDailyNote(dateStr);
+          (note.entries || []).forEach(e => {
+            if (e.type === 'task' || e.type === 'priority') {
+              tasksTotal++;
+              if (e.completed) tasksCompleted++;
+            } else if (e.type === 'done') {
+              tasksTotal++;
+              tasksCompleted++;
+            } else if (e.type === 'migrated') {
+              tasksMigrated++;
+            }
+          });
+        } catch (e) {}
+      }
+    });
+
+    let invoices = [];
+    try {
+      const FinanceVaultService = require('./FinanceVaultService');
+      invoices = FinanceVaultService.getInvoices();
+    } catch (e) {}
+
+    let weekInvoices = invoices.filter(inv => {
+      if (!inv.date) return false;
+      return inv.date >= weekStart && inv.date <= weekEnd;
+    });
+
+    const paidRevenue = weekInvoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.total || 0), 0);
+    const pendingRevenue = weekInvoices.filter(i => i.status !== 'paid').reduce((s, i) => s + (i.total || 0), 0);
+    const totalRevenue = paidRevenue + pendingRevenue;
+
+    let billableHours = 0;
+    weekInvoices.forEach(inv => {
+      (inv.items || []).forEach(it => {
+        billableHours += Number(it.quantity || it.hours || 0);
+      });
+      if (inv.clientCode) activeClientsSet.add(inv.clientCode);
+    });
+
+    return {
+      weekStart,
+      weekEnd,
+      tasksTotal,
+      tasksCompleted,
+      tasksMigrated,
+      completionRate: tasksTotal > 0 ? Math.round((tasksCompleted / tasksTotal) * 100) : 100,
+      billableHours: Math.round(billableHours * 10) / 10,
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
+      paidRevenue: Math.round(paidRevenue * 100) / 100,
+      pendingRevenue: Math.round(pendingRevenue * 100) / 100,
+      activeClients: Array.from(activeClientsSet)
+    };
+  }
+
   static getMonthlyTelemetryRollup(monthStr) {
     const targetMonth = monthStr || new Date().toISOString().slice(0, 7); // YYYY-MM
     let invoices = [];
