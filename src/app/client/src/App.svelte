@@ -28,6 +28,7 @@
   import StudioProModal from '$lib/components/features/StudioProModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
+  import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
   let commandPaletteOpen = $state(false);
   let scratchpadOpen = $state(false);
@@ -181,6 +182,7 @@
       } else if (event === 'workspace:updated' || event === 'project:updated') {
         appState.lastSyncedAt = new Date();
         projectStore.loadProjects();
+        vaultStore.scanVault();
         if (appState.currentRoute === 'dashboard') {
           projectStore.loadDashboard();
         } else if (appState.currentRoute === 'project-detail' && appState.routeParams.id) {

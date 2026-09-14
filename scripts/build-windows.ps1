@@ -114,8 +114,8 @@ Write-Host "  [OK] Bundled native WebView2 WPF assemblies and loader" -Foregroun
 # Copy Client Web Dist & Brand Assets
 Copy-Item -Recurse -Force "$clientDist\*" "$bundleDir\app\client\dist\"
 if (Test-Path "$clientDist\brand") {
-    Copy-Item -Recurse -Force "$clientDist\brand" "$bundleDir\brand"
-    Copy-Item -Recurse -Force "$clientDist\brand" (Join-Path $repoRoot "src\windows-launcher\brand")
+    Copy-Item -Recurse -Force "$clientDist\brand" "$bundleDir"
+    Copy-Item -Recurse -Force "$clientDist\brand\*" (Join-Path $repoRoot "src\windows-launcher\brand")
 }
 
 # Copy Sample Workspace for out-of-the-box offline vault
