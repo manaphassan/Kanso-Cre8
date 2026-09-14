@@ -190,6 +190,24 @@
       canvasColor: '#FFFFFF',
       surfaceColor: '#FFFFF0',
       accentColor: '#2424D9'
+    },
+    {
+      id: 'neumorphic',
+      name: 'Neumorphic Clay',
+      tag: 'SOFT UI LIGHT',
+      desc: 'Tactile extruded surfaces and debossed inputs crafted in soft alabaster clay (#E0E5EC) with high-contrast slate text and electric azure CTAs.',
+      canvasColor: '#E0E5EC',
+      surfaceColor: '#E0E5EC',
+      accentColor: '#3B82F6'
+    },
+    {
+      id: 'neumorphic-dark',
+      name: 'Neumorphic Obsidian',
+      tag: 'SOFT UI DARK',
+      desc: 'Deep charcoal slate (#1E2026) with ambient extruded shadows, subtle light specular glints, and electric sky highlights.',
+      canvasColor: '#1E2026',
+      surfaceColor: '#1E2026',
+      accentColor: '#38BDF8'
     }
   ];
 
@@ -799,10 +817,10 @@
               onkeydown={(e) => e.key === 'Enter' && appState.setTheme(t.id)}
             >
               <div class="theme-card-preview" style="background: {t.canvasColor}; border: 1px solid var(--kanso-border);">
-                <div class="preview-surface" style="background: {t.surfaceColor}; border: 1px solid {t.id === 'eink' ? '#000000' : 'rgba(255,255,255,0.1)'};">
+                <div class="preview-surface" style="background: {t.surfaceColor}; border: 1px solid {t.id === 'eink' ? '#000000' : 'rgba(255,255,255,0.1)'}; {t.id === 'neumorphic' ? 'box-shadow: 2px 2px 5px #A3B1C6, -2px -2px 5px #FFFFFF;' : t.id === 'neumorphic-dark' ? 'box-shadow: 2px 2px 5px rgba(0,0,0,0.6), -2px -2px 5px rgba(255,255,255,0.05);' : ''}">
                   <div class="preview-dot" style="background: {t.accentColor};"></div>
-                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#18181B' : t.id === 'oceanic-light' ? '#064169' : '#FFFFFF'}; width: 45%;"></div>
-                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' ? '#64748B' : t.id === 'oceanic-light' ? '#93A3BC' : '#71717A'}; width: 70%;"></div>
+                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' || t.id === 'neumorphic' ? '#18181B' : t.id === 'oceanic-light' ? '#064169' : '#FFFFFF'}; width: 45%;"></div>
+                  <div class="preview-line" style="background: {t.id === 'light' || t.id === 'eink' || t.id === 'neumorphic' ? '#64748B' : t.id === 'oceanic-light' ? '#93A3BC' : '#71717A'}; width: 70%;"></div>
                 </div>
               </div>
 

@@ -364,3 +364,231 @@ html[data-theme="eink"],
   --kanso-danger-muted: rgba(230, 83, 79, 0.12);
 }
 
+/* ═══ NEUMORPHISM (SOFT UI) LIGHT MODE (SOFT CLAY & ALABASTER) ═══ */
+[data-theme="neumorphic"] {
+  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: var(--font-ui);
+
+  /* Foundation Layer: Soft Alabaster Clay Canvas & Matching Extruded Surface */
+  --kanso-canvas: #E0E5EC;
+  --kanso-surface: #E0E5EC;
+  --kanso-surface-hover: #E8ECF2;
+  --kanso-surface-active: #D6DDE7;
+  --kanso-border: rgba(255, 255, 255, 0.6);
+  --kanso-border-subtle: rgba(163, 177, 198, 0.35);
+  --kanso-border-focus: #3B82F6;
+
+  /* High-Contrast Readable Slate Typography (Eliminates classic Neumorphic low-contrast flaw) */
+  --kanso-text-primary: #1E293B;
+  --kanso-text-secondary: #475569;
+  --kanso-text-muted: #64748B;
+  --kanso-text-faint: #94A3B8;
+
+  /* Electric Azure Hero Accent */
+  --kanso-accent: #3B82F6;
+  --kanso-accent-hover: #2563EB;
+  --kanso-accent-muted: rgba(59, 130, 246, 0.14);
+  --kanso-accent-text: #FFFFFF;
+
+  /* Vivid Status Accents */
+  --kanso-success: #10B981;
+  --kanso-success-muted: rgba(16, 185, 129, 0.14);
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: rgba(245, 158, 11, 0.14);
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: rgba(239, 68, 68, 0.14);
+
+  /* Dual-Shadow Extrusion & Deboss Physics */
+  --neu-shadow-raised: 6px 6px 14px #A3B1C6, -6px -6px 14px #FFFFFF;
+  --neu-shadow-raised-sm: 3px 3px 8px #A3B1C6, -3px -3px 8px #FFFFFF;
+  --neu-shadow-raised-lg: 10px 10px 24px #A3B1C6, -10px -10px 24px #FFFFFF;
+  --neu-shadow-inset: inset 3px 3px 6px #A3B1C6, inset -3px -3px 6px #FFFFFF;
+  --neu-shadow-inset-sm: inset 2px 2px 4px #A3B1C6, inset -2px -2px 4px #FFFFFF;
+  --neu-shadow-hover: 8px 8px 18px #A3B1C6, -8px -8px 18px #FFFFFF;
+  --neu-shadow-active: inset 2px 2px 5px #A3B1C6, inset -2px -2px 5px #FFFFFF;
+  --neu-glow: 0 0 16px rgba(59, 130, 246, 0.25);
+}
+
+/* ═══ NEUMORPHISM (SOFT UI) DARK MODE (SOFT OBSIDIAN & GRAPHITE) ═══ */
+[data-theme="neumorphic-dark"] {
+  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: var(--font-ui);
+
+  /* Foundation Layer: Deep Charcoal Slate Canvas & Matching Surface */
+  --kanso-canvas: #1E2026;
+  --kanso-surface: #1E2026;
+  --kanso-surface-hover: #262930;
+  --kanso-surface-active: #181A1F;
+  --kanso-border: rgba(255, 255, 255, 0.06);
+  --kanso-border-subtle: rgba(0, 0, 0, 0.4);
+  --kanso-border-focus: #38BDF8;
+
+  /* Slate Typography */
+  --kanso-text-primary: #F1F5F9;
+  --kanso-text-secondary: #94A3BC;
+  --kanso-text-muted: #64748B;
+  --kanso-text-faint: #475569;
+
+  /* Electric Sky Hero Accent */
+  --kanso-accent: #38BDF8;
+  --kanso-accent-hover: #0EA5E9;
+  --kanso-accent-muted: rgba(56, 189, 248, 0.16);
+  --kanso-accent-text: #09090B;
+
+  /* Vivid Status Accents */
+  --kanso-success: #34D399;
+  --kanso-success-muted: rgba(52, 211, 153, 0.16);
+  --kanso-warning: #FBBF24;
+  --kanso-warning-muted: rgba(251, 191, 36, 0.16);
+  --kanso-danger: #F87171;
+  --kanso-danger-muted: rgba(248, 113, 113, 0.16);
+
+  /* Dual-Shadow Extrusion & Deboss Physics (Dark Glow & Ambient Pit) */
+  --neu-shadow-raised: 6px 6px 14px rgba(0, 0, 0, 0.65), -5px -5px 12px rgba(255, 255, 255, 0.04);
+  --neu-shadow-raised-sm: 3px 3px 8px rgba(0, 0, 0, 0.6), -2px -2px 6px rgba(255, 255, 255, 0.03);
+  --neu-shadow-raised-lg: 10px 10px 24px rgba(0, 0, 0, 0.75), -7px -7px 18px rgba(255, 255, 255, 0.05);
+  --neu-shadow-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.7), inset -3px -3px 6px rgba(255, 255, 255, 0.03);
+  --neu-shadow-inset-sm: inset 2px 2px 4px rgba(0, 0, 0, 0.65), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+  --neu-shadow-hover: 8px 8px 18px rgba(0, 0, 0, 0.7), -6px -6px 15px rgba(255, 255, 255, 0.05);
+  --neu-shadow-active: inset 2px 2px 5px rgba(0, 0, 0, 0.8), inset -2px -2px 5px rgba(255, 255, 255, 0.03);
+  --neu-glow: 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+/* ═══ NEUMORPHIC COMPONENT-LEVEL ARCHITECTURE & ELEVATION RULES ═══ */
+
+/* 1. Raised Extruded Cards & Bento Surfaces */
+[data-theme="neumorphic"] .fluent-card,
+[data-theme="neumorphic-dark"] .fluent-card,
+[data-theme="neumorphic"] .card-surface,
+[data-theme="neumorphic-dark"] .card-surface,
+[data-theme="neumorphic"] .bento-card,
+[data-theme="neumorphic-dark"] .bento-card,
+[data-theme="neumorphic"] .theme-card,
+[data-theme="neumorphic-dark"] .theme-card,
+[data-theme="neumorphic"] .download-platform-card,
+[data-theme="neumorphic-dark"] .download-platform-card {
+  background-color: var(--kanso-surface) !important;
+  border: 1px solid var(--kanso-border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--neu-shadow-raised) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+[data-theme="neumorphic"] .invoice-paper-card {
+  box-shadow: var(--neu-shadow-raised-lg) !important;
+  border-color: #CBD5E1 !important;
+}
+
+[data-theme="neumorphic-dark"] .invoice-paper-card {
+  box-shadow: var(--neu-shadow-raised-lg) !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="neumorphic"] .card-hover-lift:hover,
+[data-theme="neumorphic-dark"] .card-hover-lift:hover,
+[data-theme="neumorphic"] .theme-card:hover,
+[data-theme="neumorphic-dark"] .theme-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--neu-shadow-hover) !important;
+}
+
+/* 2. Debossed Concave Form Inputs, Search & Dropdowns */
+[data-theme="neumorphic"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="neumorphic-dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="neumorphic"] textarea,
+[data-theme="neumorphic-dark"] textarea,
+[data-theme="neumorphic"] select,
+[data-theme="neumorphic-dark"] select,
+[data-theme="neumorphic"] .header-search-btn,
+[data-theme="neumorphic-dark"] .header-search-btn {
+  background-color: var(--kanso-surface) !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  box-shadow: var(--neu-shadow-inset) !important;
+  color: var(--kanso-text-primary) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+[data-theme="neumorphic"] input:focus,
+[data-theme="neumorphic-dark"] input:focus,
+[data-theme="neumorphic"] textarea:focus,
+[data-theme="neumorphic-dark"] textarea:focus,
+[data-theme="neumorphic"] select:focus,
+[data-theme="neumorphic-dark"] select:focus {
+  border-color: var(--kanso-border-focus) !important;
+  outline: none !important;
+}
+
+/* 3. Tactile Extruded Buttons & Interactive Actions */
+[data-theme="neumorphic"] .fluent-btn,
+[data-theme="neumorphic-dark"] .fluent-btn,
+[data-theme="neumorphic"] .icon-btn,
+[data-theme="neumorphic-dark"] .icon-btn,
+[data-theme="neumorphic"] .action-cta-btn,
+[data-theme="neumorphic-dark"] .action-cta-btn,
+[data-theme="neumorphic"] .header-settings-btn,
+[data-theme="neumorphic-dark"] .header-settings-btn {
+  border-radius: 12px !important;
+  box-shadow: var(--neu-shadow-raised-sm) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+[data-theme="neumorphic"] .fluent-btn:hover,
+[data-theme="neumorphic-dark"] .fluent-btn:hover,
+[data-theme="neumorphic"] .icon-btn:hover,
+[data-theme="neumorphic-dark"] .icon-btn:hover,
+[data-theme="neumorphic"] .action-cta-btn:hover,
+[data-theme="neumorphic-dark"] .action-cta-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--neu-shadow-hover) !important;
+}
+
+[data-theme="neumorphic"] .fluent-btn:active,
+[data-theme="neumorphic-dark"] .fluent-btn:active,
+[data-theme="neumorphic"] .icon-btn:active,
+[data-theme="neumorphic-dark"] .icon-btn:active,
+[data-theme="neumorphic"] .action-cta-btn:active,
+[data-theme="neumorphic-dark"] .action-cta-btn:active {
+  transform: translateY(0px) !important;
+  box-shadow: var(--neu-shadow-active) !important;
+}
+
+/* 4. Debossed Inset Active Navigation Pills & Badges */
+[data-theme="neumorphic"] .tag-badge,
+[data-theme="neumorphic-dark"] .tag-badge,
+[data-theme="neumorphic"] .earned-badge,
+[data-theme="neumorphic-dark"] .earned-badge {
+  background-color: var(--kanso-surface) !important;
+  border: 1px solid var(--kanso-border-subtle) !important;
+  box-shadow: var(--neu-shadow-inset-sm) !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="neumorphic"] .theme-card.selected,
+[data-theme="neumorphic-dark"] .theme-card.selected {
+  box-shadow: var(--neu-shadow-inset) !important;
+  border-color: var(--kanso-accent) !important;
+}
+
+/* 5. Progress Bars with Debossed Track and Raised Fill */
+[data-theme="neumorphic"] [class*="progress-track"],
+[data-theme="neumorphic-dark"] [class*="progress-track"],
+[data-theme="neumorphic"] [class*="bar-track"],
+[data-theme="neumorphic-dark"] [class*="bar-track"] {
+  background: var(--kanso-surface) !important;
+  box-shadow: var(--neu-shadow-inset-sm) !important;
+  border-radius: 9999px !important;
+}
+
+[data-theme="neumorphic"] [class*="progress-fill"],
+[data-theme="neumorphic-dark"] [class*="progress-fill"],
+[data-theme="neumorphic"] [class*="bar-fill"],
+[data-theme="neumorphic-dark"] [class*="bar-fill"] {
+  box-shadow: var(--neu-shadow-raised-sm) !important;
+  border-radius: 9999px !important;
+}
+
