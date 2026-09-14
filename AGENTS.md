@@ -141,3 +141,4 @@ All 10 checks must pass with `0 warned / 0 failed`.
 # WORKSPACE AGENT SKILLS
 
 - `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Zettelkasten knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
+- `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards. Safely cleans, organizes, standardizes, audits, and secures repositories without breaking behavior.
