@@ -11,8 +11,17 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
+$packageJsonPath = Join-Path $repoRoot "src\app\package.json"
+$appVersion = "0.2.2"
+if (Test-Path $packageJsonPath) {
+    try {
+        $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
+        if ($pkg.version) { $appVersion = $pkg.version }
+    } catch {}
+}
+
 $distDir = Join-Path $repoRoot "dist\linux"
-$bundleDir = Join-Path $distDir "kanso-cre8-v0.1.0-linux-x64"
+$bundleDir = Join-Path $distDir "kanso-cre8-v$appVersion-linux-x64"
 $clientDist = Join-Path $repoRoot "src\app\client\dist"
 
 Write-Host ""
@@ -133,7 +142,7 @@ $desktopPath = Join-Path $bundleDir "kanso-cre8.desktop"
 
 # Generate README.txt
 $readmeContent = @"
-# Kanso Cre8 (簡素) — Linux Desktop Edition (v0.1.0)
+# Kanso Cre8 (簡素) — Linux Desktop Edition (v$appVersion)
 
 Mindful Creative Vault — Local-First Project, Client & Knowledge Workstation.
 
@@ -156,11 +165,11 @@ Write-Host "  [OK] Assembled Linux files into: $bundleDir" -ForegroundColor Gree
 
 # 4. Create .tar.gz Distribution Archive
 Write-Host "`n[4/5] Packaging Portable tar.gz Archive..." -ForegroundColor Yellow
-$tarFile = Join-Path $distDir "kanso-cre8-v0.1.0-linux-x64.tar.gz"
+$tarFile = Join-Path $distDir "kanso-cre8-v$appVersion-linux-x64.tar.gz"
 if (Test-Path $tarFile) { Remove-Item -Force $tarFile }
 
 # Use tar executable built into Windows 10/11
-& tar.exe -czf $tarFile -C $distDir "kanso-cre8-v0.1.0-linux-x64"
+& tar.exe -czf $tarFile -C $distDir "kanso-cre8-v$appVersion-linux-x64"
 if ($LASTEXITCODE -ne 0) { throw "tar packaging failed" }
 Write-Host "  [OK] Created tar.gz archive: $tarFile" -ForegroundColor Green
 
