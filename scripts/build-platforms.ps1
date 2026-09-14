@@ -12,6 +12,14 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
+$packageJsonPath = Join-Path $repoRoot "src\app\package.json"
+$appVersion = "0.2.2"
+if (Test-Path $packageJsonPath) {
+    try {
+        $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
+        if ($pkg.version) { $appVersion = $pkg.version }
+    } catch {}
+}
 $scriptsDir = Join-Path $repoRoot "scripts"
 $distDir = Join-Path $repoRoot "dist"
 $clientDist = Join-Path $repoRoot "src\app\client\dist"
@@ -19,7 +27,7 @@ $clientDist = Join-Path $repoRoot "src\app\client\dist"
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "  KANSO CRE8 - MASTER MULTI-PLATFORM BUILD ORCHESTRATOR     " -ForegroundColor Cyan
-Write-Host "  Version:  0.1.0 (Release Candidate)                       " -ForegroundColor Cyan
+Write-Host "  Version:  $appVersion (Production Ready)                  " -ForegroundColor Cyan
 Write-Host "  Target:   $Platform                                       " -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
@@ -59,9 +67,9 @@ Write-Host "`n>>> Generating Release Manifest & SHA256 Checksums..." -Foreground
 
 $artifacts = @()
 $buildFiles = @(
-    (Join-Path $distDir "windows\kanso-cre8-v0.1.0-windows-x64.zip"),
-    (Join-Path $distDir "linux\kanso-cre8-v0.1.0-linux-x64.tar.gz"),
-    (Join-Path $distDir "android\kanso-cre8-v0.1.0-companion.apk")
+    (Join-Path $distDir "windows\kanso-cre8-v$appVersion-windows-x64.zip"),
+    (Join-Path $distDir "linux\kanso-cre8-v$appVersion-linux-x64.tar.gz"),
+    (Join-Path $distDir "android\kanso-cre8-v$appVersion-companion.apk")
 )
 
 foreach ($filePath in $buildFiles) {
@@ -81,7 +89,7 @@ foreach ($filePath in $buildFiles) {
 $manifest = @{
     product = "Kanso Cre8"
     tagline = "The Mindful Creative Vault"
-    version = "0.1.0"
+    version = $appVersion
     build_date = (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz")
     artifacts = $artifacts
 }

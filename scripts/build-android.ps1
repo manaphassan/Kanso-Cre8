@@ -11,6 +11,15 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
+$packageJsonPath = Join-Path $repoRoot "src\app\package.json"
+$appVersion = "0.2.2"
+if (Test-Path $packageJsonPath) {
+    try {
+        $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
+        if ($pkg.version) { $appVersion = $pkg.version }
+    } catch {}
+}
+
 $androidDir = Join-Path $repoRoot "src\android\app"
 $distDir = Join-Path $repoRoot "dist\android"
 $clientDist = Join-Path $repoRoot "src\app\client\dist"
@@ -164,7 +173,7 @@ if (-not (Test-Path $keystore)) {
         -dname "CN=Kanso Cre8, OU=Creative Engineering, O=Kanso Cre8 Vault, C=MY"
 }
 
-$finalApk = Join-Path $distDir "kanso-cre8-v0.1.0-companion.apk"
+$finalApk = Join-Path $distDir "kanso-cre8-v$appVersion-companion.apk"
 if (Test-Path $finalApk) { Remove-Item -Force $finalApk }
 
 & $apksigner sign --ks $keystore --ks-key-alias kanso_key --ks-pass "pass:kansocre8release" --key-pass "pass:kansocre8release" --out $finalApk $alignedApk
