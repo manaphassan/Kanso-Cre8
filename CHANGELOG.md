@@ -2,6 +2,21 @@
 
 All notable changes to Kanso Cre8 (簡素) are documented here.
 
+## [0.2.1] - 2026-09-14 (Instant Zero-Blank Boot Flow, Win32 High-DPI Icons & Clean Zero-Data Vault Mount)
+
+### Added
+- **Clean Zero-Data Vault Mount**: Mounting or switching to a new custom vault path now presents a 100% clean slate (0 projects, 0 invoices / $0.00 cashflow, 0 tasks, 0 notes) without mock data leakage.
+- **Dynamic Vault Scanning (`scanVault`)**: `VaultStore` dynamically queries disk endpoints to calculate live physical counts across projects, invoices, and notes.
+- **Empty States**: Minimalist Linear/Geist empty states for Active Projects and Today's BuJo Rapid Log in `DashboardView.svelte`.
+- **Instant Zero-Blank Boot**: Synchronous theme detection on frame 0 in Windows launcher eliminates transient dark/blank flicker.
+- **High-DPI Win32 Icon System**: Complete 7-frame uncompressed DIB (16x16 through 128x128) + 256x256 PNG icon in `icon.ico`.
+- **24-Point Smoke Test Suite**: Automated end-to-end verification script (`scripts/run-smoketest.ps1`) covering API endpoints, launcher assets, and storage compliance.
+
+### Changed
+- **FinanceService**: Handles empty lists accurately and purges stale mock invoices when switching vault paths.
+- **JournalService**: `createDefaultDailyNote` initializes with a clean blank rapid log instead of sample tasks, and provides `purgeCache()`.
+- **DashboardView Craft Metrics**: Shows clean null placeholder (`--`) until live projects are completed.
+
 ## [0.2.0] - 2026-09-14 (Zero-Database Offline Perpetual Licensing, Bi-Directional Backlinks & Craft Metrics Bento)
 
 ### Added — Priority 9 Commercial Engine & 100% Offline Perpetual Licensing
