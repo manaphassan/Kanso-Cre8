@@ -2130,10 +2130,22 @@ router.post('/journal/daily', (req, res) => {
   }
 });
 
+// GET /api/journal/rollover-check — Check for unfinished tasks from previous daily note
+router.get('/journal/rollover-check', (req, res) => {
+  try {
+    const targetDate = req.query.date || new Date().toISOString().split('T')[0];
+    const rollover = JournalVaultService.getPendingRollover(targetDate);
+    res.json({ success: true, rollover });
+  } catch (err) {
+    console.error('[Journal] getPendingRollover error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/journal/migrate-tasks — Rollover uncompleted tasks to target day
 router.post('/journal/migrate-tasks', (req, res) => {
   try {
-    const { fromDate, toDate } = req.body;
+    const { fromDate, toDate, selectedTaskIds } = req.body;
     const today = new Date().toISOString().split('T')[0];
     const targetToDate = toDate || today;
 
@@ -2145,7 +2157,7 @@ router.post('/journal/migrate-tasks', (req, res) => {
       targetFromDate = d.toISOString().split('T')[0];
     }
 
-    const result = JournalVaultService.migrateTasks(targetFromDate, targetToDate);
+    const result = JournalVaultService.migrateTasks(targetFromDate, targetToDate, selectedTaskIds);
     if (result.success) {
       SseService.broadcast('journal:migrated', { result });
     }

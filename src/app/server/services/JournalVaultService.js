@@ -265,7 +265,33 @@ class JournalVaultService {
 
   // ─── BUJO TASK MIGRATION PIPELINE ───────────────────────────────────
 
-  static migrateTasks(fromDate, toDate) {
+  static getPendingRollover(targetDate) {
+    const today = targetDate || new Date().toISOString().split('T')[0];
+    const notes = this.listDailyNotes().filter(n => n.date < today);
+    if (notes.length === 0) {
+      return { hasTasks: false, fromDate: '', count: 0, tasks: [] };
+    }
+    // Scan backwards from previous note to find latest day with incomplete tasks
+    for (const noteMeta of notes) {
+      try {
+        const note = this.getDailyNote(noteMeta.date);
+        const incomplete = (note.entries || []).filter(e => {
+          return (e.type === 'task' || e.type === 'priority') && !e.completed;
+        });
+        if (incomplete.length > 0) {
+          return {
+            hasTasks: true,
+            fromDate: noteMeta.date,
+            count: incomplete.length,
+            tasks: incomplete
+          };
+        }
+      } catch (e) {}
+    }
+    return { hasTasks: false, fromDate: '', count: 0, tasks: [] };
+  }
+
+  static migrateTasks(fromDate, toDate, selectedTaskIds = null) {
     if (!fromDate || !toDate) {
       throw new Error('Both fromDate and toDate are required for task rollover migration.');
     }
@@ -284,9 +310,14 @@ class JournalVaultService {
     const toNote = this.getDailyNote(toDate);
 
     // Identify incomplete tasks
-    const incompleteTasks = fromNote.entries.filter(e => {
+    let incompleteTasks = fromNote.entries.filter(e => {
       return (e.type === 'task' || e.type === 'priority') && !e.completed;
     });
+
+    if (Array.isArray(selectedTaskIds) && selectedTaskIds.length > 0) {
+      const idSet = new Set(selectedTaskIds);
+      incompleteTasks = incompleteTasks.filter(e => idSet.has(e.id));
+    }
 
     if (incompleteTasks.length === 0) {
       return {
@@ -538,7 +569,14 @@ class JournalVaultService {
     let tasksMigrated = 0;
     const activeClientsSet = new Set();
 
-    weekDates.forEach(dateStr => {
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dailyCadence = [];
+
+    weekDates.forEach((dateStr, idx) => {
+      let dayTotal = 0;
+      let dayCompleted = 0;
+      let dayMigrated = 0;
+
       const dailyPath = this.getDailyPath(dateStr);
       if (fs.existsSync(dailyPath)) {
         try {
@@ -546,16 +584,32 @@ class JournalVaultService {
           (note.entries || []).forEach(e => {
             if (e.type === 'task' || e.type === 'priority') {
               tasksTotal++;
-              if (e.completed) tasksCompleted++;
+              dayTotal++;
+              if (e.completed) {
+                tasksCompleted++;
+                dayCompleted++;
+              }
             } else if (e.type === 'done') {
               tasksTotal++;
+              dayTotal++;
               tasksCompleted++;
+              dayCompleted++;
             } else if (e.type === 'migrated') {
               tasksMigrated++;
+              dayMigrated++;
             }
           });
         } catch (e) {}
       }
+
+      dailyCadence.push({
+        date: dateStr,
+        dayName: dayLabels[idx],
+        tasksTotal: dayTotal,
+        tasksCompleted: dayCompleted,
+        tasksMigrated: dayMigrated,
+        rate: dayTotal > 0 ? Math.round((dayCompleted / dayTotal) * 100) : 0
+      });
     });
 
     let invoices = [];
@@ -592,7 +646,8 @@ class JournalVaultService {
       totalRevenue: Math.round(totalRevenue * 100) / 100,
       paidRevenue: Math.round(paidRevenue * 100) / 100,
       pendingRevenue: Math.round(pendingRevenue * 100) / 100,
-      activeClients: Array.from(activeClientsSet)
+      activeClients: Array.from(activeClientsSet),
+      dailyCadence
     };
   }
 

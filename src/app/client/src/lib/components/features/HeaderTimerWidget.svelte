@@ -42,6 +42,47 @@
     };
   });
 
+  // Idle Activity Detection (15-Minute Focus & Inactivity Threshold)
+  let lastActiveTimestamp = $state<number>(Date.now());
+  let showIdlePrompt = $state<boolean>(false);
+  const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+
+  $effect(() => {
+    if (!timerStore.isRunning) {
+      showIdlePrompt = false;
+      return;
+    }
+
+    function recordActivity() {
+      lastActiveTimestamp = Date.now();
+      if (showIdlePrompt) {
+        showIdlePrompt = false;
+      }
+    }
+
+    const events = ['mousemove', 'keydown', 'pointerdown', 'wheel', 'touchstart'];
+    events.forEach(evt => window.addEventListener(evt, recordActivity, { passive: true }));
+
+    const checkInterval = setInterval(() => {
+      if (timerStore.isRunning && Date.now() - lastActiveTimestamp >= IDLE_TIMEOUT_MS) {
+        showIdlePrompt = true;
+      }
+    }, 10000);
+
+    return () => {
+      events.forEach(evt => window.removeEventListener(evt, recordActivity));
+      clearInterval(checkInterval);
+    };
+  });
+
+  function dismissIdlePrompt(keepRunning = true) {
+    lastActiveTimestamp = Date.now();
+    showIdlePrompt = false;
+    if (!keepRunning) {
+      timerStore.pause();
+    }
+  }
+
   // Client Swatch Auto-Match: Automatically adapt active client when viewing project detail
   $effect(() => {
     if (!timerStore.isRunning && !timerStore.isPaused) {
@@ -271,6 +312,20 @@
       </div>
     {/if}
   </div>
+
+  <!-- Smart Idle Chronometer Pill -->
+  {#if showIdlePrompt}
+    <div class="idle-prompt-pill" role="alert">
+      <span class="idle-alert-icon">⏱️</span>
+      <span class="idle-prompt-text">Still crafting on [{timerStore.clientCode}]?</span>
+      <button type="button" class="idle-action-btn keep" onclick={() => dismissIdlePrompt(true)}>
+        Keep Running
+      </button>
+      <button type="button" class="idle-action-btn pause" onclick={() => dismissIdlePrompt(false)}>
+        Pause
+      </button>
+    </div>
+  {/if}
 </div>
 
 <!-- Stop Session Dialog -->
@@ -332,6 +387,7 @@
 
 <style>
   .timer-widget-wrap {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -351,6 +407,69 @@
     border-color: rgba(56, 189, 248, 0.4);
     background: rgba(56, 189, 248, 0.04);
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.12);
+  }
+
+  /* Smart Idle Prompt Pill */
+  .idle-prompt-pill {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    white-space: nowrap;
+    animation: idleSlide 0.15s ease-out;
+  }
+
+  .idle-alert-icon {
+    font-size: 12px;
+  }
+
+  .idle-prompt-text {
+    color: #FDE68A;
+    font-weight: 500;
+  }
+
+  .idle-action-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.12s ease;
+  }
+
+  .idle-action-btn.keep {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .idle-action-btn.keep:hover {
+    background: rgba(16, 185, 129, 0.35);
+  }
+
+  .idle-action-btn.pause {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+
+  .idle-action-btn.pause:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+
+  @keyframes idleSlide {
+    from { transform: translateY(-4px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   .transport-buttons {

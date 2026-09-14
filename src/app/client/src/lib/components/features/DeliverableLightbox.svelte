@@ -10,6 +10,7 @@
   interface Props {
     deliverable: DeliverableItem | null;
     open?: boolean;
+    initialDiffMode?: boolean;
     onClose?: () => void;
     onApprove?: (d: DeliverableItem) => Promise<void> | void;
     onRevision?: (d: DeliverableItem) => Promise<void> | void;
@@ -18,6 +19,7 @@
   let {
     deliverable,
     open = $bindable(false),
+    initialDiffMode = false,
     onClose,
     onApprove,
     onRevision
@@ -26,6 +28,12 @@
   let isSubmitting = $state<boolean>(false);
   let isImageZoomed = $state<boolean>(false);
   let isDiffMode = $state<boolean>(false);
+
+  $effect(() => {
+    if (open) {
+      isDiffMode = initialDiffMode;
+    }
+  });
 
   // Companion deliverables for this project
   const companionDeliverables = $derived.by(() => {
