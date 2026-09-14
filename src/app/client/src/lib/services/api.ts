@@ -599,6 +599,10 @@ export class ApiClient {
     return this.request(`/journal/monthly/${encodeURIComponent(month || new Date().toISOString().slice(0, 7))}/telemetry`);
   }
 
+  static getWeeklyTelemetry(date?: string): Promise<{ success: boolean; telemetry: any }> {
+    return this.request(`/journal/weekly${date ? `?date=${encodeURIComponent(date)}` : ''}`);
+  }
+
   static saveMonthlyReview(review: any): Promise<{ success: boolean; review: any }> {
     return this.request('/journal/monthly', {
       method: 'POST',

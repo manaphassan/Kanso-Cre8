@@ -78,12 +78,12 @@
       return;
     }
 
-    // Ctrl+Shift+T: Toggle Billable Timer
-    if (e.shiftKey && key === 't') {
+    // Ctrl+Alt+T or Ctrl+Shift+T: Toggle Billable Timer Play/Pause
+    if ((e.altKey || e.shiftKey) && key === 't') {
       e.preventDefault();
       if (timerStore.isRunning) {
-        timerStore.stop();
-        appState.addToast('Billable timer stopped & session logged', 'info');
+        timerStore.pause();
+        appState.addToast('Billable timer paused', 'info');
       } else if (timerStore.isPaused) {
         timerStore.resume();
         appState.addToast('Billable timer resumed', 'info');
