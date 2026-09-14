@@ -4,6 +4,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { clientService, DEFAULT_CLIENTS } from '$lib/services/clientService';
   import { financeService } from '$lib/services/financeService';
+  import { projectStore } from '$lib/stores/projectStore.svelte';
 
   let showRatePopover = $state(false);
   let showClientPopover = $state(false);
@@ -26,6 +27,38 @@
       timerStore.start();
     }
   }
+
+  // Tactile Global Keyboard Shortcut: Ctrl+Alt+T (or Cmd+Alt+T) to Toggle Play/Pause
+  $effect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === 't' || e.key === 'T')) {
+        e.preventDefault();
+        handlePlayPause();
+      }
+    }
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  });
+
+  // Client Swatch Auto-Match: Automatically adapt active client when viewing project detail
+  $effect(() => {
+    if (!timerStore.isRunning && !timerStore.isPaused) {
+      const activeProjId = appState.routeParams?.id;
+      if (activeProjId) {
+        const foundProj = projectStore.selectedProject?.id === activeProjId
+          ? projectStore.selectedProject
+          : (projectStore.projects || []).find(p => p.id === activeProjId || p.jobId === activeProjId);
+        if (foundProj) {
+          const clientCode = (foundProj.brand || (foundProj as any).clientCode || '').toUpperCase();
+          if (clientCode && clientCode !== timerStore.clientCode) {
+            selectClient(clientCode);
+          }
+        }
+      }
+    }
+  });
 
   function handleStopClick() {
     if (!timerStore.isRunning && !timerStore.isPaused && timerStore.elapsedSeconds === 0) return;
@@ -85,7 +118,7 @@
       class:running={timerStore.isRunning}
       class:paused={timerStore.isPaused}
       onclick={handlePlayPause}
-      title={timerStore.isRunning ? 'Pause Timer (Space)' : 'Start Billable Timer'}
+      title={timerStore.isRunning ? 'Pause Timer (Ctrl+Alt+T)' : 'Start Billable Timer (Ctrl+Alt+T)'}
       aria-label="Start or pause timer"
     >
       {#if timerStore.isRunning}
