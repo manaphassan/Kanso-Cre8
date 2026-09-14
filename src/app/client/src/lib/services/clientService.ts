@@ -16,8 +16,8 @@ export const DEFAULT_CLIENTS: ClientProfile[] = [
     email: 'operations@acme.com',
     phone: '+1 555-0199',
     billingAddress: '100 Innovation Way, Suite 400, San Francisco, CA 94105',
-    currency: 'USD',
-    defaultHourlyRate: 150,
+    currency: 'MYR',
+    defaultHourlyRate: 180,
     paymentTermsDays: 14,
     palette: {
       primary: '#0284C7',   // Ocean Blue
@@ -38,8 +38,8 @@ export const DEFAULT_CLIENTS: ClientProfile[] = [
     email: 'hello@nexusstudio.io',
     phone: '+44 20-7946-0912',
     billingAddress: '42 Shoreditch High St, Hackney, London E1 6JJ, UK',
-    currency: 'GBP',
-    defaultHourlyRate: 140,
+    currency: 'MYR',
+    defaultHourlyRate: 150,
     paymentTermsDays: 30,
     palette: {
       primary: '#8B5CF6',   // Purple Haze
@@ -60,7 +60,7 @@ export const DEFAULT_CLIENTS: ClientProfile[] = [
     email: 'contact@luminalabs.dev',
     phone: '+65 6789-0123',
     billingAddress: '71 Ayer Rajah Crescent, #03-01, Singapore 139951',
-    currency: 'SGD',
+    currency: 'MYR',
     defaultHourlyRate: 160,
     paymentTermsDays: 15,
     palette: {

@@ -42,7 +42,10 @@ class ProjectStore {
           return false;
         }
       }
-      if (brand !== 'all' && p.brand !== brand) return false;
+      if (brand !== 'all') {
+        const pBrand = (p.brand || (p as any).clientCode || (p as any).client || '').toUpperCase();
+        if (pBrand !== brand.toUpperCase()) return false;
+      }
       if (designer !== 'all' && p.designer !== designer) return false;
       if (priority !== 'all' && p.priority !== priority) return false;
       if (department !== 'all' && p.department !== department) return false;
@@ -51,9 +54,11 @@ class ProjectStore {
         const q = query.toLowerCase();
         const matchesJobId = p.jobId?.toLowerCase().includes(q);
         const matchesTitle = p.title?.toLowerCase().includes(q);
+        const matchesBrand = (p.brand || (p as any).clientCode || '').toLowerCase().includes(q);
+        const matchesClient = ((p as any).clientName || (p as any).client || '').toLowerCase().includes(q);
         const matchesDesigner = p.designer?.toLowerCase().includes(q);
         const matchesTags = p.tags?.some(t => t.toLowerCase().includes(q));
-        if (!matchesJobId && !matchesTitle && !matchesDesigner && !matchesTags) return false;
+        if (!matchesJobId && !matchesTitle && !matchesBrand && !matchesClient && !matchesDesigner && !matchesTags) return false;
       }
 
       return true;

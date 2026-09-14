@@ -77,24 +77,43 @@
       return;
     }
 
-    // Ctrl+Shift+T: Toggle Focus Chronometer
+    // Ctrl+Shift+T: Toggle Billable Timer
     if (e.shiftKey && key === 't') {
       e.preventDefault();
       if (timerStore.isRunning) {
         timerStore.stop();
-        appState.addToast('Focus chronometer stopped & session logged', 'info');
+        appState.addToast('Billable timer stopped & session logged', 'info');
       } else if (timerStore.isPaused) {
         timerStore.resume();
-        appState.addToast('Focus chronometer resumed', 'info');
+        appState.addToast('Billable timer resumed', 'info');
       } else {
         timerStore.start();
-        appState.addToast('Focus chronometer started', 'info');
+        appState.addToast('Billable timer started', 'info');
       }
       return;
     }
   }
 
   onMount(() => {
+    // Notify native desktop launcher to dissolve the native splash screen directly into Home Page
+    if ((window as any).chrome?.webview) {
+      try {
+        (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SPLASH_DISMISS' }));
+        (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SET_THEME', theme: appState.theme }));
+      } catch (e) {
+        console.warn('WebView2 postMessage failed', e);
+      }
+    }
+
+    // Smoothly dissolve boot splash screen once workspace is mounted and painted (browser mode)
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (typeof (window as any).dismissKansoSplash === 'function') {
+          (window as any).dismissKansoSplash();
+        }
+      }, 500);
+    });
+
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
       if (hash.startsWith('review') || window.location.search.includes('token=')) {
@@ -303,6 +322,7 @@
 
 <svelte:window onkeydown={handleGlobalKeydown} />
 
+
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
 {:else}
@@ -313,14 +333,20 @@
       <!-- ═══ 50px PRECISION STUDIO INSTRUMENT HEADER ═════════════════ -->
       <header class="app-header">
         <div class="header-left">
-          <!-- Tactile K8 Brand Badge -->
+          <!-- Tactile 簡素Cre8 Brand Badge -->
           <button
             class="k8-badge-btn"
             onclick={() => appState.navigate('dashboard')}
-            title="Kanso Cre8 Studio Deck (⌘1)"
-            aria-label="Kanso Cre8 Home"
+            title="簡素Cre8 Studio Deck (⌘1)"
+            aria-label="簡素Cre8 Home"
           >
-            <span class="k8-text">K8</span>
+            <svg class="kanso-brand-mark" viewBox="0 0 128 128" width="30" height="30">
+              <rect width="128" height="128" rx="28" fill="#131816" stroke="#252F29" stroke-width="2"/>
+              <text x="63" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#00E5FF" opacity="0.5" letter-spacing="1">簡素</text>
+              <text x="65" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#FF1744" opacity="0.5" letter-spacing="1">簡素</text>
+              <text x="64" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#F4F3EE" letter-spacing="1">簡素</text>
+              <text x="64" y="104" text-anchor="middle" font-family="'Red Hat Display', 'Inter', sans-serif" font-weight="900" font-size="24" fill="#FF5722" letter-spacing="3">CRE8</text>
+            </svg>
           </button>
 
           <!-- Touch & Click Friendly Studio Navigator Dropdown & Breadcrumbs -->
@@ -647,30 +673,30 @@
   .header-center { min-width: 0; display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center; max-width: 720px; }
   .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-  /* Tactile K8 Brand Badge */
+  /* Tactile 簡素Cre8 Brand Badge */
   .k8-badge-btn {
     width: 32px;
     height: 32px;
-    border-radius: 7px;
-    background: var(--kanso-accent-muted, rgba(222, 105, 75, 0.14));
-    border: 1px solid rgba(222, 105, 75, 0.35);
-    color: var(--kanso-accent);
+    padding: 0;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.14s ease, border-color 0.14s ease;
+    transition: transform 0.15s ease, filter 0.15s ease;
     flex-shrink: 0;
   }
   .k8-badge-btn:hover {
-    transform: scale(1.06);
-    border-color: var(--kanso-accent);
+    transform: scale(1.08);
+    filter: brightness(1.15);
   }
-  .k8-text {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+  .kanso-brand-mark {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    display: block;
   }
   .bc-root {
     font-family: var(--font-display);

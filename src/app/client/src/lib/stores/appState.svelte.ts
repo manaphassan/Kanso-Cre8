@@ -63,6 +63,11 @@ class AppStateStore {
     this.theme = newTheme;
     localStorage.setItem('kanso_theme', newTheme);
     localStorage.setItem('ss_cam_theme', newTheme);
+    if (typeof window !== 'undefined' && (window as any).chrome?.webview) {
+      try {
+        (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SET_THEME', theme: newTheme }));
+      } catch (e) {}
+    }
     this.applyTheme(newTheme);
   }
 

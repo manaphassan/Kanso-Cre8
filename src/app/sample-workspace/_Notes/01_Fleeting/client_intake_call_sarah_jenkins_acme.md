@@ -8,10 +8,10 @@ tags:
   - brief-intake
   - fintech
 created: '2026-09-09'
-updated: '2026-09-10'
+updated: '2026-09-13'
 ---
 
-# Client Intake Call: Sarah Jenkins ([[ACME]])
+# Client Intake Call: Sarah Jenkins
 
 Met with Sarah Jenkins regarding the new Enterprise Mobile Banking 3D isometric asset package.
 

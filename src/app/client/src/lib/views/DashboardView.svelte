@@ -100,7 +100,7 @@
       return {
         type: 'sky',
         header: 'Live Billable Session',
-        body: `Accruing +${settingsStore.settings.currencySymbol || '$'}${(timerStore.earnings || 0).toFixed(2)} (${timerStore.elapsedFormatted}) on [${timerStore.clientCode}]. Stop timer anytime to auto-append into draft invoice.`,
+        body: `Accruing +${settingsStore.settings.currencySymbol || 'RM'}${(timerStore.earnings || 0).toFixed(2)} (${timerStore.elapsedFormatted}) on [${timerStore.clientCode}]. Stop timer anytime to auto-append into draft invoice.`,
         actionText: 'Review Invoices →',
         actionHref: '#invoices',
         isPlayTrigger: false
@@ -109,7 +109,7 @@
       return {
         type: 'sky',
         header: 'Unbilled Session Saved',
-        body: `You have ${timerStore.elapsedFormatted} (+${settingsStore.settings.currencySymbol || '$'}${(timerStore.earnings || 0).toFixed(2)}) ready to be billed for [${timerStore.clientCode}].`,
+        body: `You have ${timerStore.elapsedFormatted} (+${settingsStore.settings.currencySymbol || 'RM'}${(timerStore.earnings || 0).toFixed(2)}) ready to be billed for [${timerStore.clientCode}].`,
         actionText: 'Open Invoice Studio →',
         actionHref: '#invoices',
         isPlayTrigger: false
@@ -118,7 +118,7 @@
       return {
         type: 'amber',
         header: 'Pending Receivables',
-        body: `${settingsStore.settings.currencySymbol || '$'}${incomeSummary.pending.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} awaiting client settlement. Check payment terms in Draft Invoices.`,
+        body: `${settingsStore.settings.currencySymbol || 'RM'}${incomeSummary.pending.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} awaiting client settlement. Check payment terms in Draft Invoices.`,
         actionText: 'View Invoices →',
         actionHref: '#invoices',
         isPlayTrigger: false
@@ -126,8 +126,8 @@
     } else {
       return {
         type: 'sky',
-        header: 'Chronometer Ready',
-        body: `Ready for creative sprint at ${settingsStore.settings.currencySymbol || '$'}${timerStore.hourlyRate}/hr on [${timerStore.clientCode}]. Start timer to track billable focus in real time.`,
+        header: 'Timer Ready',
+        body: `Ready for creative sprint at ${settingsStore.settings.currencySymbol || 'RM'}${timerStore.hourlyRate}/hr on [${timerStore.clientCode}]. Start timer to track billable focus in real time.`,
         actionText: 'Start Billable Timer →',
         actionHref: '#invoices',
         isPlayTrigger: true
@@ -363,7 +363,7 @@
           <span class="pulse-dot"></span>
           <span class="timer-client">[{timerStore.clientCode}]</span>
           <span class="timer-ticker">{timerStore.elapsedFormatted || '00:00:00'}</span>
-          <span class="timer-amount">(+${(timerStore.earnings || 0).toFixed(2)})</span>
+          <span class="timer-amount">(+{settingsStore.settings.currencySymbol || 'RM'}&nbsp;{(timerStore.earnings || 0).toFixed(2)})</span>
         </div>
       {:else}
         <div class="timer-pill idle">
@@ -637,7 +637,7 @@
         <!-- Metric 3: Effective Rate -->
         <div class="metric-card">
           <span class="metric-label">Effective Rate</span>
-          <div class="metric-value">{settingsStore.settings.currencySymbol || '$'} {timerStore.hourlyRate}/hr</div>
+          <div class="metric-value">{settingsStore.settings.currencySymbol || 'RM'} {timerStore.hourlyRate}/hr</div>
           <span class="metric-sub muted">Tier: [{timerStore.clientCode}]</span>
         </div>
 

@@ -64,10 +64,10 @@
           </div>
           <p class="comp-desc">The commercial operations engine.</p>
           <ul class="feature-list">
-            <li class="highlight">✓ <strong>Unlimited Client Dossiers</strong> &amp; Brand Hub</li>
+            <li class="highlight">✓ <strong>Unlimited Client Profiles</strong> &amp; Brand Hub</li>
             <li class="highlight">✓ <strong>YAML Quote &amp; Invoice Studio</strong> (PDF/Print)</li>
-            <li class="highlight">✓ <strong>Billable Chronometer</strong> Rate Accrual</li>
-            <li class="highlight">✓ <strong>5-Folder Project Scaffolder</strong></li>
+            <li class="highlight">✓ <strong>Billable Timer</strong> &amp; Earnings Tracker</li>
+            <li class="highlight">✓ <strong>5-Folder Project Setup</strong></li>
             <li class="highlight">✓ <strong>4K Deliverable ZIP Packaging</strong></li>
           </ul>
         </div>

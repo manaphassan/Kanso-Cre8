@@ -1,5 +1,5 @@
 /**
- * Kanso Cre8 — Live Billable Chronometer Store (Svelte 5 Runes)
+ * Kanso Cre8 — Live Billable Timer Store (Svelte 5 Runes)
  * Tactile, millisecond-accurate billable time tracking, auto-calculated earnings,
  * session logging, and state persistence across app restarts.
  */
@@ -191,7 +191,7 @@ class TimerStore {
     let log: TimeSessionLog | null = null;
     if (totalSeconds >= 5) { // Only log sessions >= 5 seconds to avoid noise
       const earned = (totalSeconds / 3600) * this.hourlyRate;
-      const symbol = settingsStore.settings.currencySymbol || '$';
+      const symbol = settingsStore.settings.currencySymbol || 'RM';
       log = {
         id: `log_${Date.now()}`,
         projectId: this.projectId,
@@ -201,7 +201,7 @@ class TimerStore {
         durationSeconds: totalSeconds,
         durationFormatted: this.formattedTime,
         earnedAmount: Math.round(earned * 100) / 100,
-        earnedFormatted: `${symbol}${earned.toFixed(2)}`,
+        earnedFormatted: `${symbol} ${earned.toFixed(2)}`,
         startedAt: this.startTime ? new Date(this.startTime).toISOString() : new Date().toISOString(),
         endedAt: new Date().toISOString(),
         note: this.sessionNote,
