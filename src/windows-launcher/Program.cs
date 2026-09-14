@@ -99,14 +99,24 @@ namespace KansoCre8.Native
             }
             logFilePath = Path.Combine(appDir, "launcher.log");
 
-            // Read user theme preference (light vs dark)
+            // Read user theme preference (light vs dark vs neumorphic)
             string savedTheme = ReadSavedTheme();
-            isLightTheme = (savedTheme == "light" || savedTheme == "oceanic-light" || savedTheme == "eink");
+            isLightTheme = (savedTheme == "light" || savedTheme == "oceanic-light" || savedTheme == "eink" || savedTheme == "neumorphic");
 
-            // Instant Theme Canvas: Light (#ECE8DF) or Dark (#09090B) — Zero blank dark screen
-            System.Windows.Media.Color canvasColor = isLightTheme
-                ? System.Windows.Media.Color.FromRgb(0xEC, 0xE8, 0xDF)
-                : System.Windows.Media.Color.FromRgb(0x09, 0x09, 0x0B);
+            // Instant Theme Canvas: Neumorphic Clay (#E0E5EC), Light (#ECE8DF) or Dark (#09090B) — Zero blank dark screen
+            System.Windows.Media.Color canvasColor;
+            if (savedTheme == "neumorphic")
+            {
+                canvasColor = System.Windows.Media.Color.FromRgb(0xE0, 0xE5, 0xEC);
+            }
+            else if (isLightTheme)
+            {
+                canvasColor = System.Windows.Media.Color.FromRgb(0xEC, 0xE8, 0xDF);
+            }
+            else
+            {
+                canvasColor = System.Windows.Media.Color.FromRgb(0x09, 0x09, 0x0B);
+            }
             Background = new SolidColorBrush(canvasColor);
 
             // Set Application Icon if present
@@ -219,7 +229,7 @@ namespace KansoCre8.Native
             };
             splashPanel.Children.Add(tagline);
 
-            // Version Badge: "v0.1.0 • Zen Atelier"
+            // Version Badge: "v0.2.2 • Zen Atelier"
             Border versionBadge = new Border
             {
                 Background = new SolidColorBrush(isLightTheme
@@ -236,7 +246,7 @@ namespace KansoCre8.Native
             };
             TextBlock versionText = new TextBlock
             {
-                Text = "v0.1.0 • Zen Atelier",
+                Text = "v0.2.2 • Zen Atelier",
                 FontSize = 10.5,
                 FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(isLightTheme
@@ -455,7 +465,11 @@ namespace KansoCre8.Native
             try
             {
                 string theme = "dark";
-                if (json.Contains("\"theme\":\"light\"") || json.Contains("\"theme\":\"oceanic-light\"") || json.Contains("\"theme\":\"eink\""))
+                if (json.Contains("\"theme\":\"neumorphic\""))
+                {
+                    theme = "neumorphic";
+                }
+                else if (json.Contains("\"theme\":\"light\"") || json.Contains("\"theme\":\"oceanic-light\"") || json.Contains("\"theme\":\"eink\""))
                 {
                     theme = "light";
                 }

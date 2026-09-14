@@ -46,13 +46,13 @@
     font-weight: 700;
   }
 
-  [data-theme="metamorphosis"] .fluent-pill.active {
+  :global([data-theme="metamorphosis"]) .fluent-pill.active {
     background: rgba(0, 207, 255, 0.18);
     color: #00CFFF;
     border-color: #00CFFF;
   }
 
-  [data-theme="catppuccin"] .fluent-pill.active {
+  :global([data-theme="catppuccin"]) .fluent-pill.active {
     background: rgba(203, 166, 247, 0.18);
     color: #CBA6F7;
     border-color: #CBA6F7;

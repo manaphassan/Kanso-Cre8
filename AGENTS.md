@@ -108,8 +108,9 @@ Never use hardcoded hex colors in components. Always use:
 - Accent CTA: `var(--kanso-accent)` (`#38BDF8` / `#0078D4`)
 - Status colors: `var(--kanso-success)`, `var(--kanso-warning)`, `var(--kanso-danger)`
 
-### Hairline Borders Over Heavy Shadows
-Elevate surfaces using `1px solid var(--kanso-border)` instead of heavy blurry drop shadows.
+### Hairline Borders & Tactile Neumorphic Extrusion
+- **Flat Studio Modes**: Elevate surfaces using `1px solid var(--kanso-border)` instead of heavy blurry drop shadows.
+- **Neumorphic Studio Modes (`neumorphic`, `neumorphic-dark`)**: Elevate surfaces using physical dual-shadow extrusion tokens (`var(--neu-shadow-raised)`) and debossed concave inputs (`var(--neu-shadow-inset)`) with high-contrast Slate typography.
 
 ---
 

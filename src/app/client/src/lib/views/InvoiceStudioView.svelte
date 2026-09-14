@@ -703,7 +703,7 @@
       </div>
 
       <!-- RIGHT PANE: Live Printable Preview (7 Cols) (Always printed) -->
-      <div class="lg:col-span-7 bg-white text-zinc-900 rounded-xl border border-zinc-200 p-8 sm:p-12 shadow-md space-y-8 print:border-none print:shadow-none print:p-0 print:m-0">
+      <div class="lg:col-span-7 invoice-paper-card bg-white text-zinc-900 rounded-xl border border-zinc-200 p-8 sm:p-12 shadow-md space-y-8 print:border-none print:shadow-none print:p-0 print:m-0">
         
         <!-- Document Header -->
         <div class="flex justify-between items-start border-b border-zinc-200 pb-6">

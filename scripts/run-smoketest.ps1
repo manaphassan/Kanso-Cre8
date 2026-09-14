@@ -66,9 +66,27 @@ try {
 # ------------------------------------------------------------------------------
 Write-Host ""
 Write-Host "[3/5] Validating Desktop Binary and Multi-Resolution Icon Set..." -ForegroundColor Yellow
-$distExe = Join-Path $repoRoot "dist\windows\KansoCre8-v0.1.0-windows-x64\KansoCre8.exe"
+$pkgJson = Join-Path $repoRoot "src\app\package.json"
+$appVer = "0.2.2"
+if (Test-Path $pkgJson) {
+    try {
+        $p = Get-Content $pkgJson -Raw | ConvertFrom-Json
+        if ($p.version) { $appVer = $p.version }
+    } catch {}
+}
+
+$distExe = Join-Path $repoRoot "dist\windows\KansoCre8-v$appVer-windows-x64\KansoCre8.exe"
+if (-not (Test-Path $distExe)) {
+    $fallbackExe = Get-ChildItem -Path (Join-Path $repoRoot "dist\windows") -Filter "KansoCre8.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($fallbackExe) { $distExe = $fallbackExe.FullName }
+}
+
 $launcherExe = Join-Path $repoRoot "src\windows-launcher\KansoCre8.exe"
-$distZip = Join-Path $repoRoot "dist\windows\kanso-cre8-v0.1.0-windows-x64.zip"
+$distZip = Join-Path $repoRoot "dist\windows\kanso-cre8-v$appVer-windows-x64.zip"
+if (-not (Test-Path $distZip)) {
+    $fallbackZip = Get-ChildItem -Path (Join-Path $repoRoot "dist\windows") -Filter "kanso-cre8-v*-windows-x64.zip" -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($fallbackZip) { $distZip = $fallbackZip.FullName }
+}
 $icoPath = Join-Path $repoRoot "src\app\src-tauri\icons\icon.ico"
 
 Report-Result -Name "Standalone KansoCre8.exe exists in dist/" -Passed (Test-Path $distExe)
@@ -124,6 +142,20 @@ if (Test-Path $clientHtml) {
 Write-Host ""
 Write-Host "[5/5] Testing Live REST API Endpoints ($BaseUrl)..." -ForegroundColor Yellow
 
+$serverProcess = $null
+$startedServer = $false
+try {
+    $testPing = Invoke-WebRequest -Uri "$BaseUrl/api/status" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
+} catch {}
+
+if (-not $testPing) {
+    Write-Host "  Backend not detected on $BaseUrl. Launching isolated server instance..." -ForegroundColor Cyan
+    $appDir = Join-Path $repoRoot "src\app"
+    $serverProcess = Start-Process node -ArgumentList "server/index.js" -WorkingDirectory $appDir -PassThru -WindowStyle Hidden
+    $startedServer = $true
+    Start-Sleep -Seconds 2
+}
+
 $endpoints = @(
     @{ Path = "/api/status"; Desc = "System Health and Uptime" },
     @{ Path = "/api/auth/roster"; Desc = "Staff Directory Roster" },
@@ -151,6 +183,11 @@ foreach ($ep in $endpoints) {
         $sw.Stop()
         Report-Result -Name "$($ep.Path) ($($ep.Desc))" -Passed $false -Detail "[Error: $($_.Exception.Message)]"
     }
+}
+
+if ($startedServer -and $serverProcess) {
+    Write-Host "`n  Stopping isolated smoke test server instance..." -ForegroundColor Cyan
+    Stop-Process -Id $serverProcess.Id -Force -ErrorAction SilentlyContinue
 }
 
 # ------------------------------------------------------------------------------

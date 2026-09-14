@@ -11,8 +11,17 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
+$packageJsonPath = Join-Path $repoRoot "src\app\package.json"
+$appVersion = "0.2.2"
+if (Test-Path $packageJsonPath) {
+    try {
+        $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
+        if ($pkg.version) { $appVersion = $pkg.version }
+    } catch {}
+}
+
 $distDir = Join-Path $repoRoot "dist\windows"
-$bundleDir = Join-Path $distDir "KansoCre8-v0.1.0-windows-x64"
+$bundleDir = Join-Path $distDir "KansoCre8-v$appVersion-windows-x64"
 $clientDist = Join-Path $repoRoot "src\app\client\dist"
 
 Write-Host ""
@@ -153,7 +162,7 @@ Set-Content -Path (Join-Path $bundleDir "Start-KansoCre8.bat") -Value $batConten
 
 # Create README
 $readmeContent = @"
-# Kanso Cre8 (簡素) — Windows Desktop Edition (v0.1.0)
+# Kanso Cre8 (簡素) — Windows Desktop Edition (v$appVersion)
 
 Mindful Creative Vault — Local-First Project, Client & Knowledge Workstation.
 
@@ -173,7 +182,7 @@ Write-Host "  [OK] Assembled files into: $bundleDir" -ForegroundColor Green
 
 # 5. Create ZIP Distribution Archive
 Write-Host "`n[5/6] Packaging Portable ZIP Archive..." -ForegroundColor Yellow
-$zipFile = Join-Path $distDir "kanso-cre8-v0.1.0-windows-x64.zip"
+$zipFile = Join-Path $distDir "kanso-cre8-v$appVersion-windows-x64.zip"
 if (Test-Path $zipFile) { Remove-Item -Force $zipFile }
 
 Compress-Archive -Path "$bundleDir\*" -DestinationPath $zipFile -CompressionLevel Optimal
