@@ -46,7 +46,11 @@ try {
 }
 Write-Host "  [OK] Server bundled into: $serverBundleOut" -ForegroundColor Green
 
-# 3. Compile Native Windows Desktop Application (WPF + WebView2)
+# Stop any running KansoCre8 process to release file lock
+Get-Process KansoCre8 -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 200
+
+# 3. Compile Native Windows Desktop Application (KansoCre8.exe)
 Write-Host "`n[3/6] Compiling Native Windows Desktop Application (KansoCre8.exe)..." -ForegroundColor Yellow
 $cscPath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 if (-not (Test-Path $cscPath)) {
@@ -83,6 +87,13 @@ $wv2Core = Join-Path $libDir "Microsoft.Web.WebView2.Core.dll"
 if ($LASTEXITCODE -ne 0) { throw "Native WPF compilation failed" }
 Write-Host "  [OK] Compiled native WPF desktop application: $launcherOut" -ForegroundColor Green
 
+# Ensure launcher directory has required dependencies for direct repo execution
+Copy-Item -Force $wv2Wpf (Join-Path $repoRoot "src\windows-launcher\Microsoft.Web.WebView2.Wpf.dll")
+Copy-Item -Force $wv2Core (Join-Path $repoRoot "src\windows-launcher\Microsoft.Web.WebView2.Core.dll")
+Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") (Join-Path $repoRoot "src\windows-launcher\WebView2Loader.dll")
+New-Item -ItemType Directory -Path (Join-Path $repoRoot "src\windows-launcher\runtimes\win-x64\native") -Force | Out-Null
+Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") (Join-Path $repoRoot "src\windows-launcher\runtimes\win-x64\native\WebView2Loader.dll")
+
 # 4. Assemble Windows Distribution
 Write-Host "`n[4/6] Assembling Portable Windows Distribution Bundle..." -ForegroundColor Yellow
 New-Item -ItemType Directory -Path "$bundleDir\app\client\dist" -Force | Out-Null
@@ -100,8 +111,12 @@ Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") "$bundleDir\WebView2Lo
 Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") "$bundleDir\runtimes\win-x64\native\WebView2Loader.dll"
 Write-Host "  [OK] Bundled native WebView2 WPF assemblies and loader" -ForegroundColor Green
 
-# Copy Client Web Dist
+# Copy Client Web Dist & Brand Assets
 Copy-Item -Recurse -Force "$clientDist\*" "$bundleDir\app\client\dist\"
+if (Test-Path "$clientDist\brand") {
+    Copy-Item -Recurse -Force "$clientDist\brand" "$bundleDir\brand"
+    Copy-Item -Recurse -Force "$clientDist\brand" (Join-Path $repoRoot "src\windows-launcher\brand")
+}
 
 # Copy Sample Workspace for out-of-the-box offline vault
 $sampleWs = Join-Path $repoRoot "src\app\sample-workspace"
@@ -173,3 +188,17 @@ Write-Host "  BUILD SUCCESS: WINDOWS DESKTOP PACKAGE READY!             " -Foreg
 Write-Host "  Standalone Folder: $bundleDir                             " -ForegroundColor Green
 Write-Host "  Distribution ZIP:  $zipFile ($zipMb MB)                   " -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
+
+# Refresh Windows Explorer icon cache
+try {
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class ShellNotify {
+        [DllImport("shell32.dll")]
+        public static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+    }
+"@ -ErrorAction SilentlyContinue
+    [ShellNotify]::SHChangeNotify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+} catch {}
+

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { clientService } from '../services/clientService';
   import { timerStore } from '../stores/timerStore.svelte';
+  import { settingsStore, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import { licenseStore } from '../stores/licenseStore.svelte';
   import type { ClientProfile } from '../types/kanso';
 
@@ -17,8 +18,8 @@
   let formEmail = $state('');
   let formPhone = $state('');
   let formAddress = $state('');
-  let formRate = $state(120);
-  let formCurrency = $state('MYR');
+  let formRate = $state(180);
+  let formCurrency = $state(settingsStore.settings.currency || 'MYR');
   let formPrimary = $state('#0EA5E9');
   let formSecondary = $state('#0284C7');
   let formDark = $state('#0F172A');
@@ -49,8 +50,8 @@
     formEmail = '';
     formPhone = '';
     formAddress = '';
-    formRate = 120;
-    formCurrency = 'MYR';
+    formRate = settingsStore.settings.defaultHourlyRate || 180;
+    formCurrency = settingsStore.settings.currency || 'MYR';
     formPrimary = '#0EA5E9';
     formSecondary = '#0284C7';
     formDark = '#0F172A';
@@ -126,7 +127,7 @@
     <div class="header-titles">
       <div class="header-tag">
         <span class="tag-badge">_Clients/</span>
-        <span class="tag-meta">{clients.length} Client Dossiers &amp; Brand Swatches</span>
+        <span class="tag-meta">{clients.length} Client Profiles &amp; Brand Swatches</span>
       </div>
       <h1 class="view-title">Clients &amp; Brand Hub</h1>
       <p class="view-subtitle">
@@ -270,13 +271,13 @@
             </div>
           {/if}
 
-          <!-- 1-Click Billable Chronometer Action -->
+          <!-- 1-Click Billable Timer Action -->
           <div class="pt-2">
             {#if timerStore.isRunning && timerStore.clientCode === client.code}
               <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span class="text-xs font-mono font-bold text-emerald-400 flex-1">
-                  Active: {timerStore.elapsedFormatted || '00:00:00'} (+${(timerStore.earnings || 0).toFixed(2)})
+                  Active: {timerStore.elapsedFormatted || '00:00:00'} (+{settingsStore.settings.currencySymbol || 'RM'} {(timerStore.earnings || 0).toFixed(2)})
                 </span>
                 <button
                   onclick={() => timerStore.stop()}
@@ -293,7 +294,7 @@
                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
-                <span>Start Billable Timer (${client.defaultHourlyRate}/hr)</span>
+                <span>Start Billable Timer ({client.currency || settingsStore.settings.currencySymbol || 'RM'} {client.defaultHourlyRate}/hr)</span>
               </button>
             {/if}
           </div>
@@ -393,12 +394,19 @@
             </div>
             <div class="space-y-1">
               <label class="text-xs font-semibold text-muted-foreground">Currency</label>
-              <input
-                type="text"
+              <select
                 bind:value={formCurrency}
-                placeholder="MYR"
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-              />
+                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono text-sm focus:outline-none focus:border-primary"
+              >
+                <option value="MYR">MYR (RM)</option>
+                <option value="USD">USD ($)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="AUD">AUD (A$)</option>
+                <option value="CAD">CAD (CA$)</option>
+                <option value="JPY">JPY (¥)</option>
+              </select>
             </div>
           </div>
 

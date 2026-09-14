@@ -15,6 +15,8 @@
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import { clientService } from '$lib/services/clientService';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
+  import { timerStore } from '$lib/stores/timerStore.svelte';
+  import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
   import type { ClientProfile } from '$lib/types/kanso';
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
@@ -41,7 +43,7 @@
   let npPriority = $state<'low' | 'normal' | 'high' | 'urgent'>('normal');
   let npDeadline = $state(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
   let npBudget = $state(1750);
-  let npCurrency = $state('USD');
+  let npCurrency = $state(settingsStore.settings.currency || 'MYR');
   let npDescription = $state('');
   let clientsList = $state<ClientProfile[]>([]);
 
@@ -104,6 +106,7 @@
     if (clientsList.length > 0 && !clientsList.some(c => c.code === npClientCode)) {
       npClientCode = clientsList[0].code;
     }
+    npCurrency = settingsStore.settings.currency || 'MYR';
     showNewProjectModal = true;
   }
 
@@ -123,7 +126,7 @@
         priority: npPriority,
         deadline: npDeadline,
         budget: Number(npBudget) || 0,
-        currency: npCurrency || 'USD',
+        currency: npCurrency || settingsStore.settings.currency || 'MYR',
         description: npDescription.trim()
       });
       showNewProjectModal = false;
@@ -134,6 +137,46 @@
     } finally {
       isSubmitting = false;
     }
+  }
+
+  function handleToggleTimer(e: Event, project: Project) {
+    e.stopPropagation();
+    if (timerStore.isRunning && timerStore.projectId === project.id) {
+      const log = timerStore.stop();
+      if (log) {
+        appState.addToast(`Logged ${log.durationFormatted} (${log.earnedFormatted}) for "${project.title}"`, 'success');
+      }
+    } else {
+      const clientRate = clientService.getClientRate(project.brand || 'ACME');
+      timerStore.start({
+        projectId: project.id,
+        projectTitle: project.title,
+        clientCode: project.brand || 'ACME',
+        hourlyRate: clientRate
+      });
+      appState.addToast(`Started live timer for "${project.title}" (${project.brand || 'ACME'})`, 'info');
+    }
+  }
+
+  function getDeadlineInfo(deadlineStr?: string): { text: string; isOverdue: boolean; isSoon: boolean } {
+    if (!deadlineStr) return { text: 'No due date', isOverdue: false, isSoon: false };
+    const due = new Date(deadlineStr);
+    if (isNaN(due.getTime())) return { text: deadlineStr, isOverdue: false, isSoon: false };
+    const now = new Date();
+    const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) {
+      return { text: `${Math.abs(diffDays)}d overdue`, isOverdue: true, isSoon: false };
+    }
+    if (diffDays === 0) {
+      return { text: 'Due today', isOverdue: false, isSoon: true };
+    }
+    if (diffDays === 1) {
+      return { text: 'Due tomorrow', isOverdue: false, isSoon: true };
+    }
+    if (diffDays <= 3) {
+      return { text: `${diffDays} days left`, isOverdue: false, isSoon: true };
+    }
+    return { text: `${diffDays} days left`, isOverdue: false, isSoon: false };
   }
 
   onMount(() => {
@@ -295,11 +338,15 @@
       onDelete={handleDeleteRequest}
     />
   {:else}
-    <!-- Default Cards Grid View -->
+    <!-- Default Cards Grid View (Single Freelance Designer POV) -->
     <div class="projects-grid">
       {#each projectStore.filteredProjects as p (p.id)}
+        {@const client = clientService.getClientByCode(p.brand || 'ACME')}
+        {@const deadlineInfo = getDeadlineInfo(p.deadline)}
+        {@const isTimerActive = timerStore.isRunning && timerStore.projectId === p.id}
         <div
           class="project-card-wrapper"
+          class:timer-active-card={isTimerActive}
           onclick={() => appState.navigate('project-detail', { id: p.id })}
           role="button"
           tabindex="0"
@@ -324,7 +371,10 @@
                 {/if}
               </div>
               <div class="badges-row">
-                <FluentBadge type="brand" value={p.brand || 'ACME'}>{p.brand || 'ACME'}</FluentBadge>
+                <div class="client-badge-pill" title={client?.name || p.brand || 'Client'}>
+                  <span class="client-badge-dot" style="background-color: {client?.palette?.primary || 'var(--kanso-accent)'};"></span>
+                  <span>{p.brand || 'ACME'}</span>
+                </div>
                 <FluentBadge type="status" value={p.status} />
               </div>
             </div>
@@ -337,24 +387,52 @@
               {p.title}
             </a>
 
-            <div class="meta-rows">
-              <div class="meta-row">
-                <span class="meta-key">Designer:</span>
-                <span class="meta-val">{p.designer || 'Unassigned'}</span>
+            <!-- Freelance Meta: Deliverables & Deadline Urgency -->
+            <div class="freelance-meta-row">
+              <div class="meta-item" title="Deliverables status">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>{p.deliverablesCount ? `${p.deliverablesCount} files` : (p.status === 'done' || p.status === 'approved' ? 'Deliverables ready' : 'Scope defined')}</span>
               </div>
-              <div class="meta-row">
-                <span class="meta-key">Deadline:</span>
-                <span class="meta-val" class:is-overdue={p.isOverdue}>{p.deadline || 'None'}</span>
+
+              <div class="meta-item deadline-item" class:is-overdue={deadlineInfo.isOverdue} class:is-soon={deadlineInfo.isSoon}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>{deadlineInfo.text}</span>
               </div>
             </div>
 
-            {#if p.tags && p.tags.length > 0}
-              <div class="card-tags">
-                {#each p.tags.slice(0, 3) as t}
-                  <span class="tag-pill">{t}</span>
-                {/each}
-              </div>
-            {/if}
+            <!-- Tactile 1-Click Billable Chronometer & Tag Bar -->
+            <div class="card-footer-action-bar">
+              <button
+                type="button"
+                class="card-timer-btn"
+                class:is-active={isTimerActive}
+                onclick={(e) => handleToggleTimer(e, p)}
+                title={isTimerActive ? 'Stop Live Timer' : 'Start Live Timer for this project'}
+              >
+                {#if isTimerActive}
+                  <span class="pulsing-record-dot"></span>
+                  <span class="timer-ticker-label">{timerStore.formattedTime}</span>
+                  <span class="timer-stop-icon">■ Stop</span>
+                {:else}
+                  <span class="timer-play-icon">▶</span>
+                  <span>Start Timer</span>
+                {/if}
+              </button>
+
+              {#if p.tags && p.tags.length > 0}
+                <div class="card-tags">
+                  {#each p.tags.slice(0, 2) as t}
+                    <span class="tag-pill">{t}</span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
           </FluentCard>
         </div>
       {/each}
@@ -482,7 +560,7 @@
         </div>
 
         <div class="form-field">
-          <label class="form-label" for="np-budget">Budget ({npCurrency})</label>
+          <label class="form-label" for="np-budget">Budget ({getCurrencySymbol(npCurrency)} {npCurrency})</label>
           <input
             id="np-budget"
             type="number"
@@ -665,38 +743,133 @@
     text-decoration: underline;
   }
 
-  .meta-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12.5px;
-    margin-bottom: 12px;
+  /* Client Badge Pill */
+  .client-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--radius-pill, 9999px);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--kanso-text-primary);
+    font-family: var(--font-mono, monospace);
   }
 
-  .meta-row {
+  .client-badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* Freelance Meta Row */
+  .freelance-meta-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--kanso-text-muted);
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--kanso-border);
   }
 
-  .meta-key { color: var(--text-secondary, #6B7280); }
-  .meta-val { font-weight: 600; color: var(--text-primary, #111827); }
-  .is-overdue { color: #EF4444; font-weight: 800; }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .deadline-item.is-overdue {
+    color: var(--kanso-danger, #ef4444);
+    font-weight: 700;
+  }
+
+  .deadline-item.is-soon {
+    color: var(--kanso-warning, #f59e0b);
+    font-weight: 600;
+  }
+
+  /* Card Footer & Timer Action */
+  .card-footer-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .card-timer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--radius-md, 6px);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .card-timer-btn:hover {
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
+  }
+
+  .card-timer-btn.is-active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: #10B981;
+    color: #10B981;
+  }
+
+  .pulsing-record-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+  }
+
+  .timer-play-icon {
+    font-size: 9px;
+  }
+
+  .timer-stop-icon {
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .timer-ticker-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+    font-weight: 700;
+  }
 
   .card-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    padding-top: 8px;
-    border-top: 1px solid var(--surface-card-border, #E5E7EB);
   }
 
   .tag-pill {
-    font-size: 12px;
-    padding: 2px 7px;
-    background: var(--surface-card-subtle, #F3F4F6);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 9999px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-muted);
   }
 
   .loading-box {

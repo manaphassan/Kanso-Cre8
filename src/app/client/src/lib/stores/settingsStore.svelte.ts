@@ -5,7 +5,7 @@
 
 export interface StudioSettings {
   defaultHourlyRate: number;
-  currency: 'USD' | 'MYR' | 'EUR' | 'GBP';
+  currency: 'MYR' | 'USD' | 'EUR' | 'GBP' | 'SGD' | 'AUD' | 'CAD' | 'JPY' | string;
   currencySymbol: string;
   defaultLens: 'studio' | 'my-workspace';
   timerAutoLog: boolean;
@@ -15,6 +15,23 @@ export interface StudioSettings {
 
 const STORAGE_KEY = 'kanso_studio_settings';
 
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  MYR: 'RM',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  SGD: 'S$',
+  AUD: 'A$',
+  CAD: 'CA$',
+  JPY: '¥'
+};
+
+export function getCurrencySymbol(code?: string): string {
+  if (!code) return 'RM';
+  const upper = code.trim().toUpperCase();
+  return CURRENCY_SYMBOLS[upper] || upper || 'RM';
+}
+
 const DEFAULT_SETTINGS: StudioSettings = {
   defaultHourlyRate: 180,
   currency: 'MYR',
@@ -23,13 +40,6 @@ const DEFAULT_SETTINGS: StudioSettings = {
   timerAutoLog: true,
   vaultAutoSave: true,
   soundEffects: true
-};
-
-const CURRENCY_SYMBOLS: Record<string, string> = {
-  MYR: 'RM',
-  USD: '$',
-  EUR: '€',
-  GBP: '£'
 };
 
 class SettingsStore {
@@ -45,10 +55,12 @@ class SettingsStore {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
+        const curr = parsed.currency || 'MYR';
         this.settings = {
           ...DEFAULT_SETTINGS,
           ...parsed,
-          currencySymbol: CURRENCY_SYMBOLS[parsed.currency] || '$'
+          currency: curr,
+          currencySymbol: getCurrencySymbol(curr)
         };
         return this.settings;
       }
@@ -62,7 +74,7 @@ class SettingsStore {
   saveSettings(): void {
     if (typeof localStorage === 'undefined') return;
     try {
-      this.settings.currencySymbol = CURRENCY_SYMBOLS[this.settings.currency] || '$';
+      this.settings.currencySymbol = getCurrencySymbol(this.settings.currency);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings));
     } catch (e) {
       console.error('[SettingsStore] Error saving settings:', e);
@@ -70,18 +82,23 @@ class SettingsStore {
   }
 
   updateSettings(partial: Partial<StudioSettings>): void {
+    const updatedCurrency = partial.currency || this.settings.currency || 'MYR';
     this.settings = {
       ...this.settings,
       ...partial,
-      currencySymbol: CURRENCY_SYMBOLS[partial.currency || this.settings.currency] || '$'
+      currency: updatedCurrency,
+      currencySymbol: getCurrencySymbol(updatedCurrency)
     };
     this.saveSettings();
   }
 
-  formatMoney(amount: number): string {
-    const symbol = this.settings.currencySymbol || '$';
-    return `${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  formatMoney(amount: number, overrideCode?: string): string {
+    const code = overrideCode || this.settings.currency || 'MYR';
+    const symbol = getCurrencySymbol(code);
+    const formatted = amount.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `${symbol} ${formatted}`;
   }
 }
 
 export const settingsStore = new SettingsStore();
+

@@ -6,6 +6,7 @@
   import type { Project } from '$lib/types';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import { zettelService } from '$lib/services/zettelService';
+  import { clientService } from '$lib/services/clientService';
   import type { ZettelTask } from '$lib/types/zettel';
 
   interface Props {
@@ -31,12 +32,12 @@
   }
 
   const columns = [
-    { id: 'backlog', label: 'Backlog', icon: '📝', color: '#6B7280', hint: 'Ideation & briefs queued' },
-    { id: 'in-progress', label: 'In Progress', icon: '⚡', color: '#0284C7', hint: 'Active design production' },
-    { id: 'review', label: 'Review Queue', icon: '🔍', color: '#8764B8', hint: 'Awaiting manager / lead sign-off' },
-    { id: 'revision', label: 'Revision Required', icon: '⚠️', color: '#D97706', hint: 'Feedback & changes pending' },
-    { id: 'done', label: 'Approved & Done', icon: '✅', color: '#107C41', hint: 'Final deliverables signed off' },
-    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: '#64748B', hint: 'Paused, archived or blocked projects' }
+    { id: 'backlog', label: 'Backlog', icon: '📝', color: '#6B7280', hint: 'Project scoping & queued briefs' },
+    { id: 'in-progress', label: 'In Production', icon: '⚡', color: '#0284C7', hint: 'Active design & asset creation' },
+    { id: 'review', label: 'Client Proofing', icon: '🔍', color: '#8764B8', hint: 'Awaiting client review & feedback' },
+    { id: 'revision', label: 'Revision Pending', icon: '⚠️', color: '#D97706', hint: 'Client adjustments requested' },
+    { id: 'done', label: 'Client Approved', icon: '✅', color: '#107C41', hint: 'Deliverables ready & billable' },
+    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: '#64748B', hint: 'Paused or parked campaigns' }
   ];
 
   let draggedProjectId = $state<string | null>(null);
@@ -275,6 +276,7 @@
           {:else}
             {#each colProjects as p (p.id)}
               {@const dMeta = getDesignerMeta(p.designer)}
+              {@const client = clientService.getClientByCode(p.brand || 'ACME')}
               <div
                 class="kanban-card"
                 draggable="true"
@@ -346,28 +348,11 @@
                   {/if}
                 </div>
 
-                <!-- Bottom Row: Designer & Due Date -->
+                <!-- Bottom Row: Client & Due Date -->
                 <div class="card-footer-row">
-                  <div class="designer-badge" title="Assigned Designer: {dMeta.name}">
-                    <div class="designer-avatar-circle" style="background: {dMeta.avatarColor};">
-                      {#if dMeta.avatar}
-                        <img
-                          src={dMeta.avatar}
-                          alt={dMeta.name}
-                          class="designer-avatar-img"
-                          onerror={(e) => {
-                            const target = e.currentTarget as HTMLElement;
-                            target.style.display = 'none';
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <span class="designer-initial-fallback" style="display: none;">{dMeta.initial}</span>
-                      {:else}
-                        <span class="designer-initial-text">{dMeta.initial}</span>
-                      {/if}
-                    </div>
-                    <span class="designer-name">{dMeta.name}</span>
+                  <div class="client-badge" title="Client: {client?.name || p.brand}">
+                    <span class="client-color-dot" style="background: {client?.palette?.primary || '#0284C7'};"></span>
+                    <span class="client-name-label">{client?.name || p.brand || 'Client'}</span>
                   </div>
 
                   <div class="deadline-block" class:is-overdue={p.isOverdue}>
@@ -666,28 +651,27 @@
     margin-top: 2px;
   }
 
-  .designer-badge {
+  .client-badge {
     display: flex;
     align-items: center;
     gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--kanso-text-muted);
   }
 
-  .designer-avatar-circle {
-    width: 22px;
-    height: 22px;
-    min-width: 22px;
-    min-height: 22px;
+  .client-color-dot {
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    color: #FFFFFF;
-    font-size: 10px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
     flex-shrink: 0;
-    position: relative;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  .client-name-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
   }
 
   .designer-avatar-img {
