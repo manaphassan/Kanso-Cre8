@@ -10,6 +10,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
   import type { Project } from '$lib/types';
+  import TaskRolloverModal from '$lib/components/features/TaskRolloverModal.svelte';
 
   // --- STATE ---
   let dailyNote = $state<DailyNote>(journalService.getDailyNote());
@@ -18,6 +19,7 @@
   let clients = $state(clientService.getClients());
   let previousTaskInfo = $state<{ hasTasks: boolean; fromDate: string; count: number; tasks: BujoEntry[] }>({ hasTasks: false, fromDate: '', count: 0, tasks: [] });
   let hasPreviousTasks = $state(false);
+  let showRolloverModal = $state(false);
   let isMigrating = $state(false);
   let taskMode = $state<'bujo' | 'universal'>('bujo');
   let universalTasks = $state<ZettelTask[]>([]);
@@ -29,7 +31,7 @@
     dailyNote = journalService.getDailyNote();
     incomeSummary = financeService.getIncomeSummary();
     clients = clientService.getClients();
-    previousTaskInfo = journalService.checkUnfinishedPreviousTasks(dailyNote.date);
+    previousTaskInfo = await journalService.checkPendingRolloverAsync(dailyNote.date);
     hasPreviousTasks = previousTaskInfo.hasTasks;
     universalTasks = await zettelService.loadUniversalTasksFromDisk();
     weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
@@ -293,6 +295,23 @@
     }
   }
 
+  async function handleRolloverSelected(selectedIds: string[]) {
+    if (isMigrating) return;
+    isMigrating = true;
+    try {
+      const res = await journalService.migratePreviousTasks(dailyNote.date, previousTaskInfo.fromDate, selectedIds);
+      dailyNote = res.note;
+      hasPreviousTasks = false;
+      previousTaskInfo = { hasTasks: false, fromDate: '', count: 0, tasks: [] };
+      weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
+      appState.addToast(res.message, 'success');
+    } catch (err: any) {
+      appState.addToast(`Migration failed: ${err.message}`, 'error');
+    } finally {
+      isMigrating = false;
+    }
+  }
+
   function getClientColor(code: string): string {
     const c = clients.find(cl => cl.code.toUpperCase() === code.toUpperCase());
     return c?.palette.primary || '#38BDF8';
@@ -482,7 +501,7 @@
         {#if hasPreviousTasks}
           <div class="rollover-banner">
             <div class="rollover-icon-badge">
-              <span class="bujo-symbol">• [>]</span>
+              <span class="bujo-symbol">• [&gt;]</span>
             </div>
             <div class="rollover-text-wrap">
               <div class="rollover-title">
@@ -495,18 +514,37 @@
                 {previousTaskInfo.count > 0 ? `${previousTaskInfo.count} open task${previousTaskInfo.count > 1 ? 's' : ''}` : 'Unfinished tasks'} carried forward from previous session. Keep rapid log momentum moving.
               </p>
             </div>
-            <button
-              onclick={handleMigrateTasks}
-              disabled={isMigrating}
-              class="migrate-btn"
-              title="Migrate open tasks to today's rapid log"
-            >
-              {#if isMigrating}
-                <span>Migrating...</span>
-              {:else}
-                <span>• [>] Migrate to Today &rarr;</span>
-              {/if}
-            </button>
+            <div class="rollover-actions-row">
+              <button
+                type="button"
+                onclick={() => (showRolloverModal = true)}
+                class="review-select-btn"
+                title="Review and select which tasks to rollover"
+              >
+                Review &amp; Select &rarr;
+              </button>
+              <button
+                type="button"
+                onclick={handleMigrateTasks}
+                disabled={isMigrating}
+                class="migrate-btn"
+                title="Migrate all open tasks to today's rapid log"
+              >
+                {#if isMigrating}
+                  <span>Migrating...</span>
+                {:else}
+                  <span>• [&gt;] Rollover All</span>
+                {/if}
+              </button>
+              <button
+                type="button"
+                onclick={() => (hasPreviousTasks = false)}
+                class="dismiss-btn"
+                title="Dismiss rollover banner"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         {/if}
 
@@ -761,6 +799,40 @@
           {/if}
         </div>
       </div>
+
+      <!-- Card 3: 7-Day BuJo Cadence Deck -->
+      <div class="synthesis-card cadence-card">
+        <div class="synthesis-card-header">
+          <span class="card-meta-label">7-Day BuJo Cadence</span>
+          <span class="card-pill sky">WEEK CYCLE</span>
+        </div>
+        <div class="cadence-bars-row">
+          {#each (weeklyTelemetry?.dailyCadence || [
+            { dayName: 'Mon', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Tue', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Wed', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Thu', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Fri', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Sat', tasksTotal: 0, tasksCompleted: 0, rate: 0 },
+            { dayName: 'Sun', tasksTotal: 0, tasksCompleted: 0, rate: 0 }
+          ]) as day}
+            <div class="cadence-day-col" title="{day.dayName}: {day.tasksCompleted}/{day.tasksTotal} done ({day.rate}%)">
+              <div class="cadence-bar-container">
+                <div 
+                  class="cadence-bar-fill" 
+                  style="height: {Math.max(6, Math.min(100, day.tasksTotal > 0 ? (day.tasksCompleted / Math.max(1, day.tasksTotal)) * 100 : 0))}%;"
+                  class:active={day.tasksCompleted > 0}
+                ></div>
+              </div>
+              <span class="cadence-day-label">{day.dayName}</span>
+              <span class="cadence-day-count">{day.tasksCompleted}</span>
+            </div>
+          {/each}
+        </div>
+        <div class="cadence-summary-sub">
+          <span>Daily velocity synced across <code class="path-code">_Journal/Daily/</code></span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -942,6 +1014,17 @@
       </div>
     </div>
   </section>
+
+  <!-- Task Rollover Modal -->
+  <TaskRolloverModal
+    bind:open={showRolloverModal}
+    fromDate={previousTaskInfo.fromDate}
+    toDate={dailyNote.date}
+    tasks={previousTaskInfo.tasks}
+    onRollover={handleRolloverSelected}
+    onRolloverAll={handleMigrateTasks}
+    onClose={() => (showRolloverModal = false)}
+  />
 </div>
 
 <style>
@@ -1372,6 +1455,46 @@
   .migrate-btn:hover {
     background: rgba(245, 158, 11, 0.3);
     border-color: rgba(245, 158, 11, 0.6);
+  }
+  .rollover-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .review-select-btn {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38BDF8;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .review-select-btn:hover {
+    background: rgba(56, 189, 248, 0.25);
+    border-color: rgba(56, 189, 248, 0.6);
+  }
+  .dismiss-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--kanso-text-muted, #71717A);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .dismiss-btn:hover {
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: rgba(255, 255, 255, 0.08);
   }
 
   /* Task lists */
@@ -1818,7 +1941,7 @@
   /* ═══ WEEKLY BUJO SYNTHESIS SECTION ═══════════════════════════════ */
   .weekly-synthesis-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
   }
   @media (max-width: 900px) {
@@ -1953,5 +2076,62 @@
   .client-mini-tag.muted {
     border-left-color: var(--kanso-border, #27272A);
     color: var(--kanso-text-muted, #71717A);
+  }
+
+  /* Cadence Deck */
+  .cadence-bars-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 0 4px;
+    height: 76px;
+  }
+  .cadence-day-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    cursor: default;
+  }
+  .cadence-bar-container {
+    width: 100%;
+    max-width: 22px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+  .cadence-bar-fill {
+    width: 100%;
+    background: var(--kanso-text-muted, #71717A);
+    border-radius: 2px;
+    transition: height 0.3s ease, background 0.2s ease;
+  }
+  .cadence-bar-fill.active {
+    background: var(--kanso-accent, #38BDF8);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+  }
+  .cadence-day-label {
+    font-size: 10px;
+    font-family: var(--font-mono, monospace);
+    color: var(--kanso-text-muted, #71717A);
+  }
+  .cadence-day-count {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .cadence-summary-sub {
+    font-size: 11px;
+    color: var(--kanso-text-muted, #71717A);
+    border-top: 1px solid var(--kanso-border, #27272A);
+    padding-top: 8px;
+    margin-top: 4px;
   }
 </style>

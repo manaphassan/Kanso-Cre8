@@ -62,9 +62,19 @@
     await projectStore.loadDeliverables();
   });
 
-  function openLightbox(d: DeliverableItem) {
+  let lightboxInitialDiff = $state<boolean>(false);
+
+  function openLightbox(d: DeliverableItem, diffMode: boolean = false) {
     selectedDeliverable = d;
+    lightboxInitialDiff = diffMode;
     lightboxOpen = true;
+  }
+
+  function openRevisionDiff(group: any) {
+    const images = group.deliverables.filter((d: any) => d.isImage || d.previewType === 'image');
+    if (images.length > 0) {
+      openLightbox(images[0], true);
+    }
   }
 
   function openResizer(d: DeliverableItem) {
@@ -342,6 +352,20 @@
                 <span class="group-meta-summary">
                   <strong>{group.deliverables.length}</strong> file{group.deliverables.length === 1 ? '' : 's'} · {(group.totalSizeBytes / (1024 * 1024)).toFixed(2)} MB · {group.designer}
                 </span>
+
+                {#if group.deliverables.filter(d => d.isImage || d.previewType === 'image').length >= 2}
+                  <button 
+                    class="group-action-btn diff-btn" 
+                    onclick={() => openRevisionDiff(group)}
+                    title="Compare deliverable revisions with visual diff slider"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="3" width="9" height="18" rx="2"></rect>
+                      <rect x="13" y="3" width="9" height="18" rx="2"></rect>
+                    </svg>
+                    <span>Compare Revisions</span>
+                  </button>
+                {/if}
 
                 <button 
                   class="group-action-btn" 
@@ -682,6 +706,7 @@
   <DeliverableLightbox
     deliverable={selectedDeliverable}
     bind:open={lightboxOpen}
+    initialDiffMode={lightboxInitialDiff}
     onClose={() => lightboxOpen = false}
     onApprove={async (d) => {
       const projId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;

@@ -2048,6 +2048,129 @@ notes: Initial deposit invoice.
     }
   });
 
+  // ─── TEST 47: JournalVaultService Pending Rollover & Selective Task Migration ───
+  await test('JournalVaultService checks pending rollover and migrates selective tasks', async () => {
+    const testDir = path.join(__dirname, 'temp-rollover-test');
+    const dailyDir = path.join(testDir, '_Journal', 'Daily');
+    fs.mkdirSync(dailyDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Create yesterday's daily note with 3 tasks
+      const yesterday = '2026-09-14';
+      const today = '2026-09-15';
+      const day1Path = path.join(dailyDir, `${yesterday}.md`);
+      const day1Content = `---
+date: ${yesterday}
+title: Monday Log
+tags: [journal, bujo, daily]
+---
+
+# 📔 Monday Log
+
+## Rapid Log
+• [x] Completed visual identity audit
+• [ ] Fix responsive mobile nav padding
+* Priority: Deliver 4K packaging renders
+`;
+      fs.writeFileSync(day1Path, day1Content, 'utf8');
+
+      // 2. Check pending rollover
+      const rollover = JournalVaultService.getPendingRollover(today);
+      assert.strictEqual(rollover.hasTasks, true);
+      assert.strictEqual(rollover.fromDate, yesterday);
+      assert.strictEqual(rollover.count, 2);
+      assert.strictEqual(rollover.tasks.length, 2);
+
+      // 3. Migrate selectively (only the priority task)
+      const priorityTask = rollover.tasks.find(t => t.type === 'priority');
+      assert.ok(priorityTask, 'Priority task must exist');
+
+      const migrationRes = JournalVaultService.migrateTasks(yesterday, today, [priorityTask.id]);
+      assert.strictEqual(migrationRes.success, true);
+      assert.strictEqual(migrationRes.migratedCount, 1);
+
+      // Verify today received the migrated priority task
+      const todayNote = JournalVaultService.getDailyNote(today);
+      assert.ok(todayNote.entries.some(e => e.text === 'Deliver 4K packaging renders'), 'Today must receive migrated task');
+
+      // 4. Test weekly telemetry dailyCadence
+      const weekly = JournalVaultService.getWeeklyTelemetryRollup(today);
+      assert.ok(Array.isArray(weekly.dailyCadence), 'dailyCadence must be an array');
+      assert.strictEqual(weekly.dailyCadence.length, 7);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 48: ApprovalService APPROVAL.md Stamping & Cryptographic Checksums ───
+  await test('ApprovalService stamps APPROVAL.md with SHA-256 checksums and digital signature', async () => {
+    const testDir = path.join(__dirname, 'temp-approval-test');
+    const projectDir = path.join(testDir, '_Projects', '2026', '202609_0001D_ACME_BrandCampaign');
+    const delivDir = path.join(projectDir, '05_DELIVERABLES');
+    fs.mkdirSync(delivDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Create project README.md
+      const readmePath = path.join(projectDir, 'README.md');
+      fs.writeFileSync(readmePath, `---
+jobId: 0001D
+title: Acme Brand Campaign
+brand: ACME
+status: review
+revision: 1
+---
+
+# Acme Brand Campaign Brief
+`, 'utf8');
+
+      // 2. Create sample deliverable file
+      const assetPath = path.join(delivDir, 'hero_4k.png');
+      fs.writeFileSync(assetPath, 'FAKE_BINARY_PNG_CONTENT_1234567890', 'utf8');
+
+      // 3. Rescan workspace
+      WorkspaceService.scan();
+
+      // 4. Process approval decision
+      const res = ApprovalService.processDecision({
+        projectId: '0001D',
+        decision: 'approved',
+        reviewer: 'Sarah Jenkins',
+        role: 'Brand Director',
+        comment: 'Stunning visual execution. Approved for print.'
+      });
+
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.project.status, 'approved');
+
+      // 5. Verify APPROVAL.md exists in 05_DELIVERABLES/
+      const certPath = path.join(delivDir, 'APPROVAL.md');
+      assert.ok(fs.existsSync(certPath), 'APPROVAL.md must exist on disk');
+
+      const certContent = fs.readFileSync(certPath, 'utf8');
+      assert.ok(certContent.includes('type: deliverable_approval'), 'Must contain YAML frontmatter');
+      assert.ok(certContent.includes('Official Deliverable Approval & Handover Certificate'), 'Must contain cert title');
+      assert.ok(certContent.includes('hero_4k.png'), 'Must index hero_4k.png');
+      assert.ok(certContent.includes('SHA-256'), 'Must contain SHA-256 table header');
+      assert.ok(certContent.includes('Sarah Jenkins'), 'Must mention reviewer');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

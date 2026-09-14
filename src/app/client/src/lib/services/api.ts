@@ -580,10 +580,14 @@ export class ApiClient {
     });
   }
 
-  static migrateDailyTasks(fromDate?: string, toDate?: string): Promise<{ success: boolean; migratedCount: number; message: string; fromNote?: any; toNote?: any }> {
+  static checkPendingRollover(date?: string): Promise<{ success: boolean; rollover: { hasTasks: boolean; fromDate: string; count: number; tasks: any[] } }> {
+    return this.request(`/journal/rollover-check${date ? `?date=${encodeURIComponent(date)}` : ''}`);
+  }
+
+  static migrateDailyTasks(fromDate?: string, toDate?: string, selectedTaskIds?: string[]): Promise<{ success: boolean; migratedCount: number; message: string; fromNote?: any; toNote?: any }> {
     return this.request('/journal/migrate-tasks', {
       method: 'POST',
-      body: JSON.stringify({ fromDate, toDate })
+      body: JSON.stringify({ fromDate, toDate, selectedTaskIds })
     });
   }
 
