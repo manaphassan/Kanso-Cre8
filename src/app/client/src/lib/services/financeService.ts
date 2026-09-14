@@ -142,6 +142,8 @@ export class FinanceService {
   private static instance: FinanceService;
   private documents: InvoiceDocument[] = [];
   private quotes: InvoiceDocument[] = [];
+  private documentsLoaded = false;
+  private quotesLoaded = false;
 
   private constructor() {
     this.loadDocuments();
@@ -160,17 +162,18 @@ export class FinanceService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           this.documents = parsed;
+          this.documentsLoaded = true;
           this.fetchDiskInvoices();
           return this.documents;
         }
       }
     } catch (e) {
-      console.warn('[FinanceService] Load error, using sample data:', e);
+      console.warn('[FinanceService] Load error:', e);
     }
-    this.documents = [...SAMPLE_INVOICES];
-    this.saveDocuments();
+    this.documents = [];
+    this.documentsLoaded = true;
     this.fetchDiskInvoices();
     return this.documents;
   }
@@ -178,8 +181,9 @@ export class FinanceService {
   public async fetchDiskInvoices(): Promise<InvoiceDocument[]> {
     try {
       const res = await ApiClient.getInvoices();
-      if (res && res.success && Array.isArray(res.invoices) && res.invoices.length > 0) {
+      if (res && res.success && Array.isArray(res.invoices)) {
         this.documents = res.invoices as InvoiceDocument[];
+        this.documentsLoaded = true;
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(this.documents));
         }
@@ -204,17 +208,18 @@ export class FinanceService {
       const stored = localStorage.getItem(QUOTES_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           this.quotes = parsed;
+          this.quotesLoaded = true;
           this.fetchDiskQuotes();
           return this.quotes;
         }
       }
     } catch (e) {
-      console.warn('[FinanceService] Load quotes error, using sample data:', e);
+      console.warn('[FinanceService] Load quotes error:', e);
     }
-    this.quotes = [...SAMPLE_QUOTES];
-    this.saveQuotes();
+    this.quotes = [];
+    this.quotesLoaded = true;
     this.fetchDiskQuotes();
     return this.quotes;
   }
@@ -222,8 +227,9 @@ export class FinanceService {
   public async fetchDiskQuotes(): Promise<InvoiceDocument[]> {
     try {
       const res = await ApiClient.getQuotes();
-      if (res && res.success && Array.isArray(res.quotes) && res.quotes.length > 0) {
+      if (res && res.success && Array.isArray(res.quotes)) {
         this.quotes = res.quotes as InvoiceDocument[];
+        this.quotesLoaded = true;
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem(QUOTES_STORAGE_KEY, JSON.stringify(this.quotes));
         }
@@ -233,6 +239,18 @@ export class FinanceService {
     return this.quotes;
   }
 
+  public async resetToDisk(): Promise<void> {
+    this.documents = [];
+    this.quotes = [];
+    this.documentsLoaded = true;
+    this.quotesLoaded = true;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(QUOTES_STORAGE_KEY);
+    }
+    await Promise.all([this.fetchDiskInvoices(), this.fetchDiskQuotes()]);
+  }
+
   public saveQuotes(): void {
     try {
       localStorage.setItem(QUOTES_STORAGE_KEY, JSON.stringify(this.quotes));
@@ -240,7 +258,7 @@ export class FinanceService {
   }
 
   public getDocuments(): InvoiceDocument[] {
-    if (this.documents.length === 0) {
+    if (!this.documentsLoaded) {
       this.loadDocuments();
     }
     return this.documents;
@@ -251,7 +269,7 @@ export class FinanceService {
   }
 
   public getQuotes(): InvoiceDocument[] {
-    if (this.quotes.length === 0) {
+    if (!this.quotesLoaded) {
       this.loadQuotes();
     }
     return this.quotes;

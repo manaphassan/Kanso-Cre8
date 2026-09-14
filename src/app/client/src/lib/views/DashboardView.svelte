@@ -57,7 +57,7 @@
       const zeroRev = completed.filter(p => (p.revision || 0) === 0).length;
       return Number(((zeroRev / completed.length) * 100).toFixed(1));
     }
-    return 92.4; // Canonical studio baseline
+    return null;
   });
 
   const turnaroundDays = $derived.by(() => {
@@ -79,7 +79,7 @@
     if (count > 0) {
       return Number((totalDays / count).toFixed(1));
     }
-    return 2.8; // Canonical studio baseline
+    return null;
   });
 
   const avgRevisionRounds = $derived.by(() => {
@@ -91,7 +91,7 @@
       const totalRevs = projects.reduce((acc, p) => acc + (p.revision || 0), 0);
       return Number((totalRevs / projects.length).toFixed(1));
     }
-    return 1.2; // Canonical studio baseline
+    return null;
   });
 
   // --- SMART SUGGESTIONS (CONTEXTUAL CREATIVE INTELLIGENCE) ---
@@ -243,46 +243,12 @@
     }
   });
 
-  // Sample Canonical Projects if projectStore is empty
+  // Active Projects from projectStore
   const activeProjects = $derived.by(() => {
     if (projectStore.projects && projectStore.projects.length > 0) {
       return projectStore.projects.slice(0, 6);
     }
-    return [
-      {
-        id: 'p1',
-        jobId: '202609_0001D_ACME_MobileAppIllustration',
-        title: 'Cloud Dashboard & Mobile App Illustrations',
-        brand: 'ACME',
-        client: 'Acme Corporation',
-        status: 'in-progress',
-        deadline: '2026-09-18',
-        progress: 75,
-        designer: '0001D'
-      },
-      {
-        id: 'p2',
-        jobId: '202609_0002S_NEX_GameKeyVisual',
-        title: 'Interactive 3D Motion Key Visuals',
-        brand: 'NEX',
-        client: 'Nexus Studio',
-        status: 'review',
-        deadline: '2026-09-22',
-        progress: 85,
-        designer: '0001D'
-      },
-      {
-        id: 'p3',
-        jobId: '202609_0003P_LUM_BrandIdentity',
-        title: 'Biotech Data Intelligence Brand System',
-        brand: 'LUM',
-        client: 'Lumina Labs',
-        status: 'in-progress',
-        deadline: '2026-09-28',
-        progress: 40,
-        designer: '0001D'
-      }
-    ];
+    return [];
   });
 
   // --- ACTIONS ---
@@ -528,24 +494,31 @@
         {/if}
 
         <!-- Task Items List -->
-        <div class="task-list">
-          {#each todayTasks as entry (entry.id)}
-            <div class="task-row">
-              <input
-                type="checkbox"
-                checked={entry.completed || entry.type === 'done'}
-                onchange={() => toggleTask(entry)}
-                class="task-check"
-              />
-              <span class="task-label" class:completed={entry.completed || entry.type === 'done'}>
-                {entry.text}
-              </span>
-              {#if entry.type === 'priority'}
-                <span class="priority-badge">* Priority</span>
-              {/if}
-            </div>
-          {/each}
-        </div>
+        {#if todayTasks.length === 0}
+          <div class="empty-today-tasks">
+            <span class="empty-task-icon">🍵</span>
+            <span class="empty-task-text">Clean daily log. Add your first intention or task below to begin your creative session.</span>
+          </div>
+        {:else}
+          <div class="task-list">
+            {#each todayTasks as entry (entry.id)}
+              <div class="task-row">
+                <input
+                  type="checkbox"
+                  checked={entry.completed || entry.type === 'done'}
+                  onchange={() => toggleTask(entry)}
+                  class="task-check"
+                />
+                <span class="task-label" class:completed={entry.completed || entry.type === 'done'}>
+                  {entry.text}
+                </span>
+                {#if entry.type === 'priority'}
+                  <span class="priority-badge">* Priority</span>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        {/if}
 
         <!-- Quick Task Input -->
         <div class="task-adder-row">
@@ -644,29 +617,29 @@
         <!-- Metric 4: First-Time-Right -->
         <div class="metric-card">
           <span class="metric-label">First-Time-Right</span>
-          <div class="metric-value {firstTimeRightPercent >= 90 ? 'emerald' : firstTimeRightPercent >= 75 ? 'sky' : 'amber'}">
-            {firstTimeRightPercent}%
+          <div class="metric-value {firstTimeRightPercent != null ? (firstTimeRightPercent >= 90 ? 'emerald' : firstTimeRightPercent >= 75 ? 'sky' : 'amber') : 'muted'}">
+            {firstTimeRightPercent != null ? `${firstTimeRightPercent}%` : '--'}
           </div>
-          <span class="metric-sub {firstTimeRightPercent >= 90 ? 'emerald' : firstTimeRightPercent >= 75 ? 'sky' : 'amber'}">
-            {firstTimeRightPercent >= 90 ? 'Zero-revision excellence' : firstTimeRightPercent >= 75 ? 'Healthy approval velocity' : 'Client revision alert'}
+          <span class="metric-sub {firstTimeRightPercent != null ? (firstTimeRightPercent >= 90 ? 'emerald' : firstTimeRightPercent >= 75 ? 'sky' : 'amber') : 'muted'}">
+            {firstTimeRightPercent != null ? (firstTimeRightPercent >= 90 ? 'Zero-revision excellence' : firstTimeRightPercent >= 75 ? 'Healthy approval velocity' : 'Client revision alert') : 'No completed projects yet'}
           </span>
         </div>
 
         <!-- Metric 5: Turnaround Velocity -->
         <div class="metric-card">
           <span class="metric-label">Turnaround Speed</span>
-          <div class="metric-value">{turnaroundDays}d</div>
-          <span class="metric-sub muted">Concept to signoff</span>
+          <div class="metric-value {turnaroundDays != null ? '' : 'muted'}">{turnaroundDays != null ? `${turnaroundDays}d` : '--'}</div>
+          <span class="metric-sub muted">{turnaroundDays != null ? 'Concept to signoff' : 'No delivery history'}</span>
         </div>
 
         <!-- Metric 6: Revision Rounds -->
         <div class="metric-card">
           <span class="metric-label">Avg Revisions</span>
-          <div class="metric-value {avgRevisionRounds <= 1.5 ? 'emerald' : 'amber'}">
-            {avgRevisionRounds} {avgRevisionRounds === 1 ? 'round' : 'rounds'}
+          <div class="metric-value {avgRevisionRounds != null ? (avgRevisionRounds <= 1.5 ? 'emerald' : 'amber') : 'muted'}">
+            {avgRevisionRounds != null ? `${avgRevisionRounds} ${avgRevisionRounds === 1 ? 'round' : 'rounds'}` : '--'}
           </div>
-          <span class="metric-sub {avgRevisionRounds <= 1.5 ? 'emerald' : 'amber'}">
-            {avgRevisionRounds <= 1.5 ? 'Low-friction signoffs' : 'Active feedback cycles'}
+          <span class="metric-sub {avgRevisionRounds != null ? (avgRevisionRounds <= 1.5 ? 'emerald' : 'amber') : 'muted'}">
+            {avgRevisionRounds != null ? (avgRevisionRounds <= 1.5 ? 'Low-friction signoffs' : 'Active feedback cycles') : 'No active projects'}
           </span>
         </div>
       </div>
@@ -690,53 +663,66 @@
       </a>
     </div>
 
-    <div class="projects-grid">
-      {#each activeProjects as project (project.id)}
-        <div class="project-card">
-          <div class="project-card-top">
-            <div class="project-tags-row">
-              <span
-                class="client-code-tag"
-                style="background-color: {getClientColor(project.brand)}"
-              >
-                {project.brand}
-              </span>
+    {#if activeProjects.length === 0}
+      <div class="empty-projects-card">
+        <div class="empty-projects-icon">📁</div>
+        <div class="empty-projects-title">Zero Projects in Active Vault</div>
+        <p class="empty-projects-desc">
+          Your active vault is a clean slate. Create a new standardized project vault or move project folders into <code class="path-code">_Projects/</code>.
+        </p>
+        <button class="empty-create-btn" onclick={() => appState.navigate('projects')}>
+          + Create New Project
+        </button>
+      </div>
+    {:else}
+      <div class="projects-grid">
+        {#each activeProjects as project (project.id)}
+          <div class="project-card">
+            <div class="project-card-top">
+              <div class="project-tags-row">
+                <span
+                  class="client-code-tag"
+                  style="background-color: {getClientColor(project.brand)}"
+                >
+                  {project.brand}
+                </span>
 
-              <span class="stage-tag {project.status}">
-                {project.status.replace('-', ' ')}
-              </span>
+                <span class="stage-tag {project.status}">
+                  {project.status.replace('-', ' ')}
+                </span>
+              </div>
+
+              <div class="project-titles-wrap">
+                <h3 class="project-title">{project.title}</h3>
+                <p class="project-job-id">{project.jobId}</p>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-labels">
+                  <span>Progress</span>
+                  <span>{project.progress ?? 60}%</span>
+                </div>
+                <div class="progress-track">
+                  <div
+                    class="progress-bar"
+                    style="width: {project.progress ?? 60}%; background-color: {getClientColor(project.brand)}"
+                  ></div>
+                </div>
+              </div>
             </div>
 
-            <div class="project-titles-wrap">
-              <h3 class="project-title">{project.title}</h3>
-              <p class="project-job-id">{project.jobId}</p>
-            </div>
-
-            <div class="progress-wrap">
-              <div class="progress-labels">
-                <span>Progress</span>
-                <span>{project.progress ?? 60}%</span>
-              </div>
-              <div class="progress-track">
-                <div
-                  class="progress-bar"
-                  style="width: {project.progress ?? 60}%; background-color: {getClientColor(project.brand)}"
-                ></div>
-              </div>
+            <div class="project-card-footer">
+              <span class="deadline-label">
+                📅 {project.deadline || 'No deadline'}
+              </span>
+              <span class="days-remaining">
+                {getDaysRemaining(project.deadline)}
+              </span>
             </div>
           </div>
-
-          <div class="project-card-footer">
-            <span class="deadline-label">
-              📅 {project.deadline || 'No deadline'}
-            </span>
-            <span class="days-remaining">
-              {getDaysRemaining(project.deadline)}
-            </span>
-          </div>
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {/if}
   </section>
 
   <!-- 4. SMART SUGGESTIONS (Creative Operations Intelligence) -->
@@ -1613,5 +1599,72 @@
     .projects-grid  { grid-template-columns: 1fr; }
     .suggestions-grid { grid-template-columns: repeat(2, 1fr); }
     .metrics-grid   { grid-template-columns: 1fr; }
+  }
+
+  /* ═══ CLEAN ZERO-STATE COMPONENTS ════════════════════════════ */
+  .empty-today-tasks {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--kanso-surface-hover, #27272A);
+    border: 1px dashed var(--kanso-border, #27272A);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .empty-task-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .empty-task-text {
+    font-size: 13.5px;
+    color: var(--kanso-text-muted, #71717A);
+    line-height: 1.4;
+  }
+
+  .empty-projects-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+    background: var(--kanso-surface, #18181B);
+    border: 1px dashed var(--kanso-border, #27272A);
+    border-radius: 12px;
+    gap: 10px;
+  }
+  .empty-projects-icon {
+    font-size: 36px;
+    margin-bottom: 4px;
+  }
+  .empty-projects-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .empty-projects-desc {
+    font-size: 13.5px;
+    color: var(--kanso-text-muted, #71717A);
+    max-width: 480px;
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .empty-create-btn {
+    background: var(--kanso-accent, #38BDF8);
+    color: #09090B;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .empty-create-btn:hover {
+    opacity: 0.9;
+  }
+  .metric-value.muted {
+    color: var(--kanso-text-muted, #71717A) !important;
   }
 </style>
