@@ -46,6 +46,15 @@ export interface YearlyReview {
   rawMarkdown: string;
 }
 
+export interface DailyCadencePoint {
+  date: string;
+  dayName: string;
+  tasksTotal: number;
+  tasksCompleted: number;
+  tasksMigrated: number;
+  rate: number;
+}
+
 export interface WeeklyTelemetry {
   weekStart: string;
   weekEnd: string;
@@ -58,6 +67,7 @@ export interface WeeklyTelemetry {
   paidRevenue: number;
   pendingRevenue: number;
   activeClients: string[];
+  dailyCadence?: DailyCadencePoint[];
 }
 
 export interface MonthlyTelemetry {
@@ -216,6 +226,23 @@ export class JournalService {
   }
 
   /**
+   * Asynchronously checks disk vault first for unfinished tasks from previous daily note,
+   * falling back gracefully to local storage if offline.
+   */
+  public async checkPendingRolloverAsync(currentDate?: string): Promise<{ hasTasks: boolean; fromDate: string; count: number; tasks: BujoEntry[] }> {
+    const today = currentDate || new Date().toISOString().split('T')[0];
+    try {
+      const res = await ApiClient.checkPendingRollover(today);
+      if (res && res.success && res.rollover) {
+        return res.rollover;
+      }
+    } catch (e) {
+      // Fallback to local storage
+    }
+    return this.checkUnfinishedPreviousTasks(today);
+  }
+
+  /**
    * Checks if yesterday (or preceding working day up to 3 days back) has incomplete tasks
    */
   public hasUnfinishedPreviousTasks(currentDate?: string): boolean {
@@ -223,9 +250,9 @@ export class JournalService {
   }
 
   /**
-   * Migrates unfinished tasks from previous daily log to today's log
+   * Migrates unfinished tasks from previous daily log to today's log (optionally filtered by selectedTaskIds)
    */
-  public async migratePreviousTasks(targetDate?: string, fromDate?: string): Promise<{ success: boolean; migratedCount: number; message: string; note: DailyNote }> {
+  public async migratePreviousTasks(targetDate?: string, fromDate?: string, selectedTaskIds?: string[]): Promise<{ success: boolean; migratedCount: number; message: string; note: DailyNote }> {
     const today = targetDate || new Date().toISOString().split('T')[0];
     let sourceDate = fromDate;
     if (!sourceDate) {
@@ -240,7 +267,7 @@ export class JournalService {
     }
 
     try {
-      const res = await ApiClient.migrateDailyTasks(sourceDate, today);
+      const res = await ApiClient.migrateDailyTasks(sourceDate, today, selectedTaskIds);
       if (res && res.success) {
         if (res.fromNote) {
           localStorage.setItem(`${DAILY_STORAGE_PREFIX}${sourceDate}`, JSON.stringify(res.fromNote));
@@ -263,7 +290,12 @@ export class JournalService {
     const sourceNote = this.getDailyNote(sourceDate);
     const todayNote = this.getDailyNote(today);
 
-    const incomplete = sourceNote.entries.filter(e => (e.type === 'task' || e.type === 'priority') && !e.completed);
+    let incomplete = sourceNote.entries.filter(e => (e.type === 'task' || e.type === 'priority') && !e.completed);
+    if (Array.isArray(selectedTaskIds) && selectedTaskIds.length > 0) {
+      const idSet = new Set(selectedTaskIds);
+      incomplete = incomplete.filter(e => idSet.has(e.id));
+    }
+
     if (incomplete.length === 0) {
       return {
         success: true,
@@ -274,8 +306,9 @@ export class JournalService {
     }
 
     // Update source note
+    const incompleteIds = new Set(incomplete.map(t => t.id));
     sourceNote.entries = sourceNote.entries.map(e => {
-      if ((e.type === 'task' || e.type === 'priority') && !e.completed) {
+      if (incompleteIds.has(e.id)) {
         return { ...e, type: 'migrated', raw: `• [>] ${e.text}` };
       }
       return e;

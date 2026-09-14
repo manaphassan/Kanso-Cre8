@@ -53,8 +53,11 @@ Write-Host "[2/5] Running Automated Backend and Vault Verification Suite..." -Fo
 Push-Location (Join-Path $repoRoot "src\app")
 try {
     $testOutput = & npm test 2>&1
-    $allTestsPassed = ($LASTEXITCODE -eq 0) -and ($testOutput -match "46 Passed, 0 Failed")
-    Report-Result -Name "Automated Unit/Integration Suite (npm test)" -Passed $allTestsPassed -Detail "(46/46 passed)"
+    $testOutputStr = $testOutput -join "`n"
+    $match = [regex]::Match($testOutputStr, "(\d+)\s+Passed,\s+0\s+Failed")
+    $allTestsPassed = ($LASTEXITCODE -eq 0) -and $match.Success
+    $detail = if ($match.Success) { "($($match.Groups[1].Value)/$($match.Groups[1].Value) passed)" } else { "Tests failed or output mismatch" }
+    Report-Result -Name "Automated Unit/Integration Suite (npm test)" -Passed $allTestsPassed -Detail $detail
 } catch {
     Report-Result -Name "Automated Unit/Integration Suite (npm test)" -Passed $false -Detail $_.Exception.Message
 } finally {
