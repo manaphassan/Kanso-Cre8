@@ -5,7 +5,7 @@
 
 export interface StudioSettings {
   defaultHourlyRate: number;
-  currency: 'MYR' | 'USD' | 'EUR' | 'GBP' | 'SGD' | 'AUD' | 'CAD' | 'JPY' | string;
+  currency: 'MYR' | 'USD' | 'EUR' | 'GBP' | 'SGD' | 'AUD' | 'CAD' | 'JPY' | 'CHF' | string;
   currencySymbol: string;
   defaultLens: 'studio' | 'my-workspace';
   timerAutoLog: boolean;
@@ -23,8 +23,21 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   SGD: 'S$',
   AUD: 'A$',
   CAD: 'CA$',
-  JPY: '¥'
+  JPY: '¥',
+  CHF: 'CHF'
 };
+
+export const SUPPORTED_CURRENCIES = [
+  { code: 'MYR', label: 'MYR — Malaysian Ringgit (RM)', symbol: 'RM' },
+  { code: 'USD', label: 'USD — US Dollar ($)', symbol: '$' },
+  { code: 'EUR', label: 'EUR — Euro (€)', symbol: '€' },
+  { code: 'GBP', label: 'GBP — British Pound (£)', symbol: '£' },
+  { code: 'SGD', label: 'SGD — Singapore Dollar (S$)', symbol: 'S$' },
+  { code: 'AUD', label: 'AUD — Australian Dollar (A$)', symbol: 'A$' },
+  { code: 'CAD', label: 'CAD — Canadian Dollar (CA$)', symbol: 'CA$' },
+  { code: 'JPY', label: 'JPY — Japanese Yen (¥)', symbol: '¥' },
+  { code: 'CHF', label: 'CHF — Swiss Franc (CHF)', symbol: 'CHF' }
+];
 
 export function getCurrencySymbol(code?: string): string {
   if (!code) return 'RM';
@@ -93,9 +106,13 @@ class SettingsStore {
   }
 
   formatMoney(amount: number, overrideCode?: string): string {
-    const code = overrideCode || this.settings.currency || 'MYR';
+    const code = (overrideCode || this.settings.currency || 'MYR').toUpperCase();
     const symbol = getCurrencySymbol(code);
-    const formatted = amount.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fractionDigits = code === 'JPY' ? 0 : 2;
+    const formatted = (Number(amount) || 0).toLocaleString('en-US', {
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits
+    });
     return `${symbol} ${formatted}`;
   }
 }

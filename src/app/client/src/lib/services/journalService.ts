@@ -18,10 +18,25 @@ export interface DailyNote {
   date: string; // YYYY-MM-DD
   title: string;
   focusIntentions: string[];
+  habits?: string[];
   entries: BujoEntry[];
   rawMarkdown: string;
   updatedAt: string;
 }
+
+export interface DailyHabitItem {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const CANONICAL_HABITS: DailyHabitItem[] = [
+  { id: 'focus_sprint', name: 'Focus Sprint', icon: '🧘', description: '25m Deep Work Sprint' },
+  { id: 'daily_sketch', name: 'Daily Study', icon: '✏️', description: 'Visual Exploration & Teardowns' },
+  { id: 'inbox_zero', name: 'Inbox Zero', icon: '📥', description: 'Client Comms & Review Cleared' },
+  { id: 'atomic_note', name: 'Atomic Note', icon: '🧠', description: 'Knowledge Engine Insight Logged' }
+];
 
 export interface MonthlyReview {
   month: string; // YYYY-MM
@@ -354,6 +369,7 @@ export class JournalService {
       date,
       title: formattedDate,
       focusIntentions: ['Deep visual craft', 'Zero distraction sprint'],
+      habits: [],
       entries,
       rawMarkdown: '',
       updatedAt: new Date().toISOString()
@@ -382,11 +398,12 @@ export class JournalService {
   }
 
   private serializeDailyNote(note: DailyNote): string {
+    const habitsLine = note.habits && note.habits.length > 0 ? `habits: [${note.habits.join(', ')}]\n` : '';
     let md = `---
 type: bujo_daily
 date: ${note.date}
 tags: [journal, bujo, daily]
----
+${habitsLine}---
 
 # ${note.title}
 
@@ -419,7 +436,60 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
 
   public getTodayTasks(): BujoEntry[] {
     const today = this.getDailyNote();
-    return today.entries.filter(e => e.type === 'task' || e.type === 'priority');
+    return today.entries.filter(e => e.type === 'task' || e.type === 'priority' || e.type === 'done');
+  }
+
+  public toggleHabit(dateStr: string, habitId: string): DailyNote {
+    const note = this.getDailyNote(dateStr);
+    const habits = new Set(note.habits || []);
+    if (habits.has(habitId)) {
+      habits.delete(habitId);
+    } else {
+      habits.add(habitId);
+    }
+    note.habits = Array.from(habits);
+    this.saveDailyNote(note);
+
+    ApiClient.toggleDailyHabit(dateStr, habitId).catch(err => {
+      console.warn('[JournalService] Async habit disk sync error:', err);
+    });
+
+    return note;
+  }
+
+  public async getWeeklyHabitMatrix(referenceDate?: string): Promise<Array<{ date: string; dayName: string; habits: string[] }>> {
+    try {
+      const res = await ApiClient.getHabitWeeklyMatrix(referenceDate);
+      if (res && res.success && Array.isArray(res.matrix)) {
+        return res.matrix;
+      }
+    } catch (e) {
+      console.warn('[JournalService] Fetch weekly habit matrix error, computing locally:', e);
+    }
+
+    const ref = referenceDate || new Date().toISOString().split('T')[0];
+    const refD = new Date(ref);
+    const dayOfWeek = refD.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(refD);
+    monday.setDate(refD.getDate() + mondayOffset);
+
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const matrix: Array<{ date: string; dayName: string; habits: string[] }> = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      const daily = this.getDailyNote(dateStr);
+      matrix.push({
+        date: dateStr,
+        dayName: dayLabels[i],
+        habits: daily.habits || []
+      });
+    }
+
+    return matrix;
   }
 
   public toggleTask(noteDate: string, taskId: string): DailyNote {

@@ -3,7 +3,7 @@
  * In-memory indexer for [[WikiLinks]], backlinks, and inline `- [ ] #task` extraction.
  */
 
-import type { ZettelNote, ZettelTask, ZettelType, BacklinkItem } from '../types/zettel';
+import type { ZettelNote, ZettelTask, ZettelType, BacklinkItem, GraphNode, GraphEdge, GraphTopology } from '../types/zettel';
 import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_zettelkasten';
@@ -354,6 +354,132 @@ export class ZettelService {
       }
     }
     return results;
+  }
+
+  /**
+   * Generates graph topology from in-memory or loaded notes.
+   */
+  public getGraphData(): GraphTopology {
+    const notes = this.getNotes();
+    const nodeMap = new Map<string, GraphNode>();
+    const edges: GraphEdge[] = [];
+    const edgeSet = new Set<string>();
+
+    // 1. Add all notes
+    for (const note of notes) {
+      nodeMap.set(note.id, {
+        id: note.id,
+        label: note.title,
+        type: note.type,
+        category: note.type,
+        radius: 7,
+        degree: 0,
+        tags: note.tags || [],
+        snippet: (note.content || '').split('\n').filter(l => l.trim() && !l.startsWith('#'))[0] || note.title
+      });
+    }
+
+    // 2. Title mapping
+    const titleToId = new Map<string, string>();
+    for (const note of notes) {
+      titleToId.set(note.title.toLowerCase(), note.id);
+    }
+
+    // 3. Connect notes and special entity mentions
+    for (const note of notes) {
+      const sourceId = note.id;
+      const allLinks = (note.relatedLinks || []).concat(
+        (note.linkedClients || []).map(c => c.replace(/^\[\[|\]\]$/g, '')),
+        (note.linkedProjects || []).map(p => p.replace(/^\[\[|\]\]$/g, ''))
+      );
+
+      for (const rawTarget of allLinks) {
+        const cleanTarget = rawTarget.replace(/^\[\[|\]\]$/g, '').trim();
+        if (!cleanTarget) continue;
+
+        let targetId = titleToId.get(cleanTarget.toLowerCase());
+        const isClient = cleanTarget.includes('ACME') || cleanTarget.includes('NEX') || cleanTarget.includes('LUM');
+        const isProject = /^\d{6}_/.test(cleanTarget);
+
+        if (!targetId) {
+          if (isClient) {
+            targetId = `client_${cleanTarget}`;
+            if (!nodeMap.has(targetId)) {
+              nodeMap.set(targetId, {
+                id: targetId,
+                label: cleanTarget,
+                type: 'client',
+                category: 'client',
+                radius: 9,
+                degree: 0,
+                tags: ['client']
+              });
+            }
+          } else if (isProject) {
+            targetId = `project_${cleanTarget}`;
+            if (!nodeMap.has(targetId)) {
+              nodeMap.set(targetId, {
+                id: targetId,
+                label: cleanTarget,
+                type: 'project',
+                category: 'project',
+                radius: 8,
+                degree: 0,
+                tags: ['project']
+              });
+            }
+          }
+        }
+
+        if (targetId && targetId !== sourceId) {
+          const edgeKey = `${sourceId}->${targetId}`;
+          if (!edgeSet.has(edgeKey)) {
+            edgeSet.add(edgeKey);
+            edges.push({ source: sourceId, target: targetId });
+
+            const sNode = nodeMap.get(sourceId);
+            const tNode = nodeMap.get(targetId);
+            if (sNode) {
+              sNode.degree = (sNode.degree || 0) + 1;
+              sNode.radius = Math.min(18, 7 + sNode.degree * 1.5);
+            }
+            if (tNode) {
+              tNode.degree = (tNode.degree || 0) + 1;
+              tNode.radius = Math.min(18, 7 + tNode.degree * 1.5);
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      nodes: Array.from(nodeMap.values()),
+      edges
+    };
+  }
+
+  /**
+   * Retrieves local graph data for a single focal note (1st and 2nd degree neighbors).
+   */
+  public getLocalGraphData(focalNoteId: string): GraphTopology {
+    const full = this.getGraphData();
+    const focalNode = full.nodes.find(n => n.id === focalNoteId);
+    if (!focalNode) return { nodes: [], edges: [] };
+
+    const neighborIds = new Set<string>([focalNoteId]);
+
+    for (const edge of full.edges) {
+      if (edge.source === focalNoteId) neighborIds.add(edge.target);
+      if (edge.target === focalNoteId) neighborIds.add(edge.source);
+    }
+
+    const localNodes = full.nodes.filter(n => neighborIds.has(n.id));
+    const localEdges = full.edges.filter(e => neighborIds.has(e.source) && neighborIds.has(e.target));
+
+    return {
+      nodes: localNodes,
+      edges: localEdges
+    };
   }
 
   private escapeRegExp(str: string): string {

@@ -55,9 +55,13 @@ class LicenseStore {
 
     // 2. Sync with disk config (_Team/_Config/license.key) asynchronously
     try {
-      const res = await ApiClient.getLicense();
-      if (res?.success && res.license && res.license !== cachedKey) {
-        this.validateAndApply(res.license, false);
+      const res = (await ApiClient.getLicense()) as any;
+      if (res?.success && res.license) {
+        if (res.license !== cachedKey) {
+          this.validateAndApply(res.license, false);
+        }
+      } else if (res?.success && !res.license && cachedKey) {
+        this.deactivateSilent();
       }
     } catch {
       // Offline fallback: use local cache
@@ -193,16 +197,24 @@ class LicenseStore {
    * Reverts to free Kanso Zen tier
    */
   public async deactivate(): Promise<void> {
+    this.deactivateSilent();
+    try {
+      await ApiClient.deactivateLicense();
+    } catch {
+      try { await ApiClient.saveLicense(''); } catch {}
+    }
+    appState.addToast('Reverted to Kanso Zen (Free Sanctuary Edition).', 'info');
+  }
+
+  public deactivateSilent(): void {
     this.tier = 'zen';
     this.licenseKey = '';
     this.licensee = '';
     this.issuedDate = '';
     this.status = 'unlicensed';
-    localStorage.removeItem(STORAGE_KEY);
-    try {
-      await ApiClient.saveLicense('');
-    } catch {}
-    appState.addToast('Reverted to Kanso Zen (Free Sanctuary Edition).', 'info');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }
 
   /**

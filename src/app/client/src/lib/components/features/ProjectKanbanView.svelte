@@ -7,6 +7,8 @@
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import { zettelService } from '$lib/services/zettelService';
   import { clientService } from '$lib/services/clientService';
+  import { timerStore } from '$lib/stores/timerStore.svelte';
+  import { settingsStore } from '$lib/stores/settingsStore.svelte';
   import type { ZettelTask } from '$lib/types/zettel';
 
   interface Props {
@@ -89,6 +91,49 @@
 
     await projectStore.updateProjectStatus(project.id, newStatus);
     draggedProjectId = null;
+  }
+
+  const PIPELINE_ORDER = ['backlog', 'in-progress', 'review', 'revision', 'done'];
+
+  async function moveProjectStage(e: Event, project: Project, direction: 'prev' | 'next') {
+    e.stopPropagation();
+    const currentStatus = project.status === 'approved' ? 'done' : (project.status === 'rejected' ? 'on-hold' : project.status);
+    const currentIndex = PIPELINE_ORDER.indexOf(currentStatus);
+    if (currentIndex === -1) {
+      await projectStore.updateProjectStatus(project.id, 'in-progress');
+      appState.addToast(`Moved ${project.jobId || project.title} to In Production`, 'info');
+      return;
+    }
+    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex >= 0 && newIndex < PIPELINE_ORDER.length) {
+      const newStatus = PIPELINE_ORDER[newIndex];
+      await projectStore.updateProjectStatus(project.id, newStatus);
+      const col = columns.find(c => c.id === newStatus);
+      appState.addToast(`Moved ${project.jobId || project.title} → ${col?.label || newStatus}`, 'success');
+    }
+  }
+
+  function handleCardTimerToggle(e: Event, project: Project) {
+    e.stopPropagation();
+    if (timerStore.isRunning && timerStore.projectId === project.id) {
+      const log = timerStore.stop();
+      if (log) {
+        appState.addToast(`Logged ${log.durationFormatted} (${log.earnedFormatted}) for "${project.title}"`, 'success');
+      }
+    } else {
+      const clientRate = clientService.getClientRate(project.brand || 'ACME');
+      timerStore.start(project.id, project.title, project.brand || 'ACME', clientRate);
+      appState.addToast(`Started chronometer for "${project.title}" (${settingsStore.formatMoney(clientRate, project.currency)}/hr)`, 'info');
+    }
+  }
+
+  let copiedHex = $state<string | null>(null);
+  function copyHex(e: Event, hex: string) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(hex);
+    copiedHex = hex;
+    appState.addToast(`Copied ${hex} to clipboard`, 'info');
+    setTimeout(() => { copiedHex = null; }, 2000);
   }
 
   function getPriorityBadge(priority?: string): { text: string; color: string } | null {
@@ -267,7 +312,13 @@
 
         <!-- Cards List -->
         <div class="column-cards-list">
-          {#if colProjects.length === 0}
+          {#if dragOverColumnId === col.id}
+            <div class="column-drop-placeholder">
+              <span>↓ Drop to move to {col.label}</span>
+            </div>
+          {/if}
+
+          {#if colProjects.length === 0 && dragOverColumnId !== col.id}
             <div class="column-empty-dropzone">
               <span class="empty-icon">📭</span>
               <span>No {col.label.toLowerCase()} projects</span>
@@ -277,6 +328,8 @@
             {#each colProjects as p (p.id)}
               {@const dMeta = getDesignerMeta(p.designer)}
               {@const client = clientService.getClientByCode(p.brand || 'ACME')}
+              {@const clientColor = client?.palette?.primary || '#0284C7'}
+              {@const currentStageIdx = PIPELINE_ORDER.indexOf(p.status === 'approved' ? 'done' : (p.status === 'rejected' ? 'on-hold' : p.status))}
               <div
                 class="kanban-card"
                 draggable="true"
@@ -344,16 +397,30 @@
                     <span class="preset-tag">{p.presetType}</span>
                   {/if}
                   {#if p.revision && p.revision > 0}
-                    <span class="rev-counter-pill">Rev {p.revision}</span>
+                    <span
+                      class="rev-counter-pill"
+                      class:rev-warning={p.revision >= 3}
+                      title={p.revision >= 3 ? `High revision rounds (${p.revision}) — verify scope & billable hours` : `Revision round ${p.revision}`}
+                    >
+                      {p.revision >= 3 ? '⚠️ ' : ''}Rev {p.revision}
+                    </span>
                   {/if}
                 </div>
 
-                <!-- Bottom Row: Client & Due Date -->
+                <!-- Bottom Row: Client Swatch & Due Date -->
                 <div class="card-footer-row">
-                  <div class="client-badge" title="Client: {client?.name || p.brand}">
-                    <span class="client-color-dot" style="background: {client?.palette?.primary || '#0284C7'};"></span>
+                  <button
+                    type="button"
+                    class="client-swatch-chip"
+                    title="Click to copy HEX {clientColor} to clipboard"
+                    onclick={(e) => copyHex(e, clientColor)}
+                  >
+                    <span class="client-color-dot" style="background: {clientColor};"></span>
                     <span class="client-name-label">{client?.name || p.brand || 'Client'}</span>
-                  </div>
+                    {#if copiedHex === clientColor}
+                      <span class="swatch-copied-label">Copied!</span>
+                    {/if}
+                  </button>
 
                   <div class="deadline-block" class:is-overdue={p.isOverdue}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -362,6 +429,39 @@
                     </svg>
                     <span>{p.deadline ? new Date(p.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No due date'}</span>
                   </div>
+                </div>
+
+                <!-- Stage Fast-Travel & Billable Chronometer Row -->
+                <div class="card-quick-actions" role="presentation" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    class="stage-nav-btn prev"
+                    title="Move to previous stage"
+                    disabled={currentStageIdx <= 0}
+                    onclick={(e) => moveProjectStage(e, p, 'prev')}
+                  >
+                    ←
+                  </button>
+
+                  <button
+                    type="button"
+                    class="card-timer-btn"
+                    class:is-active={timerStore.isRunning && timerStore.projectId === p.id}
+                    title={timerStore.isRunning && timerStore.projectId === p.id ? 'Stop Active Chronometer' : 'Track Time on this Project'}
+                    onclick={(e) => handleCardTimerToggle(e, p)}
+                  >
+                    {timerStore.isRunning && timerStore.projectId === p.id ? '⏸ Pause Timer' : '▶ Track Time'}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="stage-nav-btn next"
+                    title="Move to next stage"
+                    disabled={currentStageIdx >= PIPELINE_ORDER.length - 1 || currentStageIdx === -1}
+                    onclick={(e) => moveProjectStage(e, p, 'next')}
+                  >
+                    →
+                  </button>
                 </div>
 
                 <!-- Status Selector Menu -->
@@ -507,6 +607,24 @@
     color: var(--text-tertiary, #9CA3AF);
   }
 
+  .column-drop-placeholder {
+    border: 2px dashed var(--kanso-accent, #38BDF8);
+    background: rgba(56, 189, 248, 0.08);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--kanso-accent, #38BDF8);
+    animation: pulseDropzone 1.5s ease-in-out infinite;
+    margin-bottom: 4px;
+  }
+
+  @keyframes pulseDropzone {
+    0%, 100% { opacity: 0.75; transform: scale(0.99); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
   /* ─── Kanban Card ─── */
   .kanban-card {
     background: var(--kanso-surface, var(--surface-card));
@@ -515,7 +633,7 @@
     padding: 12px 14px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     cursor: grab;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.15s ease;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -524,8 +642,8 @@
 
   .kanban-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 120, 212, 0.4);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border-color: rgba(56, 189, 248, 0.4);
   }
 
   .kanban-card:active {
@@ -533,8 +651,12 @@
   }
 
   .kanban-card.is-dragging {
-    opacity: 0.4;
+    opacity: 0.75;
+    transform: rotate(1.5deg) scale(1.02);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+    border-color: var(--kanso-accent, #38BDF8);
     border-style: dashed;
+    z-index: 10;
   }
 
   .card-meta-header {
@@ -639,6 +761,19 @@
     color: #D97706;
     padding: 1px 6px;
     border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .rev-counter-pill.rev-warning {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    animation: subtleBlink 3s ease-in-out infinite;
+  }
+
+  @keyframes subtleBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
   }
 
   .card-footer-row {
@@ -651,30 +786,53 @@
     margin-top: 2px;
   }
 
-  .client-badge {
-    display: flex;
+  .client-swatch-chip {
+    display: inline-flex;
     align-items: center;
     gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    margin-left: -4px;
+    border-radius: 4px;
+    cursor: pointer;
     font-size: 11px;
     font-weight: 600;
     color: var(--kanso-text-muted);
+    transition: all 0.15s ease;
+  }
+
+  .client-swatch-chip:hover {
+    background: var(--kanso-surface-hover, rgba(255, 255, 255, 0.05));
+  }
+
+  .client-swatch-chip:hover .client-name-label {
+    color: var(--kanso-text-primary);
   }
 
   .client-color-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   }
 
   .client-name-label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 130px;
+    max-width: 120px;
   }
 
-
+  .swatch-copied-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
 
   .deadline-block {
     display: flex;
@@ -688,6 +846,73 @@
   .deadline-block.is-overdue {
     color: #EF4444;
     font-weight: 800;
+  }
+
+  /* Fast-Travel Stage Nav & Chronometer Row */
+  .card-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--kanso-border, #27272A);
+  }
+
+  .stage-nav-btn {
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .stage-nav-btn:hover:not(:disabled) {
+    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent, #38BDF8);
+  }
+
+  .stage-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .card-timer-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .card-timer-btn:hover {
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover, #27272A);
+    border-color: var(--kanso-border, #3F3F46);
+  }
+
+  .card-timer-btn.is-active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: #10B981;
+    color: #10B981;
+    font-weight: 700;
+    animation: pulseTimerBtn 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseTimerBtn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
   }
 
   /* Quick status selector */

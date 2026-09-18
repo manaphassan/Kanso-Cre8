@@ -29,6 +29,10 @@ Write-Host "============================================================" -Foreg
 Write-Host "  KANSO CRE8 - WINDOWS DESKTOP PACKAGING PIPELINE           " -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
+# Stop any running KansoCre8 process to release file lock
+Get-Process KansoCre8 -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 300
+
 # 1. Client Web Build
 if (-not $SkipClientBuild -or -not (Test-Path "$clientDist\index.html")) {
     Write-Host "`n[1/6] Building Production Svelte 5 Client Assets..." -ForegroundColor Yellow

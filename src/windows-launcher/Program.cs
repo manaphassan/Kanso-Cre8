@@ -209,7 +209,13 @@ namespace KansoCre8.Native
             {
                 try
                 {
-                    Icon = BitmapFrame.Create(new Uri(iconPath, UriKind.Absolute));
+                    var iconBmp = new BitmapImage();
+                    iconBmp.BeginInit();
+                    iconBmp.CacheOption = BitmapCacheOption.OnLoad;
+                    iconBmp.UriSource = new Uri(iconPath, UriKind.Absolute);
+                    iconBmp.EndInit();
+                    iconBmp.Freeze();
+                    Icon = iconBmp;
                 }
                 catch { }
             }
@@ -274,9 +280,16 @@ namespace KansoCre8.Native
             {
                 try
                 {
+                    var bannerBmp = new BitmapImage();
+                    bannerBmp.BeginInit();
+                    bannerBmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bannerBmp.UriSource = new Uri(bannerPath, UriKind.Absolute);
+                    bannerBmp.EndInit();
+                    bannerBmp.Freeze();
+
                     Image bannerImage = new Image
                     {
-                        Source = new BitmapImage(new Uri(bannerPath, UriKind.Absolute)),
+                        Source = bannerBmp,
                         MaxWidth = 440,
                         MaxHeight = 125,
                         Stretch = Stretch.Uniform,
@@ -309,7 +322,7 @@ namespace KansoCre8.Native
             };
             splashPanel.Children.Add(tagline);
 
-            // Version Badge: "v0.2.2 • Zen Atelier"
+            // Version Badge: "v0.3.0 • Zen Atelier"
             Border versionBadge = new Border
             {
                 Background = new SolidColorBrush(isLightTheme
@@ -326,7 +339,7 @@ namespace KansoCre8.Native
             };
             TextBlock versionText = new TextBlock
             {
-                Text = "v0.2.2 • Zen Atelier",
+                Text = "v0.3.0 • Zen Atelier",
                 FontSize = 10.5,
                 FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(isLightTheme
