@@ -1,7 +1,7 @@
 # ==============================================================================
 # Kanso Cre8 — Linux Desktop Standalone Build Pipeline
 # Packages portable Linux distribution bundle with POSIX launcher & .desktop spec
-# Outputs: dist/linux/kanso-cre8-v0.1.0-linux-x64.tar.gz
+# Outputs: dist/linux/kanso-cre8-v0.7.0-linux-x64.tar.gz
 # ==============================================================================
 
 param(
@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
 $packageJsonPath = Join-Path $repoRoot "src\app\package.json"
-$appVersion = "0.2.2"
+$appVersion = "0.7.0"
 if (Test-Path $packageJsonPath) {
     try {
         $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json

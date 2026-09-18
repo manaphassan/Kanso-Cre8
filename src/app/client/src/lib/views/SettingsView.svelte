@@ -1510,7 +1510,7 @@
             <div class="about-titles">
               <div class="about-title-row">
                 <h2 class="about-hero-title">簡素Cre8</h2>
-                <span class="version-badge">v0.1.0-zen</span>
+                <span class="version-badge">v0.7.0-zen</span>
               </div>
               <p class="about-hero-subtitle">The Mindful Creative Vault — an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.</p>
             </div>

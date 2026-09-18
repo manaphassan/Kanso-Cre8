@@ -322,7 +322,7 @@ namespace KansoCre8.Native
             };
             splashPanel.Children.Add(tagline);
 
-            // Version Badge: "v0.3.0 • Zen Atelier"
+            // Version Badge: "v0.7.0 • Zen Atelier"
             Border versionBadge = new Border
             {
                 Background = new SolidColorBrush(isLightTheme
@@ -339,7 +339,7 @@ namespace KansoCre8.Native
             };
             TextBlock versionText = new TextBlock
             {
-                Text = "v0.3.0 • Zen Atelier",
+                Text = "v0.7.0 • Zen Atelier",
                 FontSize = 10.5,
                 FontWeight = FontWeights.Bold,
                 Foreground = new SolidColorBrush(isLightTheme
