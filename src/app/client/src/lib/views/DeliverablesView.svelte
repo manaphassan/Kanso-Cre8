@@ -13,19 +13,27 @@
   import BatchResizerModal from '$lib/components/features/BatchResizerModal.svelte';
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
   import PreflightValidatorModal from '$lib/components/features/PreflightValidatorModal.svelte';
+  import HandoverPackageModal from '$lib/components/features/HandoverPackageModal.svelte';
 
   let selectedDeliverable = $state<DeliverableItem | null>(null);
   let lightboxOpen = $state<boolean>(false);
   let showIngesterModal = $state<boolean>(false);
   let ingestTargetProject = $state<any>(null);
 
-  // Modals for Resizer, Share Links, & Preflight
+  // Modals for Resizer, Share Links, Preflight, & Handover
   let showResizerModal = $state<boolean>(false);
   let resizerTargetDeliverable = $state<DeliverableItem | null>(null);
   let showShareModal = $state<boolean>(false);
   let shareTargetProject = $state<any>(null);
   let showPreflightModal = $state<boolean>(false);
   let preflightTargetDeliverable = $state<DeliverableItem | null>(null);
+  let showHandoverModal = $state<boolean>(false);
+  let handoverTargetProject = $state<any>(null);
+
+  function openHandoverModal(groupOrProj: any) {
+    handoverTargetProject = groupOrProj;
+    showHandoverModal = true;
+  }
 
   // DAM Filters & View Mode
   let filterStatus = $state<string>('all');
@@ -167,6 +175,118 @@
   const revisionCount = $derived(projectStore.deliverables.filter(d => d.status === 'revision').length);
   const approvedCount = $derived(projectStore.deliverables.filter(d => d.status === 'approved').length);
   const availableBrands = $derived(Array.from(new Set(projectStore.deliverables.map(d => d.project?.brand || d.projectBrand || 'ACME'))).filter(Boolean));
+
+  // ─── Deliverables DAM Multi-Select & Batch Action Engine ───
+  let selectedDeliverableIds = $state<string[]>([]);
+  let isBatchOperating = $state<boolean>(false);
+
+  function isDeliverableSelected(d: DeliverableItem): boolean {
+    const key = d.id || d.filename;
+    return selectedDeliverableIds.includes(key);
+  }
+
+  function toggleSelectDeliverable(e: Event, d: DeliverableItem) {
+    e.stopPropagation();
+    const key = d.id || d.filename;
+    if (selectedDeliverableIds.includes(key)) {
+      selectedDeliverableIds = selectedDeliverableIds.filter(id => id !== key);
+    } else {
+      selectedDeliverableIds = [...selectedDeliverableIds, key];
+    }
+  }
+
+  function isGroupAllSelected(group: ProjectDeliverableGroup): boolean {
+    if (group.deliverables.length === 0) return false;
+    return group.deliverables.every(d => selectedDeliverableIds.includes(d.id || d.filename));
+  }
+
+  function toggleSelectGroup(e: Event, group: ProjectDeliverableGroup) {
+    e.stopPropagation();
+    const groupKeys = group.deliverables.map(d => d.id || d.filename);
+    const allSelected = groupKeys.every(k => selectedDeliverableIds.includes(k));
+    if (allSelected) {
+      selectedDeliverableIds = selectedDeliverableIds.filter(id => !groupKeys.includes(id));
+    } else {
+      const toAdd = groupKeys.filter(k => !selectedDeliverableIds.includes(k));
+      selectedDeliverableIds = [...selectedDeliverableIds, ...toAdd];
+    }
+  }
+
+  function selectAllFiltered() {
+    selectedDeliverableIds = filteredDeliverables.map(d => d.id || d.filename);
+  }
+
+  function toggleSelectAllFiltered() {
+    if (filteredDeliverables.length > 0 && selectedDeliverableIds.length === filteredDeliverables.length) {
+      selectedDeliverableIds = [];
+    } else {
+      selectAllFiltered();
+    }
+  }
+
+  function clearSelection() {
+    selectedDeliverableIds = [];
+  }
+
+  async function handleBatchApprove() {
+    if (selectedDeliverableIds.length === 0) return;
+    isBatchOperating = true;
+    const selectedItems = filteredDeliverables.filter(d => selectedDeliverableIds.includes(d.id || d.filename));
+    try {
+      for (const d of selectedItems) {
+        const projId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;
+        if (projId) {
+          await ApiClient.submitDecision(projId, { decision: 'approved', deliverableId: d.id });
+        }
+      }
+      appState.addToast(`Approved ${selectedItems.length} deliverables!`, 'success', 'Batch Sign-Off');
+      clearSelection();
+      await projectStore.loadDeliverables();
+    } catch (err: any) {
+      appState.addToast(`Batch approval failed: ${err.message}`, 'error');
+    } finally {
+      isBatchOperating = false;
+    }
+  }
+
+  async function handleBatchRevision() {
+    if (selectedDeliverableIds.length === 0) return;
+    isBatchOperating = true;
+    const selectedItems = filteredDeliverables.filter(d => selectedDeliverableIds.includes(d.id || d.filename));
+    try {
+      for (const d of selectedItems) {
+        const projId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;
+        if (projId) {
+          await ApiClient.submitDecision(projId, { decision: 'revision_requested', deliverableId: d.id });
+        }
+      }
+      appState.addToast(`Requested revision for ${selectedItems.length} deliverables!`, 'warning', 'Batch Revision');
+      clearSelection();
+      await projectStore.loadDeliverables();
+    } catch (err: any) {
+      appState.addToast(`Batch revision failed: ${err.message}`, 'error');
+    } finally {
+      isBatchOperating = false;
+    }
+  }
+
+  function handleBatchDownload() {
+    const selectedItems = filteredDeliverables.filter(d => selectedDeliverableIds.includes(d.id || d.filename) && d.downloadUrl);
+    if (selectedItems.length === 0) {
+      appState.addToast('No downloadable files in selection', 'warning');
+      return;
+    }
+    for (let i = 0; i < selectedItems.length; i++) {
+      const item = selectedItems[i];
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = item.downloadUrl!;
+        a.download = item.filename;
+        a.click();
+      }, i * 180);
+    }
+    appState.addToast(`Triggered download for ${selectedItems.length} files!`, 'info', 'Batch Download');
+  }
 </script>
 
 <div class="deliverables-view-container">
@@ -380,15 +500,24 @@
                   <span>Workspace</span>
                 </button>
 
-                <a 
-                  href="/api/projects/{encodeURIComponent(group.projectId)}/export/zip" 
-                  download="{group.jobId}_deliverables.zip"
-                  class="group-action-btn"
-                  title="Download Project Handover ZIP"
+                <button 
+                  class="group-action-btn handover-btn" 
+                  onclick={() => openHandoverModal(group)}
+                  title="Configure and Build 1-Click Client Handover Package (ZIP + Manifest + Checksums)"
                 >
                   <FluentIcons name="download" size={12} />
-                  <span>ZIP</span>
-                </a>
+                  <span>Handover Package</span>
+                </button>
+
+                <button 
+                  type="button"
+                  class="group-action-btn select-all-group-btn"
+                  onclick={(e) => toggleSelectGroup(e, group)}
+                  title={isGroupAllSelected(group) ? 'Deselect Project Files' : 'Select All Files in Project'}
+                >
+                  <FluentIcons name={isGroupAllSelected(group) ? 'check' : 'grid'} size={12} />
+                  <span>{isGroupAllSelected(group) ? 'Deselect All' : 'Select Project'}</span>
+                </button>
               </div>
             </div>
 
@@ -400,9 +529,20 @@
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
-                      <div class="del-card">
+                      <div class="del-card" class:is-selected={isDeliverableSelected(d)}>
                         <!-- Preview Box -->
                         <div class="del-preview-box">
+                          <!-- Multi-Select Checkbox -->
+                          <div class="del-card-checkbox-wrap" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+                            <input
+                              type="checkbox"
+                              class="del-card-checkbox"
+                              checked={isDeliverableSelected(d)}
+                              onchange={(e) => toggleSelectDeliverable(e, d)}
+                              title="Select {d.filename}"
+                            />
+                          </div>
+
                           {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
                             <img
                               src={d.previewUrl}
@@ -514,9 +654,20 @@
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div class="del-card-wrapper" onclick={() => openLightbox(d)}>
-            <div class="del-card">
+            <div class="del-card" class:is-selected={isDeliverableSelected(d)}>
               <!-- Preview Box -->
               <div class="del-preview-box">
+                <!-- Multi-Select Checkbox -->
+                <div class="del-card-checkbox-wrap" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    class="del-card-checkbox"
+                    checked={isDeliverableSelected(d)}
+                    onchange={(e) => toggleSelectDeliverable(e, d)}
+                    title="Select {d.filename}"
+                  />
+                </div>
+
                 {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
                   <img
                     src={d.previewUrl}
@@ -631,6 +782,15 @@
       <table class="dam-table">
         <thead>
           <tr>
+            <th style="width: 38px; text-align: center;">
+              <input
+                type="checkbox"
+                class="table-select-checkbox"
+                checked={filteredDeliverables.length > 0 && selectedDeliverableIds.length === filteredDeliverables.length}
+                onchange={toggleSelectAllFiltered}
+                title="Select all filtered deliverables"
+              />
+            </th>
             <th>Preview</th>
             <th>Filename</th>
             <th>Project / Job ID</th>
@@ -643,7 +803,16 @@
         </thead>
         <tbody>
           {#each filteredDeliverables as d}
-            <tr onclick={() => openLightbox(d)} class="table-row-clickable">
+            <tr onclick={() => openLightbox(d)} class="table-row-clickable" class:row-selected={isDeliverableSelected(d)}>
+              <td style="width: 38px; text-align: center;" onclick={(e) => e.stopPropagation()}>
+                <input
+                  type="checkbox"
+                  class="table-select-checkbox"
+                  checked={isDeliverableSelected(d)}
+                  onchange={(e) => toggleSelectDeliverable(e, d)}
+                  title="Select {d.filename}"
+                />
+              </td>
               <td class="table-thumb-col">
                 {#if (d.isImage || d.previewType === 'image') && d.previewUrl}
                   <img src={d.previewUrl} alt={d.filename} class="table-thumb" />
@@ -702,6 +871,63 @@
     </div>
   {/if}
 
+  <!-- ═══════════ FLOATING BATCH ACTIONS BAR ═══════════ -->
+  {#if selectedDeliverableIds.length > 0}
+    <div class="floating-batch-bar">
+      <div class="batch-bar-left">
+        <span class="batch-count-pill">{selectedDeliverableIds.length}</span>
+        <span class="batch-label">Selected</span>
+        <button type="button" class="batch-select-all-link" onclick={selectAllFiltered}>
+          Select All ({filteredDeliverables.length})
+        </button>
+      </div>
+
+      <div class="batch-actions-right">
+        <button
+          type="button"
+          class="batch-btn batch-approve-btn"
+          disabled={isBatchOperating}
+          onclick={handleBatchApprove}
+        >
+          <FluentIcons name="check" size={13} />
+          <span>{isBatchOperating ? 'Approving...' : 'Batch Approve'}</span>
+        </button>
+
+        <button
+          type="button"
+          class="batch-btn batch-revision-btn"
+          disabled={isBatchOperating}
+          onclick={handleBatchRevision}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>{isBatchOperating ? 'Updating...' : 'Batch Revision'}</span>
+        </button>
+
+        <button
+          type="button"
+          class="batch-btn batch-download-btn"
+          onclick={handleBatchDownload}
+        >
+          <FluentIcons name="download" size={13} />
+          <span>Download Files</span>
+        </button>
+
+        <button
+          type="button"
+          class="batch-clear-btn"
+          onclick={clearSelection}
+          title="Deselect all"
+        >
+          ✕ Clear
+        </button>
+      </div>
+    </div>
+  {/if}
+
   <!-- Review & Approval Lightbox Modal -->
   <DeliverableLightbox
     deliverable={selectedDeliverable}
@@ -753,6 +979,13 @@
     bind:open={showPreflightModal}
     deliverable={preflightTargetDeliverable}
     projectTitle={preflightTargetDeliverable?.project?.title || preflightTargetDeliverable?.projectTitle}
+  />
+
+  <!-- Client Handover Package Modal -->
+  <HandoverPackageModal
+    bind:open={showHandoverModal}
+    project={handoverTargetProject}
+    onClose={() => showHandoverModal = false}
   />
 </div>
 
@@ -1086,6 +1319,17 @@
     background: var(--brand-tint, rgba(0, 120, 212, 0.1));
     color: var(--brand-primary, #0078D4);
     border-color: var(--brand-accent, #0078D4);
+  }
+  .group-action-btn.handover-btn {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: var(--kanso-accent, #38BDF8);
+    font-weight: 700;
+  }
+  .group-action-btn.handover-btn:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: var(--kanso-accent, #38BDF8);
+    color: #FFFFFF;
   }
 
   .group-content {
@@ -1523,4 +1767,195 @@
   .status-badge.status-approved { background: rgba(16, 185, 129, 0.2); color: #10B981; }
 
   .table-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+
+  /* ═══ Checkbox & Multi-Select Styling ═══ */
+  :global(.del-card.is-selected) {
+    border-color: var(--kanso-accent, #38BDF8) !important;
+    box-shadow: 0 0 0 1px var(--kanso-accent, #38BDF8), 0 8px 24px rgba(56, 189, 248, 0.15) !important;
+  }
+
+  .del-card-checkbox-wrap {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 6;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 6px;
+    padding: 3px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.15s ease;
+  }
+
+  .del-card-checkbox {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--kanso-accent, #38BDF8);
+    cursor: pointer;
+  }
+
+  .select-all-group-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .table-select-checkbox {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--kanso-accent, #38BDF8);
+    cursor: pointer;
+  }
+
+  .table-row-clickable.row-selected {
+    background: rgba(56, 189, 248, 0.08) !important;
+  }
+
+  /* ═══ Floating Batch Actions Bar ═══ */
+  .floating-batch-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 12px;
+    padding: 10px 18px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    animation: slideUpBatch 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 90vw;
+  }
+
+  @keyframes slideUpBatch {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 16px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+
+  .batch-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .batch-count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    background: var(--kanso-accent, #38BDF8);
+    color: #000;
+    font-size: 11.5px;
+    font-weight: 800;
+    font-family: monospace;
+  }
+
+  .batch-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .batch-select-all-link {
+    background: transparent;
+    border: none;
+    color: var(--kanso-accent, #38BDF8);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 2px 4px;
+  }
+
+  .batch-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .batch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+  }
+
+  .batch-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .batch-approve-btn {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #10B981;
+  }
+
+  .batch-approve-btn:hover:not(:disabled) {
+    background: #10B981;
+    color: #000;
+  }
+
+  .batch-revision-btn {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #F59E0B;
+  }
+
+  .batch-revision-btn:hover:not(:disabled) {
+    background: #F59E0B;
+    color: #000;
+  }
+
+  .batch-download-btn {
+    background: var(--kanso-canvas, #09090B);
+    border-color: var(--kanso-border, #3F3F46);
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .batch-download-btn:hover:not(:disabled) {
+    background: var(--kanso-surface-hover, #27272A);
+    border-color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  .batch-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .batch-clear-btn:hover {
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: rgba(255, 255, 255, 0.06);
+  }
 </style>

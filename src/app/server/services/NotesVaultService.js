@@ -527,10 +527,105 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
     };
   }
 
+  /**
+   * Generates graph topology (nodes + edges) for the entire vault.
+   * Connects notes via WikiLinks ([[...]]), client entities, and project references.
+   */
+  static getGraphTopology() {
+    const notes = this.listNotes();
+    const nodeMap = new Map();
+    const edges = [];
+    const edgeSet = new Set();
+
+    // 1. Add all notes as nodes
+    for (const note of notes) {
+      nodeMap.set(note.id, {
+        id: note.id,
+        label: note.title,
+        type: note.type || 'permanent',
+        category: note.type || 'permanent',
+        tags: note.tags || [],
+        degree: 0,
+        snippet: (note.content || '').split('\n').filter(l => l.trim() && !l.startsWith('#'))[0] || note.title
+      });
+    }
+
+    // 2. Map titles to IDs
+    const titleToId = new Map();
+    for (const note of notes) {
+      titleToId.set(note.title.toLowerCase(), note.id);
+    }
+
+    // 3. Connect notes and entities
+    for (const note of notes) {
+      const sourceId = note.id;
+      const allLinks = (note.links || []).concat(
+        (note.linkedClients || []).map(c => c.replace(/^\[\[|\]\]$/g, '')),
+        (note.linkedProjects || []).map(p => p.replace(/^\[\[|\]\]$/g, ''))
+      );
+
+      for (const rawTarget of allLinks) {
+        const cleanTarget = rawTarget.replace(/^\[\[|\]\]$/g, '').trim();
+        if (!cleanTarget) continue;
+
+        let targetId = titleToId.get(cleanTarget.toLowerCase());
+        const isClient = cleanTarget.includes('ACME') || cleanTarget.includes('NEX') || cleanTarget.includes('LUM');
+        const isProject = /^\d{6}_/.test(cleanTarget);
+
+        if (!targetId) {
+          if (isClient) {
+            targetId = `client_${cleanTarget}`;
+            if (!nodeMap.has(targetId)) {
+              nodeMap.set(targetId, {
+                id: targetId,
+                label: cleanTarget,
+                type: 'client',
+                category: 'client',
+                tags: ['client'],
+                degree: 0
+              });
+            }
+          } else if (isProject) {
+            targetId = `project_${cleanTarget}`;
+            if (!nodeMap.has(targetId)) {
+              nodeMap.set(targetId, {
+                id: targetId,
+                label: cleanTarget,
+                type: 'project',
+                category: 'project',
+                tags: ['project'],
+                degree: 0
+              });
+            }
+          }
+        }
+
+        if (targetId && targetId !== sourceId) {
+          const edgeKey = `${sourceId}->${targetId}`;
+          if (!edgeSet.has(edgeKey)) {
+            edgeSet.add(edgeKey);
+            edges.push({ source: sourceId, target: targetId });
+
+            const sNode = nodeMap.get(sourceId);
+            const tNode = nodeMap.get(targetId);
+            if (sNode) sNode.degree = (sNode.degree || 0) + 1;
+            if (tNode) tNode.degree = (tNode.degree || 0) + 1;
+          }
+        }
+      }
+    }
+
+    return {
+      nodes: Array.from(nodeMap.values()),
+      edges
+    };
+  }
+
   // Convenience aliases for flexible consumption
   static saveAtomicNote(noteData) { return this.saveNote(noteData); }
   static getAtomicNotes() { return this.listNotes(); }
   static getUniversalTasks() { return this.getAllTasks(); }
+  static getGraph() { return this.getGraphTopology(); }
 }
 
 module.exports = NotesVaultService;

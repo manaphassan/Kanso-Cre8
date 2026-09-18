@@ -35,4 +35,32 @@ export interface BacklinkItem {
   snippet: string;
 }
 
+export type GraphNodeType = 'permanent' | 'fleeting' | 'literature' | 'client' | 'project';
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  type: GraphNodeType;
+  category?: string;
+  radius: number;
+  degree: number;
+  tags?: string[];
+  snippet?: string;
+  x?: number;
+  y?: number;
+  vx?: number;
+  vy?: number;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  weight?: number;
+}
+
+export interface GraphTopology {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
 

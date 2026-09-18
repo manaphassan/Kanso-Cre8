@@ -1,6 +1,158 @@
-﻿# Changelog
+# Changelog
 
-All notable changes to Kanso Cre8 (ç°¡ç´ ) are documented here.
+All notable changes to Kanso Cre8 (簡素) are documented here.
+
+## [0.7.0] - 2026-09-16 (Atelier & Project Ergonomics: Kanban Fast-Travel & Chronometer, Deliverables DAM Multi-Select & Batch Actions, and Proofing Watermark Engine)
+
+### Added — Kanban Fast-Travel & Chronometer Pipeline (`ProjectKanbanView.svelte`)
+- **Fast-Travel Stage Navigation**:
+  - Tactile `←` and `→` stage navigation buttons on every card for instantaneous 1-click stage advancement along the pipeline (`Backlog` ↔ `In Production` ↔ `Client Proofing` ↔ `Revision Pending` ↔ `Client Approved`).
+  - Dropzone animated placeholder ribbon indicating drop targets during drag-and-drop.
+  - Physical elevation, rotation, and tilt animation (`rotate(1.5deg) scale(1.02)`) while dragging cards.
+- **Card-Level Billable Chronometer Integration**:
+  - `▶ Track Time` / `⏸ Pause Timer` button on every Kanban card syncing directly with `timerStore`.
+  - Automatically loads assigned client's hourly rate and begins recording billable sessions with millisecond accuracy across app reloads.
+- **Client Swatch Dot with 1-Click HEX Copy**:
+  - Direct swatch pill on card footer displaying the client's brand color; clicking copies the HEX code to the clipboard with visual "Copied!" feedback.
+- **Revision Alert Badge**:
+  - Cards with 3 or more revision rounds automatically display an alert badge (`⚠️ Rev 3+`) to flag high scope variance or billing review.
+
+### Added — Multi-Format Asset Converter & Proofing Engine (`BatchResizerModal.svelte`)
+- **Multi-Format Export**:
+  - Instant toggle between `WebP` (ultra-light modern web), `PNG` (lossless master), and `JPEG` (universal compatibility).
+  - Configurable WebP / JPEG quality slider (60% - 100%, step 5%, default 85%).
+- **5 Aspect Ratio Presets**:
+  - Added `1.91:1` Horizontal Link/Banner preset (`1200×628`) for LinkedIn and Meta ad formats alongside `1:1`, `9:16`, `16:9`, and `4:5`.
+- **Proofing Watermark Engine**:
+  - `Diagonal CONFIDENTIAL PROOF`: Repeated diagonal watermark with drop shadow and configurable opacity (10% - 65%).
+  - `Centered Studio Seal`: Elegant circular atelier proof seal ("KANSO CRE8 • ATELIER PROOF • NOT FOR DISTRIBUTION").
+  - `Custom Text Stamp`: Custom client or NDA notice text.
+  - 100% offline client-side GPU canvas rendering (< 15ms per asset) with zero compression artifacting.
+
+### Added — Deliverables DAM Multi-Select & Batch Action Bar (`DeliverablesView.svelte`)
+- **Multi-Select Checkboxes**:
+  - Interactive selection checkbox on each deliverable card (grouped and flat view) and in metadata table mode.
+  - "Select All in Project" button in project group headers for 1-click folder selection.
+  - "Select All" toggle in table header for global batch selection.
+- **Floating Batch Action Bar**:
+  - Tactile floating bar at bottom of the viewport when assets are selected with selection counter.
+  - **Batch Approve**: 1-Click manager sign-off for all selected assets.
+  - **Batch Revision**: 1-Click revision request with revision counter increment.
+  - **Batch Download**: Sequential master asset download triggering for all selected files.
+  - **Deselect All**: Instant selection reset.
+
+## [0.6.0] - 2026-09-16 (Creative Discipline Scope Presets, Custom Branding & Official Stamps, and Standalone HTML Exporter)
+
+### Added — Creative Discipline Scope Presets Engine (`scopeTemplates.ts` & `ScopeTemplateModal.svelte`)
+- **Curated Scope Presets for 5 Core Creative Disciplines**:
+  - **UI / UX & Product Design**: User flows & wireframes, atomic design system & tokens, high-fi prototype, and developer handoff documentation.
+  - **Brand Identity & Visual System**: Brand positioning & moodboard, primary/secondary logomark suite, typography & color hierarchy, and brand guidelines dossier.
+  - **3D & Motion Design**: 3D styleframes, PBR modeling & texturing, kinetic choreography & audio sync, and 4K Octane/Redshift multi-pass delivery.
+  - **Commercial Photography & Retouching**: Pre-production scouting, studio lighting production, digital capture tech & tethering, and high-end frequency-separation retouching for 15 selects.
+  - **Copywriting & Content Strategy**: Brand voice framework, core website copy, 5-part email nurture sequence, and SEO metadata with microcopy.
+- **Scope Template Selector Modal**:
+  - Visual discipline selector with badge, estimated hours, live currency/rate scaling, and deliverable descriptions.
+  - Flexibility to replace existing items or append to current line items.
+  - Option to automatically update document payment terms and revision policy based on the discipline's recommended standards.
+
+### Added — Custom Branding, Tactile Official Stamps & Client Swatch Bar
+- **Tactile Official Document Rubber Stamps**:
+  - Interactive status stamp selector: `None`, `PAID` (crimson red debossed double border), `APPROVED` (emerald green accepted seal), `DRAFT` (dashed slate watermark), and `SEAL` (circular amber studio monogram emblem).
+  - Frontmatter persistence (`stamp: 'paid' | 'approved' | 'draft' | 'seal' | 'none'`) with zero database locks.
+- **Client Brand Swatch Bar Integration**:
+  - 1-Click Client Swatches toggle displaying the client's canonical palette swatches (Primary, Secondary, Dark, Accent) directly at the top of the invoice with 1-click hex copy.
+  - Dynamic client accent styling: header badge and typography accents dynamically adapt to the assigned client's primary brand color (`ACME` #0284C7, `NEX` #8B5CF6, `LUM` #10B981).
+
+### Added — Standalone Offline HTML Exporter & Enhanced Print Styling
+- **1-Click Standalone HTML Invoice Exporter**:
+  - Generates 100% self-contained `<docNumber>_<client>.html` documents with embedded typography, inlined theme CSS, tactile stamps, and SVG branding.
+  - Works completely offline without needing Kanso Cre8 running; clients can open in any browser on desktop or mobile and print directly to PDF.
+  - REST API endpoint: `GET /api/finance/:type/:id/export-html`.
+- **Print Optimization (`@media print`)**:
+  - Standardized `@page { size: A4 portrait; margin: 12mm 15mm; }`.
+  - Zero row or instructions break clipping (`break-inside: avoid`).
+  - High-contrast typography rendering for physical printing and digital PDF generation.
+
+## [0.5.0] - 2026-09-16 (Studio Pro Offline Commercial Licensing Engine & Multi-Currency Fiscal Invoice Studio)
+
+### Added — Studio Pro Offline Commercial Licensing Engine & Cryptographic Key Verification
+- **Sanctuary vs. Commerce Split**:
+  - Kanso Zen remains permanently free for personal journaling, atomic Zettelkasten knowledge notes, scratchpad, lo-fi cassette radio, and copywriting telemetry.
+  - Kanso Studio Pro unlocks commercial freelance operations (unlimited client profiles, dual-pane YAML quote/invoice studio, billable chronometer append, 5-folder project scaffolder, and handover packaging).
+- **100% Offline Cryptographic Key Verification (`LicenseService.js`)**:
+  - Validates perpetual license keys via local HMAC-SHA256 signature verification with zero cloud auth servers and zero telemetry phone-home checks.
+  - Supports evaluation canonical alpha key `KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED` and deterministic HMAC-SHA256 keys `KANSO-PRO-<BASE64>-<SIGNATURE>`.
+  - Persists license string cleanly in `_Team/_Config/license.key`.
+  - REST endpoints: `GET /api/system/license`, `PUT /api/system/license`, `POST /api/system/license/verify`, `POST /api/system/license/deactivate`.
+- **License Management UI (`SettingsView.svelte` & `StudioProModal.svelte`)**:
+  - Dedicated "Edition & License" tab in Settings featuring active license card, licensee name, obfuscated key preview, activation input, and 1-click deactivation.
+  - Quick-fill button for the canonical evaluation alpha key.
+
+### Added — Multi-Currency & Fiscal Localization Engine for Invoice Studio (`_Finance/`)
+- **9 Global Currencies Supported**:
+  - `MYR` (RM), `USD` ($), `EUR` (€), `GBP` (£), `SGD` (S$), `AUD` (A$), `CAD` (CA$), `JPY` (¥), and `CHF` (CHF).
+  - Intelligent fraction formatting (e.g. JPY zero decimals, standard currencies 2 decimals).
+- **Fiscal Tax Presets**:
+  - 1-Click tax presets: `Exempt (0%)`, `SST 8%` (Malaysia), `SST 6%` (F&B/Logistics), `VAT 20%` (UK/Europe), `GST 9%` (Singapore), `Sales Tax 7%` (US), and `Custom %`.
+  - Configurable tax label (`SST`, `VAT`, `GST`, `Sales Tax`) stored losslessly in invoice YAML frontmatter.
+- **e-Invoicing & Fiscal Identification Drawer**:
+  - Standardized tax identification fields: Studio TIN (e.g. LHDN `C25891024090`), Studio SST registration number, Buyer TIN, and Buyer SST/VAT number.
+  - Printable preview automatically renders compliant fiscal badges in studio letterhead and client recipient block.
+- **Three Distinct Printable Layout Themes (`activeDoc.theme`)**:
+  - **Geist Minimalist**: Sleek modern tech aesthetic, hairline borders, monospace data points.
+  - **Swiss Modernist**: Josef Müller-Brockmann inspired stark typographic grid, 8px solid top rule, heavy uppercase sans-serif headings.
+  - **Classic Letterpress**: Warm cream parchment background (`#FDFBF7`), refined serif typography, double-line borders.
+
+## [0.3.0] - 2026-09-16 (Visual Knowledge Interconnection, Creative Atelier Habits & Cloud Sync Doctor)
+
+### Added — Interactive Force-Directed Knowledge Graph Visualizer (`_Notes/`)
+- **Interactive Force-Directed HTML5 Canvas Engine (`KnowledgeGraphCanvas.svelte`)**:
+  - Bespoke lightweight physics-based graph visualizer operating at smooth 60fps without heavy third-party D3 or canvas dependencies.
+  - Features real-time Coulomb repulsion, Hooke spring attraction, velocity damping, and boundary bounding.
+  - Multi-entity topology representation: Permanent Notes, Fleeting Notes, Literature Notes, Client Portals (Acme Corp, Nexus Studio, Lumina Labs), and active Project references.
+  - Interactive smooth panning, dynamic zoom controls (`+`, `-`, fit-to-screen `Reset`), and tactile node dragging.
+  - Search filter bar with live node dimming/highlighting and 5-state category toggle pills.
+  - Tactile node hover card with connected neighbor count and direct note inspector navigation.
+- **Local Constellation Mini-Graph (`LocalGraphMini.svelte`)**:
+  - Embedded local subgraph inside the active note inspector drawer of `ZettelView.svelte`.
+  - Dynamically isolates 1-hop inbound and outbound connections for focused local context analysis.
+- **Three-Mode Segmented Knowledge View Switcher (`ZettelView.svelte`)**:
+  - Clean segmented tab navigation: `[Notes Canvas]`, `[Scratchpad.md]`, and `[Knowledge Graph]`.
+- **Backend Graph Topology Engine (`NotesVaultService.js`)**:
+  - Added `getGraphTopology()` scanning all `.md` files in `_Notes/` (Permanent, Literature, Fleeting), parsing WikiLinks `[[...]]`, extracting client entity tags (e.g. `[[ACME]]`, `[[NEX]]`, `[[LUM]]`), and indexing project links.
+  - REST endpoint: `GET /api/notes/graph`.
+
+### Added — Creative Craft Habit Tracker in Bullet Journal (`_Journal/`)
+- **Daily Craft Habit Strip (`JournalView.svelte`)**:
+  - Tactile 4-habit tracker integrated directly into the Daily Rapid Log header:
+    - ⚡ **Focus Sprint**: 25+ min Pomodoro or deep design block.
+    - 🎨 **Daily Sketch**: Exploration, wireframe, or visual draft.
+    - 📥 **Inbox Zero**: Client emails, proofs, and feedback triaged.
+    - 💡 **Atomic Note**: 1 permanent design insight logged in `_Notes/`.
+  - Real-time habit toggle persisted losslessly in the YAML frontmatter of `_Journal/Daily/YYYY-MM-DD.md`.
+- **7-Day Rolling Cadence Matrix (`JournalView.svelte`)**:
+  - Visual weekly discipline grid displaying 7-day completion rates with percentage momentum score.
+- **Backend Habit Engine (`JournalVaultService.js`)**:
+  - Lossless parsing and serialization of `habits: { focus_sprint, daily_sketch, inbox_zero, atomic_note }` in daily notes.
+  - Added `toggleDailyHabit(dateStr, habitId)` and `getHabitWeeklyMatrix(referenceDate)`.
+  - REST endpoints: `POST /api/journal/daily/:date/habits` and `GET /api/journal/habits/matrix`.
+
+### Added — Cloud Sync Conflict Doctor & Vault Integrity (`SettingsView.svelte`)
+- **Automated Sync Collision Scanner (`WorkspaceService.js`)**:
+  - Recursively audits the active plain-filesystem vault for collision artifacts created by Dropbox, OneDrive, Google Drive, and Synology Drive (`conflicted copy`, `(Case Conflict)`, `.sync-conflict-*`, `(conflict)`).
+  - Matches conflict files with their base canonical files, comparing sizes and modification timestamps.
+- **Side-by-Side Collision Resolver (`SettingsView.svelte`)**:
+  - Dedicated "Cloud Sync Conflict Doctor" card in Tab 3 (Vault Settings).
+  - Presents side-by-side comparison cards (Cloud Conflict Copy vs. Original Base File) with three 1-click resolution actions:
+    - **Keep Base (Purge Conflict)**: Safely unlinks the collision copy.
+    - **Adopt Cloud Copy**: Overwrites the original base file with the conflict copy.
+    - **Archive Safely**: Relocates the conflict copy to `_Archive/` for insurance.
+  - REST endpoints: `GET /api/system/sync-conflicts` and `POST /api/system/sync-conflicts/resolve`.
+
+### Verified — Architecture, Test Suite & Governance Standards
+- Verified full verification suite: **51 Passed, 0 Failed** in `server/test/run-tests.js` (Tests 49, 50, and 51 passing).
+- Verified brand & architecture auditor: **10 passed / 0 warned / 0 failed** in `verify-kanso.ps1`.
+- Clean Vite + Svelte 5 production client compilation.
 
 ## [0.2.2] - 2026-09-15 (Tactile Neumorphic Studio Themes, Dual-Shadow Extrusion & Debossed Input Architecture)
 
