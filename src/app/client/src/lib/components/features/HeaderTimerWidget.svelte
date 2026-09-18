@@ -333,7 +333,7 @@
   <div class="stop-modal-backdrop" onclick={cancelStop} role="presentation">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="stop-modal-card" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+    <div class="stop-modal-card" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
       <div class="stop-modal-header">
         <div class="stop-title-wrap">
           <span class="stop-badge-icon">⏱️</span>

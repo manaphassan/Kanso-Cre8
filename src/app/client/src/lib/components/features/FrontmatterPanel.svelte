@@ -136,7 +136,7 @@
 
   <!-- Tags Section -->
   <div class="tags-section">
-    <label class="tag-label">Metadata Topic Tags</label>
+    <div class="tag-label">Metadata Topic Tags</div>
     <div class="tag-chips">
       {#each (frontmatter.tags || []) as tag}
         <span class="tag-chip">

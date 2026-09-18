@@ -90,8 +90,12 @@
 
 {#if open}
   <!-- Backdrop -->
-  <div class="scratchpad-overlay" onclick={() => { saveContent(); onclose(); }}>
-    <div class="scratchpad-modal" onclick={(e) => e.stopPropagation()}>
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="scratchpad-overlay" onclick={() => { saveContent(); onclose(); }} role="presentation">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="scratchpad-modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
       <!-- Header -->
       <div class="modal-header">
         <div class="header-left">
@@ -114,6 +118,7 @@
 
       <!-- Textarea Body -->
       <div class="modal-body">
+        <!-- svelte-ignore a11y_autofocus -->
         <textarea
           bind:value={content}
           oninput={handleInput}
