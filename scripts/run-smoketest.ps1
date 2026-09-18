@@ -70,7 +70,7 @@ try {
 Write-Host ""
 Write-Host "[3/5] Validating Desktop Binary and Multi-Resolution Icon Set..." -ForegroundColor Yellow
 $pkgJson = Join-Path $repoRoot "src\app\package.json"
-$appVer = "0.2.2"
+$appVer = "0.7.0"
 if (Test-Path $pkgJson) {
     try {
         $p = Get-Content $pkgJson -Raw | ConvertFrom-Json
