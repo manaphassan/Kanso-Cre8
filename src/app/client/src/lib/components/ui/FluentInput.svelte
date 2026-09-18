@@ -26,18 +26,20 @@
     oninput,
     onchange,
     style = '',
-    class: className = ''
-  }: Props = $props();
+    class: className = '',
+    id = 'fluent-inp-' + Math.random().toString(36).substring(2, 9)
+  }: Props & { id?: string } = $props();
 </script>
 
 <div class="fluent-input-wrapper {className}" {style}>
   {#if label}
-    <label class="fluent-label">
+    <label class="fluent-label" for={id}>
       {label}
       {#if required}<span class="req-star">*</span>{/if}
     </label>
   {/if}
   <input
+    {id}
     {type}
     class="fluent-input"
     class:has-error={!!error}

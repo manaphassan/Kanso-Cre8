@@ -21,15 +21,16 @@
     disabled = false,
     onchange,
     style = '',
-    class: className = ''
-  }: Props = $props();
+    class: className = '',
+    id = 'fluent-sel-' + Math.random().toString(36).substring(2, 9)
+  }: Props & { id?: string } = $props();
 </script>
 
 <div class="fluent-select-wrapper {className}" {style}>
   {#if label}
-    <label class="fluent-label">{label}</label>
+    <label class="fluent-label" for={id}>{label}</label>
   {/if}
-  <select class="fluent-select" bind:value {disabled} {onchange}>
+  <select {id} class="fluent-select" bind:value {disabled} {onchange}>
     {#each options as opt}
       {#if typeof opt === 'string'}
         <option value={opt}>{opt}</option>
