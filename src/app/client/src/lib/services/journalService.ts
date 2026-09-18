@@ -756,6 +756,77 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
       avgRevisionRounds: 1.4
     };
   }
+
+  public async getHabitHistory(daysCount: number = 30, referenceDate?: string): Promise<{
+    history: Array<{ date: string; dayName: string; dayNumber: number; habits: string[]; count: number }>;
+    daysCount: number;
+    stats: { totalCompletions: number; currentStreak: number; maxStreak: number; avgPerDay: number };
+  }> {
+    const ref = referenceDate || new Date().toISOString().split('T')[0];
+    try {
+      const res = await ApiClient.request<{
+        success: boolean;
+        history: Array<{ date: string; dayName: string; dayNumber: number; habits: string[]; count: number }>;
+        daysCount: number;
+        stats: { totalCompletions: number; currentStreak: number; maxStreak: number; avgPerDay: number };
+      }>(`/journal/habits/history?days=${daysCount}&date=${ref}`);
+      if (res && res.success && res.history) {
+        return res;
+      }
+    } catch (e) {}
+
+    const count = Math.min(Math.max(daysCount || 30, 7), 90);
+    const refD = new Date(ref);
+    const history: Array<{ date: string; dayName: string; dayNumber: number; habits: string[]; count: number }> = [];
+
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(refD);
+      d.setDate(refD.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const daily = this.getDailyNote(dateStr);
+      const habits = daily.habits || [];
+      history.push({
+        date: dateStr,
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNumber: d.getDate(),
+        habits,
+        count: habits.length
+      });
+    }
+
+    let totalCompletions = 0;
+    let maxStreak = 0;
+    let tempStreak = 0;
+    history.forEach(item => {
+      totalCompletions += item.count;
+      if (item.count > 0) {
+        tempStreak++;
+        if (tempStreak > maxStreak) maxStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+    });
+
+    let currentStreak = 0;
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].count > 0) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      history,
+      daysCount: count,
+      stats: {
+        totalCompletions,
+        currentStreak,
+        maxStreak,
+        avgPerDay: count > 0 ? +(totalCompletions / count).toFixed(1) : 0
+      }
+    };
+  }
 }
 
 export const journalService = JournalService.getInstance();

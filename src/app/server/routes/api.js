@@ -2193,6 +2193,19 @@ router.get('/journal/habits/matrix', (req, res) => {
   }
 });
 
+// GET /api/journal/habits/history — Get 30-day habit history & streak metrics
+router.get('/journal/habits/history', (req, res) => {
+  try {
+    const days = parseInt(req.query.days, 10) || 30;
+    const refDate = req.query.date || new Date().toISOString().split('T')[0];
+    const data = JournalVaultService.getHabitHistory(days, refDate);
+    res.json({ success: true, ...data });
+  } catch (err) {
+    console.error('[Journal] getHabitHistory error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/journal/rollover-check — Check for unfinished tasks from previous daily note
 router.get('/journal/rollover-check', (req, res) => {
   try {
