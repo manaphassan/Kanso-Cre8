@@ -213,6 +213,18 @@
       category: 'Quotes & Invoices',
       execute: () => appState.navigate('invoices')
     },
+    {
+      type: 'action',
+      id: 'act-switch-vault',
+      label: 'Switch Creative Vault (Ctrl+O)',
+      sublabel: 'Mount local directory or cloud sync folder with zero locks',
+      icon: 'folder',
+      badge: 'Ctrl+O',
+      category: 'System & Vault',
+      execute: () => {
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'o', ctrlKey: true, bubbles: true }));
+      }
+    },
 
     // Focus Radio Stations
     {

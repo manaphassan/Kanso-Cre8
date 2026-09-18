@@ -26,12 +26,14 @@
   import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
   import StudioProModal from '$lib/components/features/StudioProModal.svelte';
+  import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
   let commandPaletteOpen = $state(false);
   let scratchpadOpen = $state(false);
+  let vaultSwitcherOpen = $state(false);
   let serverVersion = $state('0.1.0');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
@@ -49,6 +51,13 @@
     if (key === '7') { e.preventDefault(); appState.navigate('zettel'); return; }
     if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
     if (key === '9') { e.preventDefault(); appState.navigate('settings'); return; }
+
+    // Ctrl+O: Vault Switcher
+    if (key === 'o') {
+      e.preventDefault();
+      vaultSwitcherOpen = !vaultSwitcherOpen;
+      return;
+    }
 
     // Ctrl+Shift+K: Quick Scratchpad
     if (e.shiftKey && key === 'k') {
@@ -602,6 +611,10 @@
 
   <StudioProModal />
 
+  <VaultSwitcherModal
+    bind:open={vaultSwitcherOpen}
+    onclose={() => (vaultSwitcherOpen = false)}
+  />
 
 {/if}
 

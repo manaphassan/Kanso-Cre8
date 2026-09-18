@@ -95,7 +95,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="drawer-backdrop" onclick={onclose}></div>
 
-  <aside class="notification-drawer" role="dialog" aria-label="Activity Notifications">
+  <aside class="notification-drawer" aria-label="Activity Notifications">
     <div class="drawer-header">
       <div class="header-left">
         <FluentIcons name="bell" size={18} color="#00CFFF" />
