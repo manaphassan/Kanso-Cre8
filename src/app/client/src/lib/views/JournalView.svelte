@@ -21,6 +21,12 @@
   let currentDate = $state(new Date().toISOString().split('T')[0]);
   let dailyNote: DailyNote = $state(journalService.getDailyNote());
   let weeklyHabitMatrix: Array<{ date: string; dayName: string; habits: string[] }> = $state([]);
+  let habitViewMode: '7day' | '30day' = $state('7day');
+  let habitHistoryData: {
+    history: Array<{ date: string; dayName: string; dayNumber: number; habits: string[]; count: number }>;
+    daysCount: number;
+    stats: { totalCompletions: number; currentStreak: number; maxStreak: number; avgPerDay: number };
+  } | null = $state(null);
   let newEntryText = $state('');
   let newEntryType: BujoEntry['type'] = $state('task');
   let newIntentionText = $state('');
@@ -55,6 +61,7 @@
 
   async function refreshHabitMatrix() {
     weeklyHabitMatrix = await journalService.getWeeklyHabitMatrix(currentDate);
+    habitHistoryData = await journalService.getHabitHistory(30, currentDate);
   }
 
   function handleToggleHabit(habitId: string) {
@@ -305,23 +312,73 @@
           </div>
         </div>
 
-        <!-- 7-Day Mini Dot Matrix -->
-        {#if weeklyHabitMatrix.length > 0}
-          <div class="habit-cadence-matrix">
-            <span class="matrix-title">7-DAY CADENCE</span>
-            <div class="matrix-days">
-              {#each weeklyHabitMatrix as day}
+        <!-- Cadence & Heatmap View Switcher -->
+        <div class="habit-cadence-matrix">
+          <div class="cadence-header-row">
+            <div class="cadence-tabs">
+              <button
+                type="button"
+                class="cadence-tab-btn"
+                class:active={habitViewMode === '7day'}
+                onclick={() => (habitViewMode = '7day')}
+              >
+                7-Day
+              </button>
+              <button
+                type="button"
+                class="cadence-tab-btn"
+                class:active={habitViewMode === '30day'}
+                onclick={() => (habitViewMode = '30day')}
+              >
+                30-Day Heatmap
+              </button>
+            </div>
+
+            {#if habitHistoryData && habitHistoryData.stats.currentStreak > 0}
+              <span class="streak-pill" title="Consecutive days with at least 1 habit completed">
+                🔥 {habitHistoryData.stats.currentStreak}d Streak
+              </span>
+            {/if}
+          </div>
+
+          {#if habitViewMode === '7day'}
+            {#if weeklyHabitMatrix.length > 0}
+              <div class="matrix-days">
+                {#each weeklyHabitMatrix as day}
+                  {@const isToday = day.date === currentDate}
+                  {@const habitCount = (day.habits || []).length}
+                  <button
+                    type="button"
+                    class="matrix-col"
+                    class:is-today={isToday}
+                    onclick={() => loadDailyNote(day.date)}
+                    title="{day.dayName} ({day.date}): {habitCount}/4 habits completed (click to jump)"
+                  >
+                    <span class="matrix-day-label">{day.dayName}</span>
+                    <div class="matrix-dot" style="opacity: {habitCount === 0 ? 0.25 : 0.35 + habitCount * 0.16}; background: {habitCount >= 3 ? 'var(--kanso-success, #10B981)' : habitCount > 0 ? 'var(--kanso-accent, #38BDF8)' : 'var(--kanso-text-muted, #71717A)'}"></div>
+                    <span class="matrix-count">{habitCount}</span>
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          {:else if habitHistoryData}
+            <div class="heatmap-30day-grid">
+              {#each habitHistoryData.history as day}
                 {@const isToday = day.date === currentDate}
-                {@const habitCount = (day.habits || []).length}
-                <div class="matrix-col" class:is-today={isToday} title="{day.dayName} ({day.date}): {habitCount}/4 habits completed">
-                  <span class="matrix-day-label">{day.dayName}</span>
-                  <div class="matrix-dot" style="opacity: {habitCount === 0 ? 0.25 : 0.35 + habitCount * 0.16}; background: {habitCount >= 3 ? 'var(--kanso-success, #10B981)' : habitCount > 0 ? 'var(--kanso-accent, #38BDF8)' : 'var(--kanso-text-muted, #71717A)'}"></div>
-                  <span class="matrix-count">{habitCount}</span>
-                </div>
+                {@const habitCount = day.count}
+                <button
+                  type="button"
+                  class="heatmap-cell"
+                  class:is-today={isToday}
+                  onclick={() => loadDailyNote(day.date)}
+                  title="{day.date} ({day.dayName}): {habitCount}/4 habits completed"
+                  style="opacity: {habitCount === 0 ? 0.2 : 0.35 + habitCount * 0.16}; background: {habitCount >= 3 ? 'var(--kanso-success, #10B981)' : habitCount > 0 ? 'var(--kanso-accent, #38BDF8)' : 'var(--kanso-text-muted, #71717A)'}"
+                >
+                </button>
               {/each}
             </div>
-          </div>
-        {/if}
+          {/if}
+        </div>
       </div>
 
       <!-- TWO COLUMN LAYOUT: Intentions + Rapid Log -->
@@ -1454,20 +1511,55 @@
     color: var(--kanso-accent, #38BDF8);
   }
 
-  /* 7-Day Cadence Matrix */
+  /* 7-Day & 30-Day Cadence Matrix */
   .habit-cadence-matrix {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-left: 12px;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 14px;
     border-left: 1px solid var(--kanso-border, #27272A);
   }
 
-  .matrix-title {
-    font-size: 9px;
-    font-weight: 700;
+  .cadence-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .cadence-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cadence-tab-btn {
+    background: transparent;
+    border: none;
     font-family: ui-monospace, monospace;
+    font-size: 9.5px;
+    font-weight: 700;
     color: var(--kanso-text-muted, #71717A);
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+
+  .cadence-tab-btn.active {
+    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  .streak-pill {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 
   .matrix-days {
@@ -1483,6 +1575,9 @@
     gap: 3px;
     padding: 2px 4px;
     border-radius: 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
   }
 
   .matrix-col.is-today {
@@ -1507,5 +1602,29 @@
     font-size: 8.5px;
     font-family: ui-monospace, monospace;
     color: var(--kanso-text-muted, #71717A);
+  }
+
+  .heatmap-30day-grid {
+    display: grid;
+    grid-template-columns: repeat(15, 12px);
+    grid-gap: 4px;
+    align-items: center;
+  }
+
+  .heatmap-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: transform 120ms ease;
+  }
+
+  .heatmap-cell:hover {
+    transform: scale(1.3);
+  }
+
+  .heatmap-cell.is-today {
+    outline: 1.5px solid var(--kanso-accent, #38BDF8);
   }
 </style>

@@ -870,6 +870,62 @@ class JournalVaultService {
     }
     return matrix;
   }
+
+  static getHabitHistory(daysCount = 30, referenceDate = null) {
+    const count = Math.min(Math.max(daysCount || 30, 7), 90);
+    const ref = referenceDate || new Date().toISOString().split('T')[0];
+    const refDate = new Date(ref);
+    const history = [];
+
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(refDate);
+      d.setDate(refDate.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const daily = this.getDailyNote(dateStr);
+      const habits = daily.habits || [];
+      history.push({
+        date: dateStr,
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayNumber: d.getDate(),
+        habits,
+        count: habits.length
+      });
+    }
+
+    let totalCompletions = 0;
+    let maxStreak = 0;
+    let tempStreak = 0;
+
+    history.forEach(item => {
+      totalCompletions += item.count;
+      if (item.count > 0) {
+        tempStreak++;
+        if (tempStreak > maxStreak) maxStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+    });
+
+    let currentStreak = 0;
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].count > 0) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      history,
+      daysCount: count,
+      stats: {
+        totalCompletions,
+        currentStreak,
+        maxStreak,
+        avgPerDay: count > 0 ? +(totalCompletions / count).toFixed(1) : 0
+      }
+    };
+  }
 }
 
 module.exports = JournalVaultService;
