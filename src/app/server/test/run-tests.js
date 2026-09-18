@@ -14,6 +14,7 @@ const JournalVaultService = require('../services/JournalVaultService');
 const FinanceVaultService = require('../services/FinanceVaultService');
 const NotesVaultService = require('../services/NotesVaultService');
 const TeamService = require('../services/TeamService');
+const LicenseService = require('../services/LicenseService');
 const config = require('../config');
 
 console.log('🧪 Starting Kanso Cre8 Desktop Application Verification Suite...\n');
@@ -595,6 +596,91 @@ This is the project brief content.
     await streamFinishedPromise;
     try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
     try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
+  });
+
+  // ─── TEST: High-Fidelity Deliverable Proofing & Handover Engine ───────
+  await test('ExportService computes SHA-256 and generates compliant DELIVERY.md manifest with colophon', async () => {
+    const ExportService = require('../services/ExportService');
+    const CommentService = require('../services/CommentService');
+    const testDir = path.join(__dirname, 'temp-proof-project-runtime');
+    const delivDir = path.join(testDir, '05_DELIVERABLES');
+    const copyDir = path.join(testDir, '03_COPYWRITING');
+
+    fs.mkdirSync(delivDir, { recursive: true });
+    fs.mkdirSync(copyDir, { recursive: true });
+
+    const sampleFile = path.join(delivDir, 'Hero_Motion_Teaser.mp4');
+    fs.writeFileSync(sampleFile, 'Binary Video Simulation Content 12345', 'utf8');
+    fs.writeFileSync(path.join(testDir, 'README.md'), '---\njob_id: ACME-2026-099\nclient: ACME\nstatus: approved\ndesigner: 0001D\n---\n# Acme Campaign\n', 'utf8');
+
+    // 1. Verify SHA-256 Checksum calculation
+    const hash = ExportService.computeFileSha256(sampleFile);
+    assert.strictEqual(typeof hash, 'string');
+    assert.strictEqual(hash.length, 64, 'SHA-256 hash must be 64 hexadecimal characters');
+
+    // 2. Verify DELIVERY.md manifest generation
+    const assetItems = [{
+      relPath: 'Deliverables/Hero_Motion_Teaser.mp4',
+      filename: 'Hero_Motion_Teaser.mp4',
+      format: 'MP4',
+      sizeBytes: 1024,
+      sizeFormatted: '1.00 KB',
+      sha256: hash
+    }];
+    const studioProfile = {
+      name: 'Kanso Studio',
+      registration_no: '202601001234',
+      remittance: {
+        bank_name: 'Maybank Berhad',
+        account_no: '5140 1234 5678',
+        duitnow_id: '1234567890'
+      }
+    };
+    const clientProfile = {
+      name: 'Acme Corporation',
+      code: 'ACME'
+    };
+
+    const deliveryMd = ExportService.generateDeliveryMarkdown('Acme-2026-099', {
+      job_id: 'ACME-2026-099',
+      client: 'ACME',
+      designer: '0001D',
+      title: 'Acme Campaign'
+    }, assetItems, studioProfile, clientProfile);
+
+    assert.ok(deliveryMd.includes('DELIVERY.md'), 'Must include manifest title');
+    assert.ok(deliveryMd.includes(hash), 'Must include computed SHA-256 checksum');
+    assert.ok(deliveryMd.includes('5140 1234 5678'), 'Must include wire remittance account');
+    assert.ok(deliveryMd.includes('Maybank Berhad'), 'Must include bank name');
+
+    // 3. Verify CommentService stores video timestamp annotations
+    const videoComment = CommentService.addComment(testDir, 'ACME-2026-099', {
+      author: 'Senior Art Director',
+      authorRole: 'Manager',
+      content: 'Trim tail frame to match beat drop',
+      deliverableId: 'Hero_Motion_Teaser.mp4',
+      annotation: {
+        x: 45.5,
+        y: 60.2,
+        pinNumber: 1,
+        priority: 'critical',
+        videoTimestamp: 12.45,
+        timecodeFormatted: '00:12'
+      }
+    });
+
+    assert.ok(videoComment.annotation, 'Comment must retain annotation');
+    assert.strictEqual(videoComment.annotation.videoTimestamp, 12.45);
+    assert.strictEqual(videoComment.annotation.timecodeFormatted, '00:12');
+    assert.strictEqual(videoComment.annotation.priority, 'critical');
+
+    const loadedComments = CommentService.getComments(testDir, 'ACME-2026-099');
+    const found = loadedComments.find(c => c.id === videoComment.id);
+    assert.ok(found, 'Comment must be retrievable from _comments.jsonl');
+    assert.strictEqual(found.annotation.timecodeFormatted, '00:12');
+
+    // Cleanup
+    try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
   });
 
   // ─── TEST 20: Designer Capacity & Creative SLA Metrics Computation ──
@@ -2168,6 +2254,589 @@ revision: 1
       config.WORKSPACE_ROOT = origRoot;
       WorkspaceService.workspaceRoot = origWs;
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 49: JournalVaultService Daily Habits Frontmatter & 7-Day Matrix ───
+  await test('JournalVaultService parses, saves daily habits frontmatter, and generates 7-day matrix', async () => {
+    const testDir = path.join(__dirname, 'temp-habits-test');
+    const dailyDir = path.join(testDir, '_Journal', 'Daily');
+    fs.mkdirSync(dailyDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const today = '2026-09-16';
+      // 1. Save daily note with habits
+      const note = {
+        date: today,
+        title: 'Wednesday Log',
+        habits: ['focus_sprint', 'daily_sketch'],
+        focusIntentions: ['Deep craft'],
+        entries: [
+          { id: 'e1', type: 'task', text: 'Design graph visualization', completed: false }
+        ]
+      };
+      JournalVaultService.saveDailyNote(note);
+
+      // Verify file on disk has habits in YAML frontmatter
+      const filePath = path.join(dailyDir, `${today}.md`);
+      assert.ok(fs.existsSync(filePath), 'Daily note must exist');
+      const content = fs.readFileSync(filePath, 'utf8');
+      assert.ok(content.includes('habits:'), 'YAML frontmatter must include habits');
+      assert.ok(content.includes('focus_sprint'), 'Must include focus_sprint');
+
+      // 2. Read back
+      const readBack = JournalVaultService.getDailyNote(today);
+      assert.ok(Array.isArray(readBack.habits), 'habits must be array');
+      assert.strictEqual(readBack.habits.length, 2);
+      assert.ok(readBack.habits.includes('focus_sprint'));
+      assert.ok(readBack.habits.includes('daily_sketch'));
+
+      // 3. Toggle habit
+      const toggled = JournalVaultService.toggleDailyHabit(today, 'inbox_zero');
+      assert.strictEqual(toggled.habits.length, 3);
+      assert.ok(toggled.habits.includes('inbox_zero'));
+
+      // Toggle off
+      const toggledOff = JournalVaultService.toggleDailyHabit(today, 'focus_sprint');
+      assert.strictEqual(toggledOff.habits.length, 2);
+      assert.ok(!toggledOff.habits.includes('focus_sprint'));
+
+      // 4. Matrix
+      const matrix = JournalVaultService.getHabitWeeklyMatrix(today);
+      assert.strictEqual(matrix.length, 7);
+      const todayRow = matrix.find(m => m.date === today);
+      assert.ok(todayRow, 'Today row must exist in matrix');
+      assert.ok(todayRow.habits.includes('inbox_zero'));
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 50: NotesVaultService Knowledge Graph Topology ───────────────
+  await test('NotesVaultService.getGraphTopology maps atomic notes, client nodes, and project edges', async () => {
+    const testDir = path.join(__dirname, 'temp-graph-test');
+    const notesDir = path.join(testDir, '_Notes', '03_Permanent');
+    fs.mkdirSync(notesDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Create note A linking to note B and client ACME
+      const noteAPath = path.join(notesDir, 'Note_A.md');
+      fs.writeFileSync(noteAPath, `---
+id: note_a
+title: Color Harmonies
+type: permanent
+tags: [color, design]
+---
+
+# Color Harmonies
+Connecting to [[Visual Balance]] and client [[ACME]] and project [[202609_0001D_BrandSprint]].
+`, 'utf8');
+
+      // 2. Create note B
+      const noteBPath = path.join(notesDir, 'Note_B.md');
+      fs.writeFileSync(noteBPath, `---
+id: note_b
+title: Visual Balance
+type: permanent
+tags: [layout]
+---
+
+# Visual Balance
+Layout balance principles.
+`, 'utf8');
+
+      const topology = NotesVaultService.getGraphTopology();
+      assert.ok(Array.isArray(topology.nodes), 'Nodes must be an array');
+      assert.ok(Array.isArray(topology.edges), 'Edges must be an array');
+
+      // Check node exists
+      const nodeA = topology.nodes.find(n => n.id === 'note_a');
+      assert.ok(nodeA, 'Node A must exist');
+      assert.strictEqual(nodeA.label, 'Color Harmonies');
+
+      // Check client node was automatically discovered
+      const clientNode = topology.nodes.find(n => n.id === 'client_ACME' || n.label === 'ACME');
+      assert.ok(clientNode, 'Client ACME node must exist in graph');
+      assert.strictEqual(clientNode.type, 'client');
+
+      // Check project node was automatically discovered
+      const projNode = topology.nodes.find(n => n.type === 'project');
+      assert.ok(projNode, 'Project node must exist in graph');
+
+      // Check edges connect Note A to Note B, ACME, and Project
+      const edgeToB = topology.edges.find(e => e.source === 'note_a' && e.target === 'note_b');
+      assert.ok(edgeToB, 'Edge from Note A to Note B must exist');
+
+      const edgeToClient = topology.edges.find(e => e.source === 'note_a' && e.target.includes('ACME'));
+      assert.ok(edgeToClient, 'Edge from Note A to client ACME must exist');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 51: WorkspaceService Cloud Sync Conflict Scanner & Resolution ─
+  await test('WorkspaceService scans sync conflicts and resolves via keep_local, keep_conflict, and archive', async () => {
+    const testDir = path.join(__dirname, 'temp-sync-conflict-test');
+    const notesDir = path.join(testDir, '_Notes', '01_Fleeting');
+    fs.mkdirSync(notesDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Create master note and conflicted copy
+      const baseFile = path.join(notesDir, 'Meeting_Notes.md');
+      const conflictFile = path.join(notesDir, "Meeting_Notes (Sarah's conflicted copy 2026-09-15).md");
+
+      fs.writeFileSync(baseFile, '# Meeting Notes (Local Master)\n', 'utf8');
+      fs.writeFileSync(conflictFile, '# Meeting Notes (Cloud Conflicted Copy)\n', 'utf8');
+
+      // 2. Scan conflicts
+      const conflicts = WorkspaceService.scanSyncConflicts();
+      assert.strictEqual(conflicts.length, 1);
+      assert.strictEqual(conflicts[0].baseFilename, 'Meeting_Notes.md');
+      assert.strictEqual(conflicts[0].baseExists, true);
+
+      // 3. Resolve via archive
+      const archiveRes = WorkspaceService.resolveSyncConflict(conflictFile, 'archive');
+      assert.strictEqual(archiveRes.success, true);
+      assert.ok(!fs.existsSync(conflictFile), 'Original conflict file should be moved');
+      const expectedArchive = path.join(notesDir, "archived_Meeting_Notes (Sarah's conflicted copy 2026-09-15).md");
+      assert.ok(fs.existsSync(expectedArchive), 'Archived file must exist');
+
+      // Clean up archive file
+      try { fs.unlinkSync(expectedArchive); } catch (e) {}
+
+      // 4. Test keep_local resolution
+      fs.writeFileSync(conflictFile, '# Conflicted\n', 'utf8');
+      const localRes = WorkspaceService.resolveSyncConflict(conflictFile, 'keep_local');
+      assert.strictEqual(localRes.success, true);
+      assert.ok(!fs.existsSync(conflictFile), 'Conflict file must be unlinked');
+      assert.ok(fs.existsSync(baseFile), 'Base file must be preserved');
+      assert.strictEqual(fs.readFileSync(baseFile, 'utf8'), '# Meeting Notes (Local Master)\n');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 47: Studio Pro Offline Commercial Licensing Engine ──────────────
+  test('LicenseService verifies offline canonical master key and deterministic signatures', () => {
+    // 1. Verify canonical alpha key
+    const alphaVerif = LicenseService.verifyKey(LicenseService.CANONICAL_ALPHA_KEY);
+    assert.strictEqual(alphaVerif.valid, true);
+    assert.strictEqual(alphaVerif.tier, 'pro');
+    assert.strictEqual(alphaVerif.status, 'valid');
+    assert.strictEqual(alphaVerif.payload.type, 'alpha-studio');
+
+    // 2. Generate and verify a custom offline key
+    const generated = LicenseService.generateKey({
+      licensee: 'Nexus Creative Lab',
+      email: 'studio@nexuslab.io',
+      issued: '2026-09-16'
+    });
+    assert.ok(generated.key.startsWith('KANSO-PRO-'));
+    assert.strictEqual(generated.payload.licensee, 'Nexus Creative Lab');
+
+    const genVerif = LicenseService.verifyKey(generated.key);
+    assert.strictEqual(genVerif.valid, true);
+    assert.strictEqual(genVerif.tier, 'pro');
+    assert.strictEqual(genVerif.payload.licensee, 'Nexus Creative Lab');
+    assert.strictEqual(genVerif.payload.email, 'studio@nexuslab.io');
+
+    // 3. Reject tampered key
+    const tamperedKey = generated.key.slice(0, -2) + '00';
+    const tamperedVerif = LicenseService.verifyKey(tamperedKey);
+    assert.strictEqual(tamperedVerif.valid, false);
+
+    // 4. Test disk save, status, and deactivation
+    const testWs = path.join(__dirname, 'temp-license-ws');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testWs;
+    WorkspaceService.workspaceRoot = testWs;
+
+    try {
+      // Initially unlicensed
+      const initialStatus = LicenseService.getLicenseStatus();
+      assert.strictEqual(initialStatus.tier, 'zen');
+      assert.strictEqual(initialStatus.isPro, false);
+
+      // Save pro key
+      const saveRes = LicenseService.saveLicense(LicenseService.CANONICAL_ALPHA_KEY);
+      assert.strictEqual(saveRes.success, true);
+      assert.strictEqual(saveRes.status.tier, 'pro');
+      assert.strictEqual(saveRes.status.isPro, true);
+
+      // Read back status
+      const savedStatus = LicenseService.getLicenseStatus();
+      assert.strictEqual(savedStatus.isPro, true);
+      assert.strictEqual(savedStatus.licenseKey, LicenseService.CANONICAL_ALPHA_KEY);
+
+      // Deactivate
+      const deactRes = LicenseService.deactivateLicense();
+      assert.strictEqual(deactRes.success, true);
+      assert.strictEqual(deactRes.status.tier, 'zen');
+      assert.strictEqual(deactRes.status.isPro, false);
+
+      const postDeact = LicenseService.getLicenseStatus();
+      assert.strictEqual(postDeact.isPro, false);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 48: Multi-Currency & Fiscal Localization Engine for Invoice Studio ───
+  test('FinanceVaultService losslessly stores multi-currency, fiscal metadata, and printable themes', () => {
+    const testWs = path.join(__dirname, 'temp-finance-ws');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testWs;
+    WorkspaceService.workspaceRoot = testWs;
+
+    try {
+      const sampleInvoice = {
+        id: 'inv-2026-999',
+        documentNumber: 'INV-2026-999',
+        type: 'invoice',
+        clientCode: 'ACME',
+        clientName: 'Acme Corporation',
+        clientEmail: 'billing@acme.com',
+        clientAddress: '100 Innovation Way, San Francisco, CA',
+        date: '2026-09-16',
+        dueDate: '2026-09-30',
+        status: 'draft',
+        currency: 'EUR',
+        hourlyRate: 160,
+        taxLabel: 'VAT',
+        taxRatePercent: 20,
+        tin: 'C25891024090',
+        sstRegistrationNo: 'W10-1808-32000012',
+        buyerTin: 'C10293847560',
+        buyerSstNo: 'B01-1904-41000088',
+        theme: 'swiss',
+        items: [
+          {
+            id: 'it-1',
+            description: 'Brand Identity Guidelines & Design System',
+            quantity: 10,
+            unitPrice: 160,
+            amount: 1600
+          }
+        ],
+        subtotal: 1600,
+        taxAmount: 320,
+        total: 1920,
+        notes: 'Strict net-14 payment settlement.'
+      };
+
+      // Save invoice to disk
+      const saved = FinanceVaultService.saveInvoice(sampleInvoice);
+      assert.strictEqual(saved.currency, 'EUR');
+      assert.strictEqual(saved.taxLabel, 'VAT');
+      assert.strictEqual(saved.taxRatePercent, 20);
+      assert.strictEqual(saved.tin, 'C25891024090');
+      assert.strictEqual(saved.sstRegistrationNo, 'W10-1808-32000012');
+      assert.strictEqual(saved.buyerTin, 'C10293847560');
+      assert.strictEqual(saved.buyerSstNo, 'B01-1904-41000088');
+      assert.strictEqual(saved.theme, 'swiss');
+      assert.strictEqual(saved.total, 1920);
+
+      // Read back from disk
+      const retrieved = FinanceVaultService.getInvoice('INV-2026-999');
+      assert.ok(retrieved, 'Invoice should exist on disk');
+      assert.strictEqual(retrieved.currency, 'EUR');
+      assert.strictEqual(retrieved.taxLabel, 'VAT');
+      assert.strictEqual(retrieved.tin, 'C25891024090');
+      assert.strictEqual(retrieved.sstRegistrationNo, 'W10-1808-32000012');
+      assert.strictEqual(retrieved.buyerTin, 'C10293847560');
+      assert.strictEqual(retrieved.buyerSstNo, 'B01-1904-41000088');
+      assert.strictEqual(retrieved.theme, 'swiss');
+
+      // Test Quote creation with Classic Letterpress theme and Malaysian Ringgit
+      const sampleQuote = {
+        id: 'qte-2026-888',
+        documentNumber: 'QTE-2026-888',
+        type: 'quote',
+        clientCode: 'LUM',
+        clientName: 'Lumina Labs',
+        clientEmail: 'procurement@luminalabs.com',
+        clientAddress: 'Level 18, Menara Lumina, Kuala Lumpur',
+        date: '2026-09-16',
+        dueDate: '2026-09-30',
+        validUntil: '2026-09-30',
+        status: 'draft',
+        currency: 'MYR',
+        hourlyRate: 180,
+        taxLabel: 'SST',
+        taxRatePercent: 8,
+        tin: 'C99887766554',
+        sstRegistrationNo: 'W10-2201-99881122',
+        theme: 'letterpress',
+        items: [
+          {
+            id: 'it-1',
+            description: 'AI Creative Vault UX Architecture',
+            quantity: 20,
+            unitPrice: 180,
+            amount: 3600
+          }
+        ],
+        subtotal: 3600,
+        taxAmount: 288,
+        total: 3888,
+        notes: 'Quote valid for 14 days.'
+      };
+
+      const savedQuote = FinanceVaultService.saveQuote(sampleQuote);
+      assert.strictEqual(savedQuote.currency, 'MYR');
+      assert.strictEqual(savedQuote.taxLabel, 'SST');
+      assert.strictEqual(savedQuote.theme, 'letterpress');
+
+      // Convert Quote to Invoice and check fiscal continuity
+      const conversion = FinanceVaultService.convertQuoteToInvoice('QTE-2026-888');
+      assert.strictEqual(conversion.success, true);
+      assert.strictEqual(conversion.invoice.currency, 'MYR');
+      assert.strictEqual(conversion.invoice.taxLabel, 'SST');
+      assert.strictEqual(conversion.invoice.tin, 'C99887766554');
+      assert.strictEqual(conversion.invoice.theme, 'letterpress');
+      assert.strictEqual(conversion.invoice.linkedQuoteId, 'QTE-2026-888');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 49: Custom Branding, Tactile Stamps, & Standalone HTML Export ───
+  test('FinanceVaultService parses official stamps, client accents, and generates standalone offline HTML', () => {
+    const testWs = path.join(__dirname, 'temp-branding-ws');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testWs;
+    WorkspaceService.workspaceRoot = testWs;
+
+    try {
+      const brandedInvoice = {
+        id: 'inv-2026-stamp',
+        documentNumber: 'INV-2026-STAMP',
+        type: 'invoice',
+        clientCode: 'NEX',
+        clientName: 'Nexus Studio',
+        clientEmail: 'finance@nexusstudio.io',
+        clientAddress: '42 Shoreditch High St, London E1 6JJ',
+        date: '2026-09-16',
+        dueDate: '2026-09-30',
+        status: 'paid',
+        currency: 'GBP',
+        hourlyRate: 150,
+        taxLabel: 'VAT',
+        taxRatePercent: 20,
+        theme: 'geist',
+        stamp: 'paid',
+        showClientAccent: true,
+        items: [
+          {
+            id: 'it-1',
+            description: '3D & Kinetic Motion Choreography Package',
+            quantity: 20,
+            unitPrice: 150,
+            amount: 3000
+          }
+        ],
+        subtotal: 3000,
+        taxAmount: 600,
+        total: 3600,
+        notes: 'Full payment settled via wire remittance.'
+      };
+
+      // 1. Save and verify Markdown YAML persistence
+      const saved = FinanceVaultService.saveInvoice(brandedInvoice);
+      assert.strictEqual(saved.stamp, 'paid');
+      assert.strictEqual(saved.showClientAccent, true);
+
+      const retrieved = FinanceVaultService.getInvoice('INV-2026-STAMP');
+      assert.ok(retrieved, 'Invoice should exist on disk');
+      assert.strictEqual(retrieved.stamp, 'paid');
+      assert.strictEqual(retrieved.showClientAccent, true);
+      assert.strictEqual(retrieved.currency, 'GBP');
+
+      // 2. Generate and verify standalone HTML export
+      const studioProfile = {
+        studioName: 'HaNa Creative Vault',
+        studioAddress: 'Kuala Lumpur, Malaysia',
+        billingEmail: 'art@hana-innovation.com',
+        principalName: 'Harussani',
+        tagline: 'Mindful Creative Systems',
+        paymentBank: 'Maybank',
+        paymentAccountNo: '5140-1234-5678',
+        paymentAccountName: 'HaNa Creative Vault'
+      };
+
+      const html = FinanceVaultService.generateStandaloneHtml(retrieved, studioProfile);
+      assert.ok(html.includes('<!DOCTYPE html>'), 'Must produce standard HTML5 doctype');
+      assert.ok(html.includes('INV-2026-STAMP'), 'Must contain document number');
+      assert.ok(html.includes('Nexus Studio'), 'Must contain client name');
+      assert.ok(html.includes('stamp-paid'), 'Must render tactile stamp-paid CSS class');
+      assert.ok(html.includes('PAID'), 'Must render PAID stamp text');
+      assert.ok(html.includes('Client Palette:'), 'Must include client palette swatch bar when showClientAccent is true');
+      assert.ok(html.includes('3D &amp; Kinetic Motion Choreography Package'), 'Must escape HTML in deliverables');
+      assert.ok(html.includes('@media print'), 'Must include print media stylesheet');
+
+      // 3. Test Quote conversion with approved stamp
+      const sampleQuote = {
+        id: 'qte-2026-stamp',
+        documentNumber: 'QTE-2026-STAMP',
+        type: 'quote',
+        clientCode: 'LUM',
+        clientName: 'Lumina Labs',
+        clientEmail: 'billing@luminalabs.dev',
+        date: '2026-09-16',
+        dueDate: '2026-09-30',
+        validUntil: '2026-09-30',
+        status: 'accepted',
+        currency: 'USD',
+        hourlyRate: 180,
+        stamp: 'approved',
+        showClientAccent: true,
+        items: [
+          {
+            id: 'it-q',
+            description: 'Biotech Data Visualization UI System',
+            quantity: 15,
+            unitPrice: 180,
+            amount: 2700
+          }
+        ],
+        subtotal: 2700,
+        taxAmount: 0,
+        total: 2700
+      };
+
+      FinanceVaultService.saveQuote(sampleQuote);
+      const conversion = FinanceVaultService.convertQuoteToInvoice('QTE-2026-STAMP');
+      assert.strictEqual(conversion.success, true);
+      assert.strictEqual(conversion.invoice.stamp, 'approved', 'Converted invoice should inherit approved stamp');
+      assert.strictEqual(conversion.invoice.showClientAccent, true, 'Converted invoice should inherit showClientAccent');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  // ─── TEST 50: Kanban Stage Pipeline & Deliverable Review Decision Engine ───
+  await test('Kanban stage transitions update README frontmatter and deliverable decisions persist', async () => {
+    const testWs = path.join(__dirname, 'temp-kanban-pipeline-test');
+    const origRoot = config.WORKSPACE_ROOT;
+
+    try {
+      if (fs.existsSync(testWs)) fs.rmSync(testWs, { recursive: true, force: true });
+      fs.mkdirSync(testWs, { recursive: true });
+      config.WORKSPACE_ROOT = testWs;
+      WorkspaceService.workspaceRoot = testWs;
+
+      // 1. Scaffold project in backlog
+      const scaffoldRes = WorkspaceService.scaffoldProject({
+        jobId: '0099',
+        brand: 'ACME',
+        title: 'Atelier Brand System',
+        status: 'backlog',
+        designer: 'Harussani',
+        priority: 'high'
+      }, 'Harussani');
+
+      assert.strictEqual(scaffoldRes.success, true);
+      const project = scaffoldRes.project;
+      assert.strictEqual(project.status, 'backlog');
+
+      // Check README.md on disk
+      const readmePath = path.join(project.fullPath, 'README.md');
+      assert.ok(fs.existsSync(readmePath), 'Project README.md must exist on disk');
+      let { frontmatter, body } = FrontmatterService.readProjectReadme(project.fullPath);
+      assert.strictEqual(frontmatter.status, 'backlog');
+      assert.strictEqual(frontmatter.brand, 'ACME');
+
+      // 2. Advance stage sequentially along PIPELINE_ORDER: backlog -> in-progress -> review -> revision -> done
+      const pipelineStages = ['in-progress', 'review', 'revision', 'done'];
+      for (const targetStage of pipelineStages) {
+        const updateRes = FrontmatterService.writeProjectReadme(
+          project.fullPath,
+          { ...frontmatter, status: targetStage },
+          body
+        );
+        assert.ok(updateRes.versionHash);
+
+        // Verify disk content
+        const readBack = FrontmatterService.readProjectReadme(project.fullPath);
+        assert.strictEqual(readBack.frontmatter.status, targetStage, `Stage should advance to ${targetStage}`);
+        frontmatter = readBack.frontmatter;
+      }
+
+      // 3. Create simulated deliverables in 05_DELIVERABLES
+      const reviewDir = path.join(project.fullPath, '05_DELIVERABLES');
+      if (!fs.existsSync(reviewDir)) fs.mkdirSync(reviewDir, { recursive: true });
+      fs.writeFileSync(path.join(reviewDir, 'hero-banner-16x9.png'), Buffer.from([0x89, 0x50, 0x4E, 0x47]));
+      fs.writeFileSync(path.join(reviewDir, 'social-square-1x1.png'), Buffer.from([0x89, 0x50, 0x4E, 0x47]));
+
+      const dels = DeliverableService.getProjectDeliverables(project.fullPath);
+      assert.strictEqual(dels.length, 2, 'Must detect 2 deliverables in 05_DELIVERABLES folder');
+
+      // 4. Submit revision request on hero banner
+      const revDecision = ApprovalService.processDecision({
+        projectId: project.id,
+        decision: 'revision_requested',
+        reviewer: 'Art Director',
+        role: 'Director',
+        comment: 'Adjust logo padding on mobile viewport',
+        deliverableId: 'hero-banner-16x9.png'
+      });
+
+      assert.strictEqual(revDecision.success, true);
+      assert.strictEqual(revDecision.approvalRecord.decision, 'revision_requested');
+      assert.strictEqual(revDecision.approvalRecord.round, 1);
+
+      // Verify frontmatter updated on disk
+      const revFm = FrontmatterService.readProjectReadme(project.fullPath).frontmatter;
+      assert.strictEqual(revFm.status, 'revision');
+      assert.strictEqual(revFm.revision, 1);
+      assert.strictEqual(revFm.approvals.length, 1);
+
+      // 5. Submit approval sign-off
+      const appDecision = ApprovalService.processDecision({
+        projectId: project.id,
+        decision: 'approved',
+        reviewer: 'Lead Designer',
+        role: 'Lead',
+        comment: 'Approved for client delivery',
+        deliverableId: 'social-square-1x1.png'
+      });
+
+      assert.strictEqual(appDecision.success, true);
+      const appFm = FrontmatterService.readProjectReadme(project.fullPath).frontmatter;
+      assert.strictEqual(appFm.status, 'approved');
+      assert.ok(appFm.completedAt);
+      assert.strictEqual(appFm.approvals.length, 2);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
     }
   });
 

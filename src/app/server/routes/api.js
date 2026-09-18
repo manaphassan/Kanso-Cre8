@@ -313,20 +313,32 @@ router.get('/projects/:id', authenticateToken, (req, res) => {
   }
 });
 
-router.get('/projects/:id/export', (req, res) => {
+const handleExport = (req, res) => {
   try {
     const project = WorkspaceService.getProjectById(req.params.id);
     if (!project) {
       return res.status(404).json({ error: 'Project not found.' });
     }
 
+    let selectedFiles = null;
+    if (req.query.files) {
+      selectedFiles = req.query.files.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
     ExportService.streamProjectHandover(project.fullPath, req.params.id, res, {
-      includeWip: req.query.wip === 'true'
+      includeWip: req.query.wip === 'true',
+      includeBrief: req.query.brief !== 'false',
+      includeCopy: req.query.copy !== 'false',
+      includeManifest: req.query.manifest !== 'false',
+      selectedFiles
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+};
+
+router.get('/projects/:id/export', handleExport);
+router.get('/projects/:id/export/zip', handleExport);
 
 router.delete('/projects/:id', authenticateToken, (req, res) => {
   try {
@@ -1433,8 +1445,10 @@ router.put('/system/studio-profile', authenticateToken, (req, res) => {
 
 router.get('/system/license', (req, res) => {
   try {
+    const LicenseService = require('../services/LicenseService');
     const license = TeamService.getLicense();
-    res.json({ success: true, license });
+    const status = LicenseService.getLicenseStatus();
+    res.json({ success: true, license, status });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -1442,11 +1456,33 @@ router.get('/system/license', (req, res) => {
 
 router.put('/system/license', (req, res) => {
   try {
+    const LicenseService = require('../services/LicenseService');
     const { licenseKey } = req.body || {};
-    const success = TeamService.saveLicense(licenseKey);
-    res.json({ success, message: success ? 'License updated on disk' : 'Failed to save license' });
+    const result = LicenseService.saveLicense(licenseKey);
+    res.json({ success: true, message: result.message, status: result.status, license: licenseKey });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/system/license/verify', (req, res) => {
+  try {
+    const LicenseService = require('../services/LicenseService');
+    const { licenseKey } = req.body || {};
+    const result = LicenseService.verifyKey(licenseKey);
+    res.json({ success: result.valid, result });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/system/license/deactivate', (req, res) => {
+  try {
+    const LicenseService = require('../services/LicenseService');
+    const result = LicenseService.deactivateLicense();
+    res.json({ success: true, message: result.message, status: result.status });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -2130,6 +2166,33 @@ router.post('/journal/daily', (req, res) => {
   }
 });
 
+// POST /api/journal/daily/:date/habits — Toggle a daily habit
+router.post('/journal/daily/:date/habits', (req, res) => {
+  try {
+    const { date } = req.params;
+    const { habitId } = req.body;
+    if (!habitId) return res.status(400).json({ error: 'habitId is required' });
+    const updatedNote = JournalVaultService.toggleDailyHabit(date, habitId);
+    SseService.broadcast('journal:updated', { note: updatedNote });
+    res.json({ success: true, note: updatedNote });
+  } catch (err) {
+    console.error('[Journal] toggleDailyHabit error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/journal/habits/matrix — Get 7-day habit matrix
+router.get('/journal/habits/matrix', (req, res) => {
+  try {
+    const refDate = req.query.date || new Date().toISOString().split('T')[0];
+    const matrix = JournalVaultService.getHabitWeeklyMatrix(refDate);
+    res.json({ success: true, matrix });
+  } catch (err) {
+    console.error('[Journal] getHabitWeeklyMatrix error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/journal/rollover-check — Check for unfinished tasks from previous daily note
 router.get('/journal/rollover-check', (req, res) => {
   try {
@@ -2392,6 +2455,29 @@ router.post('/finance/convert-quote', (req, res) => {
   }
 });
 
+// GET /api/finance/:type/:id/export-html — Export standalone HTML for invoice or quote
+router.get('/finance/:type/:id/export-html', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const isQuote = type === 'quotes' || type === 'quote';
+    const doc = isQuote ? FinanceVaultService.getQuote(id) : FinanceVaultService.getInvoice(id);
+    if (!doc) {
+      return res.status(404).json({ error: `${isQuote ? 'Quote' : 'Invoice'} "${id}" not found.` });
+    }
+
+    const studioProfile = TeamService.getStudioProfile() || {};
+    const html = FinanceVaultService.generateStandaloneHtml(doc, studioProfile);
+
+    const filename = `${doc.documentNumber}_${(doc.clientCode || 'Client')}.html`;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(html);
+  } catch (err) {
+    console.error('[Finance] exportHtml error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── ATELIER KNOWLEDGE ENGINE ROUTES (_Notes/) ──────────────────────
 
 // GET /api/notes/atomic — List all atomic notes with backlinks and extracted tags
@@ -2484,6 +2570,44 @@ router.post('/notes/tasks/toggle', (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('[Notes] toggleTask error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/notes/graph — Retrieve full vault knowledge graph topology
+router.get('/notes/graph', (req, res) => {
+  try {
+    const graph = NotesVaultService.getGraphTopology();
+    res.json({ success: true, graph });
+  } catch (err) {
+    console.error('[Notes] getGraphTopology error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── CLOUD SYNC DOCTOR & SYSTEM CONFLICTS ────────────────────────────
+
+// GET /api/system/sync-conflicts — Scan for cloud synchronization conflicts
+router.get('/system/sync-conflicts', (req, res) => {
+  try {
+    const conflicts = WorkspaceService.scanSyncConflicts();
+    res.json({ success: true, count: conflicts.length, conflicts });
+  } catch (err) {
+    console.error('[System] scanSyncConflicts error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/system/sync-conflicts/resolve — Resolve a sync conflict file
+router.post('/system/sync-conflicts/resolve', (req, res) => {
+  try {
+    const { conflictPath, resolution } = req.body;
+    const actor = (req.user && req.user.name) || 'Designer';
+    const result = WorkspaceService.resolveSyncConflict(conflictPath, resolution, actor);
+    SseService.broadcast('workspace:updated', { reason: 'conflict_resolved' });
+    res.json(result);
+  } catch (err) {
+    console.error('[System] resolveSyncConflict error:', err.message);
     res.status(400).json({ error: err.message });
   }
 });

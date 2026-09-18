@@ -18,6 +18,11 @@
   function fillSampleKey() {
     inputKey = 'KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED';
   }
+
+  async function handleDeactivate() {
+    if (!confirm('Are you sure you want to deactivate Kanso Studio Pro and revert to the free Zen tier?')) return;
+    await licenseStore.deactivate();
+  }
 </script>
 
 {#if licenseStore.showUpgradeModal}
@@ -73,49 +78,87 @@
         </div>
       </div>
 
-      <!-- License Activation Form -->
-      <div class="license-form-section">
-        <label for="license-key-input" class="form-label">
-          <span>Already have a license key?</span>
-          <button type="button" class="sample-key-btn" onclick={fillSampleKey}>
-            [Fill Master Alpha Key]
-          </button>
-        </label>
-        <div class="input-row">
-          <input
-            id="license-key-input"
-            type="text"
-            bind:value={inputKey}
-            placeholder="KANSO-PRO-XXXX-XXXX-VERIFIED"
-            class="key-input"
-          />
-          <button
-            type="button"
-            onclick={handleActivate}
-            disabled={isActivating || !inputKey.trim()}
-            class="activate-btn"
-          >
-            {isActivating ? 'Verifying...' : 'Activate Pro'}
-          </button>
+      <!-- License Status or Activation Form -->
+      {#if licenseStore.isPro}
+        <div class="active-license-card">
+          <div class="active-status-row">
+            <div class="active-status-badge">
+              <span class="active-dot"></span>
+              <span>STUDIO PRO ACTIVATED</span>
+            </div>
+            <span class="offline-badge">100% Offline Validated</span>
+          </div>
+          <div class="active-meta-grid">
+            <div class="active-meta-item">
+              <span class="meta-label">Authorized Licensee:</span>
+              <span class="meta-value">{licenseStore.licensee}</span>
+            </div>
+            <div class="active-meta-item">
+              <span class="meta-label">License Tier:</span>
+              <span class="meta-value text-sky">Commercial Lifetime ($39 One-Time)</span>
+            </div>
+            <div class="active-meta-item">
+              <span class="meta-label">Activated Key:</span>
+              <code class="meta-key">{licenseStore.licenseKey ? licenseStore.licenseKey.slice(0, 14) + '...' + licenseStore.licenseKey.slice(-8) : 'KANSO-PRO-VERIFIED'}</code>
+            </div>
+            <div class="active-meta-item">
+              <span class="meta-label">Issue Date:</span>
+              <span class="meta-value">{licenseStore.issuedDate || '2026-09-01'}</span>
+            </div>
+          </div>
+          <div class="active-actions-row">
+            <button type="button" onclick={handleDeactivate} class="deactivate-btn">
+              Deactivate &amp; Revert to Zen Tier
+            </button>
+          </div>
         </div>
-        <p class="offline-note">
-          🔒 Validated 100% locally via cryptographic checksum. Zero telemetry or server phone-home.
-        </p>
-      </div>
+      {:else}
+        <!-- License Activation Form -->
+        <div class="license-form-section">
+          <label for="license-key-input" class="form-label">
+            <span>Already have a license key?</span>
+            <button type="button" class="sample-key-btn" onclick={fillSampleKey}>
+              [Fill Master Alpha Key]
+            </button>
+          </label>
+          <div class="input-row">
+            <input
+              id="license-key-input"
+              type="text"
+              bind:value={inputKey}
+              placeholder="KANSO-PRO-XXXX-XXXX-VERIFIED"
+              class="key-input"
+            />
+            <button
+              type="button"
+              onclick={handleActivate}
+              disabled={isActivating || !inputKey.trim()}
+              class="activate-btn"
+            >
+              {isActivating ? 'Verifying...' : 'Activate Pro'}
+            </button>
+          </div>
+          <p class="offline-note">
+            🔒 Validated 100% locally via cryptographic checksum. Zero telemetry or server phone-home.
+          </p>
+        </div>
+      {/if}
 
       <!-- Modal Footer -->
       <div class="modal-footer">
         <button type="button" onclick={handleClose} class="cancel-btn">
-          Keep Using Kanso Zen Free
+          {licenseStore.isPro ? 'Close' : 'Keep Using Kanso Zen Free'}
         </button>
-        <a
-          href="https://github.com/manaphassan/Kanso-Cre8"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="buy-link-btn"
-        >
-          Get Lifetime License ($39) &rarr;
-        </a>
+        {#if !licenseStore.isPro}
+          <a
+            href="https://github.com/manaphassan/Kanso-Cre8"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="buy-link-btn"
+          >
+            Get Lifetime License ($39) &rarr;
+          </a>
+        {/if}
       </div>
     </div>
   </div>
@@ -395,12 +438,122 @@
     color: var(--kanso-accent, #38BDF8);
   }
 
+  .active-license-card {
+    background: rgba(56, 189, 248, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .active-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .active-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .active-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+
+  .offline-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--kanso-text-muted, #71717A);
+    font-family: monospace;
+  }
+
+  .active-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .active-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-size: 10.5px;
+    color: var(--kanso-text-muted, #71717A);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .meta-value {
+    font-weight: 600;
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .text-sky {
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  .meta-key {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .active-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .deactivate-btn {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #EF4444;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .deactivate-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #EF4444;
+  }
+
   @media (max-width: 600px) {
     .comparison-grid {
       grid-template-columns: 1fr;
     }
     .input-row {
       flex-direction: column;
+    }
+    .active-meta-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

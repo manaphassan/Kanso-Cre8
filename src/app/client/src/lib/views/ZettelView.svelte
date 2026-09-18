@@ -3,6 +3,8 @@
   import { zettelService } from '../services/zettelService';
   import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/zettel';
   import MarkdownEditor from '../components/markdown/MarkdownEditor.svelte';
+  import KnowledgeGraphCanvas from '../components/features/KnowledgeGraphCanvas.svelte';
+  import LocalGraphMini from '../components/features/LocalGraphMini.svelte';
   import { appState } from '../stores/appState.svelte';
 
   let notes: ZettelNote[] = $state([]);
@@ -11,8 +13,8 @@
   let searchQuery = $state('');
   let showTaskDrawer = $state(false);
 
-  // Tab: Atelier Notes vs Scratchpad.md
-  let activeTab: 'notes' | 'scratchpad' = $state('notes');
+  // Tab: Atelier Notes vs Scratchpad.md vs Graph View
+  let activeTab: 'notes' | 'scratchpad' | 'graph' = $state('notes');
   let scratchpadContent = $state('');
   let scratchpadSaved = $state(false);
 
@@ -34,6 +36,7 @@
       selectNote(notes[0]);
     }
     scratchpadContent = await zettelService.loadScratchpadFromDisk();
+    updateTopology();
     isDiskSyncing = false;
   });
 
@@ -65,6 +68,7 @@
 
     zettelService.saveNote(activeNote);
     notes = zettelService.getNotes();
+    updateTopology();
     appState.addToast(`Saved "${activeNote.title}" to Vault`, 'success');
   }
 
@@ -120,6 +124,7 @@
 
     zettelService.saveNote(newNote);
     notes = zettelService.getNotes();
+    updateTopology();
     selectNote(newNote);
     appState.addToast(`Created new ${type} note`, 'info');
   }
@@ -131,6 +136,7 @@
       const cat = activeNote.type;
       zettelService.deleteNote(idToDelete, cat);
       notes = zettelService.getNotes();
+      updateTopology();
       activeNote = notes.length > 0 ? notes[0] : null;
       if (activeNote) selectNote(activeNote);
       appState.addToast('Note deleted', 'info');
@@ -175,6 +181,7 @@
 
     zettelService.saveNote(newNote);
     notes = zettelService.getNotes();
+    updateTopology();
     activeTab = 'notes';
     selectNote(newNote);
     appState.addToast('Promoted scratchpad into new fleeting note!', 'success');
@@ -206,6 +213,12 @@
     fleeting: notes.filter(n => n.type === 'fleeting').length,
     literature: notes.filter(n => n.type === 'literature').length,
   });
+
+  let graphTopology = $state<GraphTopology>({ nodes: [], edges: [] });
+
+  function updateTopology() {
+    graphTopology = zettelService.getGraphData();
+  }
 
   // Extract preview line
   function getPreviewSnippet(content: string): string {
@@ -261,6 +274,22 @@
           {#if scratchpadContent.trim()}
             <span class="scratch-badge-dot"></span>
           {/if}
+        </button>
+
+        <button
+          type="button"
+          class="segment-btn"
+          class:active={activeTab === 'graph'}
+          onclick={() => activeTab = 'graph'}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span>Knowledge Graph</span>
         </button>
       </div>
 
@@ -581,6 +610,16 @@
               </div>
             {/if}
 
+            <!-- Local Constellation Mini Graph -->
+            <LocalGraphMini
+              focalNoteId={activeNote.id}
+              topology={graphTopology}
+              onSelectNode={(node) => {
+                const found = zettelService.getNoteById(node.id) || zettelService.getNoteByTitle(node.label);
+                if (found) selectNote(found);
+              }}
+            />
+
             <!-- Inbound Bi-Directional Backlinks -->
             <div class="drawer-tray-card">
               <div class="drawer-tray-header">
@@ -644,7 +683,7 @@
         {/if}
       </main>
     </div>
-  {:else}
+  {:else if activeTab === 'scratchpad'}
     <!-- ═══════════ SCRATCHPAD MODE (_Notes/Scratchpad.md) ═══════════ -->
     <div class="scratchpad-canvas-container">
       <div class="scratchpad-header-row">
@@ -718,6 +757,23 @@
         <span>💡 Human-readable Markdown storage: <strong class="vault-path">_Notes/Scratchpad.md</strong></span>
         <span>Instant plain-text sync with Obsidian &amp; VS Code</span>
       </div>
+    </div>
+  {:else if activeTab === 'graph'}
+    <!-- ═══════════ KNOWLEDGE GRAPH VIEW ═══════════ -->
+    <div class="graph-view-canvas-wrapper">
+      <KnowledgeGraphCanvas
+        topology={graphTopology}
+        activeNoteId={activeNote?.id}
+        onSelectNode={(node) => {
+          const found = zettelService.getNoteById(node.id) || zettelService.getNoteByTitle(node.label);
+          if (found) {
+            selectNote(found);
+            activeTab = 'notes';
+          } else {
+            appState.addToast(`Entity: ${node.label} (${node.type})`, 'info');
+          }
+        }}
+      />
     </div>
   {/if}
 
@@ -1724,5 +1780,14 @@
     text-align: center;
     padding: 24px 0;
     margin: 0;
+  }
+
+  .graph-view-canvas-wrapper {
+    flex: 1;
+    height: calc(100vh - 120px);
+    min-height: 560px;
+    padding: 10px 14px 14px 14px;
+    box-sizing: border-box;
+    display: flex;
   }
 </style>

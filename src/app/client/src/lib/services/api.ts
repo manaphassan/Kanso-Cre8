@@ -127,10 +127,23 @@ export class ApiClient {
     return this.request('/system/license');
   }
 
-  static async saveLicense(licenseKey: string): Promise<{ success: boolean; message: string }> {
+  static async saveLicense(licenseKey: string): Promise<{ success: boolean; message: string; status?: any }> {
     return this.request('/system/license', {
       method: 'PUT',
       body: JSON.stringify({ licenseKey })
+    });
+  }
+
+  static async verifyLicense(licenseKey: string): Promise<{ success: boolean; result: any }> {
+    return this.request('/system/license/verify', {
+      method: 'POST',
+      body: JSON.stringify({ licenseKey })
+    });
+  }
+
+  static async deactivateLicense(): Promise<{ success: boolean; message: string; status?: any }> {
+    return this.request('/system/license/deactivate', {
+      method: 'POST'
     });
   }
 
@@ -737,6 +750,36 @@ export class ApiClient {
   // ─── Workspace & Vault Mount Management ───
   static getSystemHealth(): Promise<{ success: boolean; workspaceRoot: string; workspaceExists: boolean; cachedProjects: number; lastScan: string }> {
     return this.request('/system/health');
+  }
+
+  // ─── Knowledge Graph ───
+  static getKnowledgeGraph(): Promise<{ success: boolean; graph: { nodes: any[]; edges: any[] } }> {
+    return this.request('/notes/graph');
+  }
+
+  // ─── BuJo Habits ───
+  static toggleDailyHabit(date: string, habitId: string): Promise<{ success: boolean; note: any }> {
+    return this.request(`/journal/daily/${encodeURIComponent(date)}/habits`, {
+      method: 'POST',
+      body: JSON.stringify({ habitId })
+    });
+  }
+
+  static getHabitWeeklyMatrix(date?: string): Promise<{ success: boolean; matrix: Array<{ date: string; dayName: string; habits: string[] }> }> {
+    const qs = date ? `?date=${encodeURIComponent(date)}` : '';
+    return this.request(`/journal/habits/matrix${qs}`);
+  }
+
+  // ─── Cloud Sync Doctor ───
+  static getSyncConflicts(): Promise<{ success: boolean; count: number; conflicts: any[] }> {
+    return this.request('/system/sync-conflicts');
+  }
+
+  static resolveSyncConflict(conflictPath: string, resolution: 'keep_local' | 'keep_conflict' | 'archive'): Promise<{ success: boolean; message: string }> {
+    return this.request('/system/sync-conflicts/resolve', {
+      method: 'POST',
+      body: JSON.stringify({ conflictPath, resolution })
+    });
   }
 }
 

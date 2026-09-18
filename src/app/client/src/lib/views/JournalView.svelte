@@ -2,12 +2,14 @@
   import { onMount } from 'svelte';
   import {
     journalService,
+    CANONICAL_HABITS,
     type DailyNote,
     type MonthlyReview,
     type YearlyReview,
     type MonthlyTelemetry,
     type YearlyTelemetry,
-    type BujoEntry
+    type BujoEntry,
+    type DailyHabitItem
   } from '../services/journalService';
   import { appState } from '$lib/stores/appState.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
@@ -18,6 +20,7 @@
   // Daily Log State
   let currentDate = $state(new Date().toISOString().split('T')[0]);
   let dailyNote: DailyNote = $state(journalService.getDailyNote());
+  let weeklyHabitMatrix: Array<{ date: string; dayName: string; habits: string[] }> = $state([]);
   let newEntryText = $state('');
   let newEntryType: BujoEntry['type'] = $state('task');
   let newIntentionText = $state('');
@@ -39,14 +42,25 @@
   let newMilestoneText = $state('');
 
   onMount(async () => {
-    loadDailyNote(currentDate);
+    await loadDailyNote(currentDate);
     await loadMonthlyData(currentMonth);
     await loadYearlyData(currentYear);
   });
 
-  function loadDailyNote(date: string) {
+  async function loadDailyNote(date: string) {
     currentDate = date;
     dailyNote = journalService.getDailyNote(date);
+    await refreshHabitMatrix();
+  }
+
+  async function refreshHabitMatrix() {
+    weeklyHabitMatrix = await journalService.getWeeklyHabitMatrix(currentDate);
+  }
+
+  function handleToggleHabit(habitId: string) {
+    dailyNote = journalService.toggleHabit(currentDate, habitId);
+    refreshHabitMatrix();
+    appState.addToast('Habit updated in Daily Log', 'info');
   }
 
   function shiftDay(days: number) {
@@ -267,6 +281,49 @@
         ></textarea>
       </div>
     {:else}
+      <!-- ══════ ATELIER CREATIVE CRAFT HABITS STRIP ══════ -->
+      <div class="habits-bar-card">
+        <div class="habits-left">
+          <span class="habits-section-label">STUDIO CRAFT HABITS</span>
+          <div class="habits-pill-row">
+            {#each CANONICAL_HABITS as habit}
+              {@const isActive = (dailyNote.habits || []).includes(habit.id)}
+              <button
+                type="button"
+                class="habit-toggle-pill"
+                class:active={isActive}
+                onclick={() => handleToggleHabit(habit.id)}
+                title="{habit.description} (1-click toggle)"
+              >
+                <span class="habit-glyph">{habit.icon}</span>
+                <span class="habit-name">{habit.name}</span>
+                {#if isActive}
+                  <span class="check-mark">✓</span>
+                {/if}
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        <!-- 7-Day Mini Dot Matrix -->
+        {#if weeklyHabitMatrix.length > 0}
+          <div class="habit-cadence-matrix">
+            <span class="matrix-title">7-DAY CADENCE</span>
+            <div class="matrix-days">
+              {#each weeklyHabitMatrix as day}
+                {@const isToday = day.date === currentDate}
+                {@const habitCount = (day.habits || []).length}
+                <div class="matrix-col" class:is-today={isToday} title="{day.dayName} ({day.date}): {habitCount}/4 habits completed">
+                  <span class="matrix-day-label">{day.dayName}</span>
+                  <div class="matrix-dot" style="opacity: {habitCount === 0 ? 0.25 : 0.35 + habitCount * 0.16}; background: {habitCount >= 3 ? 'var(--kanso-success, #10B981)' : habitCount > 0 ? 'var(--kanso-accent, #38BDF8)' : 'var(--kanso-text-muted, #71717A)'}"></div>
+                  <span class="matrix-count">{habitCount}</span>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      </div>
+
       <!-- TWO COLUMN LAYOUT: Intentions + Rapid Log -->
       <div class="daily-grid">
         <!-- Left Column: Daily Intentions (Focus Box) -->
@@ -1322,5 +1379,133 @@
     color: var(--kanso-text-primary, #F4F4F5);
     font-family: ui-monospace, monospace;
     font-weight: 600;
+  }
+
+  /* ═══ ATELIER CRAFT HABITS BAR ═══ */
+  .habits-bar-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .habits-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .habits-section-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    letter-spacing: 0.06em;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .habits-pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .habit-toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--kanso-text-muted, #71717A);
+    cursor: pointer;
+    transition: all 120ms ease;
+    user-select: none;
+  }
+
+  .habit-toggle-pill:hover {
+    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .habit-toggle-pill.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+
+  .habit-glyph {
+    font-size: 13px;
+  }
+
+  .check-mark {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--kanso-accent, #38BDF8);
+  }
+
+  /* 7-Day Cadence Matrix */
+  .habit-cadence-matrix {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 12px;
+    border-left: 1px solid var(--kanso-border, #27272A);
+  }
+
+  .matrix-title {
+    font-size: 9px;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .matrix-days {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .matrix-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+
+  .matrix-col.is-today {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .matrix-day-label {
+    font-size: 9px;
+    font-family: ui-monospace, monospace;
+    color: var(--kanso-text-muted, #71717A);
+  }
+
+  .matrix-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 150ms ease;
+  }
+
+  .matrix-count {
+    font-size: 8.5px;
+    font-family: ui-monospace, monospace;
+    color: var(--kanso-text-muted, #71717A);
   }
 </style>

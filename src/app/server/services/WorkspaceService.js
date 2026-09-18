@@ -962,10 +962,11 @@ class WorkspaceService {
     const currency = options.currency || 'USD';
 
     const fm = {
-      status: 'in-progress',
+      status: options.status || 'in-progress',
       priority,
       designer,
       client: clientCode,
+      brand: clientCode,
       client_name: clientName,
       deadline,
       created: now.toISOString().split('T')[0],
@@ -1255,6 +1256,146 @@ class WorkspaceService {
       folder: safeSubfolder,
       sizeBytes: buffer.length,
       relPath: path.relative(this.workspaceRoot, targetFilePath).replace(/\\/g, '/')
+    };
+  }
+
+  /**
+   * Scans the workspace vault for cloud synchronization conflict copies.
+   * Recognizes:
+   * - Dropbox: "*conflicted copy*" or "*(Case Conflict)*"
+   * - Synology / Nextcloud: "*.sync-conflict-*" or "*.sync-temp-*"
+   * - Generic: "* (conflict)*"
+   */
+  scanSyncConflicts() {
+    const conflicts = [];
+    const root = this.workspaceRoot;
+    if (!fs.existsSync(root)) return conflicts;
+
+    const conflictPatterns = [
+      /conflicted copy/i,
+      /\(Case Conflict\)/i,
+      /\.sync-conflict-/i,
+      /\.sync-temp-/i,
+      /\(conflict\)/i
+    ];
+
+    const isConflictFilename = (name) => conflictPatterns.some(p => p.test(name));
+
+    const deriveBaseFilename = (filename) => {
+      let base = filename;
+      base = base.replace(/\s*\([^)]*conflicted copy[^)]*\)/i, '');
+      base = base.replace(/\s*\(Case Conflict\)/i, '');
+      base = base.replace(/\.sync-conflict-\d+-\w+/i, '');
+      base = base.replace(/\s*\([^)]*conflict[^)]*\)/i, '');
+      return base.trim();
+    };
+
+    const crawl = (dir) => {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist') continue;
+            crawl(fullPath);
+          } else if (entry.isFile()) {
+            if (isConflictFilename(entry.name)) {
+              try {
+                const stat = fs.statSync(fullPath);
+                const baseName = deriveBaseFilename(entry.name);
+                const baseFullPath = path.join(dir, baseName);
+                const baseExists = fs.existsSync(baseFullPath);
+                let baseStat = null;
+                if (baseExists) {
+                  try { baseStat = fs.statSync(baseFullPath); } catch (e) {}
+                }
+
+                conflicts.push({
+                  conflictPath: fullPath,
+                  relPath: path.relative(root, fullPath).replace(/\\/g, '/'),
+                  filename: entry.name,
+                  sizeBytes: stat.size,
+                  mtime: stat.mtime.toISOString(),
+                  baseFilename: baseName,
+                  basePath: baseFullPath,
+                  baseRelPath: path.relative(root, baseFullPath).replace(/\\/g, '/'),
+                  baseExists,
+                  baseSizeBytes: baseStat ? baseStat.size : null,
+                  baseMtime: baseStat ? baseStat.mtime.toISOString() : null
+                });
+              } catch (err) {
+                console.warn('[WorkspaceService] Error analyzing conflict file:', err.message);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[WorkspaceService] Error crawling for conflicts:', err.message);
+      }
+    };
+
+    crawl(root);
+    return conflicts;
+  }
+
+  /**
+   * Resolves a sync conflict file safely.
+   * @param {string} conflictPath - Path to the conflicted file
+   * @param {'keep_local' | 'keep_conflict' | 'archive'} resolution - Resolution action
+   */
+  resolveSyncConflict(conflictPath, resolution = 'keep_local', actor = 'Designer') {
+    if (!conflictPath || !fs.existsSync(conflictPath)) {
+      throw new Error(`Conflict file not found on disk: ${conflictPath}`);
+    }
+
+    // Safety: ensure inside workspaceRoot
+    const resolvedPath = path.resolve(conflictPath);
+    if (!resolvedPath.startsWith(path.resolve(this.workspaceRoot))) {
+      throw new Error('Access denied: target path is outside workspace root.');
+    }
+
+    const dir = path.dirname(resolvedPath);
+    const filename = path.basename(resolvedPath);
+    let base = filename;
+    base = base.replace(/\s*\([^)]*conflicted copy[^)]*\)/i, '');
+    base = base.replace(/\s*\(Case Conflict\)/i, '');
+    base = base.replace(/\.sync-conflict-\d+-\w+/i, '');
+    base = base.replace(/\s*\([^)]*conflict[^)]*\)/i, '');
+    const baseFullPath = path.join(dir, base.trim());
+
+    if (resolution === 'keep_local') {
+      fs.unlinkSync(resolvedPath);
+    } else if (resolution === 'keep_conflict') {
+      const content = fs.readFileSync(resolvedPath);
+      fs.writeFileSync(baseFullPath, content);
+      fs.unlinkSync(resolvedPath);
+    } else if (resolution === 'archive') {
+      const archivePath = path.join(dir, `archived_${filename}`);
+      fs.renameSync(resolvedPath, archivePath);
+    } else {
+      throw new Error(`Unknown resolution strategy: ${resolution}`);
+    }
+
+    AuditService.logEvent({
+      actor,
+      action: 'SYNC_CONFLICT_RESOLVED',
+      entityType: 'System',
+      entityId: filename,
+      details: {
+        resolution,
+        conflictPath: resolvedPath,
+        basePath: baseFullPath,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    this.scan();
+
+    return {
+      success: true,
+      message: `Sync conflict resolved via ${resolution}`,
+      conflictPath: resolvedPath,
+      resolution
     };
   }
 }

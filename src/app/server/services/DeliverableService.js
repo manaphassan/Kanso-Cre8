@@ -14,7 +14,7 @@ class DeliverableService {
 
     // Only scan folders dedicated to output deliverables, production exports, and visual mockups
     const categories = [
-      { names: ['05_DELIVERABLES', '05_Deliverables', 'Deliverables', '05. Deliverables', '5_Deliverables', '05_Final_Exports', 'Final_Exports'], label: 'Final Deliverables & Master Exports', isDeliverable: true },
+      { names: ['05_DELIVERABLES', '05_Deliverables', 'Deliverables', '05. Deliverables', '5_Deliverables', '05_Final_Exports', 'Final_Exports', '_Review', 'Review'], label: 'Final Deliverables & Master Exports', isDeliverable: true },
       { names: ['04_Production', 'Production', '4_Production', '04. Production', '04_Final_Exports', 'Export', 'Exports', 'Final_Exports', '04_Exports', '04_Final'], label: 'Production & Master Exports', isDeliverable: true },
       { names: ['04_WORK_IN_PROGRESS', '04_WIP', '04. Work In Progress', '02_Artwork_Mockup', 'Artwork Mockup', '2_Artwork_Mockup', '02. Artwork Mockup', 'Mockup', '02_Mockup', '04_Mockup', 'WIP'], label: 'Work In Progress & Visual Mockups', isDeliverable: true },
       { names: ['Client_Revisions', 'Revisions', '05_Revisions', '04_Revisions'], label: 'Revision Files', isDeliverable: true }

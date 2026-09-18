@@ -88,7 +88,15 @@ export interface InvoiceDocument {
   taxRatePercent: number;
   subtotal: number;
   taxAmount: number;
+  taxLabel?: string;
   total: number;
+  tin?: string;
+  sstRegistrationNo?: string;
+  buyerTin?: string;
+  buyerSstNo?: string;
+  theme?: 'geist' | 'swiss' | 'letterpress';
+  stamp?: 'paid' | 'approved' | 'draft' | 'seal' | 'none';
+  showClientAccent?: boolean;
   notes: string;
   linkedProjectId?: string;
   linkedQuoteId?: string;
