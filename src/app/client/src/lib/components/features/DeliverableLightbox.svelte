@@ -128,9 +128,14 @@
             />
           </div>
         {:else if deliverable.isVideo || deliverable.previewType === 'video'}
-          <div class="video-wrapper">
-            <!-- svelte-ignore a11y_media_has_caption -->
-            <video src={deliverable.streamUrl || deliverable.previewUrl} controls autoplay playsinline></video>
+          <div class="video-container-pane">
+            <DeliverableAnnotationCanvas
+              projectId={deliverable.project?.id || deliverable.projectId || deliverable.project?.jobId || deliverable.projectJobId || ''}
+              deliverableId={deliverable.id || deliverable.filename}
+              mediaUrl={deliverable.streamUrl || deliverable.previewUrl}
+              altText={deliverable.filename}
+              mediaType="video"
+            />
           </div>
         {:else if deliverable.isPdf || deliverable.previewType === 'pdf'}
           <div class="pdf-wrapper">
@@ -280,6 +285,7 @@
   }
 
   .image-container-pane,
+  .video-container-pane,
   .diff-container-pane {
     position: relative;
     width: 100%;

@@ -21,6 +21,8 @@
       y: number;
       pinNumber?: number;
       priority?: 'normal' | 'critical';
+      videoTimestamp?: number;
+      timecodeFormatted?: string;
     };
   }
 
@@ -48,14 +50,36 @@
   let isAnnotateMode = $state<boolean>(false);
   let isZoomed = $state<boolean>(false);
   let selectedPinId = $state<string | null>(null);
+  let pinFilter = $state<'all' | 'open' | 'critical' | 'resolved'>('all');
+
+  // Video State
+  let videoElem = $state<HTMLVideoElement | null>(null);
+  let videoCurrentTime = $state<number>(0);
+  let videoDuration = $state<number>(0);
+  let isVideoPlaying = $state<boolean>(false);
+  let isVideoMuted = $state<boolean>(false);
 
   // New Pin Composer Draft
-  let pendingPin = $state<{ x: number; y: number; pinNumber: number } | null>(null);
+  let pendingPin = $state<{
+    x: number;
+    y: number;
+    pinNumber: number;
+    videoTimestamp?: number;
+    timecodeFormatted?: string;
+  } | null>(null);
+
   let newPinContent = $state<string>('');
   let newPinPriority = $state<'normal' | 'critical'>('normal');
   let isSavingPin = $state<boolean>(false);
 
   let imageContainer: HTMLDivElement;
+
+  function formatTimecode(sec: number): string {
+    if (isNaN(sec) || sec < 0) return '00:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
 
   onMount(async () => {
     await loadAnnotations();
@@ -100,9 +124,27 @@
     }
   }
 
+  function toggleAnnotateMode() {
+    if (readOnly) return;
+    isAnnotateMode = !isAnnotateMode;
+    if (isAnnotateMode && mediaType === 'video' && videoElem && !videoElem.paused) {
+      videoElem.pause();
+      isVideoPlaying = false;
+    }
+    if (!isAnnotateMode) {
+      pendingPin = null;
+    }
+  }
+
   function handleMediaClick(e: MouseEvent) {
     if (!isAnnotateMode || readOnly) return;
     if (!imageContainer) return;
+
+    // Pause video if playing
+    if (mediaType === 'video' && videoElem && !videoElem.paused) {
+      videoElem.pause();
+      isVideoPlaying = false;
+    }
 
     const rect = imageContainer.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -112,10 +154,35 @@
     const yPercent = Math.max(0, Math.min(100, (clickY / rect.height) * 100));
 
     const nextPinNumber = annotations.length + 1;
+    const curTime = mediaType === 'video' ? (videoElem?.currentTime || 0) : undefined;
+    const timeFormatted = curTime !== undefined ? formatTimecode(curTime) : undefined;
+
     pendingPin = {
       x: parseFloat(xPercent.toFixed(1)),
       y: parseFloat(yPercent.toFixed(1)),
-      pinNumber: nextPinNumber
+      pinNumber: nextPinNumber,
+      videoTimestamp: curTime,
+      timecodeFormatted: timeFormatted
+    };
+    newPinContent = '';
+    newPinPriority = 'normal';
+  }
+
+  function addMarkerAtCurrentTime() {
+    if (readOnly) return;
+    if (videoElem && !videoElem.paused) {
+      videoElem.pause();
+      isVideoPlaying = false;
+    }
+    isAnnotateMode = true;
+    const nextPinNumber = annotations.length + 1;
+    const curTime = videoElem?.currentTime || 0;
+    pendingPin = {
+      x: 50,
+      y: 50,
+      pinNumber: nextPinNumber,
+      videoTimestamp: curTime,
+      timecodeFormatted: formatTimecode(curTime)
     };
     newPinContent = '';
     newPinPriority = 'normal';
@@ -132,7 +199,9 @@
           x: pendingPin.x,
           y: pendingPin.y,
           pinNumber: pendingPin.pinNumber,
-          priority: newPinPriority
+          priority: newPinPriority,
+          videoTimestamp: pendingPin.videoTimestamp,
+          timecodeFormatted: pendingPin.timecodeFormatted
         }
       });
 
@@ -184,8 +253,60 @@
     }
   }
 
+  function selectPin(pin: AnnotationItem) {
+    selectedPinId = selectedPinId === pin.id ? null : pin.id;
+    if (mediaType === 'video' && videoElem && typeof pin.annotation?.videoTimestamp === 'number') {
+      videoElem.currentTime = pin.annotation.videoTimestamp;
+      videoCurrentTime = pin.annotation.videoTimestamp;
+    }
+  }
+
+  // Video Controls
+  function togglePlayPause() {
+    if (!videoElem) return;
+    if (videoElem.paused) {
+      videoElem.play();
+      isVideoPlaying = true;
+    } else {
+      videoElem.pause();
+      isVideoPlaying = false;
+    }
+  }
+
+  function handleVideoTimeUpdate() {
+    if (!videoElem) return;
+    videoCurrentTime = videoElem.currentTime;
+  }
+
+  function handleVideoLoadedMetadata() {
+    if (!videoElem) return;
+    videoDuration = videoElem.duration;
+  }
+
+  function handleScrubberInput(e: Event) {
+    const val = parseFloat((e.target as HTMLInputElement).value);
+    if (videoElem) {
+      videoElem.currentTime = val;
+      videoCurrentTime = val;
+    }
+  }
+
   const activePinsCount = $derived(annotations.filter(a => !a.resolved).length);
+  const criticalPinsCount = $derived(annotations.filter(a => !a.resolved && a.annotation?.priority === 'critical').length);
   const resolvedPinsCount = $derived(annotations.filter(a => a.resolved).length);
+
+  const visiblePins = $derived(
+    annotations.filter(a => {
+      if (pinFilter === 'open') return !a.resolved;
+      if (pinFilter === 'critical') return !a.resolved && a.annotation?.priority === 'critical';
+      if (pinFilter === 'resolved') return a.resolved;
+      return true;
+    })
+  );
+
+  const videoTimelinePins = $derived(
+    annotations.filter(a => typeof a.annotation?.videoTimestamp === 'number')
+  );
 </script>
 
 <div class="annotation-canvas-root">
@@ -200,30 +321,76 @@
         disabled={readOnly}
       >
         <FluentIcons name="pin" size={14} />
-        <span style="margin-left: 6px;">{isAnnotateMode ? 'Annotation Mode: Active' : 'Drop Feedback Pin'}</span>
+        <span style="margin-left: 6px;">{isAnnotateMode ? 'Annotation Mode: Active' : (mediaType === 'video' ? 'Click Frame to Pin' : 'Drop Feedback Pin')}</span>
       </button>
 
-      {#if annotations.length > 0}
-        <div class="pins-counter-pill">
-          <span class="active-dot"></span>
-          <b>{activePinsCount}</b> Open
-          {#if resolvedPinsCount > 0}
-            <span class="resolved-text">· {resolvedPinsCount} Resolved</span>
-          {/if}
-        </div>
+      {#if mediaType === 'video'}
+        <button
+          type="button"
+          class="quick-marker-btn"
+          onclick={addMarkerAtCurrentTime}
+          disabled={readOnly}
+          title="Add timestamped review pin at current video playback position"
+        >
+          <span>⏱️ Pin at {formatTimecode(videoCurrentTime)}</span>
+        </button>
       {/if}
+
+      <!-- Filter Pills -->
+      <div class="filter-pills-row">
+        <button
+          type="button"
+          class="filter-pill"
+          class:active={pinFilter === 'all'}
+          onclick={() => (pinFilter = 'all')}
+        >
+          All ({annotations.length})
+        </button>
+        <button
+          type="button"
+          class="filter-pill"
+          class:active={pinFilter === 'open'}
+          onclick={() => (pinFilter = 'open')}
+        >
+          <span class="dot-open"></span>
+          Open ({activePinsCount})
+        </button>
+        {#if criticalPinsCount > 0}
+          <button
+            type="button"
+            class="filter-pill critical"
+            class:active={pinFilter === 'critical'}
+            onclick={() => (pinFilter = 'critical')}
+          >
+            <span class="dot-critical"></span>
+            Critical ({criticalPinsCount})
+          </button>
+        {/if}
+        {#if resolvedPinsCount > 0}
+          <button
+            type="button"
+            class="filter-pill resolved"
+            class:active={pinFilter === 'resolved'}
+            onclick={() => (pinFilter = 'resolved')}
+          >
+            ✓ Resolved ({resolvedPinsCount})
+          </button>
+        {/if}
+      </div>
     </div>
 
     <div class="toolbar-right">
-      <button
-        type="button"
-        class="zoom-btn"
-        onclick={() => (isZoomed = !isZoomed)}
-        title="Toggle Fit / 100% Zoom"
-      >
-        <FluentIcons name="search" size={12} />
-        <span style="margin-left: 5px;">{isZoomed ? 'Fit Screen' : '100% Zoom'}</span>
-      </button>
+      {#if mediaType !== 'video'}
+        <button
+          type="button"
+          class="zoom-btn"
+          onclick={() => (isZoomed = !isZoomed)}
+          title="Toggle Fit / 100% Zoom"
+        >
+          <FluentIcons name="search" size={12} />
+          <span style="margin-left: 5px;">{isZoomed ? 'Fit Screen' : '100% Zoom'}</span>
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -237,13 +404,29 @@
     onclick={handleMediaClick}
   >
     <div class="media-container" bind:this={imageContainer}>
-      <img src={mediaUrl} alt={altText} class="base-image" />
+      {#if mediaType === 'video'}
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video
+          bind:this={videoElem}
+          src={mediaUrl}
+          class="base-video"
+          ontimeupdate={handleVideoTimeUpdate}
+          onloadedmetadata={handleVideoLoadedMetadata}
+          onplay={() => (isVideoPlaying = true)}
+          onpause={() => (isVideoPlaying = false)}
+          onended={() => (isVideoPlaying = false)}
+          playsinline
+        ></video>
+      {:else}
+        <img src={mediaUrl} alt={altText} class="base-image" />
+      {/if}
 
       <!-- Render Existing Feedback Pins -->
-      {#each annotations as pin, idx}
+      {#each visiblePins as pin, idx}
         {@const pinNum = pin.annotation?.pinNumber || idx + 1}
         {@const isCritical = pin.annotation?.priority === 'critical'}
         {@const isSelected = selectedPinId === pin.id}
+        {@const hasTimecode = typeof pin.annotation?.videoTimestamp === 'number'}
         
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -253,7 +436,7 @@
           class:is-resolved={pin.resolved}
           class:is-selected={isSelected}
           style="left: {pin.annotation?.x}%; top: {pin.annotation?.y}%;"
-          onclick={(e) => { e.stopPropagation(); selectedPinId = isSelected ? null : pin.id; }}
+          onclick={(e) => { e.stopPropagation(); selectPin(pin); }}
         >
           <div class="pin-badge">
             {#if pin.resolved}
@@ -272,12 +455,17 @@
             <div class="pin-popover" onclick={(e) => e.stopPropagation()}>
               <div class="popover-header">
                 <div class="popover-author">
-                  <span class="author-avatar" style="background: {pin.authorAvatar || 'var(--brand-primary)'};">
+                  <span class="author-avatar" style="background: {pin.authorAvatar || '#0284C7'};">
                     {(pin.author || 'U').charAt(0).toUpperCase()}
                   </span>
                   <div>
                     <div class="author-name">{pin.author}</div>
-                    <div class="pin-time">{new Date(pin.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div class="pin-time">
+                      {new Date(pin.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {#if hasTimecode}
+                        <span class="timecode-badge">⏱️ {pin.annotation?.timecodeFormatted || formatTimecode(pin.annotation?.videoTimestamp || 0)}</span>
+                      {/if}
+                    </div>
                   </div>
                 </div>
 
@@ -328,7 +516,12 @@
           <!-- Pin Note Composer Popover -->
           <div class="pin-composer-card">
             <div class="composer-header">
-              <span class="composer-title">Add Feedback Pin #{pendingPin.pinNumber}</span>
+              <div class="composer-title-wrap">
+                <span class="composer-title">Add Feedback Pin #{pendingPin.pinNumber}</span>
+                {#if pendingPin.timecodeFormatted}
+                  <span class="timecode-pill">⏱️ {pendingPin.timecodeFormatted}</span>
+                {/if}
+              </div>
               <button type="button" class="close-composer-btn" onclick={cancelPendingPin} title="Cancel">
                 <FluentIcons name="close" size={14} />
               </button>
@@ -336,7 +529,7 @@
 
             <textarea
               bind:value={newPinContent}
-              placeholder="e.g. Adjust headline alignment by 12px, fix logo contrast..."
+              placeholder="e.g. Adjust typography pacing, brighten contrast on logo, trim 1s intro..."
               class="composer-textarea"
               rows="3"
             ></textarea>
@@ -372,9 +565,76 @@
     </div>
   </div>
 
+  <!-- Video Playback & Annotation Scrubber Bar -->
+  {#if mediaType === 'video'}
+    <div class="video-scrubber-deck">
+      <div class="playback-controls-row">
+        <button
+          type="button"
+          class="play-btn"
+          onclick={togglePlayPause}
+          title={isVideoPlaying ? 'Pause Video' : 'Play Video'}
+        >
+          {#if isVideoPlaying}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          {:else}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          {/if}
+        </button>
+
+        <span class="timecode-ticker">
+          <span class="cur-time">{formatTimecode(videoCurrentTime)}</span>
+          <span class="slash">/</span>
+          <span class="dur-time">{formatTimecode(videoDuration)}</span>
+        </span>
+
+        <!-- Timeline Scrubber with Pin Markers -->
+        <div class="timeline-track-wrap">
+          <input
+            type="range"
+            min="0"
+            max={videoDuration || 100}
+            step="0.05"
+            value={videoCurrentTime}
+            oninput={handleScrubberInput}
+            class="timeline-slider"
+          />
+
+          <!-- Render Marker Dots on Scrubber -->
+          <div class="scrubber-markers-layer">
+            {#each videoTimelinePins as pin}
+              {@const posPct = (pin.annotation!.videoTimestamp! / Math.max(0.1, videoDuration)) * 100}
+              {@const isCritical = pin.annotation?.priority === 'critical'}
+              {@const isResolved = pin.resolved}
+              <button
+                type="button"
+                class="scrubber-pin-dot"
+                class:is-critical={isCritical}
+                class:is-resolved={isResolved}
+                style="left: {posPct}%;"
+                onclick={(e) => { e.stopPropagation(); selectPin(pin); }}
+                title="Pin #{pin.annotation?.pinNumber}: {pin.annotation?.timecodeFormatted} - {pin.content.substring(0, 30)}..."
+              ></button>
+            {/each}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="add-timecode-btn"
+          onclick={addMarkerAtCurrentTime}
+          title="Add Feedback Pin at Current Video Time"
+        >
+          <FluentIcons name="pin" size={12} />
+          <span>Mark Frame</span>
+        </button>
+      </div>
+    </div>
+  {/if}
+
   {#if isAnnotateMode && !pendingPin}
     <div class="annotate-hint-bar">
-      <span>💡 <b>Tip:</b> Click anywhere on the design above to drop a feedback pin for the designer.</span>
+      <span>💡 <b>Tip:</b> Click anywhere on the {mediaType === 'video' ? 'video frame' : 'design'} above to drop a review pin.</span>
     </div>
   {/if}
 </div>
@@ -386,86 +646,114 @@
     width: 100%;
     height: 100%;
     position: relative;
-    background: #090D16;
+    background: var(--kanso-canvas, #09090B);
     overflow: hidden;
   }
 
+  /* Toolbar */
   .canvas-toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background: rgba(15, 23, 42, 0.85);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
+    background: var(--kanso-surface, #18181B);
+    border-bottom: 1px solid var(--kanso-border, #27272A);
     z-index: 20;
   }
 
   .toolbar-left, .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .mode-toggle-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #F8FAFC;
-    padding: 5px 12px;
+    background: var(--kanso-surface-hover, #27272A);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
   }
   .mode-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: var(--kanso-accent, #38BDF8);
   }
   .mode-toggle-btn.active {
-    background: var(--brand-accent, #21A1F7);
-    color: #FFFFFF;
-    border-color: var(--brand-accent, #21A1F7);
-    box-shadow: 0 0 12px rgba(33, 161, 247, 0.4);
+    background: var(--kanso-accent, #38BDF8);
+    color: #09090B;
+    border-color: var(--kanso-accent, #38BDF8);
   }
 
-  .pins-counter-pill {
+  .quick-marker-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #E2E8F0;
-    font-size: 11.5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-  .active-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #F59E0B;
-  }
-  .resolved-text {
-    color: #94A3B8;
-  }
-
-  .zoom-btn {
-    background: rgba(0, 0, 0, 0.5);
-    color: #CBD5E1;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 4px 10px;
-    border-radius: 5px;
-    font-size: 11.5px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--kanso-accent, #38BDF8);
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: 700;
+    font-family: monospace;
     cursor: pointer;
   }
-  .zoom-btn:hover {
-    color: #FFFFFF;
-    background: rgba(255, 255, 255, 0.1);
+  .quick-marker-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+  }
+
+  .filter-pills-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--kanso-canvas, #09090B);
+    border: 1px solid var(--kanso-border, #27272A);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+
+  .filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--kanso-text-muted, #71717A);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .filter-pill:hover, .filter-pill.active {
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover, #27272A);
+  }
+  .filter-pill.critical.active {
+    color: #EF4444;
+  }
+  .filter-pill.resolved.active {
+    color: #10B981;
+  }
+
+  .dot-open { width: 6px; height: 6px; border-radius: 50%; background: #38BDF8; }
+  .dot-critical { width: 6px; height: 6px; border-radius: 50%; background: #EF4444; }
+
+  .zoom-btn {
+    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+    border: 1px solid var(--kanso-border, #27272A);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
   }
 
   /* Viewport and Media */
@@ -489,13 +777,14 @@
     max-height: 100%;
   }
 
-  .base-image {
+  .base-image, .base-video {
     display: block;
     max-width: 100%;
-    max-height: calc(88vh - 120px);
+    max-height: calc(82vh - 120px);
     object-fit: contain;
     border-radius: 6px;
     user-select: none;
+    border: 1px solid var(--kanso-border, #27272A);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   }
   .is-zoomed .base-image {
@@ -515,12 +804,12 @@
   }
 
   .pin-badge {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: #0284C7;
     color: #FFFFFF;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 900;
     display: flex;
     align-items: center;
@@ -548,15 +837,15 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 2px solid #EF4444;
     animation: pulseRadar 2s infinite;
     pointer-events: none;
   }
   .pulse-ring.active {
-    border-color: #21A1F7;
+    border-color: #38BDF8;
   }
   @keyframes pulseRadar {
     0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
@@ -570,20 +859,14 @@
     left: 50%;
     transform: translateX(-50%);
     width: 260px;
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #CBD5E1);
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
     padding: 12px;
     z-index: 500;
     cursor: default;
-    animation: dropPopover 0.15s ease-out;
   }
-  @keyframes dropPopover {
-    from { opacity: 0; transform: translate(-50%, -6px); }
-    to   { opacity: 1; transform: translate(-50%, 0); }
-  }
-
   .popover-header {
     display: flex;
     align-items: center;
@@ -609,24 +892,32 @@
   .author-name {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary, #0F172A);
+    color: var(--kanso-text-primary, #F4F4F5);
   }
   .pin-time {
     font-size: 10px;
-    color: var(--text-secondary, #64748B);
+    color: var(--kanso-text-muted, #71717A);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .timecode-badge {
+    font-family: monospace;
+    color: var(--kanso-accent, #38BDF8);
+    font-weight: 700;
   }
   .critical-badge {
     font-size: 9px;
-    font-weight: 900;
-    background: #FEE2E2;
-    color: #DC2626;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.2);
+    color: #EF4444;
     padding: 2px 5px;
     border-radius: 3px;
   }
 
   .pin-content-text {
     font-size: 12px;
-    color: var(--text-primary, #1E293B);
+    color: var(--kanso-text-primary, #F4F4F5);
     line-height: 1.4;
     margin: 0 0 10px 0;
     word-break: break-word;
@@ -636,27 +927,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: 1px solid var(--surface-card-border, #E2E8F0);
+    border-top: 1px solid var(--kanso-border, #27272A);
     padding-top: 8px;
   }
   .resolve-action-btn {
-    background: #F1F5F9;
-    border: 1px solid #CBD5E1;
-    color: #334155;
+    background: var(--kanso-surface-hover, #27272A);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
     font-size: 11px;
     font-weight: 700;
     padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.12s;
-  }
-  .resolve-action-btn:hover {
-    background: #E2E8F0;
   }
   .resolve-action-btn.is-resolved {
-    background: #DCFCE7;
-    border-color: #86EFAC;
-    color: #15803D;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10B981;
+    border-color: rgba(16, 185, 129, 0.4);
   }
 
   .delete-action-btn {
@@ -664,14 +951,12 @@
     border: none;
     cursor: pointer;
     font-size: 13px;
+    color: var(--kanso-text-muted, #71717A);
     padding: 4px;
     border-radius: 4px;
-    opacity: 0.6;
-    transition: opacity 0.12s;
   }
   .delete-action-btn:hover {
-    opacity: 1;
-    background: #FEE2E2;
+    color: #EF4444;
   }
 
   /* Pin Composer Card */
@@ -681,10 +966,10 @@
     left: 50%;
     transform: translateX(-50%);
     width: 290px;
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #CBD5E1);
-    border-radius: 10px;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+    background: var(--kanso-surface, #18181B);
+    border: 1px solid var(--kanso-border, #27272A);
+    border-radius: 8px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
     padding: 14px;
     z-index: 600;
     cursor: default;
@@ -695,35 +980,47 @@
     justify-content: space-between;
     margin-bottom: 8px;
   }
+  .composer-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
   .composer-title {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 800;
-    color: var(--text-primary, #0F172A);
+    color: var(--kanso-text-primary, #F4F4F5);
+  }
+  .timecode-pill {
+    font-size: 10px;
+    font-family: monospace;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--kanso-accent, #38BDF8);
+    padding: 1px 5px;
+    border-radius: 4px;
   }
   .close-composer-btn {
     border: none;
     background: transparent;
-    color: #64748B;
+    color: var(--kanso-text-muted, #71717A);
     cursor: pointer;
     font-size: 12px;
   }
 
   .composer-textarea {
     width: 100%;
-    border: 1px solid var(--surface-card-border, #CBD5E1);
+    border: 1px solid var(--kanso-border, #27272A);
     border-radius: 6px;
     padding: 8px;
     font-size: 12px;
     font-family: inherit;
-    color: var(--text-primary, #0F172A);
-    background: #FFFFFF;
+    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-canvas, #09090B);
     resize: none;
     box-sizing: border-box;
     outline: none;
   }
   .composer-textarea:focus {
-    border-color: var(--brand-accent, #21A1F7);
-    box-shadow: 0 0 0 2px rgba(33, 161, 247, 0.2);
+    border-color: var(--kanso-accent, #38BDF8);
   }
 
   .composer-footer {
@@ -737,7 +1034,7 @@
     gap: 8px;
     font-size: 11px;
     font-weight: 600;
-    color: #475569;
+    color: var(--kanso-text-muted, #71717A);
   }
   .priority-option {
     display: flex;
@@ -746,27 +1043,132 @@
     cursor: pointer;
   }
   .priority-option.critical {
-    color: #DC2626;
+    color: #EF4444;
   }
   .composer-btn-row {
     display: flex;
     gap: 6px;
   }
 
+  /* Video Scrubber Deck */
+  .video-scrubber-deck {
+    background: var(--kanso-surface, #18181B);
+    border-top: 1px solid var(--kanso-border, #27272A);
+    padding: 10px 16px;
+    z-index: 20;
+  }
+  .playback-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .play-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--kanso-surface-hover, #27272A);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .play-btn:hover {
+    background: var(--kanso-accent, #38BDF8);
+    color: #09090B;
+  }
+  .timecode-ticker {
+    font-family: monospace;
+    font-size: 11.5px;
+    color: var(--kanso-text-primary, #F4F4F5);
+    display: flex;
+    gap: 4px;
+    min-width: 90px;
+  }
+  .timecode-ticker .slash { color: var(--kanso-text-muted, #71717A); }
+  .timecode-ticker .dur-time { color: var(--kanso-text-muted, #71717A); }
+
+  .timeline-track-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .timeline-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #27272A;
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--kanso-accent, #38BDF8);
+  }
+  .scrubber-markers-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    height: 12px;
+  }
+  .scrubber-pin-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--kanso-accent, #38BDF8);
+    border: 1.5px solid #09090B;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.12s;
+  }
+  .scrubber-pin-dot:hover {
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+  .scrubber-pin-dot.is-critical {
+    background: #EF4444;
+  }
+  .scrubber-pin-dot.is-resolved {
+    background: #10B981;
+  }
+
+  .add-timecode-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--kanso-surface-hover, #27272A);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .add-timecode-btn:hover {
+    border-color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent, #38BDF8);
+  }
+
   .annotate-hint-bar {
     position: absolute;
-    bottom: 12px;
+    bottom: 58px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #F8FAFC;
-    font-size: 11.5px;
-    padding: 6px 14px;
+    background: rgba(24, 24, 27, 0.92);
+    border: 1px solid var(--kanso-border, #27272A);
+    color: var(--kanso-text-primary, #F4F4F5);
+    font-size: 11px;
+    padding: 5px 12px;
     border-radius: 20px;
     backdrop-filter: blur(8px);
     z-index: 10;
     pointer-events: none;
-    animation: fadeIn 0.2s ease;
   }
 </style>

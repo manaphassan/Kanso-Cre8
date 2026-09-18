@@ -13,6 +13,7 @@
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
   import ProjectVersionTimelineModal from '$lib/components/features/ProjectVersionTimelineModal.svelte';
+  import HandoverPackageModal from '$lib/components/features/HandoverPackageModal.svelte';
   import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
@@ -31,6 +32,7 @@
   let showIngesterModal = $state<boolean>(false);
   let showShareModal = $state<boolean>(false);
   let showTimelineModal = $state<boolean>(false);
+  let showHandoverModal = $state<boolean>(false);
   let showMoreMenu = $state<boolean>(false);
 
   // Deliverables & Lightbox
@@ -681,6 +683,16 @@
                 <h3>Production Output Assets</h3>
                 <span class="gallery-subtitle">Found in <code>05_DELIVERABLES/</code> in local creative vault</span>
               </div>
+              {#if projectStore.activeDeliverables.length > 0}
+                <button 
+                  class="handover-btn" 
+                  onclick={() => showHandoverModal = true}
+                  title="Build 1-Click Client Handover Package (ZIP + Manifest + Checksums)"
+                >
+                  <FluentIcons name="download" size={13} />
+                  <span>Client Handover Package</span>
+                </button>
+              {/if}
             </div>
 
             {#if projectStore.activeDeliverables.length === 0}
@@ -1115,6 +1127,21 @@
       onRollbackSuccess={() => {
         if (projectId) projectStore.loadProjectById(projectId);
       }}
+    />
+
+    <!-- Client Handover Package Modal -->
+    <HandoverPackageModal
+      bind:open={showHandoverModal}
+      project={{
+        id: p?.id,
+        projectId: p?.id,
+        jobId: p?.jobId,
+        brand: p?.brand,
+        title: p?.title,
+        designer: p?.designer,
+        deliverables: projectStore.activeDeliverables
+      }}
+      onClose={() => showHandoverModal = false}
     />
   {/if}
 </div>
@@ -1915,7 +1942,33 @@
   }
 
   .gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .handover-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 6px;
+    color: var(--kanso-accent, #38BDF8);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .handover-btn:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: var(--kanso-accent, #38BDF8);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.25);
   }
   .gallery-title-group h3 {
     font-size: 16px;

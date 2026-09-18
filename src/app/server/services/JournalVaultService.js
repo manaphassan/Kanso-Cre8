@@ -78,6 +78,11 @@ class JournalVaultService {
       body = fmMatch[2];
     }
 
+    let habits = [];
+    if (Array.isArray(frontmatter.habits)) {
+      habits = frontmatter.habits.map(h => String(h).trim()).filter(Boolean);
+    }
+
     const lines = body.split(/\r?\n/);
     let title = frontmatter.title || 'Daily Creative Log';
     const focusIntentions = [];
@@ -149,6 +154,7 @@ class JournalVaultService {
       date: dateStr,
       title,
       focusIntentions: focusIntentions.length ? focusIntentions : ['Deep visual craft', 'Zero distraction sprint', 'On-time proof delivery'],
+      habits,
       entries,
       rawMarkdown: rawContent,
       updatedAt: new Date().toISOString()
@@ -161,6 +167,9 @@ class JournalVaultService {
       title: note.title || 'Daily Creative Log',
       tags: ['journal', 'bujo', 'daily']
     };
+    if (Array.isArray(note.habits) && note.habits.length > 0) {
+      fm.habits = note.habits;
+    }
 
     let md = `---\n${yaml.dump(fm).trim()}\n---\n\n`;
     md += `# 📔 ${note.title || 'Daily Creative Log'}\n\n`;
@@ -218,6 +227,7 @@ class JournalVaultService {
         day: 'numeric'
       }),
       focusIntentions: ['Deep visual craft', 'Zero distraction sprint', 'On-time proof delivery'],
+      habits: [],
       entries: [
         { id: `entry_${targetDate}_1`, type: 'priority', text: 'Define top creative sprint priorities', raw: '* Priority: Define top creative sprint priorities', completed: false },
         { id: `entry_${targetDate}_2`, type: 'task', text: 'Review visual proofs and client feedback', raw: '• [ ] Review visual proofs and client feedback', completed: false }
@@ -819,6 +829,46 @@ class JournalVaultService {
       monthlyCurve,
       avgRevisionRounds
     };
+  }
+
+  // ─── DAILY HABITS TRACKING ──────────────────────────────────────────
+
+  static toggleDailyHabit(dateStr, habitId) {
+    if (!habitId) throw new Error('habitId is required.');
+    const note = this.getDailyNote(dateStr);
+    const set = new Set(note.habits || []);
+    if (set.has(habitId)) {
+      set.delete(habitId);
+    } else {
+      set.add(habitId);
+    }
+    note.habits = Array.from(set);
+    return this.saveDailyNote(note);
+  }
+
+  static getHabitWeeklyMatrix(referenceDate) {
+    const ref = referenceDate || new Date().toISOString().split('T')[0];
+    const refD = new Date(ref);
+    const dayOfWeek = refD.getDay(); // 0 is Sun
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(refD);
+    monday.setDate(refD.getDate() + mondayOffset);
+
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const matrix = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      const daily = this.getDailyNote(dateStr);
+      matrix.push({
+        date: dateStr,
+        dayName: dayLabels[i],
+        habits: daily.habits || []
+      });
+    }
+    return matrix;
   }
 }
 

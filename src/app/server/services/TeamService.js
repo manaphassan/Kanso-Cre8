@@ -409,34 +409,34 @@ class TeamService {
    * Reads the offline license key from _Team/_Config/license.key
    */
   static getLicensePath() {
-    const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
-    if (!fs.existsSync(configDir)) {
-      try { fs.mkdirSync(configDir, { recursive: true }); } catch (e) {}
-    }
-    return path.join(configDir, 'license.key');
+    const LicenseService = require('./LicenseService');
+    return LicenseService.getLicensePath();
   }
 
   static getLicense() {
-    const licensePath = this.getLicensePath();
-    if (!fs.existsSync(licensePath)) {
-      return null;
-    }
-    try {
-      return fs.readFileSync(licensePath, 'utf8').trim();
-    } catch {
-      return null;
-    }
+    const LicenseService = require('./LicenseService');
+    return LicenseService.getRawLicenseKey();
+  }
+
+  static getLicenseStatus() {
+    const LicenseService = require('./LicenseService');
+    return LicenseService.getLicenseStatus();
   }
 
   static saveLicense(licenseKey) {
-    const licensePath = this.getLicensePath();
+    const LicenseService = require('./LicenseService');
     try {
-      fs.writeFileSync(licensePath, (licenseKey || '').trim(), 'utf8');
+      LicenseService.saveLicense(licenseKey);
       return true;
     } catch (err) {
       console.error('[TeamService] Failed to save license.key:', err.message);
       return false;
     }
+  }
+
+  static deactivateLicense() {
+    const LicenseService = require('./LicenseService');
+    return LicenseService.deactivateLicense();
   }
 }
 

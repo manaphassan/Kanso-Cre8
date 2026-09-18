@@ -12,7 +12,7 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import type { ThemeName } from '$lib/types';
 
-  type SettingsTab = 'profile' | 'appearance' | 'vault' | 'preferences' | 'shortcuts' | 'license' | 'security' | 'about';
+  type SettingsTab = 'profile' | 'appearance' | 'vault' | 'preferences' | 'shortcuts' | 'license' | 'about';
   let activeTab = $state<SettingsTab>('profile');
   let licenseInputKey = $state('');
 
@@ -41,11 +41,6 @@
   let footerNotice = $state(studioService.profile.footerNotice);
   let isSavingProfile = $state(false);
 
-  // Password change fields
-  let currentPassword = $state('');
-  let newPassword = $state('');
-  let confirmPassword = $state('');
-  let isSavingPassword = $state(false);
 
   // Workspace View preferences
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
@@ -126,6 +121,66 @@
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText('https://github.com/manaphassan/Kanso-Cre8');
       appState.addToast('Repository URL copied to clipboard: https://github.com/manaphassan/Kanso-Cre8', 'success', 'URL Copied');
+    }
+  }
+
+  // Cloud Sync Conflict Doctor state
+  let syncConflicts = $state<any[]>([]);
+  let isScanningConflicts = $state(false);
+  let resolvingConflictPath = $state<string | null>(null);
+
+  function formatFileSize(bytes: number | null | undefined): string {
+    if (bytes == null || isNaN(bytes)) return '—';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  function formatFileDate(isoStr: string | null | undefined): string {
+    if (!isoStr) return '—';
+    try {
+      const d = new Date(isoStr);
+      return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return isoStr;
+    }
+  }
+
+  async function scanConflicts() {
+    isScanningConflicts = true;
+    try {
+      const res = await ApiClient.getSyncConflicts();
+      if (res && res.success) {
+        syncConflicts = res.conflicts || [];
+        if (syncConflicts.length === 0) {
+          appState.addToast('Zero sync conflicts found across active vault.', 'success', 'Vault Clean');
+        } else {
+          appState.addToast(`Discovered ${syncConflicts.length} cloud sync conflict(s).`, 'warning', 'Sync Conflicts Detected');
+        }
+      } else {
+        appState.addToast(res?.message || 'Failed to scan sync conflicts.', 'error');
+      }
+    } catch (err: any) {
+      appState.addToast(`Sync scan error: ${err.message}`, 'error');
+    } finally {
+      isScanningConflicts = false;
+    }
+  }
+
+  async function handleResolveConflict(conflictPath: string, resolution: 'keep_local' | 'keep_cloud' | 'archive') {
+    resolvingConflictPath = conflictPath;
+    try {
+      const res = await ApiClient.resolveSyncConflict(conflictPath, resolution);
+      if (res && res.success) {
+        appState.addToast(res.message || 'Conflict resolved successfully.', 'success', 'Conflict Resolved');
+        await scanConflicts();
+      } else {
+        appState.addToast(res?.message || 'Failed to resolve conflict.', 'error');
+      }
+    } catch (err: any) {
+      appState.addToast(`Resolve error: ${err.message}`, 'error');
+    } finally {
+      resolvingConflictPath = null;
     }
   }
 
@@ -386,33 +441,11 @@
     appState.addToast('Studio preferences saved successfully.', 'success');
   }
 
-  async function handlePasswordSave() {
-    if (!newPassword || newPassword.length < 6) {
-      appState.addToast('Password must be at least 6 characters long.', 'warning');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      appState.addToast('New passwords do not match.', 'warning');
-      return;
-    }
-
-    isSavingPassword = true;
-    try {
-      await ApiClient.changePassword(currentPassword, newPassword);
-      appState.addToast('Password updated successfully.', 'success');
-      currentPassword = '';
-      newPassword = '';
-      confirmPassword = '';
-    } catch (err: any) {
-      appState.addToast(`Failed to change password: ${err.message}`, 'error');
-    } finally {
-      isSavingPassword = false;
-    }
-  }
 
   onMount(() => {
     syncStudioProfile();
     loadVaultStatus();
+    scanConflicts();
   });
 </script>
 
@@ -508,16 +541,6 @@
       {/if}
     </button>
 
-    <button
-      class="tab-btn"
-      class:active={activeTab === 'security'}
-      onclick={() => (activeTab = 'security')}
-    >
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-      </svg>
-      <span>Password &amp; Security</span>
-    </button>
 
     <button
       class="tab-btn"
@@ -1114,6 +1137,125 @@
             </div>
           </div>
         </div>
+
+        <!-- Card 3: Cloud Sync Conflict Doctor & Vault Integrity -->
+        <div class="card-surface sync-doctor-card">
+          <div class="card-header">
+            <div class="card-header-badge-row">
+              <div class="flex items-center gap-2">
+                <h2 class="card-title">Cloud Sync Conflict Doctor</h2>
+                {#if syncConflicts.length > 0}
+                  <span class="badge-alert">{syncConflicts.length} Conflict{syncConflicts.length === 1 ? '' : 's'}</span>
+                {:else}
+                  <span class="badge-pristine">Pristine</span>
+                {/if}
+              </div>
+              <button
+                type="button"
+                class="scan-btn"
+                onclick={scanConflicts}
+                disabled={isScanningConflicts}
+              >
+                <span class:spinning={isScanningConflicts}>🔄</span>
+                <span>{isScanningConflicts ? 'Scanning Vault...' : 'Scan Sync Conflicts'}</span>
+              </button>
+            </div>
+            <p class="card-subtitle">
+              Detects and repairs file collisions produced by Dropbox, OneDrive, Google Drive, or Synology Drive (e.g. <code>conflicted copy</code>, <code>.sync-conflict</code>). Ensures your pure Markdown vault remains pristine.
+            </p>
+          </div>
+
+          {#if isScanningConflicts && syncConflicts.length === 0}
+            <div class="sync-scanning-box">
+              <span class="spinning text-lg">⚙️</span>
+              <span>Scanning plain filesystem for cloud conflict artifacts...</span>
+            </div>
+          {:else if syncConflicts.length === 0}
+            <div class="sync-clean-box">
+              <div class="clean-icon-pill">✓</div>
+              <div class="clean-meta">
+                <div class="clean-title">Zero Sync Collisions Detected</div>
+                <div class="clean-desc">
+                  Your client dossiers, invoices, bullet journals, and Zettelkasten knowledge notes are 100% unified without conflicting branches.
+                </div>
+              </div>
+            </div>
+          {:else}
+            <div class="conflicts-list">
+              {#each syncConflicts as conflict}
+                <div class="conflict-item">
+                  <div class="conflict-item-header">
+                    <span class="conflict-glyph">⚠️</span>
+                    <div class="conflict-file-info">
+                      <div class="conflict-name">{conflict.filename}</div>
+                      <div class="conflict-path">{conflict.relPath}</div>
+                    </div>
+                    <span class="conflict-tag">Collision Artifact</span>
+                  </div>
+
+                  <div class="conflict-comparison-grid">
+                    <!-- Left: Conflicted Copy -->
+                    <div class="comparison-card conflicted">
+                      <div class="comp-label">Cloud Conflict Copy</div>
+                      <div class="comp-val font-mono">{conflict.filename}</div>
+                      <div class="comp-meta-row">
+                        <span>Size: {formatFileSize(conflict.sizeBytes)}</span>
+                        <span>Modified: {formatFileDate(conflict.mtime)}</span>
+                      </div>
+                    </div>
+
+                    <!-- Right: Base File -->
+                    <div class="comparison-card base">
+                      <div class="comp-label">Original Vault File</div>
+                      <div class="comp-val font-mono">{conflict.baseFilename}</div>
+                      <div class="comp-meta-row">
+                        <span>Status: {conflict.baseExists ? 'Present on disk' : 'Missing'}</span>
+                        {#if conflict.baseExists}
+                          <span>Size: {formatFileSize(conflict.baseSizeBytes)}</span>
+                          <span>Modified: {formatFileDate(conflict.baseMtime)}</span>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Resolution Actions -->
+                  <div class="conflict-actions">
+                    <span class="actions-label">Resolution:</span>
+                    <div class="actions-buttons">
+                      <button
+                        type="button"
+                        class="btn-resolve keep-local"
+                        onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_local')}
+                        disabled={resolvingConflictPath === conflict.conflictPath}
+                        title="Delete the conflicted copy and preserve the original base file"
+                      >
+                        Keep Base (Purge Conflict)
+                      </button>
+                      <button
+                        type="button"
+                        class="btn-resolve keep-cloud"
+                        onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_cloud')}
+                        disabled={resolvingConflictPath === conflict.conflictPath}
+                        title="Overwrite the original base file with this cloud conflict copy"
+                      >
+                        Adopt Cloud Copy
+                      </button>
+                      <button
+                        type="button"
+                        class="btn-resolve archive"
+                        onclick={() => handleResolveConflict(conflict.conflictPath, 'archive')}
+                        disabled={resolvingConflictPath === conflict.conflictPath}
+                        title="Move conflict copy to _Archive directory for safe keeping"
+                      >
+                        Archive Safely
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
 
     <!-- ═══════════ TAB 4: PREFERENCES ═══════════ -->
@@ -1197,58 +1339,6 @@
         </div>
       </div>
 
-    <!-- ═══════════ TAB 6: SECURITY ═══════════ -->
-    {:else if activeTab === 'security'}
-      <div class="card-surface" style="max-width: 580px;">
-        <div class="card-header">
-          <h2 class="card-title">Studio Key &amp; Vault Access</h2>
-          <p class="card-subtitle">Update your standalone studio password stored in local vault configuration.</p>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="current-pw-input">Current Studio Key</label>
-          <input
-            id="current-pw-input"
-            type="password"
-            class="form-input"
-            bind:value={currentPassword}
-            placeholder="••••••••"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="new-pw-input">New Studio Key</label>
-          <input
-            id="new-pw-input"
-            type="password"
-            class="form-input"
-            bind:value={newPassword}
-            placeholder="Minimum 6 characters"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="confirm-pw-input">Confirm New Studio Key</label>
-          <input
-            id="confirm-pw-input"
-            type="password"
-            class="form-input"
-            bind:value={confirmPassword}
-            placeholder="Repeat new studio key"
-          />
-        </div>
-
-        <div class="form-actions-row">
-          <button
-            type="button"
-            class="btn-primary"
-            onclick={handlePasswordSave}
-            disabled={isSavingPassword}
-          >
-            {isSavingPassword ? 'Updating Studio Key...' : 'Update Studio Key'}
-          </button>
-        </div>
-      </div>
 
     <!-- ═══════════ TAB 6: STUDIO EDITION & LICENSE ═══════════ -->
     {:else if activeTab === 'license'}
@@ -2596,6 +2686,278 @@
 
   .tree-sub-header:hover {
     background: var(--kanso-surface);
+  }
+
+  /* Cloud Sync Conflict Doctor */
+  .sync-doctor-card {
+    gap: 16px;
+  }
+
+  .badge-alert {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--kanso-warning);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  .badge-pristine {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--kanso-success);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  .scan-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    border: 1px solid var(--kanso-border);
+    transition: all 0.15s ease;
+  }
+
+  .scan-btn:hover:not(:disabled) {
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+  }
+
+  .scan-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .spinning {
+    display: inline-block;
+    animation: sync-spin 1.2s linear infinite;
+  }
+
+  @keyframes sync-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .sync-scanning-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px;
+    background: var(--kanso-canvas);
+    border: 1px dashed var(--kanso-border);
+    border-radius: 8px;
+    color: var(--kanso-text-muted);
+    font-size: 13.5px;
+  }
+
+  .sync-clean-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: 8px;
+  }
+
+  .clean-icon-pill {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--kanso-success);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .clean-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kanso-text-primary);
+  }
+
+  .clean-desc {
+    font-size: 12.5px;
+    color: var(--kanso-text-muted);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .conflicts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .conflict-item {
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .conflict-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .conflict-glyph {
+    font-size: 18px;
+  }
+
+  .conflict-file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .conflict-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kanso-text-primary);
+    word-break: break-all;
+  }
+
+  .conflict-path {
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--kanso-text-muted);
+    margin-top: 2px;
+  }
+
+  .conflict-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--kanso-warning);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .conflict-comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .conflict-comparison-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .comparison-card {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .comparison-card.conflicted {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .comp-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--kanso-text-muted);
+  }
+
+  .comp-val {
+    font-size: 12.5px;
+    color: var(--kanso-text-primary);
+    word-break: break-all;
+  }
+
+  .comp-meta-row {
+    display: flex;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--kanso-text-muted);
+    margin-top: 2px;
+  }
+
+  .conflict-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--kanso-border);
+    flex-wrap: wrap;
+  }
+
+  .actions-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--kanso-text-muted);
+  }
+
+  .actions-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-resolve {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    transition: all 0.14s ease;
+    font-family: inherit;
+  }
+
+  .btn-resolve:hover:not(:disabled) {
+    background: var(--kanso-surface-hover);
+  }
+
+  .btn-resolve.keep-local:hover:not(:disabled) {
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
+  }
+
+  .btn-resolve.keep-cloud:hover:not(:disabled) {
+    border-color: var(--kanso-warning);
+    color: var(--kanso-warning);
+  }
+
+  .btn-resolve.archive:hover:not(:disabled) {
+    border-color: var(--kanso-text-muted);
+  }
+
+  .btn-resolve:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* About Kanso Cre8 Page */
