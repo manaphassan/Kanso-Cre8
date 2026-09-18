@@ -1,7 +1,7 @@
 # ==============================================================================
 # Kanso Cre8 — Windows Desktop Standalone Build Pipeline
 # Compiles native Windows launcher (KansoCre8.exe) and packages portable bundle
-# Outputs: dist/windows/kanso-cre8-v0.1.0-windows-x64.zip
+# Outputs: dist/windows/kanso-cre8-v0.7.0-windows-x64.zip
 # ==============================================================================
 
 param(
@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
 $packageJsonPath = Join-Path $repoRoot "src\app\package.json"
-$appVersion = "0.2.2"
+$appVersion = "0.7.0"
 if (Test-Path $packageJsonPath) {
     try {
         $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json

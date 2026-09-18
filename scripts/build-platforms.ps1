@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
 $packageJsonPath = Join-Path $repoRoot "src\app\package.json"
-$appVersion = "0.2.2"
+$appVersion = "0.7.0"
 if (Test-Path $packageJsonPath) {
     try {
         $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json

@@ -34,7 +34,7 @@
   let commandPaletteOpen = $state(false);
   let scratchpadOpen = $state(false);
   let vaultSwitcherOpen = $state(false);
-  let serverVersion = $state('0.1.0');
+  let serverVersion = $state('0.7.0');
 
   function handleGlobalKeydown(e: KeyboardEvent) {
     const isCmdOrCtrl = e.ctrlKey || e.metaKey;
