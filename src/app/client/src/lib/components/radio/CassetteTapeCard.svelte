@@ -321,7 +321,7 @@
 
   .label-freq-badge {
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     padding: 1px 6px;
     border-radius: 4px;
@@ -475,7 +475,7 @@
 
   .custom-badge {
     font-size: 9px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     padding: 1px 4px;
     border-radius: 3px;
@@ -508,7 +508,7 @@
     justify-content: center;
     gap: 4px;
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 600;
     padding: 2px 7px;
     border-radius: 4px;
@@ -539,7 +539,7 @@
 
   .status-badge {
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 4px;

@@ -1385,7 +1385,7 @@
 
   .power-label {
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     letter-spacing: 0.05em;
     color: var(--kanso-text-muted);
@@ -1428,7 +1428,7 @@
     justify-content: space-between;
     width: 100%;
     z-index: 1;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .tuner-band-tag,
@@ -1514,7 +1514,7 @@
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     z-index: 4;
   }
 
@@ -1559,7 +1559,7 @@
     font-weight: 800;
     letter-spacing: 0.1em;
     color: var(--kanso-text-muted);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .counter-digits {
@@ -1573,7 +1573,7 @@
   }
 
   .counter-digit {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     color: #FAFAFA;
@@ -1633,7 +1633,7 @@
 
   .track-title-text {
     font-size: 11.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 600;
     color: var(--kanso-text-primary);
     white-space: nowrap;
@@ -1701,7 +1701,7 @@
     font-weight: 800;
     letter-spacing: 0.05em;
     color: var(--kanso-text-muted);
-    font-family: var(--font-ui, sans-serif);
+    font-family: var(--kanso-font-ui);
   }
 
   .module-badge {
@@ -1712,7 +1712,7 @@
     border: 1px solid rgba(56, 189, 248, 0.2);
     padding: 1.5px 5px;
     border-radius: 4px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   /* Spectrum Bars Grid */
@@ -1755,7 +1755,7 @@
 
   .spectrum-band-label {
     font-size: 8px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
     line-height: 1;
   }
@@ -1864,7 +1864,7 @@
     font-size: 11px;
     font-weight: 800;
     color: #FFBE0B;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .pitch-controls {
@@ -2055,7 +2055,7 @@
     border-radius: 3px;
     background: rgba(0, 0, 0, 0.12);
     color: #151813;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     flex-shrink: 0;
   }
 
@@ -2073,7 +2073,7 @@
 
   .sticker-freq {
     font-size: 13.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     flex-shrink: 0;
   }
@@ -2347,7 +2347,7 @@
     justify-content: space-between;
     width: 100%;
     font-size: 9.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.6);
@@ -2412,7 +2412,7 @@
     font-size: 9px;
     font-weight: 900;
     letter-spacing: 0.05em;
-    font-family: var(--font-ui, sans-serif);
+    font-family: var(--kanso-font-ui);
   }
 
   .piano-sublabel {
@@ -2467,7 +2467,7 @@
 
   .vol-num {
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     color: var(--kanso-text-muted);
     min-width: 32px;
@@ -2514,7 +2514,7 @@
   .fav-tab-btn {
     font-size: 8.5px;
     font-weight: 800;
-    font-family: var(--font-ui, sans-serif);
+    font-family: var(--kanso-font-ui);
     letter-spacing: 0.04em;
     padding: 3px 7px;
     border-radius: 4px;
@@ -2596,7 +2596,7 @@
   .fav-freq-pill {
     font-size: 9.5px;
     font-weight: 800;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     padding: 2px 6px;
     border-radius: 4px;
     flex-shrink: 0;
@@ -2788,7 +2788,7 @@
 
   .ch-status {
     font-size: 9.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     color: var(--kanso-text-muted);
   }
@@ -2949,7 +2949,7 @@
 
   .modal-subheading {
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     color: var(--kanso-text-muted);
     letter-spacing: 0.08em;
@@ -3027,7 +3027,7 @@
   }
 
   .form-input.mono {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .stream-input-row {
@@ -3072,7 +3072,7 @@
 
   .stream-feedback {
     font-size: 11.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     padding: 4px 8px;
     border-radius: 4px;
     background: var(--kanso-surface);

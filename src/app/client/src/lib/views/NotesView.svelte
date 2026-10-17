@@ -860,7 +860,7 @@
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
   }
   .vault-root {
     color: var(--kanso-accent);
@@ -873,7 +873,7 @@
     color: var(--kanso-text-muted);
   }
   .atelier-title {
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -1071,7 +1071,7 @@
   .filter-pill .count-tag {
     font-size: 10px;
     opacity: 0.7;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
   }
   .dot-indicator {
     width: 5px;
@@ -1125,7 +1125,7 @@
   }
   .card-type-chip {
     font-size: 9px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     text-transform: uppercase;
     font-weight: 700;
     padding: 1px 5px;
@@ -1165,7 +1165,7 @@
     color: var(--kanso-text-muted);
   }
   .card-date {
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 10px;
   }
   .card-badges-row {
@@ -1175,7 +1175,7 @@
   }
   .card-client-pill {
     font-size: 10px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     padding: 1px 4px;
     border-radius: 3px;
@@ -1184,7 +1184,7 @@
   }
   .card-tag-pill {
     font-size: 10px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
     background: var(--kanso-canvas);
     padding: 1px 5px;
@@ -1192,7 +1192,7 @@
   }
   .card-tag-more {
     font-size: 9px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
   }
 
@@ -1247,7 +1247,7 @@
     border-radius: 6px;
     font-size: 11px;
     font-weight: 700;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     border: 1px solid var(--kanso-border);
     background: var(--kanso-canvas);
     color: var(--kanso-text-primary);
@@ -1265,7 +1265,7 @@
   }
   .updated-time-stamp {
     font-size: 11px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
   }
   .icon-action-btn {
@@ -1297,7 +1297,7 @@
   }
   .notion-title-input {
     width: 100%;
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -1335,7 +1335,7 @@
     letter-spacing: 0.04em;
   }
   .meta-client-tag {
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 700;
     padding: 2px 7px;
@@ -1347,7 +1347,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     padding: 2px 7px;
     border-radius: 4px;
@@ -1378,7 +1378,7 @@
     background: transparent;
     color: var(--kanso-text-primary);
     font-size: 11px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     outline: none;
     transition: width 0.15s ease;
   }
@@ -1460,7 +1460,7 @@
   }
   .task-due-chip {
     font-size: 10px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
     background: var(--kanso-surface);
     padding: 1px 5px;
@@ -1468,7 +1468,7 @@
   }
   .task-priority-chip {
     font-size: 10px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: #F43F5E;
     font-weight: 700;
   }
@@ -1513,7 +1513,7 @@
   }
   .bl-badge {
     font-size: 9px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     text-transform: uppercase;
     font-weight: 700;
     padding: 1px 4px;
@@ -1525,7 +1525,7 @@
   .bl-snippet {
     font-size: 11px;
     color: var(--kanso-text-muted);
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -1539,7 +1539,7 @@
   }
   .mono-code {
     color: var(--kanso-accent);
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
   }
 
   /* Empty Canvas State */
@@ -1554,7 +1554,7 @@
     gap: 12px;
   }
   .empty-zen-icon {
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 40px;
     color: var(--kanso-border);
     font-weight: 800;
@@ -1598,7 +1598,7 @@
     gap: 10px;
   }
   .file-chip {
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 11.5px;
     font-weight: 700;
     padding: 3px 8px;
@@ -1608,7 +1608,7 @@
     border: 1px solid rgba(245, 158, 11, 0.25);
   }
   .scratch-stats {
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     color: var(--kanso-text-muted);
   }
@@ -1617,7 +1617,7 @@
     align-items: center;
     gap: 4px;
     font-size: 10px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: #10B981;
     background: rgba(16, 185, 129, 0.12);
     padding: 2px 6px;
@@ -1643,7 +1643,7 @@
     border-radius: 8px;
     padding: 16px;
     color: var(--kanso-text-primary);
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 13px;
     line-height: 1.6;
     outline: none;
@@ -1658,7 +1658,7 @@
     align-items: center;
     justify-content: space-between;
     font-size: 11px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
     padding-top: 4px;
   }
@@ -1762,7 +1762,7 @@
   }
   .task-source {
     font-size: 10.5px;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
   }
   .source-link {

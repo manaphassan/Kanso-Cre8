@@ -453,7 +453,7 @@
               <div class="group-header-left">
                 <span class="chevron-arrow {isCollapsed ? 'collapsed' : ''}">▾</span>
                 <div class="group-folder-icon">
-                  <FluentIcons name="folder" size={15} color="var(--brand-accent, #0078D4)" />
+                  <FluentIcons name="folder" size={15} color="var(--kanso-accent)" />
                 </div>
                 <span class="group-job-badge">{group.jobId}</span>
                 <span class="group-brand-badge">{group.brand}</span>
@@ -1014,28 +1014,28 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     background: rgba(4, 51, 136, 0.15);
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
     padding: 3px 8px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--kanso-radius-sm);
     border: 1px solid rgba(33, 161, 247, 0.3);
   }
 
   .header-meta {
     font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   .view-title {
     font-size: 24px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .view-subtitle {
     font-size: 13.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin-top: 4px;
   }
 
@@ -1051,30 +1051,30 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 20px;
     cursor: pointer;
     font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     transition: all 0.15s ease;
   }
 
   .kpi-pill:hover {
-    background: var(--surface-card-subtle, #F8FAFC);
-    border-color: var(--brand-accent, #0078D4);
-    color: var(--text-primary);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+    color: var(--kanso-text-primary);
   }
 
   .kpi-pill.active {
-    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
-    border-color: var(--brand-accent, #0078D4);
-    color: var(--brand-primary, #0078D4);
+    background: var(--kanso-accent-muted));
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
   .kpi-count {
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     padding: 2px 8px;
     border-radius: 10px;
     font-size: 12px;
@@ -1106,11 +1106,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 7px 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .search-box input {
@@ -1118,14 +1118,14 @@
     background: transparent;
     border: none;
     outline: none;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     font-size: 13px;
   }
 
   .clear-search {
     background: transparent;
     border: none;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     cursor: pointer;
     font-size: 12px;
   }
@@ -1139,10 +1139,10 @@
 
   .clean-select {
     padding: 6px 12px;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     font-size: 12.5px;
     font-weight: 600;
     outline: none;
@@ -1150,13 +1150,13 @@
     transition: all 0.12s;
   }
   .clean-select:hover {
-    border-color: var(--brand-accent);
+    border-color: var(--kanso-accent);
   }
 
   .view-mode-toggle {
     display: flex;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     overflow: hidden;
     padding: 2px;
@@ -1171,15 +1171,15 @@
     background: transparent;
     border: none;
     border-radius: 6px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     cursor: pointer;
     transition: all 0.12s;
   }
-  .mode-btn:hover { color: var(--text-primary); }
+  .mode-btn:hover { color: var(--kanso-text-primary); }
   .mode-btn.active {
-    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
-    color: var(--text-primary);
-    border-color: var(--brand-accent);
+    background: var(--kanso-accent-muted));
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
   }
 
   /* Project Groups */
@@ -1190,8 +1190,8 @@
   }
 
   .project-group-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -1206,8 +1206,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    background: var(--surface-card-subtle, #F8FAFC);
-    border-bottom: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface-hover);
+    border-bottom: 1px solid var(--kanso-border);
     cursor: pointer;
     user-select: none;
     transition: background 0.12s;
@@ -1215,7 +1215,7 @@
     flex-wrap: wrap;
   }
   .group-header:hover {
-    background: var(--surface-card-hover, rgba(0, 120, 212, 0.04));
+    background: var(--kanso-surface-hover));
   }
 
   .group-header-left {
@@ -1229,7 +1229,7 @@
 
   .chevron-arrow {
     font-size: 13px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     transition: transform 0.2s ease;
     display: inline-block;
     width: 14px;
@@ -1245,11 +1245,11 @@
   }
 
   .group-job-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
-    color: var(--brand-accent, #0078D4);
-    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
+    color: var(--kanso-accent);
+    background: var(--kanso-accent-muted));
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -1257,9 +1257,9 @@
   .group-brand-badge {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary);
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    color: var(--kanso-text-secondary);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -1267,7 +1267,7 @@
   .group-title {
     font-size: 14px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
     letter-spacing: -0.2px;
   }
@@ -1292,7 +1292,7 @@
 
   .group-meta-summary {
     font-size: 12px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     font-weight: 500;
   }
 
@@ -1304,17 +1304,17 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-primary);
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     cursor: pointer;
     text-decoration: none;
     transition: all 0.12s;
   }
   .group-action-btn:hover {
-    background: var(--brand-tint, rgba(0, 120, 212, 0.1));
-    color: var(--brand-primary, #0078D4);
-    border-color: var(--brand-accent, #0078D4);
+    background: var(--kanso-accent-muted));
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
   }
   .group-action-btn.handover-btn {
     background: rgba(56, 189, 248, 0.12);
@@ -1344,8 +1344,8 @@
   }
 
   .del-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 10px;
     padding: 10px;
     transition: all 0.15s ease;
@@ -1357,12 +1357,12 @@
   .del-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-    border-color: var(--brand-accent, #0078D4);
+    border-color: var(--kanso-accent);
   }
 
   .del-preview-box {
     height: 145px;
-    background: var(--surface-card-subtle, #F8FAFC);
+    background: var(--kanso-surface-hover);
     border-radius: 8px;
     overflow: hidden;
     display: flex;
@@ -1370,7 +1370,7 @@
     justify-content: center;
     position: relative;
     margin-bottom: 8px;
-    border: 1px solid var(--surface-card-border);
+    border: 1px solid var(--kanso-border);
   }
 
   .del-preview-box img {
@@ -1433,7 +1433,7 @@
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.6px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .preview-status-badge {
@@ -1493,24 +1493,24 @@
   }
 
   .job-tag {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
-    color: var(--brand-accent, #0078D4);
-    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    color: var(--kanso-accent);
+    background: var(--kanso-accent-muted));
     padding: 2px 6px;
     border-radius: 4px;
   }
 
   .brand-tag {
     font-weight: 700;
-    color: var(--text-secondary);
-    background: var(--surface-card-subtle);
+    color: var(--kanso-text-secondary);
+    background: var(--kanso-surface-hover);
     padding: 2px 6px;
     border-radius: 4px;
   }
 
   .proj-title-trunc {
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1520,7 +1520,7 @@
   .del-title {
     font-size: 14px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1532,7 +1532,7 @@
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     font-weight: 500;
     padding: 3px 0 6px 0;
   }
@@ -1548,7 +1548,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 6px;
-    border-top: 1px solid var(--surface-card-border);
+    border-top: 1px solid var(--kanso-border);
     margin-top: auto;
   }
 
@@ -1560,14 +1560,14 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--brand-primary, #0078D4);
-    background: var(--brand-tint, rgba(0, 120, 212, 0.08));
+    color: var(--kanso-accent);
+    background: var(--kanso-accent-muted));
     border: 1px solid rgba(0, 120, 212, 0.2);
     cursor: pointer;
     transition: all 0.12s;
   }
   .action-btn-pill:hover {
-    background: var(--brand-primary, #0078D4);
+    background: var(--kanso-accent);
     color: #FFFFFF;
   }
 
@@ -1583,27 +1583,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     cursor: pointer;
     text-decoration: none;
     transition: all 0.12s;
   }
   .tool-icon-btn:hover {
-    background: var(--surface-card-hover, rgba(0, 120, 212, 0.1));
-    color: var(--brand-primary, #0078D4);
-    border-color: var(--brand-accent, #0078D4);
+    background: var(--kanso-surface-hover));
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
   }
 
   /* State Cards */
   .state-card {
     text-align: center;
     padding: 60px 20px;
-    background: var(--surface-card);
-    border: 1px dashed var(--surface-card-border);
-    border-radius: var(--radius-lg);
+    background: var(--kanso-surface);
+    border: 1px dashed var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1618,13 +1618,13 @@
   .state-title {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .state-desc {
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     max-width: 420px;
     margin-bottom: 12px;
   }
@@ -1635,8 +1635,8 @@
     justify-content: center;
     width: 28px;
     height: 28px;
-    background: var(--surface-card-subtle, rgba(255, 255, 255, 0.05));
-    border: 1px solid var(--surface-card-border, rgba(255, 255, 255, 0.1));
+    background: var(--kanso-surface-hover));
+    border: 1px solid var(--kanso-border));
     border-radius: 6px;
     color: #FFF;
     cursor: pointer;
@@ -1650,8 +1650,8 @@
 
   .view-mode-toggle {
     display: flex;
-    background: var(--surface-card, #0F172A);
-    border: 1px solid var(--surface-card-border, rgba(255, 255, 255, 0.15));
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border));
     border-radius: 6px;
     overflow: hidden;
   }

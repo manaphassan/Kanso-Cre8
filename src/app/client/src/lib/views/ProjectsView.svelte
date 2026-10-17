@@ -601,13 +601,13 @@
   .view-title {
     font-size: 24px;
     font-weight: 800;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .view-subtitle {
     font-size: 13px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     margin: 4px 0 0 0;
   }
 
@@ -622,8 +622,8 @@
   .view-switcher-segmented {
     display: flex;
     align-items: center;
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     padding: 3px;
     border-radius: 8px;
     gap: 2px;
@@ -634,9 +634,9 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
-    color: var(--text-secondary, #6B7280);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-secondary);
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 12px;
@@ -676,18 +676,18 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
   .seg-view-btn:hover {
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     background: rgba(0, 0, 0, 0.04);
   }
 
   .seg-view-btn.is-active {
-    background: var(--brand-accent, #0078D4);
+    background: var(--kanso-accent);
     color: #FFFFFF;
     box-shadow: 0 1px 3px rgba(0, 120, 212, 0.3);
   }
@@ -714,7 +714,7 @@
     font-family: monospace;
     font-weight: 800;
     font-size: 13px;
-    color: var(--brand-accent, #0078D4);
+    color: var(--kanso-accent);
   }
 
   .badges-row {
@@ -725,7 +725,7 @@
   .project-card-title {
     font-size: 15px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin-bottom: 12px;
     line-height: 1.35;
     display: block;
@@ -735,7 +735,7 @@
   }
 
   .project-card-title:hover {
-    color: var(--brand-accent, #0078D4);
+    color: var(--kanso-accent);
     text-decoration: underline;
   }
 
@@ -747,11 +747,11 @@
     padding: 2px 7px;
     background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
-    border-radius: var(--radius-pill, 9999px);
+    border-radius: var(--kanso-radius-full);
     font-size: 11px;
     font-weight: 600;
     color: var(--kanso-text-primary);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .client-badge-dot {
@@ -805,7 +805,7 @@
     padding: 4px 10px;
     background: var(--kanso-canvas);
     border: 1px solid var(--kanso-border);
-    border-radius: var(--radius-md, 6px);
+    border-radius: var(--kanso-radius-md);
     font-size: 11.5px;
     font-weight: 600;
     color: var(--kanso-text-muted);
@@ -848,7 +848,7 @@
   }
 
   .timer-ticker-label {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11.5px;
     font-weight: 700;
   }
@@ -871,7 +871,7 @@
   .loading-box {
     text-align: center;
     padding: 60px 0;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     font-size: 14px;
     display: flex;
     flex-direction: column;
@@ -895,8 +895,8 @@
   .empty-box {
     text-align: center;
     padding: 60px 24px;
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
   }
 
@@ -909,13 +909,13 @@
     margin: 0 0 4px 0;
     font-size: 16px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
   }
 
   .empty-box p {
     margin: 0;
     font-size: 13px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .job-id-wrap {
@@ -945,7 +945,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
   }
   .delete-warning-banner {
     background: rgba(196, 43, 28, 0.08);
@@ -961,7 +961,7 @@
   }
   .warning-text {
     font-size: 0.85rem;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0 0 8px 0;
     line-height: 1.4;
   }
@@ -969,7 +969,7 @@
     margin: 0;
     padding-left: 18px;
     font-size: 0.8rem;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -986,17 +986,17 @@
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    background: var(--surface-card-subtle, #F9FAFB);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     font-size: 0.88rem;
   }
   .target-label {
     font-weight: 600;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
   .target-val {
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
   }
 
   /* ═══ NEW PROJECT BUTTON & SCAFFOLD DIALOG ═════════════════════ */

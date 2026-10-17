@@ -502,7 +502,7 @@
   }
 
   .mode-btn.active {
-    background: var(--brand-primary, #043388);
+    background: var(--kanso-accent);
     border-color: #21A1F7;
     color: #FFFFFF;
     box-shadow: 0 0 10px rgba(33, 161, 247, 0.3);

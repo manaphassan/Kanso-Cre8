@@ -38,23 +38,21 @@
 
 <style>
   .fluent-card {
-    background-color: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
-    border-radius: var(--radius-lg, 12px);
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-fast, 0.15s ease);
+    background-color: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
+    transition: all var(--kanso-duration-fast) var(--kanso-ease);
     position: relative;
-    color: var(--text-primary, #1C1C1C);
+    color: var(--kanso-text-primary);
   }
 
   .card-elevated {
-    background-color: var(--surface-card-elevated, #FFFFFF);
-    box-shadow: var(--shadow-md);
+    background-color: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
 
   .card-hover-lift:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--brand-accent, #21A1F7);
+    border-color: var(--kanso-accent);
   }
 </style>

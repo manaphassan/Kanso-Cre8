@@ -1197,7 +1197,7 @@
     font-size: 12px;
     font-weight: 700;
     color: var(--kanso-accent, #38BDF8);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .item-title {
@@ -1220,7 +1220,7 @@
     background: rgba(0, 0, 0, 0.4);
     border-radius: 4px;
     color: var(--kanso-accent, #38BDF8);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .result-sub {
@@ -1271,7 +1271,7 @@
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--kanso-border, #27272A);
     color: var(--kanso-text-primary, #F4F4F5);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   /* Empty State */

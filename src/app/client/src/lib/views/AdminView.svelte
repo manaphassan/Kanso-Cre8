@@ -1473,7 +1473,7 @@
         <div class="maintenance-bar">
           <div>
             <h3 style="margin: 0; font-size: 15px; font-weight: 800;">Workspace Maintenance & Cache Management</h3>
-            <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--text-secondary);">
+            <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--kanso-text-secondary);">
               Trigger real-time directory re-indexing across Synology NAS volumes or clear client cache.
             </p>
           </div>
@@ -1896,7 +1896,7 @@
   onclose={() => (showPasswordModal = false)}
 >
   <div class="modal-form-body">
-    <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 14px 0;">
+    <p style="font-size: 13px; color: var(--kanso-text-secondary); margin: 0 0 14px 0;">
       Resetting credentials for <b>{resetTargetUser?.name}</b> ({resetTargetUser?.staffId}).
     </p>
 
@@ -1961,7 +1961,7 @@
   onclose={() => (showWorkspaceModal = false)}
 >
   <div class="modal-form-body">
-    <p style="margin: 0 0 14px 0; font-size: 13px; color: var(--text-secondary, #6B7280); line-height: 1.5;">
+    <p style="margin: 0 0 14px 0; font-size: 13px; color: var(--kanso-text-secondary); line-height: 1.5;">
       Specify the local or network share directory path to the active <b>Creative-Team</b> folder. The system will validate filesystem accessibility, bind real-time filesystem watchers, and rescan active production assets.
     </p>
 
@@ -2029,7 +2029,7 @@
     background: rgba(33, 161, 247, 0.15);
     color: #21A1F7;
     padding: 2px 8px;
-    border-radius: var(--radius-sm, 4px);
+    border-radius: var(--kanso-radius-sm);
     border: 1px solid rgba(33, 161, 247, 0.3);
   }
 
@@ -2039,7 +2039,7 @@
     gap: 6px;
     font-size: 11.5px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .pulse-dot {
@@ -2061,20 +2061,20 @@
 
   .header-timestamp {
     font-size: 11.5px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   .view-title {
     font-size: 24px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
     letter-spacing: -0.3px;
   }
 
   .view-subtitle {
     font-size: 13px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin: 0;
   }
 
@@ -2108,7 +2108,7 @@
   .kpi-label {
     font-size: 11.5px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -2126,19 +2126,19 @@
   .kpi-value {
     font-size: 26px;
     font-weight: 900;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 6px 0 4px 0;
   }
 
   .kpi-unit {
     font-size: 13px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .kpi-detail {
     font-size: 11.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -2152,7 +2152,7 @@
   .segmented-tab-bar {
     display: flex;
     gap: 8px;
-    border-bottom: 1px solid var(--surface-card-border);
+    border-bottom: 1px solid var(--kanso-border);
     padding-bottom: 10px;
     overflow-x: auto;
     scrollbar-width: none;
@@ -2166,7 +2166,7 @@
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     cursor: pointer;
     transition: all 0.15s ease-in-out;
     display: inline-flex;
@@ -2176,15 +2176,15 @@
   }
 
   .seg-tab-btn:hover {
-    color: var(--text-primary);
-    background: var(--surface-card-subtle);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
   }
 
   .seg-tab-btn.active {
-    color: var(--brand-accent, #21A1F7);
-    background: var(--surface-card);
-    border-color: var(--surface-card-border);
-    box-shadow: var(--shadow-sm);
+    color: var(--kanso-accent);
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
+    box-shadow: none;
   }
 
   .tab-count-pill {
@@ -2214,13 +2214,13 @@
   .deck-title {
     font-size: 17px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .deck-desc {
     font-size: 12.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin: 2px 0 0 0;
   }
 
@@ -2240,30 +2240,30 @@
   .search-icon {
     position: absolute;
     left: 10px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     pointer-events: none;
   }
 
   .fluent-search-input {
     padding: 7px 12px 7px 30px;
     border-radius: 8px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--surface-card);
-    color: var(--text-primary);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     font-size: 12.5px;
     min-width: 220px;
     outline: none;
   }
   .fluent-search-input:focus {
-    border-color: var(--brand-accent, #21A1F7);
+    border-color: var(--kanso-accent);
   }
 
   .fluent-select-filter {
     padding: 7px 12px;
     border-radius: 8px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--surface-card);
-    color: var(--text-primary);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     font-size: 12.5px;
     outline: none;
     cursor: pointer;
@@ -2271,8 +2271,8 @@
 
   .view-mode-toggle {
     display: flex;
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 2px;
   }
@@ -2284,7 +2284,7 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -2293,8 +2293,8 @@
   }
 
   .view-mode-btn.active {
-    background: var(--surface-card);
-    color: var(--text-primary);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
@@ -2306,11 +2306,11 @@
   }
 
   .company-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     transition: all var(--transition-fast, 0.15s);
@@ -2318,8 +2318,8 @@
 
   .company-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--brand-accent, #21A1F7);
+    box-shadow: none;
+    border-color: var(--kanso-accent);
   }
 
   .is-parent-card {
@@ -2377,14 +2377,14 @@
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 9999px;
-    background: var(--surface-card-subtle);
-    color: var(--text-secondary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-secondary);
   }
 
   .card-entity-title {
     font-size: 15px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 2px 0 0 0;
     line-height: 1.3;
   }
@@ -2392,41 +2392,41 @@
   .card-division-subtitle {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .ssm-box {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 11.5px;
   }
 
   .ssm-label {
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-weight: 700;
   }
 
   .ssm-code {
     font-family: monospace;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .copy-mini-btn {
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     padding: 2px 4px;
     border-radius: 4px;
     margin-left: auto;
   }
   .copy-mini-btn:hover {
-    color: var(--brand-accent, #21A1F7);
+    color: var(--kanso-accent);
     background: rgba(33, 161, 247, 0.15);
   }
 
@@ -2435,13 +2435,13 @@
     align-items: flex-start;
     gap: 8px;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .meta-icon {
     flex-shrink: 0;
     margin-top: 2px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   .meta-content {
@@ -2450,13 +2450,13 @@
   }
 
   .meta-city {
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     font-size: 12px;
   }
 
   .meta-address {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     line-height: 1.35;
   }
 
@@ -2468,7 +2468,7 @@
   .card-footer-actions {
     margin-top: auto;
     padding-top: 10px;
-    border-top: 1px solid var(--surface-card-border);
+    border-top: 1px solid var(--kanso-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2489,8 +2489,8 @@
   }
 
   .edit-action {
-    background: var(--surface-card-subtle);
-    color: var(--text-primary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
     flex: 1;
     justify-content: center;
   }
@@ -2501,7 +2501,7 @@
 
   .delete-action {
     background: transparent;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     padding: 6px 8px;
   }
   .delete-action:hover {
@@ -2511,11 +2511,11 @@
 
   /* ─── RBAC Distribution Deck ─── */
   .rbac-distribution-card {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     padding: 16px 20px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
   }
 
   .rbac-deck-header {
@@ -2530,7 +2530,7 @@
   .rbac-deck-tag {
     font-size: 9.5px;
     font-weight: 800;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
@@ -2538,7 +2538,7 @@
   .rbac-deck-title {
     font-size: 14.5px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 2px 0 0 0;
   }
 
@@ -2547,7 +2547,7 @@
     gap: 16px;
     flex-wrap: wrap;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .legend-item {
@@ -2570,7 +2570,7 @@
   .distribution-bar-track {
     height: 10px;
     border-radius: 5px;
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     display: flex;
     overflow: hidden;
     gap: 2px;
@@ -2605,26 +2605,26 @@
   }
 
   .fluent-data-table th {
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     padding: 11px 14px;
     font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--text-secondary);
-    border-bottom: 1px solid var(--surface-card-border);
+    color: var(--kanso-text-secondary);
+    border-bottom: 1px solid var(--kanso-border);
     white-space: nowrap;
   }
 
   .fluent-data-table td {
     padding: 12px 14px;
-    border-bottom: 1px solid var(--surface-card-border);
-    color: var(--text-primary);
+    border-bottom: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     vertical-align: middle;
   }
 
   .data-row:hover {
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
   }
 
   .parent-row {
@@ -2638,7 +2638,7 @@
   .empty-table-cell {
     text-align: center;
     padding: 36px !important;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   /* Table Cell Elements */
@@ -2662,7 +2662,7 @@
   .entity-title {
     font-size: 13.5px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .parent-chip {
@@ -2677,7 +2677,7 @@
 
   .division-text {
     font-size: 12.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .ssm-copy-wrapper {
@@ -2689,8 +2689,8 @@
   .reg-mono {
     font-family: monospace;
     font-size: 11.5px;
-    color: var(--text-primary);
-    background: var(--surface-card-subtle);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -2704,7 +2704,7 @@
   .city-name { font-weight: 700; font-size: 12px; }
   .address-snippet {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     max-width: 240px;
     white-space: nowrap;
     overflow: hidden;
@@ -2714,7 +2714,7 @@
   .contact-snippet {
     font-family: monospace;
     font-size: 11.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .staff-id-pill {
@@ -2754,12 +2754,12 @@
   .user-full-name {
     font-size: 13px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .custom-title {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .credential-cell {
@@ -2772,12 +2772,12 @@
     font-family: monospace;
     font-size: 11.5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .email-text {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .roles-pill-stack {
@@ -2803,7 +2803,7 @@
   .role-copywriter { background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-weight: 700; }
   .role-user { background: #EBF4FE; color: #0078D4; border: 1px solid #BFDBFE; font-weight: 700; }
 
-  .dept-text { font-size: 12px; color: var(--text-secondary); }
+  .dept-text { font-size: 12px; color: var(--kanso-text-secondary); }
   .brand-tag {
     font-family: monospace;
     font-size: 11px;
@@ -2840,11 +2840,11 @@
     padding: 5px 6px;
     border-radius: 4px;
     transition: background 0.15s;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
   .icon-action-btn:hover {
-    background: var(--surface-card-subtle);
-    color: var(--text-primary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
   }
   .icon-action-btn.delete-btn:hover {
     background: rgba(239, 68, 68, 0.15);
@@ -2861,12 +2861,12 @@
   .time-primary {
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .time-secondary {
     font-size: 11px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   .actor-cell {
@@ -2879,7 +2879,7 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: var(--brand-primary, #043388);
+    background: var(--kanso-accent);
     color: #FFFFFF;
     font-weight: 800;
     font-size: 11.5px;
@@ -2892,8 +2892,8 @@
     display: flex;
     flex-direction: column;
   }
-  .actor-meta b { font-size: 12.5px; color: var(--text-primary); }
-  .actor-meta span { font-size: 10.5px; color: var(--text-secondary); }
+  .actor-meta b { font-size: 12.5px; color: var(--kanso-text-primary); }
+  .actor-meta span { font-size: 10.5px; color: var(--kanso-text-secondary); }
 
   .action-tag {
     font-family: monospace;
@@ -2911,8 +2911,8 @@
   .entity-type-badge {
     font-size: 11px;
     font-weight: 700;
-    color: var(--text-secondary);
-    background: var(--surface-card-subtle);
+    color: var(--kanso-text-secondary);
+    background: var(--kanso-surface-hover);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -2920,21 +2920,21 @@
   .target-mono {
     font-family: monospace;
     font-size: 12px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .inspect-btn {
     background: transparent;
-    border: 1px solid var(--surface-card-border);
-    color: var(--text-secondary);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-secondary);
     padding: 4px 6px;
     border-radius: 4px;
     cursor: pointer;
   }
   .inspect-btn:hover {
-    background: var(--surface-card-subtle);
-    color: var(--text-primary);
-    border-color: var(--brand-accent, #21A1F7);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
   }
 
   /* ─── Synology & System Telemetry Grid ─── */
@@ -2964,13 +2964,13 @@
   .telemetry-card-title {
     font-size: 16px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .telemetry-card-sub {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin: 2px 0 0 0;
   }
 
@@ -2985,13 +2985,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     border-radius: 6px;
     font-size: 12.5px;
   }
 
   .tel-label {
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-weight: 600;
   }
 
@@ -2999,7 +2999,7 @@
     font-family: monospace;
     font-size: 11.5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .tel-badge-green {
@@ -3047,7 +3047,7 @@
   .field-label {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .field-input,
@@ -3058,16 +3058,16 @@
     font-size: 13px;
     font-family: inherit;
     border-radius: 6px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--surface-card);
-    color: var(--text-primary);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     outline: none;
   }
 
   .field-input:focus,
   .field-select:focus,
   .field-textarea:focus {
-    border-color: var(--brand-accent, #21A1F7);
+    border-color: var(--kanso-accent);
   }
 
   .color-picker-row {
@@ -3081,8 +3081,8 @@
     height: 34px;
     padding: 2px;
     border-radius: 6px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--surface-card);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
     cursor: pointer;
   }
 
@@ -3090,7 +3090,7 @@
     font-family: monospace;
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .checkbox-label-row {
@@ -3098,7 +3098,7 @@
     align-items: center;
     gap: 8px;
     font-size: 12.5px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     font-weight: 600;
     cursor: pointer;
   }
@@ -3106,7 +3106,7 @@
   .fluent-checkbox {
     width: 16px;
     height: 16px;
-    accent-color: var(--brand-accent, #21A1F7);
+    accent-color: var(--kanso-accent);
   }
 
   /* Role Selection Cards */
@@ -3119,7 +3119,7 @@
 
   .field-hint {
     font-size: 11px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     font-weight: normal;
   }
 
@@ -3130,10 +3130,10 @@
   }
 
   .role-card-checkbox {
-    border: 1px solid var(--surface-card-border);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 10px 12px;
-    background: var(--surface-card);
+    background: var(--kanso-surface);
     cursor: pointer;
     display: flex;
     align-items: flex-start;
@@ -3143,12 +3143,12 @@
   }
 
   .role-card-checkbox:hover {
-    border-color: var(--brand-accent, #21A1F7);
-    background: var(--surface-card-subtle);
+    border-color: var(--kanso-accent);
+    background: var(--kanso-surface-hover);
   }
 
   .role-card-checkbox.selected {
-    border-color: var(--brand-accent, #21A1F7);
+    border-color: var(--kanso-accent);
     background: rgba(33, 161, 247, 0.08);
     box-shadow: 0 0 0 1px rgba(33, 161, 247, 0.25);
   }
@@ -3157,7 +3157,7 @@
     width: 16px;
     height: 16px;
     margin-top: 2px;
-    accent-color: var(--brand-accent, #21A1F7);
+    accent-color: var(--kanso-accent);
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -3170,7 +3170,7 @@
 
   .role-card-desc {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     line-height: 1.3;
   }
 
@@ -3179,20 +3179,20 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     font-size: 12.5px;
-    background: var(--surface-card-subtle);
+    background: var(--kanso-surface-hover);
     padding: 12px;
     border-radius: 6px;
   }
-  .log-detail-meta-grid span { color: var(--text-secondary); }
+  .log-detail-meta-grid span { color: var(--kanso-text-secondary); }
 
   .json-inspector {
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 12px;
     font-family: monospace;
     font-size: 11.5px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     max-height: 220px;
     overflow-y: auto;
   }
@@ -3201,13 +3201,13 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 48px 24px;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
   }
   .empty-icon { font-size: 36px; margin-bottom: 8px; }
-  .empty-state-banner h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0; }
-  .empty-state-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+  .empty-state-banner h3 { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); margin: 0 0 4px 0; }
+  .empty-state-banner p { font-size: 13px; color: var(--kanso-text-secondary); margin: 0; }
 
   .edit-inline-btn:hover {
     background: rgba(0, 120, 212, 0.1) !important;

@@ -123,7 +123,7 @@
     padding: 3px 10px;
     border-radius: 6px;
     font-size: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -151,7 +151,7 @@
     background: var(--kanso-surface);
     color: var(--kanso-text-muted);
     font-size: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .hotkeys-left {
@@ -172,7 +172,7 @@
     padding: 2px 8px;
     border-radius: 5px;
     font-size: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     border: 1px solid var(--kanso-border);
     background: var(--kanso-surface-hover);
@@ -182,7 +182,7 @@
 
   .footer-meta {
     font-size: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
   }
 

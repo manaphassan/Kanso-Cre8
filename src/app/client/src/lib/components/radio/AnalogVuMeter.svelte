@@ -266,7 +266,7 @@
 
   .ch-badge {
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     color: var(--kanso-text-muted);
     letter-spacing: 0.05em;
@@ -280,7 +280,7 @@
 
   .meter-action-btn {
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 4px;
@@ -343,7 +343,7 @@
 
   .dial-num {
     font-size: 8px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     fill: var(--kanso-text-muted);
   }
@@ -360,7 +360,7 @@
 
   .dial-brand {
     font-size: 11px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 900;
     fill: var(--kanso-text-primary);
     letter-spacing: 0.15em;
@@ -368,7 +368,7 @@
 
   .dial-sub {
     font-size: 6px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     fill: var(--kanso-text-muted);
     letter-spacing: 0.15em;
@@ -396,7 +396,7 @@
 
   .meter-ch-name {
     font-size: 9.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     color: var(--kanso-text-muted);
     letter-spacing: 0.05em;
@@ -423,7 +423,7 @@
 
   .peak-text {
     font-size: 8.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     color: var(--kanso-text-muted);
     letter-spacing: 0.05em;

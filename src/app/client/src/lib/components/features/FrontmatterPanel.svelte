@@ -170,11 +170,11 @@
 
 <style>
   .frontmatter-panel {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-lg);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
     padding: 20px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -183,12 +183,12 @@
   .panel-title {
     font-size: 15px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .panel-subtitle {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin-top: 2px;
   }
 
@@ -201,7 +201,7 @@
   .canva-section {
     background: rgba(0, 196, 204, 0.05);
     border: 1px solid rgba(0, 196, 204, 0.25);
-    border-radius: var(--radius-md, 8px);
+    border-radius: var(--kanso-radius-md);
     padding: 12px 14px;
     display: flex;
     flex-direction: column;
@@ -233,7 +233,7 @@
   .canva-label {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .canva-open-btn {
@@ -264,7 +264,7 @@
   .tag-label {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
@@ -277,13 +277,13 @@
   }
 
   .tag-chip {
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-pill);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-full);
     padding: 3px 10px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -292,31 +292,31 @@
   .tag-del-btn {
     border: none;
     background: transparent;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     cursor: pointer;
     font-size: 10px;
   }
   .tag-del-btn:hover {
-    color: var(--color-danger);
+    color: var(--kanso-danger);
   }
 
   .tag-input-row input {
-    background: var(--surface-card);
-    border: 1px dashed var(--surface-card-border);
-    border-radius: var(--radius-pill);
+    background: var(--kanso-surface);
+    border: 1px dashed var(--kanso-border);
+    border-radius: var(--kanso-radius-full);
     padding: 3px 10px;
     font-size: 12px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     outline: none;
   }
   .tag-input-row input:focus {
-    border-color: var(--brand-accent);
+    border-color: var(--kanso-accent);
   }
 
   .panel-actions {
     display: flex;
     justify-content: flex-end;
     padding-top: 10px;
-    border-top: 1px solid var(--surface-card-border);
+    border-top: 1px solid var(--kanso-border);
   }
 </style>

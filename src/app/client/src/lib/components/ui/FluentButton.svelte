@@ -50,12 +50,12 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    font-family: var(--font-family);
+    font-family: var(--kanso-font-ui);
     font-weight: 600;
-    border-radius: var(--radius-md);
+    border-radius: var(--kanso-radius-md);
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all var(--transition-fast);
+    transition: all var(--kanso-duration-fast) var(--kanso-ease);
     outline: none;
     user-select: none;
     text-decoration: none;
@@ -63,7 +63,7 @@
   }
 
   .fluent-btn:focus-visible {
-    box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 4px var(--brand-accent);
+    box-shadow: 0 0 0 2px var(--kanso-canvas), 0 0 0 4px var(--kanso-accent);
   }
 
   /* Sizes */
@@ -73,55 +73,53 @@
 
   /* 10% Accent Layer */
   .btn-primary {
-    background: var(--brand-primary);
-    color: var(--text-inverted);
-    border-color: var(--brand-primary);
-    box-shadow: var(--shadow-sm);
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
+    border-color: var(--kanso-accent);
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--brand-secondary);
-    box-shadow: var(--brand-glow);
+    background: var(--kanso-accent-hover);
   }
 
   /* 30% Secondary Layer */
   .btn-secondary {
-    background: var(--surface-card);
-    color: var(--text-primary);
-    border-color: var(--surface-card-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-border);
   }
   .btn-secondary:hover:not(:disabled) {
-    background: var(--surface-card-subtle);
-    border-color: var(--brand-accent);
-    color: var(--brand-accent);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
   .btn-ghost {
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     border-color: transparent;
   }
   .btn-ghost:hover:not(:disabled) {
-    background: var(--surface-card-hover);
-    color: var(--text-primary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
   }
 
   .btn-danger {
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-    border-color: var(--color-danger-border);
+    background: var(--kanso-danger-muted);
+    color: var(--kanso-danger);
+    border-color: var(--kanso-danger);
   }
   .btn-danger:hover:not(:disabled) {
-    background: var(--color-danger);
+    background: var(--kanso-danger);
     color: #FFFFFF;
   }
 
   .btn-success {
-    background: var(--color-success-bg);
-    color: var(--color-success);
-    border-color: var(--color-success-border);
+    background: var(--kanso-success-muted);
+    color: var(--kanso-success);
+    border-color: var(--kanso-success);
   }
   .btn-success:hover:not(:disabled) {
-    background: var(--color-success);
+    background: var(--kanso-success);
     color: #FFFFFF;
   }
 

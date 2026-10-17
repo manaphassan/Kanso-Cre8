@@ -36,7 +36,7 @@
 
 <style>
   .empty-markdown {
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     font-size: 13px;
     padding: 12px 0;
   }

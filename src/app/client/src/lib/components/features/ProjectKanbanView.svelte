@@ -484,8 +484,8 @@
   }
 
   .kanban-column {
-    background: var(--kanso-surface, var(--surface-card-subtle));
-    border: 1px solid var(--kanso-border, var(--surface-card-border));
+    background: var(--kanso-surface, var(--kanso-surface-hover));
+    border: 1px solid var(--kanso-border, var(--kanso-border));
     border-radius: 12px;
     padding: 12px;
     display: flex;
@@ -506,7 +506,7 @@
   .column-header {
     border-top: 3px solid transparent;
     padding-top: 8px;
-    border-bottom: 1px solid var(--kanso-border, var(--surface-card-border));
+    border-bottom: 1px solid var(--kanso-border, var(--kanso-border));
     padding-bottom: 10px;
   }
 
@@ -523,7 +523,7 @@
   .col-title {
     font-size: 14px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0;
     flex: 1;
   }
@@ -537,7 +537,7 @@
 
   .col-hint {
     font-size: 11px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     margin: 4px 0 0 0;
   }
 
@@ -557,9 +557,9 @@
     justify-content: center;
     gap: 4px;
     padding: 32px 12px;
-    border: 1.5px dashed var(--surface-card-border, #E5E7EB);
+    border: 1.5px dashed var(--kanso-border);
     border-radius: 8px;
-    color: var(--text-secondary, #9CA3AF);
+    color: var(--kanso-text-secondary);
     font-size: 12px;
     text-align: center;
     margin: auto 0;
@@ -572,7 +572,7 @@
 
   .column-empty-dropzone small {
     font-size: 10.5px;
-    color: var(--text-tertiary, #9CA3AF);
+    color: var(--kanso-text-muted);
   }
 
   .column-drop-placeholder {
@@ -595,8 +595,8 @@
 
   /* ─── Kanban Card ─── */
   .kanban-card {
-    background: var(--kanso-surface, var(--surface-card));
-    border: 1px solid var(--kanso-border, var(--surface-card-border));
+    background: var(--kanso-surface, var(--kanso-surface));
+    border: 1px solid var(--kanso-border, var(--kanso-border));
     border-radius: 10px;
     padding: 12px 14px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -688,7 +688,7 @@
   .card-project-title {
     font-size: 13.5px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0;
     line-height: 1.35;
     display: -webkit-box;
@@ -701,7 +701,7 @@
   }
 
   .card-project-title:hover {
-    color: var(--brand-accent, #0078D4);
+    color: var(--kanso-accent);
     text-decoration: underline;
   }
 
@@ -714,9 +714,9 @@
 
   .preset-tag {
     font-size: 10.5px;
-    background: var(--surface-card-subtle, #F3F4F6);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
-    color: var(--text-secondary, #4B5563);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-secondary);
     padding: 1px 6px;
     border-radius: 4px;
     font-weight: 500;
@@ -749,7 +749,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 8px;
-    border-top: 1px solid var(--surface-card-border, #E5E7EB);
+    border-top: 1px solid var(--kanso-border);
     font-size: 11.5px;
     margin-top: 2px;
   }
@@ -806,7 +806,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     font-size: 11px;
     font-weight: 500;
   }
@@ -888,8 +888,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--surface-card-subtle, #F9FAFB);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 3px 8px;
     font-size: 11px;
@@ -897,7 +897,7 @@
 
   .status-quick-label {
     font-weight: 700;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .status-select-native {
@@ -906,7 +906,7 @@
     background: transparent;
     font-size: 11px;
     font-weight: 600;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     outline: none;
     cursor: pointer;
   }

@@ -218,7 +218,7 @@
 
   .mini-freq-badge {
     font-size: 10.5px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     padding: 1px 5px;
     border-radius: 3px;
@@ -269,7 +269,7 @@
 
   .mini-track-title {
     font-size: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted);
     overflow: hidden;
     text-overflow: ellipsis;

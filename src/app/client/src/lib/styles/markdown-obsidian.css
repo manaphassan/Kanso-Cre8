@@ -5,7 +5,7 @@
 .markdown-body {
   font-size: 13px;
   line-height: 1.65;
-  color: var(--text-primary);
+  color: var(--kanso-text-primary);
   word-break: break-word;
 }
 
@@ -27,7 +27,7 @@
 .markdown-body h4 {
   margin-top: 18px;
   margin-bottom: 8px;
-  color: var(--text-primary);
+  color: var(--kanso-text-primary);
   font-weight: 600;
 }
 
@@ -51,7 +51,7 @@
 
 .markdown-body p {
   margin-bottom: 12px;
-  color: var(--text-primary);
+  color: var(--kanso-text-primary);
 }
 
 .markdown-body ul,
@@ -71,21 +71,21 @@
 
 /* Code blocks */
 .markdown-body pre {
-  background: var(--surface-card-subtle);
-  border: 1px solid var(--surface-card-border);
-  border-radius: var(--radius-md);
+  background: var(--kanso-surface-hover);
+  border: 1px solid var(--kanso-border);
+  border-radius: var(--kanso-radius-md);
   padding: 12px 16px;
   overflow-x: auto;
   margin-bottom: 16px;
 }
 
 .markdown-body code {
-  font-family: var(--font-mono);
+  font-family: var(--kanso-font-mono);
   font-size: 12px;
-  background: var(--surface-card-subtle);
+  background: var(--kanso-surface-hover);
   padding: 2px 5px;
   border-radius: 4px;
-  border: 1px solid var(--surface-card-border);
+  border: 1px solid var(--kanso-border);
 }
 
 .markdown-body pre code {
@@ -100,15 +100,15 @@
   border-collapse: collapse;
   margin-bottom: 16px;
   font-size: 12px;
-  border-radius: var(--radius-md);
+  border-radius: var(--kanso-radius-md);
   overflow: hidden;
-  border: 1px solid var(--surface-card-border);
+  border: 1px solid var(--kanso-border);
 }
 
 .markdown-body th,
 .markdown-body td {
   padding: 7px 11px;
-  border: 1px solid var(--surface-card-border);
+  border: 1px solid var(--kanso-border);
   text-align: left;
 }
 
@@ -142,9 +142,9 @@
   padding: 8px 14px;
   margin-bottom: 14px;
   border-left: 3px solid #21A1F7;
-  background: var(--surface-card-subtle);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  color: var(--text-primary);
+  background: var(--kanso-surface-hover);
+  border-radius: 0 var(--kanso-radius-md) var(--kanso-radius-md) 0;
+  color: var(--kanso-text-primary);
   font-style: italic;
 }
 
@@ -152,7 +152,7 @@
 .callout {
   padding: 12px 16px;
   margin: 14px 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--kanso-radius-md);
   border-left: 4px solid;
 }
 
@@ -168,38 +168,38 @@
 }
 
 .callout-note {
-  border-color: var(--color-info);
-  background: var(--color-info-bg);
-  color: var(--text-primary);
+  border-color: var(--kanso-accent);
+  background: var(--kanso-accent-muted);
+  color: var(--kanso-text-primary);
 }
-.callout-note .callout-title { color: var(--color-info); }
+.callout-note .callout-title { color: var(--kanso-accent); }
 
 .callout-warning {
-  border-color: var(--color-warning);
-  background: var(--color-warning-bg);
-  color: var(--text-primary);
+  border-color: var(--kanso-warning);
+  background: var(--kanso-warning-muted);
+  color: var(--kanso-text-primary);
 }
-.callout-warning .callout-title { color: var(--color-warning); }
+.callout-warning .callout-title { color: var(--kanso-warning); }
 
 .callout-important {
-  border-color: var(--brand-primary);
-  background: var(--brand-tint);
-  color: var(--text-primary);
+  border-color: var(--kanso-accent);
+  background: var(--kanso-accent-muted);
+  color: var(--kanso-text-primary);
 }
-.callout-important .callout-title { color: var(--brand-primary); }
+.callout-important .callout-title { color: var(--kanso-accent); }
 
 .callout-caution,
 .callout-danger {
-  border-color: var(--color-danger);
-  background: var(--color-danger-bg);
-  color: var(--text-primary);
+  border-color: var(--kanso-danger);
+  background: var(--kanso-danger-muted);
+  color: var(--kanso-text-primary);
 }
-.callout-caution .callout-title { color: var(--color-danger); }
+.callout-caution .callout-title { color: var(--kanso-danger); }
 
 .callout-tip,
 .callout-success {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--text-primary);
+  border-color: var(--kanso-success);
+  background: var(--kanso-success-muted);
+  color: var(--kanso-text-primary);
 }
-.callout-tip .callout-title { color: var(--color-success); }
+.callout-tip .callout-title { color: var(--kanso-success); }

@@ -207,7 +207,7 @@
     background: rgba(56, 189, 248, 0.15);
     border: 1px solid rgba(56, 189, 248, 0.3);
     color: var(--kanso-accent, #38BDF8);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 800;
     padding: 2px 8px;
@@ -215,7 +215,7 @@
   }
 
   .pro-tag {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 800;
     color: #F59E0B;
@@ -227,7 +227,7 @@
   }
 
   .modal-title {
-    font-family: var(--font-display, sans-serif);
+    font-family: var(--kanso-font-display);
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -280,7 +280,7 @@
   }
 
   .tier-price {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 700;
     color: var(--kanso-text-muted, #71717A);
@@ -335,7 +335,7 @@
     border: none;
     background: transparent;
     color: var(--kanso-accent, #38BDF8);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
@@ -357,7 +357,7 @@
     border: 1px solid var(--kanso-border, #27272A);
     border-radius: 8px;
     padding: 10px 14px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 13px;
     color: var(--kanso-text-primary, #F4F4F5);
     outline: none;
