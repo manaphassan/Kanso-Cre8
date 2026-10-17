@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 const WorkspaceService = require('./WorkspaceService');
+const ConfigService = require('./ConfigService');
 
 class GeminiService {
   constructor() {
@@ -9,7 +10,7 @@ class GeminiService {
   }
 
   getConfigPath() {
-    return config.getMachineConfigPath();
+    return ConfigService.machine.getPath();
   }
 
   migrateLegacyConfig() {
@@ -54,20 +55,21 @@ class GeminiService {
 
     this.migrateLegacyConfig();
 
-    const machineCfg = config.loadMachineConfig();
-    if (machineCfg.aiApiKey) return machineCfg.aiApiKey.trim();
-    if (machineCfg.gemini && machineCfg.gemini.apiKey) return machineCfg.gemini.apiKey.trim();
+    const apiKey = ConfigService.machine.get('aiApiKey');
+    if (apiKey) return String(apiKey).trim();
+
+    const gemini = ConfigService.machine.get('gemini');
+    if (gemini && gemini.apiKey) return String(gemini.apiKey).trim();
 
     return '';
   }
 
   saveApiKey(apiKey, preferredModel = 'gemini-1.5-flash') {
     try {
-      const machineCfg = config.loadMachineConfig();
-      machineCfg.aiApiKey = (apiKey || '').trim();
-      machineCfg.aiModel = preferredModel || 'gemini-1.5-flash';
-      machineCfg.updatedAt = new Date().toISOString();
-      return config.saveMachineConfig(machineCfg);
+      return ConfigService.machine.setMultiple({
+        aiApiKey: (apiKey || '').trim(),
+        aiModel: preferredModel || 'gemini-1.5-flash'
+      });
     } catch (err) {
       console.warn('[GeminiService] Machine config write warning:', err.message);
       return false;
@@ -76,8 +78,7 @@ class GeminiService {
 
   getStatus() {
     const key = this.getApiKey();
-    const machineCfg = config.loadMachineConfig();
-    const preferredModel = machineCfg.aiModel || (machineCfg.gemini && machineCfg.gemini.preferredModel) || this.defaultModel;
+    const preferredModel = ConfigService.machine.get('aiModel') || this.defaultModel;
 
     return {
       configured: Boolean(key && key.length > 5),

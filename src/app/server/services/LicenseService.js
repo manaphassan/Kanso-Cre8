@@ -21,14 +21,8 @@ class LicenseService {
   static SIGNATURE_SECRET = 'KANSO_CRE8_OFFLINE_ED25519_ATELIER_SIGNATURE_SALT_2026';
 
   static getLicensePath() {
-    const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
-    if (!fs.existsSync(configDir)) {
-      try {
-        fs.mkdirSync(configDir, { recursive: true });
-      } catch (err) {
-        console.warn('[LicenseService] Failed to create config dir:', err.message);
-      }
-    }
+    const ConfigService = require('./ConfigService');
+    const configDir = ConfigService.vault.getConfigDir();
     return path.join(configDir, 'license.key');
   }
 
