@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Icon } from '$lib/components/ui';
   import { projectStore } from '$lib/stores/projectStore.svelte';
-  import Pill from '$lib/components/ui/Pill.svelte';
   import { clientService } from '$lib/services/clientService';
   import type { ClientProfile } from '$lib/types/kanso';
 
   let clients = $state<ClientProfile[]>([]);
+  let showFilterPopover = $state(false);
 
   $effect(() => {
     clients = clientService.getClients();
@@ -38,89 +38,129 @@
     if (debounceTimeout) clearTimeout(debounceTimeout);
     projectStore.setFilter('query', '');
   }
+
+  const activeFiltersCount = $derived(
+    (projectStore.activeFilters.brand && projectStore.activeFilters.brand !== 'all' ? 1 : 0) +
+    (projectStore.activeFilters.status && projectStore.activeFilters.status !== 'all' ? 1 : 0)
+  );
+
+  function resetFilters() {
+    projectStore.setFilter('brand', 'all');
+    projectStore.setFilter('status', 'all');
+    showFilterPopover = false;
+  }
 </script>
 
 <div class="filter-bar">
   <!-- Search input -->
   <div class="search-box">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--kanso-text-muted)" stroke-width="2">
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
+    <Icon name="search" size={14} />
     <input
       type="text"
-      placeholder="Search projects by ID, title, client, or tags..."
+      placeholder="Search projects..."
       value={searchQuery}
       oninput={handleSearchInput}
     />
     {#if searchQuery}
-      <button class="clear-search-btn" onclick={handleClearSearch} title="Clear search" aria-label="Clear search"><Icon name="close" size={12} /></button>
+      <button type="button" class="clear-search-btn" onclick={handleClearSearch} title="Clear search" aria-label="Clear search">
+        <Icon name="close" size={12} />
+      </button>
     {/if}
   </div>
 
-  <!-- Dynamic Client Filter Swatches -->
-  <div class="pill-group clients-pill-group">
+  <!-- Filter Popover Trigger -->
+  <div class="filter-popover-anchor">
     <button
       type="button"
-      class="client-filter-pill"
-      class:active={projectStore.activeFilters.brand === 'all'}
-      onclick={() => projectStore.setFilter('brand', 'all')}
+      class="filter-trigger-btn"
+      class:has-filters={activeFiltersCount > 0}
+      onclick={() => (showFilterPopover = !showFilterPopover)}
+      aria-label="Filter projects"
+      title="Filter projects"
     >
-      <span>All Clients</span>
+      <Icon name="filter" size={14} />
+      <span class="btn-label">Filter</span>
+      {#if activeFiltersCount > 0}
+        <span class="filter-badge font-mono">{activeFiltersCount}</span>
+      {/if}
     </button>
-    {#each clients as c (c.code)}
-      <button
-        type="button"
-        class="client-filter-pill"
-        class:active={projectStore.activeFilters.brand === c.code}
-        onclick={() => projectStore.setFilter('brand', c.code)}
-        title={`${c.name} (${c.code})`}
-      >
-        <span class="client-swatch-dot" style="background-color: {c.palette?.primary || 'var(--kanso-accent)'};"></span>
-        <span class="client-code-text">{c.code}</span>
-      </button>
-    {/each}
-  </div>
 
-  <!-- Status pills -->
-  <div class="pill-group statuses-pill-group">
-    {#each statuses as s}
-      <Pill
-        label={s.label}
-        active={projectStore.activeFilters.status === s.id}
-        count={s.id === 'review' ? projectStore.pendingReviewCount : undefined}
-        onclick={() => projectStore.setFilter('status', s.id)}
-      />
-    {/each}
+    {#if showFilterPopover}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="popover-backdrop" onclick={() => (showFilterPopover = false)}></div>
+      <div class="filter-popover" role="dialog" aria-label="Project filters">
+        <div class="popover-section">
+          <span class="section-label">Client</span>
+          <div class="filter-chip-grid">
+            <button
+              type="button"
+              class="filter-chip"
+              class:selected={projectStore.activeFilters.brand === 'all'}
+              onclick={() => projectStore.setFilter('brand', 'all')}
+            >
+              All Clients
+            </button>
+            {#each clients as c (c.code)}
+              <button
+                type="button"
+                class="filter-chip font-mono"
+                class:selected={projectStore.activeFilters.brand === c.code}
+                onclick={() => projectStore.setFilter('brand', c.code)}
+              >
+                <span class="chip-swatch" style="background-color: {c.palette?.primary || 'var(--kanso-accent)'};"></span>
+                <span>{c.code}</span>
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        <div class="popover-section">
+          <span class="section-label">Status</span>
+          <div class="filter-chip-grid">
+            {#each statuses as s}
+              <button
+                type="button"
+                class="filter-chip"
+                class:selected={projectStore.activeFilters.status === s.id}
+                onclick={() => projectStore.setFilter('status', s.id)}
+              >
+                {s.label}
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        {#if activeFiltersCount > 0}
+          <div class="popover-footer">
+            <button type="button" class="reset-filters-btn" onclick={resetFilters}>
+              Reset filters
+            </button>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </div>
 
 <style>
   .filter-bar {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 12px;
     margin-bottom: 20px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: var(--kanso-radius-lg);
-    padding: 10px 14px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
-
   .search-box {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--kanso-canvas);
+    background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
-    border-radius: var(--kanso-radius-md);
+    border-radius: 6px;
     padding: 6px 12px;
     flex: 1;
-    min-width: 240px;
+    color: var(--kanso-text-muted);
   }
-
   .search-box input {
     border: none;
     background: transparent;
@@ -129,75 +169,136 @@
     width: 100%;
     outline: none;
   }
-
   .search-box input::placeholder {
     color: var(--kanso-text-muted);
   }
-
   .clear-search-btn {
     border: none;
     background: transparent;
     color: var(--kanso-text-muted);
     cursor: pointer;
-    font-size: 11px;
-    padding: 2px 4px;
-    border-radius: 4px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
   }
-
   .clear-search-btn:hover {
     color: var(--kanso-text-primary);
   }
-
-  .pill-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+  .filter-popover-anchor {
+    position: relative;
   }
-
-  /* Client Swatch Filter Pills */
-  .client-filter-pill {
+  .filter-trigger-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 11px;
-    border-radius: var(--kanso-radius-full);
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--kanso-text-muted);
+    height: 34px;
+    padding: 0 12px;
     background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
+    border-radius: 6px;
+    color: var(--kanso-text-muted);
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
-    outline: none;
-    user-select: none;
   }
-
-  .client-filter-pill:hover {
-    background: var(--kanso-surface-hover);
+  .filter-trigger-btn:hover, .filter-trigger-btn.has-filters {
+    border-color: var(--kanso-accent);
     color: var(--kanso-text-primary);
-    border-color: var(--kanso-border-hover);
   }
-
-  .client-filter-pill.active {
-    background: rgba(56, 189, 248, 0.12);
-    color: var(--kanso-accent);
+  .filter-badge {
+    background: var(--kanso-accent);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .popover-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+  }
+  .filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 101;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: 8px;
+    padding: 16px;
+    width: 320px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .popover-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--kanso-text-muted);
+    letter-spacing: 0.04em;
+  }
+  .filter-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--kanso-text-muted);
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .filter-chip:hover {
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
+  }
+  .filter-chip.selected {
+    background: var(--kanso-accent);
+    color: #FFFFFF;
     border-color: var(--kanso-accent);
     font-weight: 600;
   }
-
-  .client-swatch-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  .chip-swatch {
+    width: 7px;
+    height: 7px;
+    border-radius: 9999px;
   }
-
-  .client-code-text {
-    font-family: var(--kanso-font-mono);
-    font-size: 11.5px;
-    letter-spacing: 0.02em;
+  .popover-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--kanso-border);
+  }
+  .reset-filters-btn {
+    background: transparent;
+    border: none;
+    color: var(--kanso-accent);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+  .reset-filters-btn:hover {
+    text-decoration: underline;
   }
 </style>

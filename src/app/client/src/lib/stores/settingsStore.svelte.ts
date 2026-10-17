@@ -8,6 +8,7 @@ export interface StudioSettings {
   currency: 'MYR' | 'USD' | 'EUR' | 'GBP' | 'SGD' | 'AUD' | 'CAD' | 'JPY' | 'CHF' | string;
   currencySymbol: string;
   defaultLens: 'studio' | 'my-workspace';
+  defaultProjectView: 'kanban' | 'table';
   timerAutoLog: boolean;
   vaultAutoSave: boolean;
   soundEffects: boolean;
@@ -50,6 +51,7 @@ const DEFAULT_SETTINGS: StudioSettings = {
   currency: 'MYR',
   currencySymbol: 'RM',
   defaultLens: 'studio',
+  defaultProjectView: 'kanban',
   timerAutoLog: true,
   vaultAutoSave: true,
   soundEffects: true
