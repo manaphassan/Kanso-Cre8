@@ -1,10 +1,12 @@
 ---
 id: QUOTE-2026-001
-client_id: acmecorp
-client_name: Acme Corporation
+documentNumber: QUOTE-2026-001
+type: quote
 client_code: ACME
-date: 2026-09-01
-expiry_date: 2026-09-30
+client_name: Acme Corporation
+client_email: sarah.j@acmefintech.io
+date: '2026-09-01'
+valid_until: '2026-09-30'
 status: approved
 currency: USD
 hourly_rate: 125
@@ -21,7 +23,7 @@ subtotal: 4750
 tax_percent: 0
 tax_amount: 0
 total: 4750
-notes: "Payment due within 15 days upon receipt of invoice."
+notes: Payment due within 15 days upon receipt of invoice.
 ---
 
 # Quote QUOTE-2026-001: Acme Corporation
