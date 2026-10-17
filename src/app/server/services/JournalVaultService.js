@@ -171,6 +171,17 @@ class JournalVaultService {
       fm.habits = note.habits;
     }
 
+    try {
+      const FrontmatterService = require('./FrontmatterService');
+      const validation = FrontmatterService.validate('journal_day', fm);
+      if (!validation.valid) {
+        console.warn('[JournalVaultService] journal_day validation warnings:', validation.errors);
+      }
+      if (validation.data) {
+        Object.assign(fm, validation.data);
+      }
+    } catch (_) {}
+
     let md = `---\n${yaml.dump(fm).trim()}\n---\n\n`;
     md += `# 📔 ${note.title || 'Daily Creative Log'}\n\n`;
 

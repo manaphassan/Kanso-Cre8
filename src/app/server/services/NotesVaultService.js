@@ -269,6 +269,17 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
       updated: new Date().toISOString().split('T')[0]
     };
 
+    try {
+      const FrontmatterService = require('./FrontmatterService');
+      const validation = FrontmatterService.validate('note', fm);
+      if (!validation.valid) {
+        console.warn('[NotesVaultService] note validation warnings:', validation.errors);
+      }
+      if (validation.data) {
+        Object.assign(fm, validation.data);
+      }
+    } catch (_) {}
+
     let content = note.content || '';
     // Ensure content starts with heading if not already present
     if (!content.trim().startsWith('# ')) {

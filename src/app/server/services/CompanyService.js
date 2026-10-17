@@ -268,7 +268,13 @@ class CompanyService {
       mergedFm.palette.primary = companyData.color;
     }
 
-    const serialized = FrontmatterService.serializeContent(mergedFm, existingBody);
+    const validation = FrontmatterService.validate('client', mergedFm);
+    if (!validation.valid) {
+      console.warn('[CompanyService] Client validation warnings:', validation.errors);
+    }
+    const finalFm = validation.data;
+
+    const serialized = FrontmatterService.serializeContent(finalFm, existingBody);
     const tempFile = `${filePath}.tmp.${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     fs.writeFileSync(tempFile, serialized, 'utf8');
     try {
@@ -278,7 +284,7 @@ class CompanyService {
       try { fs.unlinkSync(tempFile); } catch (e) {}
     }
 
-    return this._normalizeClient(mergedFm, existingBody, targetFolder, filePath);
+    return this._normalizeClient(finalFm, existingBody, targetFolder, filePath);
   }
 
   deleteCompany(code) {

@@ -2821,6 +2821,78 @@ Layout balance principles.
     try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
   });
 
+  // ─── TEST 56: FrontmatterService.validate & SCHEMA.md Contract ────────
+  await test('FrontmatterService.validate validates document schemas while strictly preserving unknown keys', () => {
+    // 1. Project frontmatter with custom unknown keys
+    const rawProjectFm = {
+      status: 'in-progress',
+      client: 'ACME',
+      revision: 2,
+      deadline: '2026-09-30',
+      created: '2026-09-01',
+      tags: ['fintech', 'branding'],
+      custom_plugin_meta: { render_engine: 'blender', gpu_tier: 'ultra' },
+      user_notes_extra: 'Do not drop this key'
+    };
+
+    const projectResult = FrontmatterService.validate('project', rawProjectFm);
+    assert.strictEqual(projectResult.valid, true);
+    assert.strictEqual(projectResult.errors.length, 0);
+    assert.strictEqual(projectResult.data.status, 'in-progress');
+    assert.strictEqual(projectResult.data.user_notes_extra, 'Do not drop this key');
+    assert.strictEqual(projectResult.data.custom_plugin_meta.render_engine, 'blender');
+
+    // 2. Project frontmatter with invalid status
+    const invalidProject = FrontmatterService.validate('project', {
+      status: 'non_existent_status_123',
+      revision: -5,
+      deadline: 'invalid-date'
+    });
+    assert.strictEqual(invalidProject.valid, false);
+    assert.ok(invalidProject.errors.length >= 2, 'Should flag invalid status, revision, or deadline');
+
+    // 3. Client frontmatter validation
+    const clientResult = FrontmatterService.validate('client', {
+      code: 'ACME',
+      name: 'Acme Corporation',
+      default_hourly_rate: 150,
+      custom_slack_channel: '#acme-studio'
+    });
+    assert.strictEqual(clientResult.valid, true);
+    assert.strictEqual(clientResult.data.custom_slack_channel, '#acme-studio');
+
+    // 4. Client frontmatter missing code
+    const invalidClient = FrontmatterService.validate('client', {
+      name: 'No Code Corp'
+    });
+    assert.strictEqual(invalidClient.valid, false);
+    assert.ok(invalidClient.errors.some(e => e.includes('Client code is required')));
+
+    // 5. Journal day frontmatter
+    const journalResult = FrontmatterService.validate('journal_day', {
+      date: '2026-09-09',
+      habits: ['Deep Craft'],
+      custom_energy_metric: 99
+    });
+    assert.strictEqual(journalResult.valid, true);
+    assert.strictEqual(journalResult.data.custom_energy_metric, 99);
+
+    const invalidJournal = FrontmatterService.validate('journal_day', {
+      date: 'not-a-date'
+    });
+    assert.strictEqual(invalidJournal.valid, false);
+
+    // 6. Atomic note frontmatter
+    const noteResult = FrontmatterService.validate('note', {
+      id: 'zettel_999',
+      title: 'Atomic Thinking',
+      category: 'permanent',
+      unknown_external_sync_id: 'sync_abc123'
+    });
+    assert.strictEqual(noteResult.valid, true);
+    assert.strictEqual(noteResult.data.unknown_external_sync_id, 'sync_abc123');
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
