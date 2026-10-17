@@ -14,9 +14,9 @@
   import ShareLinkModal from '$lib/components/features/ShareLinkModal.svelte';
   import PreflightValidatorModal from '$lib/components/features/PreflightValidatorModal.svelte';
   import HandoverPackageModal from '$lib/components/features/HandoverPackageModal.svelte';
+  import { useLightbox } from '$lib/utils';
 
-  let selectedDeliverable = $state<DeliverableItem | null>(null);
-  let lightboxOpen = $state<boolean>(false);
+  const lightbox = useLightbox();
   let showIngesterModal = $state<boolean>(false);
   let ingestTargetProject = $state<any>(null);
 
@@ -70,12 +70,8 @@
     await projectStore.loadDeliverables();
   });
 
-  let lightboxInitialDiff = $state<boolean>(false);
-
   function openLightbox(d: DeliverableItem, diffMode: boolean = false) {
-    selectedDeliverable = d;
-    lightboxInitialDiff = diffMode;
-    lightboxOpen = true;
+    lightbox.openLightbox(d, diffMode);
   }
 
   function openRevisionDiff(group: any) {
@@ -930,10 +926,10 @@
 
   <!-- Review & Approval Lightbox Modal -->
   <DeliverableLightbox
-    deliverable={selectedDeliverable}
-    bind:open={lightboxOpen}
-    initialDiffMode={lightboxInitialDiff}
-    onClose={() => lightboxOpen = false}
+    deliverable={lightbox.selectedDeliverable}
+    bind:open={lightbox.open}
+    initialDiffMode={lightbox.initialDiffMode}
+    onClose={() => lightbox.closeLightbox()}
     onApprove={async (d) => {
       const projId = d.project?.id || d.projectId || d.project?.jobId || d.projectJobId;
       if (projId) {

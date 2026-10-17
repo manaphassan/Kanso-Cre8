@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { BujoEntry } from '$lib/services/journalService';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     open?: boolean;
@@ -52,8 +53,8 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && open && !isSubmitting) {
-      onClose();
+    if (!isSubmitting) {
+      handleModalKeydown(e, onClose, open);
     }
   }
 
@@ -86,7 +87,7 @@
   <!-- Backdrop -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="modal-backdrop" onclick={() => { if (!isSubmitting) onClose(); }}>
+  <div class="modal-backdrop" onclick={(e) => { if (!isSubmitting) handleBackdropClick(e, onClose); }}>
     <!-- Modal Dialog Window -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->

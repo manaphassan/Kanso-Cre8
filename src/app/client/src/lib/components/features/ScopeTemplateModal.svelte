@@ -2,6 +2,7 @@
   import { CREATIVE_SCOPE_PRESETS, type ScopeDisciplineTemplate } from '../../data/scopeTemplates';
   import { settingsStore, getCurrencySymbol } from '../../stores/settingsStore.svelte';
   import type { InvoiceLineItem } from '../../types/kanso';
+  import { handleModalKeydown } from '$lib/utils';
 
   let {
     isOpen = false,
@@ -48,7 +49,7 @@
   );
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') onClose();
+    handleModalKeydown(e, onClose, isOpen);
   }
 
   function handleApply() {

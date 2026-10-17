@@ -18,6 +18,7 @@
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
+  import { fetchStaffList } from '$lib/utils';
 
   interface Props {
     projectId?: string;
@@ -224,21 +225,7 @@
   });
 
   async function loadStaffList() {
-    try {
-      const res = await ApiClient.getStaffAccounts();
-      if (res && res.users) {
-        staffList = res.users;
-      }
-    } catch {
-      try {
-        const res2 = await ApiClient.getStaffRoster();
-        if (res2 && res2.roster) {
-          staffList = res2.roster;
-        }
-      } catch (e) {
-        console.warn('[ProjectDetailView] loadStaffList error:', e);
-      }
-    }
+    staffList = await fetchStaffList();
   }
 
   async function handleManagerChange(newManager: string) {
@@ -1142,6 +1129,13 @@
         deliverables: projectStore.activeDeliverables
       }}
       onClose={() => showHandoverModal = false}
+    />
+
+    <!-- Review & Approval Lightbox Modal -->
+    <DeliverableLightbox
+      deliverable={selectedDeliverable}
+      bind:open={lightboxOpen}
+      onClose={() => (lightboxOpen = false)}
     />
   {/if}
 </div>

@@ -5,6 +5,7 @@
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import type { DeliverableItem } from '$lib/types';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     open?: boolean;
@@ -177,9 +178,7 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && open) {
-      closeModal();
-    }
+    handleModalKeydown(e, closeModal, open);
   }
 
   function closeModal() {
@@ -192,7 +191,7 @@
 
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div class="handover-backdrop" onclick={closeModal} role="dialog" aria-modal="true" aria-label="Client Handover Package" tabindex="-1">
+  <div class="handover-backdrop" onclick={(e) => handleBackdropClick(e, closeModal)} role="dialog" aria-modal="true" aria-label="Client Handover Package" tabindex="-1">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="handover-modal" onclick={(e) => e.stopPropagation()}>

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     open: boolean;
@@ -82,9 +83,7 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      onclose();
-    }
+    handleModalKeydown(e, onclose, open);
   }
 </script>
 
@@ -94,7 +93,7 @@
   <!-- Backdrop -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="vault-modal-overlay" onclick={onclose} role="presentation">
+  <div class="vault-modal-overlay" onclick={(e) => handleBackdropClick(e, onclose)} role="presentation">
     <!-- Modal Card -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->

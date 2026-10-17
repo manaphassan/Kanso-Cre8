@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import FluentButton from './FluentButton.svelte';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     open?: boolean;
@@ -28,16 +29,12 @@
     footer
   }: Props = $props();
 
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget && onClose) {
-      onClose();
-    }
+  function onBackdropClick(e: MouseEvent) {
+    handleBackdropClick(e, onClose);
   }
 
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && open && onClose) {
-      onClose();
-    }
+    handleModalKeydown(e, onClose, open);
   }
 </script>
 
@@ -46,7 +43,7 @@
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="modal-backdrop" onclick={handleBackdropClick}>
+  <div class="modal-backdrop" onclick={onBackdropClick}>
     <div class="modal-dialog" role="dialog" aria-modal="true">
       <div class="modal-header">
         <h3 class="modal-title">{title}</h3>

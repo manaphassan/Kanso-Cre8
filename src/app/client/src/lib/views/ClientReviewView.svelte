@@ -5,6 +5,7 @@
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import { useLightbox } from '$lib/utils';
 
   let token = $state<string>('');
   let isLoading = $state<boolean>(true);
@@ -12,8 +13,7 @@
   let reviewData = $state<any>(null);
 
   // Lightbox & Inspection State
-  let selectedDeliverable = $state<DeliverableItem | null>(null);
-  let lightboxOpen = $state<boolean>(false);
+  const lightbox = useLightbox();
 
   // Decision Form
   let reviewerName = $state<string>('');
@@ -60,7 +60,7 @@
   }
 
   function openLightbox(d: DeliverableItem) {
-    selectedDeliverable = {
+    lightbox.openLightbox({
       ...d,
       project: {
         jobId: reviewData?.project?.jobId || '',
@@ -71,8 +71,7 @@
         priority: 'high',
         deadline: reviewData?.project?.deadline || ''
       }
-    };
-    lightboxOpen = true;
+    });
   }
 
   async function handleDecision(decision: 'approved' | 'revision_requested') {
@@ -272,11 +271,11 @@
   </main>
 
   <!-- Lightbox Modal with Visual Diff Slider & Pin Annotation -->
-  {#if selectedDeliverable}
+  {#if lightbox.selectedDeliverable}
     <DeliverableLightbox
-      deliverable={selectedDeliverable}
-      bind:open={lightboxOpen}
-      onClose={() => lightboxOpen = false}
+      deliverable={lightbox.selectedDeliverable}
+      bind:open={lightbox.open}
+      onClose={() => lightbox.closeLightbox()}
     />
   {/if}
 </div>
