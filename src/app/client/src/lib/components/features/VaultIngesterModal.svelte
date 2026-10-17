@@ -26,7 +26,7 @@
     file: File;
     name: string;
     size: number;
-    targetFolder: '01_BRIEF_ASSETS' | '02_SOURCE_FILES' | '03_COPYWRITING' | '04_WORK_IN_PROGRESS' | '05_DELIVERABLES';
+    targetFolder: '01_BRIEF_ASSETS' | '02_SOURCE_FILES' | '03_COPY' | '04_WORK_IN_PROGRESS' | '05_DELIVERABLES';
     status: 'pending' | 'uploading' | 'done' | 'error';
     errorMessage?: string;
   }
@@ -40,7 +40,7 @@
   const CANONICAL_FOLDERS = [
     { id: '01_BRIEF_ASSETS', label: '01_BRIEF_ASSETS (Briefs & Guidelines)' },
     { id: '02_SOURCE_FILES', label: '02_SOURCE_FILES (PSD, AI, Raw Assets)' },
-    { id: '03_COPYWRITING', label: '03_COPYWRITING (Scripts & Copy.md)' },
+    { id: '03_COPY', label: '03_COPY (Scripts & Copy.md)' },
     { id: '04_WORK_IN_PROGRESS', label: '04_WORK_IN_PROGRESS (WIP Drafts)' },
     { id: '05_DELIVERABLES', label: '05_DELIVERABLES (Final Exports & Renders)' },
   ];
@@ -61,7 +61,7 @@
 
     // 3. Copywriting
     if (ext === 'md') {
-      return '03_COPYWRITING';
+      return '03_COPY';
     }
 
     // 4. Deliverables & WIP

@@ -91,7 +91,7 @@ class ExportService {
 
     // 3. Copywriting (optional, default true)
     if (options.includeCopy !== false) {
-      const copyFile = path.join(projectFullPath, '03_COPYWRITING', 'COPY.md');
+      const copyFile = path.join(projectFullPath, '03_COPY', 'COPY.md');
       if (fs.existsSync(copyFile)) {
         archive.file(copyFile, { name: 'Copywriting/COPY.md' });
         addedFiles.push('Copywriting/COPY.md');

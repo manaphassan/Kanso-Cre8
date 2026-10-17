@@ -33,7 +33,7 @@ class SnapshotService {
       } catch (e) {}
     }
 
-    const copyPath = path.join(projectFullPath, '03_COPYWRITING', 'COPY.md');
+    const copyPath = path.join(projectFullPath, '03_COPY', 'COPY.md');
     if (fs.existsSync(copyPath)) {
       try {
         fs.copyFileSync(copyPath, path.join(snapDir, 'COPY.md'));
@@ -100,7 +100,7 @@ class SnapshotService {
 
     // 3. Restore COPY.md
     const snapCopy = path.join(targetSnapDir, 'COPY.md');
-    const targetCopyDir = path.join(projectFullPath, '03_COPYWRITING');
+    const targetCopyDir = path.join(projectFullPath, '03_COPY');
     if (fs.existsSync(snapCopy)) {
       if (!fs.existsSync(targetCopyDir)) fs.mkdirSync(targetCopyDir, { recursive: true });
       fs.copyFileSync(snapCopy, path.join(targetCopyDir, 'COPY.md'));
