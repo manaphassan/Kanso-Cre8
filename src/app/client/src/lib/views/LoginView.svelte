@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
+  import { getSession, setSession } from '$lib/services/session';
 
   interface UserProfile {
     username: string;
@@ -34,8 +35,9 @@
   );
 
   // Remember Me state initialization
-  const isRemembered = typeof localStorage !== 'undefined' && localStorage.getItem('ss_cam_remember_me') === 'true';
-  const savedUser = typeof localStorage !== 'undefined' ? localStorage.getItem('ss_cam_remember_user') : null;
+  const sessionData = getSession();
+  const isRemembered = Boolean(sessionData.rememberMe);
+  const savedUser = sessionData.rememberUser || null;
 
   // Recent Active Logins (Dynamic, strictly limited to 3)
   function getStoredRecentUsers(): string[] {
@@ -125,9 +127,7 @@
   function updateRecentUsers(loggedUser: string) {
     const updated = [loggedUser, ...recentUsernames.filter((u) => u !== loggedUser)].slice(0, 3);
     recentUsernames = updated;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('ss_cam_recent_users', JSON.stringify(updated));
-    }
+    setSession({ rememberUser: loggedUser });
   }
 
   function initHeroWaveCanvas() {
@@ -376,11 +376,9 @@
       if (res.success && res.token) {
         // Handle Remember Me persistence
         if (rememberMe) {
-          localStorage.setItem('ss_cam_remember_me', 'true');
-          localStorage.setItem('ss_cam_remember_user', username);
+          setSession({ rememberMe: true, rememberUser: username });
         } else {
-          localStorage.removeItem('ss_cam_remember_me');
-          localStorage.removeItem('ss_cam_remember_user');
+          setSession({ rememberMe: false, rememberUser: undefined });
         }
 
         // Update Recent Active Users (Top 3)

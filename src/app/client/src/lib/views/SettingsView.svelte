@@ -9,8 +9,8 @@
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import { journalService } from '$lib/services/journalService';
   import { financeService } from '$lib/services/financeService';
-  import { projectStore } from '$lib/stores/projectStore.svelte';
   import type { ThemeName } from '$lib/types';
+  import { getSession, setSession } from '$lib/services/session';
 
   type SettingsTab = 'profile' | 'appearance' | 'vault' | 'preferences' | 'shortcuts' | 'license' | 'about';
   let activeTab = $state<SettingsTab>('profile');
@@ -45,7 +45,7 @@
   // Workspace View preferences
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
   let defaultProjectView = $state<ViewMode>(
-    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards'
+    getSession().defaultProjectView || 'cards'
   );
 
   // Hourly rate preset
@@ -428,10 +428,7 @@
   }
 
   function handleSavePreferences() {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('ss_cam_default_project_view', defaultProjectView);
-      localStorage.setItem('ss_cam_project_view', defaultProjectView);
-    }
+    setSession({ defaultProjectView, projectView: defaultProjectView });
     const numRate = Number(hourlyRate) || 125;
     timerStore.setHourlyRate(numRate);
     settingsStore.updateSettings({

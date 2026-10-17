@@ -198,7 +198,7 @@
   });
 
   const designerAvatarSrc = $derived.by(() => {
-    return designerInfo?.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${designerInfo?.staffId}`) || (appState.currentUser?.staffId === designerInfo?.staffId ? (appState.currentUser.avatar || '') : '')) : '');
+    return designerInfo?.avatar || (appState.currentUser?.staffId === designerInfo?.staffId ? (appState.currentUser.avatar || '') : '');
   });
 
   const managerInfo = $derived.by(() => {
@@ -212,7 +212,7 @@
   });
 
   const managerAvatarSrc = $derived.by(() => {
-    return managerInfo?.avatar || (typeof localStorage !== 'undefined' ? (localStorage.getItem(`ss_cam_avatar_${managerInfo?.staffId}`) || (appState.currentUser?.staffId === managerInfo?.staffId ? (appState.currentUser.avatar || '') : '')) : '');
+    return managerInfo?.avatar || (appState.currentUser?.staffId === managerInfo?.staffId ? (appState.currentUser.avatar || '') : '');
   });
 
   $effect(() => {

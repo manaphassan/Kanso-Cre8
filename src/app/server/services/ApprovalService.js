@@ -76,7 +76,7 @@ class ApprovalService {
       }
     });
 
-    // Notify team via _Team/team-notes.json so SS-CAM picks it up
+    // Notify team via _Team/team-notes.json
     this.postTeamNotification(project, decision, reviewer, comment, newRevision);
 
     // If approved, stamp formal APPROVAL.md certificate in 05_DELIVERABLES/
@@ -95,7 +95,7 @@ class ApprovalService {
   }
 
   /**
-   * Posts notification to shared _Team/team-notes.json for SS-CAM desktop clients.
+   * Posts notification to shared _Team/team-notes.json for desktop clients.
    */
   static postTeamNotification(project, decision, reviewer, comment, revision) {
     try {

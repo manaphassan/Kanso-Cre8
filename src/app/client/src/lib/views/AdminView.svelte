@@ -522,7 +522,7 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `SS-CAM_Audit_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Kanso_Cre8_Audit_Report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1405,7 +1405,7 @@
             <div class="telemetry-row">
               <span class="tel-label">Workspace Root Path</span>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <code class="tel-code">{systemStatus?.workspaceRoot || '\\\\SSNAS\\Creative-Team'}</code>
+                <code class="tel-code">{systemStatus?.workspaceRoot || '\\\\NAS\\Creative-Vault'}</code>
                 <button
                   type="button"
                   class="edit-inline-btn"
@@ -1450,7 +1450,7 @@
           <div class="telemetry-detail-list">
             <div class="telemetry-row">
               <span class="tel-label">Server Version</span>
-              <b>SS-CAM Web v{systemStatus?.version || '4.5.1'} ({systemStatus?.platform || 'x64'})</b>
+              <b>Kanso Cre8 Web v{systemStatus?.version || '0.7.0'} ({systemStatus?.platform || 'x64'})</b>
             </div>
             <div class="telemetry-row">
               <span class="tel-label">Client Framework</span>
@@ -1971,7 +1971,7 @@
         type="text"
         class="field-input"
         bind:value={newWorkspacePath}
-        placeholder="e.g. D:\SynologyDrive\Creative-Team or \\SSNAS\Creative-Team"
+        placeholder="e.g. D:\SynologyDrive\Creative-Vault or \\NAS\Creative-Vault"
         style="font-family: monospace; font-size: 13px;"
       />
     </div>

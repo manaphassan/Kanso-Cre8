@@ -118,23 +118,7 @@
       (member?.staffId && appState.currentUser.staffId && member.staffId.toLowerCase() === appState.currentUser.staffId.toLowerCase())
     ));
 
-    let avatar: string | null = member?.avatar || null;
-
-    if (!avatar && typeof localStorage !== 'undefined') {
-      if (member?.staffId) {
-        avatar = localStorage.getItem(`ss_cam_avatar_${member.staffId}`);
-      }
-      if (!avatar && member?.username) {
-        avatar = localStorage.getItem(`ss_cam_avatar_${member.username}`);
-      }
-      if (!avatar && isCurrentUser) {
-        avatar = appState.currentUser?.avatar || localStorage.getItem('ss_cam_user_avatar') || null;
-      }
-    }
-
-    if (!avatar && isCurrentUser && appState.currentUser?.avatar) {
-      avatar = appState.currentUser.avatar;
-    }
+    let avatar: string | null = member?.avatar || (isCurrentUser ? appState.currentUser?.avatar : null) || null;
 
     const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || '#0078D4';
     const displayName = member?.name || raw;

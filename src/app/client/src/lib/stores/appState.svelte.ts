@@ -3,6 +3,7 @@
  */
 import type { User, ThemeName, ToastMessage } from '$lib/types';
 import { ApiClient } from '$lib/services/api';
+import { getSession, setSession } from '$lib/services/session';
 
 export const DEFAULT_DESKTOP_CREATOR: User = {
   id: 'ACME001',
@@ -33,7 +34,8 @@ class AppStateStore {
   routeParams = $state<Record<string, any>>({});
   private static readonly VALID_THEMES: ThemeName[] = ['dark', 'light', 'eink', 'oceanic', 'oceanic-light', 'neumorphic', 'neumorphic-dark', 'falconia', 'metamorphosis', 'catppuccin'];
   private static getStoredTheme(): ThemeName {
-    const stored = localStorage.getItem('kanso_theme') || localStorage.getItem('ss_cam_theme');
+    const session = getSession();
+    const stored = session.theme || (typeof localStorage !== 'undefined' ? localStorage.getItem('kanso_theme') : null);
     if (stored && AppStateStore.VALID_THEMES.includes(stored as ThemeName)) {
       if (stored === 'falconia') return 'dark';
       return stored as ThemeName;
@@ -61,8 +63,7 @@ class AppStateStore {
 
   setTheme(newTheme: ThemeName) {
     this.theme = newTheme;
-    localStorage.setItem('kanso_theme', newTheme);
-    localStorage.setItem('ss_cam_theme', newTheme);
+    setSession({ theme: newTheme });
     if (typeof window !== 'undefined' && (window as any).chrome?.webview) {
       try {
         (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SET_THEME', theme: newTheme }));
