@@ -1089,23 +1089,17 @@ router.get('/team', authenticateToken, (req, res) => {
 
 // ─── USER & STAFF DIRECTORY ROUTES ──────────────────────────────────
 
-router.get('/team/roster', (req, res) => {
-  try {
-    const roster = TeamService.getStaffRoster();
-    res.json({ success: true, roster, users: roster });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get('/users', (req, res) => {
+const handleGetUsers = (req, res) => {
   try {
     const roster = TeamService.getStaffRoster();
     res.json({ success: true, users: roster, roster });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+};
+
+router.get('/users', handleGetUsers);
+router.get('/team/roster', handleGetUsers);
 
 router.post('/users', authenticateToken, (req, res) => {
   try {
@@ -1178,42 +1172,6 @@ router.post('/users/:username/reset-password', authenticateToken, (req, res) => 
       entityId: req.params.username
     });
     res.json({ success: true, message: `Password reset successfully for ${req.params.username}` });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-router.post('/team/roster', authenticateToken, (req, res) => {
-  try {
-    const newMember = TeamService.addStaffMember(req.body);
-    AuditService.logEvent({
-      actor: req.user.name,
-      role: req.user.role,
-      action: 'STAFF_MEMBER_PROVISIONED',
-      entityType: 'Staff',
-      entityId: newMember.staffId,
-      details: newMember
-    });
-    SseService.broadcast('team:updated', { member: newMember, action: 'created' });
-    res.json({ success: true, member: newMember });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-router.put('/team/roster/:id', authenticateToken, (req, res) => {
-  try {
-    const updated = TeamService.updateStaffMember(req.params.id, req.body);
-    AuditService.logEvent({
-      actor: req.user.name,
-      role: req.user.role,
-      action: 'STAFF_MEMBER_UPDATED',
-      entityType: 'Staff',
-      entityId: req.params.id,
-      details: updated
-    });
-    SseService.broadcast('team:updated', { member: updated, action: 'updated' });
-    res.json({ success: true, member: updated });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -1330,18 +1288,7 @@ router.get('/audit', authenticateToken, (req, res) => {
   }
 });
 
-// ─── SYSTEM STATUS & DOCKER HEALTHCHECK ───────────────────────────────
 
-router.get('/status', (req, res) => {
-  res.json({
-    status: 'ok',
-    app: config.APP_TITLE,
-    version: config.VERSION,
-    uptimeSeconds: Math.floor(process.uptime()),
-    memoryUsageMB: Math.round(process.memoryUsage().rss / (1024 * 1024)),
-    timestamp: new Date().toISOString()
-  });
-});
 
 router.get('/system/health', authenticateToken, (req, res) => {
   const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
