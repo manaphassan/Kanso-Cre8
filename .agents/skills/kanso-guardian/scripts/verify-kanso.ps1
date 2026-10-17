@@ -177,6 +177,34 @@ if (Test-Path $financeServicePath) {
     Report-Check "Finance" "financeService.ts not found" "FAIL"
 }
 
+# 6. CLIENT PRIVACY & IDENTITY SANITIZATION
+Write-Host ""
+Write-Host "[ 6. CLIENT PRIVACY & IDENTITY SANITIZATION ]" -ForegroundColor White
+$denyListPath = Join-Path $repoRoot "docs\.deny-list.txt"
+if (Test-Path $denyListPath) {
+    $denyPatterns = Get-Content $denyListPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object { $_.Trim() }
+    $sampleWsPath = Join-Path $repoRoot "src\app\sample-workspace"
+    $leaksFound = @()
+    if (Test-Path $sampleWsPath) {
+        $sampleFiles = Get-ChildItem -Path $sampleWsPath -Recurse -File -Include *.json, *.jsonl, *.md
+        foreach ($file in $sampleFiles) {
+            $content = Get-Content $file.FullName -Raw
+            foreach ($pattern in $denyPatterns) {
+                if ($content -match [regex]::Escape($pattern)) {
+                    $leaksFound += "$($file.Name) contains '$pattern'"
+                }
+            }
+        }
+    }
+    if ($leaksFound.Count -eq 0) {
+        Report-Check "Privacy" "Sample workspace verified clean of real personal identities" "PASS"
+    } else {
+        Report-Check "Privacy" "Identity leaks detected in sample workspace: $($leaksFound -join '; ')" "FAIL"
+    }
+} else {
+    Report-Check "Privacy" "docs/.deny-list.txt missing" "WARN"
+}
+
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 if ($script:failCount -eq 0) {

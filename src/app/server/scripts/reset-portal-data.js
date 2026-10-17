@@ -44,7 +44,7 @@ const DEFAULT_COMPANIES = [
 ];
 
 const DEFAULT_STAFF = [
-  { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
+  { staffId: 'ACME001', username: 'alex', name: 'Alex Mercer', email: 'alex@example.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
   { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
   { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
   { staffId: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Lead Copywriter', department: 'Content & Copy', defaultBrand: 'ACME', avatarColor: '#F59E0B', active: true },

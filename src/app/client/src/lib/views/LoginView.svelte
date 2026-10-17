@@ -511,7 +511,7 @@
 
     <!-- Official Kanso Cre8 Footer -->
     <div class="portal-footer-meta">
-      2026 © harusssani.manaphassan · PolyForm Noncommercial 1.0.0
+      2026 © Kanso Cre8 · PolyForm Noncommercial 1.0.0
     </div>
   </div>
 </div>

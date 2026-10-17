@@ -6,9 +6,9 @@ import { ApiClient } from '$lib/services/api';
 
 export const DEFAULT_DESKTOP_CREATOR: User = {
   id: 'ACME001',
-  username: 'harussani',
-  name: 'Harussani',
-  email: 'harussani@acme.com',
+  username: 'alex',
+  name: 'Alex Mercer',
+  email: 'alex@example.com',
   role: 'Art Director / Administrator',
   roles: ['Administrator', 'Designer'],
   staffId: 'ACME001',

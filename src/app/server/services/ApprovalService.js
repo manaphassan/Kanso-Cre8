@@ -211,8 +211,8 @@ class ApprovalService {
         round: approvalRecord.round || frontmatter.revision || 1,
         timestamp,
         signature: studioProfile.digitalSignature || studioProfile.principalName || 'Authorized Studio Principal',
-        studioName: studioProfile.studioName || 'HaNa Innovation',
-        registrationNo: studioProfile.businessRegNo || 'LLP-9921',
+        studioName: studioProfile.studioName || 'Acme Design Studio',
+        registrationNo: studioProfile.businessRegNo || '2026-ACME-0001',
         files: filesInfo.map(f => ({
           filename: f.name,
           format: f.format,
@@ -256,11 +256,11 @@ ${tableRows}
 
 ## 🏛️ Digital Colophon & Atelier Authorization
 
-**Studio**: ${studioProfile.studioName || 'HaNa Innovation'}  
-**Business Registration No**: \`${studioProfile.businessRegNo || '202601004829 (LLP-9921)'}\`  
-**Principal Art Director**: ${studioProfile.principalName || 'Harussani'}  
-**Digital Signature Colophon**: *${studioProfile.digitalSignature || studioProfile.principalName || 'Harussani / HaNa Innovation'}*  
-**Billing & Legal Inquiries**: ${studioProfile.billingEmail || 'harussani@hana-innovation.com'}  
+**Studio**: ${studioProfile.studioName || 'Acme Design Studio'}  
+**Business Registration No**: \`${studioProfile.businessRegNo || '2026-ACME-0001'}\`  
+**Principal Art Director**: ${studioProfile.principalName || 'Alex Mercer'}  
+**Digital Signature Colophon**: *${studioProfile.digitalSignature || studioProfile.principalName || 'Alex Mercer / Acme Design Studio'}*  
+**Billing & Legal Inquiries**: ${studioProfile.billingEmail || 'billing@example.com'}  
 
 > **Authenticity Notice**: This certificate was signed offline-first in **Kanso Cre8 (簡素)**. All files live as human-readable UTF-8 Markdown and local filesystem binaries under local control.
 `;

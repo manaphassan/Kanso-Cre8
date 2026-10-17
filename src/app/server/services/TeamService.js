@@ -18,7 +18,7 @@ class TeamService {
   static getStaffRoster() {
     const rosterPath = this.getRosterPath();
     const defaultTeam = [
-      { staffId: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
+      { staffId: 'ACME001', username: 'alex', name: 'Alex Mercer', email: 'alex@example.com', role: 'Art Director / Administrator', department: 'Creative Production', defaultBrand: 'ACME', avatarColor: '#0284C7', active: true },
       { staffId: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Multimedia Designer', department: 'Multimedia & Motion', defaultBrand: 'NEX', avatarColor: '#8B5CF6', active: true },
       { staffId: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Creative Strategist', department: 'Research & Strategy', defaultBrand: 'LUM', avatarColor: '#10B981', active: true },
       { staffId: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Lead Copywriter', department: 'Content & Copy', defaultBrand: 'ACME', avatarColor: '#F59E0B', active: true },
@@ -343,21 +343,21 @@ class TeamService {
   static getStudioProfile() {
     const profilePath = this.getStudioProfilePath();
     const defaultProfile = {
-      studioName: 'HaNa Innovation',
-      principalName: 'Harussani',
+      studioName: 'Acme Design Studio',
+      principalName: 'Alex Mercer',
       professionalTitle: 'Principal Art Director & Brand Architect',
       tagline: 'Mindful Brand Systems & Digital Craft',
-      businessRegNo: '202601004829 (LLP-9921)',
-      billingEmail: 'harussani@hana-innovation.com',
-      studioAddress: 'Kuala Lumpur, Malaysia',
-      website: 'https://hana-innovation.com',
-      phone: '+60 12-345 6789',
-      paymentBank: 'Maybank (MBBEMYKL)',
-      paymentAccountNo: '5140-1234-5678',
-      paymentAccountName: 'HaNa Innovation',
-      paymentSwiftOrQr: 'DuitNow / SWIFT: MBBEMYKL',
+      businessRegNo: '2026-ACME-0001',
+      billingEmail: 'billing@example.com',
+      studioAddress: '100 Creative Way, Suite 400, Metropolis',
+      website: 'https://example.com',
+      phone: '+1-555-0100',
+      paymentBank: 'Acme Federal Bank',
+      paymentAccountNo: '0000-0000-0000',
+      paymentAccountName: 'Acme Design Studio',
+      paymentSwiftOrQr: 'SWIFT: ACMEUS33 / DuitNow: 00000000',
       defaultPaymentTerms: '50% Upfront Deposit • Net 14 Days • 2 Revision Rounds',
-      defaultCurrency: 'MYR',
+      defaultCurrency: 'USD',
       brandColor: '#0284C7',
       logo: '',
       digitalSignature: '',

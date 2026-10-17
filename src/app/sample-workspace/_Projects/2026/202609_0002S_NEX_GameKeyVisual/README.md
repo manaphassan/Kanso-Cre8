@@ -1,6 +1,6 @@
 ---
 status: review
-designer: harusssani.manaphassan
+designer: alex.mercer
 client: NEX
 deadline: "2026-09-18"
 created: "2026-09-02"

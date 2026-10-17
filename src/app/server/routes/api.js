@@ -283,7 +283,7 @@ router.get('/projects', authenticateToken, (req, res) => {
 
 router.post('/projects', authenticateToken, (req, res) => {
   try {
-    const actor = (req.user && (req.user.name || req.user.username)) || 'harusssani.manaphassan';
+    const actor = (req.user && (req.user.name || req.user.username)) || 'creator';
     const result = WorkspaceService.scaffoldProject(req.body, actor);
     res.status(201).json(result);
   } catch (err) {

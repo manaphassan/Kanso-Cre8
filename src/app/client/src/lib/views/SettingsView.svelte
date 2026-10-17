@@ -698,23 +698,23 @@
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="business-reg-input">Business Reg No. / Tax ID (SSM, VAT, EIN, ABN)</label>
-              <input id="business-reg-input" type="text" class="form-input font-mono" bind:value={businessRegNo} placeholder="e.g. 202601004829 (LLP-9921)" />
+              <input id="business-reg-input" type="text" class="form-input font-mono" bind:value={businessRegNo} placeholder="e.g. 2026-ACME-0001" />
             </div>
             <div class="form-group">
               <label class="form-label" for="billing-email-input">Official Business &amp; Billing Email</label>
-              <input id="billing-email-input" type="email" class="form-input" bind:value={billingEmail} placeholder="e.g. billing@hana-innovation.com" />
+              <input id="billing-email-input" type="email" class="form-input" bind:value={billingEmail} placeholder="e.g. billing@example.com" />
             </div>
             <div class="form-group">
               <label class="form-label" for="address-input">Studio Location / Physical Atelier Base</label>
-              <input id="address-input" type="text" class="form-input" bind:value={studioAddress} placeholder="e.g. Kuala Lumpur, Malaysia" />
+              <input id="address-input" type="text" class="form-input" bind:value={studioAddress} placeholder="e.g. Metropolis, USA" />
             </div>
             <div class="form-group">
               <label class="form-label" for="website-input">Studio Website / Portfolio URL</label>
-              <input id="website-input" type="url" class="form-input font-mono" bind:value={website} placeholder="e.g. https://hana-innovation.com" />
+              <input id="website-input" type="url" class="form-input font-mono" bind:value={website} placeholder="e.g. https://example.com" />
             </div>
             <div class="form-group">
               <label class="form-label" for="phone-input">Direct Phone / WhatsApp / Telegram</label>
-              <input id="phone-input" type="tel" class="form-input font-mono" bind:value={phone} placeholder="e.g. +60 12-345 6789" />
+              <input id="phone-input" type="tel" class="form-input font-mono" bind:value={phone} placeholder="e.g. +1-555-0100" />
             </div>
             <div class="form-group">
               <label class="form-label" for="currency-select">Default Invoicing Currency</label>

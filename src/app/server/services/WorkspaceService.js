@@ -54,8 +54,8 @@ class WorkspaceService {
     console.log('[WorkspaceService] Seeding sample Kanso Cre8 project vaults...');
     const samples = [
       {
-        designer: 'harusssani.manaphassan',
-        designerName: 'Harusssani',
+        designer: 'alex.mercer',
+        designerName: 'Alex Mercer',
         year: '2026',
         month: '202609_September',
         folder: '202609_0001D_ACME_MobileAppIllustration',
@@ -82,8 +82,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: 'harusssani.manaphassan',
-        designerName: 'Harusssani',
+        designer: 'alex.mercer',
+        designerName: 'Alex Mercer',
         year: '2026',
         month: '202609_September',
         folder: '202609_0002S_NEX_GameKeyVisual',
@@ -110,8 +110,8 @@ class WorkspaceService {
         ]
       },
       {
-        designer: 'harusssani.manaphassan',
-        designerName: 'Harusssani',
+        designer: 'alex.mercer',
+        designerName: 'Alex Mercer',
         year: '2026',
         month: '202609_September',
         folder: '202609_0003P_LUM_BrandIdentity',
@@ -912,7 +912,7 @@ class WorkspaceService {
    *     ├── 05_DELIVERABLES/
    *     └── README.md (with YAML Frontmatter)
    */
-  scaffoldProject(options, actor = 'harusssani.manaphassan') {
+  scaffoldProject(options, actor = 'alex.mercer') {
     const title = (options.title || 'Untitled Project').trim();
     const clientCode = (options.clientCode || 'ACME').toUpperCase().trim();
     const clientName = options.clientName || clientCode;
@@ -957,7 +957,7 @@ class WorkspaceService {
     // Write README.md with YAML frontmatter
     const deadline = options.deadline || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
     const priority = options.priority || 'normal';
-    const designer = options.designer || 'harusssani.manaphassan';
+    const designer = options.designer || 'alex.mercer';
     const budget = Number(options.budget) || 0;
     const currency = options.currency || 'USD';
 
