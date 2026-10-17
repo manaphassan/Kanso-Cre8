@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { timerStore } from '$lib/stores/timerStore.svelte';
-  import { projectStore } from '$lib/stores/projectStore.svelte';
-  import { settingsStore } from '$lib/stores/settingsStore.svelte';
   import { Icon } from '$lib/components/ui';
 
   interface Props {
@@ -12,128 +9,151 @@
   }
 
   let { unbilledSuggestion, reviewSuggestion, deadlineSuggestion, wellnessSuggestion }: Props = $props();
+
+  const alerts = $derived.by(() => {
+    const list: Array<{ header: string; body: string; actionText?: string; actionHref?: string; icon: string; severity: string }> = [];
+    if (reviewSuggestion && reviewSuggestion.header !== 'Review Queue Clear') {
+      list.push({ ...reviewSuggestion, icon: 'alert', severity: 'warning' });
+    }
+    if (deadlineSuggestion && deadlineSuggestion.header === 'Approaching Milestone') {
+      list.push({ ...deadlineSuggestion, icon: 'calendar', severity: 'warning' });
+    }
+    if (unbilledSuggestion && (unbilledSuggestion.header === 'Live Billable Session' || unbilledSuggestion.header === 'Pending Receivables')) {
+      list.push({ ...unbilledSuggestion, icon: 'wallet', severity: 'info' });
+    }
+    if (list.length === 0) {
+      list.push({
+        ...(wellnessSuggestion || {
+          header: 'Focus & Cadence',
+          body: 'Mindful zen pacing. Take a 5-minute break between deep focus sessions.',
+          actionText: 'Tune Radio',
+          actionHref: '#radio'
+        }),
+        icon: 'sparkle',
+        severity: 'calm'
+      });
+    }
+    return list;
+  });
+
+  let activeIndex = $state(0);
+  const currentAlert = $derived(alerts[Math.min(activeIndex, alerts.length - 1)] || alerts[0]);
+
+  function nextAlert() {
+    activeIndex = (activeIndex + 1) % alerts.length;
+  }
 </script>
 
-<section class="suggestions-panel">
-  <div class="suggestions-header">
-    <div class="sugg-header-left">
-      <span class="bento-badge">CREATIVE OPERATIONS INTELLIGENCE</span>
-      <h3 class="suggestions-title">Smart Suggestions &amp; Studio Radar</h3>
-    </div>
+<aside class="suggestion-strip severity-{currentAlert.severity}" aria-label="Smart suggestions">
+  <div class="strip-left">
+    <span class="strip-icon"><Icon name={currentAlert.icon} size={14} /></span>
+    <span class="strip-label font-semibold">{currentAlert.header}</span>
+    <span class="strip-separator">·</span>
+    <span class="strip-body">{currentAlert.body}</span>
   </div>
 
-  <div class="suggestions-grid">
-    <!-- Unbilled -->
-    <div class="suggestion-card sky">
-      <div class="sugg-top">
-        <span class="sugg-chip sky">{unbilledSuggestion.header}</span>
-      </div>
-      <p class="sugg-body">{unbilledSuggestion.body}</p>
-      <a href={unbilledSuggestion.actionHref} class="sugg-action-btn">{unbilledSuggestion.actionText}</a>
-    </div>
-
-    <!-- Proofs -->
-    <div class="suggestion-card amber">
-      <div class="sugg-top">
-        <span class="sugg-chip amber">{reviewSuggestion.header}</span>
-      </div>
-      <p class="sugg-body">{reviewSuggestion.body}</p>
-      <a href={reviewSuggestion.actionHref} class="sugg-action-btn">{reviewSuggestion.actionText}</a>
-    </div>
-
-    <!-- Deadlines -->
-    <div class="suggestion-card {deadlineSuggestion.type}">
-      <div class="sugg-top">
-        <span class="sugg-chip {deadlineSuggestion.type}">{deadlineSuggestion.header}</span>
-      </div>
-      <p class="sugg-body">{deadlineSuggestion.body}</p>
-      <a href={deadlineSuggestion.actionHref} class="sugg-action-btn">{deadlineSuggestion.actionText}</a>
-    </div>
-
-    <!-- Wellness -->
-    <div class="suggestion-card teal">
-      <div class="sugg-top">
-        <span class="sugg-chip teal">{wellnessSuggestion.header}</span>
-      </div>
-      <p class="sugg-body">{wellnessSuggestion.body}</p>
-      <a href={wellnessSuggestion.actionHref} class="sugg-action-btn">{wellnessSuggestion.actionText}</a>
-    </div>
+  <div class="strip-right">
+    {#if alerts.length > 1}
+      <button class="strip-cycle-btn font-mono" onclick={nextAlert} title="Next suggestion" aria-label="Next suggestion">
+        {activeIndex + 1}/{alerts.length}
+      </button>
+    {/if}
+    {#if currentAlert.actionHref}
+      <a href={currentAlert.actionHref} class="strip-action-link">{currentAlert.actionText}</a>
+    {/if}
   </div>
-</section>
+</aside>
 
 <style>
-  .suggestions-panel {
+  .suggestion-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
     background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 24px;
+    border-radius: 6px;
     margin-bottom: 24px;
+    font-size: 13px;
+    min-height: 40px;
   }
-  .suggestions-header {
-    margin-bottom: 16px;
+  .suggestion-strip.severity-warning {
+    border-left: 3px solid var(--kanso-warning);
   }
-  .bento-badge {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+  .suggestion-strip.severity-info {
+    border-left: 3px solid var(--kanso-accent);
+  }
+  .suggestion-strip.severity-calm {
+    border-left: 3px solid var(--kanso-border);
+  }
+  .strip-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .strip-icon {
+    display: flex;
+    align-items: center;
     color: var(--kanso-accent);
+    flex-shrink: 0;
   }
-  .suggestions-title {
-    margin: 4px 0 0 0;
-    font-size: 16px;
-    font-weight: 700;
+  .severity-warning .strip-icon {
+    color: var(--kanso-warning);
+  }
+  .strip-label {
     color: var(--kanso-text-primary);
+    flex-shrink: 0;
   }
-  .suggestions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+  .strip-separator {
+    color: var(--kanso-text-muted);
   }
-  @media (max-width: 1024px) {
-    .suggestions-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .strip-body {
+    color: var(--kanso-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  @media (max-width: 600px) {
-    .suggestions-grid {
-      grid-template-columns: 1fr;
-    }
+  .strip-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
-  .suggestion-card {
+  .strip-cycle-btn {
     background: var(--kanso-canvas);
     border: 1px solid var(--kanso-border);
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .sugg-chip {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-  .sugg-chip.sky { background: var(--kanso-surface); color: var(--kanso-accent); border: 1px solid var(--kanso-border); }
-  .sugg-chip.amber { background: var(--kanso-surface); color: var(--kanso-warning); border: 1px solid var(--kanso-border); }
-  .sugg-chip.teal { background: var(--kanso-surface); color: var(--kanso-success); border: 1px solid var(--kanso-border); }
-  .sugg-chip.rose { background: var(--kanso-surface); color: var(--kanso-danger); border: 1px solid var(--kanso-border); }
-  .sugg-body {
-    margin: 0;
-    font-size: 12px;
     color: var(--kanso-text-muted);
-    line-height: 1.45;
-    flex: 1;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
   }
-  .sugg-action-btn {
+  .strip-cycle-btn:hover {
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
+  }
+  .strip-action-link {
     font-size: 12px;
     font-weight: 600;
     color: var(--kanso-accent);
     text-decoration: none;
-    margin-top: 4px;
+    white-space: nowrap;
   }
-  .sugg-action-btn:hover {
+  .strip-action-link:hover {
     text-decoration: underline;
+  }
+  @media (max-width: 768px) {
+    .suggestion-strip {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .strip-left {
+      white-space: normal;
+      flex-wrap: wrap;
+    }
   }
 </style>
