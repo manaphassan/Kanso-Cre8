@@ -5,6 +5,7 @@
  */
 
 import { settingsStore } from './settingsStore.svelte';
+import { ApiClient } from '../services/api';
 
 export interface TimeSessionLog {
   id: string;
@@ -91,6 +92,7 @@ class TimerStore {
   constructor() {
     this.loadTimeLogs();
     this.loadPersistedState();
+    this.syncFromMachine();
   }
 
   // --- AUDIO FEEDBACK (Tactile Mechanical Clicks) ---
@@ -155,6 +157,16 @@ class TimerStore {
     this.playMechanicalClick('start');
     this.startTicker();
     this.persistState();
+
+    // Sync to Machine tier
+    ApiClient.startTimer({
+      projectId: this.projectId,
+      projectTitle: this.projectTitle,
+      clientCode: this.clientCode,
+      hourlyRate: this.hourlyRate,
+      sessionNote: this.sessionNote,
+      accumulatedSeconds: this.accumulatedSeconds
+    }).catch(() => {});
   }
 
   pause() {
@@ -170,6 +182,7 @@ class TimerStore {
       this.tickerInterval = null;
     }
     this.persistState();
+    ApiClient.pauseTimer().catch(() => {});
   }
 
   resume() {
@@ -221,6 +234,7 @@ class TimerStore {
     this.sessionNote = '';
 
     this.clearPersistedState();
+    ApiClient.stopTimer({ appendToInvoice: true, note: log ? log.note : '' }).catch(() => {});
     return log;
   }
 
@@ -315,6 +329,38 @@ class TimerStore {
     } catch (e) {
       console.warn('[TimerStore] Load timer state warning:', e);
     }
+  }
+
+  async syncFromMachine() {
+    try {
+      const res = await ApiClient.getTimerState();
+      if (res && res.success && res.timer) {
+        const t = res.timer;
+        if (t.isRunning && t.startedAt) {
+          const liveElapsed = Math.floor((Date.now() - t.startedAt) / 1000) + (t.accumulatedSeconds || 0);
+          this.accumulatedSeconds = liveElapsed;
+          this.startTime = Date.now();
+          this.currentTickerSeconds = 0;
+          this.projectId = t.projectId || '';
+          this.projectTitle = t.projectTitle || '';
+          this.clientCode = t.clientCode || 'ACME';
+          this.hourlyRate = t.hourlyRate || 150;
+          this.sessionNote = t.sessionNote || '';
+          this.isPaused = false;
+          this.isRunning = true;
+          this.startTicker();
+        } else if (t.isPaused) {
+          this.accumulatedSeconds = t.accumulatedSeconds || 0;
+          this.projectId = t.projectId || '';
+          this.projectTitle = t.projectTitle || '';
+          this.clientCode = t.clientCode || 'ACME';
+          this.hourlyRate = t.hourlyRate || 150;
+          this.sessionNote = t.sessionNote || '';
+          this.isPaused = true;
+          this.isRunning = false;
+        }
+      }
+    } catch (_) {}
   }
 
   private clearPersistedState() {

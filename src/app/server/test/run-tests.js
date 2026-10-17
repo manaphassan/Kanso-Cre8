@@ -2963,6 +2963,85 @@ Layout balance principles.
     }
   });
 
+  // ─── TEST 58: TimerService Live Chronometer & Invoice Append ──────────
+  await test('TimerService persists live state in Machine tier and appends session to draft invoice on stop', () => {
+    const TimerService = require('../services/TimerService');
+    const ConfigService = require('../services/ConfigService');
+
+    const testWs = path.join(__dirname, 'temp-timer-workspace-test');
+    if (fs.existsSync(testWs)) fs.rmSync(testWs, { recursive: true, force: true });
+    fs.mkdirSync(path.join(testWs, '_Finance', 'Invoices'), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testWs;
+    WorkspaceService.workspaceRoot = testWs;
+
+    try {
+      // 1. Reset timer to clean baseline
+      TimerService.reset();
+      const initial = TimerService.getState();
+      assert.strictEqual(initial.isRunning, false);
+      assert.strictEqual(initial.startedAt, null);
+
+      // 2. Start timer
+      const started = TimerService.start({
+        projectId: '202609_0001D_ACME_MobileAppIllustration',
+        projectTitle: 'Mobile App 3D Assets',
+        clientCode: 'ACME',
+        hourlyRate: 150,
+        sessionNote: 'Isometric icon rendering',
+        accumulatedSeconds: 1800 // Pre-bank 30 mins for test
+      });
+
+      assert.strictEqual(started.isRunning, true);
+      assert.ok(typeof started.startedAt === 'number');
+
+      // 3. Verify state persisted in Machine tier (app.json) and NOT in vault
+      const machineTimer = ConfigService.machine.get('timer');
+      assert.ok(machineTimer, 'Timer state must be in Machine tier');
+      assert.strictEqual(machineTimer.isRunning, true);
+      assert.strictEqual(machineTimer.startedAt, started.startedAt);
+
+      const forbiddenVaultTimer = path.join(testWs, '_Team', '_Config', 'timer.json');
+      assert.strictEqual(fs.existsSync(forbiddenVaultTimer), false, 'Vault _Team/_Config/timer.json must never exist');
+
+      // 4. Verify elapsed time calculation from startedAt
+      const state = TimerService.getState();
+      assert.ok(state.elapsedSeconds >= 1800, 'Elapsed seconds must include accumulated and live time');
+      assert.ok(state.earnedAmount >= 75, 'Earned amount must be calculated from elapsed hours * rate');
+
+      // 5. Pause and resume
+      const paused = TimerService.pause();
+      assert.strictEqual(paused.isRunning, false);
+      assert.strictEqual(paused.isPaused, true);
+      assert.strictEqual(paused.startedAt, null);
+      assert.ok(paused.accumulatedSeconds >= 1800);
+
+      const resumed = TimerService.resume();
+      assert.strictEqual(resumed.isRunning, true);
+      assert.strictEqual(resumed.isPaused, false);
+      assert.ok(typeof resumed.startedAt === 'number');
+
+      // 6. Stop timer and append to invoice
+      const stopResult = TimerService.stop({ appendToInvoice: true, note: 'Final sprint sign-off' });
+      assert.strictEqual(stopResult.success, true);
+      assert.ok(stopResult.sessionLog, 'Session log must be generated');
+      assert.strictEqual(stopResult.sessionLog.appendedToInvoice, true);
+      assert.ok(stopResult.invoice, 'Draft invoice must be updated/created');
+      assert.ok(stopResult.invoice.documentNumber);
+
+      // Verify machine state reset after stop
+      const afterStopMachine = ConfigService.machine.get('timer');
+      assert.strictEqual(afterStopMachine.isRunning, false);
+      assert.strictEqual(afterStopMachine.startedAt, null);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);
