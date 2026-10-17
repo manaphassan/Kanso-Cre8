@@ -353,7 +353,7 @@
                 <div class="inc-title">
                   <span>Approved Copywriting (COPY.md)</span>
                 </div>
-                <p class="inc-desc">Includes approved headlines, taglines, legal fine print, and localized translations from <code>03_COPYWRITING/</code>.</p>
+                <p class="inc-desc">Includes approved headlines, taglines, legal fine print, and localized translations from <code>03_COPY/</code>.</p>
               </div>
             </label>
 

@@ -1206,7 +1206,7 @@ class WorkspaceService {
     const validSubfolders = [
       '01_BRIEF', '01_BRIEF_ASSETS',
       '02_SOURCE', '02_SOURCE_FILES',
-      '03_COPY', '03_COPYWRITING',
+      '03_COPY',
       '04_WIP', '04_WORK_IN_PROGRESS',
       '05_DELIVERABLES'
     ];

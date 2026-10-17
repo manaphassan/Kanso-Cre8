@@ -1093,7 +1093,7 @@
           <ul class="subfolder-list">
             <li><code>01_BRIEF_ASSETS/</code></li>
             <li><code>02_SOURCE_FILES/</code></li>
-            <li><code>03_COPYWRITING/</code> (including COPY.md)</li>
+            <li><code>03_COPY/</code> (including COPY.md)</li>
             <li><code>04_WORK_IN_PROGRESS/</code></li>
             <li><code>05_DELIVERABLES/</code> (all exported mockups and files)</li>
           </ul>

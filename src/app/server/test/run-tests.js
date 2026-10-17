@@ -380,7 +380,7 @@ This is the project brief content.
     assert.ok(Array.isArray(notifs), 'Notifications must return an array');
   });
 
-  // ─── TEST 15: CopywritingService & 03_COPYWRITING/COPY.md ───────────
+  // ─── TEST 15: CopywritingService & 03_COPY/COPY.md ─────────────────
   test('CopywritingService reads, auto-scaffolds templates, and saves COPY.md on NAS', () => {
     const CopywritingService = require('../services/CopywritingService');
     const testDir = path.join(__dirname, 'temp-test-copywriting-dir');
@@ -389,7 +389,7 @@ This is the project brief content.
     const copyData = CopywritingService.getCopywriting(testDir, '0085D', 'Rejal Premium Packaging');
     assert.ok(copyData.body, 'Must return non-empty copywriting markdown body');
     assert.ok(copyData.stats.words > 0, 'Must compute word count');
-    assert.ok(copyData.filePath.includes('03_COPYWRITING') || copyData.filePath.includes('COPY.md'), 'Must resolve copy file path');
+    assert.ok(copyData.filePath.includes('03_COPY') || copyData.filePath.includes('COPY.md'), 'Must resolve copy file path');
 
     // Test saving custom markdown copy
     const customCopy = '# Updated Video Script Hook\n\n- Hook 1: Raw Honey vitality test';
@@ -407,7 +407,7 @@ This is the project brief content.
     const projectDir = path.join(testDir, '2026', '202608_August', '202608_9999D_SS_Temp_Test_Project');
     const sub1 = path.join(projectDir, '01_BRIEF_ASSETS');
     const sub2 = path.join(projectDir, '02_SOURCE_FILES');
-    const sub3 = path.join(projectDir, '03_COPYWRITING');
+    const sub3 = path.join(projectDir, '03_COPY');
     const sub4 = path.join(projectDir, '04_WORK_IN_PROGRESS');
     const sub5 = path.join(projectDir, '05_DELIVERABLES');
 
@@ -518,7 +518,7 @@ This is the project brief content.
     const testDir = path.join(__dirname, 'temp-deliv-test-project');
     const delivDir = path.join(testDir, '05_DELIVERABLES');
     const prodDir = path.join(testDir, '04_Production');
-    const copyDir = path.join(testDir, '03_COPYWRITING');
+    const copyDir = path.join(testDir, '03_COPY');
     const srcDir = path.join(testDir, '02_SOURCE_FILES');
 
     fs.mkdirSync(delivDir, { recursive: true });
@@ -566,7 +566,7 @@ This is the project brief content.
     const ExportService = require('../services/ExportService');
     const testDir = path.join(__dirname, 'temp-export-project-runtime');
     const delivDir = path.join(testDir, '05_DELIVERABLES');
-    const copyDir = path.join(testDir, '03_COPYWRITING');
+    const copyDir = path.join(testDir, '03_COPY');
 
     fs.mkdirSync(delivDir, { recursive: true });
     fs.mkdirSync(copyDir, { recursive: true });
@@ -604,7 +604,7 @@ This is the project brief content.
     const CommentService = require('../services/CommentService');
     const testDir = path.join(__dirname, 'temp-proof-project-runtime');
     const delivDir = path.join(testDir, '05_DELIVERABLES');
-    const copyDir = path.join(testDir, '03_COPYWRITING');
+    const copyDir = path.join(testDir, '03_COPY');
 
     fs.mkdirSync(delivDir, { recursive: true });
     fs.mkdirSync(copyDir, { recursive: true });
@@ -904,7 +904,7 @@ This is the project brief content.
     const SnapshotService = require('../services/SnapshotService');
     const testDir = path.join(__dirname, 'temp-snapshot-workspace');
     const projDir = path.join(testDir, '2026', '202608_August', '202608_0088D_SS_Snapshot_Test');
-    const copyDir = path.join(projDir, '03_COPYWRITING');
+    const copyDir = path.join(projDir, '03_COPY');
     fs.mkdirSync(copyDir, { recursive: true });
 
     // Initial state: Rev 1

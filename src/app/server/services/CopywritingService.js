@@ -7,11 +7,11 @@ const WorkspaceService = require('./WorkspaceService');
 class CopywritingService {
   /**
    * Resolves the copywriting file path for a project.
-   * Priority: <projectPath>/03_COPYWRITING/COPY.md -> fallback: <projectPath>/COPY.md -> fallback: _Team/copywriting/<id>.md
+   * Priority: <projectPath>/03_COPY/COPY.md -> fallback: <projectPath>/COPY.md -> fallback: _Team/copywriting/<id>.md
    */
   static getCopyFilePath(projectPath, projectId) {
     if (projectPath && fs.existsSync(projectPath)) {
-      const dir03 = path.join(projectPath, '03_COPYWRITING');
+      const dir03 = path.join(projectPath, '03_COPY');
       if (!fs.existsSync(dir03)) {
         try {
           fs.mkdirSync(dir03, { recursive: true });
@@ -36,16 +36,16 @@ class CopywritingService {
    * Default template for copywriting
    */
   static getDefaultTemplate(projectTitle = 'Project Copywriting') {
-    return `# ✍️ Copywriting & Script Studio: ${projectTitle}
+    return `# Copywriting & Script Studio: ${projectTitle}
 
-## 🎯 Target Audience & Hook Strategy
+## Target Audience & Hook Strategy
 - **Core Demographic**: Men aged 28-55 seeking high performance, energy, and vitality.
 - **Tone of Voice**: Masculine, Authoritative, Trustworthy, Premium Medical.
 - **Primary Angle**: Clinically proven vitality formulation with 100% pure authentic ingredients.
 
 ---
 
-## 📢 Meta Ad Creative Copy Variants
+## Meta Ad Creative Copy Variants
 
 ### Angle 1: Direct Benefit & Authority
 > **Headline**: "Rahsia Tenaga Lelaki Sejati Kini Terbongkar — 100% Asli Tanpa Kompromi."
@@ -59,7 +59,7 @@ class CopywritingService {
 
 ---
 
-## 🎬 TikTok / Reels Video Script (9:16)
+## Video Script (9:16)
 
 | Scene | Visual / On-Screen Action | Audio / Voiceover (Malay) |
 | :--- | :--- | :--- |
@@ -70,7 +70,7 @@ class CopywritingService {
 
 ---
 
-## 📦 Packaging & Label Compliance Claims
+## Packaging & Label Compliance Claims
 - [x] Tiada bahan kimia terlarang / No banned substances
 - [x] Halal certified extraction process
 - [x] Standard dos harian: 1 sudu setiap pagi sebelum sarapan
