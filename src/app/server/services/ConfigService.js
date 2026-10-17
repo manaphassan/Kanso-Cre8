@@ -491,6 +491,27 @@ class ConfigService {
       }
     }
 
+    // 5. Retire global _Team/comments/ directory
+    const teamCommentsDir = path.join(vaultRoot, '_Team', 'comments');
+    if (fs.existsSync(teamCommentsDir)) {
+      try {
+        const commentFiles = fs.readdirSync(teamCommentsDir);
+        for (const file of commentFiles) {
+          const filePath = path.join(teamCommentsDir, file);
+          const stat = fs.statSync(filePath);
+          if (stat.isFile() && stat.size > 0) {
+            const dest = path.join(backupDir, `comments_${file}.migrated.bak`);
+            fs.copyFileSync(filePath, dest);
+            backups.push(dest);
+          }
+        }
+        fs.rmSync(teamCommentsDir, { recursive: true, force: true });
+        actions.push('Retired global _Team/comments/ directory; comments relocated to project _review.md');
+      } catch (err) {
+        errors.push(`Failed to retire _Team/comments/: ${err.message}`);
+      }
+    }
+
     return {
       success: errors.length === 0,
       actions,

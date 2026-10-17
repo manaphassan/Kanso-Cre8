@@ -61,6 +61,14 @@ class ApprovalService {
     // Save atomically back to README.md
     FrontmatterService.writeProjectReadme(project.fullPath, updatedFm, body);
 
+    // Also record decision in project _review.md
+    try {
+      const CommentService = require('./CommentService');
+      CommentService.addApproval(project.fullPath, project.jobId || project.id, approvalRecord);
+    } catch (err) {
+      console.warn('[ApprovalService] Failed to record approval in _review.md:', err.message);
+    }
+
     // Audit log
     AuditService.logEvent({
       actor: reviewer,
@@ -271,6 +279,18 @@ ${tableRows}
     } catch (err) {
       console.error('[ApprovalService] Error stamping APPROVAL.md:', err.message);
       return null;
+    }
+  }
+
+  /**
+   * Retrieves approval history from project _review.md.
+   */
+  static getApprovals(projectPath, projectId) {
+    try {
+      const CommentService = require('./CommentService');
+      return CommentService.getApprovals(projectPath, projectId);
+    } catch (_) {
+      return [];
     }
   }
 }
