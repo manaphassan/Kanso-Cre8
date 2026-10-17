@@ -1,0 +1,9 @@
+{
+  "theme": "light",
+  "default_project_view": "kanban",
+  "density": "comfortable",
+  "hourly_rate": 150,
+  "currency": "USD",
+  "radio_favorites": [],
+  "pomodoro_minutes": 25
+}

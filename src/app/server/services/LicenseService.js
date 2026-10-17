@@ -27,9 +27,17 @@ class LicenseService {
   }
 
   /**
-   * Reads raw license string from disk.
+   * Reads raw license string from vault config (license.json) or legacy license.key.
    */
   static getRawLicenseKey() {
+    try {
+      const ConfigService = require('./ConfigService');
+      const licData = ConfigService.vault.get('license');
+      if (licData && licData.licenseKey) {
+        return String(licData.licenseKey).trim();
+      }
+    } catch (_) {}
+
     const filePath = this.getLicensePath();
     if (!fs.existsSync(filePath)) {
       return null;
@@ -241,8 +249,22 @@ class LicenseService {
       throw new Error(verification.error || 'Invalid license key.');
     }
 
-    const filePath = this.getLicensePath();
-    fs.writeFileSync(filePath, rawKey.trim(), 'utf8');
+    try {
+      const ConfigService = require('./ConfigService');
+      ConfigService.vault.set('license', {
+        active: true,
+        tier: verification.tier || 'pro',
+        licenseKey: rawKey.trim(),
+        issuedTo: verification.licensee || 'Studio User'
+      });
+    } catch (err) {
+      console.warn('[LicenseService] Warning setting vault license.json:', err.message);
+    }
+
+    try {
+      const filePath = this.getLicensePath();
+      fs.writeFileSync(filePath, rawKey.trim(), 'utf8');
+    } catch (_) {}
 
     return {
       success: true,
@@ -255,9 +277,19 @@ class LicenseService {
   }
 
   /**
-   * Deactivates the current license by purging license.key.
+   * Deactivates the current license by purging license state.
    */
   static deactivateLicense() {
+    try {
+      const ConfigService = require('./ConfigService');
+      ConfigService.vault.set('license', {
+        active: false,
+        tier: 'zen',
+        licenseKey: null,
+        issuedTo: 'Solo Creator'
+      });
+    } catch (_) {}
+
     const filePath = this.getLicensePath();
     if (fs.existsSync(filePath)) {
       try {

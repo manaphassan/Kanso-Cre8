@@ -19,6 +19,8 @@ app.json
 *.jks
 license.key
 **/license.key
+license.json
+**/license.json
 user_passwords.json
 **/user_passwords.json
 

@@ -27,12 +27,7 @@ class TeamService {
     ];
 
     if (!fs.existsSync(rosterPath)) {
-      try {
-        fs.writeFileSync(rosterPath, JSON.stringify(defaultTeam, null, 2), 'utf8');
-        return defaultTeam;
-      } catch (err) {
-        return defaultTeam;
-      }
+      return defaultTeam;
     }
 
     try {
