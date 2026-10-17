@@ -23,7 +23,9 @@
   <div class="radio-drawer-backdrop" onclick={onclose} role="presentation">
     <div
       class="radio-drawer-panel"
+      tabindex="-1"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.key === 'Escape' && onclose()}
       role="dialog"
       aria-modal="true"
       aria-label="Focus Radio Cassette Deck"

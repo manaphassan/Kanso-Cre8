@@ -319,7 +319,8 @@
         class:active={isAnnotateMode}
         onclick={toggleAnnotateMode}
         disabled={readOnly}
-      >
+      
+        aria-label="Toggle annotation mode">
         <Icon name="pin" size={14} />
         <span style="margin-left: 6px;">{isAnnotateMode ? 'Annotation Mode: Active' : (mediaType === 'video' ? 'Click Frame to Pin' : 'Drop Feedback Pin')}</span>
       </button>
@@ -522,7 +523,7 @@
                   <span class="timecode-pill">⏱️ {pendingPin.timecodeFormatted}</span>
                 {/if}
               </div>
-              <button type="button" class="close-composer-btn" onclick={cancelPendingPin} title="Cancel">
+              <button type="button" class="close-composer-btn" onclick={cancelPendingPin} title="Cancel" aria-label="Cancel annotation pin">
                 <Icon name="close" size={14} />
               </button>
             </div>
@@ -574,7 +575,8 @@
           class="play-btn"
           onclick={togglePlayPause}
           title={isVideoPlaying ? 'Pause Video' : 'Play Video'}
-        >
+        
+        aria-label="Play or pause video">
           {#if isVideoPlaying}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
           {:else}

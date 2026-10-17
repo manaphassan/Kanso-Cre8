@@ -602,8 +602,9 @@
             <!-- Doc Number, Type, Status & Currency -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">Number</label>
+                <label for="inv-doc-number" class="text-xs font-semibold text-muted-foreground uppercase">Number</label>
                 <input
+                  id="inv-doc-number"
                   type="text"
                   bind:value={activeDoc.documentNumber}
                   oninput={persistActiveDoc}
@@ -612,8 +613,9 @@
               </div>
 
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">Doc Type</label>
+                <label for="inv-doc-type" class="text-xs font-semibold text-muted-foreground uppercase">Doc Type</label>
                 <select
+                  id="inv-doc-type"
                   bind:value={activeDoc.type}
                   onchange={persistActiveDoc}
                   class="w-full px-2 py-1.5 rounded-md border border-border bg-background text-foreground focus:outline-none focus:border-primary"
@@ -624,8 +626,9 @@
               </div>
 
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">Status</label>
+                <label for="inv-doc-status" class="text-xs font-semibold text-muted-foreground uppercase">Status</label>
                 <select
+                  id="inv-doc-status"
                   bind:value={activeDoc.status}
                   onchange={persistActiveDoc}
                   class="w-full px-2 py-1.5 rounded-md border border-border bg-background text-foreground font-medium focus:outline-none focus:border-primary"
@@ -644,8 +647,9 @@
               </div>
 
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">Currency</label>
+                <label for="inv-doc-currency" class="text-xs font-semibold text-muted-foreground uppercase">Currency</label>
                 <select
+                  id="inv-doc-currency"
                   bind:value={activeDoc.currency}
                   onchange={() => { recalcTotals(); persistActiveDoc(); }}
                   class="w-full px-2 py-1.5 rounded-md border border-border bg-background text-foreground font-mono text-xs focus:outline-none focus:border-primary"
@@ -659,8 +663,9 @@
 
             <!-- Client Picker -->
             <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground uppercase">Assign Client</label>
+              <label for="inv-doc-client" class="text-xs font-semibold text-muted-foreground uppercase">Assign Client</label>
               <select
+                id="inv-doc-client"
                 value={activeDoc.clientCode}
                 onchange={handleClientSelect}
                 class="w-full px-2.5 py-1.5 rounded-md border border-border bg-background text-foreground font-semibold focus:outline-none focus:border-primary"
@@ -674,8 +679,9 @@
             <!-- Dates -->
             <div class="grid grid-cols-2 gap-2">
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">Issue Date</label>
+                <label for="inv-doc-issue-date" class="text-xs font-semibold text-muted-foreground uppercase">Issue Date</label>
                 <input
+                  id="inv-doc-issue-date"
                   type="date"
                   bind:value={activeDoc.date}
                   onchange={persistActiveDoc}
@@ -683,10 +689,11 @@
                 />
               </div>
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase">
+                <label for="inv-doc-due-date" class="text-xs font-semibold text-muted-foreground uppercase">
                   {activeDoc.type === 'quote' ? 'Valid Until' : 'Payment Due Date'}
                 </label>
                 <input
+                  id="inv-doc-due-date"
                   type="date"
                   bind:value={activeDoc.dueDate}
                   onchange={persistActiveDoc}
@@ -787,8 +794,9 @@
 
               <div class="grid grid-cols-3 gap-2 pt-1">
                 <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase">Tax Label</label>
+                  <label for="inv-tax-label" class="text-xs font-semibold text-muted-foreground uppercase">Tax Label</label>
                   <input
+                    id="inv-tax-label"
                     type="text"
                     bind:value={activeDoc.taxLabel}
                     oninput={persistActiveDoc}
@@ -797,8 +805,9 @@
                   />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase">Rate (%)</label>
+                  <label for="inv-tax-rate" class="text-xs font-semibold text-muted-foreground uppercase">Rate (%)</label>
                   <input
+                    id="inv-tax-rate"
                     type="number"
                     bind:value={activeDoc.taxRatePercent}
                     oninput={() => { recalcTotals(); persistActiveDoc(); }}
@@ -806,8 +815,9 @@
                   />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase">Rate Ref</label>
+                  <label for="inv-tax-ref" class="text-xs font-semibold text-muted-foreground uppercase">Rate Ref</label>
                   <input
+                    id="inv-tax-ref"
                     type="number"
                     bind:value={activeDoc.hourlyRate}
                     oninput={persistActiveDoc}
@@ -837,8 +847,9 @@
                 <div class="space-y-2 pt-2 text-xs">
                   <div class="grid grid-cols-2 gap-2">
                     <div class="space-y-1">
-                      <label class="font-semibold text-muted-foreground">Studio TIN (e.g. LHDN)</label>
+                      <label for="inv-studio-tin" class="font-semibold text-muted-foreground">Studio TIN (e.g. LHDN)</label>
                       <input
+                        id="inv-studio-tin"
                         type="text"
                         bind:value={activeDoc.tin}
                         oninput={persistActiveDoc}
@@ -847,8 +858,9 @@
                       />
                     </div>
                     <div class="space-y-1">
-                      <label class="font-semibold text-muted-foreground">Studio SST No</label>
+                      <label for="inv-studio-sst" class="font-semibold text-muted-foreground">Studio SST No</label>
                       <input
+                        id="inv-studio-sst"
                         type="text"
                         bind:value={activeDoc.sstRegistrationNo}
                         oninput={persistActiveDoc}
@@ -860,8 +872,9 @@
 
                   <div class="grid grid-cols-2 gap-2">
                     <div class="space-y-1">
-                      <label class="font-semibold text-muted-foreground">Buyer TIN</label>
+                      <label for="inv-buyer-tin" class="font-semibold text-muted-foreground">Buyer TIN</label>
                       <input
+                        id="inv-buyer-tin"
                         type="text"
                         bind:value={activeDoc.buyerTin}
                         oninput={persistActiveDoc}
@@ -870,8 +883,9 @@
                       />
                     </div>
                     <div class="space-y-1">
-                      <label class="font-semibold text-muted-foreground">Buyer SST No</label>
+                      <label for="inv-buyer-sst" class="font-semibold text-muted-foreground">Buyer SST No</label>
                       <input
+                        id="inv-buyer-sst"
                         type="text"
                         bind:value={activeDoc.buyerSstNo}
                         oninput={persistActiveDoc}
@@ -886,10 +900,11 @@
 
             <!-- Notes & Terms Details -->
             <div class="space-y-1 pt-2 border-t border-border">
-              <label class="text-xs font-semibold text-muted-foreground uppercase">
+              <label for="inv-doc-notes" class="text-xs font-semibold text-muted-foreground uppercase">
                 {activeDoc.type === 'quote' ? 'Proposal Validity & Revision Terms' : 'Payment Terms & Notes'}
               </label>
               <textarea
+                id="inv-doc-notes"
                 bind:value={activeDoc.notes}
                 rows="2"
                 oninput={persistActiveDoc}
@@ -1565,7 +1580,7 @@
     margin: 12mm 15mm;
   }
   @media print {
-    body {
+    :global(body) {
       background: var(--kanso-surface) !important;
     }
     .invoice-paper-card {

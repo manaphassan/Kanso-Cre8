@@ -116,7 +116,7 @@
             <p class="modal-sub">Audit-backed revision milestones for <b>{projectTitle || projectId}</b>.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal} title="Close Modal">
+        <button class="close-btn" onclick={closeModal} title="Close modal" aria-label="Close dialog">
           <Icon name="close" size={16} />
         </button>
       </div>

@@ -413,7 +413,8 @@
             onclick={copyDownloadLink} 
             disabled={!downloadUrl || selectedDeliverables.length === 0}
             title="Copy direct API download link for client sharing"
-          >
+          
+        aria-label="Copy download link">
             <Icon name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
             <span>{linkCopied ? 'Link copied' : 'Copy link'}</span>
           </button>

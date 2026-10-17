@@ -884,7 +884,8 @@
           class="batch-btn batch-approve-btn"
           disabled={isBatchOperating}
           onclick={handleBatchApprove}
-        >
+        
+        aria-label="Batch approve deliverables">
           <Icon name="check" size={13} />
           <span>{isBatchOperating ? 'Approving...' : 'Batch Approve'}</span>
         </button>
@@ -894,7 +895,8 @@
           class="batch-btn batch-revision-btn"
           disabled={isBatchOperating}
           onclick={handleBatchRevision}
-        >
+        
+        aria-label="Batch request revision">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>

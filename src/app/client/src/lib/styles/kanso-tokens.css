@@ -978,3 +978,15 @@ svg {
   border-radius: 9999px !important;
 }
 
+
+/* ═══════════ ACCESSIBLE FOCUS RINGS (KANSO ACCENT) ═══════════ */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--kanso-accent) !important;
+  outline-offset: 2px !important;
+}

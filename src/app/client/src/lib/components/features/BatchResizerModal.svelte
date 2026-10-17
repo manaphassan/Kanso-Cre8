@@ -261,7 +261,7 @@
             <p class="modal-sub">Generate social-ready multi-format packs (1:1, 9:16, 16:9, 4:5, 1.91:1) in WebP, PNG, or JPEG with ambient blur or watermark security.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal} title="Close Modal">
+        <button class="close-btn" onclick={closeModal} title="Close modal" aria-label="Close dialog">
           <Icon name="close" size={16} />
         </button>
       </div>

@@ -232,7 +232,7 @@
             <p class="modal-sub">Direct Gemini 1.5 Pro / Flash generator &amp; Gemini Ultra prompt packager.</p>
           </div>
         </div>
-        <button class="close-btn" onclick={closeModal} title="Close Modal">
+        <button class="close-btn" onclick={closeModal} title="Close modal" aria-label="Close dialog">
           <Icon name="close" size={16} />
         </button>
       </div>
