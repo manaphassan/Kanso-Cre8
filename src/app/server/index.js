@@ -19,7 +19,26 @@ app.use(compression({
   }
 }));
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+  'tauri://localhost',
+  'http://tauri.localhost',
+  'https://tauri.localhost'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy: Access denied for origin ' + origin));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
