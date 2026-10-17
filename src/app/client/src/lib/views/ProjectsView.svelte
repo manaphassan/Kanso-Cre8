@@ -10,8 +10,7 @@
   import Dialog from '$lib/components/ui/Dialog.svelte';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { clientService } from '$lib/services/clientService';
-  import { licenseStore } from '$lib/stores/licenseStore.svelte';
-  import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
+    import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
   import type { ClientProfile } from '$lib/types/kanso';
 
   type ViewMode = 'kanban' | 'table';
@@ -69,10 +68,6 @@
   }
 
   function openNewProjectModal() {
-    if (!licenseStore.isPro && projectStore.projects.length >= 2) {
-      licenseStore.requirePro('Unlimited 5-Folder Project Scaffolding');
-      return;
-    }
     clientsList = clientService.getClients();
     if (clientsList.length > 0 && !clientsList.some(c => c.code === npClientCode)) {
       npClientCode = clientsList[0].code;

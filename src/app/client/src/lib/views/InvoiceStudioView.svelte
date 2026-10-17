@@ -3,8 +3,7 @@
   import { financeService } from '../services/financeService';
   import { clientService } from '../services/clientService';
   import { studioService } from '../services/studioService.svelte';
-  import { licenseStore } from '../stores/licenseStore.svelte';
-  import { settingsStore, SUPPORTED_CURRENCIES, getCurrencySymbol } from '../stores/settingsStore.svelte';
+    import { settingsStore, SUPPORTED_CURRENCIES, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import { appState } from '../stores/appState.svelte';
   import ScopeTemplateModal from '../components/features/ScopeTemplateModal.svelte';
   import { Icon } from '$lib/components/ui';
@@ -95,10 +94,6 @@
 
   function handleDownloadHtml() {
     if (!activeDoc) return;
-    if (!licenseStore.isPro) {
-      licenseStore.requirePro('Standalone HTML Export');
-      return;
-    }
     const url = `/api/finance/${activeDoc.type}/${activeDoc.documentNumber}/export-html`;
     const a = document.createElement('a');
     a.href = url;
@@ -217,10 +212,6 @@
   }
 
   function createNewInvoice() {
-    if (!licenseStore.isPro) {
-      licenseStore.requirePro('Custom YAML Invoices');
-      return;
-    }
     const defaultClient = clients[0] || {
       code: 'ACME',
       name: 'Acme Corporation',
@@ -283,10 +274,6 @@
   }
 
   function createNewQuote() {
-    if (!licenseStore.isPro) {
-      licenseStore.requirePro('Dual-Pane Quotes Studio');
-      return;
-    }
     const defaultClient = clients.find(c => c.code === 'NEX') || clients[0] || {
       code: 'NEX',
       name: 'Nexus Studio',
@@ -389,10 +376,6 @@
   }
 
   function triggerPrint() {
-    if (!licenseStore.isPro) {
-      licenseStore.requirePro('Print-Ready PDF Generation');
-      return;
-    }
     window.print();
   }
 

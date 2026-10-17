@@ -218,13 +218,10 @@ class LicenseStore {
   }
 
   /**
-   * Checks if an action is allowed, or prompts upgrade modal if Pro is required
+   * Checks if an action is allowed. Gating clutter outside Settings > About has been removed.
    */
-  public requirePro(featureName: string): boolean {
-    if (this.isPro) return true;
-    appState.addToast(`${featureName} requires Kanso Studio Pro.`, 'warning');
-    this.showUpgradeModal = true;
-    return false;
+  public requirePro(_featureName?: string): boolean {
+    return true;
   }
 }
 
