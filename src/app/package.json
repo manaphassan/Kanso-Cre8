@@ -39,7 +39,7 @@
     "invoicing",
     "markdown"
   ],
-  "author": "harusssani.manaphassan",
+  "author": "Kanso Cre8 Team",
   "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",

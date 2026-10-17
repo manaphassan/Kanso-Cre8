@@ -1,6 +1,6 @@
 ---
 status: in-progress
-designer: harusssani.manaphassan
+designer: alex.mercer
 client: ACME
 deadline: "2026-09-23"
 created: "2026-09-01"

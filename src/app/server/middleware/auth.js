@@ -160,7 +160,7 @@ function getUserPermissions(user) {
 
 // Initial Users Directory
 const SYSTEM_USERS = [
-  { id: 'ACME001', username: 'harussani', name: 'Harussani', email: 'harussani@acme.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'ACME001', department: 'Creative Production' },
+  { id: 'ACME001', username: 'alex', name: 'Alex Mercer', email: 'alex@example.com', role: 'Administrator, Designer', roles: ['Administrator', 'Designer'], staffId: 'ACME001', department: 'Creative Production' },
   { id: 'NEX002', username: 'alex', name: 'Alex Vance', email: 'alex@nexusstudio.io', role: 'Designer', roles: ['Designer'], staffId: 'NEX002', department: 'Multimedia & Motion' },
   { id: 'LUM003', username: 'elena', name: 'Elena Rostova', email: 'elena@luminalabs.dev', role: 'Manager', roles: ['Manager'], staffId: 'LUM003', department: 'Research & Strategy' },
   { id: 'ACME004', username: 'marcus', name: 'Marcus Brody', email: 'marcus@acme.com', role: 'Copywriter', roles: ['Copywriter'], staffId: 'ACME004', department: 'Content & Copy' },
@@ -194,7 +194,7 @@ function verifyUserPassword(username, password) {
   const passwords = getStoredPasswords();
   
   const defaultPasswords = {
-    'harussani': 'kanso123',
+    'alex': 'kanso123',
     'admin': 'admin123'
   };
 
@@ -243,9 +243,9 @@ function generateToken(user) {
 
 const DEFAULT_DESKTOP_USER = {
   id: 'ACME001',
-  username: 'harussani',
-  name: 'Harussani',
-  email: 'harussani@acme.com',
+  username: 'alex',
+  name: 'Alex Mercer',
+  email: 'alex@example.com',
   role: 'Art Director / Administrator',
   roles: ['Administrator', 'Designer'],
   staffId: 'ACME001',

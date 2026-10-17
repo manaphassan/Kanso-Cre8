@@ -223,14 +223,14 @@ class ExportService {
     const totalSizeFormatted = this.formatBytes(totalBytes);
     const clientName = client?.name || frontmatter.client_name || frontmatter.client || 'Acme Corporation';
     const clientCode = client?.code || frontmatter.client || 'ACME';
-    const studioName = studio?.name || studio?.studioName || 'HaNa Innovation';
-    const principalName = studio?.freelancer_name || studio?.principalName || 'Harussani';
-    const registrationNo = studio?.registration_no || studio?.businessRegNo || '202601004829';
+    const studioName = studio?.name || studio?.studioName || 'Acme Design Studio';
+    const principalName = studio?.freelancer_name || studio?.principalName || 'Alex Mercer';
+    const registrationNo = studio?.registration_no || studio?.businessRegNo || '2026-ACME-0001';
     const billingEmail = studio?.email || studio?.billingEmail || 'billing@example.com';
-    const bankName = studio?.remittance?.bank_name || studio?.paymentBank || 'Maybank';
-    const accountNo = studio?.remittance?.account_no || studio?.paymentAccountNo || '5140-1234-5678';
+    const bankName = studio?.remittance?.bank_name || studio?.paymentBank || 'Acme Federal Bank';
+    const accountNo = studio?.remittance?.account_no || studio?.paymentAccountNo || '0000-0000-0000';
     const accountHolder = studio?.remittance?.account_holder || studio?.paymentAccountName || studioName;
-    const swiftOrDuitNow = studio?.remittance?.duitnow_id || studio?.remittance?.swift_code || studio?.paymentSwiftOrQr || 'MBBEMYKL';
+    const swiftOrDuitNow = studio?.remittance?.duitnow_id || studio?.remittance?.swift_code || studio?.paymentSwiftOrQr || 'ACMEUS33';
     const paymentTerms = studio?.defaultPaymentTerms || 'Net 14 Days';
 
     return `---
@@ -311,13 +311,13 @@ This creative package certifies the final production handover of all deliverable
   static generateHtmlSummary(projectName, frontmatter, assets, studio, client) {
     const clientName = client?.name || frontmatter.client_name || frontmatter.client || 'Acme Corporation';
     const clientCode = client?.code || frontmatter.client || 'ACME';
-    const studioName = studio?.name || studio?.studioName || 'HaNa Innovation';
-    const principalName = studio?.freelancer_name || studio?.principalName || 'Harussani';
-    const registrationNo = studio?.registration_no || studio?.businessRegNo || '202601004829';
+    const studioName = studio?.name || studio?.studioName || 'Acme Design Studio';
+    const principalName = studio?.freelancer_name || studio?.principalName || 'Alex Mercer';
+    const registrationNo = studio?.registration_no || studio?.businessRegNo || '2026-ACME-0001';
     const billingEmail = studio?.email || studio?.billingEmail || 'billing@example.com';
-    const bankName = studio?.remittance?.bank_name || studio?.paymentBank || 'Maybank';
-    const accountNo = studio?.remittance?.account_no || studio?.paymentAccountNo || '5140-1234-5678';
-    const swiftOrDuitNow = studio?.remittance?.duitnow_id || studio?.remittance?.swift_code || studio?.paymentSwiftOrQr || 'MBBEMYKL';
+    const bankName = studio?.remittance?.bank_name || studio?.paymentBank || 'Acme Federal Bank';
+    const accountNo = studio?.remittance?.account_no || studio?.paymentAccountNo || '0000-0000-0000';
+    const swiftOrDuitNow = studio?.remittance?.duitnow_id || studio?.remittance?.swift_code || studio?.paymentSwiftOrQr || 'ACMEUS33';
     const totalBytes = assets.reduce((sum, a) => sum + (a.sizeBytes || 0), 0);
     const totalSizeFormatted = this.formatBytes(totalBytes);
     const generatedAt = new Date().toISOString();

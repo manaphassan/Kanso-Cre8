@@ -1,0 +1,9 @@
+# Kanso Cre8 Identity Deny-List
+# Patterns that must never appear in sample data, code defaults, or public commits.
+harussani
+manaphassan
+hana innovation
+hana-innovation
+5140-1234-5678
+MBBEMYKL
+202601004829

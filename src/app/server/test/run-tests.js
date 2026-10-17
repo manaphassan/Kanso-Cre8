@@ -157,7 +157,7 @@ This is the project brief content.
     const projectDir = path.join(testDir, '2026', '202608_August', '202608_9998A_SS_Temp_Approval_Test');
     fs.mkdirSync(projectDir, { recursive: true });
 
-    const initialFm = { status: 'review', designer: 'Harussani', revision: 1, approvals: [] };
+    const initialFm = { status: 'review', designer: 'Alex Mercer', revision: 1, approvals: [] };
     const initialBody = '# Sandbox Approval Test Project\n\nBrief content.';
     FrontmatterService.writeProjectReadme(projectDir, initialFm, initialBody);
 
@@ -277,7 +277,7 @@ This is the project brief content.
     assert.ok(Array.isArray(roster), 'Staff roster must return an array');
     assert.ok(roster.length >= 6, 'Must contain canonical creative team members');
 
-    const lead = roster.find(m => m.staffId === 'ACME001' || m.username === 'harussani');
+    const lead = roster.find(m => m.staffId === 'ACME001' || m.username === 'alex');
     assert.ok(lead, 'Lead staff (ACME001) must exist');
     assert.ok(lead.role, 'Lead staff must have an assigned role');
 
@@ -320,16 +320,16 @@ This is the project brief content.
     assert.ok(Array.isArray(directory), 'Team directory must return an array of creatives');
     assert.ok(directory.length > 0, 'Directory must contain active creative staff');
     
-    const harussani = directory.find(m => m.staffId === 'ACME001' || m.name === 'Harussani');
-    assert.ok(harussani, 'Harussani (Art Director) must be in creative team directory');
-    assert.ok(harussani.workload, 'Harussani must have workload metrics object');
-    assert.strictEqual(typeof harussani.workload.active, 'number', 'Workload active count must be a number');
-    assert.strictEqual(typeof harussani.capacityStatus, 'string', 'Capacity status must be a string');
-    assert.strictEqual(typeof harussani.workload.weightedLoad, 'number', 'Weighted load must be a number');
-    assert.ok(Array.isArray(harussani.assignedProjects), 'Assigned projects must be an array');
-    if (harussani.assignedProjects.length > 0) {
-      assert.strictEqual(typeof harussani.assignedProjects[0].slaDays, 'number', 'Assigned project must have numeric slaDays');
-      assert.strictEqual(typeof harussani.assignedProjects[0].slotWeight, 'number', 'Assigned project must have numeric slotWeight');
+    const alex = directory.find(m => m.staffId === 'ACME001' || m.name === 'Alex Mercer');
+    assert.ok(alex, 'Alex Mercer (Art Director) must be in creative team directory');
+    assert.ok(alex.workload, 'Alex Mercer must have workload metrics object');
+    assert.strictEqual(typeof alex.workload.active, 'number', 'Workload active count must be a number');
+    assert.strictEqual(typeof alex.capacityStatus, 'string', 'Capacity status must be a string');
+    assert.strictEqual(typeof alex.workload.weightedLoad, 'number', 'Weighted load must be a number');
+    assert.ok(Array.isArray(alex.assignedProjects), 'Assigned projects must be an array');
+    if (alex.assignedProjects.length > 0) {
+      assert.strictEqual(typeof alex.assignedProjects[0].slaDays, 'number', 'Assigned project must have numeric slaDays');
+      assert.strictEqual(typeof alex.assignedProjects[0].slotWeight, 'number', 'Assigned project must have numeric slotWeight');
     }
 
     // Cleanup
@@ -345,14 +345,14 @@ This is the project brief content.
     const newComment = CommentService.addComment(testDir, testProjectId, {
       author: 'Haikal',
       authorRole: 'User',
-      content: 'Updated the packaging dieline specs. @hasan @harussani please sign off!',
+      content: 'Updated the packaging dieline specs. @alex @marcus please sign off!',
       deliverableId: 'del_001'
     });
 
     assert.ok(newComment.id.startsWith('cmt_'), 'Comment ID must start with cmt_');
     assert.strictEqual(newComment.author, 'Haikal');
-    assert.ok(newComment.mentions.includes('hasan'), 'Must extract @hasan mention');
-    assert.ok(newComment.mentions.includes('harussani'), 'Must extract @harussani mention');
+    assert.ok(newComment.mentions.includes('alex'), 'Must extract @alex mention');
+    assert.ok(newComment.mentions.includes('marcus'), 'Must extract @marcus mention');
     assert.strictEqual(newComment.resolved, false);
 
     // Retrieve comments
@@ -1057,7 +1057,7 @@ This is the project brief content.
       assert.strictEqual(order.attachmentCount, 1, 'Order must have 1 initial attachment');
 
       // 2. Add another attachment
-      const added = OrderService.saveOrderAttachment(order.id, 'spec_sheet.pdf', Buffer.from('pdf_content'), 'Designer Harussani');
+      const added = OrderService.saveOrderAttachment(order.id, 'spec_sheet.pdf', Buffer.from('pdf_content'), 'Designer Alex Mercer');
       assert.strictEqual(added.filename, 'spec_sheet.pdf');
 
       // 3. List attachments
@@ -2679,14 +2679,14 @@ Layout balance principles.
 
       // 2. Generate and verify standalone HTML export
       const studioProfile = {
-        studioName: 'HaNa Creative Vault',
-        studioAddress: 'Kuala Lumpur, Malaysia',
-        billingEmail: 'art@hana-innovation.com',
-        principalName: 'Harussani',
+        studioName: 'Acme Design Studio',
+        studioAddress: '100 Creative Way, Metropolis',
+        billingEmail: 'billing@example.com',
+        principalName: 'Alex Mercer',
         tagline: 'Mindful Creative Systems',
-        paymentBank: 'Maybank',
-        paymentAccountNo: '5140-1234-5678',
-        paymentAccountName: 'HaNa Creative Vault'
+        paymentBank: 'Acme Federal Bank',
+        paymentAccountNo: '0000-0000-0000',
+        paymentAccountName: 'Acme Design Studio'
       };
 
       const html = FinanceVaultService.generateStandaloneHtml(retrieved, studioProfile);
@@ -2758,9 +2758,9 @@ Layout balance principles.
         brand: 'ACME',
         title: 'Atelier Brand System',
         status: 'backlog',
-        designer: 'Harussani',
+        designer: 'Alex Mercer',
         priority: 'high'
-      }, 'Harussani');
+      }, 'Alex Mercer');
 
       assert.strictEqual(scaffoldRes.success, true);
       const project = scaffoldRes.project;
