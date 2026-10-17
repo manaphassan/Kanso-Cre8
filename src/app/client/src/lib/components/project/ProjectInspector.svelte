@@ -57,6 +57,15 @@
       </div>
     </div>
 
+    <!-- Revision Rounds -->
+    <div class="inspector-group">
+      <span class="inspector-label">Revision Rounds</span>
+      <div class="inspector-row font-mono">
+        <Icon name="refresh" size={14} />
+        <span>Round {project.revision || 0}</span>
+      </div>
+    </div>
+
     <!-- Standardized 5-Folder Structure -->
     <div class="inspector-group">
       <span class="inspector-label">Canonical Project Vault</span>

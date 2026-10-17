@@ -11,7 +11,6 @@
   import DashboardCashflow from '$lib/components/dashboard/DashboardCashflow.svelte';
   import DashboardTodayTasks from '$lib/components/dashboard/DashboardTodayTasks.svelte';
   import DashboardMetricsBento from '$lib/components/dashboard/DashboardMetricsBento.svelte';
-  import DashboardWeeklySynthesis from '$lib/components/dashboard/DashboardWeeklySynthesis.svelte';
   import DashboardProjectGlance from '$lib/components/dashboard/DashboardProjectGlance.svelte';
   import DashboardSmartSuggestions from '$lib/components/dashboard/DashboardSmartSuggestions.svelte';
 
@@ -19,14 +18,12 @@
   let incomeSummary = $state(financeService.getIncomeSummary());
   let previousTaskInfo = $state<{ hasTasks: boolean; fromDate: string; count: number; tasks: BujoEntry[] }>({ hasTasks: false, fromDate: '', count: 0, tasks: [] });
   let universalTasks = $state<NoteTask[]>([]);
-  let weeklyTelemetry = $state<WeeklyTelemetry | null>(null);
 
   async function refreshDashboardData() {
     dailyNote = journalService.getDailyNote();
     incomeSummary = financeService.getIncomeSummary();
     previousTaskInfo = await journalService.checkPendingRolloverAsync(dailyNote.date);
     universalTasks = await notesService.loadUniversalTasksFromDisk();
-    weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
   }
 
   onMount(async () => {
@@ -66,17 +63,6 @@
     return count > 0 ? Number((totalDays / count).toFixed(1)) : null;
   });
 
-  const avgRevisionRounds = $derived.by(() => {
-    if (projectStore.dashboardData?.slaMetrics?.avgRevisionCount != null) {
-      return projectStore.dashboardData.slaMetrics.avgRevisionCount;
-    }
-    const projects = projectStore.projects || [];
-    if (projects.length > 0) {
-      const totalRevs = projects.reduce((acc, p) => acc + (p.revision || 0), 0);
-      return Number((totalRevs / projects.length).toFixed(1));
-    }
-    return null;
-  });
 
   const unbilledSuggestion = $derived.by(() => {
     if (timerStore.isRunning) {
@@ -170,10 +156,7 @@
     </div>
   </header>
 
-  <!-- 1. Income & Cashflow -->
-  <DashboardCashflow {incomeSummary} />
-
-  <!-- 2. Main 2-Column Grid: Today Tasks & Metrics Bento -->
+  <!-- 1 & 2. Main 2-Column Grid: Today Tasks & Metrics Bento -->
   <div class="deck-main-grid">
     <div class="deck-column-left card-surface">
       <DashboardTodayTasks
@@ -192,24 +175,23 @@
       <DashboardMetricsBento
         {firstTimeRightPercent}
         {turnaroundDays}
-        {avgRevisionRounds}
       />
     </div>
   </div>
 
-  <!-- 3. Weekly BuJo Synthesis -->
-  <DashboardWeeklySynthesis {weeklyTelemetry} />
-
-  <!-- 4. Projects Status at a Glance -->
+  <!-- 3. Projects Status at a Glance -->
   <DashboardProjectGlance />
 
-  <!-- 5. Smart Suggestions Panel -->
+  <!-- 4. Smart Suggestions (one-line strip) -->
   <DashboardSmartSuggestions
     {unbilledSuggestion}
     {reviewSuggestion}
     {deadlineSuggestion}
     {wellnessSuggestion}
   />
+
+  <!-- 5. Total Income & Cashflow -->
+  <DashboardCashflow {incomeSummary} />
 </div>
 
 <style>

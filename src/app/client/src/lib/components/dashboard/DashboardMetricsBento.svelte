@@ -6,47 +6,36 @@
   interface Props {
     firstTimeRightPercent: number | null;
     turnaroundDays: number | null;
-    avgRevisionRounds: number | null;
   }
 
-  let { firstTimeRightPercent, turnaroundDays, avgRevisionRounds }: Props = $props();
+  let { firstTimeRightPercent, turnaroundDays }: Props = $props();
 
   const todayFocusHours = $derived(timerStore.getTodayHours());
   const weekFocusHours = $derived(timerStore.getWeekHours());
 </script>
 
 <div class="metrics-bento-grid">
-  <!-- Metric 1: Hours Today -->
+  <!-- Metric 1: Focus Hours -->
   <div class="metric-card">
     <div class="metric-header">
-      <span class="metric-label">Hours Logged Today</span>
+      <span class="metric-label">Focus Hours</span>
       <span class="metric-icon-wrap"><Icon name="clock" size={14} /></span>
     </div>
     <div class="metric-val font-mono">{todayFocusHours.toFixed(1)}h</div>
-    <span class="metric-meta">Tactile billable timer focus</span>
+    <span class="metric-meta">{weekFocusHours.toFixed(1)}h this week</span>
   </div>
 
-  <!-- Metric 2: Hours This Week -->
-  <div class="metric-card">
-    <div class="metric-header">
-      <span class="metric-label">Hours This Week</span>
-      <span class="metric-icon-wrap"><Icon name="calendar" size={14} /></span>
-    </div>
-    <div class="metric-val font-mono">{weekFocusHours.toFixed(1)}h</div>
-    <span class="metric-meta">Across active campaign tasks</span>
-  </div>
-
-  <!-- Metric 3: Effective Rate -->
+  <!-- Metric 2: Effective Rate -->
   <div class="metric-card">
     <div class="metric-header">
       <span class="metric-label">Effective Rate</span>
-      <span class="metric-icon-wrap"><Icon name="tag" size={14} /></span>
+      <span class="metric-icon-wrap"><Icon name="wallet" size={14} /></span>
     </div>
     <div class="metric-val font-mono">{settingsStore.settings.currencySymbol || 'RM'}{timerStore.hourlyRate}/hr</div>
-    <span class="metric-meta">Active studio billing velocity</span>
+    <span class="metric-meta">Active billing velocity</span>
   </div>
 
-  <!-- Metric 4: First-Time-Right -->
+  <!-- Metric 3: First-Time-Right -->
   <div class="metric-card">
     <div class="metric-header">
       <span class="metric-label">First-Time-Right</span>
@@ -58,24 +47,14 @@
     <span class="metric-meta">Zero-revision deliverables</span>
   </div>
 
-  <!-- Metric 5: Turnaround Velocity -->
+  <!-- Metric 4: Turnaround Velocity -->
   <div class="metric-card">
     <div class="metric-header">
       <span class="metric-label">Turnaround Velocity</span>
-      <span class="metric-icon-wrap"><Icon name="trend-up" size={14} /></span>
+      <span class="metric-icon-wrap"><Icon name="bolt" size={14} /></span>
     </div>
     <div class="metric-val font-mono">{turnaroundDays != null ? `${turnaroundDays}d` : '—'}</div>
     <span class="metric-meta">Average cycle duration</span>
-  </div>
-
-  <!-- Metric 6: Revision Rounds -->
-  <div class="metric-card">
-    <div class="metric-header">
-      <span class="metric-label">Revision Rounds</span>
-      <span class="metric-icon-wrap"><Icon name="refresh" size={14} /></span>
-    </div>
-    <div class="metric-val font-mono">{avgRevisionRounds != null ? avgRevisionRounds.toFixed(1) : '—'}</div>
-    <span class="metric-meta">Average rounds per proof</span>
   </div>
 </div>
 
