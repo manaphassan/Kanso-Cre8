@@ -12,7 +12,7 @@
 **Technology Stack**:
 - Tauri v2 (Rust desktop runtime)
 - Svelte 5 (Runes: `$state`, `$derived`, `$props`, `$effect`)
-- Tailwind CSS + Linear / Geist Minimalist Studio Tokens
+- Linear / Geist Minimalist Studio Tokens + Small Utility Sheet (tailwind-compat.css)
 - Pure Markdown-as-Database Storage Engine (Zero SQL, SQLite, or Prisma)
 - Web Audio API (Retro Cassette Focus Radio & Studio Deck)
 
