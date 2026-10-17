@@ -9,13 +9,10 @@
   import DashboardView from '$lib/views/DashboardView.svelte';
   import ProjectsView from '$lib/views/ProjectsView.svelte';
   import ProjectDetailView from '$lib/views/ProjectDetailView.svelte';
-  import DeliverablesView from '$lib/views/DeliverablesView.svelte';
-  import CopyStudioView from '$lib/views/CopyStudioView.svelte';
-  import ClientsView from '$lib/views/ClientsView.svelte';
-  import InvoiceStudioView from '$lib/views/InvoiceStudioView.svelte';
+  import ClientsMoneyView from '$lib/views/ClientsMoneyView.svelte';
   import NotesView from '$lib/views/NotesView.svelte';
-  import RadioView from '$lib/views/RadioView.svelte';
   import MiniCassetteDock from '$lib/components/radio/MiniCassetteDock.svelte';
+  import RadioDrawer from '$lib/components/radio/RadioDrawer.svelte';
   import SettingsView from '$lib/views/SettingsView.svelte';
   import ClientReviewView from '$lib/views/ClientReviewView.svelte';
   import JournalView from '$lib/views/JournalView.svelte';
@@ -158,6 +155,10 @@
       const parts = hash.split('/');
       let route = parts[0];
       if (route === 'zettel') route = 'notes';
+      if (route === 'radio') {
+        appState.radioDrawerOpen = true;
+        route = 'dashboard';
+      }
       const id = parts[1] ? decodeURIComponent(parts[1]) : undefined;
       appState.currentRoute = (route && route !== 'login') ? route : 'dashboard';
       appState.routeParams = id ? { id } : {};
@@ -336,17 +337,15 @@
           {:else if appState.currentRoute === 'project-detail'}
             <ProjectDetailView projectId={appState.routeParams.id} />
           {:else if appState.currentRoute === 'deliverables'}
-            <DeliverablesView />
+            <ProjectDetailView projectId={appState.routeParams.id || (projectStore.projects[0]?.id ?? '')} initialTab="deliverables" />
+          {:else if appState.currentRoute === 'copy-studio'}
+            <ProjectDetailView projectId={appState.routeParams.id || (projectStore.projects[0]?.id ?? '')} initialTab="copywriting" />
           {:else if appState.currentRoute === 'clients'}
-            <ClientsView />
+            <ClientsMoneyView initialTab="clients" />
           {:else if appState.currentRoute === 'invoices'}
-            <InvoiceStudioView />
+            <ClientsMoneyView initialTab="invoices" />
           {:else if appState.currentRoute === 'notes' || appState.currentRoute === 'zettel'}
             <NotesView />
-          {:else if appState.currentRoute === 'radio'}
-            <RadioView />
-          {:else if appState.currentRoute === 'copy-studio'}
-            <CopyStudioView />
           {:else if appState.currentRoute === 'settings' || appState.currentRoute === 'profile'}
             <SettingsView />
           {:else}
@@ -377,6 +376,11 @@
   <VaultSwitcherModal
     bind:open={vaultSwitcherOpen}
     onclose={() => (vaultSwitcherOpen = false)}
+  />
+
+  <RadioDrawer
+    bind:open={appState.radioDrawerOpen}
+    onclose={() => (appState.radioDrawerOpen = false)}
   />
 {/if}
 

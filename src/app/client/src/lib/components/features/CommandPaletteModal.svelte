@@ -388,7 +388,7 @@
       }
     },
 
-    // Strict Ascending Navigation (⌘1 to ⌘9)
+    // Canonical 6-Item Navigation (⌘1 to ⌘6)
     {
       type: 'nav',
       id: 'nav-1-dashboard',
@@ -402,8 +402,8 @@
     {
       type: 'nav',
       id: 'nav-2-projects',
-      label: 'Open Project Manager',
-      sublabel: 'Coordinate creative campaigns, Kanban pipelines & Gantt schedules',
+      label: 'Open Projects',
+      sublabel: 'Coordinate creative campaigns, briefs, review queue & copy',
       icon: 'folder',
       badge: '⌘2',
       category: 'Navigation',
@@ -411,73 +411,53 @@
     },
     {
       type: 'nav',
-      id: 'nav-3-deliverables',
-      label: 'Open Review Queue',
-      sublabel: 'Inspect, approve, and manage creative deliverables',
-      icon: 'sparkles',
-      badge: '⌘3',
-      category: 'Navigation',
-      execute: () => appState.navigate('deliverables')
-    },
-    {
-      type: 'nav',
-      id: 'nav-4-journal',
+      id: 'nav-3-journal',
       label: 'Open Bullet Journal (BuJo Rapid Log)',
       sublabel: 'Daily notes, task rollover & monthly reviews',
       icon: 'calendar',
-      badge: '⌘4',
+      badge: '⌘3',
       category: 'Navigation',
       execute: () => appState.navigate('journal')
     },
     {
       type: 'nav',
-      id: 'nav-5-clients',
-      label: 'Open Clients & Brand Hub',
-      sublabel: 'Client profiles, brand palettes & billing rates',
-      icon: 'users',
+      id: 'nav-4-notes',
+      label: 'Open Atelier Notes',
+      sublabel: 'Second brain, fleeting notes & universal #tasks',
+      icon: 'file',
+      badge: '⌘4',
+      category: 'Navigation',
+      execute: () => appState.navigate('notes')
+    },
+    {
+      type: 'nav',
+      id: 'nav-5-clients-money',
+      label: 'Open Clients & Money',
+      sublabel: 'Client profiles, quotes, proposals & invoices hub',
+      icon: 'wallet',
       badge: '⌘5',
       category: 'Navigation',
       execute: () => appState.navigate('clients')
     },
     {
       type: 'nav',
-      id: 'nav-6-invoices',
-      label: 'Open Quotes & Invoices',
-      sublabel: 'Plain Markdown invoices, proposals & RM billing',
-      icon: 'document',
-      badge: '⌘6',
-      category: 'Navigation',
-      execute: () => appState.navigate('invoices')
-    },
-    {
-      type: 'nav',
-      id: 'nav-7-zettel',
-      label: 'Open Atelier Notes',
-      sublabel: 'Second brain, fleeting notes & universal #tasks',
-      icon: 'document',
-      badge: '⌘7',
-      category: 'Navigation',
-      execute: () => appState.navigate('zettel')
-    },
-    {
-      type: 'nav',
-      id: 'nav-8-radio',
-      label: 'Open Focus Radio',
-      sublabel: 'Hi-Fi retro mechanical tape player & Pomodoro',
-      icon: 'colorPalette',
-      badge: '⌘8',
-      category: 'Navigation',
-      execute: () => appState.navigate('radio')
-    },
-    {
-      type: 'nav',
-      id: 'nav-9-settings',
+      id: 'nav-6-settings',
       label: 'Open Studio Settings',
       sublabel: 'Vault configuration, lighting themes & preferences',
       icon: 'settings',
-      badge: '⌘9',
+      badge: '⌘6',
       category: 'Navigation',
       execute: () => appState.navigate('settings')
+    },
+    {
+      type: 'nav',
+      id: 'nav-radio-drawer',
+      label: 'Open Focus Radio Drawer',
+      sublabel: 'Mechanical cassette focus audio and 25-minute Pomodoro',
+      icon: 'music',
+      badge: 'Radio',
+      category: 'Navigation',
+      execute: () => { appState.radioDrawerOpen = true; }
     },
     {
       type: 'nav',

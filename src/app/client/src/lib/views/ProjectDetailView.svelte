@@ -20,15 +20,22 @@
   import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
   import { fetchStaffList } from '$lib/utils';
 
+  type MainCanvasView = 'brief' | 'copywriting' | 'deliverables' | 'direction';
+
   interface Props {
     projectId?: string;
+    initialTab?: MainCanvasView;
   }
 
-  let { projectId = '' }: Props = $props();
+  let { projectId = '', initialTab = 'brief' }: Props = $props();
 
-  // View state
-  type MainCanvasView = 'brief' | 'copywriting' | 'deliverables' | 'direction';
-  let activeCanvasView = $state<MainCanvasView>('brief');
+  let activeCanvasView = $state<MainCanvasView>(initialTab);
+
+  $effect(() => {
+    if (initialTab && initialTab !== activeCanvasView) {
+      activeCanvasView = initialTab;
+    }
+  });
   let inspectorOpen = $state<boolean>(true);
   let showIngesterModal = $state<boolean>(false);
   let showShareModal = $state<boolean>(false);
@@ -604,18 +611,8 @@
           class:active={activeCanvasView === 'brief'}
           onclick={() => (activeCanvasView = 'brief')}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-          <span>Creative Brief</span>
-        </button>
-
-        <button
-          class="canvas-nav-item"
-          class:active={activeCanvasView === 'copywriting'}
-          onclick={() => (activeCanvasView = 'copywriting')}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          <span>Copywriting Studio</span>
-          <span class="view-chip" title="{copyStats.words} words in 03_COPY/COPY.md">{copyStats.words} words</span>
+          <Icon name="file" size={14} />
+          <span>Brief</span>
         </button>
 
         <button
@@ -623,8 +620,18 @@
           class:active={activeCanvasView === 'deliverables'}
           onclick={() => (activeCanvasView = 'deliverables')}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          <span>Deliverables ({projectStore.activeDeliverables.length})</span>
+          <Icon name="sparkles" size={14} />
+          <span>Review Queue ({projectStore.activeDeliverables.length})</span>
+        </button>
+
+        <button
+          class="canvas-nav-item"
+          class:active={activeCanvasView === 'copywriting'}
+          onclick={() => (activeCanvasView = 'copywriting')}
+        >
+          <Icon name="edit" size={14} />
+          <span>Copy Studio</span>
+          <span class="view-chip" title="{copyStats.words} words in 03_COPY/COPY.md">{copyStats.words} words</span>
         </button>
 
         <button
@@ -632,8 +639,8 @@
           class:active={activeCanvasView === 'direction'}
           onclick={() => (activeCanvasView = 'direction')}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.36 19.64 10.63 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
-          <span>Creative Direction</span>
+          <Icon name="target" size={14} />
+          <span>Direction</span>
         </button>
       </div>
     </header>
