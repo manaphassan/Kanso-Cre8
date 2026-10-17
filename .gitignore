@@ -1,4 +1,4 @@
-# ── Kanso Cre8 Desktop Application ─────────────────────────────
+# Kanso Cre8 Desktop Application
 node_modules/
 **/node_modules/
 dist/
@@ -6,24 +6,36 @@ dist/
 .vite/
 src/app/src-tauri/target/
 
-# ── Local Environment & Machine-Local Configuration ─────────────
+# Local Environment & Machine-Local Configuration
 src/app/server/workspace_config.json
 src/app/server/ai-config.json
-*.env
-*.env.local
+app.json
+**/app.json
+.env*
+*.env*
 
-# ── OS & Editor Metadata ─────────────────────────────────────────
+# Secrets & Credentials
+*.keystore
+*.jks
+license.key
+**/license.key
+user_passwords.json
+**/user_passwords.json
+
+# OS & Editor Metadata
 .DS_Store
 Thumbs.db
 desktop.ini
 *.swp
 *.log
+src/app/launcher.log
+src/windows-launcher/launcher.log
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea/
 
-# ── Temporary / Scratch Files ────────────────────────────────────
+# Temporary / Scratch Files
 scratch/
 temp/
 tmp/
@@ -31,9 +43,9 @@ tmp/
 *.bak
 *.old
 
-# ── Windows Launcher Build Outputs ──────────────────────────────
-src/windows-launcher/*.dll
-src/windows-launcher/runtimes/
-src/windows-launcher/launcher.log
-scripts/*.exe
+# Windows Binaries & Build Outputs
+*.exe
+*.dll
+*.pdb
 *.exe.config
+src/windows-launcher/runtimes/
