@@ -725,11 +725,13 @@ This is the project brief content.
       assert.strictEqual(result.success, true, 'Should report success on valid path switch');
       assert.strictEqual(path.resolve(WorkspaceService.workspaceRoot), path.resolve(tempSwitchDir), 'workspaceRoot must update');
       
-      // Verify override file was written
-      const overridePath = path.resolve(__dirname, '../workspace_config.json');
-      assert.ok(fs.existsSync(overridePath), 'workspace_config.json must be created');
-      const savedConfig = JSON.parse(fs.readFileSync(overridePath, 'utf8'));
+      // Verify machine config was written and legacy override was not created in server/
+      const machineConfigPath = config.getMachineConfigPath();
+      assert.ok(fs.existsSync(machineConfigPath), 'Machine config app.json must exist');
+      const savedConfig = config.loadMachineConfig();
       assert.strictEqual(path.resolve(savedConfig.workspaceRoot), path.resolve(tempSwitchDir), 'Saved config must match new path');
+      const legacyPath = path.resolve(__dirname, '../workspace_config.json');
+      assert.strictEqual(fs.existsSync(legacyPath), false, 'workspace_config.json must not be created in server/');
 
       // Test invalid path throws error
       assert.throws(() => {

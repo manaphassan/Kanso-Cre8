@@ -9,89 +9,75 @@ class GeminiService {
   }
 
   getConfigPath() {
-    const root = WorkspaceService.workspaceRoot || config.WORKSPACE_ROOT;
-    const teamDir = path.join(root, '_Team');
-    if (!fs.existsSync(teamDir)) {
-      try { fs.mkdirSync(teamDir, { recursive: true }); } catch (e) {}
-    }
-    return path.join(teamDir, 'ai-config.json');
+    return config.getMachineConfigPath();
   }
 
-  getFallbackConfigPath() {
-    return path.join(__dirname, '../ai-config.json');
+  migrateLegacyConfig() {
+    try {
+      const root = WorkspaceService.workspaceRoot || config.WORKSPACE_ROOT;
+      const legacyTeamAi = path.join(root, '_Team', 'ai-config.json');
+      if (fs.existsSync(legacyTeamAi)) {
+        const data = JSON.parse(fs.readFileSync(legacyTeamAi, 'utf8'));
+        const machineCfg = config.loadMachineConfig();
+        if (data.apiKey && !machineCfg.aiApiKey) {
+          machineCfg.aiApiKey = data.apiKey.trim();
+        }
+        if (data.preferredModel && !machineCfg.aiModel) {
+          machineCfg.aiModel = data.preferredModel;
+        }
+        config.saveMachineConfig(machineCfg);
+        try { fs.unlinkSync(legacyTeamAi); } catch (e) {}
+      }
+    } catch (e) {}
+
+    try {
+      const legacyServerAi = path.join(__dirname, '../ai-config.json');
+      if (fs.existsSync(legacyServerAi)) {
+        const data = JSON.parse(fs.readFileSync(legacyServerAi, 'utf8'));
+        const machineCfg = config.loadMachineConfig();
+        if (data.apiKey && !machineCfg.aiApiKey) {
+          machineCfg.aiApiKey = data.apiKey.trim();
+        }
+        if (data.preferredModel && !machineCfg.aiModel) {
+          machineCfg.aiModel = data.preferredModel;
+        }
+        config.saveMachineConfig(machineCfg);
+        try { fs.unlinkSync(legacyServerAi); } catch (e) {}
+      }
+    } catch (e) {}
   }
 
   getApiKey() {
-    // 1. Check environment variable
     if (process.env.GEMINI_API_KEY) {
       return process.env.GEMINI_API_KEY.trim();
     }
 
-    // 2. Check _Team/ai-config.json in workspace root
-    const configPath = this.getConfigPath();
-    if (fs.existsSync(configPath)) {
-      try {
-        const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        if (data.apiKey) return data.apiKey.trim();
-      } catch (err) {
-        console.warn('[GeminiService] Could not read primary ai-config.json:', err.message);
-      }
-    }
+    this.migrateLegacyConfig();
 
-    // 3. Check fallback local path
-    const fallbackPath = this.getFallbackConfigPath();
-    if (fs.existsSync(fallbackPath)) {
-      try {
-        const data = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-        if (data.apiKey) return data.apiKey.trim();
-      } catch (err) {
-        console.warn('[GeminiService] Could not read fallback ai-config.json:', err.message);
-      }
-    }
+    const machineCfg = config.loadMachineConfig();
+    if (machineCfg.aiApiKey) return machineCfg.aiApiKey.trim();
+    if (machineCfg.gemini && machineCfg.gemini.apiKey) return machineCfg.gemini.apiKey.trim();
 
     return '';
   }
 
   saveApiKey(apiKey, preferredModel = 'gemini-1.5-flash') {
-    const payload = {
-      apiKey: (apiKey || '').trim(),
-      preferredModel: preferredModel || 'gemini-1.5-flash',
-      updatedAt: new Date().toISOString()
-    };
-    const content = JSON.stringify(payload, null, 2);
-    let saved = false;
-
-    // Try primary workspace location
     try {
-      const configPath = this.getConfigPath();
-      fs.writeFileSync(configPath, content, 'utf8');
-      saved = true;
+      const machineCfg = config.loadMachineConfig();
+      machineCfg.aiApiKey = (apiKey || '').trim();
+      machineCfg.aiModel = preferredModel || 'gemini-1.5-flash';
+      machineCfg.updatedAt = new Date().toISOString();
+      return config.saveMachineConfig(machineCfg);
     } catch (err) {
-      console.warn('[GeminiService] Primary config write warning:', err.message);
+      console.warn('[GeminiService] Machine config write warning:', err.message);
+      return false;
     }
-
-    // Also write to local fallback
-    try {
-      const fallbackPath = this.getFallbackConfigPath();
-      fs.writeFileSync(fallbackPath, content, 'utf8');
-      saved = true;
-    } catch (err) {
-      console.warn('[GeminiService] Fallback config write warning:', err.message);
-    }
-
-    return saved;
   }
 
   getStatus() {
     const key = this.getApiKey();
-    let preferredModel = this.defaultModel;
-    const configPath = this.getConfigPath();
-    if (fs.existsSync(configPath)) {
-      try {
-        const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        if (data.preferredModel) preferredModel = data.preferredModel;
-      } catch (e) {}
-    }
+    const machineCfg = config.loadMachineConfig();
+    const preferredModel = machineCfg.aiModel || (machineCfg.gemini && machineCfg.gemini.preferredModel) || this.defaultModel;
 
     return {
       configured: Boolean(key && key.length > 5),
