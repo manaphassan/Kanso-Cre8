@@ -3,7 +3,7 @@
  * In-memory indexer for [[WikiLinks]], backlinks, and inline `- [ ] #task` extraction.
  */
 
-import type { ZettelNote, ZettelTask, ZettelType, BacklinkItem, GraphNode, GraphEdge, GraphTopology } from '../types/zettel';
+import type { ZettelNote, ZettelTask, ZettelType, BacklinkItem, GraphNode, GraphEdge, GraphTopology, NoteItem, NoteTask, NoteType } from '../types/notes';
 import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_zettelkasten';
@@ -487,4 +487,7 @@ export class ZettelService {
   }
 }
 
-export const zettelService = ZettelService.getInstance();
+export const notesService = ZettelService.getInstance();
+export const zettelService = notesService;
+export const NotesService = ZettelService;
+

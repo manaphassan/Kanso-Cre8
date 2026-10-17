@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import type { GraphNode, GraphEdge, GraphTopology, GraphNodeType } from '$lib/types/zettel';
+  import type { GraphNode, GraphEdge, GraphTopology, GraphNodeType } from '$lib/types/notes';
 
   interface Props {
     topology: GraphTopology;

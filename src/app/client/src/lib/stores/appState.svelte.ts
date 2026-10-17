@@ -103,8 +103,8 @@ class AppStateStore {
   }
 
   navigate(route: string, params: Record<string, any> = {}) {
-    // Prevent routing to login in desktop-only app
-    const targetRoute = route === 'login' ? 'dashboard' : route;
+    // Prevent routing to login in desktop-only app; alias zettel -> notes
+    const targetRoute = route === 'login' ? 'dashboard' : (route === 'zettel' ? 'notes' : route);
     this.currentRoute = targetRoute;
     this.routeParams = params;
     window.location.hash = targetRoute + (params.id ? `/${encodeURIComponent(params.id)}` : '');

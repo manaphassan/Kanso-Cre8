@@ -13,7 +13,7 @@
   import CopyStudioView from '$lib/views/CopyStudioView.svelte';
   import ClientsView from '$lib/views/ClientsView.svelte';
   import InvoiceStudioView from '$lib/views/InvoiceStudioView.svelte';
-  import ZettelView from '$lib/views/ZettelView.svelte';
+  import NotesView from '$lib/views/NotesView.svelte';
   import RadioView from '$lib/views/RadioView.svelte';
   import MiniCassetteDock from '$lib/components/radio/MiniCassetteDock.svelte';
   import TeamView from '$lib/views/TeamView.svelte';
@@ -48,7 +48,7 @@
     if (key === '4') { e.preventDefault(); appState.navigate('journal'); return; }
     if (key === '5') { e.preventDefault(); appState.navigate('clients'); return; }
     if (key === '6') { e.preventDefault(); appState.navigate('invoices'); return; }
-    if (key === '7') { e.preventDefault(); appState.navigate('zettel'); return; }
+    if (key === '7') { e.preventDefault(); appState.navigate('notes'); return; }
     if (key === '8') { e.preventDefault(); appState.navigate('radio'); return; }
     if (key === '9') { e.preventDefault(); appState.navigate('settings'); return; }
 
@@ -132,7 +132,8 @@
       }
       if (!hash || hash === 'login') { appState.currentRoute = 'dashboard'; return; }
       const parts = hash.split('/');
-      const route = parts[0];
+      let route = parts[0];
+      if (route === 'zettel') route = 'notes';
       const id = parts[1] ? decodeURIComponent(parts[1]) : undefined;
       appState.currentRoute = (route && route !== 'login') ? route : 'dashboard';
       appState.routeParams = id ? { id } : {};
@@ -245,7 +246,8 @@
   const radioIcon   = `<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>`;
   const clientIcon  = `<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>`;
   const invoiceIcon = `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>`;
-  const zettelIcon  = `<path d="M16 3H5a2 2 0 0 0-2 2v11"/><rect x="8" y="7" width="13" height="14" rx="2"/><line x1="11" y1="12" x2="18" y2="12"/><line x1="11" y1="16" x2="16" y2="16"/>`;
+  const notesIcon   = `<path d="M16 3H5a2 2 0 0 0-2 2v11"/><rect x="8" y="7" width="13" height="14" rx="2"/><line x1="11" y1="12" x2="18" y2="12"/><line x1="11" y1="16" x2="16" y2="16"/>`;
+  const zettelIcon  = notesIcon;
   const teamIcon    = `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`;
   const pencilIcon  = `<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>`;
   const adminIcon   = `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>`;
@@ -258,7 +260,8 @@
     journal:          { title: 'Bullet Journal',       layout: 'layout-full', icon: journalIcon },
     clients:          { title: 'Clients & Brand Hub',  layout: 'layout-full', icon: clientIcon },
     invoices:         { title: 'Quotes & Invoices',    layout: 'layout-full', icon: invoiceIcon },
-    zettel:           { title: 'Atelier Notes',        layout: 'layout-full', icon: zettelIcon },
+    notes:            { title: 'Atelier Notes',        layout: 'layout-full', icon: notesIcon },
+    zettel:           { title: 'Atelier Notes',        layout: 'layout-full', icon: notesIcon },
     radio:            { title: 'Focus Radio',          layout: 'layout-full', icon: radioIcon },
     'copy-studio':    { title: 'Copywriting Studio',   layout: 'layout-full', icon: pencilIcon },
     settings:         { title: 'Studio Settings',      layout: 'layout-full', icon: adminIcon },
@@ -292,6 +295,7 @@
       case 'journal': return '⌘4';
       case 'clients': return '⌘5';
       case 'invoices': return '⌘6';
+      case 'notes': return '⌘7';
       case 'zettel': return '⌘7';
       case 'radio': return '⌘8';
       case 'settings': return '⌘9';
@@ -312,7 +316,7 @@
       { route: 'invoices',     label: 'Quotes & Invoices',  icon: invoiceIcon, pro: true },
     ]},
     { section: 'Knowledge & Atelier', items: [
-      { route: 'zettel',       label: 'Atelier Notes',      icon: zettelIcon },
+      { route: 'notes',        label: 'Atelier Notes',      icon: notesIcon },
       { route: 'copy-studio',  label: 'Copywriting Studio', icon: pencilIcon },
     ]},
     { section: 'Focus & Audio', items: [
@@ -497,8 +501,8 @@
             <ClientsView />
           {:else if appState.currentRoute === 'invoices'}
             <InvoiceStudioView />
-          {:else if appState.currentRoute === 'zettel'}
-            <ZettelView />
+          {:else if appState.currentRoute === 'notes' || appState.currentRoute === 'zettel'}
+            <NotesView />
           {:else if appState.currentRoute === 'radio'}
             <RadioView />
           {:else if appState.currentRoute === 'copy-studio'}

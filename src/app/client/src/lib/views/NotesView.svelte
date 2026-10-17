@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { zettelService } from '../services/zettelService';
-  import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/zettel';
+  import { notesService as zettelService } from '../services/notesService';
+  import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/notes';
   import MarkdownEditor from '../components/markdown/MarkdownEditor.svelte';
   import KnowledgeGraphCanvas from '../components/features/KnowledgeGraphCanvas.svelte';
   import LocalGraphMini from '../components/features/LocalGraphMini.svelte';

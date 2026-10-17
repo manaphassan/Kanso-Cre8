@@ -5,11 +5,11 @@
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
-  import { zettelService } from '$lib/services/zettelService';
+  import { notesService } from '$lib/services/notesService';
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
-  import type { ZettelTask } from '$lib/types/zettel';
+  import type { NoteTask } from '$lib/types/notes';
 
   interface Props {
     projects: Project[];
@@ -20,17 +20,17 @@
   let { projects, isAdminUser = false, onDelete }: Props = $props();
 
   let showTaskBar = $state(false);
-  let vaultTasks = $state<ZettelTask[]>([]);
+  let vaultTasks = $state<NoteTask[]>([]);
 
   onMount(() => {
-    vaultTasks = zettelService.getAllTasks();
+    vaultTasks = notesService.getAllTasks();
   });
 
   let pendingVaultTasks = $derived(vaultTasks.filter(t => !t.completed));
 
-  function handleToggleVaultTask(task: ZettelTask) {
-    zettelService.toggleTask(task);
-    vaultTasks = zettelService.getAllTasks();
+  function handleToggleVaultTask(task: NoteTask) {
+    notesService.toggleTask(task);
+    vaultTasks = notesService.getAllTasks();
   }
 
   const columns = [
