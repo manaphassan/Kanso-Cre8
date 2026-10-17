@@ -15,7 +15,9 @@
   <script>
     (function() {
       try {
-        var t = localStorage.getItem('kanso_theme') || localStorage.getItem('ss_cam_theme') || 'dark';
+        var sessRaw = localStorage.getItem('kanso.session');
+        var sess = sessRaw ? JSON.parse(sessRaw) : null;
+        var t = (sess && sess.theme) || localStorage.getItem('kanso_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', t);
       } catch(e) {}
     })();

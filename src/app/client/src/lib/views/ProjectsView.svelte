@@ -17,17 +17,18 @@
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { settingsStore, getCurrencySymbol } from '$lib/stores/settingsStore.svelte';
+  import { getSession, setSession } from '$lib/services/session';
   import type { ClientProfile } from '$lib/types/kanso';
 
   type ViewMode = 'cards' | 'kanban' | 'gantt' | 'calendar' | 'table';
 
-  const initialDefaultView: ViewMode =
-    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_default_project_view') as ViewMode)) || 'cards';
+  const sessionData = getSession();
+  const initialDefaultView: ViewMode = (sessionData.defaultProjectView as ViewMode) || 'cards';
 
   let defaultView = $state<ViewMode>(initialDefaultView);
 
   let viewMode = $state<ViewMode>(
-    (typeof localStorage !== 'undefined' && (localStorage.getItem('ss_cam_project_view') as ViewMode)) || initialDefaultView
+    (sessionData.projectView as ViewMode) || initialDefaultView
   );
 
   let projectToDelete = $state<Project | null>(null);
@@ -54,17 +55,12 @@
 
   function setViewMode(mode: ViewMode) {
     viewMode = mode;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('ss_cam_project_view', mode);
-    }
+    setSession({ projectView: mode });
   }
 
   function saveAsDefaultView() {
     defaultView = viewMode;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('ss_cam_default_project_view', viewMode);
-      localStorage.setItem('ss_cam_project_view', viewMode);
-    }
+    setSession({ defaultProjectView: viewMode, projectView: viewMode });
     const viewLabels: Record<ViewMode, string> = {
       cards: 'Cards Grid',
       kanban: 'Kanban Board',

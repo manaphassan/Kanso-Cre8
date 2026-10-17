@@ -521,11 +521,7 @@
           (member.username && appState.currentUser.username && member.username.toLowerCase() === appState.currentUser.username.toLowerCase()) ||
           (member.name && appState.currentUser.name && member.name.toLowerCase() === appState.currentUser.name.toLowerCase())
         ))}
-        {@const memberAvatar = member.avatar || (typeof localStorage !== 'undefined' ? (
-          (member.staffId ? localStorage.getItem(`ss_cam_avatar_${member.staffId}`) : null) ||
-          (member.username ? localStorage.getItem(`ss_cam_avatar_${member.username}`) : null) ||
-          (isCurrentUser ? (appState.currentUser?.avatar || localStorage.getItem('ss_cam_user_avatar') || '') : '')
-        ) : '')}
+        {@const memberAvatar = member.avatar || (isCurrentUser ? (appState.currentUser?.avatar || '') : '')}
 
         <FluentCard hoverLift padding="20px">
           <!-- Card Header & Identity -->

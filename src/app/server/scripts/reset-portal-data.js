@@ -64,8 +64,8 @@ const INITIAL_AUDIT_LOG = {
 };
 
 const targetDirs = [
-  'E:\\SynologyDrive\\Creative-Team',
-  '\\\\SSNAS\\Creative-Team',
+  'E:\\SynologyDrive\\Creative-Vault',
+  '\\\\NAS\\Creative-Vault',
   path.resolve(__dirname, '../sample-workspace')
 ];
 

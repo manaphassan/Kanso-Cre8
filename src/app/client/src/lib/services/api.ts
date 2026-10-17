@@ -14,6 +14,8 @@ import type {
   TeamMember
 } from '$lib/types';
 
+import { getSession, setSession } from './session';
+
 const isTauri = typeof window !== 'undefined' && (
   Boolean((window as any).__TAURI_INTERNALS__) ||
   window.location.protocol === 'tauri:' ||
@@ -29,15 +31,15 @@ export class ApiClient {
   }
 
   static getToken(): string {
-    return localStorage.getItem('ss_cam_token') || '';
+    return getSession().token || '';
   }
 
   static setToken(token: string): void {
-    localStorage.setItem('ss_cam_token', token);
+    setSession({ token });
   }
 
   static removeToken(): void {
-    localStorage.removeItem('ss_cam_token');
+    setSession({ token: undefined });
   }
 
   static async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
