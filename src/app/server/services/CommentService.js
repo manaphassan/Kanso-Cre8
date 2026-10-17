@@ -142,19 +142,7 @@ class CommentService {
     }
 
     const content = FrontmatterService.serializeContent(frontmatter, finalBody);
-    const tempFile = `${reviewPath}.tmp.${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    const dir = path.dirname(reviewPath);
-    if (!fs.existsSync(dir)) {
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (_) {}
-    }
-
-    fs.writeFileSync(tempFile, content, 'utf8');
-    try {
-      fs.renameSync(tempFile, reviewPath);
-    } catch (_) {
-      fs.writeFileSync(reviewPath, content, 'utf8');
-      try { fs.unlinkSync(tempFile); } catch (e) {}
-    }
+    FrontmatterService.writeAtomic(reviewPath, content, 'utf8');
   }
 
   /**

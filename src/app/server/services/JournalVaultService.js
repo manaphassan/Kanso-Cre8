@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const config = require('../config');
+const FrontmatterService = require('./FrontmatterService');
 
 class JournalVaultService {
   static getJournalRootDir() {
@@ -259,7 +260,7 @@ class JournalVaultService {
     const filePath = this.getDailyPath(noteData.date);
     const serialized = this.serializeDailyNote(noteData);
 
-    fs.writeFileSync(filePath, serialized, 'utf8');
+    FrontmatterService.writeAtomic(filePath, serialized, 'utf8');
     return this.parseDailyNote(serialized, noteData.date);
   }
 
@@ -474,7 +475,7 @@ class JournalVaultService {
     };
 
     const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# 📅 Monthly Review: ${reviewData.month}\n\n${reviewData.reflections || ''}\n`;
-    fs.writeFileSync(filePath, md, 'utf8');
+    FrontmatterService.writeAtomic(filePath, md, 'utf8');
     return this.getMonthlyReview(reviewData.month);
   }
 
@@ -561,7 +562,7 @@ class JournalVaultService {
     };
 
     const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# 🏔️ Annual Vision & Retrospective: ${yearStr}\n\n${yearlyData.vision || ''}\n`;
-    fs.writeFileSync(filePath, md, 'utf8');
+    FrontmatterService.writeAtomic(filePath, md, 'utf8');
     return this.getYearlyIndex(yearStr);
   }
 

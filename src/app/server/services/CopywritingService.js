@@ -3,6 +3,7 @@ const path = require('path');
 const config = require('../config');
 const AuditService = require('./AuditService');
 const WorkspaceService = require('./WorkspaceService');
+const FrontmatterService = require('./FrontmatterService');
 
 class CopywritingService {
   /**
@@ -100,7 +101,7 @@ class CopywritingService {
       body = this.getDefaultTemplate(projectTitle || projectId);
       // Auto-save the default template so the file is created on NAS
       try {
-        fs.writeFileSync(filePath, body, 'utf8');
+        FrontmatterService.writeAtomic(filePath, body, 'utf8');
         lastUpdated = new Date().toISOString();
       } catch (err) {
         console.warn(`[CopywritingService] Auto-save default error:`, err.message);
@@ -131,7 +132,7 @@ class CopywritingService {
     const filePath = this.getCopyFilePath(projectPath, projectId);
     
     try {
-      fs.writeFileSync(filePath, bodyContent, 'utf8');
+      FrontmatterService.writeAtomic(filePath, bodyContent, 'utf8');
 
       AuditService.logEvent({
         actor,

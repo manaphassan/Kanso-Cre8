@@ -3042,6 +3042,82 @@ Layout balance principles.
     }
   });
 
+  // ─── TEST 59: Sync-Safety: Atomic Writes, Debounced Writes, and Conflict Detection ──
+  await test('FrontmatterService executes atomic writes, debounces rapid writes, and WorkspaceService detects conflicted copies', async () => {
+    const testWs = path.join(__dirname, 'temp-sync-safety-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+
+    try {
+      if (fs.existsSync(testWs)) fs.rmSync(testWs, { recursive: true, force: true });
+      fs.mkdirSync(testWs, { recursive: true });
+      config.WORKSPACE_ROOT = testWs;
+      WorkspaceService.workspaceRoot = testWs;
+
+      // 1. Verify FrontmatterService.writeAtomic creates target file without leftover tmp files
+      const atomicTestFile = path.join(testWs, 'test_atomic.md');
+      const testContent = '---\ntitle: "Atomic Write Test"\n---\n\nSafe content.';
+      const res = FrontmatterService.writeAtomic(atomicTestFile, testContent);
+      assert.strictEqual(res, true);
+      assert.ok(fs.existsSync(atomicTestFile));
+      assert.strictEqual(fs.readFileSync(atomicTestFile, 'utf8'), testContent);
+
+      // Verify no temporary files remain in directory
+      const leftoverTmp = fs.readdirSync(testWs).filter(f => f.includes('.tmp.'));
+      assert.strictEqual(leftoverTmp.length, 0, 'No temporary files should linger after atomic write');
+
+      // 2. Verify FrontmatterService.writeDebounced coalesces rapid writes
+      const debouncedTestFile = path.join(testWs, 'test_debounced.md');
+
+      // Trigger 5 rapid writes within 50ms
+      FrontmatterService.writeDebounced(debouncedTestFile, 'version 1', 100);
+      FrontmatterService.writeDebounced(debouncedTestFile, 'version 2', 100);
+      FrontmatterService.writeDebounced(debouncedTestFile, 'version 3', 100);
+      FrontmatterService.writeDebounced(debouncedTestFile, 'version 4', 100);
+      const finalWritePromise = FrontmatterService.writeDebounced(debouncedTestFile, 'version 5 final', 100);
+
+      // Before timer fires, file should not exist yet
+      assert.strictEqual(fs.existsSync(debouncedTestFile), false, 'Debounced write should not hit disk immediately');
+
+      // Wait for debounced write to complete
+      await finalWritePromise;
+      assert.ok(fs.existsSync(debouncedTestFile));
+      assert.strictEqual(fs.readFileSync(debouncedTestFile, 'utf8'), 'version 5 final');
+
+      // 3. Verify NotesVaultService.saveScratchpad writes atomically
+      const scratch = NotesVaultService.saveScratchpad('Rapid scratchpad entry');
+      assert.strictEqual(scratch.success, true);
+      const scratchPath = NotesVaultService.getScratchpadPath();
+      assert.ok(fs.existsSync(scratchPath));
+      assert.strictEqual(fs.readFileSync(scratchPath, 'utf8'), 'Rapid scratchpad entry');
+
+      // 4. Verify detection of Dropbox / OneDrive *conflicted copy* files
+      const clientDir = path.join(testWs, '_Clients', 'ACME_Acme_Corp');
+      fs.mkdirSync(clientDir, { recursive: true });
+      const mainClient = path.join(clientDir, 'client.md');
+      const conflictClient = path.join(clientDir, "client (Acme's conflicted copy 2026-10-17).md");
+
+      FrontmatterService.writeAtomic(mainClient, '---\ncode: ACME\nname: Acme Corp\n---\n');
+      FrontmatterService.writeAtomic(conflictClient, '---\ncode: ACME\nname: Acme Corp Remote\n---\n');
+
+      const detectedConflicts = WorkspaceService.scanSyncConflicts();
+      assert.strictEqual(detectedConflicts.length, 1);
+      assert.strictEqual(detectedConflicts[0].filename, "client (Acme's conflicted copy 2026-10-17).md");
+      assert.strictEqual(detectedConflicts[0].baseFilename, 'client.md');
+      assert.strictEqual(detectedConflicts[0].baseExists, true);
+
+      // Resolve conflict via keep_local
+      const resolveRes = WorkspaceService.resolveSyncConflict(conflictClient, 'keep_local');
+      assert.strictEqual(resolveRes.success, true);
+      assert.strictEqual(fs.existsSync(conflictClient), false);
+      assert.strictEqual(fs.existsSync(mainClient), true);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
   console.log(`\n========================================================`);
   console.log(`Test Results: ${passed} Passed, ${failed} Failed`);
   console.log(`========================================================\n`);

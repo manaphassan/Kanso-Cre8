@@ -167,14 +167,30 @@ export class ZettelService {
     }
   }
 
-  public saveScratchpad(content: string): void {
+  private scratchpadDebounceTimer: any = null;
+
+  public saveScratchpad(content: string, immediate = false): void {
     try {
       localStorage.setItem(SCRATCHPAD_KEY, content);
-      ApiClient.saveScratchpad(content).catch(err => {
-        console.warn('[ZettelService] Remote scratchpad sync warning:', err);
-      });
+      if (this.scratchpadDebounceTimer) {
+        clearTimeout(this.scratchpadDebounceTimer);
+        this.scratchpadDebounceTimer = null;
+      }
+
+      if (immediate) {
+        ApiClient.saveScratchpad(content).catch(err => {
+          console.warn('[NotesService] Remote scratchpad sync warning:', err);
+        });
+      } else {
+        this.scratchpadDebounceTimer = setTimeout(() => {
+          this.scratchpadDebounceTimer = null;
+          ApiClient.saveScratchpad(content).catch(err => {
+            console.warn('[NotesService] Remote scratchpad sync warning:', err);
+          });
+        }, 300);
+      }
     } catch (e) {
-      console.error('[ZettelService] Scratchpad save error:', e);
+      console.error('[NotesService] Scratchpad save error:', e);
     }
   }
 
