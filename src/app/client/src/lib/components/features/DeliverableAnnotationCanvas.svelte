@@ -373,7 +373,7 @@
             class:active={pinFilter === 'resolved'}
             onclick={() => (pinFilter = 'resolved')}
           >
-            ✓ Resolved ({resolvedPinsCount})
+            <Icon name="check" size={12} /> Resolved ({resolvedPinsCount})
           </button>
         {/if}
       </div>
@@ -440,7 +440,7 @@
         >
           <div class="pin-badge">
             {#if pin.resolved}
-              ✓
+              <Icon name="check" size={10} />
             {:else}
               {pinNum}
             {/if}
@@ -634,7 +634,7 @@
 
   {#if isAnnotateMode && !pendingPin}
     <div class="annotate-hint-bar">
-      <span>💡 <b>Tip:</b> Click anywhere on the {mediaType === 'video' ? 'video frame' : 'design'} above to drop a review pin.</span>
+      <span><Icon name="lightbulb" size={14} /> <b>Tip:</b> Click anywhere on the {mediaType === 'video' ? 'video frame' : 'design'} above to drop a review pin.</span>
     </div>
   {/if}
 </div>

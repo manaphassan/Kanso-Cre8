@@ -6,6 +6,7 @@
   import { fetchStaffList } from '$lib/utils';
   import type { Project } from '$lib/types';
   import Badge from '$lib/components/ui/Badge.svelte';
+  import { Icon, type IconName } from '$lib/components/ui';
   import { notesService } from '$lib/services/notesService';
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
@@ -34,13 +35,13 @@
     vaultTasks = notesService.getAllTasks();
   }
 
-  const columns = [
-    { id: 'backlog', label: 'Backlog', icon: '📝', color: 'var(--kanso-text-muted)', hint: 'Project scoping & queued briefs' },
-    { id: 'in-progress', label: 'In Production', icon: '⚡', color: 'var(--kanso-accent)', hint: 'Active design & asset creation' },
-    { id: 'review', label: 'Client Proofing', icon: '🔍', color: 'var(--kanso-accent)', hint: 'Awaiting client review & feedback' },
-    { id: 'revision', label: 'Revision Pending', icon: '⚠️', color: 'var(--kanso-warning)', hint: 'Client adjustments requested' },
-    { id: 'done', label: 'Client Approved', icon: '✅', color: 'var(--kanso-success)', hint: 'Deliverables ready & billable' },
-    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: 'var(--kanso-text-muted)', hint: 'Paused or parked campaigns' }
+  const columns: Array<{ id: string; label: string; icon: IconName; color: string; hint: string }> = [
+    { id: 'backlog', label: 'Backlog', icon: 'file', color: 'var(--kanso-text-muted)', hint: 'Project scoping & queued briefs' },
+    { id: 'in-progress', label: 'In Production', icon: 'bolt', color: 'var(--kanso-accent)', hint: 'Active design & asset creation' },
+    { id: 'review', label: 'Client Proofing', icon: 'search', color: 'var(--kanso-accent)', hint: 'Awaiting client review & feedback' },
+    { id: 'revision', label: 'Revision Pending', icon: 'alert', color: 'var(--kanso-warning)', hint: 'Client adjustments requested' },
+    { id: 'done', label: 'Client Approved', icon: 'check', color: 'var(--kanso-success)', hint: 'Deliverables ready & billable' },
+    { id: 'on-hold', label: 'On Hold / Queued', icon: 'clock', color: 'var(--kanso-text-muted)', hint: 'Paused or parked campaigns' }
   ];
 
   let draggedProjectId = $state<string | null>(null);
@@ -210,7 +211,7 @@
   <!-- Universal Task Rollup Bar -->
   <div class="vault-task-rollup-bar">
     <div class="task-rollup-left">
-      <span class="task-rollup-icon">📋</span>
+      <span class="task-rollup-icon"><Icon name="file" size={14} /></span>
       <span class="task-rollup-title">Vault Task Rollup</span>
       <span class="task-rollup-badge">{pendingVaultTasks.length} active tasks</span>
     </div>
@@ -219,7 +220,7 @@
       class="task-rollup-toggle-btn"
       onclick={() => showTaskBar = !showTaskBar}
     >
-      {showTaskBar ? 'Hide Tasks ▲' : 'Show Tasks ▼'}
+      {showTaskBar ? 'Hide Tasks' : 'Show Tasks'}
     </button>
   </div>
 
@@ -239,7 +240,7 @@
               />
               <span class="task-chip-desc">{task.description}</span>
               {#if task.dueDate}
-                <span class="task-chip-date">📅 {task.dueDate}</span>
+                <span class="task-chip-date"><Icon name="calendar" size={12} /> {task.dueDate}</span>
               {/if}
               {#if task.priority && task.priority !== 'normal'}
                 <span class="task-chip-priority" class:is-high={task.priority === 'high' || task.priority === 'urgent'}>
@@ -269,7 +270,7 @@
         <!-- Column Header -->
         <div class="column-header" style="border-top-color: {col.color};">
           <div class="col-title-wrap">
-            <span class="col-icon">{col.icon}</span>
+            <span class="col-icon"><Icon name={col.icon} size={14} /></span>
             <h3 class="col-title">{col.label}</h3>
             <span class="col-count-pill" style="background: {col.color}1A; color: {col.color};">
               {colProjects.length}
@@ -288,7 +289,7 @@
 
           {#if colProjects.length === 0 && dragOverColumnId !== col.id}
             <div class="column-empty-dropzone">
-              <span class="empty-icon">📭</span>
+              <span class="empty-icon"><Icon name="folder" size={24} /></span>
               <span>No {col.label.toLowerCase()} projects</span>
               <small>Drag cards here to update pipeline</small>
             </div>
@@ -338,12 +339,13 @@
                         type="button"
                         class="quick-delete-btn"
                         title="Delete project"
+                        aria-label="Delete project"
                         onclick={(e) => {
                           e.stopPropagation();
                           onDelete(p);
                         }}
                       >
-                        🗑
+                        <Icon name="trash" size={12} />
                       </button>
                     {/if}
                   </div>
@@ -370,7 +372,7 @@
                       class:rev-warning={p.revision >= 3}
                       title={p.revision >= 3 ? `High revision rounds (${p.revision}) — verify scope & billable hours` : `Revision round ${p.revision}`}
                     >
-                      {p.revision >= 3 ? '⚠️ ' : ''}Rev {p.revision}
+                      {#if p.revision >= 3}<Icon name="alert" size={10} /> {/if}Rev {p.revision}
                     </span>
                   {/if}
                 </div>

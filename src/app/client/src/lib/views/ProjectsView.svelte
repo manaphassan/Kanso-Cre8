@@ -485,13 +485,13 @@
       <!-- Info banner with 5-folder preview -->
       <div class="scaffold-preview-banner">
         <div class="preview-title">
-          <span>📁 Standardized Vault Structure</span>
+          <span><Icon name="folder" size={14} /> Standardized Vault Structure</span>
         </div>
         <p class="preview-text">
           Instantly generates canonical 5-folder hierarchy and <code>README.md</code> with YAML frontmatter specs:
         </p>
         <div class="folder-tree-box">
-          <div class="tree-root">📂 {new Date().getFullYear()}/{new Date().getFullYear()}{String(new Date().getMonth() + 1).padStart(2, '0')}_[JOBID]_{npClientCode}_{npTitle.replace(/[^a-zA-Z0-9]/g, '_') || 'Project'}/</div>
+          <div class="tree-root"><Icon name="folder" size={14} /> {new Date().getFullYear()}/{new Date().getFullYear()}{String(new Date().getMonth() + 1).padStart(2, '0')}_[JOBID]_{npClientCode}_{npTitle.replace(/[^a-zA-Z0-9]/g, '_') || 'Project'}/</div>
           <div class="tree-branch">├── 01_BRIEF/ <span class="tree-desc">(References &amp; logos)</span></div>
           <div class="tree-branch">├── 02_SOURCE/ <span class="tree-desc">(Master design vectors)</span></div>
           <div class="tree-branch">├── 03_COPY/COPY.md <span class="tree-desc">(Headlines &amp; copy)</span></div>

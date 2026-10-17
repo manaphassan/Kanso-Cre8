@@ -77,8 +77,8 @@ A timeless interior and graphic design ratio to balance palette harmony:
 Met with Sarah Jenkins regarding the new Enterprise Mobile Banking 3D isometric asset package.
 
 ### Action Items & Deliverables:
-- [ ] #task 3D chassis blockout in Blender for [[202609_0001D_ACME_MobileAppIllustration]] 📅 2026-09-14 ⏫ high
-- [ ] #task Export transparent 4K PNG renders to 04_WIP/ 📅 2026-09-18
+- [ ] #task 3D chassis blockout in Blender for [[202609_0001D_ACME_MobileAppIllustration]] due: 2026-09-14 priority: high
+- [ ] #task Export transparent 4K PNG renders to 04_WIP/ due: 2026-09-18
 - [ ] #task Send revised quote [[INV-2026-001]] to Sarah
 - [ ] Verify font licensing for [[ACME]] typography assets
 
@@ -253,8 +253,8 @@ export class ZettelService {
     );
     note.linkedProjects = uniqueLinks.filter(l => l.match(/\[\[\d{6}_/));
 
-    // Extract inline tasks: - [ ] #task Description 📅 YYYY-MM-DD ⏫ priority
-    const taskRegex = /- \[([ xX])\]\s*(?:#task)?\s*(.*?)(?:\s*📅\s*(\d{4}-\d{2}-\d{2}))?(?:\s*⏫\s*(high|urgent|low))?$/gm;
+    // Extract inline tasks: - [ ] #task Description due: YYYY-MM-DD priority: priority
+    const taskRegex = /- \[([ xX])\]\s*(?:#task)?\s*(.*?)(?:\s*\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s*\u{23EB}\s*(high|urgent|low))?$/gm;
     const tasks: ZettelTask[] = [];
 
     for (const match of note.content.matchAll(taskRegex)) {

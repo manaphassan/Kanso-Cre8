@@ -17,7 +17,7 @@ const TeamService = require('../services/TeamService');
 const LicenseService = require('../services/LicenseService');
 const config = require('../config');
 
-console.log('🧪 Starting Kanso Cre8 Desktop Application Verification Suite...\n');
+console.log('Starting Kanso Cre8 Desktop Application Verification Suite...\n');
 
 // Mock AuditService path to prevent polluting production NAS audit logs
 const origAuditGetPath = AuditService.getAuditLogPath;
@@ -35,10 +35,10 @@ async function runTests() {
     try {
       const res = fn();
       if (res && typeof res.then === 'function') await res;
-      console.log(`  ✅ PASS: ${name}`);
+      console.log(`  PASS: ${name}`);
       passed++;
     } catch (err) {
-      console.error(`  ❌ FAIL: ${name}`);
+      console.error(`  FAIL: ${name}`);
       console.error(`     Error: ${err.message}`);
       failed++;
     }
@@ -1099,7 +1099,7 @@ title: Tuesday, September 8, 2026
 tags: [journal, bujo, daily]
 ---
 
-# 📔 Tuesday, September 8, 2026
+# Tuesday, September 8, 2026
 
 ## Focus Intentions
 - [x] Initial design sprint
@@ -1398,7 +1398,7 @@ notes: Initial deposit invoice.
         category: 'fleeting',
         tags: ['prep'],
         content: '# Client Review Prep\n\n' +
-                 '- [ ] #task Export SVG proof sheet 📅 2026-09-20 ⏫ high\n' +
+                 '- [ ] #task Export SVG proof sheet due: 2026-09-20 priority: high\n' +
                  '- [x] #task Email agenda to stakeholders\n' +
                  '- [ ] Plain uncompleted note without hash'
       });
@@ -2085,7 +2085,7 @@ title: Monday Log
 tags: [journal, bujo, daily]
 ---
 
-# 📔 Monday Log
+# Monday Log
 
 ## Rapid Log
 • [x] Completed visual identity audit

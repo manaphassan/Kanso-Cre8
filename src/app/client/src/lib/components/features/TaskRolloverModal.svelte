@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import type { BujoEntry } from '$lib/services/journalService';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
@@ -133,7 +134,7 @@
       <div class="task-list-scroll">
         {#if tasks.length === 0}
           <div class="empty-tasks-message">
-            <span>🍵 All tasks from {fromDate} were completed.</span>
+            <span><Icon name="check" size={16} /> All tasks from {fromDate} were completed.</span>
           </div>
         {:else}
           {#each tasks as task (task.id)}

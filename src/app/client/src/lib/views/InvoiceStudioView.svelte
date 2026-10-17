@@ -7,6 +7,7 @@
   import { settingsStore, SUPPORTED_CURRENCIES, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import { appState } from '../stores/appState.svelte';
   import ScopeTemplateModal from '../components/features/ScopeTemplateModal.svelte';
+  import { Icon } from '$lib/components/ui';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
   let docType: 'invoices' | 'quotes' = $state('invoices');
@@ -443,7 +444,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
-        <span>⚡ Scope Presets</span>
+        <span><Icon name="bolt" size={14} /> Scope Presets</span>
       </button>
 
       <button
@@ -476,14 +477,14 @@
         onclick={() => switchDocType('invoices')}
         class="px-4 py-2 text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 {docType === 'invoices' ? 'bg-primary/15 text-primary border border-primary/30 shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'}"
       >
-        <span>📄 Invoices</span>
+        <span><Icon name="file" size={14} /> Invoices</span>
         <span class="px-1.5 py-0.2 rounded-full text-xs font-mono bg-primary/20">{invoices.length}</span>
       </button>
       <button
         onclick={() => switchDocType('quotes')}
         class="px-4 py-2 text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 {docType === 'quotes' ? 'bg-primary/15 text-primary border border-primary/30 shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'}"
       >
-        <span>📑 Quotes &amp; Proposals</span>
+        <span><Icon name="file" size={14} /> Quotes &amp; Proposals</span>
         <span class="px-1.5 py-0.2 rounded-full text-xs font-mono bg-primary/20">{quotes.length}</span>
       </button>
     </div>
@@ -559,7 +560,7 @@
       <div class="lg:col-span-5 rounded-xl border border-border bg-card p-6 shadow-sm space-y-6 print:hidden">
         <div class="flex items-center justify-between border-b border-border pb-4">
           <h2 class="text-base font-bold text-foreground flex items-center gap-2">
-            <span>⚙️ Frontmatter Specs</span>
+            <span><Icon name="settings" size={14} /> Frontmatter Specs</span>
             <span class="text-xs font-mono text-muted-foreground">({activeDoc.documentNumber}.md)</span>
           </h2>
 
@@ -590,7 +591,7 @@
                 </div>
                 {#if activeDoc.linkedInvoiceId}
                   <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold">
-                    ✓ {activeDoc.linkedInvoiceId}
+                    <Icon name="check" size={12} /> {activeDoc.linkedInvoiceId}
                   </span>
                 {:else}
                   <button
@@ -598,7 +599,7 @@
                     disabled={isConverting}
                     class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
                   >
-                    <span>⚡ Convert to Invoice</span>
+                    <span><Icon name="bolt" size={14} /> Convert to Invoice</span>
                   </button>
                 {/if}
               </div>
@@ -709,7 +710,7 @@
                     onclick={() => showScopeModal = true}
                     class="text-xs text-primary hover:underline font-semibold flex items-center gap-1 cursor-pointer"
                   >
-                    <span>⚡ Scope Preset</span>
+                    <span><Icon name="bolt" size={14} /> Scope Preset</span>
                   </button>
                   <button
                     onclick={addLineItem}
@@ -734,8 +735,9 @@
                       onclick={() => removeLineItem(index)}
                       class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer"
                       title="Remove item"
+                      aria-label="Remove item"
                     >
-                      ✕
+                      <Icon name="close" size={12} />
                     </button>
                   </div>
 
@@ -829,7 +831,7 @@
                 class="w-full flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase hover:text-foreground cursor-pointer py-1"
               >
                 <span class="flex items-center gap-1.5">
-                  <span>🏛️ e-Invoicing &amp; Tax Identifiers</span>
+                  <span><Icon name="building" size={14} /> e-Invoicing &amp; Tax Identifiers</span>
                   {#if activeDoc.tin || activeDoc.sstRegistrationNo}
                     <span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px]">Active</span>
                   {/if}
@@ -1070,7 +1072,7 @@
                 </div>
               </div>
               {#if copiedHex}
-                <span class="text-xs font-semibold text-emerald-500 animate-fadeIn">✓ Copied {copiedHex}!</span>
+                <span class="text-xs font-semibold text-emerald-500 animate-fadeIn"><Icon name="check" size={12} /> Copied {copiedHex}!</span>
               {/if}
             </div>
           {/if}
@@ -1137,7 +1139,7 @@
 
                 {#if activeDoc.linkedInvoiceId}
                   <span class="text-xs font-mono font-semibold text-emerald-700">
-                    ✓ Generated: {activeDoc.linkedInvoiceId}
+                    <Icon name="check" size={12} /> Generated: {activeDoc.linkedInvoiceId}
                   </span>
                 {/if}
 

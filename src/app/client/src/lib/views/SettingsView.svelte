@@ -10,6 +10,7 @@
   import { journalService } from '$lib/services/journalService';
   import { financeService } from '$lib/services/financeService';
   import type { ThemeName } from '$lib/types';
+  import { Icon } from '$lib/components/ui';
   import { getSession, setSession } from '$lib/services/session';
 
   type SettingsTab = 'profile' | 'appearance' | 'vault' | 'preferences' | 'shortcuts' | 'license' | 'about';
@@ -862,7 +863,7 @@
         </div>
 
         <div class="typography-notice-box">
-          <div class="notice-icon">📐</div>
+          <div class="notice-icon"><Icon name="edit" size={20} /></div>
           <div class="notice-content">
             <h4>Legible Typography Standard Active</h4>
             <p>All micro-text below 12px has been eliminated. Body copy renders comfortably at 14px–15px, and primary studio metrics render at 24px–28px font sizes for maximum readability on Retina and 4K studio displays.</p>
@@ -943,7 +944,7 @@
           <div class="vault-tree-view">
             <!-- Root node -->
             <div class="tree-root-bar">
-              <span class="tree-root-icon">📦</span>
+              <span class="tree-root-icon"><Icon name="package" size={16} /></span>
               <span class="tree-root-path">{currentVaultRoot || 'Vault Root'}</span>
               <span class="tree-root-badge">Canonical Zen Specification</span>
             </div>
@@ -957,7 +958,7 @@
                   onclick={() => toggleNode('clients')}
                 >
                   <span class="tree-chevron" class:expanded={expandedNodes['clients']}>▶</span>
-                  <span class="folder-glyph">📁</span>
+                  <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                   <span class="folder-name">_Clients/</span>
                   <span class="folder-role">Client Profiles &amp; Brand Hub</span>
                   <span class="folder-count">5 Clients</span>
@@ -965,17 +966,17 @@
                 {#if expandedNodes['clients']}
                   <div class="tree-children">
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">ACME_AcmeCorp/</span>
                       <span class="leaf-desc">Acme Corporation profile (HEX #38BDF8 · client.md)</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">NEX_NexusStudio/</span>
                       <span class="leaf-desc">Nexus Studio profile (HEX #8B5CF6 · client.md)</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">LUM_LuminaLabs/</span>
                       <span class="leaf-desc">Lumina Labs profile (HEX #10B981 · client.md)</span>
                     </div>
@@ -991,7 +992,7 @@
                   onclick={() => toggleNode('finance')}
                 >
                   <span class="tree-chevron" class:expanded={expandedNodes['finance']}>▶</span>
-                  <span class="folder-glyph">📁</span>
+                  <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                   <span class="folder-name">_Finance/</span>
                   <span class="folder-role">Dual-Pane Markdown Financial Ledger</span>
                   <span class="folder-count">Quotes &amp; Invoices</span>
@@ -999,12 +1000,12 @@
                 {#if expandedNodes['finance']}
                   <div class="tree-children">
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">Quotes/</span>
                       <span class="leaf-desc">Standard proposals with scoped deliverable milestones</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">Invoices/</span>
                       <span class="leaf-desc">Plain markdown invoices synced with header billable timer</span>
                     </div>
@@ -1020,7 +1021,7 @@
                   onclick={() => toggleNode('projects')}
                 >
                   <span class="tree-chevron" class:expanded={expandedNodes['projects']}>▶</span>
-                  <span class="folder-glyph">📁</span>
+                  <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                   <span class="folder-name">_Projects/</span>
                   <span class="folder-role">Standardized 5-Folder Creative Vaults</span>
                   <span class="folder-count">Annual Structure</span>
@@ -1034,7 +1035,7 @@
                         onclick={() => toggleNode('projects-2026')}
                       >
                         <span class="tree-chevron small" class:expanded={expandedNodes['projects-2026']}>▶</span>
-                        <span class="folder-glyph">📁</span>
+                        <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                         <span class="leaf-name font-semibold">2026/</span>
                         <span class="leaf-desc">Current production calendar</span>
                       </button>
@@ -1042,16 +1043,16 @@
                     {#if expandedNodes['projects-2026']}
                       <div class="tree-sub-children">
                         <div class="tree-leaf highlight">
-                          <span class="folder-glyph">📁</span>
+                          <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                           <span class="leaf-name font-bold">202609_0001D_ACME_MobileAppIllustration/</span>
                           <span class="leaf-desc">Active Acme Corp flagship project</span>
                         </div>
                         <div class="tree-sub-sub-children">
-                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── 📁</span> <span class="leaf-code">01_BRIEF/</span> <span class="leaf-role">Client briefs, municipal contracts, thermal specs</span></div>
-                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── 📁</span> <span class="leaf-code">02_SOURCE/</span> <span class="leaf-role">Logos, vector typography, high-res assets</span></div>
-                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── 📁</span> <span class="leaf-code">03_COPY/</span> <span class="leaf-role">Bodycopy, terms, municipal slip text</span></div>
-                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── 📁</span> <span class="leaf-code">04_WIP/</span> <span class="leaf-role">Active Figma exports, vectors, working files</span></div>
-                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">└── 📁</span> <span class="leaf-code">05_DELIVERABLES/</span> <span class="leaf-role">Ready-to-print press files, client proofs &amp; PDFs</span></div>
+                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── <Icon name="folder" size={12} /></span> <span class="leaf-code">01_BRIEF/</span> <span class="leaf-role">Client briefs, municipal contracts, thermal specs</span></div>
+                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── <Icon name="folder" size={12} /></span> <span class="leaf-code">02_SOURCE/</span> <span class="leaf-role">Logos, vector typography, high-res assets</span></div>
+                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── <Icon name="folder" size={12} /></span> <span class="leaf-code">03_COPY/</span> <span class="leaf-role">Bodycopy, terms, municipal slip text</span></div>
+                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">├── <Icon name="folder" size={12} /></span> <span class="leaf-code">04_WIP/</span> <span class="leaf-role">Active Figma exports, vectors, working files</span></div>
+                          <div class="tree-leaf mini"><span class="sub-leaf-glyph">└── <Icon name="folder" size={12} /></span> <span class="leaf-code">05_DELIVERABLES/</span> <span class="leaf-role">Ready-to-print press files, client proofs &amp; PDFs</span></div>
                         </div>
                       </div>
                     {/if}
@@ -1067,7 +1068,7 @@
                   onclick={() => toggleNode('journal')}
                 >
                   <span class="tree-chevron" class:expanded={expandedNodes['journal']}>▶</span>
-                  <span class="folder-glyph">📁</span>
+                  <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                   <span class="folder-name">_Journal/</span>
                   <span class="folder-role">Bullet Journal (BuJo) Rapid Logging</span>
                   <span class="folder-count">Daily · Monthly · Yearly</span>
@@ -1075,17 +1076,17 @@
                 {#if expandedNodes['journal']}
                   <div class="tree-children">
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">Daily/</span>
                       <span class="leaf-desc">Rapid logs (• [ ] Task, [x] Done, [>] Migrated, * Priority)</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">Monthly/</span>
                       <span class="leaf-desc">Completed deliverables, total hours, creative retrospectives</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">Yearly/</span>
                       <span class="leaf-desc">Annual creative vision, revenue milestones &amp; highlights</span>
                     </div>
@@ -1101,7 +1102,7 @@
                   onclick={() => toggleNode('notes')}
                 >
                   <span class="tree-chevron" class:expanded={expandedNodes['notes']}>▶</span>
-                  <span class="folder-glyph">📁</span>
+                  <span class="folder-glyph"><Icon name="folder" size={14} /></span>
                   <span class="folder-name">_Notes/</span>
                   <span class="folder-role">Atelier Zettelkasten Knowledge Engine</span>
                   <span class="folder-count">Atomic Notes + Scratchpad</span>
@@ -1109,22 +1110,22 @@
                 {#if expandedNodes['notes']}
                   <div class="tree-children">
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">01_Fleeting/</span>
                       <span class="leaf-desc">Instant creative brainstorms &amp; transient thoughts</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">02_Literature/</span>
                       <span class="leaf-desc">Design books, typography notes, and case studies</span>
                     </div>
                     <div class="tree-leaf">
-                      <span class="file-glyph">📁</span>
+                      <span class="file-glyph"><Icon name="folder" size={14} /></span>
                       <span class="leaf-name">03_Permanent/</span>
                       <span class="leaf-desc">Atomic design principles, brand rules &amp; studio laws</span>
                     </div>
                     <div class="tree-leaf highlight">
-                      <span class="file-glyph">📄</span>
+                      <span class="file-glyph"><Icon name="file" size={14} /></span>
                       <span class="leaf-name font-bold">Scratchpad.md</span>
                       <span class="leaf-desc">Instant clipboard capture buffer &amp; transient scratch notes</span>
                     </div>
@@ -1140,7 +1141,7 @@
           {#if syncConflicts.length > 0}
             <div class="sync-banner-header">
               <div class="sync-banner-lead">
-                <span class="sync-banner-glyph alert">⚠️</span>
+                <span class="sync-banner-glyph alert"><Icon name="alert" size={16} /></span>
                 <div>
                   <div class="sync-banner-title">{syncConflicts.length} Cloud Sync Conflict{syncConflicts.length === 1 ? '' : 's'} Detected</div>
                   <div class="sync-banner-subtitle">
@@ -1154,7 +1155,7 @@
                 onclick={scanConflicts}
                 disabled={isScanningConflicts}
               >
-                <span class:spinning={isScanningConflicts}>🔄</span>
+                <span class:spinning={isScanningConflicts}><Icon name="refresh" size={14} /></span>
                 <span>{isScanningConflicts ? 'Scanning...' : 'Rescan'}</span>
               </button>
             </div>
@@ -1201,7 +1202,7 @@
           {:else}
             <div class="sync-banner-pristine">
               <div class="sync-banner-lead">
-                <span class="clean-icon-pill-mini">✓</span>
+                <span class="clean-icon-pill-mini"><Icon name="check" size={12} /></span>
                 <div>
                   <span class="clean-title-inline">Cloud Sync: Pristine</span>
                   <span class="clean-desc-inline">— Zero conflicted copies or collisions detected across active vault.</span>
@@ -1213,7 +1214,7 @@
                 onclick={scanConflicts}
                 disabled={isScanningConflicts}
               >
-                <span class:spinning={isScanningConflicts}>🔄</span>
+                <span class:spinning={isScanningConflicts}><Icon name="refresh" size={14} /></span>
                 <span>{isScanningConflicts ? 'Scanning...' : 'Scan Sync Conflicts'}</span>
               </button>
             </div>
@@ -1422,14 +1423,14 @@
                     <span class="matrix-price">Free Forever</span>
                   </div>
                   <ul class="matrix-list">
-                    <li>✓ Bullet Journal (Daily, Monthly, Yearly)</li>
-                    <li>✓ Atelier Notes (Fleeting, Literature, Permanent)</li>
-                    <li>✓ Bi-Directional Backlinks &amp; Graph</li>
-                    <li>✓ Retro Cassette Focus Radio &amp; Lo-Fi Streams</li>
-                    <li>✓ Copywriting Studio &amp; Readability Telemetry</li>
-                    <li>✓ 100% Plain Markdown Storage</li>
-                    <li class="disabled">✗ Limited to 1 Active Client</li>
-                    <li class="disabled">✗ No PDF Invoice &amp; Quote Generation</li>
+                    <li><Icon name="check" size={13} /> Bullet Journal (Daily, Monthly, Yearly)</li>
+                    <li><Icon name="check" size={13} /> Atelier Notes (Fleeting, Literature, Permanent)</li>
+                    <li><Icon name="check" size={13} /> Bi-Directional Backlinks &amp; Graph</li>
+                    <li><Icon name="check" size={13} /> Retro Cassette Focus Radio &amp; Lo-Fi Streams</li>
+                    <li><Icon name="check" size={13} /> Copywriting Studio &amp; Readability Telemetry</li>
+                    <li><Icon name="check" size={13} /> 100% Plain Markdown Storage</li>
+                    <li class="disabled"><Icon name="close" size={13} /> Limited to 1 Active Client</li>
+                    <li class="disabled"><Icon name="close" size={13} /> No PDF Invoice &amp; Quote Generation</li>
                   </ul>
                 </div>
 
@@ -1439,14 +1440,14 @@
                     <span class="matrix-price">$39 One-Time Perpetual</span>
                   </div>
                   <ul class="matrix-list">
-                    <li>✓ Everything in Kanso Zen</li>
-                    <li>✓ <strong>Unlimited Client Profiles &amp; Brand Hub</strong></li>
-                    <li>✓ <strong>Dual-Pane YAML Invoice &amp; Quote Studio</strong></li>
-                    <li>✓ <strong>Print-Ready A4/Letter PDF Generation</strong></li>
-                    <li>✓ <strong>Live Billable Timer &amp; Earnings Tracker</strong></li>
-                    <li>✓ <strong>Standardized 5-Folder Project Folders</strong></li>
-                    <li>✓ <strong>Studio Brand Profile Auto-Stamping</strong></li>
-                    <li>✓ <strong>100% Offline Forever — Zero Subscriptions</strong></li>
+                    <li><Icon name="check" size={13} /> Everything in Kanso Zen</li>
+                    <li><Icon name="check" size={13} /> <strong>Unlimited Client Profiles &amp; Brand Hub</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>Dual-Pane YAML Invoice &amp; Quote Studio</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>Print-Ready A4/Letter PDF Generation</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>Live Billable Timer &amp; Earnings Tracker</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>Standardized 5-Folder Project Folders</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>Studio Brand Profile Auto-Stamping</strong></li>
+                    <li><Icon name="check" size={13} /> <strong>100% Offline Forever — Zero Subscriptions</strong></li>
                   </ul>
                 </div>
               </div>
@@ -1521,25 +1522,25 @@
         <!-- 4 Creative Pillars Bento -->
         <div class="pillars-bento-grid">
           <div class="pillar-card">
-            <div class="pillar-icon">📂</div>
+            <div class="pillar-icon"><Icon name="folder" size={24} /></div>
             <h3 class="pillar-title">Pure Markdown Storage</h3>
             <p class="pillar-desc">Zero SQL or SQLite binary files. 100% human-readable UTF-8 files and YAML frontmatter openable anytime in VS Code or Obsidian with zero database lock-in.</p>
           </div>
 
           <div class="pillar-card">
-            <div class="pillar-icon">⏱️</div>
+            <div class="pillar-icon"><Icon name="clock" size={24} /></div>
             <h3 class="pillar-title">Live Billable Timer</h3>
             <p class="pillar-desc">Real-time design rate timer with live accrued earnings, active client color palette 1-click copy, and seamless 1-click logging to draft invoice markdown files.</p>
           </div>
 
           <div class="pillar-card">
-            <div class="pillar-icon">📻</div>
+            <div class="pillar-icon"><Icon name="music" size={24} /></div>
             <h3 class="pillar-title">Mechanical Retro Focus Audio</h3>
             <p class="pillar-desc">Faithful dual-spool mechanical cassette deck rotating at 33 RPM, integrated Web Audio real-time DSP, Lo-Fi streams (AnimeFM, Initial D), Side A/B flips, and favorite station tuner presets.</p>
           </div>
 
           <div class="pillar-card">
-            <div class="pillar-icon">📐</div>
+            <div class="pillar-icon"><Icon name="target" size={24} /></div>
             <h3 class="pillar-title">24pt Typography Handoff</h3>
             <p class="pillar-desc">Strict mathematical hierarchy: Red Hat Display for expressive titles &ge; 24pt, and Nunito for UI clarity &lt; 24pt. Zero font mixing within a single line.</p>
           </div>

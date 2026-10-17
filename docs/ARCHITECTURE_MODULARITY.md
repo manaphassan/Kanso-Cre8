@@ -6,7 +6,7 @@
 
 ---
 
-## 🏛️ Executive Summary: Is Kanso Cre8 Modular by Design?
+## ️ Executive Summary: Is Kanso Cre8 Modular by Design?
 
 **Yes, fundamentally.** Kanso Cre8 is architected so that each layer functions as an independent, replaceable subsystem. Changes in one layer do not cause cascading breaking changes in other layers:
 
@@ -30,7 +30,7 @@
 
 ---
 
-## 🗄️ Layer 1: Vault Storage Layer (Pure Markdown-as-Database)
+## ️ Layer 1: Vault Storage Layer (Pure Markdown-as-Database)
 
 ### Philosophy: Zero Binary Lock-In
 Unlike conventional creative management software that locks project metadata into an opaque SQLite or PostgreSQL database, **every domain in Kanso Cre8 lives in its own isolated filesystem container**:
@@ -50,7 +50,7 @@ Because storage is pure directories and files:
 
 ---
 
-## ⚙️ Layer 2: Domain Services Layer (`lib/services/`)
+## ️ Layer 2: Domain Services Layer (`lib/services/`)
 
 Each domain is encapsulated in an isolated TypeScript service with clean input/output boundaries:
 
@@ -67,7 +67,7 @@ If the Focus Radio is streaming audio, it has zero dependencies on `zettelServic
 
 ---
 
-## 🖥️ Layer 3: Pluggable View Layer (`lib/views/`)
+## ️ Layer 3: Pluggable View Layer (`lib/views/`)
 
 The application shell (`App.svelte`) acts as a lightweight host for independent, pluggable views:
 
@@ -98,7 +98,7 @@ Each view manages its own local presentation state and interacts only with its c
 
 ---
 
-## 🎨 Layer 4: Atomic Design System Layer (`lib/components/ui/`)
+## Layer 4: Atomic Design System Layer (`lib/components/ui/`)
 
 User interface components follow the atomic design hierarchy:
 
@@ -120,7 +120,7 @@ User interface components follow the atomic design hierarchy:
 
 ---
 
-## 🧪 Proof of Architectural Modularity: The Retro Cassette Player
+## Proof of Architectural Modularity: The Retro Cassette Player
 
 When integrating the Retro Cassette Radio (ported from the mechanical player in SS-CAM Android), the modular architecture allowed clean implementation without modifying existing business logic:
 

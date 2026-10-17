@@ -37,7 +37,7 @@
 
   const SKILL_METADATA: Record<string, SkillMeta> = {
     'Packaging': {
-      icon: '📦',
+      icon: 'package',
       category: 'Physical Print & Production',
       whatItMeasures: 'Die-cut accuracy, bleed/margin tolerances, box dielines, bottle/capsule labels, foil stamps, barcoding, and factory prepress readiness.',
       whatIsGood: 'Dielines pass factory prepress checks on the first attempt with 0 bleed/fold errors. Zero factory rejections or reprints.',
@@ -45,7 +45,7 @@
       actionAdvice: 'Require double-check on dieline template and physical mockup fold test before sending to manufacturing.'
     },
     'Graphic Design': {
-      icon: '🎨',
+      icon: 'palette',
       category: 'Visual Craftsmanship & Marketing',
       whatItMeasures: 'Visual hierarchy, typography scale, key visuals (KVs), social media carousels, POSM roll-ups, and promo poster composition.',
       whatIsGood: 'Crisp visual balance, high scroll-stopping aesthetic, clear typographic hierarchy, and instant brand recognition.',
@@ -53,7 +53,7 @@
       actionAdvice: 'Adhere strictly to Fluent 2 spacing tokens and brand typography scales.'
     },
     '3D & Motion': {
-      icon: '🎲',
+      icon: 'target',
       category: 'CGI, 3D Rendering & Animation',
       whatItMeasures: '3D product bottle/box modeling, photorealistic lighting, liquid physics simulation, and smooth motion graphics animation.',
       whatIsGood: 'Photorealistic textures, natural lighting reflections, smooth 60fps animations, handling premium product reveals internally.',
@@ -61,7 +61,7 @@
       actionAdvice: 'Optimize lighting presets and maintain reusable master bottle/box 3D models.'
     },
     'Video Editing': {
-      icon: '🎬',
+      icon: 'video',
       category: 'Direct-Response & Short-Form Video',
       whatItMeasures: 'TikTok / Reels 9:16 video ad pacing, first-3-second hook retention, UGC b-roll cuts, sound design, and subtitle safe zones.',
       whatIsGood: 'First 3s hook retention >30%, punchy cut transitions, crystal-clear audio voiceover mix, rapid testing variations.',
@@ -69,7 +69,7 @@
       actionAdvice: 'Frontload strongest visual hook in seconds 0-3 and verify mobile TikTok safe-zone overlays.'
     },
     'Copywriting': {
-      icon: '✍️',
+      icon: 'edit',
       category: 'Direct Response & Messaging',
       whatItMeasures: 'Persuasive headlines, problem-agitation scripts, benefit hooks, advertising claims, and call-to-action (CTA) clarity.',
       whatIsGood: 'High click-through-rate (CTR) angles, emotionally resonant pain points, clear CTA, and 100% compliant with ad platform policies.',
@@ -77,7 +77,7 @@
       actionAdvice: 'Test at least 3 distinct hook variations per brief and run through the ad policy safety checklist.'
     },
     'Branding': {
-      icon: '✨',
+      icon: 'sparkle',
       category: 'Brand Identity & Design System',
       whatItMeasures: 'Multi-brand cohesion across client entities (Acme Corp, Nexus Studio, Lumina Labs), logo protection zones, color palettes, and brand equity.',
       whatIsGood: 'Flawless brand consistency across packaging, web, and ads; zero off-palette colors; instant customer trust and brand recall.',
@@ -125,7 +125,7 @@
   const activeMetric = $derived(activeSkills[activeMetricIndex] || activeSkills[0]);
   const activeMeta = $derived(
     SKILL_METADATA[activeMetric.label] || {
-      icon: '🎯',
+      icon: 'target',
       category: 'Creative Discipline',
       whatItMeasures: 'Studio execution capability and output quality in this design domain.',
       whatIsGood: 'Output meets or exceeds benchmark quality with zero major revisions.',
@@ -147,7 +147,7 @@
 
   function getMeta(label: string): SkillMeta {
     return SKILL_METADATA[label] || {
-      icon: '🎯',
+      icon: 'target',
       category: 'Creative Discipline',
       whatItMeasures: 'Studio execution capability in this domain.',
       whatIsGood: 'Meets quarterly benchmark with clean handoff.',
@@ -360,9 +360,9 @@
         <div class="tooltip-desc">{hMeta.whatItMeasures}</div>
         <div class="tooltip-footer">
           {#if hSkill.actual >= hSkill.target}
-            <span class="status-good">✓ Good: Fast sign-off, zero dieline/script delays.</span>
+            <span class="status-good"><Icon name="check" size={12} /> Good: Fast sign-off, zero dieline/script delays.</span>
           {:else}
-            <span class="status-gap">⚠ Attention: Revision risk; Art Director preflight advised.</span>
+            <span class="status-gap"><Icon name="alert" size={12} /> Attention: Revision risk; Art Director preflight advised.</span>
           {/if}
         </div>
       </div>
@@ -383,7 +383,7 @@
         onmouseenter={() => (hoveredIndex = i)}
         onmouseleave={() => (hoveredIndex = null)}
       >
-        <span class="chip-icon">{meta.icon}</span>
+        <span class="chip-icon"><Icon name={meta.icon} size={14} /></span>
         <span class="chip-name">{s.label}</span>
         <span class="chip-score" class:ahead={delta >= 0} class:gap={delta < 0}>
           {s.actual}%
@@ -404,7 +404,7 @@
     <div class="detail-card-header">
       <div class="detail-title-col">
         <div class="detail-category-label">
-          <span>{activeMeta.icon}</span>
+          <Icon name={activeMeta.icon} size={14} />
           <span>{activeMeta.category}</span>
           {#if activeMetric.projectCount}
             <span class="project-count-pill">{activeMetric.projectCount} Audited Projects</span>
@@ -471,14 +471,14 @@
 
       <div class="guidance-col good">
         <div class="guidance-heading">
-          <span class="indicator-badge good">🟢 Good (≥ {activeMetric.target}%)</span>
+          <span class="indicator-badge good"><span class="dot dot-success"></span> Good (≥ {activeMetric.target}%)</span>
         </div>
         <p class="guidance-text">{activeMeta.whatIsGood}</p>
       </div>
 
       <div class="guidance-col bad">
         <div class="guidance-heading">
-          <span class="indicator-badge bad">🔴 Needs Attention (&lt; {activeMetric.target}%)</span>
+          <span class="indicator-badge bad"><span class="dot dot-danger"></span> Needs Attention (&lt; {activeMetric.target}%)</span>
         </div>
         <p class="guidance-text">{activeMeta.whatIsBad}</p>
       </div>
@@ -544,14 +544,14 @@
       <h4>2. The Golden Rule: Good vs Bad at a Glance</h4>
       <div class="rule-box-grid">
         <div class="rule-box green">
-          <div class="rule-header">🟢 Green Outside Blue (Outperforming / Healthy)</div>
+          <div class="rule-header"><span class="dot dot-success"></span> Green Outside Blue (Outperforming / Healthy)</div>
           <p>
             When the solid green polygon extends <strong>outside or touches</strong> the dashed blue line, the studio is
             at peak readiness. Outputs are approved with minimal iterations and can be shipped with high confidence.
           </p>
         </div>
         <div class="rule-box red">
-          <div class="rule-header">🔴 Green Inside Blue (Skill Gap / Bottleneck)</div>
+          <div class="rule-header"><span class="dot dot-danger"></span> Green Inside Blue (Skill Gap / Bottleneck)</div>
           <p>
             When the solid green polygon is <strong>visibly inside</strong> the dashed blue boundary, this discipline is an
             operational bottleneck. Expect higher revision cycles, delay risks, or required Art Director preflight reviews.
@@ -584,8 +584,8 @@
                 </td>
                 <td class="target-cell">{s.target}%</td>
                 <td>{m.whatItMeasures}</td>
-                <td class="good-cell">✓ {m.whatIsGood}</td>
-                <td class="bad-cell">✕ {m.whatIsBad}</td>
+                <td class="good-cell"><Icon name="check" size={12} /> {m.whatIsGood}</td>
+                <td class="bad-cell"><Icon name="close" size={12} /> {m.whatIsBad}</td>
               </tr>
             {/each}
           </tbody>

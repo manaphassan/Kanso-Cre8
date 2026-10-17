@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
@@ -241,7 +242,7 @@
       <div class="loading-state">Loading comments from NAS…</div>
     {:else if filteredComments.length === 0}
       <div class="empty-state">
-        <div class="empty-icon">💬</div>
+        <div class="empty-icon"><Icon name="message" size={24} /></div>
         <p class="empty-title">No comments yet</p>
         <p class="empty-desc">
           Start the conversation, request specific revisions, or tag team members with <code class="tag-code">@username</code>.
@@ -270,7 +271,7 @@
                   <span class="role-tag role-{comment.authorRole?.toLowerCase() || 'user'}">{comment.authorRole}</span>
                   {#if comment.deliverableId}
                     <span class="deliverable-tag">
-                      🎯 {deliverables.find(d => d.id === comment.deliverableId)?.name || comment.deliverableId}
+                      <Icon name="target" size={12} /> {deliverables.find(d => d.id === comment.deliverableId)?.name || comment.deliverableId}
                     </span>
                   {/if}
                 </div>
@@ -284,15 +285,15 @@
                     title={comment.resolved ? 'Reopen comment thread' : 'Mark as resolved'}
                   >
                     {#if comment.resolved}
-                      ✓ Resolved
+                      <Icon name="check" size={12} /> Resolved
                     {:else}
-                      ○ Resolve
+                      Resolve
                     {/if}
                   </button>
 
                   {#if appState.currentUser?.role === 'admin' || appState.currentUser?.name === comment.author}
-                    <button class="btn-delete" onclick={() => handleDelete(comment.id)} title="Delete comment">
-                      ✕
+                    <button class="btn-delete" onclick={() => handleDelete(comment.id)} title="Delete comment" aria-label="Delete comment">
+                      <Icon name="close" size={12} />
                     </button>
                   {/if}
                 </div>
@@ -323,7 +324,7 @@
         <select class="deliverable-link-select" bind:value={selectedDeliverableTag}>
           <option value="">Attach to General Project</option>
           {#each deliverables as d}
-            <option value={d.id}>🎯 {d.name} ({d.format})</option>
+            <option value={d.id}>{d.name} ({d.format})</option>
           {/each}
         </select>
       {/if}

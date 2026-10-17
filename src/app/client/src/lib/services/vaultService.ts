@@ -180,14 +180,14 @@ export class VaultService {
 
   /**
    * Extracts universal task items from Markdown text
-   * Pattern: - [ ] #task <Title> [📅 YYYY-MM-DD] [⏫ low|normal|high|urgent]
+   * Pattern: - [ ] #task <Title> [due: YYYY-MM-DD] [priority: low|normal|high|urgent]
    */
   static extractTasks(markdown: string, sourceFilePath: string = ''): ExtractedTask[] {
     if (!markdown) return [];
     const tasks: ExtractedTask[] = [];
     const lines = markdown.split('\n');
 
-    const taskRegex = /^\s*-\s*\[([ xX])\]\s*#task\s+(.+?)(?:\s+📅\s*(\d{4}-\d{2}-\d{2}))?(?:\s+⏫\s*(low|normal|high|urgent))?\s*$/;
+    const taskRegex = /^\s*-\s*\[([ xX])\]\s*#task\s+(.+?)(?:\s+\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s+\u{23EB}\s*(low|normal|high|urgent))?\s*$/;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -256,7 +256,7 @@ export class VaultService {
       tags: ['design', options.clientCode.toLowerCase()]
     };
 
-    const body = `# ${options.title}\n\n> [!NOTE]\n> ${options.description || 'Project creative brief and specifications.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and references 📅 ${frontmatter.due_date} ⏫ normal\n- [ ] #task Prepare initial source drafts in 02_SOURCE/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Finalize deliverables in 05_DELIVERABLES/\n`;
+    const body = `# ${options.title}\n\n> [!NOTE]\n> ${options.description || 'Project creative brief and specifications.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and references due: ${frontmatter.due_date} priority: normal\n- [ ] #task Prepare initial source drafts in 02_SOURCE/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Finalize deliverables in 05_DELIVERABLES/\n`;
 
     return this.stringifyMarkdown(frontmatter, body);
   }

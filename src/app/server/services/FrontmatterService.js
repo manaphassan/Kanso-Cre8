@@ -38,27 +38,27 @@ class FrontmatterService {
         const titleMatch = folderName.replace(/^\d{6}_([A-Za-z0-9]+)_([A-Za-z0-9]+)_?/, '').replace(/_/g, ' ');
         const cleanTitle = titleMatch || 'Creative Project Brief';
 
-        body = `# 🎨 ${cleanTitle}
+        body = `# ${cleanTitle}
 
-## 🎯 Campaign & Objective Overview
+## Campaign & Objective Overview
 Deliver high-converting visual assets, compliant packaging, and campaign creatives according to studio brand standards.
 
-## 📋 Creative Deliverables & Milestones
+## Creative Deliverables & Milestones
 - [ ] 01. Packaging Box Dieline & Label (AI/PDF, CMYK 300 DPI)
 - [ ] 02. Product 3D Render & Mockup (PNG 4K transparent)
 - [ ] 03. Social Media Ad Carousel (1080x1080, 5 slides)
 - [ ] 04. Short-form Video Hook (9:16, 15s)
 
-## 🧭 Visual Direction & Brand Voice
+## Visual Direction & Brand Voice
 - **Tone**: Clean, Minimalist, Precision Studio.
 - **Primary Palette**: Deep Canvas \`#09090B\`, Electric Sky \`#38BDF8\`, Pure Surface \`#18181B\`.
 
-## 📊 Production & Review Flow
+## Production & Review Flow
 \`\`\`mermaid
 flowchart LR
-  Intake[📥 Intake & Brief] --> Concept[🎨 Concept & Dieline]
-  Concept --> Review[🔍 Art Director Review]
-  Review --> Approved[✅ Final Sign-Off]
+  Intake[Intake & Brief] --> Concept[Concept & Dieline]
+  Concept --> Review[Art Director Review]
+  Review --> Approved[Final Sign-Off]
 \`\`\`
 `;
       }

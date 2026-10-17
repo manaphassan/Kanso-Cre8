@@ -97,16 +97,16 @@ class JournalVaultService {
       if (!line) continue;
 
       if (line.startsWith('# ')) {
-        title = line.replace(/^#\s+/, '').replace(/^📔\s*/, '').trim();
+        title = line.replace(/^#\s+/, '').replace(/^[\u{1F4D4}]\s*/u, '').trim();
         continue;
       }
 
-      if (/^##\s*(🎯\s*)?(Focus\s+Intentions|Daily\s+Intentions)/i.test(line)) {
+      if (/^##\s*(?:[\u{1F3AF}]\s*)?(Focus\s+Intentions|Daily\s+Intentions)/iu.test(line)) {
         currentSection = 'intentions';
         continue;
       }
 
-      if (/^##\s*(⚡\s*)?(Rapid\s+Log|Tasks)/i.test(line)) {
+      if (/^##\s*(?:[\u{26A1}]\s*)?(Rapid\s+Log|Tasks)/iu.test(line)) {
         currentSection = 'rapid_log';
         continue;
       }
@@ -184,7 +184,7 @@ class JournalVaultService {
     } catch (_) {}
 
     let md = `---\n${yaml.dump(fm).trim()}\n---\n\n`;
-    md += `# 📔 ${note.title || 'Daily Creative Log'}\n\n`;
+    md += `# ${note.title || 'Daily Creative Log'}\n\n`;
 
     if (note.focusIntentions && note.focusIntentions.length) {
       md += `## Focus Intentions\n`;
@@ -474,7 +474,7 @@ class JournalVaultService {
       reflections: reviewData.reflections || ''
     };
 
-    const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# 📅 Monthly Review: ${reviewData.month}\n\n${reviewData.reflections || ''}\n`;
+    const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# Monthly Review: ${reviewData.month}\n\n${reviewData.reflections || ''}\n`;
     FrontmatterService.writeAtomic(filePath, md, 'utf8');
     return this.getMonthlyReview(reviewData.month);
   }
@@ -561,7 +561,7 @@ class JournalVaultService {
       vision: yearlyData.vision || ''
     };
 
-    const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# 🏔️ Annual Vision & Retrospective: ${yearStr}\n\n${yearlyData.vision || ''}\n`;
+    const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# Annual Vision & Retrospective: ${yearStr}\n\n${yearlyData.vision || ''}\n`;
     FrontmatterService.writeAtomic(filePath, md, 'utf8');
     return this.getYearlyIndex(yearStr);
   }

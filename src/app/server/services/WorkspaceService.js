@@ -197,7 +197,7 @@ class WorkspaceService {
         }
       };
 
-      const body = `# ${s.title}\n\n## Project Objective\nDeliver high-impact visual design and production collateral for ${s.brand}.\n\n## Core Deliverables\n- Master high-res vectors and source design files in \`02_SOURCE/\`\n- Review exports and renders in \`04_WIP/\`\n- Client-ready delivery assets in \`05_DELIVERABLES/\`\n\n## Sprint Checklist\n- [ ] #task Review client brief and references in 01_BRIEF/ 📅 ${s.deadline} ⏫ normal\n- [ ] #task Prepare design source files in 02_SOURCE/\n- [ ] #task Finalize copy and messaging in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Deliver approved assets in 05_DELIVERABLES/\n`;
+      const body = `# ${s.title}\n\n## Project Objective\nDeliver high-impact visual design and production collateral for ${s.brand}.\n\n## Core Deliverables\n- Master high-res vectors and source design files in \`02_SOURCE/\`\n- Review exports and renders in \`04_WIP/\`\n- Client-ready delivery assets in \`05_DELIVERABLES/\`\n\n## Sprint Checklist\n- [ ] #task Review client brief and references in 01_BRIEF/ due: ${s.deadline} priority: normal\n- [ ] #task Prepare design source files in 02_SOURCE/\n- [ ] #task Finalize copy and messaging in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Deliver approved assets in 05_DELIVERABLES/\n`;
 
       FrontmatterService.writeProjectReadme(projDir, fm, body);
     }
@@ -996,7 +996,7 @@ class WorkspaceService {
       }
     };
 
-    const readmeBody = `# ${title}\n\n> [!NOTE]\n> ${options.description || 'Standardized 5-folder creative project vault.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and vector assets in 01_BRIEF/ 📅 ${deadline} ⏫ normal\n- [ ] #task Prepare master design source files in 02_SOURCE/\n- [ ] #task Compose hooks and copywriting in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Package final deliverables in 05_DELIVERABLES/\n`;
+    const readmeBody = `# ${title}\n\n> [!NOTE]\n> ${options.description || 'Standardized 5-folder creative project vault.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and vector assets in 01_BRIEF/ due: ${deadline} priority: normal\n- [ ] #task Prepare master design source files in 02_SOURCE/\n- [ ] #task Compose hooks and copywriting in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Package final deliverables in 05_DELIVERABLES/\n`;
 
     FrontmatterService.writeProjectReadme(targetDir, fm, readmeBody);
 

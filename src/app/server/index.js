@@ -86,9 +86,9 @@ app.use((err, req, res, next) => {
 
 app.listen(config.PORT, config.HOST, () => {
   console.log('================================================================');
-  console.log(`🚀 Kanso Cre8 (簡素) — The Mindful Creative Vault Server`);
-  console.log(`🌐 Server running at: http://${config.HOST === '0.0.0.0' ? 'localhost' : config.HOST}:${config.PORT}`);
-  console.log(`📂 Workspace Root:   ${config.WORKSPACE_ROOT}`);
-  console.log(`🔒 Environment:      Production Ready`);
+  console.log(`Kanso Cre8 (簡素) — The Mindful Creative Vault Server`);
+  console.log(`Server running at: http://${config.HOST === '0.0.0.0' ? 'localhost' : config.HOST}:${config.PORT}`);
+  console.log(`Workspace Root:   ${config.WORKSPACE_ROOT}`);
+  console.log(`Environment:      Production Ready`);
   console.log('================================================================');
 });

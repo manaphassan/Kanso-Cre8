@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { projectStore } from '$lib/stores/projectStore.svelte';
@@ -282,9 +283,10 @@
                       type="button"
                       class="btn-action-delete"
                       title="Delete Project"
+                      aria-label="Delete Project"
                       onclick={() => onDelete(p)}
                     >
-                      🗑
+                      <Icon name="trash" size={14} />
                     </button>
                   {/if}
                 </div>

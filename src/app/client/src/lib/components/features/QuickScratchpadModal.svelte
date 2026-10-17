@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { notesService } from '$lib/services/notesService';
@@ -115,7 +116,7 @@
           {:else if lastSaved}
             <span class="sync-indicator saved">Saved {lastSaved}</span>
           {/if}
-          <button class="close-btn" onclick={() => { saveContent(); onclose(); }} title="Close (Esc)">✕</button>
+          <button class="close-btn" onclick={() => { saveContent(); onclose(); }} title="Close (Esc)" aria-label="Close"><Icon name="close" size={14} /></button>
         </div>
       </div>
 
@@ -142,7 +143,7 @@
         <div class="footer-actions">
           <button class="action-btn text-btn" onclick={handleClear}>Clear</button>
           <button class="action-btn secondary-btn" onclick={handlePasteClipboard}>
-            📋 Paste Clipboard
+            <Icon name="file" size={14} /> Paste Clipboard
           </button>
           <button class="action-btn primary-btn" onclick={() => { saveContent(); onclose(); }}>
             Save &amp; Close

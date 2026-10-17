@@ -155,8 +155,8 @@ A timeless interior and graphic design ratio to balance palette harmony:
 Met with Sarah Jenkins regarding the new Enterprise Mobile Banking 3D isometric asset package.
 
 ### Action Items & Deliverables:
-- [ ] #task 3D chassis blockout in Blender for [[202609_0001D_ACME_MobileAppIllustration]] 📅 2026-09-14 ⏫ high
-- [ ] #task Export transparent 4K PNG renders to 04_WIP/ 📅 2026-09-18
+- [ ] #task 3D chassis blockout in Blender for [[202609_0001D_ACME_MobileAppIllustration]] due: 2026-09-14 priority: high
+- [ ] #task Export transparent 4K PNG renders to 04_WIP/ due: 2026-09-18
 - [ ] #task Send revised quote [[INV-2026-001]] to Sarah
 - [ ] Verify font licensing for [[ACME]] typography assets
 
@@ -213,7 +213,7 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
     const linkedProjects = uniqueLinks.filter(l => l.match(/\[\[\d{6}_/));
 
     // Extract inline tasks tagged with #task
-    const taskRegex = /- \[([ xX])\]\s*#task\s*(.*?)(?:\s*📅\s*(\d{4}-\d{2}-\d{2}))?(?:\s*⏫\s*(high|urgent|low))?$/gm;
+    const taskRegex = /- \[([ xX])\]\s*#task\s*(.*?)(?:\s*(?:[\u{1F4C5}]|due:)\s*(\d{4}-\d{2}-\d{2}))?(?:\s*(?:[\u{23EB}]|priority:)\s*(high|urgent|low))?$/gmu;
     const extractedTasks = [];
 
     for (const match of body.matchAll(taskRegex)) {

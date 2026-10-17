@@ -101,7 +101,7 @@ class WebhookService {
         avatar_url: 'https://raw.githubusercontent.com/manaphassan/Kanso-Cre8/main/src/app/client/public/brand/kanso-mark.svg',
         embeds: [
           {
-            title: `🎨 [${eventName}] ${title}`,
+            title: `[${eventName}] ${title}`,
             description: desc,
             color: 0x0284C7,
             timestamp: new Date().toISOString(),
@@ -115,7 +115,7 @@ class WebhookService {
       };
     } else if (hook.serviceType === 'slack') {
       body = {
-        text: `*🎨 Kanso Cre8 [${eventName}]:* ${title}\n>${desc}\n_By: ${payload.actor || 'Studio Lead'}_`
+        text: `*Kanso Cre8 [${eventName}]:* ${title}\n>${desc}\n_By: ${payload.actor || 'Studio Lead'}_`
       };
     } else {
       // Generic / WhatsApp Webhook Gateway

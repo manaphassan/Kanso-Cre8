@@ -360,7 +360,7 @@
         oninput={handleSearchChange}
       />
       {#if rawSearchInput}
-        <button class="clear-search" onclick={handleClearSearch} title="Clear search">✕</button>
+        <button class="clear-search" onclick={handleClearSearch} title="Clear search" aria-label="Clear search"><Icon name="close" size={12} /></button>
       {/if}
     </div>
 
@@ -918,7 +918,7 @@
           onclick={clearSelection}
           title="Deselect all"
         >
-          ✕ Clear
+          <Icon name="close" size={12} /> Clear
         </button>
       </div>
     </div>

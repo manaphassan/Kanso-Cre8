@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { notesService as zettelService } from '../services/notesService';
   import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/notes';
@@ -119,7 +120,7 @@
       created: today,
       updated: today,
       relatedLinks: [],
-      content: `# ${defaultTitle}\n\nCapture your thought here. Connect ideas with [[WikiLinks]] or tag clients like [[ACME]] or [[NEX]].\n\n- [ ] #task Next creative step 📅 ${today}`
+      content: `# ${defaultTitle}\n\nCapture your thought here. Connect ideas with [[WikiLinks]] or tag clients like [[ACME]] or [[NEX]].\n\n- [ ] #task Next creative step due: ${today}`
     };
 
     zettelService.saveNote(newNote);
@@ -350,7 +351,7 @@
               class="clear-search-btn"
               onclick={() => searchQuery = ''}
               title="Clear search"
-            >✕</button>
+             aria-label="Close"><Icon name="close" size={12} /></button>
           {/if}
         </div>
 
@@ -404,7 +405,7 @@
         <div class="notes-feed-list">
           {#if filteredNotes.length === 0}
             <div class="empty-feed-placeholder">
-              <span class="empty-icon">📝</span>
+              <span class="empty-icon"><Icon name="file" size={24} /></span>
               <p class="empty-text">No matching notes found</p>
               {#if searchQuery}
                 <button type="button" class="empty-reset-btn" onclick={() => searchQuery = ''}>Clear search</button>
@@ -598,7 +599,7 @@
                           {task.description}
                         </span>
                         {#if task.dueDate}
-                          <span class="task-due-chip">📅 {task.dueDate}</span>
+                          <span class="task-due-chip"><Icon name="calendar" size={12} /> {task.dueDate}</span>
                         {/if}
                         {#if task.priority === 'high' || task.priority === 'urgent'}
                           <span class="task-priority-chip">⏫ {task.priority}</span>
@@ -754,7 +755,7 @@
       ></textarea>
 
       <div class="scratchpad-footer-bar">
-        <span>💡 Human-readable Markdown storage: <strong class="vault-path">_Notes/Scratchpad.md</strong></span>
+        <span><Icon name="lightbulb" size={14} /> Human-readable Markdown storage: <strong class="vault-path">_Notes/Scratchpad.md</strong></span>
         <span>Instant plain-text sync with Obsidian &amp; VS Code</span>
       </div>
     </div>
@@ -783,10 +784,10 @@
       <div class="task-drawer-modal" onclick={(e) => e.stopPropagation()}>
         <div class="modal-header">
           <div class="modal-title-group">
-            <span class="modal-icon">✓</span>
+            <span class="modal-icon"><Icon name="check" size={16} /></span>
             <h2>Universal Vault Tasks ({allTasks.length})</h2>
           </div>
-          <button type="button" class="close-btn" onclick={() => showTaskDrawer = false}>✕</button>
+          <button type="button" class="close-btn" onclick={() => showTaskDrawer = false} aria-label="Close"><Icon name="close" size={12} /></button>
         </div>
 
         <div class="modal-body-scroll">
@@ -815,7 +816,7 @@
 
                   <div class="task-meta-pills">
                     {#if task.dueDate}
-                      <span class="task-due-chip">📅 {task.dueDate}</span>
+                      <span class="task-due-chip"><Icon name="calendar" size={12} /> {task.dueDate}</span>
                     {/if}
                     {#if task.priority}
                       <span class="task-priority-chip">{task.priority}</span>

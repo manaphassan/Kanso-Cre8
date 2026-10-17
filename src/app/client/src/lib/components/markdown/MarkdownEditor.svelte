@@ -1,5 +1,6 @@
 <script lang="ts">
   import MarkdownViewer from './MarkdownViewer.svelte';
+  import { Icon } from '$lib/components/ui';
 
   interface Props {
     value?: string;
@@ -88,7 +89,7 @@
   function insertMermaid(type: 'flow' | 'pie' | 'sequence' | 'timeline') {
     let code = '';
     if (type === 'flow') {
-      code = `\`\`\`mermaid\nflowchart TD\n  Brief[📋 Creative Brief] --> Concept[🎨 Visual Concept]\n  Concept --> Proof[🔍 Client Proof Preview]\n  Proof -->|Client Approved| Deliver[✅ Final Deliverables]\n  Proof -->|Revisions| Concept\n\`\`\``;
+      code = `\`\`\`mermaid\nflowchart TD\n  Brief[Creative Brief] --> Concept[Visual Concept]\n  Concept --> Proof[Client Proof Preview]\n  Proof -->|Client Approved| Deliver[Final Deliverables]\n  Proof -->|Revisions| Concept\n\`\`\``;
     } else if (type === 'pie') {
       code = `\`\`\`mermaid\npie title Deliverable Media Mix\n  "Packaging Dielines" : 40\n  "Social Media Ads" : 35\n  "3D Render Assets" : 25\n\`\`\``;
     } else if (type === 'sequence') {
@@ -134,7 +135,7 @@
   <!-- Top Obsidian / Notion Zen Command Bar -->
   <header class="editor-header">
     <div class="header-doc-meta">
-      <span class="doc-icon">📝</span>
+      <span class="doc-icon"><Icon name="file" size={14} /></span>
       <span class="doc-title">{title || 'README.md'}</span>
       <span class="meta-sep">•</span>
       <span class="doc-stats">{wordCount} words</span>
@@ -374,42 +375,42 @@
           onclick={() => { showCalloutMenu = !showCalloutMenu; showDiagramMenu = false; }}
           title="Notion Callout Box"
         >
-          <span class="trigger-icon">💡</span>
+          <span class="trigger-icon"><Icon name="lightbulb" size={14} /></span>
           <span>Callout</span>
           <span class="trigger-arrow">▾</span>
         </button>
         {#if showCalloutMenu}
           <div class="n-dropdown-menu">
             <button class="n-menu-item" onclick={() => { insertCallout('NOTE'); showCalloutMenu = false; }}>
-              <span class="m-icon">📌</span>
+              <span class="m-icon"><Icon name="pin" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Note</span>
                 <span class="m-desc">Key reference or spec</span>
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertCallout('TIP'); showCalloutMenu = false; }}>
-              <span class="m-icon">💡</span>
+              <span class="m-icon"><Icon name="lightbulb" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Tip / Idea</span>
                 <span class="m-desc">Creative recommendation</span>
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertCallout('WARNING'); showCalloutMenu = false; }}>
-              <span class="m-icon">⚠️</span>
+              <span class="m-icon"><Icon name="alert" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Warning</span>
                 <span class="m-desc">Crucial constraint</span>
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertCallout('OBJECTIVE'); showCalloutMenu = false; }}>
-              <span class="m-icon">🎯</span>
+              <span class="m-icon"><Icon name="target" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Objective</span>
                 <span class="m-desc">Campaign core goal</span>
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertCallout('APPROVED'); showCalloutMenu = false; }}>
-              <span class="m-icon">✅</span>
+              <span class="m-icon"><Icon name="check" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Client Sign-Off</span>
                 <span class="m-desc">Approval milestone</span>
@@ -428,14 +429,14 @@
           onclick={() => { showDiagramMenu = !showDiagramMenu; showCalloutMenu = false; }}
           title="Mermaid Diagrams"
         >
-          <span class="trigger-icon">📊</span>
+          <span class="trigger-icon"><Icon name="chart" size={14} /></span>
           <span>Diagram</span>
           <span class="trigger-arrow">▾</span>
         </button>
         {#if showDiagramMenu}
           <div class="n-dropdown-menu">
             <button class="n-menu-item" onclick={() => { insertMermaid('flow'); showDiagramMenu = false; }}>
-              <span class="m-icon">🔀</span>
+              <span class="m-icon"><Icon name="arrowRight" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Creative Workflow</span>
                 <span class="m-desc">Brief to Final Flowchart</span>
@@ -449,14 +450,14 @@
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertMermaid('sequence'); showDiagramMenu = false; }}>
-              <span class="m-icon">💬</span>
+              <span class="m-icon"><Icon name="message" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Client Review Sequence</span>
                 <span class="m-desc">Proof review & feedback cycle</span>
               </div>
             </button>
             <button class="n-menu-item" onclick={() => { insertMermaid('pie'); showDiagramMenu = false; }}>
-              <span class="m-icon">🥧</span>
+              <span class="m-icon"><Icon name="chart" size={14} /></span>
               <div class="m-text">
                 <span class="m-title">Media Mix Breakdown</span>
                 <span class="m-desc">Deliverables proportion chart</span>
@@ -494,7 +495,7 @@
           <MarkdownViewer content={value} />
         {:else}
           <div class="empty-preview">
-            <span class="empty-icon">📝</span>
+            <span class="empty-icon"><Icon name="file" size={24} /></span>
             <p>No document content written yet.</p>
             <p class="empty-sub">Type your creative brief, checklist, or client notes above.</p>
           </div>
