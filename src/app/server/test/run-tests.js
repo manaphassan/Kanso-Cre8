@@ -367,38 +367,54 @@ This is the project brief content.
   // ─── TEST 13: CommentService & Collaboration Threads ────────────────
   test('CommentService reads, writes, extracts @mentions, and resolves project comments', () => {
     const CommentService = require('../services/CommentService');
-    const testProjectId = '0085D';
-    const testDir = path.join(__dirname, '..', '..', '..', 'Creative-Team', '2026', '202608_August', '202608_0085D_SS_Rejal_Premium_Packaging');
+    const testProjectId = '202609_0001D_ACME';
+    const testDir = path.join(__dirname, 'temp-comment-test');
+    if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+    fs.mkdirSync(testDir, { recursive: true });
 
-    const newComment = CommentService.addComment(testDir, testProjectId, {
-      author: 'Haikal',
-      authorRole: 'User',
-      content: 'Updated the packaging dieline specs. @alex @marcus please sign off!',
-      deliverableId: 'del_001'
-    });
+    try {
+      const newComment = CommentService.addComment(testDir, testProjectId, {
+        author: 'Haikal',
+        authorRole: 'User',
+        content: 'Updated the packaging dieline specs. @alex @marcus please sign off!',
+        deliverableId: 'del_001'
+      });
 
-    assert.ok(newComment.id.startsWith('cmt_'), 'Comment ID must start with cmt_');
-    assert.strictEqual(newComment.author, 'Haikal');
-    assert.ok(newComment.mentions.includes('alex'), 'Must extract @alex mention');
-    assert.ok(newComment.mentions.includes('marcus'), 'Must extract @marcus mention');
-    assert.strictEqual(newComment.resolved, false);
+      assert.ok(newComment.id.startsWith('cmt_'), 'Comment ID must start with cmt_');
+      assert.strictEqual(newComment.author, 'Haikal');
+      assert.ok(newComment.mentions.includes('alex'), 'Must extract @alex mention');
+      assert.ok(newComment.mentions.includes('marcus'), 'Must extract @marcus mention');
+      assert.strictEqual(newComment.resolved, false);
 
-    // Retrieve comments
-    const allComments = CommentService.getComments(testDir, testProjectId);
-    assert.ok(allComments.length >= 1, 'Must contain at least 1 comment');
-    assert.ok(allComments.some(c => c.id === newComment.id), 'Must find created comment');
+      // Verify physical _review.md file created in project folder
+      const reviewFilePath = path.join(testDir, '_review.md');
+      assert.ok(fs.existsSync(reviewFilePath), '_review.md must exist in project folder');
+      const reviewContent = fs.readFileSync(reviewFilePath, 'utf8');
+      assert.ok(reviewContent.includes('Updated the packaging dieline specs.'));
 
-    // Resolve comment
-    const resolveResult = CommentService.resolveComment(testDir, testProjectId, newComment.id, true, 'Hasan', 'Admin');
-    assert.strictEqual(resolveResult.resolved, true);
+      // Retrieve comments
+      const allComments = CommentService.getComments(testDir, testProjectId);
+      assert.ok(allComments.length >= 1, 'Must contain at least 1 comment');
+      assert.ok(allComments.some(c => c.id === newComment.id), 'Must find created comment');
 
-    const updatedComments = CommentService.getComments(testDir, testProjectId);
-    const resolvedItem = updatedComments.find(c => c.id === newComment.id);
-    assert.ok(resolvedItem && resolvedItem.resolved, 'Comment must be marked resolved');
+      // Resolve comment
+      const resolveResult = CommentService.resolveComment(testDir, testProjectId, newComment.id, true, 'Hasan', 'Admin');
+      assert.strictEqual(resolveResult.resolved, true);
 
-    // Delete comment
-    const deleteResult = CommentService.deleteComment(testDir, testProjectId, newComment.id, 'Haikal', 'User');
-    assert.strictEqual(deleteResult.success, true);
+      const updatedComments = CommentService.getComments(testDir, testProjectId);
+      const resolvedItem = updatedComments.find(c => c.id === newComment.id);
+      assert.ok(resolvedItem && resolvedItem.resolved, 'Comment must be marked resolved');
+
+      // Delete comment
+      const deleteResult = CommentService.deleteComment(testDir, testProjectId, newComment.id, 'Haikal', 'User');
+      assert.strictEqual(deleteResult.success, true);
+
+      // Assert _Team/comments is never created
+      const teamComments = path.join(config.WORKSPACE_ROOT, '_Team', 'comments');
+      assert.strictEqual(fs.existsSync(teamComments), false, 'Forbidden _Team/comments must never be created');
+    } finally {
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
   });
 
   // ─── TEST 14: Activity Notifications & Mentions ─────────────────────
@@ -2891,6 +2907,60 @@ Layout balance principles.
     });
     assert.strictEqual(noteResult.valid, true);
     assert.strictEqual(noteResult.data.unknown_external_sync_id, 'sync_abc123');
+  });
+
+  // ─── TEST 57: Comments & Approvals in <project>/_review.md ────────────
+  await test('CommentService and ApprovalService store review comments and decisions in <project>/_review.md', () => {
+    const CommentService = require('../services/CommentService');
+    const ApprovalService = require('../services/ApprovalService');
+    const testDir = path.join(__dirname, 'temp-review-md-test');
+    if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+    fs.mkdirSync(testDir, { recursive: true });
+
+    try {
+      // 1. Post a comment
+      const cmt = CommentService.addComment(testDir, '202609_0099_TEST', {
+        author: 'Marcus Vance',
+        authorRole: 'Designer',
+        content: 'Refined 3D shadows and typography.'
+      });
+      assert.ok(cmt.id);
+
+      // 2. Add an approval record
+      const appr = CommentService.addApproval(testDir, '202609_0099_TEST', {
+        id: 'appr_test_001',
+        round: 1,
+        decision: 'approved',
+        reviewer: 'Alex Mercer',
+        role: 'Creative Director',
+        comment: 'Outstanding visual depth.',
+        timestamp: new Date().toISOString()
+      });
+      assert.ok(appr.id);
+
+      // 3. Verify physical _review.md file existence and content
+      const reviewPath = path.join(testDir, '_review.md');
+      assert.ok(fs.existsSync(reviewPath), '_review.md must physically exist');
+      const raw = fs.readFileSync(reviewPath, 'utf8');
+      assert.ok(raw.includes('Refined 3D shadows and typography.'));
+      assert.ok(raw.includes('Outstanding visual depth.'));
+      assert.ok(raw.includes('Alex Mercer'));
+
+      // 4. Verify reading back
+      const loadedComments = CommentService.getComments(testDir, '202609_0099_TEST');
+      assert.strictEqual(loadedComments.length, 1);
+      assert.strictEqual(loadedComments[0].content, 'Refined 3D shadows and typography.');
+
+      const loadedApprovals = ApprovalService.getApprovals(testDir, '202609_0099_TEST');
+      assert.strictEqual(loadedApprovals.length, 1);
+      assert.strictEqual(loadedApprovals[0].reviewer, 'Alex Mercer');
+
+      // 5. Ensure global _Team/comments is NOT created
+      const forbiddenDir = path.join(config.WORKSPACE_ROOT, '_Team', 'comments');
+      assert.strictEqual(fs.existsSync(forbiddenDir), false, '_Team/comments must not exist');
+    } finally {
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
   });
 
   console.log(`\n========================================================`);

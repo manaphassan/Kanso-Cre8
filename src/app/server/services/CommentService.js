@@ -2,56 +2,171 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 const AuditService = require('./AuditService');
-const TeamService = require('./TeamService');
 const WorkspaceService = require('./WorkspaceService');
+const FrontmatterService = require('./FrontmatterService');
 
 class CommentService {
   /**
-   * Resolves the comments file path for a project.
-   * Priority: <projectDir>/_comments.jsonl -> fallback: _Team/comments/<projectId>.jsonl
+   * Resolves the canonical review markdown path (_review.md) for a project.
+   * Comments and approvals are stored together inside the project folder as _review.md.
+   * Global _Team/comments/ is permanently retired.
+   */
+  static getReviewPath(projectPath, projectId) {
+    if (projectPath) {
+      if (!fs.existsSync(projectPath)) {
+        try { fs.mkdirSync(projectPath, { recursive: true }); } catch (_) {}
+      }
+      return path.join(projectPath, '_review.md');
+    }
+
+    if (projectId) {
+      try {
+        const proj = WorkspaceService.getProjectById(projectId);
+        if (proj && proj.fullPath) {
+          return path.join(proj.fullPath, '_review.md');
+        }
+      } catch (_) {}
+    }
+
+    const wsRoot = WorkspaceService.workspaceRoot || config.WORKSPACE_ROOT;
+    const fallbackDir = path.join(wsRoot, '_Projects');
+    if (!fs.existsSync(fallbackDir)) {
+      try { fs.mkdirSync(fallbackDir, { recursive: true }); } catch (_) {}
+    }
+    return path.join(fallbackDir, `${projectId || 'project'}_review.md`);
+  }
+
+  /**
+   * Backward-compatible alias for getReviewPath.
    */
   static getCommentsPath(projectPath, projectId) {
-    if (projectPath && fs.existsSync(projectPath)) {
-      return path.join(projectPath, '_comments.jsonl');
-    }
-    const teamCommentsDir = path.join(config.WORKSPACE_ROOT, '_Team', 'comments');
-    if (!fs.existsSync(teamCommentsDir)) {
+    return this.getReviewPath(projectPath, projectId);
+  }
+
+  /**
+   * Reads the _review.md file, migrating legacy jsonl files if found.
+   */
+  static readReview(projectPath, projectId) {
+    const reviewPath = this.getReviewPath(projectPath, projectId);
+
+    if (fs.existsSync(reviewPath)) {
       try {
-        fs.mkdirSync(teamCommentsDir, { recursive: true });
+        const raw = fs.readFileSync(reviewPath, 'utf8');
+        const { frontmatter, body } = FrontmatterService.parseRawContent(raw);
+        const comments = Array.isArray(frontmatter.comments) ? frontmatter.comments : [];
+        const approvals = Array.isArray(frontmatter.approvals) ? frontmatter.approvals : [];
+        return {
+          path: reviewPath,
+          frontmatter,
+          body,
+          comments,
+          approvals
+        };
       } catch (err) {
-        console.warn('[CommentService] Failed to create team comments directory:', err.message);
+        console.error(`[CommentService] Failed to read _review.md from ${reviewPath}:`, err.message);
       }
     }
-    return path.join(teamCommentsDir, `${projectId}.jsonl`);
+
+    // Check for legacy _comments.jsonl in project folder to transparently migrate
+    let migratedComments = [];
+    if (projectPath) {
+      const legacyJsonl = path.join(projectPath, '_comments.jsonl');
+      if (fs.existsSync(legacyJsonl)) {
+        try {
+          const content = fs.readFileSync(legacyJsonl, 'utf8');
+          migratedComments = content.split('\n')
+            .map(l => l.trim())
+            .filter(Boolean)
+            .map(l => {
+              try { return JSON.parse(l); } catch (_) { return null; }
+            })
+            .filter(Boolean);
+          try { fs.unlinkSync(legacyJsonl); } catch (_) {}
+        } catch (_) {}
+      }
+    }
+
+    const initialFm = {
+      project_id: projectId || path.basename(projectPath || ''),
+      comments: migratedComments,
+      approvals: []
+    };
+
+    if (migratedComments.length > 0) {
+      this.writeReview(reviewPath, initialFm, null);
+    }
+
+    return {
+      path: reviewPath,
+      frontmatter: initialFm,
+      body: '',
+      comments: migratedComments,
+      approvals: []
+    };
   }
 
   /**
-   * Retrieves all comments for a project.
+   * Writes frontmatter and human-readable body to _review.md atomically.
+   */
+  static writeReview(reviewPath, frontmatter, body = null) {
+    const comments = Array.isArray(frontmatter.comments) ? frontmatter.comments : [];
+    const approvals = Array.isArray(frontmatter.approvals) ? frontmatter.approvals : [];
+
+    let finalBody = body;
+    if (!finalBody || !finalBody.trim()) {
+      let md = `# Project Review & Approvals\n\n`;
+
+      md += `## Approvals History\n`;
+      if (approvals.length === 0) {
+        md += `_No formal approvals recorded yet._\n\n`;
+      } else {
+        for (const appr of approvals) {
+          const dateStr = (appr.timestamp || '').split('T')[0] || 'Pending';
+          const decision = (appr.decision || 'approved').toUpperCase();
+          md += `- **Round ${appr.round || 1} [${decision}]** by ${appr.reviewer || 'Reviewer'} (${appr.role || 'Manager'}) on ${dateStr}: *${appr.comment || 'No comment provided.'}*\n`;
+        }
+        md += `\n`;
+      }
+
+      md += `## Comments Thread\n`;
+      if (comments.length === 0) {
+        md += `_No review comments posted yet._\n`;
+      } else {
+        for (const c of comments) {
+          const dateStr = (c.timestamp || '').split('T')[0] || '';
+          const status = c.resolved ? ' *(Resolved)*' : '';
+          md += `- **${c.author || 'User'}** (${dateStr})${status}: ${c.content}\n`;
+        }
+      }
+      finalBody = md;
+    }
+
+    const content = FrontmatterService.serializeContent(frontmatter, finalBody);
+    const tempFile = `${reviewPath}.tmp.${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    const dir = path.dirname(reviewPath);
+    if (!fs.existsSync(dir)) {
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (_) {}
+    }
+
+    fs.writeFileSync(tempFile, content, 'utf8');
+    try {
+      fs.renameSync(tempFile, reviewPath);
+    } catch (_) {
+      fs.writeFileSync(reviewPath, content, 'utf8');
+      try { fs.unlinkSync(tempFile); } catch (e) {}
+    }
+  }
+
+  /**
+   * Retrieves all comments for a project from _review.md.
    */
   static getComments(projectPath, projectId) {
-    const filePath = this.getCommentsPath(projectPath, projectId);
-    if (!fs.existsSync(filePath)) {
-      return [];
-    }
-
-    try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const lines = content.split('\n').filter(l => l.trim().length > 0);
-      return lines.map(line => {
-        try {
-          return JSON.parse(line);
-        } catch (e) {
-          return null;
-        }
-      }).filter(Boolean).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-    } catch (err) {
-      console.error(`[CommentService] Failed to read comments from ${filePath}:`, err.message);
-      return [];
-    }
+    const review = this.readReview(projectPath, projectId);
+    return [...review.comments].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   }
 
   /**
-   * Appends a new comment to the project's comment thread.
+   * Appends a new comment to the project's _review.md.
    */
   static addComment(projectPath, projectId, {
     author = 'Designer',
@@ -85,10 +200,16 @@ class CommentService {
       resolved: false
     };
 
-    const filePath = this.getCommentsPath(projectPath, projectId);
+    const review = this.readReview(projectPath, projectId);
+    const updatedComments = [...review.comments, comment];
+    const updatedFm = {
+      ...review.frontmatter,
+      project_id: projectId || review.frontmatter.project_id,
+      comments: updatedComments
+    };
+
     try {
-      const line = JSON.stringify(comment) + '\n';
-      fs.appendFileSync(filePath, line, 'utf8');
+      this.writeReview(review.path, updatedFm, null);
 
       // Record in Audit Trail
       AuditService.logEvent({
@@ -107,44 +228,42 @@ class CommentService {
 
       return comment;
     } catch (err) {
-      console.error(`[CommentService] Failed to save comment to ${filePath}:`, err.message);
-      throw new Error(`Failed to save comment to NAS: ${err.message}`);
+      console.error(`[CommentService] Failed to save comment to ${review.path}:`, err.message);
+      throw new Error(`Failed to save comment to _review.md: ${err.message}`);
     }
   }
 
   /**
-   * Toggles resolved status of a comment.
+   * Toggles resolved status of a comment in _review.md.
    */
   static resolveComment(projectPath, projectId, commentId, resolved = true, actor = 'System', role = 'User') {
-    const filePath = this.getCommentsPath(projectPath, projectId);
-    if (!fs.existsSync(filePath)) {
-      throw new Error('No comments found for this project');
+    const review = this.readReview(projectPath, projectId);
+    let found = false;
+
+    const updatedComments = review.comments.map(item => {
+      if (item.id === commentId) {
+        found = true;
+        return {
+          ...item,
+          resolved,
+          resolvedBy: resolved ? actor : null,
+          resolvedAt: resolved ? new Date().toISOString() : null
+        };
+      }
+      return item;
+    });
+
+    if (!found) {
+      throw new Error(`Comment with ID ${commentId} not found`);
     }
 
+    const updatedFm = {
+      ...review.frontmatter,
+      comments: updatedComments
+    };
+
     try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const lines = content.split('\n').filter(l => l.trim().length > 0);
-      let found = false;
-      const updatedLines = lines.map(line => {
-        try {
-          const item = JSON.parse(line);
-          if (item.id === commentId) {
-            item.resolved = resolved;
-            item.resolvedBy = resolved ? actor : null;
-            item.resolvedAt = resolved ? new Date().toISOString() : null;
-            found = true;
-          }
-          return JSON.stringify(item);
-        } catch (e) {
-          return line;
-        }
-      });
-
-      if (!found) {
-        throw new Error(`Comment with ID ${commentId} not found`);
-      }
-
-      fs.writeFileSync(filePath, updatedLines.join('\n') + '\n', 'utf8');
+      this.writeReview(review.path, updatedFm, null);
 
       AuditService.logEvent({
         actor,
@@ -163,40 +282,34 @@ class CommentService {
   }
 
   /**
-   * Deletes a comment.
+   * Deletes a comment from _review.md.
    */
   static deleteComment(projectPath, projectId, commentId, actor = 'System', role = 'User') {
-    const filePath = this.getCommentsPath(projectPath, projectId);
-    if (!fs.existsSync(filePath)) {
-      throw new Error('No comments found for this project');
+    const review = this.readReview(projectPath, projectId);
+    let found = false;
+
+    for (const item of review.comments) {
+      if (item.id === commentId) {
+        if (role !== 'Admin' && item.author !== actor) {
+          throw new Error('Unauthorized to delete this comment');
+        }
+        found = true;
+        break;
+      }
     }
 
+    if (!found) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    const filteredComments = review.comments.filter(item => item.id !== commentId);
+    const updatedFm = {
+      ...review.frontmatter,
+      comments: filteredComments
+    };
+
     try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const lines = content.split('\n').filter(l => l.trim().length > 0);
-      let deleted = false;
-      const filteredLines = lines.filter(line => {
-        try {
-          const item = JSON.parse(line);
-          if (item.id === commentId) {
-            // Verify permission: Author or Admin
-            if (role !== 'Admin' && item.author !== actor) {
-              throw new Error('Unauthorized to delete this comment');
-            }
-            deleted = true;
-            return false;
-          }
-          return true;
-        } catch (e) {
-          return true;
-        }
-      });
-
-      if (!deleted) {
-        throw new Error(`Comment with ID ${commentId} not found`);
-      }
-
-      fs.writeFileSync(filePath, filteredLines.join('\n') + (filteredLines.length > 0 ? '\n' : ''), 'utf8');
+      this.writeReview(review.path, updatedFm, null);
 
       AuditService.logEvent({
         actor,
@@ -212,6 +325,30 @@ class CommentService {
       console.error(`[CommentService] Failed to delete comment ${commentId}:`, err.message);
       throw err;
     }
+  }
+
+  /**
+   * Retrieves all approvals for a project from _review.md.
+   */
+  static getApprovals(projectPath, projectId) {
+    const review = this.readReview(projectPath, projectId);
+    return review.approvals || [];
+  }
+
+  /**
+   * Appends an approval record to _review.md.
+   */
+  static addApproval(projectPath, projectId, approvalRecord) {
+    const review = this.readReview(projectPath, projectId);
+    const updatedApprovals = [approvalRecord, ...(review.approvals || [])];
+    const updatedFm = {
+      ...review.frontmatter,
+      project_id: projectId || review.frontmatter.project_id,
+      approvals: updatedApprovals
+    };
+
+    this.writeReview(review.path, updatedFm, null);
+    return approvalRecord;
   }
 
   /**
