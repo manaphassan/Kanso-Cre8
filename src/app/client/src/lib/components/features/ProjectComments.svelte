@@ -4,7 +4,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { fetchStaffList } from '$lib/utils';
   import type { ProjectComment, DeliverableItem } from '$lib/types';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
 
   interface Props {
     projectId: string;
@@ -368,13 +368,13 @@
 
     <div class="composer-footer">
       <span class="keyboard-hint">Press <b>Ctrl + Enter</b> to post</span>
-      <FluentButton
+      <Button
         appearance="primary"
         onclick={handleSubmitComment}
         disabled={!newCommentText.trim() || isSubmitting}
       >
         {isSubmitting ? 'Posting…' : 'Post Comment'}
-      </FluentButton>
+      </Button>
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * FluentIcons.svelte - Canonical Microsoft Fluent 2 SVG Icon System
+   * Icon.svelte - Canonical Microsoft Fluent 2 SVG Icon System
    * Standardizes crisp iconography across all pages, buttons, and modals.
    */
   export type IconName =

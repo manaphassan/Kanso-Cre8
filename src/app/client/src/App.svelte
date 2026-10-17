@@ -3,9 +3,9 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentToast from '$lib/components/ui/FluentToast.svelte';
-  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import Toast from '$lib/components/ui/Toast.svelte';
+  import Dialog from '$lib/components/ui/Dialog.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
   import DashboardView from '$lib/views/DashboardView.svelte';
   import ProjectsView from '$lib/views/ProjectsView.svelte';
   import ProjectDetailView from '$lib/views/ProjectDetailView.svelte';
@@ -622,7 +622,7 @@
 
 {/if}
 
-<FluentToast />
+<Toast />
 
 <style>
   /* ═══ SHELL ════════════════════════════════════════════════════ */

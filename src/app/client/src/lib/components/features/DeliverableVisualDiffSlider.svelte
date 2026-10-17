@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { DeliverableItem } from '$lib/types';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     currentDeliverable: DeliverableItem;
@@ -170,7 +170,7 @@
         onclick={() => activeMode = 'split'}
         title="Curtain Split Slider"
       >
-        <FluentIcons name="diff" size={13} />
+        <Icon name="diff" size={13} />
         <span style="margin-left: 5px;">Split Scrub</span>
       </button>
       <button 
@@ -178,7 +178,7 @@
         onclick={() => activeMode = 'onion'}
         title="Onion Skin Opacity Blend"
       >
-        <FluentIcons name="eye" size={13} />
+        <Icon name="eye" size={13} />
         <span style="margin-left: 5px;">Onion Skin</span>
       </button>
       <button 
@@ -186,7 +186,7 @@
         onclick={() => activeMode = 'side-by-side'}
         title="Side-by-Side Synchronized Dual View"
       >
-        <FluentIcons name="grid" size={13} />
+        <Icon name="grid" size={13} />
         <span style="margin-left: 5px;">Side-by-Side</span>
       </button>
       <button 
@@ -194,7 +194,7 @@
         onclick={() => activeMode = 'difference'}
         title="Pixel Difference (Invert Highlight)"
       >
-        <FluentIcons name="bolt" size={13} />
+        <Icon name="bolt" size={13} />
         <span style="margin-left: 5px;">Pixel Diff</span>
       </button>
     </div>
@@ -208,7 +208,7 @@
       <button class="zoom-btn" onclick={() => setZoom(3)} class:active={zoomLevel === 3}>300%</button>
       {#if zoomLevel > 1}
         <button class="reset-btn" onclick={resetZoom} title="Reset Pan & Zoom">
-          <FluentIcons name="history" size={11} />
+          <Icon name="history" size={11} />
           <span style="margin-left: 4px;">Reset</span>
         </button>
       {/if}
@@ -235,7 +235,7 @@
       </div>
 
       <div class="version-swap-icon">
-        <FluentIcons name="arrowRight" size={14} />
+        <Icon name="arrowRight" size={14} />
       </div>
 
       <div class="version-col after-col">
@@ -294,7 +294,7 @@
   >
     {#if !beforeDeliverable}
       <div class="no-companion-state">
-        <FluentIcons name="folder" size={32} color="rgba(255,255,255,0.2)" />
+        <Icon name="folder" size={32} color="rgba(255,255,255,0.2)" />
         <p style="margin-top: 10px;">No companion deliverable selected for comparison.</p>
         <span class="empty-sub">Please select a base image from the dropdown above.</span>
       </div>

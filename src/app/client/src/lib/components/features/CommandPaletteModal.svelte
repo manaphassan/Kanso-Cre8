@@ -8,7 +8,7 @@
   import { journalService } from '$lib/services/journalService';
   import { radioService, ALL_CASSETTE_STATIONS } from '$lib/services/radioService.svelte';
   import { clientService } from '$lib/services/clientService';
-  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
+  import Icon, { type IconName } from '$lib/components/ui/Icon.svelte';
   import { handleBackdropClick } from '$lib/utils';
 
   interface Props {
@@ -665,7 +665,7 @@
       <!-- Search Input Bar -->
       <div class="palette-search-header">
         <div class="search-icon-box">
-          <FluentIcons name="search" size={18} color="var(--kanso-accent)" />
+          <Icon name="search" size={18} color="var(--kanso-accent)" />
         </div>
         <input 
           bind:this={inputRef}
@@ -676,7 +676,7 @@
         />
         {#if query}
           <button class="clear-btn" onclick={() => query = ''} title="Clear query">
-            <FluentIcons name="close" size={14} />
+            <Icon name="close" size={14} />
           </button>
         {/if}
         <span class="esc-badge" onclick={closeModal}>ESC</span>
@@ -765,7 +765,7 @@
         {#if searchResults.length === 0}
           <div class="palette-empty">
             <div class="empty-icon-wrap">
-              <FluentIcons name="search" size={32} color="var(--kanso-text-muted)" />
+              <Icon name="search" size={32} color="var(--kanso-text-muted)" />
             </div>
             <p class="empty-title">No matching studio items for "{query}"</p>
             <span class="empty-hint">Try searching by client (<code>ACME</code>, <code>NEX</code>, <code>LUM</code>), color token, or shortcut (<code>⌘1</code>).</span>
@@ -784,7 +784,7 @@
                 {#if item.type === 'bujo'}
                   <!-- Quick BuJo Task Creator -->
                   <div class="result-icon icon-bujo">
-                    <FluentIcons name="calendar" size={16} color="var(--kanso-accent)" />
+                    <Icon name="calendar" size={16} color="var(--kanso-accent)" />
                   </div>
                   <div class="result-info">
                     <div class="result-title-row">
@@ -799,7 +799,7 @@
                 {:else if item.type === 'project'}
                   <!-- Project Vault Item -->
                   <div class="result-icon icon-project">
-                    <FluentIcons name="folder" size={16} />
+                    <Icon name="folder" size={16} />
                   </div>
                   <div class="result-info">
                     <div class="result-title-row">
@@ -815,7 +815,7 @@
                   </div>
                   <span class="action-shortcut">
                     <span>Open Vault</span>
-                    <FluentIcons name="arrowRight" size={11} />
+                    <Icon name="arrowRight" size={11} />
                   </span>
 
                 {:else if item.type === 'token'}
@@ -830,13 +830,13 @@
                   </div>
                   <span class="action-shortcut">
                     <span>Copy HEX</span>
-                    <FluentIcons name="copy" size={11} />
+                    <Icon name="copy" size={11} />
                   </span>
 
                 {:else}
                   <!-- General / Nav / Timer / Radio Action -->
                   <div class="result-icon icon-action">
-                    <FluentIcons name={item.icon} size={16} />
+                    <Icon name={item.icon} size={16} />
                   </div>
                   <div class="result-info">
                     <div class="result-title-row">

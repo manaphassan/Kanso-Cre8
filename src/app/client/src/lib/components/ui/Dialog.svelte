@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import FluentButton from './FluentButton.svelte';
+  import Button from './Button.svelte';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
@@ -60,9 +60,9 @@
         {#if footer}
           {@render footer()}
         {:else}
-          <FluentButton appearance="secondary" onclick={onClose}>{cancelText}</FluentButton>
+          <Button appearance="secondary" onclick={onClose}>{cancelText}</Button>
           {#if onConfirm}
-            <FluentButton appearance={confirmAppearance} {loading} onclick={onConfirm}>{confirmText}</FluentButton>
+            <Button appearance={confirmAppearance} {loading} onclick={onConfirm}>{confirmText}</Button>
           {/if}
         {/if}
       </div>

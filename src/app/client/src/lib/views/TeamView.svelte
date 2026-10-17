@@ -4,9 +4,9 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import type { TeamMember } from '$lib/types';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   let teamMembers = $state<TeamMember[]>([]);
   let isLoading = $state<boolean>(true);
@@ -246,7 +246,7 @@
     </div>
 
     <div class="hero-actions">
-      <FluentButton
+      <Button
         appearance="secondary"
         onclick={() => loadTeam(true)}
         disabled={isRefreshing}
@@ -264,10 +264,10 @@
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
         </svg>
         {isRefreshing ? 'Syncing...' : 'Refresh Telemetry'}
-      </FluentButton>
+      </Button>
 
       {#if appState.hasPermission('admin:manage_users') || appState.currentUser?.role?.toLowerCase().includes('admin') || appState.currentUser?.role?.toLowerCase().includes('director')}
-        <FluentButton
+        <Button
           appearance="primary"
           onclick={() => appState.navigate('admin')}
           title="Manage Staff Directory & User Accounts"
@@ -276,14 +276,14 @@
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
           Manage Staff Roster
-        </FluentButton>
+        </Button>
       {/if}
     </div>
   </div>
 
   <!-- ═══ 4 STUDIO CAPACITY KPI TILES ═══════════════════════════ -->
   <div class="kpi-grid">
-    <FluentCard hoverLift padding="16px" borderAccent="var(--kanso-accent)">
+    <Card hoverLift padding="16px" borderAccent="var(--kanso-accent)">
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap bg-blue">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -299,9 +299,9 @@
           <span class="kpi-footnote">{studioMetrics.availableCount} available for dispatch</span>
         </div>
       </div>
-    </FluentCard>
+    </Card>
 
-    <FluentCard hoverLift padding="16px" borderAccent="var(--kanso-accent)">
+    <Card hoverLift padding="16px" borderAccent="var(--kanso-accent)">
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap bg-azure">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -317,9 +317,9 @@
           <span class="kpi-footnote">Avg: {studioMetrics.avgLoad} tasks per designer</span>
         </div>
       </div>
-    </FluentCard>
+    </Card>
 
-    <FluentCard hoverLift padding="16px" borderAccent="var(--kanso-warning)">
+    <Card hoverLift padding="16px" borderAccent="var(--kanso-warning)">
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap bg-amber">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -335,9 +335,9 @@
           <span class="kpi-footnote">Pending sign-off & updates</span>
         </div>
       </div>
-    </FluentCard>
+    </Card>
 
-    <FluentCard hoverLift padding="16px" borderAccent={studioMetrics.healthColor}>
+    <Card hoverLift padding="16px" borderAccent={studioMetrics.healthColor}>
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: {studioMetrics.healthColor};">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -354,11 +354,11 @@
           <span class="kpi-footnote">{studioMetrics.totalCompleted} completed assets delivered</span>
         </div>
       </div>
-    </FluentCard>
+    </Card>
   </div>
 
   <!-- ═══ INTERACTIVE FILTER & SEARCH BAR ═══════════════════════ -->
-  <FluentCard padding="14px 18px">
+  <Card padding="14px 18px">
     <div class="filter-bar-layout">
       <!-- Search Input -->
       <div class="search-wrap">
@@ -479,7 +479,7 @@
         </button>
       {/if}
     </div>
-  </FluentCard>
+  </Card>
 
   <!-- ═══ TEAM MEMBERS GRID ═══════════════════════════════════════ -->
   {#if isLoading}
@@ -495,21 +495,21 @@
       {/each}
     </div>
   {:else if filteredTeam.length === 0}
-    <FluentCard padding="48px">
+    <Card padding="48px">
       <div class="empty-state">
         <div class="empty-icon">
-          <FluentIcons name="user" size={40} color="rgba(255,255,255,0.3)" />
+          <Icon name="user" size={40} color="rgba(255,255,255,0.3)" />
         </div>
         <h3 class="empty-title">No team members match your criteria</h3>
         <p class="empty-desc">Try clearing your search query or selecting "All" departments and statuses.</p>
-        <FluentButton
+        <Button
           appearance="secondary"
           onclick={() => { searchQuery = ''; selectedDept = 'all'; selectedCapacity = 'all'; }}
         >
           Reset All Filters
-        </FluentButton>
+        </Button>
       </div>
-    </FluentCard>
+    </Card>
   {:else}
     <div class="team-grid">
       {#each filteredTeam as member (member.staffId || member.username)}
@@ -523,7 +523,7 @@
         ))}
         {@const memberAvatar = member.avatar || (isCurrentUser ? (appState.currentUser?.avatar || '') : '')}
 
-        <FluentCard hoverLift padding="20px">
+        <Card hoverLift padding="20px">
           <!-- Card Header & Identity -->
           <div class="member-card-header">
             <div class="avatar-wrap">
@@ -668,7 +668,7 @@
                           title="Reassign / Rebalance this project to another designer"
                           onclick={() => openReassignDialog(proj, member.name)}
                         >
-                          <FluentIcons name="sparkles" size={11} color="var(--kanso-warning)" />
+                          <Icon name="sparkles" size={11} color="var(--kanso-warning)" />
                         </button>
                       </div>
                     </div>
@@ -737,7 +737,7 @@
               </a>
             {/if}
           </div>
-        </FluentCard>
+        </Card>
       {/each}
     </div>
   {/if}
@@ -751,7 +751,7 @@
         <div class="reassign-header">
           <div class="header-left">
             <div class="reassign-icon">
-              <FluentIcons name="sparkles" size={18} color="var(--kanso-warning)" />
+              <Icon name="sparkles" size={18} color="var(--kanso-warning)" />
             </div>
             <div>
               <h2 class="modal-title">1-Click Workload Rebalancer</h2>
@@ -759,7 +759,7 @@
             </div>
           </div>
           <button class="close-btn" onclick={() => (showReassignModal = false)} aria-label="Close">
-            <FluentIcons name="close" size={14} />
+            <Icon name="close" size={14} />
           </button>
         </div>
 
@@ -788,11 +788,11 @@
         </div>
 
         <div class="reassign-footer">
-          <FluentButton appearance="secondary" onclick={() => (showReassignModal = false)}>Cancel</FluentButton>
-          <FluentButton appearance="primary" loading={isReassigning} onclick={handleConfirmReassign}>
-            <FluentIcons name="sparkles" size={13} />
+          <Button appearance="secondary" onclick={() => (showReassignModal = false)}>Cancel</Button>
+          <Button appearance="primary" loading={isReassigning} onclick={handleConfirmReassign}>
+            <Icon name="sparkles" size={13} />
             <span style="margin-left: 5px;">Confirm Reassignment</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
     </div>

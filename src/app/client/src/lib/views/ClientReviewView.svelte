@@ -3,8 +3,8 @@
   import { ApiClient } from '$lib/services/api';
   import type { DeliverableItem } from '$lib/types';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import { useLightbox } from '$lib/utils';
 
   let token = $state<string>('');
@@ -112,10 +112,10 @@
       {#if reviewData?.shareInfo}
         <div class="header-perm-pill {reviewData.shareInfo.permissions}">
           {#if reviewData.shareInfo.permissions === 'review_approve'}
-            <FluentIcons name="checkCircle" size={13} color="var(--kanso-success)" />
+            <Icon name="checkCircle" size={13} color="var(--kanso-success)" />
             <span style="margin-left: 5px;">Formal Approval Enabled</span>
           {:else}
-            <FluentIcons name="search" size={13} />
+            <Icon name="search" size={13} />
             <span style="margin-left: 5px;">View-Only Preview</span>
           {/if}
         </div>
@@ -135,7 +135,7 @@
     {:else if errorMsg}
       <div class="state-card error-card">
         <div class="state-icon">
-          <FluentIcons name="warning" size={32} color="var(--kanso-warning)" />
+          <Icon name="warning" size={32} color="var(--kanso-warning)" />
         </div>
         <h2>Review Link Expired or Invalid</h2>
         <p>{errorMsg}</p>
@@ -145,7 +145,7 @@
     {:else if submittedResult}
       <div class="state-card success-card">
         <div class="state-icon">
-          <FluentIcons
+          <Icon
             name={submittedResult.decision === 'approved' ? 'checkCircle' : 'warning'}
             size={36}
             color={submittedResult.decision === 'approved' ? 'var(--kanso-success)' : 'var(--kanso-warning)'}
@@ -195,17 +195,17 @@
                 {:else if d.isVideo}
                   <video src={d.url} class="thumb-video" preload="metadata" muted></video>
                   <span class="play-badge">
-                    <FluentIcons name="video" size={11} />
+                    <Icon name="video" size={11} />
                     <span style="margin-left: 3px;">VIDEO</span>
                   </span>
                 {:else if d.isPdf}
                   <div class="pdf-thumb-box">
-                    <FluentIcons name="file" size={24} color="var(--kanso-danger)" />
+                    <Icon name="file" size={24} color="var(--kanso-danger)" />
                     <span style="margin-top: 4px;">PDF Export</span>
                   </div>
                 {:else}
                   <div class="pdf-thumb-box">
-                    <FluentIcons name="folder" size={24} color="var(--kanso-accent)" />
+                    <Icon name="folder" size={24} color="var(--kanso-accent)" />
                     <span style="margin-top: 4px;">Master Asset</span>
                   </div>
                 {/if}
@@ -215,7 +215,7 @@
                 <div class="card-sub-row">
                   <span class="card-folder">{d.folder}</span>
                   <span class="inspect-tag">
-                    <FluentIcons name="search" size={10} />
+                    <Icon name="search" size={10} />
                     <span style="margin-left: 3px;">Inspect</span>
                   </span>
                 </div>
@@ -230,7 +230,7 @@
         <section class="decision-deck">
           <div class="deck-header">
             <div class="deck-icon">
-              <FluentIcons name="edit" size={18} color="var(--kanso-accent)" />
+              <Icon name="edit" size={18} color="var(--kanso-accent)" />
             </div>
             <div>
               <h3 class="deck-title">Client Sign-Off &amp; Decision</h3>
@@ -256,14 +256,14 @@
           </div>
 
           <div class="decision-action-buttons">
-            <FluentButton appearance="secondary" size="lg" loading={isSubmitting} onclick={() => handleDecision('revision_requested')}>
-              <FluentIcons name="warning" size={14} color="var(--kanso-warning)" />
+            <Button appearance="secondary" size="lg" loading={isSubmitting} onclick={() => handleDecision('revision_requested')}>
+              <Icon name="warning" size={14} color="var(--kanso-warning)" />
               <span style="margin-left: 6px;">Request Revisions</span>
-            </FluentButton>
-            <FluentButton appearance="primary" size="lg" loading={isSubmitting} onclick={() => handleDecision('approved')}>
-              <FluentIcons name="checkCircle" size={14} color="var(--kanso-success)" />
+            </Button>
+            <Button appearance="primary" size="lg" loading={isSubmitting} onclick={() => handleDecision('approved')}>
+              <Icon name="checkCircle" size={14} color="var(--kanso-success)" />
               <span style="margin-left: 6px;">Approve &amp; Sign-Off Deliverables</span>
-            </FluentButton>
+            </Button>
           </div>
         </section>
       {/if}

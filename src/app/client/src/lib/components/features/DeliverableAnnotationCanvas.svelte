@@ -2,8 +2,8 @@
   import { onMount, onDestroy } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface AnnotationItem {
     id: string;
@@ -320,7 +320,7 @@
         onclick={toggleAnnotateMode}
         disabled={readOnly}
       >
-        <FluentIcons name="pin" size={14} />
+        <Icon name="pin" size={14} />
         <span style="margin-left: 6px;">{isAnnotateMode ? 'Annotation Mode: Active' : (mediaType === 'video' ? 'Click Frame to Pin' : 'Drop Feedback Pin')}</span>
       </button>
 
@@ -387,7 +387,7 @@
           onclick={() => (isZoomed = !isZoomed)}
           title="Toggle Fit / 100% Zoom"
         >
-          <FluentIcons name="search" size={12} />
+          <Icon name="search" size={12} />
           <span style="margin-left: 5px;">{isZoomed ? 'Fit Screen' : '100% Zoom'}</span>
         </button>
       {/if}
@@ -485,7 +485,7 @@
                   class:is-resolved={pin.resolved}
                   onclick={(e) => toggleResolvePin(pin, e)}
                 >
-                  <FluentIcons name={pin.resolved ? 'history' : 'checkCircle'} size={12} />
+                  <Icon name={pin.resolved ? 'history' : 'checkCircle'} size={12} />
                   <span style="margin-left: 4px;">{pin.resolved ? 'Reopen' : 'Mark Resolved'}</span>
                 </button>
 
@@ -495,7 +495,7 @@
                   onclick={(e) => deletePin(pin.id, e)}
                   title="Delete this pin"
                 >
-                  <FluentIcons name="delete" size={13} />
+                  <Icon name="delete" size={13} />
                 </button>
               </div>
             </div>
@@ -523,7 +523,7 @@
                 {/if}
               </div>
               <button type="button" class="close-composer-btn" onclick={cancelPendingPin} title="Cancel">
-                <FluentIcons name="close" size={14} />
+                <Icon name="close" size={14} />
               </button>
             </div>
 
@@ -547,8 +547,8 @@
               </div>
 
               <div class="composer-btn-row">
-                <FluentButton appearance="subtle" size="sm" onclick={cancelPendingPin}>Cancel</FluentButton>
-                <FluentButton
+                <Button appearance="subtle" size="sm" onclick={cancelPendingPin}>Cancel</Button>
+                <Button
                   appearance="primary"
                   size="sm"
                   loading={isSavingPin}
@@ -556,7 +556,7 @@
                   onclick={savePendingPin}
                 >
                   Save Pin
-                </FluentButton>
+                </Button>
               </div>
             </div>
           </div>
@@ -625,7 +625,7 @@
           onclick={addMarkerAtCurrentTime}
           title="Add Feedback Pin at Current Video Time"
         >
-          <FluentIcons name="pin" size={12} />
+          <Icon name="pin" size={12} />
           <span>Mark Frame</span>
         </button>
       </div>

@@ -4,10 +4,10 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
   import type { DeliverableItem, ProjectFrontmatter, ProjectComment } from '$lib/types';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Dialog from '$lib/components/ui/Dialog.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import ProjectComments from '$lib/components/features/ProjectComments.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
@@ -449,9 +449,9 @@
     <div class="empty-state">
       <h3>Project not found</h3>
       <p>The requested creative directory does not exist or has been moved.</p>
-      <FluentButton appearance="primary" onclick={() => appState.navigate('projects')}>
+      <Button appearance="primary" onclick={() => appState.navigate('projects')}>
         Return to Catalog
-      </FluentButton>
+      </Button>
     </div>
   {:else}
     <!-- ═══════════ MINIMAL & MODERN COMMAND HEADER ═══════════ -->
@@ -513,7 +513,7 @@
               onclick={() => (showIngesterModal = true)}
               title="Ingest raw files or deliverables to NAS"
             >
-              <FluentIcons name="upload" size={13} />
+              <Icon name="upload" size={13} />
               <span>Ingest</span>
             </button>
 
@@ -522,7 +522,7 @@
               onclick={() => (showShareModal = true)}
               title="Generate Client Review Link"
             >
-              <FluentIcons name="link" size={13} />
+              <Icon name="link" size={13} />
               <span>Share</span>
             </button>
 
@@ -532,7 +532,7 @@
               class="action-btn-clean"
               title="Export Handover ZIP"
             >
-              <FluentIcons name="download" size={13} />
+              <Icon name="download" size={13} />
               <span>Export ZIP</span>
             </a>
 
@@ -555,7 +555,7 @@
                     class="more-dropdown-item"
                     onclick={() => (showMoreMenu = false)}
                   >
-                    <FluentIcons name="desktop" size={13} />
+                    <Icon name="desktop" size={13} />
                     <span>Open in Desktop</span>
                   </a>
 
@@ -563,7 +563,7 @@
                     class="more-dropdown-item"
                     onclick={() => { showTimelineModal = true; showMoreMenu = false; }}
                   >
-                    <FluentIcons name="timeline" size={13} />
+                    <Icon name="timeline" size={13} />
                     <span>Timeline &amp; Rollback</span>
                   </button>
 
@@ -573,7 +573,7 @@
                       class="more-dropdown-item item-danger"
                       onclick={() => { showDeleteModal = true; showMoreMenu = false; }}
                     >
-                      <FluentIcons name="delete" size={13} color="var(--kanso-danger)" />
+                      <Icon name="delete" size={13} color="var(--kanso-danger)" />
                       <span>Delete Project</span>
                     </button>
                   {/if}
@@ -676,7 +676,7 @@
                   onclick={() => showHandoverModal = true}
                   title="Build 1-Click Client Handover Package (ZIP + Manifest + Checksums)"
                 >
-                  <FluentIcons name="download" size={13} />
+                  <Icon name="download" size={13} />
                   <span>Client Handover Package</span>
                 </button>
               {/if}
@@ -685,7 +685,7 @@
             {#if projectStore.activeDeliverables.length === 0}
               <div class="empty-gallery">
                 <div class="empty-icon-box">
-                  <FluentIcons name="folder" size={36} color="rgba(255,255,255,0.2)" />
+                  <Icon name="folder" size={36} color="rgba(255,255,255,0.2)" />
                 </div>
                 <p>No output media found in <code>05_DELIVERABLES</code> or <code>04_Production</code>.</p>
                 <p class="empty-sub">Export output media (PNG, JPG, MP4, PDF) from Photoshop, Illustrator, or Blender into the project folder.</p>
@@ -704,18 +704,18 @@
                           <!-- svelte-ignore a11y_media_has_caption -->
                           <video src={d.streamUrl || d.previewUrl} preload="metadata" muted playsinline></video>
                           <span class="del-play-badge">
-                            <FluentIcons name="video" size={12} />
+                            <Icon name="video" size={12} />
                             <span style="margin-left: 4px;">VIDEO</span>
                           </span>
                         </div>
                       {:else if d.isPdf || d.previewType === 'pdf'}
                         <div class="del-pdf-thumb">
-                          <FluentIcons name="file" size={24} color="var(--kanso-danger)" />
+                          <Icon name="file" size={24} color="var(--kanso-danger)" />
                           <span class="del-thumb-text">PDF DOCUMENT</span>
                         </div>
                       {:else if d.isAudio || d.previewType === 'audio'}
                         <div class="del-audio-thumb">
-                          <FluentIcons name="video" size={24} color="var(--kanso-accent)" />
+                          <Icon name="video" size={24} color="var(--kanso-accent)" />
                           <span class="del-thumb-text">AUDIO TRACK</span>
                         </div>
                       {:else}
@@ -737,7 +737,7 @@
           </div>
         {:else if activeCanvasView === 'direction'}
           <!-- Creative Direction Panel -->
-          <FluentCard elevated>
+          <Card elevated>
             <div class="form-section-header">
               <div class="header-titles">
                 <h3>Creative &amp; Visual Direction Matrix</h3>
@@ -746,23 +746,23 @@
 
               <div class="header-actions">
                 {#if !isEditingDirection}
-                  <FluentButton appearance="secondary" size="sm" onclick={() => (isEditingDirection = true)}>
+                  <Button appearance="secondary" size="sm" onclick={() => (isEditingDirection = true)}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
                     <span style="margin-left: 5px;">Edit Direction</span>
-                  </FluentButton>
+                  </Button>
                 {:else}
                   <div class="direction-action-group">
-                    <FluentButton appearance="secondary" size="sm" onclick={() => (isEditingDirection = false)}>
+                    <Button appearance="secondary" size="sm" onclick={() => (isEditingDirection = false)}>
                       Cancel
-                    </FluentButton>
-                    <FluentButton appearance="primary" size="sm" loading={isSavingDirection} onclick={saveCreativeDirection}>
+                    </Button>
+                    <Button appearance="primary" size="sm" loading={isSavingDirection} onclick={saveCreativeDirection}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
                       </svg>
                       <span style="margin-left: 5px;">Save Direction</span>
-                    </FluentButton>
+                    </Button>
                   </div>
                 {/if}
               </div>
@@ -860,7 +860,7 @@
                 </div>
               </div>
             {/if}
-          </FluentCard>
+          </Card>
         {/if}
       </main>
 
@@ -964,7 +964,7 @@
                 </div>
                 <div class="scope-status-row">
                   <div class="scope-count-badge">
-                    <FluentIcons name="folder" size={13} />
+                    <Icon name="folder" size={13} />
                     <span>{projectStore.activeDeliverables.length} files in <code>05_DELIVERABLES/</code></span>
                   </div>
                 </div>
@@ -1021,7 +1021,7 @@
                     class="pipeline-action-btn primary"
                     onclick={() => (showShareModal = true)}
                   >
-                    <FluentIcons name="link" size={13} />
+                    <Icon name="link" size={13} />
                     <span>Share Client Proof Link</span>
                   </button>
 
@@ -1059,7 +1059,7 @@
     />
 
     <!-- Delete Confirmation Dialog -->
-    <FluentDialog
+    <Dialog
       bind:open={showDeleteModal}
       title="Delete Project & Files"
       confirmText="Permanently Delete"
@@ -1071,7 +1071,7 @@
       <div class="delete-dialog-body">
         <div class="delete-warning-banner">
           <div class="warning-title">
-            <FluentIcons name="warning" size={16} color="var(--kanso-danger)" />
+            <Icon name="warning" size={16} color="var(--kanso-danger)" />
             <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
           </div>
           <p class="warning-text">
@@ -1090,7 +1090,7 @@
           <span class="target-val"><strong>{p.jobId || p.id}</strong> — {p.title}</span>
         </div>
       </div>
-    </FluentDialog>
+    </Dialog>
 
     <!-- Vault Ingester Modal -->
     <VaultIngesterModal

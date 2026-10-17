@@ -1,7 +1,7 @@
 <script lang="ts">
   import { appState } from '$lib/stores/appState.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import type { DeliverableItem } from '$lib/types';
 
   interface Props {
@@ -139,7 +139,7 @@
       <div class="preflight-header">
         <div class="header-left">
           <div class="preflight-icon-badge">
-            <FluentIcons name="printer" size={20} color="var(--kanso-accent)" />
+            <Icon name="printer" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Production Print &amp; POSM Preflight Validator</h2>
@@ -147,7 +147,7 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close Modal">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
@@ -202,7 +202,7 @@
           <div class="checks-list">
             <div class="check-item">
               <span class="check-icon">
-                <FluentIcons 
+                <Icon 
                   name={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? 'checkCircle' : 'warning'} 
                   size={16} 
                   color={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? 'var(--kanso-success)' : 'var(--kanso-warning)'} 
@@ -216,7 +216,7 @@
 
             <div class="check-item">
               <span class="check-icon">
-                <FluentIcons name="colorPalette" size={16} color="var(--kanso-accent)" />
+                <Icon name="colorPalette" size={16} color="var(--kanso-accent)" />
               </span>
               <div>
                 <span class="check-name">Color Profile Recommendation</span>
@@ -226,7 +226,7 @@
 
             <div class="check-item">
               <span class="check-icon">
-                <FluentIcons name="vector" size={16} color="var(--kanso-accent)" />
+                <Icon name="vector" size={16} color="var(--kanso-accent)" />
               </span>
               <div>
                 <span class="check-name">Standard Bleed Safety Margin</span>
@@ -240,10 +240,10 @@
       <!-- Footer -->
       <div class="preflight-footer">
         <button class="report-dl-btn" onclick={downloadReport}>
-          <FluentIcons name="download" size={14} />
+          <Icon name="download" size={14} />
           <span style="margin-left: 6px;">Download Preflight Certificate</span>
         </button>
-        <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
+        <Button appearance="subtle" onclick={closeModal}>Close</Button>
       </div>
     </div>
   </div>

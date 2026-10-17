@@ -1,6 +1,6 @@
 <script lang="ts">
   import { projectStore } from '$lib/stores/projectStore.svelte';
-  import FluentPill from '$lib/components/ui/FluentPill.svelte';
+  import Pill from '$lib/components/ui/Pill.svelte';
   import { clientService } from '$lib/services/clientService';
   import type { ClientProfile } from '$lib/types/kanso';
 
@@ -84,7 +84,7 @@
   <!-- Status pills -->
   <div class="pill-group statuses-pill-group">
     {#each statuses as s}
-      <FluentPill
+      <Pill
         label={s.label}
         active={projectStore.activeFilters.status === s.id}
         count={s.id === 'review' ? projectStore.pendingReviewCount : undefined}

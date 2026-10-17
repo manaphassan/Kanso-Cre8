@@ -1,8 +1,8 @@
 <script lang="ts">
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
 
   interface Props {
     projects: Project[];
@@ -205,10 +205,10 @@
   <!-- Top Navigation & Timeline Controls -->
   <div class="gantt-header-bar">
     <div class="month-selector">
-      <FluentButton appearance="subtle" onclick={prevMonth} title="Previous Month">‹ Prev</FluentButton>
+      <Button appearance="subtle" onclick={prevMonth} title="Previous Month">‹ Prev</Button>
       <h3 class="month-title">{monthInfo.monthName}</h3>
-      <FluentButton appearance="subtle" onclick={nextMonth} title="Next Month">Next ›</FluentButton>
-      <FluentButton appearance="secondary" onclick={goToday}>Today</FluentButton>
+      <Button appearance="subtle" onclick={nextMonth} title="Next Month">Next ›</Button>
+      <Button appearance="secondary" onclick={goToday}>Today</Button>
     </div>
 
     <div class="gantt-legend">
@@ -256,7 +256,7 @@
             <div class="gantt-col-left">
               <div class="project-id-title-wrap">
                 <span class="proj-job-mono">{p.jobId || p.id}</span>
-                <FluentBadge type="brand" value={p.brand || 'SS'} />
+                <Badge type="brand" value={p.brand || 'SS'} />
                 <span class="proj-row-title" title={p.title}>{p.title}</span>
               </div>
               <div class="proj-sub-meta">

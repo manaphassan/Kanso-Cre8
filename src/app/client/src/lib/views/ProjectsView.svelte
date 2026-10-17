@@ -9,10 +9,10 @@
   import ProjectGanttView from '$lib/components/features/ProjectGanttView.svelte';
   import ProjectCalendarView from '$lib/components/features/ProjectCalendarView.svelte';
   import ProjectTableView from '$lib/components/features/ProjectTableView.svelte';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
-  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Dialog from '$lib/components/ui/Dialog.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import { clientService } from '$lib/services/clientService';
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
@@ -308,7 +308,7 @@
   {:else if projectStore.filteredProjects.length === 0}
     <div class="empty-box">
       <div class="empty-emoji">
-        <FluentIcons name="folder" size={40} color="rgba(255,255,255,0.3)" />
+        <Icon name="folder" size={40} color="rgba(255,255,255,0.3)" />
       </div>
       <h3>No projects found</h3>
       <p>No creative production records match the current filter selection.</p>
@@ -348,7 +348,7 @@
           tabindex="0"
           onkeydown={(e) => e.key === 'Enter' && appState.navigate('project-detail', { id: p.id })}
         >
-          <FluentCard hoverLift padding="16px">
+          <Card hoverLift padding="16px">
             <div class="card-top">
               <div class="job-id-wrap">
                 <span class="job-id-chip">{p.jobId || p.id}</span>
@@ -362,7 +362,7 @@
                       handleDeleteRequest(p);
                     }}
                   >
-                    <FluentIcons name="delete" size={13} />
+                    <Icon name="delete" size={13} />
                   </button>
                 {/if}
               </div>
@@ -371,7 +371,7 @@
                   <span class="client-badge-dot" style="background-color: {client?.palette?.primary || 'var(--kanso-accent)'};"></span>
                   <span>{p.brand || 'ACME'}</span>
                 </div>
-                <FluentBadge type="status" value={p.status} />
+                <Badge type="status" value={p.status} />
               </div>
             </div>
 
@@ -429,14 +429,14 @@
                 </div>
               {/if}
             </div>
-          </FluentCard>
+          </Card>
         </div>
       {/each}
     </div>
   {/if}
 
   <!-- Admin Delete Confirmation Dialog -->
-  <FluentDialog
+  <Dialog
     bind:open={showDeleteModal}
     title="Delete Project & Files"
     confirmText="Permanently Delete"
@@ -448,7 +448,7 @@
     <div class="delete-dialog-body">
       <div class="delete-warning-banner">
         <div class="warning-title">
-          <FluentIcons name="warning" size={16} color="var(--kanso-danger)" />
+          <Icon name="warning" size={16} color="var(--kanso-danger)" />
           <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
         </div>
         <p class="warning-text">
@@ -469,10 +469,10 @@
         </div>
       {/if}
     </div>
-  </FluentDialog>
+  </Dialog>
 
   <!-- New Project Scaffolding Dialog -->
-  <FluentDialog
+  <Dialog
     bind:open={showNewProjectModal}
     title="Scaffold 5-Folder Project Vault"
     confirmText="Scaffold Vault"
@@ -577,7 +577,7 @@
         ></textarea>
       </div>
     </div>
-  </FluentDialog>
+  </Dialog>
 </div>
 
 <style>

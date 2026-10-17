@@ -1,6 +1,6 @@
 <script lang="ts">
-  import FluentDialog from '../ui/FluentDialog.svelte';
-  import FluentIcons from '../ui/FluentIcons.svelte';
+  import Dialog from '../ui/Dialog.svelte';
+  import Icon from '../ui/Icon.svelte';
 
   interface SkillItem {
     label: string;
@@ -177,7 +177,7 @@
       onclick={() => (showGuideModal = true)}
       title="How to read this radar competency matrix"
     >
-      <FluentIcons name="info" size={13} color="var(--kanso-accent)" />
+      <Icon name="info" size={13} color="var(--kanso-accent)" />
       <span>How to Read Matrix</span>
     </button>
   </div>
@@ -428,13 +428,13 @@
 
         <div class="delta-pill" class:ahead={isAhead} class:near={isNear} class:gap={isGap}>
           {#if isAhead}
-            <FluentIcons name="checkCircle" size={12} color="#10B981" />
+            <Icon name="checkCircle" size={12} color="#10B981" />
             <span>+{activeDelta}% Ahead of Benchmark</span>
           {:else if isNear}
-            <FluentIcons name="warning" size={12} color="#F59E0B" />
+            <Icon name="warning" size={12} color="#F59E0B" />
             <span>{activeDelta}% Slight Gap (Manageable)</span>
           {:else}
-            <FluentIcons name="warning" size={12} color="#EF4444" />
+            <Icon name="warning" size={12} color="#EF4444" />
             <span>{activeDelta}% Competency Gap (Action Required)</span>
           {/if}
         </div>
@@ -463,7 +463,7 @@
     <div class="guidance-grid">
       <div class="guidance-col measure">
         <div class="guidance-heading">
-          <FluentIcons name="target" size={13} color="var(--kanso-accent)" />
+          <Icon name="target" size={13} color="var(--kanso-accent)" />
           <span>What It Measures</span>
         </div>
         <p class="guidance-text">{activeMeta.whatItMeasures}</p>
@@ -486,14 +486,14 @@
 
     <!-- Action Tip -->
     <div class="action-tip-banner">
-      <FluentIcons name="sparkle" size={14} color="var(--kanso-accent)" />
+      <Icon name="sparkle" size={14} color="var(--kanso-accent)" />
       <span class="action-tip-text"><strong>Art Director Action:</strong> {activeMeta.actionAdvice}</span>
     </div>
   </div>
 </div>
 
 <!-- "How to Read This Matrix" Deep Dive Modal Dialog -->
-<FluentDialog
+<Dialog
   open={showGuideModal}
   title="Art Director Skill Competency Matrix Guide"
   confirmText="Got It"
@@ -593,7 +593,7 @@
       </div>
     </div>
   </div>
-</FluentDialog>
+</Dialog>
 
 <style>
   .radar-container {

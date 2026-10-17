@@ -3,10 +3,10 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import CreativeAiAssistantModal from '$lib/components/features/CreativeAiAssistantModal.svelte';
 
   let selectedProject = $state<any>(null);
@@ -148,7 +148,7 @@
     </div>
     <div class="header-actions">
       <button class="ai-launch-btn" onclick={() => showAiModal = true}>
-        <FluentIcons name="sparkles" size={14} color="var(--kanso-warning)" />
+        <Icon name="sparkles" size={14} color="var(--kanso-warning)" />
         <span style="margin-left: 5px;">Gemini Creative AI</span>
       </button>
     </div>
@@ -158,7 +158,7 @@
   <div class="platform-gauges-grid">
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="video" size={20} color="var(--kanso-accent)" />
+        <Icon name="video" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">TikTok Ads Hook</div>
@@ -167,7 +167,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="desktop" size={20} color="var(--kanso-accent)" />
+        <Icon name="desktop" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Ad Headline</div>
@@ -176,7 +176,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="file" size={20} color="var(--kanso-accent)" />
+        <Icon name="file" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Primary Copy</div>
@@ -185,7 +185,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="sparkles" size={20} color="var(--kanso-success)" />
+        <Icon name="sparkles" size={20} color="var(--kanso-success)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Shopee / Lazada Title</div>
@@ -195,28 +195,28 @@
   </div>
 
   <!-- Quick Templates Bar -->
-  <FluentCard padding="14px 18px">
+  <Card padding="14px 18px">
     <div class="deck-wrapper">
       <div class="deck-left">
         <span class="badge-framework">FRAMEWORKS</span>
         <span class="deck-title">Quick Ad Copy Frameworks:</span>
       </div>
       <div class="deck-actions">
-        <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('tiktok')}>
-          <FluentIcons name="video" size={13} />
+        <Button appearance="secondary" size="sm" onclick={() => copyPreset('tiktok')}>
+          <Icon name="video" size={13} />
           <span style="margin-left: 4px;">TikTok Hook Script</span>
-        </FluentButton>
-        <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('facebook')}>
-          <FluentIcons name="edit" size={13} />
+        </Button>
+        <Button appearance="secondary" size="sm" onclick={() => copyPreset('facebook')}>
+          <Icon name="edit" size={13} />
           <span style="margin-left: 4px;">Facebook Problem/Solution</span>
-        </FluentButton>
-        <FluentButton appearance="secondary" size="sm" onclick={() => copyPreset('packaging')}>
-          <FluentIcons name="file" size={13} />
+        </Button>
+        <Button appearance="secondary" size="sm" onclick={() => copyPreset('packaging')}>
+          <Icon name="file" size={13} />
           <span style="margin-left: 4px;">Packaging Benefit Claims</span>
-        </FluentButton>
+        </Button>
       </div>
     </div>
-  </FluentCard>
+  </Card>
 
   <!-- Projects Copywriting Matrix Grid -->
   <div class="projects-copy-grid">
@@ -225,7 +225,7 @@
       {@const headlineLen = (copy.headline || '').length}
       {@const bodyLen = (copy.body_copy || copy.content || '').length}
       
-      <FluentCard hoverLift padding="18px">
+      <Card hoverLift padding="18px">
         <div class="copy-card-header">
           <div>
             <div class="job-meta-row">
@@ -260,12 +260,12 @@
         </div>
 
         <div class="copy-card-footer">
-          <FluentButton appearance="primary" size="sm" onclick={() => openCopyEditor(p)}>
-            <FluentIcons name="edit" size={13} />
+          <Button appearance="primary" size="sm" onclick={() => openCopyEditor(p)}>
+            <Icon name="edit" size={13} />
             <span style="margin-left: 5px;">Edit Copy &amp; Live Preview</span>
-          </FluentButton>
+          </Button>
         </div>
-      </FluentCard>
+      </Card>
     {/each}
   </div>
 
@@ -284,7 +284,7 @@
           </div>
           <div class="modal-header-right">
             <button class="close-modal-btn" onclick={closeCopyEditor} aria-label="Close modal">
-              <FluentIcons name="close" size={14} />
+              <Icon name="close" size={14} />
               <span style="margin-left: 4px;">Close</span>
             </button>
           </div>
@@ -295,7 +295,7 @@
           <!-- LEFT PANE: Editor & Snippet Matrix -->
           <div class="editor-left-pane">
             <div class="pane-headline">
-              <FluentIcons name="edit" size={14} />
+              <Icon name="edit" size={14} />
               <span class="pane-title" style="margin-left: 5px;">COPYWRITING EDITOR</span>
               <span class="pane-sub">Writes to <code>03_COPY/COPY.md</code></span>
             </div>
@@ -304,7 +304,7 @@
             <div class="snippet-drawer">
               <span class="snippet-label">Quick Snippets:</span>
               <button class="snippet-btn ai-snippet-btn" onclick={() => showAiModal = true}>
-                <FluentIcons name="sparkles" size={12} color="var(--kanso-warning)" />
+                <Icon name="sparkles" size={12} color="var(--kanso-warning)" />
                 <span style="margin-left: 3px;">Gemini AI Generator</span>
               </button>
               <button class="snippet-btn" onclick={() => insertSnippet('hook')}>+ Viral Hook</button>
@@ -379,21 +379,21 @@
                 class="mockup-tab {activeMockupTab === 'whatsapp' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'whatsapp'}
               >
-                <FluentIcons name="chat" size={14} />
+                <Icon name="chat" size={14} />
                 <span style="margin-left: 5px;">WhatsApp Bubble</span>
               </button>
               <button 
                 class="mockup-tab {activeMockupTab === 'meta' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'meta'}
               >
-                <FluentIcons name="desktop" size={14} />
+                <Icon name="desktop" size={14} />
                 <span style="margin-left: 5px;">Meta Feed Ad</span>
               </button>
               <button 
                 class="mockup-tab {activeMockupTab === 'tiktok' ? 'active' : ''}" 
                 onclick={() => activeMockupTab = 'tiktok'}
               >
-                <FluentIcons name="video" size={14} />
+                <Icon name="video" size={14} />
                 <span style="margin-left: 5px;">TikTok 9:16</span>
               </button>
             </div>
@@ -454,7 +454,7 @@
 
                   <div class="meta-media-preview">
                     <div class="meta-media-placeholder">
-                      <FluentIcons name="image" size={28} color="rgba(255,255,255,0.3)" />
+                      <Icon name="image" size={28} color="rgba(255,255,255,0.3)" />
                       <span style="margin-top: 4px;">Campaign Creative Proof</span>
                     </div>
                   </div>
@@ -475,10 +475,10 @@
                     <!-- Right Actions Sidebar -->
                     <div class="tiktok-sidebar">
                       <div class="tt-avatar" style="background: {brandConfig.color};">{brandConfig.initial}</div>
-                      <div class="tt-action"><FluentIcons name="checkCircle" size={18} color="var(--kanso-danger)" /><small>42.8K</small></div>
-                      <div class="tt-action"><FluentIcons name="chat" size={18} /><small>1.2K</small></div>
-                      <div class="tt-action"><FluentIcons name="link" size={18} /><small>3.4K</small></div>
-                      <div class="tt-action"><FluentIcons name="externalLink" size={18} /><small>Share</small></div>
+                      <div class="tt-action"><Icon name="checkCircle" size={18} color="var(--kanso-danger)" /><small>42.8K</small></div>
+                      <div class="tt-action"><Icon name="chat" size={18} /><small>1.2K</small></div>
+                      <div class="tt-action"><Icon name="link" size={18} /><small>3.4K</small></div>
+                      <div class="tt-action"><Icon name="externalLink" size={18} /><small>Share</small></div>
                     </div>
 
                     <!-- Bottom Caption -->
@@ -492,7 +492,7 @@
                       </div>
                       {#if draftCta}
                         <div class="tt-cta-pill">
-                          <FluentIcons name="link" size={11} />
+                          <Icon name="link" size={11} />
                           <span style="margin-left: 4px;">{draftCta}</span>
                         </div>
                       {/if}
@@ -506,13 +506,13 @@
 
         <!-- Modal Bottom Footer -->
         <div class="modal-footer">
-          <FluentButton appearance="subtle" onclick={closeCopyEditor}>
+          <Button appearance="subtle" onclick={closeCopyEditor}>
             Cancel
-          </FluentButton>
-          <FluentButton appearance="primary" loading={isSavingCopy} onclick={handleSaveCopy}>
-            <FluentIcons name="save" size={14} />
+          </Button>
+          <Button appearance="primary" loading={isSavingCopy} onclick={handleSaveCopy}>
+            <Icon name="save" size={14} />
             <span style="margin-left: 5px;">Save COPY.md to Markdown Vault</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
     </div>
