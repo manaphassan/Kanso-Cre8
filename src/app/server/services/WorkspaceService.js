@@ -20,8 +20,19 @@ class WorkspaceService {
 
   init() {
     this.ensureWorkspace();
+    this.migrateVault();
     this.scan();
     this.startWatcher();
+  }
+
+  migrateVault(targetPath = null) {
+    try {
+      const ConfigService = require('./ConfigService');
+      return ConfigService.migrateVault(targetPath || this.workspaceRoot);
+    } catch (err) {
+      console.warn('[WorkspaceService] Vault migration warning:', err.message);
+      return { success: false, error: err.message };
+    }
   }
 
   ensureWorkspace() {
@@ -1158,6 +1169,9 @@ class WorkspaceService {
     } catch (err) {
       console.warn('[WorkspaceService] Failed to write machine config override:', err.message);
     }
+
+    // Automatically migrate vault structure if needed
+    this.migrateVault(targetPath);
 
     // Restart watcher on new path
     this.startWatcher();

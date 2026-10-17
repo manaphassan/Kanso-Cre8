@@ -314,8 +314,190 @@ class ConfigService {
         console.error(`[ConfigService] Failed to delete vault config '${name}':`, err.message);
         return false;
       }
+    },
+
+    /**
+     * Executes vault migration on target root.
+     */
+    migrate(vaultRoot = null) {
+      return ConfigService.migrateVault(vaultRoot);
     }
   };
+
+  /**
+   * Idempotent migration of an old or legacy vault to canonical Kanso Zen structure.
+   * Consolidates _Team/_Config/ into 3 canonical files:
+   *   1. studio_profile.json
+   *   2. preferences.json
+   *   3. license.json
+   *
+   * Backs up retired files to the Machine tier (<appData>/backups/<name>.migrated.bak)
+   * before deleting them from the vault. Never deletes or touches user .md files.
+   *
+   * @param {string} [targetVaultRoot] - Directory of the vault to migrate. Defaults to active root.
+   * @returns {{ success: boolean, actions: string[], backups: string[], errors: string[] }}
+   */
+  static migrateVault(targetVaultRoot = null) {
+    const vaultRoot = targetVaultRoot || this.vault.getRoot();
+    const configDir = path.join(vaultRoot, '_Team', '_Config');
+    const actions = [];
+    const backups = [];
+    const errors = [];
+
+    if (!fs.existsSync(configDir)) {
+      return { success: true, actions: ['Config directory does not exist, nothing to migrate.'], backups, errors };
+    }
+
+    const machineConfigDir = path.dirname(this.machine.getPath());
+    const backupDir = path.join(machineConfigDir, 'backups');
+    try {
+      if (!fs.existsSync(backupDir)) {
+        fs.mkdirSync(backupDir, { recursive: true, mode: 0o700 });
+      }
+    } catch (err) {
+      console.warn('[ConfigService] Could not create machine backups dir:', err.message);
+    }
+
+    const backupFile = (filename) => {
+      const src = path.join(configDir, filename);
+      if (fs.existsSync(src)) {
+        try {
+          const dest = path.join(backupDir, `${filename}.migrated.bak`);
+          fs.copyFileSync(src, dest);
+          backups.push(dest);
+          return true;
+        } catch (err) {
+          errors.push(`Failed to backup ${filename}: ${err.message}`);
+          return false;
+        }
+      }
+      return false;
+    };
+
+    // 1. theme.txt -> preferences.json
+    const themeTxtPath = path.join(configDir, 'theme.txt');
+    if (fs.existsSync(themeTxtPath)) {
+      try {
+        const themeContent = fs.readFileSync(themeTxtPath, 'utf8').trim().toLowerCase();
+        if (themeContent) {
+          const prefsPath = path.join(configDir, 'preferences.json');
+          let currentPrefs = { ...DEFAULT_PREFERENCES };
+          if (fs.existsSync(prefsPath)) {
+            try {
+              currentPrefs = { ...currentPrefs, ...JSON.parse(fs.readFileSync(prefsPath, 'utf8')) };
+            } catch (_) {}
+          }
+          currentPrefs.theme = themeContent;
+          this._writeAtomicJson(prefsPath, currentPrefs);
+          actions.push(`Migrated theme.txt ('${themeContent}') into preferences.json`);
+        }
+        if (backupFile('theme.txt')) {
+          fs.unlinkSync(themeTxtPath);
+          actions.push('Backed up and removed legacy theme.txt from vault');
+        }
+      } catch (err) {
+        errors.push(`Failed to migrate theme.txt: ${err.message}`);
+      }
+    }
+
+    // 2. license.key -> license.json
+    const licenseKeyPath = path.join(configDir, 'license.key');
+    if (fs.existsSync(licenseKeyPath)) {
+      try {
+        const keyContent = fs.readFileSync(licenseKeyPath, 'utf8').trim();
+        if (keyContent) {
+          const licPath = path.join(configDir, 'license.json');
+          let currentLic = { ...DEFAULT_LICENSE };
+          if (fs.existsSync(licPath)) {
+            try {
+              currentLic = { ...currentLic, ...JSON.parse(fs.readFileSync(licPath, 'utf8')) };
+            } catch (_) {}
+          }
+          currentLic.active = true;
+          currentLic.tier = 'pro';
+          currentLic.licenseKey = keyContent;
+          this._writeAtomicJson(licPath, currentLic);
+          actions.push('Migrated license.key into license.json');
+        }
+        if (backupFile('license.key')) {
+          fs.unlinkSync(licenseKeyPath);
+          actions.push('Backed up and removed legacy license.key from vault');
+        }
+      } catch (err) {
+        errors.push(`Failed to migrate license.key: ${err.message}`);
+      }
+    }
+
+    // 3. Normalize studio_profile.json keys to canonical AGENTS.md spec
+    const studioPath = path.join(configDir, 'studio_profile.json');
+    if (fs.existsSync(studioPath)) {
+      try {
+        const raw = fs.readFileSync(studioPath, 'utf8');
+        const parsed = JSON.parse(raw);
+        let changed = false;
+
+        const normalized = { ...DEFAULT_STUDIO_PROFILE, ...parsed };
+
+        if (parsed.businessRegNo && !parsed.registration_no) {
+          normalized.registration_no = parsed.businessRegNo;
+          changed = true;
+        }
+        if (parsed.digitalSignature && !parsed.signature_text) {
+          normalized.signature_text = parsed.digitalSignature;
+          changed = true;
+        }
+        if (parsed.logo && !parsed.logo_url) {
+          normalized.logo_url = parsed.logo;
+          changed = true;
+        }
+        if (parsed.paymentSwiftOrQr && (!parsed.swift_bic || !parsed.duitnow_id)) {
+          if (parsed.paymentSwiftOrQr.includes('SWIFT:')) {
+            const parts = parsed.paymentSwiftOrQr.split('/');
+            const swiftPart = parts.find(p => p.includes('SWIFT:'));
+            const duitPart = parts.find(p => p.includes('DuitNow:'));
+            if (swiftPart && !parsed.swift_bic) {
+              normalized.swift_bic = swiftPart.replace('SWIFT:', '').trim();
+              changed = true;
+            }
+            if (duitPart && !parsed.duitnow_id) {
+              normalized.duitnow_id = duitPart.replace('DuitNow:', '').trim();
+              changed = true;
+            }
+          }
+        }
+
+        if (changed || !fs.existsSync(studioPath)) {
+          this._writeAtomicJson(studioPath, normalized);
+          actions.push('Normalized studio_profile.json keys (registration_no, signature_text, logo_url, swift_bic, duitnow_id)');
+        }
+      } catch (err) {
+        errors.push(`Failed to normalize studio_profile.json: ${err.message}`);
+      }
+    }
+
+    // 4. Retire old JSON files: user_passwords.json, staff_directory.json, team-notes.json
+    const retiredFiles = ['user_passwords.json', 'staff_directory.json', 'team-notes.json'];
+    for (const filename of retiredFiles) {
+      const fullPath = path.join(configDir, filename);
+      if (fs.existsSync(fullPath)) {
+        try {
+          if (backupFile(filename)) {
+            fs.unlinkSync(fullPath);
+            actions.push(`Backed up and retired ${filename}`);
+          }
+        } catch (err) {
+          errors.push(`Failed to retire ${filename}: ${err.message}`);
+        }
+      }
+    }
+
+    return {
+      success: errors.length === 0,
+      actions,
+      backups,
+      errors
+    };
+  }
 
   // Top-level convenience accessors
   static getMachine(key, defaultValue) {

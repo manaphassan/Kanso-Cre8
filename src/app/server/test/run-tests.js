@@ -270,70 +270,79 @@ This is the project brief content.
 
   // ─── TEST 12: TeamService & User Staff Directory Governance ────────
   test('TeamService provisions, updates, and validates staff user accounts', () => {
-    const TeamService = require('../services/TeamService');
-    const { getUserRoles, getUserPermissions } = require('../middleware/auth');
-    const roster = TeamService.getStaffRoster();
+    const testDir = path.join(__dirname, 'temp-team-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testDir;
 
-    assert.ok(Array.isArray(roster), 'Staff roster must return an array');
-    assert.ok(roster.length >= 6, 'Must contain canonical creative team members');
-
-    const lead = roster.find(m => m.staffId === 'ACME001' || m.username === 'alex');
-    assert.ok(lead, 'Lead staff (ACME001) must exist');
-    assert.ok(lead.role, 'Lead staff must have an assigned role');
-
-    // Test adding and updating a multi-role staff user
-    const testStaffId = 'KANSO9999';
     try {
+      const TeamService = require('../services/TeamService');
+      const { getUserRoles, getUserPermissions } = require('../middleware/auth');
+      const roster = TeamService.getStaffRoster();
+
+      assert.ok(Array.isArray(roster), 'Staff roster must return an array');
+      assert.ok(roster.length >= 6, 'Must contain canonical creative team members');
+
+      const lead = roster.find(m => m.staffId === 'ACME001' || m.username === 'alex');
+      assert.ok(lead, 'Lead staff (ACME001) must exist');
+      assert.ok(lead.role, 'Lead staff must have an assigned role');
+
+      // Test adding and updating a multi-role staff user
+      const testStaffId = 'KANSO9999';
+      try {
+        TeamService.deleteStaffMember(testStaffId);
+      } catch (e) {}
+
+      const added = TeamService.addStaffMember({
+        staffId: testStaffId,
+        name: 'Test Staff Designer & Copywriter',
+        roles: ['Designer', 'Copywriter'],
+        department: 'Creative Production',
+        defaultBrand: 'ACME'
+      });
+
+      assert.strictEqual(added.staffId, 'KANSO9999');
+      assert.strictEqual(added.name, 'Test Staff Designer & Copywriter');
+      assert.ok(added.roles.includes('Designer'), 'Must include Designer role');
+      assert.ok(added.roles.includes('Copywriter'), 'Must include Copywriter role');
+
+      // Test permission aggregation across multiple roles
+      const perms = getUserPermissions(added);
+      assert.ok(perms.includes('deliverable:upload'), 'Must contain Designer upload permission');
+      assert.ok(perms.includes('copy:draft'), 'Must contain Copywriter draft permission');
+
+      const updated = TeamService.updateStaffMember(testStaffId, {
+        name: 'Test Staff Lead Designer',
+        roles: ['Designer', 'Manager']
+      });
+      assert.strictEqual(updated.name, 'Test Staff Lead Designer');
+      assert.ok(updated.roles.includes('Manager'), 'Must update to include Manager role');
+
+      const updatedPerms = getUserPermissions(updated);
+      assert.ok(updatedPerms.includes('team:manage_workload'), 'Must contain Manager workload permission');
+
+      // Test Team Directory & Workload aggregation
+      const directory = TeamService.getTeamDirectory();
+      assert.ok(Array.isArray(directory), 'Team directory must return an array of creatives');
+      assert.ok(directory.length > 0, 'Directory must contain active creative staff');
+      
+      const alex = directory.find(m => m.staffId === 'ACME001' || m.name === 'Alex Mercer');
+      assert.ok(alex, 'Alex Mercer (Art Director) must be in creative team directory');
+      assert.ok(alex.workload, 'Alex Mercer must have workload metrics object');
+      assert.strictEqual(typeof alex.workload.active, 'number', 'Workload active count must be a number');
+      assert.strictEqual(typeof alex.capacityStatus, 'string', 'Capacity status must be a string');
+      assert.strictEqual(typeof alex.workload.weightedLoad, 'number', 'Weighted load must be a number');
+      assert.ok(Array.isArray(alex.assignedProjects), 'Assigned projects must be an array');
+      if (alex.assignedProjects.length > 0) {
+        assert.strictEqual(typeof alex.assignedProjects[0].slaDays, 'number', 'Assigned project must have numeric slaDays');
+        assert.strictEqual(typeof alex.assignedProjects[0].slotWeight, 'number', 'Assigned project must have numeric slotWeight');
+      }
+
+      // Cleanup
       TeamService.deleteStaffMember(testStaffId);
-    } catch (e) {}
-
-    const added = TeamService.addStaffMember({
-      staffId: testStaffId,
-      name: 'Test Staff Designer & Copywriter',
-      roles: ['Designer', 'Copywriter'],
-      department: 'Creative Production',
-      defaultBrand: 'ACME'
-    });
-
-    assert.strictEqual(added.staffId, 'KANSO9999');
-    assert.strictEqual(added.name, 'Test Staff Designer & Copywriter');
-    assert.ok(added.roles.includes('Designer'), 'Must include Designer role');
-    assert.ok(added.roles.includes('Copywriter'), 'Must include Copywriter role');
-
-    // Test permission aggregation across multiple roles
-    const perms = getUserPermissions(added);
-    assert.ok(perms.includes('deliverable:upload'), 'Must contain Designer upload permission');
-    assert.ok(perms.includes('copy:draft'), 'Must contain Copywriter draft permission');
-
-    const updated = TeamService.updateStaffMember(testStaffId, {
-      name: 'Test Staff Lead Designer',
-      roles: ['Designer', 'Manager']
-    });
-    assert.strictEqual(updated.name, 'Test Staff Lead Designer');
-    assert.ok(updated.roles.includes('Manager'), 'Must update to include Manager role');
-
-    const updatedPerms = getUserPermissions(updated);
-    assert.ok(updatedPerms.includes('team:manage_workload'), 'Must contain Manager workload permission');
-
-    // Test Team Directory & Workload aggregation
-    const directory = TeamService.getTeamDirectory();
-    assert.ok(Array.isArray(directory), 'Team directory must return an array of creatives');
-    assert.ok(directory.length > 0, 'Directory must contain active creative staff');
-    
-    const alex = directory.find(m => m.staffId === 'ACME001' || m.name === 'Alex Mercer');
-    assert.ok(alex, 'Alex Mercer (Art Director) must be in creative team directory');
-    assert.ok(alex.workload, 'Alex Mercer must have workload metrics object');
-    assert.strictEqual(typeof alex.workload.active, 'number', 'Workload active count must be a number');
-    assert.strictEqual(typeof alex.capacityStatus, 'string', 'Capacity status must be a string');
-    assert.strictEqual(typeof alex.workload.weightedLoad, 'number', 'Weighted load must be a number');
-    assert.ok(Array.isArray(alex.assignedProjects), 'Assigned projects must be an array');
-    if (alex.assignedProjects.length > 0) {
-      assert.strictEqual(typeof alex.assignedProjects[0].slaDays, 'number', 'Assigned project must have numeric slaDays');
-      assert.strictEqual(typeof alex.assignedProjects[0].slotWeight, 'number', 'Assigned project must have numeric slotWeight');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
     }
-
-    // Cleanup
-    TeamService.deleteStaffMember(testStaffId);
   });
 
   // ─── TEST 13: CommentService & Collaboration Threads ────────────────
@@ -2722,6 +2731,74 @@ Layout balance principles.
       WorkspaceService.workspaceRoot = origRoot;
       try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
     }
+  });
+
+  // ─── TEST 55: ConfigService & migrateVault Idempotent Consolidation ───
+  await test('ConfigService.migrateVault consolidates _Team/_Config, creates outside backups, and normalizes schema', async () => {
+    const ConfigService = require('../services/ConfigService');
+    const testWs = path.join(__dirname, 'temp-migrate-vault-test');
+    const testConfigDir = path.join(testWs, '_Team', '_Config');
+
+    fs.mkdirSync(testConfigDir, { recursive: true });
+
+    // Seed legacy vault files
+    fs.writeFileSync(path.join(testConfigDir, 'theme.txt'), 'light\n', 'utf8');
+    fs.writeFileSync(path.join(testConfigDir, 'license.key'), 'KANSO-PRO-TEST-MIGRATED-KEY-2026', 'utf8');
+    fs.writeFileSync(path.join(testConfigDir, 'user_passwords.json'), JSON.stringify({ admin: 'secret123' }), 'utf8');
+    fs.writeFileSync(path.join(testConfigDir, 'staff_directory.json'), JSON.stringify([{ id: 'S1' }]), 'utf8');
+    fs.writeFileSync(path.join(testConfigDir, 'team-notes.json'), JSON.stringify({ notes: [] }), 'utf8');
+    fs.writeFileSync(path.join(testConfigDir, 'studio_profile.json'), JSON.stringify({
+      studioName: 'Migrated Atelier',
+      businessRegNo: 'REG-999',
+      digitalSignature: 'Alex Signature',
+      logo: 'https://example.com/logo.png',
+      paymentSwiftOrQr: 'SWIFT: TESTSWIFT / DuitNow: 12345678'
+    }), 'utf8');
+
+    // Run first migration pass
+    const report1 = ConfigService.migrateVault(testWs);
+    assert.strictEqual(report1.success, true);
+    assert.ok(report1.actions.length >= 4);
+
+    // Verify theme.txt was migrated into preferences.json and removed from vault
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'theme.txt')), false, 'theme.txt must be removed from vault');
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'preferences.json')), true, 'preferences.json must be created');
+    const prefs = JSON.parse(fs.readFileSync(path.join(testConfigDir, 'preferences.json'), 'utf8'));
+    assert.strictEqual(prefs.theme, 'light');
+
+    // Verify license.key was migrated into license.json and removed from vault
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'license.key')), false, 'license.key must be removed from vault');
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'license.json')), true, 'license.json must be created');
+    const lic = JSON.parse(fs.readFileSync(path.join(testConfigDir, 'license.json'), 'utf8'));
+    assert.strictEqual(lic.active, true);
+    assert.strictEqual(lic.licenseKey, 'KANSO-PRO-TEST-MIGRATED-KEY-2026');
+
+    // Verify retired files were removed from vault
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'user_passwords.json')), false);
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'staff_directory.json')), false);
+    assert.strictEqual(fs.existsSync(path.join(testConfigDir, 'team-notes.json')), false);
+
+    // Verify backups were created outside vault
+    assert.ok(report1.backups.length >= 3);
+    for (const b of report1.backups) {
+      assert.strictEqual(fs.existsSync(b), true, `Backup file ${b} must exist on disk`);
+    }
+
+    // Verify studio_profile.json was normalized with canonical AGENTS.md keys
+    const prof = JSON.parse(fs.readFileSync(path.join(testConfigDir, 'studio_profile.json'), 'utf8'));
+    assert.strictEqual(prof.registration_no, 'REG-999');
+    assert.strictEqual(prof.signature_text, 'Alex Signature');
+    assert.strictEqual(prof.logo_url, 'https://example.com/logo.png');
+    assert.strictEqual(prof.swift_bic, 'TESTSWIFT');
+    assert.strictEqual(prof.duitnow_id, '12345678');
+
+    // Run second pass to assert idempotency
+    const report2 = ConfigService.migrateVault(testWs);
+    assert.strictEqual(report2.success, true);
+    assert.strictEqual(report2.backups.length, 0, 'Second run must not create redundant backups');
+
+    // Cleanup
+    try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
   });
 
   console.log(`\n========================================================`);
