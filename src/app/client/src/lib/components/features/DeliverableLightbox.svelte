@@ -143,7 +143,7 @@
         {:else if deliverable.isAudio || deliverable.previewType === 'audio'}
           <div class="audio-wrapper">
             <div class="audio-disc">
-              <FluentIcons name="video" size={32} color="#00CFFF" />
+              <FluentIcons name="video" size={32} color="var(--kanso-accent)" />
             </div>
             <div class="audio-track-title">{deliverable.filename}</div>
             <!-- svelte-ignore a11y_media_has_caption -->
@@ -274,7 +274,7 @@
   }
 
   .lightbox-media-viewer {
-    background: #090D16;
+    background: var(--kanso-canvas);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -313,7 +313,7 @@
     border-radius: 16px;
     background: transparent;
     border: none;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
@@ -324,12 +324,12 @@
   }
 
   .view-toggle-pill:hover {
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .view-toggle-pill.active {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     box-shadow: 0 2px 8px rgba(33, 161, 247, 0.3);
   }
 
@@ -363,7 +363,7 @@
     bottom: 16px;
     right: 16px;
     background: rgba(0, 0, 0, 0.75);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     padding: 6px 12px;
@@ -375,7 +375,7 @@
   }
   .zoom-toggle-btn:hover {
     background: rgba(0, 0, 0, 0.95);
-    border-color: #FFFFFF;
+    border-color: var(--kanso-accent-text);
   }
 
   .video-wrapper {
@@ -401,7 +401,7 @@
     height: 100%;
     border: none;
     border-radius: 8px;
-    background: #FFFFFF;
+    background: var(--kanso-surface);
   }
 
   .audio-wrapper {
@@ -409,7 +409,7 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
   .audio-disc {
     font-size: 64px;
@@ -418,14 +418,14 @@
   .audio-track-title {
     font-size: 16px;
     font-weight: 700;
-    color: #E2E8F0;
+    color: var(--kanso-text-primary);
   }
   .audio-player {
     width: 320px;
   }
 
   .file-icon-placeholder {
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -443,11 +443,11 @@
   .file-name {
     font-size: 15px;
     font-weight: 700;
-    color: #F8FAFC;
+    color: var(--kanso-text-primary);
   }
   .file-hint {
     font-size: 12.5px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     max-width: 320px;
   }
 
@@ -514,8 +514,8 @@
   .job-pill {
     font-size: 11px;
     font-weight: 800;
-    background: #E2E8F0;
-    color: #334155;
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
     padding: 1px 6px;
     border-radius: 4px;
   }
@@ -558,9 +558,9 @@
     border-radius: 4px;
     text-transform: uppercase;
   }
-  .status-approved { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-  .status-revision { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .status-pending { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+  .status-approved { background: var(--kanso-success-subtle, rgba(16, 185, 129, 0.12)); color: var(--kanso-success); border: 1px solid var(--kanso-success); }
+  .status-revision { background: var(--kanso-danger-subtle, rgba(239, 68, 68, 0.12)); color: var(--kanso-danger); border: 1px solid var(--kanso-danger); }
+  .status-pending { background: var(--kanso-warning-subtle, rgba(245, 158, 11, 0.12)); color: var(--kanso-warning); border: 1px solid var(--kanso-warning); }
 
   .sidebar-actions {
     display: flex;
@@ -586,8 +586,8 @@
     transition: all 0.14s;
   }
   .download-btn:hover {
-    background: #E2E8F0;
-    border-color: #94A3B8;
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-text-muted);
   }
 
   .decision-group {

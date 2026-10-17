@@ -382,7 +382,7 @@
         professionalTitle: professionalTitle.trim(),
         tagline: tagline.trim(),
         logo: logo || '',
-        brandColor: brandColor || '#0284C7',
+        brandColor: brandColor || 'var(--kanso-accent)',
         businessRegNo: businessRegNo.trim(),
         billingEmail: billingEmail.trim(),
         studioAddress: studioAddress.trim(),
@@ -409,7 +409,7 @@
         appState.currentUser.email = billingEmail.trim();
         appState.currentUser.role = professionalTitle.trim();
         appState.currentUser.avatar = logo || '';
-        appState.currentUser.avatarColor = brandColor || '#0284C7';
+        appState.currentUser.avatarColor = brandColor || 'var(--kanso-accent)';
       }
 
       appState.addToast('Studio and brand profile saved successfully.', 'success', 'Profile Updated');
@@ -569,7 +569,7 @@
 
           <div class="stationery-sheet-preview">
             <div class="sheet-header-left">
-              <div class="sheet-logo-monogram" style="background: {brandColor || '#0284C7'};">
+              <div class="sheet-logo-monogram" style="background: {brandColor || 'var(--kanso-accent)'};">
                 {#if logo}
                   <img src={logo} alt={studioName || principalName} class="sheet-logo-img" />
                 {:else}
@@ -615,7 +615,7 @@
             <div class="avatar-preview-wrap">
               <div
                 class="avatar-display studio-logo-display"
-                style="background: {brandColor || '#0284C7'};"
+                style="background: {brandColor || 'var(--kanso-accent)'};"
               >
                 {#if logo}
                   <img src={logo} alt={studioName || principalName} class="avatar-img" />
@@ -1617,15 +1617,15 @@
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .status-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px #10B981;
+    background: var(--kanso-success);
+    box-shadow: 0 0 8px var(--kanso-success);
   }
 
   /* Segmented Navigation Tabs */
@@ -1670,8 +1670,8 @@
   }
 
   :global([data-theme="eink"]) .tab-btn.active {
-    background: #000000;
-    color: #FFFFFF;
+    background: var(--kanso-text-primary);
+    color: var(--kanso-surface);
   }
 
   /* Cards & Surface Containers */
@@ -1758,7 +1758,7 @@
     border-radius: 8px;
     border: none;
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
@@ -1786,7 +1786,7 @@
   }
 
   .btn-secondary.danger {
-    color: #EF4444;
+    color: var(--kanso-danger);
     border-color: rgba(239, 68, 68, 0.3);
   }
 
@@ -1809,7 +1809,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 24px;
     font-weight: 800;
     border: 2px solid var(--kanso-border);
@@ -1866,7 +1866,7 @@
   }
 
   .swatch-circle:hover { transform: scale(1.15); }
-  .swatch-circle.selected { border-color: #FFFFFF; box-shadow: 0 0 0 2px var(--kanso-accent); }
+  .swatch-circle.selected { border-color: var(--kanso-accent-text); box-shadow: 0 0 0 2px var(--kanso-accent); }
 
   .studio-logo-display {
     border-radius: 12px;
@@ -1974,7 +1974,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 20px;
     font-weight: 800;
     overflow: hidden;
@@ -2043,7 +2043,7 @@
     font-size: 10.5px;
     font-weight: 800;
     letter-spacing: 0.08em;
-    color: #10B981;
+    color: var(--kanso-success);
     background: rgba(16, 185, 129, 0.12);
     padding: 2px 6px;
     border-radius: 4px;
@@ -2372,7 +2372,7 @@
     gap: 8px;
     font-size: 12px;
     font-weight: 700;
-    color: #10B981;
+    color: var(--kanso-success);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -2381,8 +2381,8 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 10px #10B981;
+    background: var(--kanso-success);
+    box-shadow: 0 0 10px var(--kanso-success);
   }
 
   .vault-path-text {
@@ -3088,7 +3088,7 @@
     font-family: var(--kanso-font-mono);
     font-size: 10px;
     font-weight: 800;
-    color: #F59E0B;
+    color: var(--kanso-warning);
     background: rgba(245, 158, 11, 0.14);
     border: 1px solid rgba(245, 158, 11, 0.3);
     padding: 1px 5px;
@@ -3120,7 +3120,7 @@
 
   .edition-badge.pro {
     background: rgba(245, 158, 11, 0.12);
-    color: #F59E0B;
+    color: var(--kanso-warning);
     border: 1px solid rgba(245, 158, 11, 0.28);
   }
 
@@ -3136,7 +3136,7 @@
     gap: 6px;
     font-size: 12px;
     font-weight: 700;
-    color: #10B981;
+    color: var(--kanso-success);
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.25);
     padding: 4px 12px;
@@ -3299,7 +3299,7 @@
   }
 
   .matrix-header.pro .matrix-price {
-    color: #F59E0B;
+    color: var(--kanso-warning);
   }
 
   .matrix-list {
@@ -3323,7 +3323,7 @@
   }
 
   .danger-action {
-    color: #EF4444;
+    color: var(--kanso-danger);
     border-color: rgba(239, 68, 68, 0.3);
   }
 
@@ -3335,9 +3335,9 @@
   :global([data-theme="eink"]) .storage-pill,
   :global([data-theme="eink"]) .tree-root-badge,
   :global([data-theme="eink"]) .version-badge {
-    background: #000000 !important;
-    color: #FFFFFF !important;
-    border: 1px solid #000000 !important;
+    background: var(--kanso-text-primary) !important;
+    color: var(--kanso-surface) !important;
+    border: 1px solid var(--kanso-text-primary) !important;
   }
 
   :global([data-theme="eink"]) .active-vault-banner,
@@ -3345,25 +3345,25 @@
   :global([data-theme="eink"]) .git-repository-box,
   :global([data-theme="eink"]) .spec-item,
   :global([data-theme="eink"]) .pillar-card {
-    border-color: #000000 !important;
+    border-color: var(--kanso-border) !important;
   }
 
   :global([data-theme="eink"]) .status-pulse-dot {
-    background: #000000 !important;
+    background: var(--kanso-text-primary) !important;
     box-shadow: none !important;
   }
 
   :global([data-theme="eink"]) .status-text {
-    color: #000000 !important;
+    color: var(--kanso-text-primary) !important;
   }
 
   :global([data-theme="eink"]) .tree-leaf.highlight {
-    background: #F0F0F0 !important;
-    border-color: #000000 !important;
+    background: var(--kanso-surface-hover) !important;
+    border-color: var(--kanso-border) !important;
   }
 
   :global([data-theme="eink"]) .candidate-row.is-current {
-    border-color: #000000 !important;
-    background: #F0F0F0 !important;
+    border-color: var(--kanso-border) !important;
+    background: var(--kanso-surface-hover) !important;
   }
 </style>

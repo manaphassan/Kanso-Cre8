@@ -109,7 +109,7 @@
       <div class="timeline-header">
         <div class="header-left">
           <div class="timeline-icon-badge">
-            <FluentIcons name="timeline" size={20} color="#00CFFF" />
+            <FluentIcons name="timeline" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Creative Version Timeline &amp; Rollback</h2>
@@ -207,7 +207,7 @@
       <!-- Footer -->
       <div class="timeline-footer">
         <span class="security-tip">
-          <FluentIcons name="lock" size={12} color="#00CFFF" />
+          <FluentIcons name="lock" size={12} color="var(--kanso-accent)" />
           <span style="margin-left: 6px;">Pre-rollback safety backups are created automatically prior to any restoration.</span>
         </span>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
@@ -242,7 +242,7 @@
     width: 95%;
     max-width: 780px;
     height: 85vh;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     display: flex;
@@ -262,11 +262,11 @@
 
   .header-left { display: flex; align-items: center; gap: 12px; }
   .timeline-icon { font-size: 24px; }
-  .modal-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
-  .modal-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); }
+  .modal-sub { font-size: 12px; color: var(--kanso-text-muted); margin-top: 2px; }
 
-  .close-btn { background: transparent; border: none; font-size: 16px; color: #94A3B8; cursor: pointer; padding: 4px 8px; }
-  .close-btn:hover { color: #FFF; }
+  .close-btn { background: transparent; border: none; font-size: 16px; color: var(--kanso-text-muted); cursor: pointer; padding: 4px 8px; }
+  .close-btn:hover { color: var(--kanso-accent-text); }
 
   .timeline-body {
     flex: 1;
@@ -288,26 +288,26 @@
 
   .capture-input {
     flex: 1;
-    background: #1E293B;
+    background: var(--kanso-surface-hover);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
     padding: 8px 12px;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 12.5px;
     outline: none;
   }
-  .capture-input:focus { border-color: #38BDF8; }
+  .capture-input:focus { border-color: var(--kanso-accent); }
 
   /* Tree */
   .tree-container { display: flex; flex-direction: column; gap: 12px; }
   .loading-box, .empty-box {
     text-align: center;
     padding: 40px 20px;
-    color: #64748B;
+    color: var(--kanso-text-muted);
     font-size: 13px;
   }
   .empty-icon { font-size: 36px; display: block; margin-bottom: 6px; }
-  .empty-sub { font-size: 11px; color: #475569; display: block; margin-top: 4px; }
+  .empty-sub { font-size: 11px; color: var(--kanso-text-secondary); display: block; margin-top: 4px; }
 
   .milestones-list { display: flex; flex-direction: column; gap: 0; }
   .milestone-card {
@@ -328,9 +328,9 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: #043388;
-    border: 2px solid #21A1F7;
-    color: #FFF;
+    background: var(--kanso-accent);
+    border: 2px solid var(--kanso-accent);
+    color: var(--kanso-accent-text);
     font-size: 11px;
     font-weight: 800;
     display: flex;
@@ -365,25 +365,25 @@
 
   .milestone-top { display: flex; justify-content: space-between; align-items: center; }
   .rev-tags { display: flex; align-items: center; gap: 8px; }
-  .rev-badge { font-size: 11px; font-weight: 800; background: #043388; color: #FFF; padding: 2px 6px; border-radius: 4px; }
+  .rev-badge { font-size: 11px; font-weight: 800; background: var(--kanso-accent); color: var(--kanso-accent-text); padding: 2px 6px; border-radius: 4px; }
   .status-pill { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
-  .status-pill.status-approved { background: rgba(16, 185, 129, 0.2); color: #10B981; }
-  .status-pill.status-revision { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
-  .status-pill.status-in-progress { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }
+  .status-pill.status-approved { background: rgba(16, 185, 129, 0.2); color: var(--kanso-success); }
+  .status-pill.status-revision { background: rgba(239, 68, 68, 0.2); color: var(--kanso-danger); }
+  .status-pill.status-in-progress { background: rgba(245, 158, 11, 0.2); color: var(--kanso-warning); }
 
-  .latest-tag { font-size: 9px; font-weight: 900; background: #10B981; color: #0F172A; padding: 2px 5px; border-radius: 3px; }
-  .timestamp-meta { font-size: 11px; color: #64748B; }
+  .latest-tag { font-size: 9px; font-weight: 900; background: var(--kanso-success); color: var(--kanso-text-primary); padding: 2px 5px; border-radius: 3px; }
+  .timestamp-meta { font-size: 11px; color: var(--kanso-text-muted); }
 
-  .milestone-note { font-size: 13px; color: #F8FAFC; font-weight: 600; font-style: italic; }
+  .milestone-note { font-size: 13px; color: var(--kanso-text-primary); font-weight: 600; font-style: italic; }
 
-  .milestone-meta-row { display: flex; align-items: center; gap: 12px; font-size: 11px; color: #94A3B8; margin-top: 2px; }
-  .snap-id-tag { font-family: monospace; font-size: 10px; color: #64748B; }
+  .milestone-meta-row { display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--kanso-text-muted); margin-top: 2px; }
+  .snap-id-tag { font-family: monospace; font-size: 10px; color: var(--kanso-text-muted); }
 
   .rollback-action-row { margin-top: 6px; display: flex; justify-content: flex-end; }
   .rollback-btn {
     background: transparent;
     border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #F87171;
+    color: var(--kanso-danger);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 11px;
@@ -402,5 +402,5 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(11, 17, 33, 0.98);
   }
-  .security-tip { font-size: 11px; color: #64748B; }
+  .security-tip { font-size: 11px; color: var(--kanso-text-muted); }
 </style>

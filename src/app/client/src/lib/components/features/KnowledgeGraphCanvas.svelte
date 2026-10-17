@@ -46,9 +46,9 @@
   });
 
   const TYPE_COLORS: Record<GraphNodeType, { fill: string; stroke: string; glow: string; label: string }> = {
-    permanent: { fill: '#27272A', stroke: '#E4E4E7', glow: 'rgba(244, 244, 245, 0.3)', label: 'Permanent' },
-    fleeting: { fill: '#064E3B', stroke: '#10B981', glow: 'rgba(16, 185, 129, 0.4)', label: 'Fleeting' },
-    literature: { fill: '#78350F', stroke: '#F59E0B', glow: 'rgba(245, 158, 11, 0.4)', label: 'Literature' },
+    permanent: { fill: 'var(--kanso-border)', stroke: 'var(--kanso-border)', glow: 'rgba(244, 244, 245, 0.3)', label: 'Permanent' },
+    fleeting: { fill: 'var(--kanso-success)', stroke: 'var(--kanso-success)', glow: 'rgba(16, 185, 129, 0.4)', label: 'Fleeting' },
+    literature: { fill: 'var(--kanso-warning)', stroke: 'var(--kanso-warning)', glow: 'rgba(245, 158, 11, 0.4)', label: 'Literature' },
     client: { fill: '#0C4A6E', stroke: '#38BDF8', glow: 'rgba(56, 189, 248, 0.45)', label: 'Client' },
     project: { fill: '#581C87', stroke: '#C084FC', glow: 'rgba(192, 132, 252, 0.45)', label: 'Project' }
   };
@@ -573,7 +573,7 @@
     width: 100%;
     height: 100%;
     min-height: 500px;
-    background: var(--kanso-canvas, #09090B);
+    background: var(--kanso-canvas);
     border-radius: 8px;
     overflow: hidden;
     user-select: none;
@@ -609,11 +609,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 4px 10px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
 
@@ -622,18 +622,18 @@
     border: none;
     outline: none;
     font-size: 12px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     width: 130px;
   }
 
   .graph-search-input::placeholder {
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .clear-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 14px;
     cursor: pointer;
     padding: 0 2px;
@@ -644,8 +644,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 4px 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
@@ -657,7 +657,7 @@
     gap: 5px;
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 11px;
     font-weight: 500;
     padding: 3px 6px;
@@ -669,7 +669,7 @@
 
   .pill-btn.active {
     opacity: 1;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .pill-dot {
@@ -684,8 +684,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 3px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
@@ -699,7 +699,7 @@
     justify-content: center;
     background: transparent;
     border: none;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     font-size: 13px;
     font-family: monospace;
     border-radius: 4px;
@@ -707,15 +707,15 @@
   }
 
   .action-btn:hover {
-    background: var(--kanso-surface-hover, #27272A);
+    background: var(--kanso-surface-hover);
   }
 
   /* ─── HOVER CARD ─── */
   .hover-card {
     position: fixed;
     width: 230px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 10px 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
@@ -743,20 +743,20 @@
   .degree-badge {
     font-size: 10px;
     font-family: monospace;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .card-title {
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     margin: 0 0 4px 0;
     line-height: 1.35;
   }
 
   .card-snippet {
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     margin: 0 0 8px 0;
     line-height: 1.4;
     display: -webkit-box;
@@ -767,9 +767,9 @@
 
   .card-footer {
     font-size: 9.5px;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-family: monospace;
-    border-top: 1px solid var(--kanso-border, #27272A);
+    border-top: 1px solid var(--kanso-border);
     padding-top: 5px;
   }
 
@@ -790,13 +790,13 @@
     font-family: monospace;
     background: rgba(24, 24, 27, 0.85);
     backdrop-filter: blur(8px);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-muted, #71717A);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
     padding: 3px 8px;
     border-radius: 4px;
   }
 
   .hud-pill.zen-mode {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 </style>

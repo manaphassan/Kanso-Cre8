@@ -119,7 +119,7 @@
       <div class="share-header">
         <div class="header-left">
           <div class="share-icon-badge">
-            <FluentIcons name="link" size={20} color="#00CFFF" />
+            <FluentIcons name="link" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Client Review &amp; Share Links</h2>
@@ -249,7 +249,7 @@
 
       <div class="share-footer">
         <span class="security-tip">
-          <FluentIcons name="lock" size={12} color="#00CFFF" />
+          <FluentIcons name="lock" size={12} color="var(--kanso-accent)" />
           <span style="margin-left: 6px;">Cryptographic tokenized access — zero credentials leaked.</span>
         </span>
         <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
@@ -284,7 +284,7 @@
     width: 95%;
     max-width: 680px;
     max-height: 85vh;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     display: flex;
@@ -304,18 +304,18 @@
 
   .header-left { display: flex; align-items: center; gap: 12px; }
   .share-icon { font-size: 24px; }
-  .modal-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
-  .modal-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); }
+  .modal-sub { font-size: 12px; color: var(--kanso-text-muted); margin-top: 2px; }
 
   .close-btn {
     background: transparent;
     border: none;
     font-size: 16px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     cursor: pointer;
     padding: 4px 8px;
   }
-  .close-btn:hover { color: #FFF; }
+  .close-btn:hover { color: var(--kanso-accent-text); }
 
   .share-body {
     flex: 1;
@@ -341,18 +341,18 @@
   }
 
   .form-field { display: flex; flex-direction: column; gap: 4px; }
-  .field-label { font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
+  .field-label { font-size: 11px; font-weight: 700; color: var(--kanso-text-muted); text-transform: uppercase; }
 
   .form-select, .form-input {
-    background: #1E293B;
+    background: var(--kanso-surface-hover);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
     padding: 8px 10px;
-    color: #F8FAFC;
+    color: var(--kanso-text-primary);
     font-size: 12px;
     outline: none;
   }
-  .form-select:focus, .form-input:focus { border-color: #21A1F7; }
+  .form-select:focus, .form-input:focus { border-color: var(--kanso-accent); }
 
   .form-actions { margin-top: 14px; display: flex; justify-content: flex-end; }
 
@@ -368,17 +368,17 @@
   }
 
   .gen-header { display: flex; justify-content: space-between; align-items: center; }
-  .gen-badge { font-size: 10px; font-weight: 900; background: #21A1F7; color: #0F172A; padding: 2px 6px; border-radius: 4px; }
-  .gen-exp { font-size: 11px; color: #94A3B8; }
+  .gen-badge { font-size: 10px; font-weight: 900; background: var(--kanso-accent); color: var(--kanso-text-primary); padding: 2px 6px; border-radius: 4px; }
+  .gen-exp { font-size: 11px; color: var(--kanso-text-muted); }
 
   .link-url-row { display: flex; gap: 8px; }
   .url-input {
     flex: 1;
-    background: #090D16;
+    background: var(--kanso-canvas);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     padding: 8px 10px;
-    color: #38BDF8;
+    color: var(--kanso-accent);
     font-size: 12px;
     font-family: monospace;
     outline: none;
@@ -386,8 +386,8 @@
 
   .copy-btn {
     padding: 8px 14px;
-    background: #043388;
-    color: #FFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     border: none;
     border-radius: 6px;
     font-size: 12px;
@@ -395,7 +395,7 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-  .copy-btn:hover { background: #0078D4; }
+  .copy-btn:hover { background: var(--kanso-accent); }
 
   .share-quick-btns { display: flex; gap: 10px; }
   .whatsapp-btn {
@@ -405,7 +405,7 @@
     padding: 6px 12px;
     border-radius: 6px;
     background: #25D366;
-    color: #050505;
+    color: var(--kanso-text-primary);
     font-size: 12px;
     font-weight: 700;
     border: none;
@@ -418,7 +418,7 @@
     padding: 6px 12px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.1);
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 12px;
     font-weight: 700;
     text-decoration: none;
@@ -426,8 +426,8 @@
 
   /* History */
   .history-section { display: flex; flex-direction: column; gap: 8px; }
-  .history-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #94A3B8; }
-  .empty-state { font-size: 12px; color: #64748B; padding: 8px 0; }
+  .history-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--kanso-text-muted); }
+  .empty-state { font-size: 12px; color: var(--kanso-text-muted); padding: 8px 0; }
 
   .links-list { display: flex; flex-direction: column; gap: 6px; }
   .link-row {
@@ -442,18 +442,18 @@
 
   .link-meta-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
   .perm-pill { font-size: 10px; font-weight: 800; padding: 1px 5px; border-radius: 3px; }
-  .perm-pill.review_approve { background: rgba(16, 185, 129, 0.2); color: #34D399; }
-  .perm-pill.view_only { background: rgba(148, 163, 184, 0.2); color: #94A3B8; }
+  .perm-pill.review_approve { background: rgba(16, 185, 129, 0.2); color: var(--kanso-success); }
+  .perm-pill.view_only { background: rgba(148, 163, 184, 0.2); color: var(--kanso-text-muted); }
 
-  .created-meta { color: #94A3B8; }
-  .access-count { color: #38BDF8; font-weight: 700; }
-  .link-note { font-size: 11px; color: #CBD5E1; font-style: italic; margin-top: 2px; }
+  .created-meta { color: var(--kanso-text-muted); }
+  .access-count { color: var(--kanso-accent); font-weight: 700; }
+  .link-note { font-size: 11px; color: var(--kanso-text-muted); font-style: italic; margin-top: 2px; }
 
   .link-actions { display: flex; align-items: center; gap: 6px; }
   .icon-action-btn {
     background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
@@ -462,7 +462,7 @@
   .revoke-btn {
     background: transparent;
     border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #F87171;
+    color: var(--kanso-danger);
     font-size: 10px;
     font-weight: 700;
     padding: 3px 6px;
@@ -480,5 +480,5 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(11, 17, 33, 0.95);
   }
-  .security-tip { font-size: 11px; color: #64748B; }
+  .security-tip { font-size: 11px; color: var(--kanso-text-muted); }
 </style>

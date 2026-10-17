@@ -424,7 +424,7 @@
           <span
             class="power-led"
             style="
-              background: {state.isPlaying ? '#10B981' : '#71717A'};
+              background: {state.isPlaying ? 'var(--kanso-success)' : 'var(--kanso-text-muted)'};
               box-shadow: {state.isPlaying ? '0 0 10px rgba(16, 185, 129, 0.7)' : 'none'};
             "
           ></span>
@@ -1565,7 +1565,7 @@
   .counter-digits {
     display: flex;
     gap: 1.5px;
-    background: #09090B;
+    background: var(--kanso-canvas);
     padding: 2px 4px;
     border-radius: 3px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1607,7 +1607,7 @@
 
   .counter-reset-btn:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     border-color: var(--kanso-accent);
     transform: rotate(90deg);
   }
@@ -1722,7 +1722,7 @@
     gap: 6px;
     align-items: flex-end;
     height: 76px;
-    background: #09090B;
+    background: var(--kanso-canvas);
     padding: 8px 6px 4px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1891,13 +1891,13 @@
 
   .pitch-btn:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .pitch-scale-line {
     flex: 1;
     height: 6px;
-    background: #09090B;
+    background: var(--kanso-canvas);
     border-radius: 3px;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2013,7 +2013,7 @@
     font-size: 11px;
     font-weight: 900;
     border-radius: 4px;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     letter-spacing: 0.05em;
     flex-shrink: 0;
     border: none;
@@ -2255,7 +2255,7 @@
     flex: 1;
     margin: 0 16px;
     height: 28px;
-    background: #09090B;
+    background: var(--kanso-canvas);
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
@@ -2300,7 +2300,7 @@
   .capstan-core {
     width: 2px;
     height: 10px;
-    background: #27272A;
+    background: var(--kanso-surface);
   }
 
   .roller-dot {
@@ -2327,7 +2327,7 @@
     height: 16px;
     background: linear-gradient(180deg, #71717A 0%, #D4D4D8 40%, #A1A1AA 70%, #52525B 100%);
     border-radius: 3px;
-    border: 1px solid #27272A;
+    border: 1px solid var(--kanso-border);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
     z-index: 2;
     display: flex;
@@ -2338,7 +2338,7 @@
   .head-core-line {
     width: 2px;
     height: 10px;
-    background: #18181B;
+    background: var(--kanso-surface);
   }
 
   .tape-bias-text {
@@ -2362,14 +2362,14 @@
     padding: 2px 8px;
     font-size: 9px;
     font-weight: 800;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
   .quick-flip-btn:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: #FFFFFF;
+    border-color: var(--kanso-accent-text);
   }
 
   /* ════ MECHANICAL PIANO-KEY TRANSPORT BAR ════ */
@@ -2431,7 +2431,7 @@
 
   .piano-key.key-play.is-active {
     background: #FF7A00;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     box-shadow: 0 0 12px rgba(255, 122, 0, 0.5);
   }
 
@@ -2576,7 +2576,7 @@
   }
 
   .fav-station-row.is-playing {
-    border-color: #10B981;
+    border-color: var(--kanso-success);
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
   }
 
@@ -2634,8 +2634,8 @@
     letter-spacing: 0.05em;
     padding: 1px 4px;
     border-radius: 3px;
-    background: #10B981;
-    color: #FFFFFF;
+    background: var(--kanso-success);
+    color: var(--kanso-accent-text);
     flex-shrink: 0;
     line-height: 1.2;
   }
@@ -2720,7 +2720,7 @@
 
   .fav-browse-all-btn:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   /* Multi-Channel Atelier Soundboard */
@@ -2873,7 +2873,7 @@
 
   .rack-action-btn.primary:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     border-color: var(--kanso-accent);
   }
 
@@ -3060,8 +3060,8 @@
 
   .test-stream-btn.is-success {
     background: rgba(16, 185, 129, 0.15);
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--kanso-success);
+    color: var(--kanso-success);
   }
 
   .test-stream-btn.is-error {
@@ -3080,7 +3080,7 @@
   }
 
   .stream-feedback.success {
-    color: #10B981;
+    color: var(--kanso-success);
     border-color: rgba(16, 185, 129, 0.35);
     background: rgba(16, 185, 129, 0.08);
   }
@@ -3130,7 +3130,7 @@
   }
 
   .color-swatch-chip.active {
-    border-color: #FFFFFF;
+    border-color: var(--kanso-accent-text);
     transform: scale(1.15);
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
   }
@@ -3138,7 +3138,7 @@
   .chip-check {
     font-size: 11px;
     font-weight: 900;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
@@ -3176,7 +3176,7 @@
   .modal-btn.submit {
     background: var(--kanso-accent);
     border: 1px solid var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .modal-btn.submit:hover:not(:disabled) {
@@ -3237,7 +3237,7 @@
   .modal-btn.danger {
     background: #E5383B;
     border: 1px solid #E5383B;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .modal-btn.danger:hover {
@@ -3247,21 +3247,21 @@
 
   /* E-Ink Monochrome Overrides */
   :global([data-theme="eink"]) .modal-dialog {
-    border: 2px solid #000000 !important;
-    background: #FFFFFF !important;
-    color: #000000 !important;
+    border: 2px solid var(--kanso-border) !important;
+    background: var(--kanso-surface) !important;
+    color: var(--kanso-text-primary) !important;
     box-shadow: none !important;
   }
 
   :global([data-theme="eink"]) .modal-btn.submit {
-    background: #000000 !important;
-    color: #FFFFFF !important;
-    border-color: #000000 !important;
+    background: var(--kanso-text-primary) !important;
+    color: var(--kanso-surface) !important;
+    border-color: var(--kanso-text-primary) !important;
   }
 
   :global([data-theme="eink"]) .modal-btn.danger {
-    background: #000000 !important;
-    color: #FFFFFF !important;
-    border-color: #000000 !important;
+    background: var(--kanso-text-primary) !important;
+    color: var(--kanso-surface) !important;
+    border-color: var(--kanso-text-primary) !important;
   }
 </style>

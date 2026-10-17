@@ -448,7 +448,7 @@
     <div class="delete-dialog-body">
       <div class="delete-warning-banner">
         <div class="warning-title">
-          <FluentIcons name="warning" size={16} color="#EF4444" />
+          <FluentIcons name="warning" size={16} color="var(--kanso-danger)" />
           <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
         </div>
         <p class="warning-text">
@@ -648,8 +648,8 @@
 
   .save-default-btn:hover {
     background: rgba(0, 120, 212, 0.08);
-    border-color: #0078D4;
-    color: #0078D4;
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
   .default-view-badge {
@@ -658,7 +658,7 @@
     gap: 5px;
     background: rgba(16, 124, 65, 0.08);
     border: 1px solid rgba(16, 124, 65, 0.25);
-    color: #107C41;
+    color: var(--kanso-success);
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 12px;
@@ -688,7 +688,7 @@
 
   .seg-view-btn.is-active {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     box-shadow: 0 1px 3px rgba(0, 120, 212, 0.3);
   }
 
@@ -781,12 +781,12 @@
   }
 
   .deadline-item.is-overdue {
-    color: var(--kanso-danger, #ef4444);
+    color: var(--kanso-danger);
     font-weight: 700;
   }
 
   .deadline-item.is-soon {
-    color: var(--kanso-warning, #f59e0b);
+    color: var(--kanso-warning);
     font-weight: 600;
   }
 
@@ -821,15 +821,15 @@
 
   .card-timer-btn.is-active {
     background: rgba(16, 185, 129, 0.12);
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--kanso-success);
+    color: var(--kanso-success);
   }
 
   .pulsing-record-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10B981;
+    background: var(--kanso-success);
     animation: pulse 1.2s infinite;
   }
 
@@ -883,7 +883,7 @@
     width: 28px;
     height: 28px;
     border: 3px solid rgba(0, 120, 212, 0.2);
-    border-top-color: #0078D4;
+    border-top-color: var(--kanso-accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -949,14 +949,14 @@
   }
   .delete-warning-banner {
     background: rgba(196, 43, 28, 0.08);
-    border: 1px solid #C42B1C;
+    border: 1px solid var(--kanso-danger);
     border-radius: 8px;
     padding: 14px;
   }
   .warning-title {
     font-weight: 700;
     font-size: 0.95rem;
-    color: #C42B1C;
+    color: var(--kanso-danger);
     margin-bottom: 6px;
   }
   .warning-text {
@@ -976,7 +976,7 @@
   }
   .subfolder-list code {
     font-family: monospace;
-    color: #C42B1C;
+    color: var(--kanso-danger);
     background: rgba(196, 43, 28, 0.06);
     padding: 1px 4px;
     border-radius: 3px;
@@ -1005,8 +1005,8 @@
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
     font-weight: 700;
     font-size: 0.8rem;
     border-radius: 8px;
@@ -1024,12 +1024,12 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .scaffold-preview-banner {
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 12px 14px;
     display: flex;
@@ -1040,20 +1040,20 @@
   .preview-title {
     font-weight: 700;
     font-size: 0.85rem;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
   }
 
   .preview-text {
     font-size: 0.8rem;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     margin: 0;
     line-height: 1.4;
   }
 
   .preview-text code {
     font-family: monospace;
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
     padding: 1px 4px;
     border-radius: 3px;
   }
@@ -1061,25 +1061,25 @@
   .folder-tree-box {
     font-family: monospace;
     font-size: 0.72rem;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 8px 10px;
     line-height: 1.5;
   }
 
   .tree-root {
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-weight: 700;
   }
 
   .tree-branch {
     padding-left: 12px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .tree-desc {
-    color: var(--kanso-text-muted, #52525B);
+    color: var(--kanso-text-muted);
   }
 
   .scaffold-form-grid {
@@ -1105,16 +1105,16 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .form-input {
     width: 100%;
     padding: 7px 10px;
     border-radius: 6px;
-    border: 1px solid var(--kanso-border, #27272A);
-    background: var(--kanso-surface, #18181B);
-    color: var(--kanso-text-primary, #F4F4F5);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     font-size: 0.8rem;
     outline: none;
     box-sizing: border-box;
@@ -1122,7 +1122,7 @@
   }
 
   .form-input:focus {
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
   }
 
   .form-select {

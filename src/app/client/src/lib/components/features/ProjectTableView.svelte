@@ -83,7 +83,7 @@
         name: 'Unassigned',
         initial: '?',
         avatar: null,
-        avatarColor: '#6B7280'
+        avatarColor: 'var(--kanso-text-muted)'
       };
     }
 
@@ -104,7 +104,7 @@
 
     let avatar: string | null = member?.avatar || (isCurrentUser ? appState.currentUser?.avatar : null) || null;
 
-    const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || '#0078D4';
+    const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || 'var(--kanso-accent)';
     const displayName = member?.name || raw;
     const initial = displayName.charAt(0).toUpperCase();
 
@@ -349,7 +349,7 @@
   .sort-arrow {
     font-size: 10px;
     margin-left: 4px;
-    color: #0078D4;
+    color: var(--kanso-accent);
   }
 
   .table-row-item {
@@ -371,7 +371,7 @@
   .td-job-id {
     font-family: monospace;
     font-weight: 800;
-    color: #0078D4;
+    color: var(--kanso-accent);
     font-size: 12.5px;
     white-space: nowrap;
   }
@@ -462,7 +462,7 @@
     min-width: 22px;
     min-height: 22px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 10px;
     font-weight: 800;
     display: flex;
@@ -509,22 +509,22 @@
 
   .priority-urgent {
     background: rgba(239, 68, 68, 0.12);
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   .priority-high {
     background: rgba(245, 158, 11, 0.12);
-    color: #F59E0B;
+    color: var(--kanso-warning);
   }
 
   .priority-medium {
     background: rgba(2, 132, 199, 0.12);
-    color: #0284C7;
+    color: var(--kanso-accent);
   }
 
   .priority-low {
     background: rgba(107, 114, 128, 0.12);
-    color: #6B7280;
+    color: var(--kanso-text-muted);
   }
 
   /* Status select inside table */
@@ -541,29 +541,29 @@
 
   .status-table-select.status-done,
   .status-table-select.status-approved {
-    color: #107C41;
+    color: var(--kanso-success);
     border-color: rgba(16, 124, 65, 0.3);
   }
 
   .status-table-select.status-review {
-    color: #8764B8;
+    color: var(--kanso-accent);
     border-color: rgba(135, 100, 184, 0.3);
   }
 
   .status-table-select.status-revision {
-    color: #D97706;
+    color: var(--kanso-warning);
     border-color: rgba(217, 119, 6, 0.3);
   }
 
   .status-table-select.status-in-progress {
-    color: #0284C7;
+    color: var(--kanso-accent);
     border-color: rgba(2, 132, 199, 0.3);
   }
 
   .revision-table-badge {
     font-size: 11px;
     font-weight: 800;
-    color: #D97706;
+    color: var(--kanso-warning);
     background: rgba(217, 119, 6, 0.12);
     padding: 2px 8px;
     border-radius: 4px;
@@ -583,14 +583,14 @@
   }
 
   .deadline-table-wrap.is-overdue {
-    color: #EF4444;
+    color: var(--kanso-danger);
     font-weight: 700;
   }
 
   .overdue-tag {
     font-size: 9.5px;
     font-weight: 800;
-    color: #EF4444;
+    color: var(--kanso-danger);
     background: rgba(239, 68, 68, 0.1);
     padding: 1px 4px;
     border-radius: 3px;
@@ -623,9 +623,9 @@
   }
 
   .btn-action-open:hover {
-    background: #0078D4;
-    color: #FFFFFF;
-    border-color: #0078D4;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
+    border-color: var(--kanso-accent);
   }
 
   .btn-action-delete {

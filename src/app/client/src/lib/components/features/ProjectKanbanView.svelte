@@ -35,12 +35,12 @@
   }
 
   const columns = [
-    { id: 'backlog', label: 'Backlog', icon: '📝', color: '#6B7280', hint: 'Project scoping & queued briefs' },
-    { id: 'in-progress', label: 'In Production', icon: '⚡', color: '#0284C7', hint: 'Active design & asset creation' },
-    { id: 'review', label: 'Client Proofing', icon: '🔍', color: '#8764B8', hint: 'Awaiting client review & feedback' },
-    { id: 'revision', label: 'Revision Pending', icon: '⚠️', color: '#D97706', hint: 'Client adjustments requested' },
-    { id: 'done', label: 'Client Approved', icon: '✅', color: '#107C41', hint: 'Deliverables ready & billable' },
-    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: '#64748B', hint: 'Paused or parked campaigns' }
+    { id: 'backlog', label: 'Backlog', icon: '📝', color: 'var(--kanso-text-muted)', hint: 'Project scoping & queued briefs' },
+    { id: 'in-progress', label: 'In Production', icon: '⚡', color: 'var(--kanso-accent)', hint: 'Active design & asset creation' },
+    { id: 'review', label: 'Client Proofing', icon: '🔍', color: 'var(--kanso-accent)', hint: 'Awaiting client review & feedback' },
+    { id: 'revision', label: 'Revision Pending', icon: '⚠️', color: 'var(--kanso-warning)', hint: 'Client adjustments requested' },
+    { id: 'done', label: 'Client Approved', icon: '✅', color: 'var(--kanso-success)', hint: 'Deliverables ready & billable' },
+    { id: 'on-hold', label: 'On Hold / Queued', icon: '⏸️', color: 'var(--kanso-text-muted)', hint: 'Paused or parked campaigns' }
   ];
 
   let draggedProjectId = $state<string | null>(null);
@@ -139,10 +139,10 @@
 
   function getPriorityBadge(priority?: string): { text: string; color: string } | null {
     switch ((priority || '').toLowerCase().trim()) {
-      case 'urgent': return { text: 'P3', color: '#EF4444' };
-      case 'high': return { text: 'P2', color: '#F59E0B' };
+      case 'urgent': return { text: 'P3', color: 'var(--kanso-danger)' };
+      case 'high': return { text: 'P2', color: 'var(--kanso-warning)' };
       case 'medium':
-      case 'standard': return { text: 'P1', color: '#0284C7' };
+      case 'standard': return { text: 'P1', color: 'var(--kanso-accent)' };
       default: return null; // Low - no badge
     }
   }
@@ -172,7 +172,7 @@
         name: 'Unassigned',
         initial: '?',
         avatar: null,
-        avatarColor: '#6B7280'
+        avatarColor: 'var(--kanso-text-muted)'
       };
     }
 
@@ -193,7 +193,7 @@
 
     let avatar: string | null = member?.avatar || (isCurrentUser ? appState.currentUser?.avatar : null) || null;
 
-    const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || '#0078D4';
+    const avatarColor = member?.avatarColor || (isCurrentUser ? appState.currentUser?.avatarColor : null) || 'var(--kanso-accent)';
     const displayName = member?.name || raw;
     const initial = displayName.charAt(0).toUpperCase();
 
@@ -296,7 +296,7 @@
             {#each colProjects as p (p.id)}
               {@const dMeta = getDesignerMeta(p.designer)}
               {@const client = clientService.getClientByCode(p.brand || 'ACME')}
-              {@const clientColor = client?.palette?.primary || '#0284C7'}
+              {@const clientColor = client?.palette?.primary || 'var(--kanso-accent)'}
               {@const currentStageIdx = PIPELINE_ORDER.indexOf(p.status === 'approved' ? 'done' : (p.status === 'rejected' ? 'on-hold' : p.status))}
               <div
                 class="kanban-card"
@@ -499,7 +499,7 @@
 
   .kanban-column.is-drag-over {
     background: rgba(0, 120, 212, 0.08);
-    border-color: #0078D4;
+    border-color: var(--kanso-accent);
     box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
   }
 
@@ -576,14 +576,14 @@
   }
 
   .column-drop-placeholder {
-    border: 2px dashed var(--kanso-accent, #38BDF8);
+    border: 2px dashed var(--kanso-accent);
     background: rgba(56, 189, 248, 0.08);
     border-radius: 8px;
     padding: 12px;
     text-align: center;
     font-size: 11px;
     font-weight: 700;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     animation: pulseDropzone 1.5s ease-in-out infinite;
     margin-bottom: 4px;
   }
@@ -622,7 +622,7 @@
     opacity: 0.75;
     transform: rotate(1.5deg) scale(1.02);
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
     border-style: dashed;
     z-index: 10;
   }
@@ -644,14 +644,14 @@
     font-family: monospace;
     font-size: 12px;
     font-weight: 800;
-    color: #0078D4;
+    color: var(--kanso-accent);
     text-decoration: none;
     cursor: pointer;
   }
 
   .job-id-mono:hover {
     text-decoration: underline;
-    color: #005a9e;
+    color: var(--kanso-accent);
   }
 
   .card-action-group {
@@ -726,7 +726,7 @@
     font-size: 10px;
     font-weight: 800;
     background: rgba(217, 119, 6, 0.12);
-    color: #D97706;
+    color: var(--kanso-warning);
     padding: 1px 6px;
     border-radius: 4px;
     transition: all 0.15s ease;
@@ -734,7 +734,7 @@
 
   .rev-counter-pill.rev-warning {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--kanso-danger);
     border: 1px solid rgba(239, 68, 68, 0.3);
     animation: subtleBlink 3s ease-in-out infinite;
   }
@@ -796,7 +796,7 @@
   .swatch-copied-label {
     font-size: 9.5px;
     font-weight: 700;
-    color: #10B981;
+    color: var(--kanso-success);
     background: rgba(16, 185, 129, 0.15);
     padding: 1px 4px;
     border-radius: 3px;
@@ -812,7 +812,7 @@
   }
 
   .deadline-block.is-overdue {
-    color: #EF4444;
+    color: var(--kanso-danger);
     font-weight: 800;
   }
 
@@ -822,13 +822,13 @@
     align-items: center;
     gap: 6px;
     padding-top: 6px;
-    border-top: 1px dashed var(--kanso-border, #27272A);
+    border-top: 1px dashed var(--kanso-border);
   }
 
   .stage-nav-btn {
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-muted, #71717A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
     font-size: 11px;
     font-weight: 700;
     padding: 2px 8px;
@@ -838,9 +838,9 @@
   }
 
   .stage-nav-btn:hover:not(:disabled) {
-    background: var(--kanso-surface-hover, #27272A);
-    color: var(--kanso-accent, #38BDF8);
-    border-color: var(--kanso-accent, #38BDF8);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
   }
 
   .stage-nav-btn:disabled {
@@ -853,9 +853,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-muted, #71717A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
     font-size: 10.5px;
     font-weight: 600;
     padding: 3px 6px;
@@ -865,15 +865,15 @@
   }
 
   .card-timer-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-surface-hover, #27272A);
-    border-color: var(--kanso-border, #3F3F46);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-border);
   }
 
   .card-timer-btn.is-active {
     background: rgba(16, 185, 129, 0.12);
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--kanso-success);
+    color: var(--kanso-success);
     font-weight: 700;
     animation: pulseTimerBtn 2s ease-in-out infinite;
   }
@@ -916,8 +916,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 8px 14px;
     margin-bottom: 12px;
@@ -936,7 +936,7 @@
   .task-rollup-title {
     font-size: 12px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .task-rollup-badge {
@@ -944,15 +944,15 @@
     font-weight: 600;
     font-family: monospace;
     background: rgba(56, 189, 248, 0.12);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     padding: 1px 6px;
     border-radius: 4px;
   }
 
   .task-rollup-toggle-btn {
     background: transparent;
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-muted, #71717A);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-muted);
     font-size: 11px;
     font-weight: 600;
     padding: 4px 10px;
@@ -962,13 +962,13 @@
   }
 
   .task-rollup-toggle-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
   }
 
   .vault-tasks-shelf {
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 14px;
@@ -976,7 +976,7 @@
 
   .tasks-empty {
     font-size: 12px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     text-align: center;
     padding: 12px;
   }
@@ -991,18 +991,18 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 5px 10px;
     font-size: 11px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     cursor: pointer;
     transition: border-color 0.15s ease;
   }
 
   .task-chip-card:hover {
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
   }
 
   .task-chip-card.is-done {
@@ -1011,7 +1011,7 @@
 
   .task-chip-card.is-done .task-chip-desc {
     text-decoration: line-through;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .task-chip-check {
@@ -1025,8 +1025,8 @@
   .task-chip-date {
     font-family: monospace;
     font-size: 10px;
-    color: var(--kanso-text-muted, #71717A);
-    background: var(--kanso-surface, #18181B);
+    color: var(--kanso-text-muted);
+    background: var(--kanso-surface);
     padding: 1px 4px;
     border-radius: 3px;
   }
@@ -1035,20 +1035,20 @@
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    color: #F59E0B;
+    color: var(--kanso-warning);
     background: rgba(245, 158, 11, 0.12);
     padding: 1px 4px;
     border-radius: 3px;
   }
 
   .task-chip-priority.is-high {
-    color: #EF4444;
+    color: var(--kanso-danger);
     background: rgba(239, 68, 68, 0.12);
   }
 
   .task-chip-source {
     font-size: 9px;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     opacity: 0.8;
   }
 </style>

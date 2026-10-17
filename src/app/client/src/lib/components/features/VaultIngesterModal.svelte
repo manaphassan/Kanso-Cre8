@@ -182,7 +182,7 @@
       <div class="ingester-header">
         <div class="header-left">
           <div class="ingest-icon-badge">
-            <FluentIcons name="upload" size={20} color="#00CFFF" />
+            <FluentIcons name="upload" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Drag &amp; Drop Vault Ingester</h2>
@@ -213,7 +213,7 @@
           onchange={(e) => handleFilesAdded((e.target as HTMLInputElement).files)} 
         />
         <div class="dropzone-content">
-          <FluentIcons name="upload" size={36} color="#38BDF8" />
+          <FluentIcons name="upload" size={36} color="var(--kanso-accent)" />
           <div class="drop-text" style="margin-top: 10px;">
             <b>Drag and drop files here</b> or <span class="browse-link">browse workstation</span>
           </div>
@@ -327,7 +327,7 @@
     width: 95%;
     max-width: 780px;
     max-height: 85vh;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     display: flex;
@@ -348,19 +348,19 @@
 
   .header-left { display: flex; align-items: center; gap: 12px; }
   .ingest-icon { font-size: 24px; }
-  .modal-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
-  .modal-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); }
+  .modal-sub { font-size: 12px; color: var(--kanso-text-muted); margin-top: 2px; }
 
   .close-btn {
     background: transparent;
     border: none;
     font-size: 16px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 6px;
   }
-  .close-btn:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.1); }
+  .close-btn:hover { color: var(--kanso-accent-text); background: rgba(255, 255, 255, 0.1); }
 
   /* Dropzone */
   .dropzone-box {
@@ -378,7 +378,7 @@
   }
 
   .dropzone-box:hover, .dropzone-box.dragging {
-    border-color: #21A1F7;
+    border-color: var(--kanso-accent);
     background: rgba(33, 161, 247, 0.1);
     transform: translateY(-1px);
   }
@@ -386,10 +386,10 @@
   .hidden-file-input { display: none; }
   .dropzone-content { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .drop-icon { font-size: 32px; }
-  .drop-text { font-size: 13px; color: #F8FAFC; }
-  .browse-link { color: #21A1F7; font-weight: 700; text-decoration: underline; }
-  .drop-hint { font-size: 11px; color: #94A3B8; }
-  .drop-hint code { background: rgba(255, 255, 255, 0.08); padding: 2px 4px; border-radius: 3px; color: #38BDF8; }
+  .drop-text { font-size: 13px; color: var(--kanso-text-primary); }
+  .browse-link { color: var(--kanso-accent); font-weight: 700; text-decoration: underline; }
+  .drop-hint { font-size: 11px; color: var(--kanso-text-muted); }
+  .drop-hint code { background: rgba(255, 255, 255, 0.08); padding: 2px 4px; border-radius: 3px; color: var(--kanso-accent); }
 
   /* Staged Section */
   .staged-section {
@@ -409,13 +409,13 @@
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
   }
 
   .clear-all-btn {
     background: none;
     border: none;
-    color: #EF4444;
+    color: var(--kanso-danger);
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
@@ -443,15 +443,15 @@
     overflow: hidden;
   }
 
-  .file-name { font-weight: 600; color: #F8FAFC; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-size { font-size: 10px; color: #94A3B8; font-family: monospace; }
+  .file-name { font-weight: 600; color: var(--kanso-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-size { font-size: 10px; color: var(--kanso-text-muted); font-family: monospace; }
 
   .folder-select-col { display: flex; align-items: center; gap: 8px; }
-  .arrow-indicator { color: #21A1F7; font-weight: 800; }
+  .arrow-indicator { color: var(--kanso-accent); font-weight: 800; }
 
   .folder-dropdown {
-    background: #1E293B;
-    color: #F8FAFC;
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
     padding: 6px 10px;
@@ -466,12 +466,12 @@
   .remove-btn {
     background: transparent;
     border: none;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     cursor: pointer;
     font-weight: 800;
     padding: 4px;
   }
-  .remove-btn:hover { color: #EF4444; }
+  .remove-btn:hover { color: var(--kanso-danger); }
 
   .status-badge {
     font-size: 10px;
@@ -479,9 +479,9 @@
     padding: 2px 6px;
     border-radius: 4px;
   }
-  .status-badge.uploading { background: rgba(33, 161, 247, 0.2); color: #38BDF8; }
-  .status-badge.done { background: rgba(16, 185, 129, 0.2); color: #34D399; }
-  .status-badge.error { background: rgba(239, 68, 68, 0.2); color: #F87171; }
+  .status-badge.uploading { background: rgba(33, 161, 247, 0.2); color: var(--kanso-accent); }
+  .status-badge.done { background: rgba(16, 185, 129, 0.2); color: var(--kanso-success); }
+  .status-badge.error { background: rgba(239, 68, 68, 0.2); color: var(--kanso-danger); }
 
   /* Footer */
   .ingester-footer {
@@ -493,7 +493,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .canonical-tip { font-size: 11px; color: #64748B; }
-  .ingesting-counter { font-size: 12px; font-weight: 700; color: #21A1F7; }
+  .canonical-tip { font-size: 11px; color: var(--kanso-text-muted); }
+  .ingesting-counter { font-size: 12px; font-weight: 700; color: var(--kanso-accent); }
   .footer-actions { display: flex; align-items: center; gap: 10px; }
 </style>

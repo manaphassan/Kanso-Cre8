@@ -122,7 +122,7 @@
 
   .tape-card-btn:hover .blank-rec-badge {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     border-color: var(--kanso-accent);
   }
 
@@ -137,7 +137,7 @@
     justify-content: space-between;
     position: relative;
     overflow: hidden;
-    background: #18181B;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
@@ -191,7 +191,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #27272A;
+    background: var(--kanso-surface);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     z-index: 2;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -417,13 +417,13 @@
   /* E-Ink Monochrome Overrides */
   :global([data-theme="eink"]) .tape-card-btn {
     border-style: dashed;
-    border-color: #000000;
-    background: #FFFFFF;
+    border-color: var(--kanso-border);
+    background: var(--kanso-surface);
   }
 
   :global([data-theme="eink"]) .tape-card-btn:hover {
     background: #F4F4F5;
-    border-color: #000000;
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .tape-card-btn:hover .meta-genre {
@@ -432,19 +432,19 @@
 
   :global([data-theme="eink"]) .tape-card-btn:hover .blank-rec-badge {
     background: #000000;
-    color: #FFFFFF;
-    border-color: #000000;
+    color: var(--kanso-accent-text);
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .card-tape-shell {
-    background: #FFFFFF;
-    border-color: #000000;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
     box-shadow: none;
   }
 
   :global([data-theme="eink"]) .card-sticker-label {
-    background: #FFFFFF;
-    border-color: #000000;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .label-station-name {
@@ -452,18 +452,18 @@
   }
 
   :global([data-theme="eink"]) .card-tape-window {
-    background: #FFFFFF;
-    border-color: #000000;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .card-ribbon-strip {
-    background: #FFFFFF;
-    border-color: #000000;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .card-gauge-box {
-    background: #FFFFFF;
-    border-color: #000000;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .gauge-mark {
@@ -475,14 +475,14 @@
   }
 
   :global([data-theme="eink"]) .blank-rec-badge {
-    background: #FFFFFF;
+    background: var(--kanso-surface);
     color: #000000;
-    border-color: #000000;
+    border-color: var(--kanso-border);
   }
 
   :global([data-theme="eink"]) .blank-tag {
     color: #000000;
-    border-color: #000000;
-    background: #FFFFFF;
+    border-color: var(--kanso-border);
+    background: var(--kanso-surface);
   }
 </style>

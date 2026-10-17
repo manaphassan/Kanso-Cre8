@@ -112,7 +112,7 @@
       {#if reviewData?.shareInfo}
         <div class="header-perm-pill {reviewData.shareInfo.permissions}">
           {#if reviewData.shareInfo.permissions === 'review_approve'}
-            <FluentIcons name="checkCircle" size={13} color="#10B981" />
+            <FluentIcons name="checkCircle" size={13} color="var(--kanso-success)" />
             <span style="margin-left: 5px;">Formal Approval Enabled</span>
           {:else}
             <FluentIcons name="search" size={13} />
@@ -135,7 +135,7 @@
     {:else if errorMsg}
       <div class="state-card error-card">
         <div class="state-icon">
-          <FluentIcons name="warning" size={32} color="#F59E0B" />
+          <FluentIcons name="warning" size={32} color="var(--kanso-warning)" />
         </div>
         <h2>Review Link Expired or Invalid</h2>
         <p>{errorMsg}</p>
@@ -148,7 +148,7 @@
           <FluentIcons
             name={submittedResult.decision === 'approved' ? 'checkCircle' : 'warning'}
             size={36}
-            color={submittedResult.decision === 'approved' ? '#10B981' : '#F59E0B'}
+            color={submittedResult.decision === 'approved' ? 'var(--kanso-success)' : 'var(--kanso-warning)'}
           />
         </div>
         <h2>Decision Recorded Successfully</h2>
@@ -200,12 +200,12 @@
                   </span>
                 {:else if d.isPdf}
                   <div class="pdf-thumb-box">
-                    <FluentIcons name="file" size={24} color="#EF4444" />
+                    <FluentIcons name="file" size={24} color="var(--kanso-danger)" />
                     <span style="margin-top: 4px;">PDF Export</span>
                   </div>
                 {:else}
                   <div class="pdf-thumb-box">
-                    <FluentIcons name="folder" size={24} color="#21A1F7" />
+                    <FluentIcons name="folder" size={24} color="var(--kanso-accent)" />
                     <span style="margin-top: 4px;">Master Asset</span>
                   </div>
                 {/if}
@@ -230,7 +230,7 @@
         <section class="decision-deck">
           <div class="deck-header">
             <div class="deck-icon">
-              <FluentIcons name="edit" size={18} color="#21A1F7" />
+              <FluentIcons name="edit" size={18} color="var(--kanso-accent)" />
             </div>
             <div>
               <h3 class="deck-title">Client Sign-Off &amp; Decision</h3>
@@ -257,11 +257,11 @@
 
           <div class="decision-action-buttons">
             <FluentButton appearance="secondary" size="lg" loading={isSubmitting} onclick={() => handleDecision('revision_requested')}>
-              <FluentIcons name="warning" size={14} color="#F59E0B" />
+              <FluentIcons name="warning" size={14} color="var(--kanso-warning)" />
               <span style="margin-left: 6px;">Request Revisions</span>
             </FluentButton>
             <FluentButton appearance="primary" size="lg" loading={isSubmitting} onclick={() => handleDecision('approved')}>
-              <FluentIcons name="checkCircle" size={14} color="#10B981" />
+              <FluentIcons name="checkCircle" size={14} color="var(--kanso-success)" />
               <span style="margin-left: 6px;">Approve &amp; Sign-Off Deliverables</span>
             </FluentButton>
           </div>
@@ -283,8 +283,8 @@
 <style>
   .client-portal-shell {
     min-height: 100vh;
-    background: #090D16;
-    color: #F8FAFC;
+    background: var(--kanso-canvas);
+    color: var(--kanso-text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
@@ -292,7 +292,7 @@
 
   /* Header */
   .portal-header {
-    background: #0F172A;
+    background: var(--kanso-surface);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding: 14px 28px;
   }
@@ -312,7 +312,7 @@
     font-weight: 800;
     letter-spacing: 1px;
     background: rgba(33, 161, 247, 0.15);
-    color: #38BDF8;
+    color: var(--kanso-accent);
     padding: 3px 8px;
     border-radius: 4px;
     border: 1px solid rgba(33, 161, 247, 0.3);
@@ -324,8 +324,8 @@
     padding: 4px 10px;
     border-radius: 6px;
   }
-  .header-perm-pill.review_approve { background: rgba(16, 185, 129, 0.2); color: #34D399; }
-  .header-perm-pill.view_only { background: rgba(148, 163, 184, 0.2); color: #94A3B8; }
+  .header-perm-pill.review_approve { background: rgba(16, 185, 129, 0.2); color: var(--kanso-success); }
+  .header-perm-pill.view_only { background: rgba(148, 163, 184, 0.2); color: var(--kanso-text-muted); }
 
   /* Main */
   .portal-main {
@@ -342,25 +342,25 @@
 
   /* Hero */
   .project-hero {
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
     padding: 20px 24px;
   }
 
   .hero-tags { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .brand-tag { font-size: 11px; font-weight: 800; background: #043388; color: #FFF; padding: 2px 6px; border-radius: 4px; }
-  .job-id { font-size: 13px; font-weight: 800; font-family: monospace; color: #38BDF8; }
+  .brand-tag { font-size: 11px; font-weight: 800; background: var(--kanso-accent); color: var(--kanso-accent-text); padding: 2px 6px; border-radius: 4px; }
+  .job-id { font-size: 13px; font-weight: 800; font-family: monospace; color: var(--kanso-accent); }
   .rev-tag { font-size: 11px; font-weight: 700; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; }
 
-  .project-title { font-size: 22px; font-weight: 800; color: #FFF; margin: 4px 0; }
-  .designer-meta { font-size: 12px; color: #94A3B8; }
+  .project-title { font-size: 22px; font-weight: 800; color: var(--kanso-accent-text); margin: 4px 0; }
+  .designer-meta { font-size: 12px; color: var(--kanso-text-muted); }
 
   /* Deliverables Grid */
   .deliverables-section { display: flex; flex-direction: column; gap: 14px; }
   .section-header-row { display: flex; flex-direction: column; gap: 2px; }
-  .section-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
-  .section-hint { font-size: 12px; color: #64748B; }
+  .section-title { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); }
+  .section-hint { font-size: 12px; color: var(--kanso-text-muted); }
 
   .deliverables-grid {
     display: grid;
@@ -369,7 +369,7 @@
   }
 
   .deliverable-card {
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     overflow: hidden;
@@ -377,7 +377,7 @@
     transition: all 0.15s ease;
   }
   .deliverable-card:hover {
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   }
@@ -385,7 +385,7 @@
   .media-thumb-box {
     width: 100%;
     height: 180px;
-    background: #090D16;
+    background: var(--kanso-canvas);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -399,23 +399,23 @@
     bottom: 8px;
     right: 8px;
     background: rgba(0, 0, 0, 0.8);
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 11px;
     font-weight: 700;
     padding: 3px 8px;
     border-radius: 4px;
   }
-  .pdf-thumb-box { font-size: 14px; font-weight: 700; color: #94A3B8; }
+  .pdf-thumb-box { font-size: 14px; font-weight: 700; color: var(--kanso-text-muted); }
 
   .card-info { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-  .card-filename { font-size: 13px; font-weight: 700; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-filename { font-size: 13px; font-weight: 700; color: var(--kanso-accent-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card-sub-row { display: flex; justify-content: space-between; align-items: center; }
-  .card-folder { font-size: 11px; color: #64748B; }
-  .inspect-tag { font-size: 11px; color: #38BDF8; font-weight: 700; }
+  .card-folder { font-size: 11px; color: var(--kanso-text-muted); }
+  .inspect-tag { font-size: 11px; color: var(--kanso-accent); font-weight: 700; }
 
   /* Decision Deck */
   .decision-deck {
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(33, 161, 247, 0.3);
     border-radius: 14px;
     padding: 24px;
@@ -424,24 +424,24 @@
 
   .deck-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .deck-icon { font-size: 24px; }
-  .deck-title { font-size: 16px; font-weight: 800; color: #FFF; }
-  .deck-sub { font-size: 12px; color: #94A3B8; }
+  .deck-title { font-size: 16px; font-weight: 800; color: var(--kanso-accent-text); }
+  .deck-sub { font-size: 12px; color: var(--kanso-text-muted); }
 
   .decision-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .input-col { display: flex; flex-direction: column; gap: 4px; }
-  .input-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94A3B8; }
+  .input-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--kanso-text-muted); }
 
   .portal-input, .portal-textarea {
-    background: #1E293B;
+    background: var(--kanso-surface-hover);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     padding: 10px 12px;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 13px;
     outline: none;
     font-family: inherit;
   }
-  .portal-input:focus, .portal-textarea:focus { border-color: #38BDF8; }
+  .portal-input:focus, .portal-textarea:focus { border-color: var(--kanso-accent); }
 
   .decision-action-buttons {
     margin-top: 18px;
@@ -452,7 +452,7 @@
 
   /* States */
   .state-card {
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 60px 20px;
@@ -465,15 +465,15 @@
   }
 
   .state-icon { font-size: 48px; margin-bottom: 12px; }
-  .state-card h2 { font-size: 18px; font-weight: 800; color: #FFF; margin-bottom: 6px; }
-  .state-card p { font-size: 13px; color: #94A3B8; }
-  .error-hint { font-size: 11px; color: #64748B; margin-top: 10px; }
+  .state-card h2 { font-size: 18px; font-weight: 800; color: var(--kanso-accent-text); margin-bottom: 6px; }
+  .state-card p { font-size: 13px; color: var(--kanso-text-muted); }
+  .error-hint { font-size: 11px; color: var(--kanso-text-muted); margin-top: 10px; }
 
   .spinner {
     width: 36px;
     height: 36px;
     border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #38BDF8;
+    border-top-color: var(--kanso-accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-bottom: 16px;
@@ -490,14 +490,14 @@
     text-align: left;
     font-size: 12px;
   }
-  .receipt-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #94A3B8; }
-  .receipt-row b { color: #FFF; }
+  .receipt-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--kanso-text-muted); }
+  .receipt-row b { color: var(--kanso-accent-text); }
 
   .back-btn {
     margin-top: 16px;
     padding: 8px 16px;
-    background: #043388;
-    color: #FFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     border: none;
     border-radius: 6px;
     font-weight: 700;

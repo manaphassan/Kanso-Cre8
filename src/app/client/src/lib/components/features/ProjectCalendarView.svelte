@@ -111,11 +111,11 @@
   function getStatusColor(status: string): string {
     switch (status) {
       case 'done':
-      case 'approved': return '#107C41';
-      case 'review': return '#8764B8';
-      case 'revision': return '#D97706';
-      case 'in-progress': return '#0284C7';
-      default: return '#6B7280';
+      case 'approved': return 'var(--kanso-success)';
+      case 'review': return 'var(--kanso-accent)';
+      case 'revision': return 'var(--kanso-warning)';
+      case 'in-progress': return 'var(--kanso-accent)';
+      default: return 'var(--kanso-text-muted)';
     }
   }
 </script>
@@ -131,10 +131,10 @@
     </div>
 
     <div class="cal-legend-row">
-      <span class="legend-badge"><span class="badge-dot" style="background: #0284C7;"></span> In Progress</span>
-      <span class="legend-badge"><span class="badge-dot" style="background: #8764B8;"></span> Review Queue</span>
-      <span class="legend-badge"><span class="badge-dot" style="background: #D97706;"></span> Revision</span>
-      <span class="legend-badge"><span class="badge-dot" style="background: #107C41;"></span> Approved/Done</span>
+      <span class="legend-badge"><span class="badge-dot" style="background: var(--kanso-accent);"></span> In Progress</span>
+      <span class="legend-badge"><span class="badge-dot" style="background: var(--kanso-accent);"></span> Review Queue</span>
+      <span class="legend-badge"><span class="badge-dot" style="background: var(--kanso-warning);"></span> Revision</span>
+      <span class="legend-badge"><span class="badge-dot" style="background: var(--kanso-success);"></span> Approved/Done</span>
     </div>
   </div>
 
@@ -288,7 +288,7 @@
   }
 
   .cal-day-cell.is-today {
-    border: 1.5px solid #0078D4;
+    border: 1.5px solid var(--kanso-accent);
     background: rgba(0, 120, 212, 0.02);
   }
 
@@ -305,8 +305,8 @@
   }
 
   .day-number.today-num {
-    background: #0078D4;
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -319,7 +319,7 @@
   .day-count-badge {
     font-size: 10px;
     font-weight: 700;
-    color: #0284C7;
+    color: var(--kanso-accent);
     background: rgba(2, 132, 199, 0.12);
     padding: 1px 5px;
     border-radius: 4px;
@@ -337,7 +337,7 @@
     text-align: left;
     background: var(--kanso-surface-hover);
     border: 1px solid var(--kanso-border);
-    border-left: 3px solid #0078D4;
+    border-left: 3px solid var(--kanso-accent);
     border-radius: 4px;
     padding: 4px 6px;
     cursor: pointer;
@@ -357,7 +357,7 @@
     font-family: monospace;
     font-size: 10px;
     font-weight: 800;
-    color: #0078D4;
+    color: var(--kanso-accent);
   }
 
   .chip-title {

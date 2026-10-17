@@ -130,19 +130,19 @@
     const avgLoad = totalCreatives > 0 ? (totalActive / totalCreatives).toFixed(1) : '0';
 
     let healthStatus = 'Optimal';
-    let healthColor = '#10B981';
+    let healthColor = 'var(--kanso-success)';
     if (overloadedCount > 0) {
       healthStatus = `${overloadedCount} Overloaded`;
-      healthColor = '#EF4444';
+      healthColor = 'var(--kanso-danger)';
     } else if (atCapacityCount > 0) {
       healthStatus = `${atCapacityCount} At Capacity`;
-      healthColor = '#F97316';
+      healthColor = 'var(--kanso-warning)';
     } else if (Number(avgLoad) >= 3.5) {
       healthStatus = 'Peak Capacity';
-      healthColor = '#F59E0B';
+      healthColor = 'var(--kanso-warning)';
     } else if (totalActive === 0) {
       healthStatus = 'Available';
-      healthColor = '#21A1F7';
+      healthColor = 'var(--kanso-accent)';
     }
 
     return {
@@ -301,7 +301,7 @@
       </div>
     </FluentCard>
 
-    <FluentCard hoverLift padding="16px" borderAccent="#0284C7">
+    <FluentCard hoverLift padding="16px" borderAccent="var(--kanso-accent)">
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap bg-azure">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -319,7 +319,7 @@
       </div>
     </FluentCard>
 
-    <FluentCard hoverLift padding="16px" borderAccent="#F59E0B">
+    <FluentCard hoverLift padding="16px" borderAccent="var(--kanso-warning)">
       <div class="kpi-card-content">
         <div class="kpi-icon-wrap bg-amber">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -515,7 +515,7 @@
       {#each filteredTeam as member (member.staffId || member.username)}
         {@const w = member.workload || { total: 0, active: 0, inProgress: 0, inReview: 0, revision: 0, overdue: 0, completed: 0, capacityPercent: 0 }}
         {@const roles = parseRoles(member.role, member.roles)}
-        {@const avatarBg = member.avatarColor || '#0078D4'}
+        {@const avatarBg = member.avatarColor || 'var(--kanso-accent)'}
         {@const isCurrentUser = Boolean(appState.currentUser && (
           (member.staffId && appState.currentUser.staffId && member.staffId.toLowerCase() === appState.currentUser.staffId.toLowerCase()) ||
           (member.username && appState.currentUser.username && member.username.toLowerCase() === appState.currentUser.username.toLowerCase()) ||
@@ -541,7 +541,7 @@
               </div>
               <span
                 class="online-dot"
-                style="background: {member.capacityColor || '#10B981'};"
+                style="background: {member.capacityColor || 'var(--kanso-success)'};"
                 title="Capacity: {member.capacityStatus}"
               ></span>
             </div>
@@ -601,7 +601,7 @@
             <div class="meter-track">
               <div
                 class="meter-fill"
-                style="width: {(w.capacityPercent && w.capacityPercent > 0) ? Math.min(100, w.capacityPercent) : 0}%; background: {member.capacityColor || '#10B981'};"
+                style="width: {(w.capacityPercent && w.capacityPercent > 0) ? Math.min(100, w.capacityPercent) : 0}%; background: {member.capacityColor || 'var(--kanso-success)'};"
               ></div>
             </div>
           </div>
@@ -668,7 +668,7 @@
                           title="Reassign / Rebalance this project to another designer"
                           onclick={() => openReassignDialog(proj, member.name)}
                         >
-                          <FluentIcons name="sparkles" size={11} color="#D4AF37" />
+                          <FluentIcons name="sparkles" size={11} color="var(--kanso-warning)" />
                         </button>
                       </div>
                     </div>
@@ -751,7 +751,7 @@
         <div class="reassign-header">
           <div class="header-left">
             <div class="reassign-icon">
-              <FluentIcons name="sparkles" size={18} color="#D4AF37" />
+              <FluentIcons name="sparkles" size={18} color="var(--kanso-warning)" />
             </div>
             <div>
               <h2 class="modal-title">1-Click Workload Rebalancer</h2>
@@ -836,7 +836,7 @@
     border-radius: 9999px;
     font-size: 10.5px;
     font-weight: 800;
-    color: #059669;
+    color: var(--kanso-success);
     letter-spacing: 0.5px;
   }
 
@@ -844,8 +844,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px #10B981;
+    background: var(--kanso-success);
+    box-shadow: 0 0 8px var(--kanso-success);
     animation: livePulse 2s infinite;
   }
 
@@ -924,8 +924,8 @@
   }
 
   .kpi-icon-wrap.bg-blue  { background: rgba(4, 51, 136, 0.10); color: var(--kanso-accent); }
-  .kpi-icon-wrap.bg-azure { background: rgba(33, 161, 247, 0.12); color: #0284C7; }
-  .kpi-icon-wrap.bg-amber { background: rgba(245, 158, 11, 0.12); color: #D97706; }
+  .kpi-icon-wrap.bg-azure { background: rgba(33, 161, 247, 0.12); color: var(--kanso-accent); }
+  .kpi-icon-wrap.bg-amber { background: rgba(245, 158, 11, 0.12); color: var(--kanso-warning); }
 
   .kpi-meta {
     display: flex;
@@ -1052,15 +1052,15 @@
   }
   .pill-btn.active {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     border-color: var(--kanso-accent);
     box-shadow: 0 2px 6px rgba(4, 51, 136, 0.25);
   }
 
-  .pill-btn.status-avail.active { background: #10B981; border-color: #10B981; }
-  .pill-btn.status-norm.active  { background: #0284C7; border-color: #0284C7; }
-  .pill-btn.status-high.active  { background: #F59E0B; border-color: #F59E0B; }
-  .pill-btn.status-over.active  { background: #EF4444; border-color: #EF4444; }
+  .pill-btn.status-avail.active { background: var(--kanso-success); border-color: var(--kanso-success); }
+  .pill-btn.status-norm.active  { background: var(--kanso-accent); border-color: var(--kanso-accent); }
+  .pill-btn.status-high.active  { background: var(--kanso-warning); border-color: var(--kanso-warning); }
+  .pill-btn.status-over.active  { background: var(--kanso-danger); border-color: var(--kanso-danger); }
 
   .sort-wrap {
     display: flex;
@@ -1138,7 +1138,7 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 20px;
     font-weight: 800;
     display: flex;
@@ -1337,15 +1337,15 @@
   }
 
   .matrix-cell.has-revision .cell-num {
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 
   .matrix-cell.is-overdue .cell-num {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   .matrix-cell.completed-cell .cell-num {
-    color: #059669;
+    color: var(--kanso-success);
   }
 
   .cell-num {
@@ -1498,7 +1498,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     background: rgba(168, 85, 247, 0.1);
-    color: #C084FC;
+    color: var(--kanso-accent);
     border: 1px solid rgba(168, 85, 247, 0.2);
     white-space: nowrap;
   }
@@ -1520,21 +1520,21 @@
     white-space: nowrap;
   }
 
-  .chip-status.status-in-progress { background: rgba(33, 161, 247, 0.15); color: #0284C7; border: 1px solid rgba(33, 161, 247, 0.3); }
-  .chip-status.status-review      { background: rgba(245, 158, 11, 0.15); color: #D97706; border: 1px solid rgba(245, 158, 11, 0.3); }
-  .chip-status.status-revision    { background: rgba(239, 68, 68, 0.15); color: #DC2626; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .chip-status.status-backlog     { background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.25); }
+  .chip-status.status-in-progress { background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent); border: 1px solid rgba(33, 161, 247, 0.3); }
+  .chip-status.status-review      { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+  .chip-status.status-revision    { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+  .chip-status.status-backlog     { background: rgba(148, 163, 184, 0.15); color: var(--kanso-text-muted); border: 1px solid rgba(148, 163, 184, 0.25); }
   .chip-status.status-done,
-  .chip-status.status-approved    { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
-  .chip-status.status-on-hold     { background: rgba(100, 116, 139, 0.15); color: #64748B; border: 1px solid rgba(100, 116, 139, 0.25); }
+  .chip-status.status-approved    { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success); border: 1px solid rgba(16, 185, 129, 0.3); }
+  .chip-status.status-on-hold     { background: rgba(100, 116, 139, 0.15); color: var(--kanso-text-muted); border: 1px solid rgba(100, 116, 139, 0.25); }
 
   .status-cap {
     border-color: rgba(249, 115, 22, 0.3) !important;
-    color: #F97316 !important;
+    color: var(--kanso-warning) !important;
   }
   .status-cap.active {
-    background: #F97316 !important;
-    color: #FFFFFF !important;
+    background: var(--kanso-warning) !important;
+    color: var(--kanso-accent-text) !important;
   }
 
   .no-projects-box {
@@ -1580,7 +1580,7 @@
   }
   .primary-action:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .secondary-action {
@@ -1656,7 +1656,7 @@
   .rebalance-chip-btn {
     background: rgba(245, 158, 11, 0.15);
     border: 1px solid rgba(245, 158, 11, 0.3);
-    color: #F59E0B;
+    color: var(--kanso-warning);
     border-radius: 4px;
     padding: 3px 8px;
     font-size: 12px;
@@ -1666,8 +1666,8 @@
     flex-shrink: 0;
   }
   .rebalance-chip-btn:hover {
-    background: #F59E0B;
-    color: #0F172A;
+    background: var(--kanso-warning);
+    color: var(--kanso-text-primary);
   }
 
   .reassign-backdrop {
@@ -1688,7 +1688,7 @@
   .reassign-modal {
     width: 95%;
     max-width: 520px;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 14px;
     display: flex;
@@ -1715,17 +1715,17 @@
   }
 
   .reassign-field { display: flex; flex-direction: column; gap: 6px; }
-  .field-label { font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
+  .field-label { font-size: 12px; font-weight: 700; color: var(--kanso-text-muted); text-transform: uppercase; }
   .field-input, .field-select {
-    background: #1E293B;
+    background: var(--kanso-surface-hover);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
     padding: 8px 12px;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 13px;
     outline: none;
   }
-  .field-input:focus, .field-select:focus { border-color: #38BDF8; }
+  .field-input:focus, .field-select:focus { border-color: var(--kanso-accent); }
 
   .reassign-footer {
     display: flex;

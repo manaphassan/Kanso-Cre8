@@ -221,7 +221,7 @@
   }
 
   .canva-badge {
-    background: #00C4CC;
+    background: var(--kanso-accent);
     color: white;
     font-size: 9px;
     font-weight: 800;
@@ -242,7 +242,7 @@
     gap: 5px;
     font-size: 11px;
     font-weight: 600;
-    color: #008891;
+    color: var(--kanso-accent);
     background: rgba(0, 196, 204, 0.12);
     padding: 4px 8px;
     border-radius: 4px;
@@ -251,7 +251,7 @@
   }
 
   .canva-open-btn:hover {
-    background: #00C4CC;
+    background: var(--kanso-accent);
     color: white;
   }
 

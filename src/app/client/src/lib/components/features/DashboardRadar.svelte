@@ -750,12 +750,12 @@
 
   .tooltip-badge.ahead {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .tooltip-badge.gap {
     background: rgba(245, 158, 11, 0.15);
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 
   .tooltip-scores {
@@ -786,11 +786,11 @@
   }
 
   .status-good {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .status-gap {
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 
   /* Skill Selector Chips */
@@ -846,12 +846,12 @@
 
   .chip-score.ahead {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .chip-score.gap {
     background: rgba(245, 158, 11, 0.15);
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 
   .chip-status-dot {
@@ -861,15 +861,15 @@
   }
 
   .dot-green {
-    background: #10B981;
+    background: var(--kanso-success);
   }
 
   .dot-amber {
-    background: #F59E0B;
+    background: var(--kanso-warning);
   }
 
   .dot-red {
-    background: #EF4444;
+    background: var(--kanso-danger);
   }
 
   /* Metric Detail & Guidance Card */
@@ -953,7 +953,7 @@
   }
 
   .score-value.green {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .score-value.blue {
@@ -978,17 +978,17 @@
 
   .delta-pill.ahead {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .delta-pill.near {
     background: rgba(245, 158, 11, 0.15);
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 
   .delta-pill.gap {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   /* Progress Track */
@@ -1028,7 +1028,7 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 8.5px;
     font-weight: 700;
     padding: 1px 4px;
@@ -1072,11 +1072,11 @@
   }
 
   .indicator-badge.good {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .indicator-badge.bad {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   .guidance-text {
@@ -1202,11 +1202,11 @@
   }
 
   .rule-box.green .rule-header {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .rule-box.red .rule-header {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   .table-responsive {
@@ -1252,10 +1252,10 @@
   }
 
   .good-cell {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .bad-cell {
-    color: #D97706;
+    color: var(--kanso-warning);
   }
 </style>

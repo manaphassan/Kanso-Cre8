@@ -80,12 +80,12 @@
 
   function getIconColor(type: string): string {
     switch (type) {
-      case 'mention': return '#00CFFF';
-      case 'comment': return '#38BDF8';
-      case 'revision': return '#F59E0B';
-      case 'approval': return '#10B981';
-      case 'system': return '#A78BFA';
-      default: return '#94A3B8';
+      case 'mention': return 'var(--kanso-accent)';
+      case 'comment': return 'var(--kanso-accent)';
+      case 'revision': return 'var(--kanso-warning)';
+      case 'approval': return 'var(--kanso-success)';
+      case 'system': return 'var(--kanso-accent)';
+      default: return 'var(--kanso-text-muted)';
     }
   }
 </script>
@@ -98,7 +98,7 @@
   <aside class="notification-drawer" aria-label="Activity Notifications">
     <div class="drawer-header">
       <div class="header-left">
-        <FluentIcons name="bell" size={18} color="#00CFFF" />
+        <FluentIcons name="bell" size={18} color="var(--kanso-accent)" />
         <h3 class="drawer-title">Activity &amp; Notifications</h3>
         {#if appState.notificationCount > 0}
           <span class="unread-pill">{appState.notificationCount} new</span>
@@ -121,7 +121,7 @@
       {:else if notifications.length === 0}
         <div class="empty-state">
           <div class="empty-icon-box">
-            <FluentIcons name="checkCircle" size={32} color="#10B981" />
+            <FluentIcons name="checkCircle" size={32} color="var(--kanso-success)" />
           </div>
           <p class="empty-title">All caught up</p>
           <p class="empty-desc">No new mentions, approval milestones, or revision alerts at this time.</p>
@@ -227,8 +227,8 @@
   .unread-pill {
     font-size: 10.5px;
     font-weight: 800;
-    background: #EF4444;
-    color: #FFFFFF;
+    background: var(--kanso-danger);
+    color: var(--kanso-accent-text);
     padding: 2px 7px;
     border-radius: 9999px;
   }
@@ -325,7 +325,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #EF4444;
+    background: var(--kanso-danger);
   }
 
   .notif-content {
