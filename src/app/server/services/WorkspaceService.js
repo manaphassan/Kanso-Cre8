@@ -1153,10 +1153,8 @@ class WorkspaceService {
 
     // Persist configuration override to Machine tier
     try {
-      const machineConfig = config.loadMachineConfig();
-      machineConfig.workspaceRoot = targetPath;
-      machineConfig.updatedAt = new Date().toISOString();
-      config.saveMachineConfig(machineConfig);
+      const ConfigService = require('./ConfigService');
+      ConfigService.machine.set('workspaceRoot', targetPath);
     } catch (err) {
       console.warn('[WorkspaceService] Failed to write machine config override:', err.message);
     }

@@ -330,79 +330,24 @@ class TeamService {
    * Path to the plain JSON studio and freelance branding profile.
    */
   static getStudioProfilePath() {
-    const configDir = path.join(config.WORKSPACE_ROOT, '_Team', '_Config');
-    if (!fs.existsSync(configDir)) {
-      try { fs.mkdirSync(configDir, { recursive: true }); } catch (e) {}
-    }
-    return path.join(configDir, 'studio_profile.json');
+    const ConfigService = require('./ConfigService');
+    return ConfigService.vault.getPath('studio');
   }
 
   /**
-   * Loads canonical studio & freelance branding profile, seeding sensible defaults if missing.
+   * Loads canonical studio & freelance branding profile via ConfigService.
    */
   static getStudioProfile() {
-    const profilePath = this.getStudioProfilePath();
-    const defaultProfile = {
-      studioName: 'Acme Design Studio',
-      principalName: 'Alex Mercer',
-      professionalTitle: 'Principal Art Director & Brand Architect',
-      tagline: 'Mindful Brand Systems & Digital Craft',
-      businessRegNo: '2026-ACME-0001',
-      billingEmail: 'billing@example.com',
-      studioAddress: '100 Creative Way, Suite 400, Metropolis',
-      website: 'https://example.com',
-      phone: '+1-555-0100',
-      paymentBank: 'Acme Federal Bank',
-      paymentAccountNo: '0000-0000-0000',
-      paymentAccountName: 'Acme Design Studio',
-      paymentSwiftOrQr: 'SWIFT: ACMEUS33 / DuitNow: 00000000',
-      defaultPaymentTerms: '50% Upfront Deposit • Net 14 Days • 2 Revision Rounds',
-      defaultCurrency: 'USD',
-      brandColor: '#0284C7',
-      logo: '',
-      digitalSignature: '',
-      footerNotice: 'Crafted with mindful focus & precision in Kanso Cre8.'
-    };
-
-    if (!fs.existsSync(profilePath)) {
-      try {
-        fs.writeFileSync(profilePath, JSON.stringify(defaultProfile, null, 2), 'utf8');
-        return defaultProfile;
-      } catch (err) {
-        return defaultProfile;
-      }
-    }
-
-    try {
-      const data = fs.readFileSync(profilePath, 'utf8');
-      const parsed = JSON.parse(data);
-      return { ...defaultProfile, ...parsed };
-    } catch (err) {
-      return defaultProfile;
-    }
+    const ConfigService = require('./ConfigService');
+    return ConfigService.vault.get('studio');
   }
 
   /**
-   * Atomically saves updated studio branding profile to vault.
+   * Atomically saves updated studio branding profile to vault via ConfigService.
    */
   static saveStudioProfile(profile) {
-    const profilePath = this.getStudioProfilePath();
-    const current = this.getStudioProfile();
-    const updated = { ...current, ...profile };
-    try {
-      const tempFile = `${profilePath}.tmp.${Date.now()}`;
-      fs.writeFileSync(tempFile, JSON.stringify(updated, null, 2), 'utf8');
-      try {
-        fs.renameSync(tempFile, profilePath);
-      } catch (renameErr) {
-        fs.writeFileSync(profilePath, JSON.stringify(updated, null, 2), 'utf8');
-        try { fs.unlinkSync(tempFile); } catch (e) {}
-      }
-      return updated;
-    } catch (err) {
-      console.error('[TeamService] Failed to save studio_profile.json:', err.message);
-      return current;
-    }
+    const ConfigService = require('./ConfigService');
+    return ConfigService.vault.set('studio', profile);
   }
 
   /**
