@@ -163,11 +163,12 @@ if (Test-Path $clientServicePath) {
     Report-Check "ClientHub" "clientService.ts not found" "FAIL"
 }
 
+$notesServicePath = Join-Path $repoRoot "src\app\client\src\lib\services\notesService.ts"
 $zettelServicePath = Join-Path $repoRoot "src\app\client\src\lib\services\zettelService.ts"
-if (Test-Path $zettelServicePath) {
-    Report-Check "Zettelkasten" "Zettelkasten WikiLink & task crawler engine verified" "PASS"
+if ((Test-Path $notesServicePath) -or (Test-Path $zettelServicePath)) {
+    Report-Check "NotesEngine" "Atelier Notes WikiLink & task crawler engine verified" "PASS"
 } else {
-    Report-Check "Zettelkasten" "zettelService.ts not found" "FAIL"
+    Report-Check "NotesEngine" "notesService.ts not found" "FAIL"
 }
 
 $financeServicePath = Join-Path $repoRoot "src\app\client\src\lib\services\financeService.ts"

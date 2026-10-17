@@ -2,12 +2,13 @@
  * Kanso Cre8 — Zettelkasten & Atomic Knowledge Types
  */
 
-export type ZettelType = 'fleeting' | 'literature' | 'permanent';
+export type NoteType = 'fleeting' | 'literature' | 'permanent';
+export type ZettelType = NoteType;
 
-export interface ZettelNote {
-  id: string; // e.g. "zettel_20260909_001"
+export interface NoteItem {
+  id: string; // e.g. "note_20260909_001"
   title: string;
-  type: ZettelType;
+  type: NoteType;
   content: string;
   tags: string[];
   created: string;
@@ -15,10 +16,11 @@ export interface ZettelNote {
   relatedLinks: string[]; // e.g. ["[[b2b_saas_hero_formula]]"]
   linkedClients?: string[]; // e.g. ["[[ACME]]", "[[NEX]]"]
   linkedProjects?: string[]; // e.g. ["[[202609_0001_ACME_MobileAppIllustration]]"]
-  extractedTasks?: ZettelTask[];
+  extractedTasks?: NoteTask[];
 }
+export type ZettelNote = NoteItem;
 
-export interface ZettelTask {
+export interface NoteTask {
   id: string;
   sourceNoteId: string;
   sourceNoteTitle: string;
@@ -29,9 +31,10 @@ export interface ZettelTask {
   dueDate?: string;
   linkedProject?: string;
 }
+export type ZettelTask = NoteTask;
 
 export interface BacklinkItem {
-  note: ZettelNote;
+  note: NoteItem;
   snippet: string;
 }
 

@@ -3,8 +3,8 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { journalService, type DailyNote, type BujoEntry, type WeeklyTelemetry } from '$lib/services/journalService';
-  import { zettelService } from '$lib/services/zettelService';
-  import type { ZettelTask } from '$lib/types/zettel';
+  import { notesService } from '$lib/services/notesService';
+  import type { NoteTask } from '$lib/types/notes';
   import { financeService } from '$lib/services/financeService';
   import { clientService } from '$lib/services/clientService';
   import { appState } from '$lib/stores/appState.svelte';
@@ -22,7 +22,7 @@
   let showRolloverModal = $state(false);
   let isMigrating = $state(false);
   let taskMode = $state<'bujo' | 'universal'>('bujo');
-  let universalTasks = $state<ZettelTask[]>([]);
+  let universalTasks = $state<NoteTask[]>([]);
   let weeklyTelemetry = $state<WeeklyTelemetry | null>(null);
 
   onMount(async () => {
@@ -33,7 +33,7 @@
     clients = clientService.getClients();
     previousTaskInfo = await journalService.checkPendingRolloverAsync(dailyNote.date);
     hasPreviousTasks = previousTaskInfo.hasTasks;
-    universalTasks = await zettelService.loadUniversalTasksFromDisk();
+    universalTasks = await notesService.loadUniversalTasksFromDisk();
     weeklyTelemetry = await journalService.getWeeklyTelemetry(dailyNote.date);
   });
 
@@ -262,9 +262,9 @@
     dailyNote = journalService.toggleTask(dailyNote.date, entry.id);
   }
 
-  async function handleToggleUniversalTask(task: ZettelTask) {
+  async function handleToggleUniversalTask(task: NoteTask) {
     try {
-      zettelService.toggleTask(task);
+      notesService.toggleTask(task);
       universalTasks = [...universalTasks];
     } catch (err: any) {
       appState.addToast(`Failed to toggle task: ${err.message}`, 'error');
@@ -625,7 +625,7 @@
         {/if}
         <div class="rollup-footer">
           <span>Synced directly to disk notes in <code class="path-code">_Notes/</code></span>
-          <a href="#zettel" class="section-link">Open Atelier Notes &rarr;</a>
+          <a href="#notes" class="section-link">Open Atelier Notes &rarr;</a>
         </div>
       {/if}
     </div>

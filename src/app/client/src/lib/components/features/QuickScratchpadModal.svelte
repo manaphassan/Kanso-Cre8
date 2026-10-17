@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { ApiClient } from '$lib/services/api';
-  import { zettelService } from '$lib/services/zettelService';
+  import { notesService } from '$lib/services/notesService';
   import { appState } from '$lib/stores/appState.svelte';
 
   interface Props {
@@ -30,7 +30,7 @@
         return;
       }
     } catch (e) {}
-    content = zettelService.getScratchpad();
+    content = notesService.getScratchpad();
   }
 
   function handleInput() {
@@ -45,10 +45,10 @@
     try {
       isSaving = true;
       await ApiClient.saveScratchpad(content);
-      zettelService.saveScratchpad(content);
+      notesService.saveScratchpad(content);
       lastSaved = new Date().toLocaleTimeString();
     } catch (e) {
-      zettelService.saveScratchpad(content);
+      notesService.saveScratchpad(content);
     } finally {
       isSaving = false;
     }
