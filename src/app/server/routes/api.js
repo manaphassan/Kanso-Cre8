@@ -1177,101 +1177,102 @@ router.post('/users/:username/reset-password', authenticateToken, (req, res) => 
   }
 });
 
-// ─── COMPANY & SUBSIDIARY DIRECTORY ROUTES ──────────────────────────
+// ─── CLIENT & COMPANY DIRECTORY ROUTES ──────────────────────────────
 
-router.get('/companies', (req, res) => {
+function handleGetClients(req, res) {
   try {
-    const companies = CompanyService.getAll();
-    res.json({ success: true, companies });
+    const clients = CompanyService.getAll();
+    res.json({ success: true, clients, companies: clients });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+}
 
-router.get('/companies/:code', (req, res) => {
+function handleGetClientByCode(req, res) {
   try {
-    const company = CompanyService.getByCode(req.params.code);
-    if (!company) {
-      return res.status(404).json({ error: `Company with code ${req.params.code} not found.` });
+    const client = CompanyService.getByCode(req.params.code);
+    if (!client) {
+      return res.status(404).json({ error: `Client with code ${req.params.code} not found.` });
     }
-    res.json({ success: true, company });
+    res.json({ success: true, client, company: client });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+}
 
-router.post('/companies', authenticateToken, (req, res) => {
+function handleSaveClient(req, res) {
   try {
     const saved = CompanyService.saveCompany(req.body);
     AuditService.logEvent({
       actor: req.user ? req.user.name : 'System Admin',
       role: req.user ? req.user.role : 'Admin',
-      action: 'COMPANY_SAVED',
-      entityType: 'Company',
+      action: 'CLIENT_SAVED',
+      entityType: 'Client',
       entityId: saved.code,
       details: saved
     });
+    SseService.broadcast('client:updated', { client: saved, company: saved, action: 'saved' });
     SseService.broadcast('company:updated', { company: saved, action: 'saved' });
-    res.json({ success: true, company: saved });
+    res.json({ success: true, client: saved, company: saved });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-});
+}
 
-router.put('/companies/:code', authenticateToken, (req, res) => {
+function handleUpdateClientByCode(req, res) {
   try {
     const data = { ...req.body, code: req.params.code };
     const saved = CompanyService.saveCompany(data);
     AuditService.logEvent({
       actor: req.user ? req.user.name : 'System Admin',
       role: req.user ? req.user.role : 'Admin',
-      action: 'COMPANY_UPDATED',
-      entityType: 'Company',
+      action: 'CLIENT_UPDATED',
+      entityType: 'Client',
       entityId: saved.code,
       details: saved
     });
+    SseService.broadcast('client:updated', { client: saved, company: saved, action: 'updated' });
     SseService.broadcast('company:updated', { company: saved, action: 'updated' });
-    res.json({ success: true, company: saved });
+    res.json({ success: true, client: saved, company: saved });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-});
+}
 
-router.put('/companies', authenticateToken, (req, res) => {
-  try {
-    const saved = CompanyService.saveCompany(req.body);
-    AuditService.logEvent({
-      actor: req.user ? req.user.name : 'System Admin',
-      role: req.user ? req.user.role : 'Admin',
-      action: 'COMPANY_UPDATED',
-      entityType: 'Company',
-      entityId: saved.code,
-      details: saved
-    });
-    SseService.broadcast('company:updated', { company: saved, action: 'updated' });
-    res.json({ success: true, company: saved });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-router.delete('/companies/:code', authenticateToken, (req, res) => {
+function handleDeleteClient(req, res) {
   try {
     const result = CompanyService.deleteCompany(req.params.code);
     AuditService.logEvent({
       actor: req.user ? req.user.name : 'System Admin',
       role: req.user ? req.user.role : 'Admin',
-      action: 'COMPANY_DELETED',
-      entityType: 'Company',
+      action: 'CLIENT_DELETED',
+      entityType: 'Client',
       entityId: req.params.code,
       details: { deletedCode: req.params.code }
     });
+    SseService.broadcast('client:updated', { deletedCode: req.params.code, action: 'deleted' });
     SseService.broadcast('company:updated', { deletedCode: req.params.code, action: 'deleted' });
     res.json({ success: true, ...result });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-});
+}
+
+// Canonical /clients endpoints
+router.get('/clients', handleGetClients);
+router.get('/clients/:code', handleGetClientByCode);
+router.post('/clients', authenticateToken, handleSaveClient);
+router.put('/clients/:code', authenticateToken, handleUpdateClientByCode);
+router.put('/clients', authenticateToken, handleSaveClient);
+router.delete('/clients/:code', authenticateToken, handleDeleteClient);
+
+// Backward-compatible /companies aliases
+router.get('/companies', handleGetClients);
+router.get('/companies/:code', handleGetClientByCode);
+router.post('/companies', authenticateToken, handleSaveClient);
+router.put('/companies/:code', authenticateToken, handleUpdateClientByCode);
+router.put('/companies', authenticateToken, handleSaveClient);
+router.delete('/companies/:code', authenticateToken, handleDeleteClient);
 
 // ─── AUDIT LOGS ─────────────────────────────────────────────────────
 

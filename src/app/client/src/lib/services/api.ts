@@ -326,26 +326,43 @@ export class ApiClient {
     });
   }
 
-  // ─── Company & Subsidiary Directory ───
-  static getCompanies(): Promise<{ success: boolean; companies: any[] }> {
-    return this.request('/companies');
+  // ─── Clients & Company Directory ───
+  static getClients(): Promise<{ success: boolean; clients: any[]; companies?: any[] }> {
+    return this.request('/clients');
   }
 
-  static getCompany(code: string): Promise<{ success: boolean; company: any }> {
-    return this.request(`/companies/${encodeURIComponent(code)}`);
+  static getClient(code: string): Promise<{ success: boolean; client: any; company?: any }> {
+    return this.request(`/clients/${encodeURIComponent(code)}`);
   }
 
-  static saveCompany(payload: any): Promise<{ success: boolean; company: any }> {
-    return this.request('/companies', {
+  static saveClient(payload: any): Promise<{ success: boolean; client: any; company?: any }> {
+    return this.request('/clients', {
       method: 'POST',
       body: JSON.stringify(payload)
     });
   }
 
-  static deleteCompany(code: string): Promise<{ success: boolean; deletedCode: string }> {
-    return this.request(`/companies/${encodeURIComponent(code)}`, {
+  static deleteClient(code: string): Promise<{ success: boolean; deletedCode: string }> {
+    return this.request(`/clients/${encodeURIComponent(code)}`, {
       method: 'DELETE'
     });
+  }
+
+  // Backward-compatible company aliases
+  static getCompanies(): Promise<{ success: boolean; companies: any[] }> {
+    return this.request('/clients');
+  }
+
+  static getCompany(code: string): Promise<{ success: boolean; company: any }> {
+    return this.request(`/clients/${encodeURIComponent(code)}`);
+  }
+
+  static saveCompany(payload: any): Promise<{ success: boolean; company: any }> {
+    return this.saveClient(payload);
+  }
+
+  static deleteCompany(code: string): Promise<{ success: boolean; deletedCode: string }> {
+    return this.deleteClient(code);
   }
 
   // ─── Notifications & Live Activity ───

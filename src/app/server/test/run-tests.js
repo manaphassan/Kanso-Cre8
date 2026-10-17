@@ -241,31 +241,50 @@ This is the project brief content.
   });
 
   // ─── TEST 11: Company & Subsidiary Management Integrity ─────────────
-  test('CompanyService provisions and manages active client entities', () => {
-    const CompanyService = require('../services/CompanyService');
-    const companies = CompanyService.getAll();
+  test('CompanyService provisions and manages active client entities via _Clients markdown', () => {
+    const testDir = path.join(__dirname, 'temp-client-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    config.WORKSPACE_ROOT = testDir;
 
-    assert.ok(Array.isArray(companies), 'Companies must return an array');
-    assert.ok(companies.length >= 3, 'Must contain at least 3 default client profiles');
+    try {
+      const CompanyService = require('../services/CompanyService');
+      const companies = CompanyService.getAll();
 
-    const acme = CompanyService.getByCode('ACME');
-    assert.ok(acme, 'Acme Corporation (ACME) must exist');
-    assert.strictEqual(acme.name, 'Acme Corporation');
-    assert.strictEqual(acme.isParent, true);
+      assert.ok(Array.isArray(companies), 'Companies must return an array');
+      assert.ok(companies.length >= 3, 'Must contain at least 3 default client profiles');
 
-    const nexus = CompanyService.getByCode('NEX');
-    assert.ok(nexus, 'Nexus Studio (NEX) must exist');
+      const acme = CompanyService.getByCode('ACME');
+      assert.ok(acme, 'Acme Corporation (ACME) must exist');
+      assert.strictEqual(acme.name, 'Acme Corporation');
+      assert.strictEqual(acme.isParent, true);
 
-    const lumina = CompanyService.getByCode('LUM');
-    assert.ok(lumina, 'Lumina Labs (LUM) must exist');
+      const nexus = CompanyService.getByCode('NEX');
+      assert.ok(nexus, 'Nexus Studio (NEX) must exist');
 
-    // Test saving an update
-    const updated = CompanyService.saveCompany({
-      code: 'LUM',
-      name: 'Lumina Labs Pte Ltd',
-      location: 'Singapore'
-    });
-    assert.strictEqual(updated.location, 'Singapore');
+      const lumina = CompanyService.getByCode('LUM');
+      assert.ok(lumina, 'Lumina Labs (LUM) must exist');
+
+      // Test saving an update
+      const updated = CompanyService.saveCompany({
+        code: 'LUM',
+        name: 'Lumina Labs Pte Ltd',
+        location: 'Singapore'
+      });
+      assert.strictEqual(updated.location, 'Singapore');
+
+      // Assert physical markdown file was written
+      const luminaMd = path.join(testDir, '_Clients', 'LUM_LuminaLabs', 'client.md');
+      assert.ok(fs.existsSync(luminaMd), 'client.md must exist on disk in _Clients folder');
+      const mdContent = fs.readFileSync(luminaMd, 'utf8');
+      assert.ok(mdContent.includes('Singapore'));
+
+      // Assert companies.json is NEVER created
+      const legacyJson = path.join(testDir, '_Team', '_Config', 'companies.json');
+      assert.strictEqual(fs.existsSync(legacyJson), false, 'companies.json must NEVER be created');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
   });
 
   // ─── TEST 12: TeamService & User Staff Directory Governance ────────
@@ -1193,6 +1212,7 @@ notes: Initial deposit invoice.
   // ─── TEST 33: REST API /api/journal and /api/finance Endpoints ───────
   await test('REST API /api/journal and /api/finance endpoints return valid responses and sync to disk', async () => {
     const testDir = path.join(__dirname, 'temp-api-vault-test');
+    if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
     fs.mkdirSync(path.join(testDir, '_Journal', 'Daily'), { recursive: true });
     fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
 

@@ -4,6 +4,7 @@
  */
 
 import type { ClientProfile } from '../types/kanso';
+import { ApiClient } from './api';
 
 const STORAGE_KEY = 'kanso_cre8_clients';
 
@@ -121,9 +122,44 @@ export class ClientService {
     }
   }
 
+  public async syncWithServer(): Promise<ClientProfile[]> {
+    try {
+      const res = await ApiClient.getClients();
+      if (res && res.clients && Array.isArray(res.clients) && res.clients.length > 0) {
+        this.clients = res.clients.map((c: any) => ({
+          id: c.id || c.code.toLowerCase(),
+          name: c.name,
+          code: c.code,
+          contactPerson: c.contactPerson || c.contact_person || '',
+          email: c.email || '',
+          phone: c.phone || '',
+          billingAddress: c.billingAddress || c.billing_address || c.address || '',
+          currency: c.currency || 'USD',
+          defaultHourlyRate: c.defaultHourlyRate || c.default_hourly_rate || 150,
+          paymentTermsDays: c.paymentTermsDays || c.payment_terms_days || 14,
+          palette: c.palette || {
+            primary: c.color || '#0284C7',
+            secondary: '#0052CC',
+            dark: '#0A0D14',
+            light: '#F8FAFC',
+            accent: '#00F0FF'
+          },
+          notes: c.notes || '',
+          activeProjectsCount: c.activeProjectsCount || 0,
+          totalInvoiced: c.totalInvoiced || 0
+        }));
+        return this.clients;
+      }
+    } catch (e) {
+      console.warn('[ClientService] Server sync warning:', e);
+    }
+    return this.clients;
+  }
+
   public getClients(): ClientProfile[] {
     if (this.clients.length === 0) {
       this.loadClients();
+      this.syncWithServer().catch(() => {});
     }
     return this.clients;
   }
@@ -144,6 +180,20 @@ export class ClientService {
   public addClient(client: ClientProfile): void {
     this.clients.push(client);
     this.saveClients();
+    ApiClient.saveClient({
+      code: client.code,
+      name: client.name,
+      contactPerson: client.contactPerson,
+      email: client.email,
+      phone: client.phone,
+      billingAddress: client.billingAddress,
+      currency: client.currency,
+      defaultHourlyRate: client.defaultHourlyRate,
+      paymentTermsDays: client.paymentTermsDays,
+      palette: client.palette,
+      color: client.palette.primary,
+      notes: client.notes
+    }).catch(err => console.warn('[ClientService] Failed to save client to server:', err));
   }
 
   public updateClient(client: ClientProfile): void {
@@ -151,12 +201,30 @@ export class ClientService {
     if (index !== -1) {
       this.clients[index] = client;
       this.saveClients();
+      ApiClient.saveClient({
+        code: client.code,
+        name: client.name,
+        contactPerson: client.contactPerson,
+        email: client.email,
+        phone: client.phone,
+        billingAddress: client.billingAddress,
+        currency: client.currency,
+        defaultHourlyRate: client.defaultHourlyRate,
+        paymentTermsDays: client.paymentTermsDays,
+        palette: client.palette,
+        color: client.palette.primary,
+        notes: client.notes
+      }).catch(err => console.warn('[ClientService] Failed to update client on server:', err));
     }
   }
 
   public deleteClient(id: string): void {
+    const target = this.clients.find(c => c.id === id);
     this.clients = this.clients.filter(c => c.id !== id);
     this.saveClients();
+    if (target) {
+      ApiClient.deleteClient(target.code).catch(err => console.warn('[ClientService] Failed to delete client on server:', err));
+    }
   }
 }
 
