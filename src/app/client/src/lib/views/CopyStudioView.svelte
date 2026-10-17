@@ -425,7 +425,7 @@
                       {/if}
                       <div class="wa-meta">
                         <span>10:42 AM</span>
-                        <span class="wa-ticks">✓✓</span>
+                        <span class="wa-ticks"><Icon name="check" size={12} /><Icon name="check" size={12} /></span>
                       </div>
                     </div>
                   </div>

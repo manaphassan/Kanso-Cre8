@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount, onDestroy } from 'svelte';
 
   interface Props {
@@ -100,7 +101,7 @@
         onclick={toggleBacklight}
         title="Toggle Meter Warm Filament Backlight"
       >
-        💡 {isBacklightHigh ? 'WARM' : 'DIM'}
+        <Icon name="lightbulb" size={12} /> {isBacklightHigh ? 'WARM' : 'DIM'}
       </button>
     </div>
   </div>

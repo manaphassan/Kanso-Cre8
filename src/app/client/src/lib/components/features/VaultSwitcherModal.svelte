@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
@@ -108,14 +109,14 @@
           <h3 class="modal-title">Switch Creative Vault</h3>
           <p class="modal-sub">Mount local directory or external sync folder with zero binary database locks</p>
         </div>
-        <button class="close-btn" onclick={onclose} title="Close (Esc)">✕</button>
+        <button class="close-btn" onclick={onclose} title="Close (Esc)" aria-label="Close"><Icon name="close" size={14} /></button>
       </div>
 
       <!-- Body -->
       <div class="modal-body">
         {#if errorMsg}
           <div class="error-banner">
-            <span>⚠️ {errorMsg}</span>
+            <span><Icon name="alert" size={14} /> {errorMsg}</span>
           </div>
         {/if}
 
@@ -137,7 +138,7 @@
                   {#if cand.isCurrent}
                     <span class="active-dot"></span>
                   {:else}
-                    📁
+                    <Icon name="folder" size={16} />
                   {/if}
                 </div>
 
@@ -202,7 +203,7 @@
       <!-- Footer -->
       <div class="modal-footer">
         <div class="footer-note">
-          <span>💡 100% human-readable Markdown. Works seamlessly with Dropbox, Google Drive &amp; OneDrive.</span>
+          <span><Icon name="lightbulb" size={14} /> 100% human-readable Markdown. Works seamlessly with Dropbox, Google Drive &amp; OneDrive.</span>
         </div>
         <button class="btn-cancel" onclick={onclose}>Close</button>
       </div>

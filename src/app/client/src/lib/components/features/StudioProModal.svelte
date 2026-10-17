@@ -1,5 +1,6 @@
 <script lang="ts">
   import { licenseStore } from '$lib/stores/licenseStore.svelte';
+  import { Icon } from '$lib/components/ui';
 
   let inputKey = $state('');
   let isActivating = $state(false);
@@ -54,11 +55,11 @@
           </div>
           <p class="comp-desc">The personal creative sanctuary.</p>
           <ul class="feature-list">
-            <li>✓ Unlimited Atomic Notes &amp; Scratchpad</li>
-            <li>✓ Daily Bullet Journal &amp; Monthly Review</li>
-            <li>✓ Retro Cassette Focus Radio &amp; Pomodoro</li>
-            <li>✓ Copywriting Studio &amp; Telemetry</li>
-            <li>✓ Pure Markdown Storage (100% Offline)</li>
+            <li><Icon name="check" size={12} /> Unlimited Atomic Notes &amp; Scratchpad</li>
+            <li><Icon name="check" size={12} /> Daily Bullet Journal &amp; Monthly Review</li>
+            <li><Icon name="check" size={12} /> Retro Cassette Focus Radio &amp; Pomodoro</li>
+            <li><Icon name="check" size={12} /> Copywriting Studio &amp; Telemetry</li>
+            <li><Icon name="check" size={12} /> Pure Markdown Storage (100% Offline)</li>
           </ul>
         </div>
 
@@ -69,11 +70,11 @@
           </div>
           <p class="comp-desc">The commercial operations engine.</p>
           <ul class="feature-list">
-            <li class="highlight">✓ <strong>Unlimited Client Profiles</strong> &amp; Brand Hub</li>
-            <li class="highlight">✓ <strong>YAML Quote &amp; Invoice Studio</strong> (PDF/Print)</li>
-            <li class="highlight">✓ <strong>Billable Timer</strong> &amp; Earnings Tracker</li>
-            <li class="highlight">✓ <strong>5-Folder Project Setup</strong></li>
-            <li class="highlight">✓ <strong>4K Deliverable ZIP Packaging</strong></li>
+            <li class="highlight"><Icon name="check" size={12} /> <strong>Unlimited Client Profiles</strong> &amp; Brand Hub</li>
+            <li class="highlight"><Icon name="check" size={12} /> <strong>YAML Quote &amp; Invoice Studio</strong> (PDF/Print)</li>
+            <li class="highlight"><Icon name="check" size={12} /> <strong>Billable Timer</strong> &amp; Earnings Tracker</li>
+            <li class="highlight"><Icon name="check" size={12} /> <strong>5-Folder Project Setup</strong></li>
+            <li class="highlight"><Icon name="check" size={12} /> <strong>4K Deliverable ZIP Packaging</strong></li>
           </ul>
         </div>
       </div>
@@ -139,7 +140,7 @@
             </button>
           </div>
           <p class="offline-note">
-            🔒 Validated 100% locally via cryptographic checksum. Zero telemetry or server phone-home.
+            <Icon name="lock" size={13} /> Validated 100% locally via cryptographic checksum. Zero telemetry or server phone-home.
           </p>
         </div>
       {/if}

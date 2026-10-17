@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import Pill from '$lib/components/ui/Pill.svelte';
   import { clientService } from '$lib/services/clientService';
@@ -53,7 +54,7 @@
       oninput={handleSearchInput}
     />
     {#if searchQuery}
-      <button class="clear-search-btn" onclick={handleClearSearch} title="Clear search">✕</button>
+      <button class="clear-search-btn" onclick={handleClearSearch} title="Clear search" aria-label="Clear search"><Icon name="close" size={12} /></button>
     {/if}
   </div>
 

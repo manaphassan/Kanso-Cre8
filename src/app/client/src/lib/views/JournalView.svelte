@@ -13,6 +13,7 @@
   } from '../services/journalService';
   import { appState } from '$lib/stores/appState.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
+  import { Icon } from '$lib/components/ui';
 
   type ViewTab = 'daily' | 'monthly' | 'yearly';
   let activeTab: ViewTab = $state('daily');
@@ -180,11 +181,11 @@
   // Symbol styling helper
   function getSymbolBadge(type: BujoEntry['type']) {
     switch (type) {
-      case 'priority': return { symbol: '★', label: 'Priority', color: 'var(--kanso-warning)', bg: 'rgba(245, 158, 11, 0.12)' };
+      case 'priority': return { symbol: '*', label: 'Priority', color: 'var(--kanso-warning)', bg: 'rgba(245, 158, 11, 0.12)' };
       case 'event': return { symbol: '○', label: 'Event', color: 'var(--kanso-accent)', bg: 'rgba(56, 189, 248, 0.12)' };
       case 'note': return { symbol: '—', label: 'Note', color: 'var(--kanso-text-muted)', bg: 'rgba(148, 163, 184, 0.12)' };
       case 'migrated': return { symbol: '>', label: 'Migrated', color: 'var(--kanso-accent)', bg: 'rgba(168, 85, 247, 0.12)' };
-      case 'done': return { symbol: '✓', label: 'Done', color: 'var(--kanso-success)', bg: 'rgba(16, 185, 129, 0.12)' };
+      case 'done': return { symbol: 'x', label: 'Done', color: 'var(--kanso-success)', bg: 'rgba(16, 185, 129, 0.12)' };
       default: return { symbol: '•', label: 'Task', color: 'var(--kanso-text-primary)', bg: 'var(--kanso-surface-hover)' };
     }
   }
@@ -302,10 +303,10 @@
                 onclick={() => handleToggleHabit(habit.id)}
                 title="{habit.description} (1-click toggle)"
               >
-                <span class="habit-glyph">{habit.icon}</span>
+                <span class="habit-glyph"><Icon name={habit.icon as any} size={14} /></span>
                 <span class="habit-name">{habit.name}</span>
                 {#if isActive}
-                  <span class="check-mark">✓</span>
+                  <span class="check-mark"><Icon name="check" size={14} /></span>
                 {/if}
               </button>
             {/each}
@@ -336,7 +337,7 @@
 
             {#if habitHistoryData && habitHistoryData.stats.currentStreak > 0}
               <span class="streak-pill" title="Consecutive days with at least 1 habit completed">
-                🔥 {habitHistoryData.stats.currentStreak}d Streak
+                <Icon name="flame" size={14} /> {habitHistoryData.stats.currentStreak}d Streak
               </span>
             {/if}
           </div>
@@ -386,7 +387,7 @@
         <!-- Left Column: Daily Intentions (Focus Box) -->
         <div class="intentions-card">
           <div class="card-head">
-            <span class="chead-icon">🎯</span>
+            <span class="chead-icon"><Icon name="target" size={16} /></span>
             <h3 class="chead-title">Daily Intentions</h3>
           </div>
           <p class="chead-sub">3 essential outcomes to guide your creative flow today.</p>
@@ -400,7 +401,8 @@
                   class="int-del-btn"
                   onclick={() => handleRemoveIntention(idx)}
                   title="Remove intention"
-                >✕</button>
+                  aria-label="Remove intention"
+                ><Icon name="close" size={12} /></button>
               </div>
             {/each}
           </div>
@@ -419,7 +421,7 @@
         <!-- Right Column: Rapid Log Entries -->
         <div class="rapid-log-card">
           <div class="card-head">
-            <span class="chead-icon">⚡</span>
+            <span class="chead-icon"><Icon name="bolt" size={16} /></span>
             <h3 class="chead-title">Rapid Log</h3>
             <span class="badge-count">{dailyNote.entries.length} items</span>
           </div>
@@ -428,7 +430,7 @@
           <form class="quick-entry-bar" onsubmit={(e) => { e.preventDefault(); handleAddEntry(); }}>
             <select bind:value={newEntryType} class="entry-type-select">
               <option value="task">• [ ] Task</option>
-              <option value="priority">★ Priority</option>
+              <option value="priority">* Priority</option>
               <option value="event">○ Event</option>
               <option value="note">— Note</option>
             </select>
@@ -483,8 +485,9 @@
                   class="entry-del-btn"
                   onclick={() => handleDeleteEntry(entry.id)}
                   title="Delete entry"
+                  aria-label="Delete entry"
                 >
-                  ✕
+                  <Icon name="close" size={12} />
                 </button>
               </div>
             {:else}
@@ -506,7 +509,7 @@
       </button>
 
       <div class="date-title-col">
-        <span class="date-label">📅 {monthlyReview.title || `Monthly Review: ${currentMonth}`}</span>
+        <span class="date-label"><Icon name="calendar" size={14} /> {monthlyReview.title || `Monthly Review: ${currentMonth}`}</span>
         <span class="file-path-hint">_Journal/Monthly/{currentMonth}.md</span>
       </div>
 
@@ -553,7 +556,7 @@
           </div>
 
           <div class="bento-card">
-            <span class="bento-icon">💵</span>
+            <span class="bento-icon"><Icon name="wallet" size={16} /></span>
             <div class="bento-content">
               <span class="bento-val">${monthlyTelemetry.totalRevenue.toLocaleString()}</span>
               <span class="bento-label">
@@ -563,7 +566,7 @@
           </div>
 
           <div class="bento-card">
-            <span class="bento-icon">📦</span>
+            <span class="bento-icon"><Icon name="package" size={16} /></span>
             <div class="bento-content">
               <span class="bento-val">{monthlyTelemetry.deliverablesCount}</span>
               <span class="bento-label">Deliverables Handed Over</span>
@@ -571,7 +574,7 @@
           </div>
 
           <div class="bento-card">
-            <span class="bento-icon">🔄</span>
+            <span class="bento-icon"><Icon name="refresh" size={16} /></span>
             <div class="bento-content">
               <span class="bento-val">{monthlyTelemetry.avgRevisionRounds}x</span>
               <span class="bento-label">Avg Revision Rounds</span>
@@ -587,14 +590,14 @@
           <!-- Monthly Focus Goals -->
           <div class="rsection-box">
             <div class="card-head">
-              <span class="chead-icon">🎯</span>
+              <span class="chead-icon"><Icon name="target" size={16} /></span>
               <h4 class="rsection-title">Core Monthly Focus &amp; Objectives</h4>
             </div>
             <div class="rlist">
               {#each (monthlyReview.goals || []) as goal, idx}
                 <div class="rlist-item">
-                  <span>✓ {goal}</span>
-                  <button class="item-del-btn" onclick={() => handleRemoveGoal(idx)}>✕</button>
+                  <span><Icon name="check" size={13} /> {goal}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveGoal(idx)} aria-label="Delete"><Icon name="close" size={12} /></button>
                 </div>
               {/each}
             </div>
@@ -607,14 +610,14 @@
           <!-- Deliverables Summary -->
           <div class="rsection-box" style="margin-top: 16px;">
             <div class="card-head">
-              <span class="chead-icon">✨</span>
+              <span class="chead-icon"><Icon name="sparkle" size={16} /></span>
               <h4 class="rsection-title">Deliverables Summary</h4>
             </div>
             <div class="rlist">
               {#each (monthlyReview.deliverablesSummary || []) as deliv, idx}
                 <div class="rlist-item">
-                  <span>📦 {deliv}</span>
-                  <button class="item-del-btn" onclick={() => handleRemoveDeliverable(idx)}>✕</button>
+                  <span><Icon name="package" size={13} /> {deliv}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveDeliverable(idx)} aria-label="Delete"><Icon name="close" size={12} /></button>
                 </div>
               {/each}
             </div>
@@ -629,7 +632,7 @@
         <div class="review-col-right">
           <div class="rsection-box h-full flex flex-col">
             <div class="card-head">
-              <span class="chead-icon">🌿</span>
+              <span class="chead-icon"><Icon name="file" size={16} /></span>
               <h4 class="rsection-title">Creative Reflection &amp; Atelier Retrospective</h4>
             </div>
             <p class="chead-sub">
@@ -662,7 +665,7 @@
       </button>
 
       <div class="date-title-col">
-        <span class="date-label">🏔️ {yearlyReview.title || `${currentYear} Studio Vision & Annual Index`}</span>
+        <span class="date-label"><Icon name="target" size={14} /> {yearlyReview.title || `${currentYear} Studio Vision & Annual Index`}</span>
         <span class="file-path-hint">_Journal/Yearly/{currentYear}.md</span>
       </div>
 
@@ -702,7 +705,7 @@
         {@const revPercent = Math.min(100, Math.round((yearlyTelemetry.totalRevenue / (yearlyReview.revenueTarget || 150000)) * 100))}
         <div class="telemetry-bento-grid">
           <div class="bento-card bento-wide">
-            <span class="bento-icon">💰</span>
+            <span class="bento-icon"><Icon name="wallet" size={16} /></span>
             <div class="bento-content flex-1">
               <div class="flex justify-between items-baseline mb-1">
                 <span class="bento-val">${yearlyTelemetry.totalRevenue.toLocaleString()}</span>
@@ -724,7 +727,7 @@
           </div>
 
           <div class="bento-card">
-            <span class="bento-icon">📁</span>
+            <span class="bento-icon"><Icon name="folder" size={16} /></span>
             <div class="bento-content">
               <span class="bento-val">{yearlyTelemetry.completedProjects}</span>
               <span class="bento-label">Completed Vaults ({yearlyTelemetry.projectsCount} total)</span>
@@ -761,14 +764,14 @@
         <div class="review-col-left">
           <div class="rsection-box">
             <div class="card-head">
-              <span class="chead-icon">🏆</span>
+              <span class="chead-icon"><Icon name="star" size={16} /></span>
               <h4 class="rsection-title">Annual Milestones Achieved</h4>
             </div>
             <div class="rlist">
               {#each (yearlyReview.milestones || []) as milestone, idx}
                 <div class="rlist-item">
-                  <span>🏆 {milestone}</span>
-                  <button class="item-del-btn" onclick={() => handleRemoveMilestone(idx)}>✕</button>
+                  <span><Icon name="star" size={13} /> {milestone}</span>
+                  <button class="item-del-btn" onclick={() => handleRemoveMilestone(idx)} aria-label="Delete"><Icon name="close" size={12} /></button>
                 </div>
               {/each}
             </div>
@@ -783,7 +786,7 @@
         <div class="review-col-right">
           <div class="rsection-box h-full flex flex-col">
             <div class="card-head">
-              <span class="chead-icon">🌟</span>
+              <span class="chead-icon"><Icon name="star" size={16} /></span>
               <h4 class="rsection-title">Studio Manifesto &amp; Creative North Star</h4>
             </div>
             <p class="chead-sub">

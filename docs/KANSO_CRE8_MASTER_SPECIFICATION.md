@@ -10,7 +10,7 @@
 
 ---
 
-## 🏛️ 1. Brand Identity & Design System
+## ️ 1. Brand Identity & Design System
 
 ### 1.1 Brand Philosophy & Etymology
 * **Kanso (簡素)**: One of the 7 pillars of traditional Japanese Zen aesthetics (*Wabi-Sabi*). It denotes **simplicity, plainness, and the conscious elimination of clutter**. In design and engineering, Kanso means achieving elegance, calm, and speed not by adding features, but by eliminating friction until only the essential remains.
@@ -78,7 +78,7 @@ Kanso Cre8 balances visual surfaces using the classic architectural **60 / 30 / 
 
 ---
 
-## 🗄️ 2. Storage Engine: Pure Markdown-as-Database
+## ️ 2. Storage Engine: Pure Markdown-as-Database
 
 ### 2.1 Storage Philosophy
 * **Zero External Database**: No SQL Server, no SQLite binary blobs, no cloud-locked database.
@@ -94,59 +94,59 @@ Kanso Cre8 balances visual surfaces using the classic architectural **60 / 30 / 
 ### 2.2 Canonical Vault Structure
 
 ```text
-📁 KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
+ KansoCre8-Vault/                        # Sync Root (Dropbox, GDrive, OneDrive, or Local)
 │
-├── 📁 _Clients/                          # 🏢 Client Dossiers (Profiles, Rates & Brand Assets)
-│   ├── 📁 ACME_AcmeCorp/                 # (Acme Corporation · $125/hr)
-│   │   ├── 📄 client.md                 # YAML frontmatter: contacts, billing, palette, rates
-│   │   └── 📁 Assets/                   # SVG logos, fonts, brand guidelines PDF
-│   ├── 📁 NEX_NexusStudio/               # (Nexus Studio · $110/hr)
-│   │   ├── 📄 client.md
-│   │   └── 📁 Assets/
-│   └── 📁 LUM_LuminaLabs/                # (Lumina Labs · $140/hr)
-│       ├── 📄 client.md
-│       └── 📁 Assets/
+├──  _Clients/                          #  Client Dossiers (Profiles, Rates & Brand Assets)
+│   ├──  ACME_AcmeCorp/                 # (Acme Corporation · $125/hr)
+│   │   ├──  client.md                 # YAML frontmatter: contacts, billing, palette, rates
+│   │   └──  Assets/                   # SVG logos, fonts, brand guidelines PDF
+│   ├──  NEX_NexusStudio/               # (Nexus Studio · $110/hr)
+│   │   ├──  client.md
+│   │   └──  Assets/
+│   └──  LUM_LuminaLabs/                # (Lumina Labs · $140/hr)
+│       ├──  client.md
+│       └──  Assets/
 │
-├── 📁 _Finance/                          # 🧾 Cashflow Studio (Quotes & Invoices)
-│   ├── 📁 Quotes/
-│   │   └── 📄 QUOTE-2026-001_AcmeCorp_BrandSystem.md
-│   └── 📁 Invoices/
-│       ├── 📄 INV-2026-001_AcmeCorp_Deposit.md
-│       └── 📄 INV-2026-002_NexusStudio_LaunchDesign.md
+├──  _Finance/                          #  Cashflow Studio (Quotes & Invoices)
+│   ├──  Quotes/
+│   │   └──  QUOTE-2026-001_AcmeCorp_BrandSystem.md
+│   └──  Invoices/
+│       ├──  INV-2026-001_AcmeCorp_Deposit.md
+│       └──  INV-2026-002_NexusStudio_LaunchDesign.md
 │
-├── 📁 _Projects/                         # 📁 Standardized Project Vaults
-│   └── 📁 2026/                          # Project Vaults (Year / Month / Project)
-│       └── 📁 202609_September/
-│           └── 📁 202609_0001_ACME_MobileAppIllustration/
-│               ├── 📁 01_BRIEF/          # Client briefs, references, moodboards
-│               ├── 📁 02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
-│               ├── 📁 03_COPY/           # COPY.md (scripts, social hooks, specs)
-│               ├── 📁 04_WIP/            # Draft exports, test renders, review clips
-│               ├── 📁 05_DELIVERABLES/   # High-res exports ready for client handover
-│               └── 📄 README.md          # Project Master File (Status, Tasks, Milestones, Budget)
+├──  _Projects/                         #  Standardized Project Vaults
+│   └──  2026/                          # Project Vaults (Year / Month / Project)
+│       └──  202609_September/
+│           └──  202609_0001_ACME_MobileAppIllustration/
+│               ├──  01_BRIEF/          # Client briefs, references, moodboards
+│               ├──  02_SOURCE/         # .psd, .ai, .afdesign, Blender, Figma links
+│               ├──  03_COPY/           # COPY.md (scripts, social hooks, specs)
+│               ├──  04_WIP/            # Draft exports, test renders, review clips
+│               ├──  05_DELIVERABLES/   # High-res exports ready for client handover
+│               └──  README.md          # Project Master File (Status, Tasks, Milestones, Budget)
 │
-├── 📁 _Journal/                          # 📔 Creator's BuJo (Bullet Journal System)
-│   ├── 📁 Daily/                         # Daily rapid logs (e.g. 2026-09-09.md)
-│   ├── 📁 Monthly/                       # Monthly reviews & billable reflections (2026-09.md)
-│   └── 📁 Yearly/                        # Annual vision & milestone reviews (2026.md)
+├──  _Journal/                          #  Creator's BuJo (Bullet Journal System)
+│   ├──  Daily/                         # Daily rapid logs (e.g. 2026-09-09.md)
+│   ├──  Monthly/                       # Monthly reviews & billable reflections (2026-09.md)
+│   └──  Yearly/                        # Annual vision & milestone reviews (2026.md)
 │
-├── 📁 _Notes/                            # 🧠 Atelier Notes & Knowledge Engine
-│   ├── 📁 01_Fleeting/                   # Raw quick captures (e.g. 20260909_call_notes.md)
-│   ├── 📁 02_Literature/                 # Design teardowns, book notes, competitor swipe files
-│   ├── 📁 03_Permanent/                  # Atomic creative assets & formulas
-│   │   ├── 📄 hook_curiosity_gap.md
-│   │   ├── 📄 rule_60_30_10_color.md
-│   │   └── 📄 b2b_saas_hero_formula.md
-│   └── 📄 Scratchpad.md                  # 📝 Temporary quick notes buffer
+├──  _Notes/                            #  Atelier Notes & Knowledge Engine
+│   ├──  01_Fleeting/                   # Raw quick captures (e.g. 20260909_call_notes.md)
+│   ├──  02_Literature/                 # Design teardowns, book notes, competitor swipe files
+│   ├──  03_Permanent/                  # Atomic creative assets & formulas
+│   │   ├──  hook_curiosity_gap.md
+│   │   ├──  rule_60_30_10_color.md
+│   │   └──  b2b_saas_hero_formula.md
+│   └──  Scratchpad.md                  #  Temporary quick notes buffer
 │
-└── 📁 _Team/                             # 💼 Atelier Settings & Studio Identity
-    └── 📁 _Config/                      # Vault-wide configuration
-        └── 📄 studio_profile.json       # Master Brand Dossier (Name, Reg No, Bank/SWIFT, DuitNow, Sig)
+└──  _Team/                             #  Atelier Settings & Studio Identity
+    └──  _Config/                      # Vault-wide configuration
+        └──  studio_profile.json       # Master Brand Dossier (Name, Reg No, Bank/SWIFT, DuitNow, Sig)
 ```
 
 ---
 
-## 📋 3. Data Schemas & YAML Frontmatter
+## 3. Data Schemas & YAML Frontmatter
 
 ### 3.1 Studio & Freelance Brand Dossier Schema (`_Team/_Config/studio_profile.json`)
 ```json
@@ -228,8 +228,8 @@ knowledge_links:
 
 # Project Brief & Milestone Checklist
 - [x] Initial alignment meeting with Alex
-- [ ] #task 3D chassis blockout in Blender 📅 2026-09-14 ⏫ high
-- [ ] #task Render 4K lighting passes to 04_WIP/ 📅 2026-09-18
+- [ ] #task 3D chassis blockout in Blender  2026-09-14 ⏫ high
+- [ ] #task Render 4K lighting passes to 04_WIP/  2026-09-18
 - [ ] Client review & final sign-off
 ```
 
@@ -298,11 +298,11 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 
 ---
 
-## 🔄 4. Zettelkasten + Project Management Integration Matrix
+## 4. Zettelkasten + Project Management Integration Matrix
 
 | Integration Touchpoint | Technical Mechanism | Workflow Impact |
 | :--- | :--- | :--- |
-| **1. Universal Task Rollup** | Regex crawler scans all `.md` files for `- [ ] #task [description] [📅 date]`. | Any to-do written during client calls or fleeting notes appears in the global Kanban board automatically. |
+| **1. Universal Task Rollup** | Regex crawler scans all `.md` files for `- [ ] #task [description] [ date]`. | Any to-do written during client calls or fleeting notes appears in the global Kanban board automatically. |
 | **2. Project Knowledge Tray** | Frontmatter field `knowledge_links: ["[[...]]"]`. | Active projects display relevant atomic design rules side-by-side on screen while creating in Photoshop/Figma. |
 | **3. Atomic Hook Injector** | In `03_COPY/COPY.md`, browse permanent notes drawer and click `[+ Insert Hook]`. | Tested copy structures and formulas are injected into ad scripts with one keystroke. |
 | **4. Asset Rule Extraction** | Highlight winning copy or layout in `COPY.md` and click `[Extract to Atomic Note]`. | Automatically creates a permanent note in `_Notes/03_Permanent/` for future client work. |
@@ -310,7 +310,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 
 ---
 
-## 💻 5. Multi-Platform System Architecture (Tauri v2 + Svelte 5)
+## 5. Multi-Platform System Architecture (Tauri v2 + Svelte 5)
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -338,7 +338,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 
 ---
 
-## 🗺️ 6. Phased Master Implementation Roadmap
+## ️ 6. Phased Master Implementation Roadmap
 
 ### Phase 1: Brand System & Design Tokens Foundation
 - Configure Tailwind CSS with the **Linear / Geist Minimalist Design Tokens** (Canvas `#09090B`, Surface `#18181B`, Hairline `#27272A`, Electric Sky `#38BDF8`).
@@ -367,7 +367,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 - Port mechanical cassette player from SS-CAM Android with dual 6-spoke rotating gear wheels (33 RPM).
 - Stream curated Lo-Fi, Vaporwave, and Ambient stations (Chillhop, Nightwave, SomaFM, Parisian Jazz, Zen Alpha).
 - Embed persistent 40px Mini-Cassette Dock and 25-minute Pomodoro focus timer.
-- Implement synchronized favorite presets rack with active station indicator and automated migration of legacy station IDs (`nightwave-plaza` ➔ `nightwave`, `somafm-groovesalad` ➔ `somafm`).
+- Implement synchronized favorite presets rack with active station indicator and automated migration of legacy station IDs (`nightwave-plaza`  `nightwave`, `somafm-groovesalad`  `somafm`).
 
 ### Phase 6: Copywriting Studio & Deliverables Review
 - Build `CopyStudioView.svelte` writing directly to `03_COPY/COPY.md` with live word, character, and read-time telemetry.
@@ -391,7 +391,7 @@ State an unexpected, counter-intuitive result in line 1 without revealing the ca
 
 ---
 
-## 🏛️ 7. Commercial Architecture & Offline Licensing Engine
+## ️ 7. Commercial Architecture & Offline Licensing Engine
 
 ### 7.1 The "Sanctuary vs. Commerce" Split
 Kanso Cre8 rejects monthly SaaS subscription models. The product is structured into two intentional tiers:

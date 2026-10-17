@@ -32,10 +32,10 @@ export interface DailyHabitItem {
 }
 
 export const CANONICAL_HABITS: DailyHabitItem[] = [
-  { id: 'focus_sprint', name: 'Focus Sprint', icon: '🧘', description: '25m Deep Work Sprint' },
-  { id: 'daily_sketch', name: 'Daily Study', icon: '✏️', description: 'Visual Exploration & Teardowns' },
-  { id: 'inbox_zero', name: 'Inbox Zero', icon: '📥', description: 'Client Comms & Review Cleared' },
-  { id: 'atomic_note', name: 'Atomic Note', icon: '🧠', description: 'Knowledge Engine Insight Logged' }
+  { id: 'focus_sprint', name: 'Focus Sprint', icon: 'bolt', description: '25m Deep Work Sprint' },
+  { id: 'daily_sketch', name: 'Daily Study', icon: 'palette', description: 'Visual Exploration & Teardowns' },
+  { id: 'inbox_zero', name: 'Inbox Zero', icon: 'check', description: 'Client Comms & Review Cleared' },
+  { id: 'atomic_note', name: 'Atomic Note', icon: 'file', description: 'Knowledge Engine Insight Logged' }
 ];
 
 export interface MonthlyReview {
@@ -407,10 +407,10 @@ ${habitsLine}---
 
 # ${note.title}
 
-## 🎯 Daily Intentions
+## Daily Intentions
 ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
 
-## ⚡ Rapid Log
+## Rapid Log
 `;
 
     for (const e of note.entries) {

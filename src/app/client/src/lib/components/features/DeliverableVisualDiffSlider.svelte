@@ -434,7 +434,7 @@
             draggable="false"
           />
           <div class="canvas-badge badge-center">
-            ⚡ Difference Map: Unchanged areas appear black; modified pixels light up.
+            <Icon name="bolt" size={14} /> Difference Map: Unchanged areas appear black; modified pixels light up.
           </div>
         </div>
       {/if}

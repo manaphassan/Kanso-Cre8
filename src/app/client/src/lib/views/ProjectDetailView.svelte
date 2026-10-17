@@ -773,7 +773,7 @@
               <div class="direction-preview-grid">
                 <div class="preview-card">
                   <div class="preview-card-header">
-                    <span class="preview-icon">🎨</span>
+                    <span class="preview-icon"><Icon name="palette" size={14} /></span>
                     <span class="preview-title">Visual Concept / Style Direction</span>
                   </div>
                   <div class="preview-card-body">
@@ -787,7 +787,7 @@
 
                 <div class="preview-card">
                   <div class="preview-card-header">
-                    <span class="preview-icon">🎯</span>
+                    <span class="preview-icon"><Icon name="target" size={14} /></span>
                     <span class="preview-title">Primary Color Palette Tokens</span>
                   </div>
                   <div class="preview-card-body">
@@ -811,7 +811,7 @@
 
                 <div class="preview-card full-width">
                   <div class="preview-card-header">
-                    <span class="preview-icon">👥</span>
+                    <span class="preview-icon"><Icon name="users" size={14} /></span>
                     <span class="preview-title">Target Audience Demographics &amp; Psychology</span>
                   </div>
                   <div class="preview-card-body">
@@ -877,7 +877,7 @@
               class="close-inspector-x"
               onclick={() => (inspectorOpen = false)}
               title="Collapse Inspector"
-            >✕</button>
+             aria-label="Collapse Inspector"><Icon name="close" size={14} /></button>
           </div>
 
           <div class="inspector-content">
@@ -978,32 +978,32 @@
                 </div>
                 <div class="vault-directory-tree">
                   <div class="tree-item active-link" onclick={() => (activeCanvasView = 'brief')} role="button" tabindex="0">
-                    <span class="tree-icon">📄</span>
+                    <span class="tree-icon"><Icon name="file" size={14} /></span>
                     <span class="tree-name">README.md</span>
                     <span class="tree-tag">YAML Specs</span>
                   </div>
                   <div class="tree-item">
-                    <span class="tree-icon">📁</span>
+                    <span class="tree-icon"><Icon name="folder" size={14} /></span>
                     <span class="tree-name">01_BRIEF/</span>
                     <span class="tree-tag">Assets &amp; Brief</span>
                   </div>
                   <div class="tree-item">
-                    <span class="tree-icon">📁</span>
+                    <span class="tree-icon"><Icon name="folder" size={14} /></span>
                     <span class="tree-name">02_SOURCE/</span>
                     <span class="tree-tag">Design Masters</span>
                   </div>
                   <div class="tree-item active-link" onclick={() => (activeCanvasView = 'copywriting')} role="button" tabindex="0">
-                    <span class="tree-icon">📝</span>
+                    <span class="tree-icon"><Icon name="file" size={14} /></span>
                     <span class="tree-name">03_COPY/COPY.md</span>
                     <span class="tree-tag">Headlines</span>
                   </div>
                   <div class="tree-item">
-                    <span class="tree-icon">📁</span>
+                    <span class="tree-icon"><Icon name="folder" size={14} /></span>
                     <span class="tree-name">04_WIP/</span>
                     <span class="tree-tag">Draft Renders</span>
                   </div>
                   <div class="tree-item active-link" onclick={() => (activeCanvasView = 'deliverables')} role="button" tabindex="0">
-                    <span class="tree-icon">📦</span>
+                    <span class="tree-icon"><Icon name="package" size={14} /></span>
                     <span class="tree-name">05_DELIVERABLES/</span>
                     <span class="tree-tag">{projectStore.activeDeliverables.length} exports</span>
                   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { clientService } from '../services/clientService';
   import { timerStore } from '../stores/timerStore.svelte';
@@ -324,8 +325,9 @@
           <button
             onclick={() => isEditingClient = false}
             class="text-muted-foreground hover:text-foreground p-1 rounded-md"
+            aria-label="Close"
           >
-            ✕
+            <Icon name="close" size={14} />
           </button>
         </div>
 

@@ -652,7 +652,7 @@
     <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'companies')}>
       <div class="kpi-top">
         <span class="kpi-label">Registered Entities</span>
-        <span class="kpi-icon-pill" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">🏢</span>
+        <span class="kpi-icon-pill" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);"></span>
       </div>
       <div class="kpi-value">{stats.totalCompanies} <span class="kpi-unit">Units</span></div>
       <div class="kpi-detail">
@@ -664,7 +664,7 @@
     <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'users')}>
       <div class="kpi-top">
         <span class="kpi-label">Staff Personnel Roster</span>
-        <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.15); color: var(--kanso-accent);">👥</span>
+        <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.15); color: var(--kanso-accent);"></span>
       </div>
       <div class="kpi-value">{stats.totalUsers} <span class="kpi-unit">Accounts</span></div>
       <div class="kpi-detail">
@@ -676,7 +676,7 @@
     <Card hoverLift borderAccent="var(--kanso-success)" onclick={() => (activeTab = 'audit')}>
       <div class="kpi-top">
         <span class="kpi-label">Security Audit Trail</span>
-        <span class="kpi-icon-pill" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">🛡️</span>
+        <span class="kpi-icon-pill" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);"></span>
       </div>
       <div class="kpi-value">{stats.totalAuditCount} <span class="kpi-unit">Events</span></div>
       <div class="kpi-detail">
@@ -689,7 +689,7 @@
     <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'system')}>
       <div class="kpi-top">
         <span class="kpi-label">Synology NAS Engine</span>
-        <span class="kpi-icon-pill" style="background: rgba(135, 100, 184, 0.15); color: var(--kanso-accent);">⚡</span>
+        <span class="kpi-icon-pill" style="background: rgba(135, 100, 184, 0.15); color: var(--kanso-accent);"></span>
       </div>
       <div class="kpi-value" style="font-size: 20px; padding-top: 4px;">
         Mounted & Live
@@ -756,7 +756,7 @@
       class:active={activeTab === 'webhooks'}
       onclick={() => (activeTab = 'webhooks')}
     >
-      <span style="font-size: 14px;">🔔</span>
+      <span style="font-size: 14px;"></span>
       <span>Webhooks &amp; Alerts</span>
       <span class="tab-count-pill">{webhooks.length}</span>
     </button>
@@ -838,10 +838,10 @@
             {#each VaultService.CANONICAL_DIRECTORIES as folder}
               <div class="p-2.5 rounded-lg bg-[var(--kanso-surface-hover)] border border-[var(--kanso-border)] flex items-center justify-between">
                 <div class="flex items-center gap-2 truncate">
-                  <span class="text-sm">📁</span>
+                  <span class="text-sm"></span>
                   <span class="font-mono text-xs text-[var(--kanso-text-primary)] font-medium truncate">{folder}/</span>
                 </div>
-                <span class="text-xs text-[var(--kanso-success)] font-mono">✓ verified</span>
+                <span class="text-xs text-[var(--kanso-success)] font-mono">verified</span>
               </div>
             {/each}
           </div>
@@ -873,7 +873,7 @@
                   </div>
                   <div class="flex items-center gap-2">
                     {#if task.dueDate}
-                      <span class="text-[11px] font-mono text-[var(--kanso-text-muted)]">📅 {task.dueDate}</span>
+                      <span class="text-[11px] font-mono text-[var(--kanso-text-muted)]">{task.dueDate}</span>
                     {/if}
                     {#if task.priority}
                       <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-mono font-bold {task.priority === 'urgent' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : task.priority === 'high' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'}">
@@ -961,7 +961,7 @@
 
                   <div class="card-badges">
                     {#if comp.isParent}
-                      <span class="parent-entity-pill">👑 Holding Parent</span>
+                      <span class="parent-entity-pill">Holding Parent</span>
                     {:else}
                       <span class="subsidiary-entity-pill">Operating Unit</span>
                     {/if}
@@ -1015,7 +1015,7 @@
             </div>
           {:else}
             <div class="empty-state-banner">
-              <div class="empty-icon">🏢</div>
+              <div class="empty-icon"></div>
               <h3>No Corporate Entities Match Search</h3>
               <p>Try searching with another keyword or company code.</p>
             </div>
@@ -1386,7 +1386,7 @@
           <div class="telemetry-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">
-                📂
+                
               </div>
               <div>
                 <h3 class="telemetry-card-title">Synology NAS Storage Mount</h3>
@@ -1439,7 +1439,7 @@
         <Card elevated>
           <div class="telemetry-card-header">
             <div class="telemetry-icon-box" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">
-              ⚡
+              
             </div>
             <div>
               <h3 class="telemetry-card-title">Node.js & Container Engine</h3>
@@ -1513,7 +1513,7 @@
 
       <!-- Register New Webhook Card -->
       <Card elevated style="margin-bottom: 20px;">
-        <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 800;">➕ Register New Studio Webhook</h3>
+        <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 800;">Register New Studio Webhook</h3>
         <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr auto; gap: 12px; align-items: flex-end;">
           <div>
             <label class="field-label" for="new-webhook-name">Bot / Channel Name</label>
@@ -1542,7 +1542,7 @@
       <div style="display: flex; flex-direction: column; gap: 12px;">
         {#if webhooks.length === 0}
           <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-            <span style="font-size: 32px; display: block; margin-bottom: 6px;">🔔</span>
+            <span style="font-size: 32px; display: block; margin-bottom: 6px;"></span>
             <span style="font-weight: 700; color: var(--kanso-accent-text);">No Webhooks Configured</span>
             <p style="font-size: 12px; color: var(--kanso-text-muted); margin-top: 4px;">Register a Discord or Slack webhook above to receive live notifications on team deliverables and client sign-offs.</p>
           </div>
@@ -1551,7 +1551,7 @@
             <Card hoverLift padding="16px">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                  <span style="font-size: 24px;">{hook.serviceType === 'discord' ? '🎮' : hook.serviceType === 'slack' ? '💬' : '🔔'}</span>
+                  
                   <div>
                     <div style="display: flex; align-items: center; gap: 8px;">
                       <span style="font-weight: 800; font-size: 14px; color: var(--kanso-accent-text);">{hook.name}</span>
@@ -1568,10 +1568,10 @@
 
                 <div style="display: flex; gap: 8px;">
                   <Button appearance="secondary" size="xs" loading={isTestingHook === hook.id} onclick={() => handleTestWebhook(hook)}>
-                    🔔 Test Ping
+                     Test Ping
                   </Button>
                   <Button appearance="danger" size="xs" onclick={() => handleDeleteWebhook(hook.id)}>
-                    🗑 Remove
+                    Remove
                   </Button>
                 </div>
               </div>

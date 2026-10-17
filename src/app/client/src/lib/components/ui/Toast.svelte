@@ -1,5 +1,6 @@
 <script lang="ts">
   import { appState } from '$lib/stores/appState.svelte';
+  import Icon from './Icon.svelte';
 </script>
 
 <div class="toast-container">
@@ -12,7 +13,7 @@
         {/if}
         <div class="toast-message">{toast.message}</div>
       </div>
-      <button class="toast-close" onclick={() => appState.removeToast(toast.id)}>✕</button>
+      <button class="toast-close" onclick={() => appState.removeToast(toast.id)} aria-label="Dismiss toast"><Icon name="close" size={12} /></button>
     </div>
   {/each}
 </div>

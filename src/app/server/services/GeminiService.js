@@ -148,11 +148,11 @@ class GeminiService {
 Your task is to write high-converting, viral advertising hooks that capture attention within the first 3 seconds on TikTok, LinkedIn, Meta, and X/Twitter.
 Language requirement: ${language === 'Malay' ? 'Bahasa Melayu yang santai, persuasive, dan natural' : 'High-impact persuasive English with razor-sharp clarity'}.
 Always provide 5 distinct categorized hooks:
-1. 💥 CURIOSITY / PATTERN INTERRUPT
-2. ⚡ PAIN POINT / AGITATION
-3. 🏆 SOCIAL PROOF / TRANSFORMATION
+1. CURIOSITY / PATTERN INTERRUPT
+2. PAIN POINT / AGITATION
+3. SOCIAL PROOF / TRANSFORMATION
 4. ⏰ URGENCY / FOMO
-5. 📖 RELATABLE STORYTELLING
+5. RELATABLE STORYTELLING
 
 Format as clean, ready-to-use markdown bullets with strong emojis.`;
 
@@ -170,11 +170,11 @@ Generate the 5 categorized viral hooks now:`;
     const systemPrompt = `You are an elite creative director and conversion copywriter for Kanso Cre8 studio.
 Write a full, ready-to-run advertising script optimized specifically for ${platform}.
 Include:
-- 🎣 Opening Hook (with visual text-on-screen cues)
-- 🔥 Agitation & Problem Breakdown
-- 💡 Solution & Tactical Mechanism
-- 🛡️ Commercial Licensing & Quality Standards
-- 🚀 Strong Call to Action (CTA) with direct link urgency
+- Opening Hook (with visual text-on-screen cues)
+- Agitation & Problem Breakdown
+- Solution & Tactical Mechanism
+- Commercial Licensing & Quality Standards
+- Strong Call to Action (CTA) with direct link urgency
 
 Language: ${language}. Use clean Markdown suitable for direct insertion into 03_COPY/COPY.md.`;
 

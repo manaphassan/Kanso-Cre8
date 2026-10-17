@@ -707,7 +707,7 @@
               </span>
               <span class="theme-name">{t.name}</span>
               {#if appState.theme === t.id}
-                <span class="active-check">✓</span>
+                <span class="active-check"><Icon name="check" size={12} /></span>
               {/if}
             </button>
           {/each}
@@ -728,35 +728,35 @@
           class:active={activeFilter === 'themes'}
           onclick={() => { activeFilter = 'themes'; selectedIndex = 0; }}
         >
-          🎭 Themes
+          Themes
         </button>
         <button
           class="filter-chip"
           class:active={activeFilter === 'actions'}
           onclick={() => { activeFilter = 'actions'; selectedIndex = 0; }}
         >
-          ⚡ Actions
+          Actions
         </button>
         <button
           class="filter-chip"
           class:active={activeFilter === 'swatches'}
           onclick={() => { activeFilter = 'swatches'; selectedIndex = 0; }}
         >
-          🎨 Swatches
+          Swatches
         </button>
         <button
           class="filter-chip"
           class:active={activeFilter === 'projects'}
           onclick={() => { activeFilter = 'projects'; selectedIndex = 0; }}
         >
-          📁 Projects
+          Projects
         </button>
         <button
           class="filter-chip"
           class:active={activeFilter === 'nav'}
           onclick={() => { activeFilter = 'nav'; selectedIndex = 0; }}
         >
-          🧭 Nav (⌘1-9)
+          Nav (Ctrl+1..6)
         </button>
       </div>
 

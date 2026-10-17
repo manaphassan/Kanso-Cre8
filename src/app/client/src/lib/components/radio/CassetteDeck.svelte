@@ -4,6 +4,7 @@
   import type { CassetteRadioStation } from '$lib/types/radio';
   import { ambientAudioService } from '$lib/services/ambientAudioService.svelte';
   import AnalogVuMeter from './AnalogVuMeter.svelte';
+  import { Icon } from '$lib/components/ui';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
   import CassetteTapeCard from './CassetteTapeCard.svelte';
   import CassetteBlankCard from './CassetteBlankCard.svelte';
@@ -310,7 +311,7 @@
       audio.oncanplay = () => {
         clearTimeout(timeout);
         testStreamStatus = 'success';
-        testStreamMsg = '✓ Audio stream online & verified! Broadcast ready.';
+        testStreamMsg = 'Audio stream online and verified. Broadcast ready.';
         audio.play().catch(() => {});
         setTimeout(() => {
           stopTestAudio();
@@ -320,7 +321,7 @@
       audio.onerror = () => {
         clearTimeout(timeout);
         testStreamStatus = 'error';
-        testStreamMsg = '⚠ Stream error: unable to decode audio format.';
+        testStreamMsg = 'Stream error: unable to decode audio format.';
         stopTestAudio();
       };
 
@@ -487,7 +488,7 @@
 
         <!-- Track Marquee -->
         <div class="marquee-box">
-          <span class="tape-disc-icon">♫</span>
+          <span class="tape-disc-icon"><Icon name="music" size={14} /></span>
           <span class="track-title-text" title={state.currentTrackTitle}>
             {state.currentTrackTitle}
           </span>
@@ -633,7 +634,7 @@
                 <div class="sticker-meta-wrap">
                   <span class="sticker-side-tag song-tag">NOW PLAYING</span>
                   <span class="sticker-name now-playing" title="Now Playing: {state.currentTrackTitle || station.featuredTrack}">
-                    ♫ {state.currentTrackTitle || station.featuredTrack}
+                    <Icon name="music" size={12} /> {state.currentTrackTitle || station.featuredTrack}
                   </span>
                 </div>
               {/if}
@@ -826,7 +827,7 @@
             onclick={() => radioService.toggleMute()}
             title={state.isMuted ? 'Unmute' : 'Mute'}
           >
-            {state.isMuted || state.volume === 0 ? '🔇' : state.volume < 0.5 ? '🔉' : '🔊'}
+            <Icon name={state.isMuted || state.volume === 0 ? 'volumeMute' : 'volume'} size={16} />
           </button>
           <input
             type="range"
@@ -864,7 +865,7 @@
                 onclick={() => { playMechanicalClick(); favoriteFilter = 'favorites'; }}
                 title="Show Favorite Presets"
               >
-                ★ FAV ({validFavoriteStations.length})
+                <Icon name="star" size={12} /> FAV ({validFavoriteStations.length})
               </button>
               <button
                 type="button"
@@ -881,7 +882,7 @@
           <div class="favorites-list-scroll">
             {#if favoriteFilter === 'favorites' && favoriteStationIds.length === 0}
               <div class="fav-empty-state">
-                <span class="empty-star">☆</span>
+                <span class="empty-star"><Icon name="star" size={12} /></span>
                 <p class="empty-text">No favorites starred yet</p>
                 <button
                   type="button"
@@ -940,7 +941,7 @@
                     title={isFav ? `Remove ${st.name} from Favorites` : `Add ${st.name} to Favorites`}
                     aria-label={isFav ? `Remove ${st.name} from Favorites` : `Add ${st.name} to Favorites`}
                   >
-                    {isFav ? '★' : '☆'}
+                    <Icon name="star" size={14} />
                   </button>
                 </div>
               {/each}
@@ -1051,7 +1052,7 @@
       <div class="rack-header-row">
         <div class="rack-header-left">
           <h2 class="rack-title">
-            📼 Studio Cassette Rack ({stations.length} Tapes)
+            Studio Cassette Rack ({stations.length} Tapes)
           </h2>
           <span class="rack-subtitle">Click any tape to load into the mastering deck · Blank tape to record</span>
         </div>
@@ -1074,7 +1075,7 @@
             onclick={() => { playMechanicalClick(); isManageMode = !isManageMode; }}
             title={isManageMode ? 'Exit Tape Management Mode' : 'Manage & Delete Tapes'}
           >
-            <span class="btn-icon">⚙</span>
+            <span class="btn-icon"><Icon name="settings" size={14} /></span>
             <span>{isManageMode ? 'Done' : 'Manage Tapes'}</span>
           </button>
 
@@ -1132,7 +1133,7 @@
           <div class="modal-title-group">
             <span class="modal-subheading">STUDIO TAPE MASTERING RECORDER</span>
             <h3 id="record-modal-title" class="modal-title">
-              {editingStation ? '✎ Edit Cassette Tape' : '🎙 Record Blank Cassette C-90'}
+              {editingStation ? 'Edit Cassette Tape' : 'Record Blank Cassette C-90'}
             </h3>
           </div>
           <button
@@ -1140,8 +1141,9 @@
             class="modal-close-btn"
             onclick={closeRecordModal}
             title="Close modal"
+            aria-label="Close modal"
           >
-            ✕
+            <Icon name="close" size={14} />
           </button>
         </div>
 
@@ -1184,7 +1186,7 @@
                 onclick={handleTestStream}
                 disabled={testStreamStatus === 'testing' || !formStreamUrl.trim()}
               >
-                {testStreamStatus === 'testing' ? 'Testing...' : testStreamStatus === 'success' ? '✓ Tested' : '▷ Test Stream'}
+                {testStreamStatus === 'testing' ? 'Testing...' : testStreamStatus === 'success' ? 'Tested' : 'Test Stream'}
               </button>
             </div>
             {#if testStreamMsg}
@@ -1238,7 +1240,7 @@
                   aria-label="Select {preset.name} color"
                 >
                   {#if formShellColor.toLowerCase() === preset.hex.toLowerCase()}
-                    <span class="chip-check">✓</span>
+                    <span class="chip-check"><Icon name="check" size={12} /></span>
                   {/if}
                 </button>
               {/each}
@@ -1271,7 +1273,7 @@
               class="modal-btn submit"
               disabled={!formName.trim() || !formStreamUrl.trim()}
             >
-              {editingStation ? '💾 Save Changes' : '⏺ Record & Insert Tape'}
+              {editingStation ? 'Save Changes' : 'Record & Insert Tape'}
             </button>
           </div>
         </form>
@@ -1295,7 +1297,7 @@
         aria-labelledby="delete-dialog-title"
         onclick={(e) => e.stopPropagation()}
       >
-        <div class="delete-icon-box">🗑</div>
+        <div class="delete-icon-box"><Icon name="trash" size={24} /></div>
         <h3 id="delete-dialog-title" class="delete-heading">Erase & Eject Tape?</h3>
         <p class="delete-body">
           Are you sure you want to permanently erase <strong>{stationToDelete.name}</strong> ({stationToDelete.frequency}) from your studio cassette rack?
@@ -1313,7 +1315,7 @@
             class="modal-btn danger"
             onclick={confirmDeleteStation}
           >
-            🗑 Erase Tape
+            <Icon name="trash" size={14} /> Erase Tape
           </button>
         </div>
       </div>

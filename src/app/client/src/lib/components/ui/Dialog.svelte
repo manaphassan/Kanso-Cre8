@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import Button from './Button.svelte';
+  import Icon from './Icon.svelte';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
@@ -47,7 +48,7 @@
     <div class="modal-dialog" role="dialog" aria-modal="true">
       <div class="modal-header">
         <h3 class="modal-title">{title}</h3>
-        <button class="close-btn" onclick={onClose} aria-label="Close">✕</button>
+        <button class="close-btn" onclick={onClose} aria-label="Close"><Icon name="close" size={14} /></button>
       </div>
 
       <div class="modal-body">

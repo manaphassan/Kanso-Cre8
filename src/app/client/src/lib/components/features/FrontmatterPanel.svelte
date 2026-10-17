@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import type { ProjectFrontmatter, ProjectStatus, ProjectPriority } from '$lib/types';
   import Input from '$lib/components/ui/Input.svelte';
   import Select from '$lib/components/ui/Select.svelte';
@@ -142,7 +143,7 @@
         <span class="tag-chip">
           <span>{tag}</span>
           {#if !readonly}
-            <button class="tag-del-btn" onclick={() => removeTag(tag)}>✕</button>
+            <button class="tag-del-btn" onclick={() => removeTag(tag)} aria-label="Remove tag"><Icon name="close" size={10} /></button>
           {/if}
         </span>
       {/each}

@@ -126,10 +126,10 @@ class ApprovalService {
       }
 
       const decisionTitle = decision === 'approved' 
-        ? '✅ APPROVED' 
+        ? 'APPROVED' 
         : decision === 'revision_requested' 
-          ? `⚠️ REVISION REQUIRED (Round ${revision})` 
-          : '⛔ ON HOLD';
+          ? `REVISION REQUIRED (Round ${revision})` 
+          : 'ON HOLD';
 
       const content = `${decisionTitle} - ${project.jobId} ${project.title}\nBy: ${reviewer}\nNote: ${comment || 'No comment provided.'}`;
 
@@ -240,7 +240,7 @@ class ApprovalService {
 ${yaml.dump(certificateFm).trim()}
 ---
 
-# ✍️ Official Deliverable Approval & Handover Certificate
+# Official Deliverable Approval & Handover Certificate
 
 **Certificate ID**: \`${certId}\`  
 **Project**: ${project.jobId || project.id} — ${project.title || frontmatter.title || 'Creative Project'}  
@@ -248,11 +248,11 @@ ${yaml.dump(certificateFm).trim()}
 **Formally Approved By**: ${approvalRecord.reviewer || 'Client Stakeholder'} (${approvalRecord.role || 'Manager'})  
 **Approval Timestamp**: ${timestamp} (${dateOnly})  
 **Revision Round**: Round ${approvalRecord.round || frontmatter.revision || 1}  
-**Status**: 🟢 **APPROVED & CERTIFIED FOR PRODUCTION**
+**Status**: **APPROVED & CERTIFIED FOR PRODUCTION**
 
 ---
 
-## 📦 Verified Deliverables & Cryptographic Signatures (SHA-256)
+## Verified Deliverables & Cryptographic Signatures (SHA-256)
 
 Every deliverable asset below was cryptographically hashed at the moment of approval to guarantee bit-for-bit authenticity, tamper-proofing, and intellectual property provenance:
 
@@ -262,7 +262,7 @@ ${tableRows}
 
 ---
 
-## 🏛️ Digital Colophon & Atelier Authorization
+## Digital Colophon & Atelier Authorization
 
 **Studio**: ${studioProfile.studioName || 'Acme Design Studio'}  
 **Business Registration No**: \`${studioProfile.businessRegNo || '2026-ACME-0001'}\`  

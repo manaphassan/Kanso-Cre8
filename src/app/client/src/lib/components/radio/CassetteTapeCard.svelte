@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icon } from '$lib/components/ui';
   import type { CassetteRadioStation } from '$lib/types/radio';
   import { radioService } from '$lib/services/radioService.svelte';
   import CassetteSpoolWheel from './CassetteSpoolWheel.svelte';
@@ -174,7 +175,7 @@
             onclick={(e) => { e.stopPropagation(); onedit?.(); }}
             title="Edit {station.name} Tape"
           >
-            ✎ Edit
+            <Icon name="edit" size={12} /> Edit
           </button>
         {/if}
         {#if ondelete}
@@ -184,7 +185,7 @@
             onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
             title="Erase & Eject {station.name} Tape"
           >
-            🗑 Erase
+            <Icon name="trash" size={12} /> Erase
           </button>
         {/if}
       </div>

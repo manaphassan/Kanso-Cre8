@@ -11,6 +11,7 @@
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
   import type { Project } from '$lib/types';
   import TaskRolloverModal from '$lib/components/features/TaskRolloverModal.svelte';
+  import { Icon } from '$lib/components/ui';
 
   // --- STATE ---
   let dailyNote = $state<DailyNote>(journalService.getDailyNote());
@@ -376,7 +377,7 @@
   <section class="bento-section">
     <div class="section-header-row">
       <h2 class="section-title">
-        <span>💰 Total Income &amp; Studio Cashflow</span>
+        <span><Icon name="wallet" size={16} /> Total Income &amp; Studio Cashflow</span>
       </h2>
       <a href="#invoices" class="section-link">View Invoice Studio &rarr;</a>
     </div>
@@ -443,7 +444,7 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">
-            <span>⚡ Tasks</span>
+            <span><Icon name="bolt" size={16} /> Tasks</span>
             {#if taskMode === 'bujo'}
               <span class="panel-title-sub">({dailyNote.date})</span>
             {:else}
@@ -490,7 +491,7 @@
         <!-- Daily Intentions Chips -->
         {#if dailyNote.focusIntentions && dailyNote.focusIntentions.length > 0}
           <div class="intentions-row">
-            <span class="intentions-label">🎯 Intentions:</span>
+            <span class="intentions-label"><Icon name="target" size={14} /> Intentions:</span>
             {#each dailyNote.focusIntentions as intention}
               <span class="intention-chip">{intention}</span>
             {/each}
@@ -542,7 +543,7 @@
                 class="dismiss-btn"
                 title="Dismiss rollover banner"
               >
-                ✕
+                <Icon name="close" size={12} />
               </button>
             </div>
           </div>
@@ -551,7 +552,7 @@
         <!-- Task Items List -->
         {#if todayTasks.length === 0}
           <div class="empty-today-tasks">
-            <span class="empty-task-icon">🍵</span>
+            <span class="empty-task-icon"><Icon name="check" size={24} /></span>
             <span class="empty-task-text">Clean daily log. Add your first intention or task below to begin your creative session.</span>
           </div>
         {:else}
@@ -617,7 +618,7 @@
                   <span class="priority-badge">* {uTask.priority}</span>
                 {/if}
                 {#if uTask.dueDate}
-                  <span class="due-badge">📅 {uTask.dueDate}</span>
+                  <span class="due-badge"><Icon name="calendar" size={12} /> {uTask.dueDate}</span>
                 {/if}
               </div>
             {/each}
@@ -635,7 +636,7 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">
-            <span>📐 Design Craft Metrics</span>
+            <span><Icon name="chart" size={16} /> Design Craft Metrics</span>
           </h2>
           <p class="panel-subtitle">
             Atelier turnaround efficiency, revision velocity, and focused billable hours.
@@ -706,7 +707,7 @@
     <div class="section-header-row">
       <div>
         <h2 class="section-title">
-          <span>📓 Weekly BuJo Synthesis &amp; Momentum</span>
+          <span><Icon name="file" size={16} /> Weekly BuJo Synthesis &amp; Momentum</span>
           {#if weeklyTelemetry}
             <span class="panel-title-sub">({weeklyTelemetry.weekStart} &rarr; {weeklyTelemetry.weekEnd})</span>
           {/if}
@@ -841,7 +842,7 @@
     <div class="section-header-row">
       <div>
         <h2 class="section-title">
-          <span>🎨 Active Projects at a Glance</span>
+          <span><Icon name="palette" size={16} /> Active Projects at a Glance</span>
         </h2>
         <p class="panel-subtitle">
           Real-time delivery pipeline, client stage badges, and deadline countdowns.
@@ -855,7 +856,7 @@
 
     {#if activeProjects.length === 0}
       <div class="empty-projects-card">
-        <div class="empty-projects-icon">📁</div>
+        <div class="empty-projects-icon"><Icon name="folder" size={32} /></div>
         <div class="empty-projects-title">Zero Projects in Active Vault</div>
         <p class="empty-projects-desc">
           Your active vault is a clean slate. Create a new standardized project vault or move project folders into <code class="path-code">_Projects/</code>.
@@ -903,7 +904,7 @@
 
             <div class="project-card-footer">
               <span class="deadline-label">
-                📅 {project.deadline || 'No deadline'}
+                <Icon name="calendar" size={12} /> {project.deadline || 'No deadline'}
               </span>
               <span class="days-remaining">
                 {getDaysRemaining(project.deadline)}
@@ -920,7 +921,7 @@
     <div class="panel-header">
       <div>
         <h2 class="panel-title">
-          <span>💡 Smart Creative Suggestions</span>
+          <span><Icon name="lightbulb" size={16} /> Smart Creative Suggestions</span>
         </h2>
         <p class="panel-subtitle">
           Contextual studio intelligence: live billable hours, review bottlenecks, approaching milestones, and mindful flow.
