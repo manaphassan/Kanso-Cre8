@@ -86,7 +86,7 @@
         language: languageInput
       });
       generatedOutput = res.hooks;
-      appState.addToast('Viral hooks composed!', 'success');
+      appState.addToast('Viral hooks composed.', 'success');
     } catch (err: any) {
       if (!aiStatus.configured) {
         activeTab = 'settings';
@@ -115,7 +115,7 @@
         language: languageInput
       });
       generatedOutput = res.script;
-      appState.addToast('Advertising script generated!', 'success');
+      appState.addToast('Advertising script generated.', 'success');
     } catch (err: any) {
       if (!aiStatus.configured) {
         activeTab = 'settings';
@@ -143,7 +143,7 @@
         brandColors: imageColors
       });
       generatedOutput = res.prompts;
-      appState.addToast('Commercial photography prompts generated!', 'success');
+      appState.addToast('Commercial photography prompts generated.', 'success');
     } catch (err: any) {
       if (!aiStatus.configured) {
         activeTab = 'settings';
@@ -174,7 +174,7 @@
     if (!generatedOutput) return;
     try {
       await navigator.clipboard.writeText(generatedOutput);
-      appState.addToast('Copied to clipboard!', 'success');
+      appState.addToast('Copied to clipboard.', 'success');
     } catch (e) {
       appState.addToast('Could not copy automatically', 'info');
     }
@@ -184,7 +184,7 @@
     if (!generatedOutput) return;
     if (onInsertCopy) {
       onInsertCopy(`\n\n## Gemini AI Generated Content\n\n${generatedOutput}\n`);
-      appState.addToast('Inserted into COPY.md editor!', 'success');
+      appState.addToast('Inserted into COPY.md editor.', 'success');
       closeModal();
     }
   }
@@ -195,7 +195,7 @@
       const res = await ApiClient.saveAiConfig({ apiKey: newApiKey, preferredModel: newModel });
       aiStatus = res.status;
       newApiKey = '';
-      appState.addToast('Gemini API configuration saved!', 'success');
+      appState.addToast('Gemini API configuration saved.', 'success');
       activeTab = 'hooks';
     } catch (err: any) {
       appState.addToast(`Failed to save settings: ${err.message}`, 'error');
@@ -295,7 +295,7 @@
             <div class="settings-actions">
               <Button appearance="primary" loading={isSavingSettings} onclick={saveAiSettings}>
                 <Icon name="save" size={14} />
-                <span style="margin-left: 6px;">Save Configuration</span>
+                <span style="margin-left: 6px;">Save settings</span>
               </Button>
             </div>
           </div>

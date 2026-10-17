@@ -61,7 +61,7 @@
         note
       });
       generatedShare = res.share;
-      appState.addToast('Client review link generated!', 'success');
+      appState.addToast('Client review link generated.', 'success');
       loadActiveLinks();
     } catch (err: any) {
       appState.addToast(`Failed to generate link: ${err.message}`, 'error');
@@ -79,7 +79,7 @@
     const url = getShareUrl(token);
     try {
       await navigator.clipboard.writeText(url);
-      appState.addToast('Review link copied to clipboard!', 'success');
+      appState.addToast('Review link copied to clipboard.', 'success');
     } catch (err) {
       appState.addToast(url, 'info');
     }

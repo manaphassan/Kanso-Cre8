@@ -33,7 +33,7 @@
         timeLeft--;
       } else {
         pauseTimer();
-        appState.addToast('Pomodoro focus sprint complete! Take a mindful 5-minute break.', 'success', 'Sprint Finished');
+        appState.addToast('Pomodoro focus sprint complete. Take a mindful 5-minute break.', 'success', 'Sprint Finished');
         if (onSprintComplete) onSprintComplete();
       }
     }, 1000);

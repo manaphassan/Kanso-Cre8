@@ -112,7 +112,7 @@
     }
 
     navigator.clipboard.writeText(text);
-    appState.addToast('Copy framework copied to clipboard!', 'success');
+    appState.addToast('Copy framework copied to clipboard.', 'success');
   }
 
   function getCharStatus(current: number, max: number) {

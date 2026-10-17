@@ -120,11 +120,7 @@
         <div class="loading-state">Syncing live activity feed…</div>
       {:else if notifications.length === 0}
         <div class="empty-state">
-          <div class="empty-icon-box">
-            <Icon name="checkCircle" size={32} color="var(--kanso-success)" />
-          </div>
-          <p class="empty-title">All caught up</p>
-          <p class="empty-desc">No new mentions, approval milestones, or revision alerts at this time.</p>
+          <p class="empty-desc">No notifications.</p>
         </div>
       {:else}
         <div class="notif-list">

@@ -47,7 +47,7 @@
         newDesigner: reassignTargetDesigner,
         reason: reassignReason
       });
-      appState.addToast(`Project ${reassignProjectData.jobId || ''} reassigned to ${reassignTargetDesigner}!`, 'success');
+      appState.addToast(`Project ${reassignProjectData.jobId || ''} reassigned to ${reassignTargetDesigner}.`, 'success');
       showReassignModal = false;
       await loadTeam(true);
       await projectStore.loadProjects();

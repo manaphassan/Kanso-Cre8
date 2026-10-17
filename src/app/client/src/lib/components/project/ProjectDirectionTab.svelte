@@ -28,7 +28,7 @@
       {#if !isEditing}
         <button type="button" class="btn-secondary" onclick={() => (isEditing = true)}>Edit Direction</button>
       {:else}
-        <button type="button" class="btn-primary" onclick={handleSave}>Save Direction</button>
+        <button type="button" class="btn-primary" onclick={handleSave}>Save direction</button>
         <button type="button" class="btn-secondary" onclick={() => (isEditing = false)}>Cancel</button>
       {/if}
     </div>

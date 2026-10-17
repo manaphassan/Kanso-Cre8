@@ -495,9 +495,7 @@
           <MarkdownViewer content={value} />
         {:else}
           <div class="empty-preview">
-            <span class="empty-icon"><Icon name="file" size={24} /></span>
             <p>No document content written yet.</p>
-            <p class="empty-sub">Type your creative brief, checklist, or client notes above.</p>
           </div>
         {/if}
       </div>

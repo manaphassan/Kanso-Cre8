@@ -131,7 +131,7 @@
   <div class="card-surface reflection-card">
     <div class="reflection-header">
       <h3 class="log-title">Evening Creative Reflection</h3>
-      <button type="button" class="btn-primary-mini" onclick={handleSaveReflection}>Save Reflection</button>
+      <button type="button" class="btn-primary-mini" onclick={handleSaveReflection}>Save reflection</button>
     </div>
     <textarea class="reflection-textarea" rows="3" bind:value={reflectionText} placeholder="Mindful notes on today's craft, client interactions, or energy levels..."></textarea>
   </div>

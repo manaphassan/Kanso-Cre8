@@ -121,7 +121,7 @@
     a.download = `Preflight_${deliverable.filename.replace(/\.[^/.]+$/, "")}.html`;
     a.click();
     URL.revokeObjectURL(url);
-    appState.addToast('Preflight certificate downloaded!', 'success');
+    appState.addToast('Preflight certificate downloaded.', 'success');
   }
 
   function closeModal() {

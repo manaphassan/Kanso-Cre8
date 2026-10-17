@@ -97,7 +97,7 @@ export const SAMPLE_INVOICES: InvoiceDocument[] = [
     subtotal: 2250,
     taxAmount: 180,
     total: 2430,
-    notes: 'Payment is due within 14 days of invoice date via direct wire or ACH transfer. Thank you for your business!',
+    notes: 'Payment is due within 14 days of invoice date via direct wire or ACH transfer. Thank you for your business.',
     linkedProjectId: '202609_0001_ACME_MobileAppIllustration'
   },
   {

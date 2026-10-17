@@ -242,11 +242,7 @@
       <div class="loading-state">Loading comments from NAS…</div>
     {:else if filteredComments.length === 0}
       <div class="empty-state">
-        <div class="empty-icon"><Icon name="message" size={24} /></div>
-        <p class="empty-title">No comments yet</p>
-        <p class="empty-desc">
-          Start the conversation, request specific revisions, or tag team members with <code class="tag-code">@username</code>.
-        </p>
+        <p class="empty-desc">No comments on this deliverable.</p>
       </div>
     {:else}
       <div class="comments-list">

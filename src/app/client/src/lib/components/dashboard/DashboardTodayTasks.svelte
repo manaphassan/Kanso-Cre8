@@ -77,8 +77,8 @@
 
   <!-- Intentions Chips -->
   <div class="intentions-chips-row">
-    <button type="button" class="intention-chip" onclick={() => handleQuickIntention('Review client proof deck')}>+ Review Proof</button>
-    <button type="button" class="intention-chip" onclick={() => handleQuickIntention('Send draft invoice')}>+ Send Invoice</button>
+    <button type="button" class="intention-chip" onclick={() => handleQuickIntention('Review client proof deck')}>+ Review proof</button>
+    <button type="button" class="intention-chip" onclick={() => handleQuickIntention('Send draft invoice')}>+ Send invoice</button>
     <button type="button" class="intention-chip" onclick={() => handleQuickIntention('Morning creative sprint')}>+ Sprint</button>
     <a href="#journal" class="open-journal-link">Open Full Journal →</a>
   </div>
@@ -90,7 +90,7 @@
         <strong>{previousTaskInfo.count} uncompleted task(s)</strong> from {previousTaskInfo.fromDate}
       </div>
       <button type="button" class="rollover-action-btn" onclick={() => (showRolloverModal = true)}>
-        Review &amp; Migrate
+        Review and migrate
       </button>
     </div>
   {/if}

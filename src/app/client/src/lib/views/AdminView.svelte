@@ -574,7 +574,7 @@
         serviceType: newHookType,
         events: newHookEvents
       });
-      appState.addToast('Webhook registered successfully!', 'success');
+      appState.addToast('Webhook registered successfully.', 'success');
       newHookName = '';
       newHookUrl = '';
       const res = await ApiClient.getWebhooks();

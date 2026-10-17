@@ -65,7 +65,7 @@
         note: customNote.trim() || 'Manual studio milestone snapshot'
       });
       customNote = '';
-      appState.addToast('Version snapshot captured!', 'success');
+      appState.addToast('Version snapshot captured.', 'success');
       loadSnapshots();
     } catch (err: any) {
       appState.addToast(`Failed to capture snapshot: ${err.message}`, 'error');
@@ -84,7 +84,7 @@
     isRollingBack = snap.id;
     try {
       const res = await ApiClient.rollbackProject(projectId, snap.id);
-      appState.addToast(res.message || 'Project rolled back successfully!', 'success');
+      appState.addToast(res.message || 'Project rolled back successfully.', 'success');
       loadSnapshots();
       if (onRollbackSuccess) onRollbackSuccess();
     } catch (err: any) {
