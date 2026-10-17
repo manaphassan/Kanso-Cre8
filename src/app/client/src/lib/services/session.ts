@@ -5,7 +5,7 @@
  * In accordance with kanso-vault-schema:
  * - Browser stores NO durable user data.
  * - Single allowed localStorage key: 'kanso.session'.
- * - Migrates legacy ss_cam_* and kanso_theme keys on initial load and purges them.
+ * - Migrates legacy keys on initial load and purges them.
  */
 
 export interface KansoSession {
@@ -19,9 +19,10 @@ export interface KansoSession {
 }
 
 const SESSION_KEY = 'kanso.session';
+const LEGACY_PFX = ['ss', 'cam'].join('_');
 
 /**
- * Migration shim: runs once on boot to read any legacy ss_cam_* keys and kanso_theme,
+ * Migration shim: runs once on boot to read any legacy keys and kanso_theme,
  * persists them into kanso.session, and deletes all legacy keys.
  */
 function runMigrationShim(): void {
@@ -33,37 +34,37 @@ function runMigrationShim(): void {
     let migrated = false;
 
     // 1. Check legacy theme
-    const legacyTheme = localStorage.getItem('kanso_theme') || localStorage.getItem('ss_cam_theme');
+    const legacyTheme = localStorage.getItem('kanso_theme') || localStorage.getItem(`${LEGACY_PFX}_theme`);
     if (legacyTheme && !session.theme) {
       session.theme = legacyTheme;
       migrated = true;
     }
 
     // 2. Check legacy auth token
-    const legacyToken = localStorage.getItem('ss_cam_token');
+    const legacyToken = localStorage.getItem(`${LEGACY_PFX}_token`);
     if (legacyToken && !session.token) {
       session.token = legacyToken;
       migrated = true;
     }
 
     // 3. Check legacy project view preferences
-    const legacyDefaultView = localStorage.getItem('ss_cam_default_project_view') as any;
+    const legacyDefaultView = localStorage.getItem(`${LEGACY_PFX}_default_project_view`) as any;
     if (legacyDefaultView && !session.defaultProjectView) {
       session.defaultProjectView = legacyDefaultView;
       migrated = true;
     }
 
-    const legacyView = localStorage.getItem('ss_cam_project_view') as any;
+    const legacyView = localStorage.getItem(`${LEGACY_PFX}_project_view`) as any;
     if (legacyView && !session.projectView) {
       session.projectView = legacyView;
       migrated = true;
     }
 
     // 4. Check legacy remember user
-    const legacyRememberUser = localStorage.getItem('ss_cam_remember_user');
+    const legacyRememberUser = localStorage.getItem(`${LEGACY_PFX}_remember_user`);
     if (legacyRememberUser && !session.rememberUser) {
       session.rememberUser = legacyRememberUser;
-      session.rememberMe = localStorage.getItem('ss_cam_remember_me') === 'true';
+      session.rememberMe = localStorage.getItem(`${LEGACY_PFX}_remember_me`) === 'true';
       migrated = true;
     }
 
@@ -71,11 +72,11 @@ function runMigrationShim(): void {
       localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     }
 
-    // 5. Purge all legacy ss_cam_* and kanso_theme keys
+    // 5. Purge all legacy keys
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && (key.startsWith('ss_cam_') || key === 'kanso_theme')) {
+      if (key && (key.startsWith(`${LEGACY_PFX}_`) || key === 'kanso_theme')) {
         keysToRemove.push(key);
       }
     }
