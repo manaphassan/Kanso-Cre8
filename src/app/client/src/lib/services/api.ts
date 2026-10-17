@@ -566,21 +566,6 @@ export class ApiClient {
     });
   }
 
-  // ─── Obsidian & Notion Vault Migration ───
-  static previewMigration(sourceDir: string): Promise<{ success: boolean; preview: any }> {
-    return this.request('/migration/preview', {
-      method: 'POST',
-      body: JSON.stringify({ sourceDir })
-    });
-  }
-
-  static executeMigration(payload: { sourceDir: string; targetDir?: string; mode?: 'copy' | 'move' }): Promise<{ success: boolean; result: any }> {
-    return this.request('/migration/execute', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  }
-
   // ─── Pure Markdown Journal Vault (_Journal/) ───
   static getDailyNote(date?: string): Promise<{ success: boolean; note: any }> {
     return this.request(`/journal/daily${date ? `/${encodeURIComponent(date)}` : ''}`);
