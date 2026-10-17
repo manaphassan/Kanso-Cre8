@@ -11,7 +11,7 @@
 
 .markdown-body h1,
 .markdown-body h2 {
-  color: var(--kanso-accent, #0284C7); /* Kanso Studio Brand Accent */
+  color: var(--kanso-accent); /* Kanso Studio Brand Accent */
   font-weight: 700;
   border-bottom: none;
 }
@@ -20,7 +20,7 @@
 [data-theme="metamorphosis"] .markdown-body h2,
 [data-theme="catppuccin"] .markdown-body h1,
 [data-theme="catppuccin"] .markdown-body h2 {
-  color: #00CFFF; /* Electric Cyan in dark theme */
+  color: var(--kanso-accent); /* Electric Cyan in dark theme */
 }
 
 .markdown-body h3,
@@ -113,19 +113,19 @@
 }
 
 .markdown-body th {
-  background: #1E293B !important; /* Dark Slate Navy matching Desktop */
-  color: #FFFFFF !important;
+  background: var(--kanso-surface) !important;
+  color: var(--kanso-text-primary) !important;
   font-weight: 700;
-  border-color: #334155;
+  border-color: var(--kanso-border);
   font-size: 11.5px;
   letter-spacing: 0.2px;
 }
 
 [data-theme="metamorphosis"] .markdown-body th,
 [data-theme="catppuccin"] .markdown-body th {
-  background: #0F172A !important;
-  color: #F8FAFC !important;
-  border-color: #1E293B;
+  background: var(--kanso-surface) !important;
+  color: var(--kanso-text-primary) !important;
+  border-color: var(--kanso-text-primary);
 }
 
 .markdown-body tr:nth-child(even) {
@@ -141,7 +141,7 @@
 .markdown-body blockquote {
   padding: 8px 14px;
   margin-bottom: 14px;
-  border-left: 3px solid #21A1F7;
+  border-left: 3px solid var(--kanso-accent);
   background: var(--kanso-surface-hover);
   border-radius: 0 var(--kanso-radius-md) var(--kanso-radius-md) 0;
   color: var(--kanso-text-primary);

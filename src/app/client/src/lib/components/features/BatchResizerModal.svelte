@@ -254,7 +254,7 @@
       <div class="resizer-header">
         <div class="header-left">
           <div class="resizer-icon-badge">
-            <FluentIcons name="vector" size={20} color="#38BDF8" />
+            <FluentIcons name="vector" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Multi-Format Asset Converter & Proofing Engine</h2>
@@ -515,7 +515,7 @@
     width: 95%;
     max-width: 1020px;
     height: 88vh;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     display: flex;
@@ -534,19 +534,19 @@
   }
 
   .header-left { display: flex; align-items: center; gap: 12px; }
-  .modal-title { font-size: 15px; font-weight: 800; color: #F8FAFC; }
-  .modal-sub { font-size: 11.5px; color: #94A3B8; margin-top: 2px; }
+  .modal-title { font-size: 15px; font-weight: 800; color: var(--kanso-text-primary); }
+  .modal-sub { font-size: 11.5px; color: var(--kanso-text-muted); margin-top: 2px; }
 
   .close-btn {
     background: transparent;
     border: none;
     font-size: 16px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 6px;
   }
-  .close-btn:hover { color: #FFF; background: rgba(255, 255, 255, 0.08); }
+  .close-btn:hover { color: var(--kanso-accent-text); background: rgba(255, 255, 255, 0.08); }
 
   .resizer-body {
     flex: 1;
@@ -565,7 +565,7 @@
   }
 
   .control-card { display: flex; flex-direction: column; gap: 7px; }
-  .control-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.5px; }
+  .control-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--kanso-text-muted); letter-spacing: 0.5px; }
 
   /* Format Toggle */
   .format-toggle-group {
@@ -592,18 +592,18 @@
 
   .format-btn.active {
     background: rgba(56, 189, 248, 0.15);
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
   }
 
   .format-badge {
     font-size: 12px;
     font-weight: 800;
-    color: #FFF;
+    color: var(--kanso-accent-text);
   }
 
   .format-desc {
     font-size: 9px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     margin-top: 2px;
     text-align: center;
   }
@@ -626,12 +626,12 @@
     font-size: 10.5px;
   }
 
-  .slider-title { color: #94A3B8; }
-  .slider-value { color: #38BDF8; font-weight: 700; font-family: monospace; }
+  .slider-title { color: var(--kanso-text-muted); }
+  .slider-value { color: var(--kanso-accent); font-weight: 700; font-family: monospace; }
 
   .quality-range-slider {
     width: 100%;
-    accent-color: #38BDF8;
+    accent-color: var(--kanso-accent);
     cursor: pointer;
   }
 
@@ -644,7 +644,7 @@
     width: 100%;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #FFF;
+    color: var(--kanso-accent-text);
     padding: 7px 10px;
     border-radius: 6px;
     font-size: 11.5px;
@@ -653,14 +653,14 @@
   }
 
   .watermark-dropdown option {
-    background: #0F172A;
-    color: #FFF;
+    background: var(--kanso-surface);
+    color: var(--kanso-accent-text);
   }
 
   .watermark-text-input {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #FFF;
+    color: var(--kanso-accent-text);
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 11px;
@@ -668,7 +668,7 @@
   }
 
   .watermark-text-input:focus {
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
   }
 
   /* Fill mode */
@@ -687,10 +687,10 @@
   .fill-option-btn:hover { background: rgba(255, 255, 255, 0.08); }
   .fill-option-btn.active {
     background: rgba(56, 189, 248, 0.12);
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
   }
-  .fill-title { font-size: 11.5px; font-weight: 700; color: #FFF; }
-  .fill-desc { font-size: 9.5px; color: #94A3B8; margin-top: 1px; }
+  .fill-title { font-size: 11.5px; font-weight: 700; color: var(--kanso-accent-text); }
+  .fill-desc { font-size: 9.5px; color: var(--kanso-text-muted); margin-top: 1px; }
 
   .color-palette-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .swatch-btn { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); cursor: pointer; }
@@ -710,25 +710,25 @@
   .preset-info { flex: 1; display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .preset-icon { font-size: 16px; }
   .preset-label-row { display: flex; align-items: center; gap: 6px; }
-  .preset-label { font-size: 11.5px; font-weight: 700; color: #FFF; }
-  .res-badge { font-size: 9.5px; background: rgba(255, 255, 255, 0.1); padding: 1px 4px; border-radius: 3px; color: #38BDF8; font-family: monospace; }
-  .platform-meta { font-size: 9.5px; color: #64748B; }
+  .preset-label { font-size: 11.5px; font-weight: 700; color: var(--kanso-accent-text); }
+  .res-badge { font-size: 9.5px; background: rgba(255, 255, 255, 0.1); padding: 1px 4px; border-radius: 3px; color: var(--kanso-accent); font-family: monospace; }
+  .platform-meta { font-size: 9.5px; color: var(--kanso-text-muted); }
 
   .single-dl-btn {
     background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     padding: 4px 7px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 11px;
     transition: all 0.15s ease;
   }
-  .single-dl-btn:hover { background: #38BDF8; color: #0F172A; }
+  .single-dl-btn:hover { background: var(--kanso-accent); color: var(--kanso-text-primary); }
 
   /* Preview Stage */
   .preview-stage-col {
-    background: #090D16;
+    background: var(--kanso-canvas);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -748,13 +748,13 @@
     border-radius: 6px;
     background: transparent;
     border: 1px solid transparent;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     font-size: 10.5px;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
   }
-  .stage-tab.active { background: #043388; color: #FFF; border-color: #38BDF8; }
+  .stage-tab.active { background: var(--kanso-accent); color: var(--kanso-accent-text); border-color: var(--kanso-accent); }
 
   .stage-viewport {
     flex: 1;
@@ -773,7 +773,7 @@
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
   }
 
-  .stage-loading { font-size: 12px; color: #64748B; }
+  .stage-loading { font-size: 12px; color: var(--kanso-text-muted); }
 
   /* Footer */
   .resizer-footer {
@@ -784,7 +784,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(11, 17, 33, 0.95);
   }
-  .footer-tip { font-size: 11px; color: #64748B; }
+  .footer-tip { font-size: 11px; color: var(--kanso-text-muted); }
   .footer-actions { display: flex; align-items: center; gap: 10px; }
 
   @media (max-width: 800px) {

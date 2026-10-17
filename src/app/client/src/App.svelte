@@ -879,8 +879,8 @@
   .dropdown-item-count {
     font-size: 12px;
     font-weight: 700;
-    background: #EF4444;
-    color: #FFFFFF;
+    background: var(--kanso-danger);
+    color: var(--kanso-accent-text);
     padding: 2px 7px;
     border-radius: 9999px;
   }
@@ -898,7 +898,7 @@
     font-family: var(--kanso-font-mono);
     font-size: 10px;
     font-weight: 800;
-    color: #F59E0B;
+    color: var(--kanso-warning);
     background: rgba(245, 158, 11, 0.12);
     border: 1px solid rgba(245, 158, 11, 0.25);
     padding: 1px 5px;
@@ -911,7 +911,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #F59E0B;
+    background: var(--kanso-warning);
     vertical-align: super;
   }
 
@@ -1006,7 +1006,7 @@
     top: 2px;
     right: 2px;
     background: var(--kanso-danger);
-    color: #fff;
+    color: var(--kanso-accent-text);
     font-size: 11px;
     font-weight: 800;
     padding: 0 5px;
@@ -1195,7 +1195,7 @@
       top: -4px;
       right: -8px;
       background: var(--kanso-danger);
-      color: #FFFFFF;
+      color: var(--kanso-accent-text);
       font-size: 11px;
       font-weight: 800;
       min-width: 17px;
@@ -1280,7 +1280,7 @@
     align-items: center;
     gap: 8px;
     background: var(--kanso-accent);
-    color: #ffffff;
+    color: var(--kanso-accent-text);
     font-weight: 600;
     font-size: 0.85rem;
     padding: 9px 16px;
@@ -1291,7 +1291,7 @@
   .platform-download-btn:hover {
     background: var(--kanso-accent-hover);
     transform: translateY(-1px);
-    color: #ffffff;
+    color: var(--kanso-accent-text);
   }
   .platform-link-btn {
     display: inline-flex;
@@ -1323,13 +1323,13 @@
   .linux-terminal-box code {
     font-family: var(--kanso-font-mono);
     font-size: 0.78rem;
-    color: #38BDF8;
+    color: var(--kanso-accent);
     white-space: nowrap;
   }
   .copy-cmd-btn {
-    background: #1E293B;
-    color: #F8FAFC;
-    border: 1px solid #334155;
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    border: 1px solid var(--kanso-border);
     font-size: 0.75rem;
     font-weight: 600;
     padding: 5px 10px;
@@ -1339,6 +1339,6 @@
     transition: background 0.15s;
   }
   .copy-cmd-btn:hover {
-    background: #334155;
+    background: var(--kanso-surface-hover);
   }
 </style>

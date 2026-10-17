@@ -175,7 +175,7 @@
   .client-filter-pill:hover {
     background: var(--kanso-surface-hover);
     color: var(--kanso-text-primary);
-    border-color: var(--kanso-border-hover, #3f3f46);
+    border-color: var(--kanso-border-hover);
   }
 
   .client-filter-pill.active {

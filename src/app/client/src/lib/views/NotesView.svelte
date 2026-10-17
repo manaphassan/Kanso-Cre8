@@ -927,7 +927,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #F59E0B;
+    background: var(--kanso-warning);
   }
 
   /* ─── Action Buttons ─── */
@@ -950,11 +950,11 @@
     border-color: var(--kanso-text-muted);
   }
   .aux-action-btn.danger {
-    color: #F43F5E;
+    color: var(--kanso-danger);
   }
   .aux-action-btn.danger:hover {
     background: rgba(244, 63, 94, 0.1);
-    border-color: #F43F5E;
+    border-color: var(--kanso-danger);
   }
   .primary-cta-btn {
     display: inline-flex;
@@ -965,7 +965,7 @@
     font-size: 12px;
     font-weight: 700;
     background: var(--kanso-accent);
-    color: #09090B;
+    color: var(--kanso-canvas);
     border: none;
     cursor: pointer;
     transition: transform 0.1s ease, filter 0.15s ease;
@@ -1078,9 +1078,9 @@
     height: 5px;
     border-radius: 50%;
   }
-  .dot-indicator.sky { background: #38BDF8; }
-  .dot-indicator.amber { background: #F59E0B; }
-  .dot-indicator.purple { background: #A855F7; }
+  .dot-indicator.sky { background: var(--kanso-accent); }
+  .dot-indicator.amber { background: var(--kanso-warning); }
+  .dot-indicator.purple { background: var(--kanso-accent); }
 
   /* Feed List */
   .notes-feed-list {
@@ -1134,15 +1134,15 @@
   }
   .card-type-chip.permanent {
     background: rgba(56, 189, 248, 0.12);
-    color: #38BDF8;
+    color: var(--kanso-accent);
   }
   .card-type-chip.fleeting {
     background: rgba(245, 158, 11, 0.12);
-    color: #F59E0B;
+    color: var(--kanso-warning);
   }
   .card-type-chip.literature {
     background: rgba(168, 85, 247, 0.12);
-    color: #A855F7;
+    color: var(--kanso-accent);
   }
 
   .card-snippet-text {
@@ -1254,9 +1254,9 @@
     cursor: pointer;
     outline: none;
   }
-  .type-select-chip.permanent { color: #38BDF8; }
-  .type-select-chip.fleeting { color: #F59E0B; }
-  .type-select-chip.literature { color: #A855F7; }
+  .type-select-chip.permanent { color: var(--kanso-accent); }
+  .type-select-chip.fleeting { color: var(--kanso-warning); }
+  .type-select-chip.literature { color: var(--kanso-accent); }
 
   .canvas-actions-strip {
     display: flex;
@@ -1286,8 +1286,8 @@
     color: var(--kanso-text-primary);
   }
   .icon-action-btn.delete:hover {
-    color: #F43F5E;
-    border-color: #F43F5E;
+    color: var(--kanso-danger);
+    border-color: var(--kanso-danger);
     background: rgba(244, 63, 94, 0.1);
   }
 
@@ -1469,7 +1469,7 @@
   .task-priority-chip {
     font-size: 10px;
     font-family: var(--kanso-font-mono);
-    color: #F43F5E;
+    color: var(--kanso-danger);
     font-weight: 700;
   }
 
@@ -1519,9 +1519,9 @@
     padding: 1px 4px;
     border-radius: 3px;
   }
-  .bl-badge.permanent { color: #38BDF8; background: rgba(56, 189, 248, 0.12); }
-  .bl-badge.fleeting { color: #F59E0B; background: rgba(245, 158, 11, 0.12); }
-  .bl-badge.literature { color: #A855F7; background: rgba(168, 85, 247, 0.12); }
+  .bl-badge.permanent { color: var(--kanso-accent); background: rgba(56, 189, 248, 0.12); }
+  .bl-badge.fleeting { color: var(--kanso-warning); background: rgba(245, 158, 11, 0.12); }
+  .bl-badge.literature { color: var(--kanso-accent); background: rgba(168, 85, 247, 0.12); }
   .bl-snippet {
     font-size: 11px;
     color: var(--kanso-text-muted);
@@ -1604,7 +1604,7 @@
     padding: 3px 8px;
     border-radius: 5px;
     background: rgba(245, 158, 11, 0.12);
-    color: #F59E0B;
+    color: var(--kanso-warning);
     border: 1px solid rgba(245, 158, 11, 0.25);
   }
   .scratch-stats {
@@ -1618,7 +1618,7 @@
     gap: 4px;
     font-size: 10px;
     font-family: var(--kanso-font-mono);
-    color: #10B981;
+    color: var(--kanso-success);
     background: rgba(16, 185, 129, 0.12);
     padding: 2px 6px;
     border-radius: 4px;
@@ -1627,7 +1627,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #10B981;
+    background: var(--kanso-success);
   }
   .scratchpad-actions {
     display: flex;
@@ -1702,7 +1702,7 @@
     gap: 8px;
   }
   .modal-icon {
-    color: #10B981;
+    color: var(--kanso-success);
     font-weight: 800;
   }
   .modal-title-group h2 {

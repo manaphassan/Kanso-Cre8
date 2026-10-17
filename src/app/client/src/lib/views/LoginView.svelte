@@ -440,7 +440,7 @@
 
       <!-- Quick Roster Profile Selector -->
       <div class="form-group" style="margin-top: -6px;">
-        <label for="login-account-select" class="field-label" style="font-size: 12px; color: var(--kanso-text-muted, #71717A);">Or select from workspace roster:</label>
+        <label for="login-account-select" class="field-label" style="font-size: 12px; color: var(--kanso-text-muted);">Or select from workspace roster:</label>
         <select id="login-account-select" class="field-select" style="font-size: 12.5px; padding: 6px 10px;" bind:value={username}>
           {#each sortedUsers as u}
             <option value={u.username}>
@@ -528,7 +528,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, #09090B 0%, #18181B 60%, #09090B 100%);
+    background: var(--kanso-canvas);
     overflow: hidden;
     z-index: 1000;
   }
@@ -606,14 +606,14 @@
   .portal-heading {
     font-size: 22px;
     font-weight: 900;
-    color: #022057;
+    color: var(--kanso-text-primary);
     margin: 0;
     letter-spacing: -0.3px;
   }
 
   .portal-subheading {
     font-size: 13px;
-    color: #575756;
+    color: var(--kanso-text-muted);
     margin-top: 5px;
     margin-bottom: 18px;
     font-weight: 500;
@@ -624,7 +624,7 @@
     border-radius: 8px;
     background: rgba(239, 68, 68, 0.12);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #DC2626;
+    color: var(--kanso-danger);
     font-size: 12.5px;
     font-weight: 600;
     margin-bottom: 18px;
@@ -640,7 +640,7 @@
 
   .field-label {
     font-weight: 700;
-    color: #022057;
+    color: var(--kanso-text-primary);
     font-size: 13px;
     display: block;
     margin-bottom: 6px;
@@ -655,16 +655,16 @@
     font-size: 13.5px;
     font-weight: 600;
     border-radius: 8px;
-    border: 1px solid #CCCCCC;
-    background: #FFFFFF;
-    color: #1A1A1A;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
     outline: none;
     transition: border-color 0.2s;
   }
 
   .field-select:focus,
   .field-input:focus {
-    border-color: #21A1F7;
+    border-color: var(--kanso-accent);
     box-shadow: 0 0 0 2px rgba(33, 161, 247, 0.2);
   }
 
@@ -684,13 +684,13 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #666666;
+    color: var(--kanso-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2px;
   }
-  .eye-btn:hover { color: #043388; }
+  .eye-btn:hover { color: var(--kanso-accent); }
 
   /* Remember Me */
   .remember-row {
@@ -704,7 +704,7 @@
     align-items: center;
     gap: 8px;
     font-size: 12.5px;
-    color: #475569;
+    color: var(--kanso-text-secondary);
     cursor: pointer;
     user-select: none;
   }
@@ -712,7 +712,7 @@
   .fluent-checkbox {
     width: 16px;
     height: 16px;
-    accent-color: #043388;
+    accent-color: var(--kanso-accent);
     cursor: pointer;
   }
 
@@ -721,8 +721,8 @@
     height: 44px;
     font-size: 14.5px;
     font-weight: 800;
-    background: linear-gradient(90deg, #022057 0%, #043388 50%, #21A1F7 100%);
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     border: none;
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(4, 51, 136, 0.3);
@@ -754,7 +754,7 @@
   .roster-title {
     font-size: 12px;
     font-weight: 700;
-    color: #666666;
+    color: var(--kanso-text-muted);
     text-transform: uppercase;
     display: block;
     margin-bottom: 8px;
@@ -767,13 +767,13 @@
   }
 
   .roster-chip {
-    background: #F1F5F9;
-    border: 1px solid #CBD5E1;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 9999px;
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 600;
-    color: #334155;
+    color: var(--kanso-text-primary);
     cursor: pointer;
     transition: all 0.15s;
     display: inline-flex;
@@ -781,14 +781,14 @@
     gap: 4px;
   }
   .roster-chip:hover {
-    color: #043388;
-    border-color: #21A1F7;
-    background: #EBF4FE;
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
+    background: var(--kanso-surface-hover);
   }
 
   .chip-id {
     font-family: monospace;
-    color: #043388;
+    color: var(--kanso-accent);
     font-weight: 800;
     font-size: 12px;
   }
@@ -798,7 +798,7 @@
     text-align: center;
     font-size: 12px;
     font-weight: 600;
-    color: #666666;
+    color: var(--kanso-text-muted);
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     padding-top: 14px;
     line-height: 1.6;

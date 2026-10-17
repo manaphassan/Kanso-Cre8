@@ -819,7 +819,7 @@
                   </span>
                 {:else if d.isPdf}
                   <span class="table-icon-pill">
-                    <FluentIcons name="file" size={12} color="#EF4444" />
+                    <FluentIcons name="file" size={12} color="var(--kanso-danger)" />
                     <span style="margin-left: 3px;">PDF</span>
                   </span>
                 {:else}
@@ -1087,9 +1087,9 @@
     border-radius: 50%;
     display: inline-block;
   }
-  .dot-pending { background: #F59E0B; }
-  .dot-revision { background: #EF4444; }
-  .dot-approved { background: #10B981; }
+  .dot-pending { background: var(--kanso-warning); }
+  .dot-revision { background: var(--kanso-danger); }
+  .dot-approved { background: var(--kanso-success); }
 
   /* Toolbar */
   .deliverable-toolbar {
@@ -1319,13 +1319,13 @@
   .group-action-btn.handover-btn {
     background: rgba(56, 189, 248, 0.12);
     border-color: rgba(56, 189, 248, 0.3);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-weight: 700;
   }
   .group-action-btn.handover-btn:hover {
     background: rgba(56, 189, 248, 0.22);
-    border-color: var(--kanso-accent, #38BDF8);
-    color: #FFFFFF;
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent-text);
   }
 
   .group-content {
@@ -1417,16 +1417,16 @@
     transform: scale(1.08) translateY(-2px);
   }
   .pdf-circle {
-    background: #DC2626;
-    color: #FFFFFF;
+    background: var(--kanso-danger);
+    color: var(--kanso-accent-text);
   }
   .video-circle {
-    background: #7C3AED;
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
   }
   .generic-circle {
-    background: #475569;
-    color: #FFFFFF;
+    background: var(--kanso-text-muted);
+    color: var(--kanso-accent-text);
   }
 
   .sheet-type-tag {
@@ -1460,9 +1460,9 @@
     background: currentColor;
   }
 
-  .status-approved { background: rgba(16, 185, 129, 0.92); color: #FFFFFF; }
-  .status-revision { background: rgba(239, 68, 68, 0.92); color: #FFFFFF; }
-  .status-pending { background: rgba(245, 158, 11, 0.92); color: #FFFFFF; }
+  .status-approved { background: rgba(16, 185, 129, 0.92); color: var(--kanso-accent-text); }
+  .status-revision { background: rgba(239, 68, 68, 0.92); color: var(--kanso-accent-text); }
+  .status-pending { background: rgba(245, 158, 11, 0.92); color: var(--kanso-accent-text); }
 
   .format-badge {
     position: absolute;
@@ -1473,7 +1473,7 @@
     padding: 2px 7px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.7);
-    color: #F8FAFC;
+    color: var(--kanso-text-primary);
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(8px);
   }
@@ -1568,7 +1568,7 @@
   }
   .action-btn-pill:hover {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .action-icons-right {
@@ -1638,14 +1638,14 @@
     background: var(--kanso-surface-hover));
     border: 1px solid var(--kanso-border));
     border-radius: 6px;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     cursor: pointer;
     font-size: 12px;
     transition: all 0.15s ease;
   }
   .tool-icon-btn:hover {
     background: rgba(33, 161, 247, 0.2);
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
   }
 
   .view-mode-toggle {
@@ -1659,13 +1659,13 @@
     background: transparent;
     border: none;
     padding: 6px 10px;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     cursor: pointer;
     font-size: 13px;
   }
   .mode-btn.active {
-    background: #043388;
-    color: #FFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
   }
 
   .ratio-pill {
@@ -1673,7 +1673,7 @@
     top: 8px;
     left: 8px;
     background: rgba(0, 0, 0, 0.75);
-    color: #38BDF8;
+    color: var(--kanso-accent);
     font-size: 12px;
     font-weight: 800;
     padding: 2px 7px;
@@ -1684,8 +1684,8 @@
 
   /* DAM Table */
   .dam-table-card {
-    background: #0F172A;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     overflow-x: auto;
   }
@@ -1700,17 +1700,17 @@
   .dam-table th {
     padding: 12px 16px;
     background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--kanso-border);
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
   }
 
   .dam-table td {
     padding: 10px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    color: #CBD5E1;
+    border-bottom: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
   }
 
   .table-row-clickable {
@@ -1737,10 +1737,10 @@
     border-radius: 4px;
   }
 
-  .table-filename { font-weight: 700; color: #FFF; }
+  .table-filename { font-weight: 700; color: var(--kanso-accent-text); }
   .table-proj-info { display: flex; flex-direction: column; gap: 2px; }
-  .job-id-sm { font-size: 12px; font-weight: 800; color: #38BDF8; font-family: monospace; }
-  .proj-title-sm { font-size: 12px; color: #94A3B8; }
+  .job-id-sm { font-size: 12px; font-weight: 800; color: var(--kanso-accent); font-family: monospace; }
+  .proj-title-sm { font-size: 12px; color: var(--kanso-text-muted); }
 
   .format-badge, .ratio-badge {
     font-size: 12px;
@@ -1750,7 +1750,7 @@
     border-radius: 4px;
     font-family: monospace;
   }
-  .ratio-badge { color: #38BDF8; }
+  .ratio-badge { color: var(--kanso-accent); }
 
   .status-badge {
     font-size: 12px;
@@ -1758,16 +1758,16 @@
     padding: 2px 7px;
     border-radius: 4px;
   }
-  .status-badge.status-pending { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }
-  .status-badge.status-revision { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
-  .status-badge.status-approved { background: rgba(16, 185, 129, 0.2); color: #10B981; }
+  .status-badge.status-pending { background: rgba(245, 158, 11, 0.2); color: var(--kanso-warning); }
+  .status-badge.status-revision { background: rgba(239, 68, 68, 0.2); color: var(--kanso-danger); }
+  .status-badge.status-approved { background: rgba(16, 185, 129, 0.2); color: var(--kanso-success); }
 
   .table-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
 
   /* ═══ Checkbox & Multi-Select Styling ═══ */
   :global(.del-card.is-selected) {
-    border-color: var(--kanso-accent, #38BDF8) !important;
-    box-shadow: 0 0 0 1px var(--kanso-accent, #38BDF8), 0 8px 24px rgba(56, 189, 248, 0.15) !important;
+    border-color: var(--kanso-accent) !important;
+    box-shadow: 0 0 0 1px var(--kanso-accent), 0 8px 24px rgba(56, 189, 248, 0.15) !important;
   }
 
   .del-card-checkbox-wrap {
@@ -1789,7 +1789,7 @@
   .del-card-checkbox {
     width: 14px;
     height: 14px;
-    accent-color: var(--kanso-accent, #38BDF8);
+    accent-color: var(--kanso-accent);
     cursor: pointer;
   }
 
@@ -1802,7 +1802,7 @@
   .table-select-checkbox {
     width: 14px;
     height: 14px;
-    accent-color: var(--kanso-accent, #38BDF8);
+    accent-color: var(--kanso-accent);
     cursor: pointer;
   }
 
@@ -1821,8 +1821,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     padding: 10px 18px;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -1856,8 +1856,8 @@
     height: 22px;
     padding: 0 6px;
     border-radius: 11px;
-    background: var(--kanso-accent, #38BDF8);
-    color: #000;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     font-size: 11.5px;
     font-weight: 800;
     font-family: monospace;
@@ -1866,13 +1866,13 @@
   .batch-label {
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .batch-select-all-link {
     background: transparent;
     border: none;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
@@ -1907,41 +1907,41 @@
   .batch-approve-btn {
     background: rgba(16, 185, 129, 0.18);
     border-color: rgba(16, 185, 129, 0.4);
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .batch-approve-btn:hover:not(:disabled) {
-    background: #10B981;
-    color: #000;
+    background: var(--kanso-success);
+    color: var(--kanso-accent-text);
   }
 
   .batch-revision-btn {
     background: rgba(245, 158, 11, 0.18);
     border-color: rgba(245, 158, 11, 0.4);
-    color: #F59E0B;
+    color: var(--kanso-warning);
   }
 
   .batch-revision-btn:hover:not(:disabled) {
-    background: #F59E0B;
-    color: #000;
+    background: var(--kanso-warning);
+    color: var(--kanso-accent-text);
   }
 
   .batch-download-btn {
-    background: var(--kanso-canvas, #09090B);
-    border-color: var(--kanso-border, #3F3F46);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-canvas);
+    border-color: var(--kanso-border);
+    color: var(--kanso-text-primary);
   }
 
   .batch-download-btn:hover:not(:disabled) {
-    background: var(--kanso-surface-hover, #27272A);
-    border-color: var(--kanso-accent, #38BDF8);
-    color: var(--kanso-accent, #38BDF8);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
   .batch-clear-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
@@ -1951,7 +1951,7 @@
   }
 
   .batch-clear-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     background: rgba(255, 255, 255, 0.06);
   }
 </style>

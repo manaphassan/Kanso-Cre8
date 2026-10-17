@@ -386,7 +386,7 @@
 
   function getClientPalette(code: string) {
     const c = clients.find(cl => cl.code.toUpperCase() === (code || '').toUpperCase());
-    return c?.palette || { primary: '#38BDF8', secondary: '#0284C7', accent: '#38BDF8' };
+    return c?.palette || { primary: 'var(--kanso-accent)', secondary: 'var(--kanso-accent)', accent: 'var(--kanso-accent)' };
   }
 
   const currentList = $derived(docType === 'invoices' ? invoices : quotes);
@@ -1331,52 +1331,52 @@
 
   /* 1. GEIST MINIMALIST (Default Tech & Studio Aesthetic) */
   .invoice-paper-card.theme-geist {
-    background: #ffffff;
-    color: #18181b;
-    border-color: #e4e4e7;
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-border);
     font-family: var(--kanso-font-ui);
   }
   .theme-geist .doc-header-row,
   .theme-geist .table-header-row,
   .theme-geist .border-t,
   .theme-geist .border-b {
-    border-color: #e4e4e7;
+    border-color: var(--kanso-border);
   }
   .theme-geist .studio-logo {
-    background: #fafafa;
-    border-color: #e4e4e7;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
   }
   .theme-geist .studio-title {
-    color: #09090b;
+    color: var(--kanso-canvas);
   }
   .theme-geist .reg-pill,
   .theme-geist .fiscal-chip {
-    background: #f4f4f5;
-    color: #52525b;
-    border-color: #e4e4e7;
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-muted);
+    border-color: var(--kanso-border);
   }
   .theme-geist .studio-details,
   .theme-geist .client-details,
   .theme-geist .summary-line {
-    color: #71717a;
+    color: var(--kanso-text-muted);
   }
   .theme-geist .section-label,
   .theme-geist .table-header-row {
-    color: #a1a1aa;
+    color: var(--kanso-text-secondary);
   }
   .theme-geist .total-line {
-    border-color: #d4d4d8;
-    color: #09090b;
+    border-color: var(--kanso-border);
+    color: var(--kanso-canvas);
   }
   .theme-geist .doc-instructions-box {
-    background: #fafafa;
-    border-color: #e4e4e7;
-    color: #52525b;
+    background: var(--kanso-surface);
+    border-color: var(--kanso-border);
+    color: var(--kanso-text-muted);
   }
 
   /* 2. SWISS MODERNIST (Josef Müller-Brockmann / Stark Asymmetric Contrast) */
   .invoice-paper-card.theme-swiss {
-    background: #ffffff;
+    background: var(--kanso-surface);
     color: #000000;
     border: 1px solid #000000;
     border-top: 8px solid #000000;
@@ -1395,13 +1395,13 @@
   .theme-swiss .studio-logo {
     border-radius: 0;
     border: 2px solid #000000;
-    background: #ffffff;
+    background: var(--kanso-surface);
   }
   .theme-swiss .reg-pill,
   .theme-swiss .fiscal-chip {
     border-radius: 0;
     background: #000000;
-    color: #ffffff;
+    color: var(--kanso-accent-text);
     border: 1px solid #000000;
     font-weight: 700;
   }
@@ -1512,8 +1512,8 @@
     opacity: 0.88;
   }
   .stamp-paid {
-    color: #dc2626;
-    border: 4px double #dc2626;
+    color: var(--kanso-danger);
+    border: 4px double var(--kanso-danger);
     padding: 6px 18px;
     font-size: 26px;
     letter-spacing: 0.25em;
@@ -1522,8 +1522,8 @@
     box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.15);
   }
   .stamp-approved {
-    color: #059669;
-    border: 4px double #059669;
+    color: var(--kanso-success);
+    border: 4px double var(--kanso-success);
     padding: 6px 18px;
     font-size: 24px;
     letter-spacing: 0.22em;
@@ -1531,8 +1531,8 @@
     transform: rotate(-10deg);
   }
   .stamp-draft {
-    color: #6b7280;
-    border: 3px dashed #6b7280;
+    color: var(--kanso-text-muted);
+    border: 3px dashed var(--kanso-text-muted);
     padding: 6px 20px;
     font-size: 22px;
     letter-spacing: 0.28em;
@@ -1540,8 +1540,8 @@
     transform: rotate(-15deg);
   }
   .stamp-seal {
-    color: #d97706;
-    border: 3px solid #d97706;
+    color: var(--kanso-warning);
+    border: 3px solid var(--kanso-warning);
     border-radius: 50%;
     width: 86px;
     height: 86px;
@@ -1570,7 +1570,7 @@
   }
   @media print {
     body {
-      background: #ffffff !important;
+      background: var(--kanso-surface) !important;
     }
     .invoice-paper-card {
       border: none !important;

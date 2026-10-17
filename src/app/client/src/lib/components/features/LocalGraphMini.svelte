@@ -25,9 +25,9 @@
   let hoveredNode: GraphNode | null = $state(null);
 
   const TYPE_COLORS: Record<GraphNodeType, { fill: string; stroke: string }> = {
-    permanent: { fill: '#27272A', stroke: '#E4E4E7' },
-    fleeting: { fill: '#064E3B', stroke: '#10B981' },
-    literature: { fill: '#78350F', stroke: '#F59E0B' },
+    permanent: { fill: 'var(--kanso-border)', stroke: 'var(--kanso-border)' },
+    fleeting: { fill: 'var(--kanso-success)', stroke: 'var(--kanso-success)' },
+    literature: { fill: 'var(--kanso-warning)', stroke: 'var(--kanso-warning)' },
     client: { fill: '#0C4A6E', stroke: '#38BDF8' },
     project: { fill: '#581C87', stroke: '#C084FC' }
   };
@@ -232,8 +232,8 @@
   .local-graph-box {
     width: 100%;
     height: 190px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     overflow: hidden;
     display: flex;
@@ -246,7 +246,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 6px 10px;
-    border-bottom: 1px solid var(--kanso-border, #27272A);
+    border-bottom: 1px solid var(--kanso-border);
     background: rgba(0, 0, 0, 0.15);
   }
 
@@ -254,14 +254,14 @@
     font-size: 9.5px;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-family: monospace;
   }
 
   .neighbor-count {
     font-size: 9px;
     font-family: monospace;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
   }
 
   .local-graph-canvas {

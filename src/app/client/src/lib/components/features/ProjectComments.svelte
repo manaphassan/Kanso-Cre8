@@ -45,7 +45,7 @@
           role: u.role,
           staffId: u.staffId,
           avatar: u.avatar || '',
-          avatarColor: u.avatarColor || '#0078D4'
+          avatarColor: u.avatarColor || 'var(--kanso-accent)'
         }));
       }
     } catch (e) {
@@ -253,7 +253,7 @@
           {@const authorMember = teamMembers.find(m => (m.name && m.name.toLowerCase() === (comment.author || '').toLowerCase()) || (m.username && m.username.toLowerCase() === (comment.author || '').toLowerCase()) || (m.staffId && m.staffId.toLowerCase() === (comment.author || '').toLowerCase()))}
           {@const isPhoto = comment.authorAvatar && (comment.authorAvatar.startsWith('data:') || comment.authorAvatar.startsWith('http') || comment.authorAvatar.startsWith('/'))}
           {@const avatarSrc = isPhoto ? comment.authorAvatar : (authorMember?.avatar || '')}
-          {@const avatarBg = (!isPhoto && comment.authorAvatar) ? comment.authorAvatar : (authorMember?.avatarColor || '#043388')}
+          {@const avatarBg = (!isPhoto && comment.authorAvatar) ? comment.authorAvatar : (authorMember?.avatarColor || 'var(--kanso-accent)')}
           <div class="comment-card" class:is-resolved={comment.resolved}>
             <div class="comment-avatar" style="background: {avatarBg};">
               {#if avatarSrc}
@@ -349,7 +349,7 @@
           <div class="mention-dropdown-title">Team Members</div>
           {#each matchingMentions as member}
             <button class="mention-item" onclick={() => insertMention(member.username)}>
-              <div class="mention-avatar" style="background: {member.avatarColor || '#043388'};">
+              <div class="mention-avatar" style="background: {member.avatarColor || 'var(--kanso-accent)'};">
                 {#if member.avatar}
                   <img src={member.avatar} alt={member.name} class="avatar-photo" />
                 {:else}
@@ -424,7 +424,7 @@
     background: var(--kanso-accent-muted);
     padding: 2px 8px;
     border-radius: 9999px;
-    border: 1px solid #BFDBFE;
+    border: 1px solid var(--kanso-border);
   }
 
   .filter-controls {
@@ -464,7 +464,7 @@
   }
   .seg-btn.active {
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .refresh-btn {
@@ -538,7 +538,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 12px;
     font-weight: 800;
     display: flex;
@@ -592,9 +592,9 @@
     border-radius: 4px;
     text-transform: uppercase;
   }
-  .role-admin { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .role-manager { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-  .role-user { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; }
+  .role-admin { background: var(--kanso-danger-subtle, rgba(239, 68, 68, 0.12)); color: var(--kanso-danger); border: 1px solid var(--kanso-danger); }
+  .role-manager { background: var(--kanso-warning-subtle, rgba(245, 158, 11, 0.12)); color: var(--kanso-warning); border: 1px solid var(--kanso-warning); }
+  .role-user { background: var(--kanso-accent-subtle, rgba(56, 189, 248, 0.12)); color: var(--kanso-accent); border: 1px solid var(--kanso-border); }
 
   .deliverable-tag {
     font-size: 11px;
@@ -629,14 +629,14 @@
     transition: all 0.12s;
   }
   .btn-resolve:hover {
-    background: #ECFDF5;
-    color: #047857;
-    border-color: #A7F3D0;
+    background: var(--kanso-success-subtle, rgba(16, 185, 129, 0.12));
+    color: var(--kanso-success);
+    border-color: var(--kanso-success);
   }
   .btn-resolve.resolved {
-    background: #ECFDF5;
-    color: #047857;
-    border-color: #A7F3D0;
+    background: var(--kanso-success-subtle, rgba(16, 185, 129, 0.12));
+    color: var(--kanso-success);
+    border-color: var(--kanso-success);
   }
 
   .btn-delete {
@@ -649,8 +649,8 @@
     border-radius: 4px;
   }
   .btn-delete:hover {
-    color: #EF4444;
-    background: #FEF2F2;
+    color: var(--kanso-danger);
+    background: var(--kanso-danger-subtle, rgba(239, 68, 68, 0.12));
   }
 
   .comment-body {
@@ -667,7 +667,7 @@
     background: var(--kanso-accent-muted);
     padding: 1px 5px;
     border-radius: 4px;
-    border: 1px solid #BFDBFE;
+    border: 1px solid var(--kanso-border);
   }
 
   /* Composer */
@@ -783,7 +783,7 @@
     height: 24px;
     border-radius: 50%;
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 10px;
     font-weight: 800;
     display: flex;

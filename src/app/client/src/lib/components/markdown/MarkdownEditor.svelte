@@ -508,8 +508,8 @@
   .markdown-editor-wrapper {
     display: flex;
     flex-direction: column;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 10px;
     overflow: hidden;
   }
@@ -520,8 +520,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background: var(--kanso-canvas, #09090B);
-    border-bottom: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border-bottom: 1px solid var(--kanso-border);
     gap: 12px;
     flex-wrap: wrap;
   }
@@ -531,7 +531,7 @@
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .doc-icon {
@@ -540,18 +540,18 @@
 
   .doc-title {
     font-weight: 600;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     letter-spacing: -0.01em;
   }
 
   .meta-sep {
-    color: var(--kanso-border, #27272A);
+    color: var(--kanso-border);
     font-size: 10px;
   }
 
   .doc-stats {
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .header-actions-row {
@@ -563,8 +563,8 @@
   /* Segmented Modes */
   .segmented-modes {
     display: flex;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 2px;
     gap: 2px;
@@ -578,7 +578,7 @@
     background: transparent;
     border: none;
     border-radius: 4px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 11.5px;
     font-weight: 500;
     cursor: pointer;
@@ -586,12 +586,12 @@
   }
 
   .mode-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .mode-btn.active {
-    background: var(--kanso-surface-hover, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
     font-weight: 600;
   }
 
@@ -600,8 +600,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
     border: none;
     padding: 5px 12px;
     border-radius: 6px;
@@ -635,7 +635,7 @@
     width: 11px;
     height: 11px;
     border: 2px solid rgba(0, 0, 0, 0.2);
-    border-top-color: #000;
+    border-top-color: var(--kanso-text-primary);
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
   }
@@ -650,8 +650,8 @@
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: var(--kanso-surface, #18181B);
-    border-bottom: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border-bottom: 1px solid var(--kanso-border);
     flex-wrap: wrap;
   }
 
@@ -664,7 +664,7 @@
   .tool-sep {
     width: 1px;
     height: 16px;
-    background: var(--kanso-border, #27272A);
+    background: var(--kanso-border);
     margin: 0 4px;
   }
 
@@ -679,7 +679,7 @@
     background: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 11.5px;
     font-weight: 500;
     cursor: pointer;
@@ -687,8 +687,8 @@
   }
 
   .n-tool-btn:hover {
-    background: var(--kanso-surface-hover, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
   }
 
   .n-tool-btn.h-tag {
@@ -703,7 +703,7 @@
   }
 
   .n-task-btn {
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     font-weight: 500;
   }
 
@@ -719,10 +719,10 @@
     gap: 5px;
     height: 26px;
     padding: 0 8px;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 5px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     font-size: 11.5px;
     font-weight: 500;
     cursor: pointer;
@@ -731,8 +731,8 @@
 
   .n-dropdown-trigger:hover,
   .n-dropdown-trigger.is-active {
-    background: var(--kanso-surface-hover, #27272A);
-    border-color: var(--kanso-accent, #38BDF8);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
   }
 
   .trigger-icon {
@@ -741,7 +741,7 @@
 
   .trigger-arrow {
     font-size: 9px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   /* Notion Dropdown Menu */
@@ -749,8 +749,8 @@
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     padding: 4px;
@@ -777,7 +777,7 @@
   }
 
   .n-menu-item:hover {
-    background: var(--kanso-surface-hover, #27272A);
+    background: var(--kanso-surface-hover);
   }
 
   .m-icon {
@@ -793,12 +793,12 @@
   .m-title {
     font-size: 12px;
     font-weight: 600;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .m-desc {
     font-size: 10px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   /* Panes Layout */
@@ -819,8 +819,8 @@
 
   .source-pane {
     display: flex;
-    border-right: 1px solid var(--kanso-border, #27272A);
-    background: var(--kanso-canvas, #09090B);
+    border-right: 1px solid var(--kanso-border);
+    background: var(--kanso-canvas);
     min-height: 440px;
   }
   .mode-source .source-pane {
@@ -840,13 +840,13 @@
     font-size: 13px;
     line-height: 1.65;
     background: transparent;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     box-sizing: border-box;
   }
 
   .preview-pane {
     padding: 20px 24px;
-    background: var(--kanso-surface, #18181B);
+    background: var(--kanso-surface);
     min-height: 240px;
     overflow: visible;
   }
@@ -857,13 +857,13 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     text-align: center;
     padding: 40px;
   }
   .empty-preview .empty-icon { font-size: 30px; margin-bottom: 8px; opacity: 0.8; }
-  .empty-preview p { font-size: 13px; font-weight: 600; color: var(--kanso-text-primary, #F4F4F5); margin: 0 0 4px 0; }
-  .empty-preview .empty-sub { font-size: 11.5px; color: var(--kanso-text-muted, #71717A); margin: 0; }
+  .empty-preview p { font-size: 13px; font-weight: 600; color: var(--kanso-text-primary); margin: 0 0 4px 0; }
+  .empty-preview .empty-sub { font-size: 11.5px; color: var(--kanso-text-muted); margin: 0; }
 
   @media (max-width: 900px) {
     .editor-panes.mode-split {
@@ -871,7 +871,7 @@
     }
     .source-pane {
       border-right: none;
-      border-bottom: 1px solid var(--kanso-border, #27272A);
+      border-bottom: 1px solid var(--kanso-border);
       min-height: 260px;
     }
   }

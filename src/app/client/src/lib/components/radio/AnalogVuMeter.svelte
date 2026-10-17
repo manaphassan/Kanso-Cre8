@@ -417,7 +417,7 @@
   }
 
   .peak-led.peaking {
-    background: #EF4444;
+    background: var(--kanso-danger);
     box-shadow: 0 0 8px #EF4444;
   }
 

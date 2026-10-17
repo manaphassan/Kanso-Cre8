@@ -148,7 +148,7 @@
     </div>
     <div class="header-actions">
       <button class="ai-launch-btn" onclick={() => showAiModal = true}>
-        <FluentIcons name="sparkles" size={14} color="#D4AF37" />
+        <FluentIcons name="sparkles" size={14} color="var(--kanso-warning)" />
         <span style="margin-left: 5px;">Gemini Creative AI</span>
       </button>
     </div>
@@ -158,7 +158,7 @@
   <div class="platform-gauges-grid">
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="video" size={20} color="#00CFFF" />
+        <FluentIcons name="video" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">TikTok Ads Hook</div>
@@ -167,7 +167,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="desktop" size={20} color="#21A1F7" />
+        <FluentIcons name="desktop" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Ad Headline</div>
@@ -176,7 +176,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="file" size={20} color="#38BDF8" />
+        <FluentIcons name="file" size={20} color="var(--kanso-accent)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Meta Primary Copy</div>
@@ -185,7 +185,7 @@
     </div>
     <div class="gauge-card">
       <div class="gauge-icon">
-        <FluentIcons name="sparkles" size={20} color="#10B981" />
+        <FluentIcons name="sparkles" size={20} color="var(--kanso-success)" />
       </div>
       <div class="gauge-info">
         <div class="gauge-name">Shopee / Lazada Title</div>
@@ -304,7 +304,7 @@
             <div class="snippet-drawer">
               <span class="snippet-label">Quick Snippets:</span>
               <button class="snippet-btn ai-snippet-btn" onclick={() => showAiModal = true}>
-                <FluentIcons name="sparkles" size={12} color="#D4AF37" />
+                <FluentIcons name="sparkles" size={12} color="var(--kanso-warning)" />
                 <span style="margin-left: 3px;">Gemini AI Generator</span>
               </button>
               <button class="snippet-btn" onclick={() => insertSnippet('hook')}>+ Viral Hook</button>
@@ -475,7 +475,7 @@
                     <!-- Right Actions Sidebar -->
                     <div class="tiktok-sidebar">
                       <div class="tt-avatar" style="background: {brandConfig.color};">{brandConfig.initial}</div>
-                      <div class="tt-action"><FluentIcons name="checkCircle" size={18} color="#EF4444" /><small>42.8K</small></div>
+                      <div class="tt-action"><FluentIcons name="checkCircle" size={18} color="var(--kanso-danger)" /><small>42.8K</small></div>
                       <div class="tt-action"><FluentIcons name="chat" size={18} /><small>1.2K</small></div>
                       <div class="tt-action"><FluentIcons name="link" size={18} /><small>3.4K</small></div>
                       <div class="tt-action"><FluentIcons name="externalLink" size={18} /><small>Share</small></div>
@@ -553,30 +553,30 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #043388, #21A1F7);
-    color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(33, 161, 247, 0.35);
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
     transition: all 0.15s ease;
   }
   .ai-launch-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(33, 161, 247, 0.5);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
   }
 
   .ai-snippet-btn {
-    background: rgba(33, 161, 247, 0.15) !important;
-    border-color: #21A1F7 !important;
-    color: #38BDF8 !important;
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: var(--kanso-accent) !important;
+    color: var(--kanso-accent) !important;
     font-weight: 800 !important;
   }
   .ai-snippet-btn:hover {
-    background: #21A1F7 !important;
-    color: #0F172A !important;
+    background: var(--kanso-accent) !important;
+    color: var(--kanso-accent-text) !important;
   }
 
   /* Platform limits grid */
@@ -626,8 +626,8 @@
     font-weight: 800;
     padding: 2px 6px;
     border-radius: 4px;
-    background: #043388;
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
   }
   .deck-title { font-size: 13px; font-weight: 700; color: var(--kanso-text-primary); }
   .deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -681,9 +681,9 @@
     padding: 1px 5px;
     border-radius: 4px;
   }
-  .char-pill.good { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-  .char-pill.warning { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
-  .char-pill.exceeded { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+  .char-pill.good { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success); }
+  .char-pill.warning { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning); }
+  .char-pill.exceeded { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger); }
 
   .copy-headline { font-size: 13px; font-weight: 600; color: var(--kanso-text-primary); font-style: italic; }
   .copy-body-snippet { font-size: 12px; color: var(--kanso-text-secondary); line-height: 1.4; }
@@ -734,8 +734,8 @@
     font-weight: 800;
     padding: 2px 6px;
     border-radius: 4px;
-    background: #043388;
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
   }
   .job-id-lg { font-size: 14px; font-weight: 800; font-family: monospace; color: var(--kanso-accent); }
   .modal-title { font-size: 16px; font-weight: 700; color: var(--kanso-text-primary); }
@@ -793,7 +793,7 @@
     cursor: pointer;
     transition: all 0.12s ease;
   }
-  .snippet-btn:hover { background: #043388; color: #FFFFFF; border-color: #043388; }
+  .snippet-btn:hover { background: var(--kanso-accent); color: var(--kanso-accent-text); border-color: var(--kanso-accent); }
 
   .input-section { display: flex; flex-direction: column; gap: 6px; }
   .section-label-row { display: flex; align-items: center; justify-content: space-between; }
@@ -806,9 +806,9 @@
     padding: 1px 5px;
     border-radius: 3px;
   }
-  .limit-chip.good { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-  .limit-chip.warning { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
-  .limit-chip.exceeded { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+  .limit-chip.good { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success); }
+  .limit-chip.warning { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning); }
+  .limit-chip.exceeded { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger); }
 
   .fluent-input, .fluent-textarea {
     width: 100%;
@@ -829,7 +829,7 @@
 
   /* Right Pane: Live Mockup */
   .mockup-right-pane {
-    background: #090D16;
+    background: var(--kanso-canvas);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -837,8 +837,8 @@
 
   .mockup-tabs {
     display: flex;
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--kanso-surface);
+    border-bottom: 1px solid var(--kanso-border);
     padding: 6px 12px;
     gap: 8px;
   }
@@ -848,16 +848,16 @@
     border-radius: 6px;
     background: transparent;
     border: 1px solid transparent;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.12s ease;
   }
   .mockup-tab.active {
-    background: #043388;
-    color: #FFFFFF;
-    border-color: #21A1F7;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
+    border-color: var(--kanso-accent);
   }
 
   .mockup-viewport {
@@ -897,7 +897,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 12px;
   }
   .wa-name { font-size: 13px; font-weight: 700; color: #E9EDEF; }
@@ -924,7 +924,7 @@
     line-height: 1.4;
   }
 
-  .wa-headline { font-weight: 700; margin-bottom: 4px; color: #FFF; }
+  .wa-headline { font-weight: 700; margin-bottom: 4px; color: var(--kanso-accent-text); }
   .wa-content { word-break: break-word; }
   .wa-cta-box {
     margin-top: 8px;
@@ -971,7 +971,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 13px;
   }
   .meta-page-name { font-size: 13px; font-weight: 700; color: #E4E6EB; }
@@ -1074,7 +1074,7 @@
     background: #FE2C55;
     font-size: 10px;
     font-weight: 900;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1086,7 +1086,7 @@
     align-items: center;
     font-size: 14px;
   }
-  .tt-action small { font-size: 9px; color: #FFF; font-weight: 700; }
+  .tt-action small { font-size: 9px; color: var(--kanso-accent-text); font-weight: 700; }
   .tt-music-disc {
     width: 24px;
     height: 24px;
@@ -1108,7 +1108,7 @@
     padding-right: 36px;
   }
 
-  .tt-username { font-size: 11px; font-weight: 800; color: #FFF; }
+  .tt-username { font-size: 11px; font-weight: 800; color: var(--kanso-accent-text); }
   .tt-caption { font-size: 11px; color: #EEE; line-height: 1.3; }
   .tt-music-track { font-size: 9px; color: #CCC; }
   .tt-cta-pill {
@@ -1118,7 +1118,7 @@
     border-radius: 4px;
     font-size: 10px;
     font-weight: 700;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     align-self: flex-start;
   }
 

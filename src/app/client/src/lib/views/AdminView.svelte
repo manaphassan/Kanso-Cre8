@@ -38,7 +38,7 @@
       status: 'active',
       isParent: true,
       establishedYear: '2021',
-      color: '#0066FF'
+      color: 'var(--kanso-accent)'
     },
     {
       code: 'NEX',
@@ -51,7 +51,7 @@
       status: 'active',
       isParent: false,
       establishedYear: '2023',
-      color: '#38BDF8'
+      color: 'var(--kanso-accent)'
     },
     {
       code: 'LUM',
@@ -64,7 +64,7 @@
       status: 'active',
       isParent: false,
       establishedYear: '2024',
-      color: '#10B981'
+      color: 'var(--kanso-success)'
     }
   ];
 
@@ -225,7 +225,7 @@
     location: '',
     status: 'active',
     isParent: false,
-    color: '#043388'
+    color: 'var(--kanso-accent)'
   });
 
   let showUserModal = $state<boolean>(false);
@@ -242,7 +242,7 @@
     roles: ['Designer'],
     department: 'Creative Production',
     defaultBrand: 'SSH',
-    avatarColor: '#0078D4',
+    avatarColor: 'var(--kanso-accent)',
     active: true,
     password: ''
   });
@@ -328,7 +328,7 @@
       location: '',
       status: 'active',
       isParent: false,
-      color: '#043388'
+      color: 'var(--kanso-accent)'
     };
     showEditModal = true;
   }
@@ -395,7 +395,7 @@
       roles: ['Designer'],
       department: 'Creative Production',
       defaultBrand: 'ACME',
-      avatarColor: '#38BDF8',
+      avatarColor: 'var(--kanso-accent)',
       active: true,
       password: 'KansoCre8!'
     };
@@ -649,10 +649,10 @@
   <!-- ─── 4-METRIC EXECUTIVE KPI TELEMETRY STRIP ─── -->
   <div class="kpi-telemetry-deck">
     <!-- Metric 1: Entities -->
-    <FluentCard hoverLift borderAccent="#21A1F7" onclick={() => (activeTab = 'companies')}>
+    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'companies')}>
       <div class="kpi-top">
         <span class="kpi-label">Registered Entities</span>
-        <span class="kpi-icon-pill" style="background: rgba(33, 161, 247, 0.15); color: #21A1F7;">🏢</span>
+        <span class="kpi-icon-pill" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">🏢</span>
       </div>
       <div class="kpi-value">{stats.totalCompanies} <span class="kpi-unit">Units</span></div>
       <div class="kpi-detail">
@@ -661,10 +661,10 @@
     </FluentCard>
 
     <!-- Metric 2: Staff Roster -->
-    <FluentCard hoverLift borderAccent="#0284C7" onclick={() => (activeTab = 'users')}>
+    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'users')}>
       <div class="kpi-top">
         <span class="kpi-label">Staff Personnel Roster</span>
-        <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.15); color: #0284C7;">👥</span>
+        <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.15); color: var(--kanso-accent);">👥</span>
       </div>
       <div class="kpi-value">{stats.totalUsers} <span class="kpi-unit">Accounts</span></div>
       <div class="kpi-detail">
@@ -673,10 +673,10 @@
     </FluentCard>
 
     <!-- Metric 3: Audit Volume -->
-    <FluentCard hoverLift borderAccent="#107C41" onclick={() => (activeTab = 'audit')}>
+    <FluentCard hoverLift borderAccent="var(--kanso-success)" onclick={() => (activeTab = 'audit')}>
       <div class="kpi-top">
         <span class="kpi-label">Security Audit Trail</span>
-        <span class="kpi-icon-pill" style="background: rgba(16, 124, 65, 0.15); color: #107C41;">🛡️</span>
+        <span class="kpi-icon-pill" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">🛡️</span>
       </div>
       <div class="kpi-value">{stats.totalAuditCount} <span class="kpi-unit">Events</span></div>
       <div class="kpi-detail">
@@ -686,10 +686,10 @@
     </FluentCard>
 
     <!-- Metric 4: Synology Vault -->
-    <FluentCard hoverLift borderAccent="#8764B8" onclick={() => (activeTab = 'system')}>
+    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'system')}>
       <div class="kpi-top">
         <span class="kpi-label">Synology NAS Engine</span>
-        <span class="kpi-icon-pill" style="background: rgba(135, 100, 184, 0.15); color: #8764B8;">⚡</span>
+        <span class="kpi-icon-pill" style="background: rgba(135, 100, 184, 0.15); color: var(--kanso-accent);">⚡</span>
       </div>
       <div class="kpi-value" style="font-size: 20px; padding-top: 4px;">
         Mounted & Live
@@ -950,12 +950,12 @@
           {#each filteredCompanies as comp}
             <div class="company-card" class:is-parent-card={comp.isParent}>
               <!-- Brand Top Accent Bar -->
-              <div class="card-brand-bar" style="background: {comp.color || '#043388'};"></div>
+              <div class="card-brand-bar" style="background: {comp.color || 'var(--kanso-accent)'};"></div>
 
               <div class="card-body">
                 <!-- Card Header -->
                 <div class="card-header-row">
-                  <div class="card-code-badge" style="background: {comp.color || '#043388'};">
+                  <div class="card-code-badge" style="background: {comp.color || 'var(--kanso-accent)'};">
                     {comp.code}
                   </div>
 
@@ -1042,7 +1042,7 @@
                 {#each filteredCompanies as comp}
                   <tr class="data-row" class:parent-row={comp.isParent}>
                     <td>
-                      <span class="company-code-badge" style="background: {comp.color || '#043388'};">
+                      <span class="company-code-badge" style="background: {comp.color || 'var(--kanso-accent)'};">
                         {comp.code}
                       </span>
                     </td>
@@ -1207,7 +1207,7 @@
                   </td>
                   <td>
                     <div class="user-name-cell">
-                      <div class="user-avatar-mini" style="background: {u.avatarColor || '#0078D4'};">
+                      <div class="user-avatar-mini" style="background: {u.avatarColor || 'var(--kanso-accent)'};">
                         {(u.name || 'D').charAt(0)}
                       </div>
                       <div class="name-details">
@@ -1385,7 +1385,7 @@
         <FluentCard elevated>
           <div class="telemetry-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div style="display: flex; align-items: center; gap: 12px;">
-              <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: #21A1F7;">
+              <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">
                 📂
               </div>
               <div>
@@ -1411,7 +1411,7 @@
                   class="edit-inline-btn"
                   onclick={openWorkspaceModal}
                   title="Edit Root Path"
-                  style="background: transparent; border: none; cursor: pointer; color: #0078D4; font-size: 12px; display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-weight: 600;"
+                  style="background: transparent; border: none; cursor: pointer; color: var(--kanso-accent); font-size: 12px; display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-weight: 600;"
                 >
                   Edit ↗
                 </button>
@@ -1438,7 +1438,7 @@
         <!-- Card 2: Process & Runtime Engine -->
         <FluentCard elevated>
           <div class="telemetry-card-header">
-            <div class="telemetry-icon-box" style="background: rgba(16, 124, 65, 0.15); color: #107C41;">
+            <div class="telemetry-icon-box" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">
               ⚡
             </div>
             <div>
@@ -1543,8 +1543,8 @@
         {#if webhooks.length === 0}
           <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
             <span style="font-size: 32px; display: block; margin-bottom: 6px;">🔔</span>
-            <span style="font-weight: 700; color: #FFF;">No Webhooks Configured</span>
-            <p style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Register a Discord or Slack webhook above to receive live notifications on team deliverables and client sign-offs.</p>
+            <span style="font-weight: 700; color: var(--kanso-accent-text);">No Webhooks Configured</span>
+            <p style="font-size: 12px; color: var(--kanso-text-muted); margin-top: 4px;">Register a Discord or Slack webhook above to receive live notifications on team deliverables and client sign-offs.</p>
           </div>
         {:else}
           {#each webhooks as hook}
@@ -1554,13 +1554,13 @@
                   <span style="font-size: 24px;">{hook.serviceType === 'discord' ? '🎮' : hook.serviceType === 'slack' ? '💬' : '🔔'}</span>
                   <div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                      <span style="font-weight: 800; font-size: 14px; color: #FFF;">{hook.name}</span>
-                      <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; background: #043388; color: #FFF; padding: 2px 6px; border-radius: 4px;">{hook.serviceType}</span>
-                      <span style="font-size: 10px; color: {hook.lastStatus === 200 ? '#10B981' : '#F59E0B'}; font-weight: 700;">
+                      <span style="font-weight: 800; font-size: 14px; color: var(--kanso-accent-text);">{hook.name}</span>
+                      <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; background: var(--kanso-accent); color: var(--kanso-accent-text); padding: 2px 6px; border-radius: 4px;">{hook.serviceType}</span>
+                      <span style="font-size: 10px; color: {hook.lastStatus === 200 ? 'var(--kanso-success)' : 'var(--kanso-warning)'}; font-weight: 700;">
                         ● {hook.lastStatus === 200 ? 'Active & Healthy' : 'Ready'}
                       </span>
                     </div>
-                    <span style="font-size: 11px; color: #64748B; font-family: monospace; display: block; margin-top: 2px;">
+                    <span style="font-size: 11px; color: var(--kanso-text-muted); font-family: monospace; display: block; margin-top: 2px;">
                       {hook.url.length > 50 ? hook.url.substring(0, 47) + '...' : hook.url}
                     </span>
                   </div>
@@ -2027,7 +2027,7 @@
     letter-spacing: 0.6px;
     text-transform: uppercase;
     background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
+    color: var(--kanso-accent);
     padding: 2px 8px;
     border-radius: var(--kanso-radius-sm);
     border: 1px solid rgba(33, 161, 247, 0.3);
@@ -2046,8 +2046,8 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #10B981;
-    box-shadow: 0 0 8px #10B981;
+    background: var(--kanso-success);
+    box-shadow: 0 0 8px var(--kanso-success);
     display: inline-block;
   }
 
@@ -2055,7 +2055,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10B981;
+    background: var(--kanso-success);
     display: inline-block;
   }
 
@@ -2144,9 +2144,9 @@
     gap: 6px;
   }
 
-  .text-rose { color: #EF4444; font-weight: 700; }
-  .text-amber { color: #D97706; font-weight: 700; }
-  .text-azure { color: #21A1F7; font-weight: 700; }
+  .text-rose { color: var(--kanso-danger); font-weight: 700; }
+  .text-amber { color: var(--kanso-warning); font-weight: 700; }
+  .text-azure { color: var(--kanso-accent); font-weight: 700; }
 
   /* ─── Segmented Tab Bar ─── */
   .segmented-tab-bar {
@@ -2193,7 +2193,7 @@
     padding: 1px 7px;
     border-radius: 9999px;
     background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
+    color: var(--kanso-accent);
   }
 
   /* ─── Section Decks & Action Bars ─── */
@@ -2347,7 +2347,7 @@
   }
 
   .card-code-badge {
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-weight: 900;
     font-size: 12px;
     font-family: monospace;
@@ -2368,7 +2368,7 @@
     padding: 2px 8px;
     border-radius: 9999px;
     background: rgba(33, 161, 247, 0.2);
-    color: #21A1F7;
+    color: var(--kanso-accent);
     text-transform: uppercase;
   }
 
@@ -2496,7 +2496,7 @@
   }
   .edit-action:hover {
     background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
+    color: var(--kanso-accent);
   }
 
   .delete-action {
@@ -2506,7 +2506,7 @@
   }
   .delete-action:hover {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   /* ─── RBAC Distribution Deck ─── */
@@ -2561,11 +2561,11 @@
     height: 8px;
     border-radius: 50%;
   }
-  .dot-admin { background: #EF4444; }
-  .dot-manager { background: #D97706; }
-  .dot-designer { background: #0078D4; }
-  .dot-copywriter { background: #7C3AED; }
-  .dot-user { background: #0078D4; }
+  .dot-admin { background: var(--kanso-danger); }
+  .dot-manager { background: var(--kanso-warning); }
+  .dot-designer { background: var(--kanso-accent); }
+  .dot-copywriter { background: var(--kanso-accent); }
+  .dot-user { background: var(--kanso-accent); }
 
   .distribution-bar-track {
     height: 10px;
@@ -2580,11 +2580,11 @@
     height: 100%;
     transition: width 0.3s ease;
   }
-  .bar-admin { background: #EF4444; }
-  .bar-manager { background: #D97706; }
-  .bar-designer { background: #0078D4; }
-  .bar-copywriter { background: #7C3AED; }
-  .bar-user { background: #0078D4; }
+  .bar-admin { background: var(--kanso-danger); }
+  .bar-manager { background: var(--kanso-warning); }
+  .bar-designer { background: var(--kanso-accent); }
+  .bar-copywriter { background: var(--kanso-accent); }
+  .bar-user { background: var(--kanso-accent); }
 
   /* ─── Fluent Data Table ─── */
   .table-container-card {
@@ -2643,7 +2643,7 @@
 
   /* Table Cell Elements */
   .company-code-badge {
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-weight: 900;
     font-size: 11px;
     font-family: monospace;
@@ -2671,7 +2671,7 @@
     padding: 1px 6px;
     border-radius: 9999px;
     background: rgba(33, 161, 247, 0.2);
-    color: #21A1F7;
+    color: var(--kanso-accent);
     text-transform: uppercase;
   }
 
@@ -2724,7 +2724,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     background: rgba(33, 161, 247, 0.15);
-    color: #21A1F7;
+    color: var(--kanso-accent);
   }
 
   .user-name-cell {
@@ -2737,7 +2737,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-weight: 800;
     font-size: 13px;
     display: flex;
@@ -2797,20 +2797,20 @@
     white-space: nowrap;
     letter-spacing: 0.3px;
   }
-  .role-admin { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .role-manager { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-  .role-designer { background: #EBF4FE; color: #0078D4; border: 1px solid #BFDBFE; font-weight: 700; }
-  .role-copywriter { background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-weight: 700; }
-  .role-user { background: #EBF4FE; color: #0078D4; border: 1px solid #BFDBFE; font-weight: 700; }
+  .role-admin { background: var(--kanso-danger-subtle, rgba(239, 68, 68, 0.12)); color: var(--kanso-danger); border: 1px solid var(--kanso-danger); }
+  .role-manager { background: var(--kanso-warning-subtle, rgba(245, 158, 11, 0.12)); color: var(--kanso-warning); border: 1px solid var(--kanso-warning); }
+  .role-designer { background: var(--kanso-accent-subtle, rgba(56, 189, 248, 0.12)); color: var(--kanso-accent); border: 1px solid var(--kanso-border); font-weight: 700; }
+  .role-copywriter { background: var(--kanso-surface-hover); color: var(--kanso-accent); border: 1px solid var(--kanso-border); font-weight: 700; }
+  .role-user { background: var(--kanso-accent-subtle, rgba(56, 189, 248, 0.12)); color: var(--kanso-accent); border: 1px solid var(--kanso-border); font-weight: 700; }
 
   .dept-text { font-size: 12px; color: var(--kanso-text-secondary); }
   .brand-tag {
     font-family: monospace;
     font-size: 11px;
     font-weight: 700;
-    background: #EBF4FE;
-    color: #043388;
-    border: 1px solid #BFDBFE;
+    background: var(--kanso-accent-subtle, rgba(56, 189, 248, 0.12));
+    color: var(--kanso-accent);
+    border: 1px solid var(--kanso-border);
     padding: 1px 6px;
     border-radius: 4px;
   }
@@ -2823,8 +2823,8 @@
     border-radius: 4px;
     display: inline-block;
   }
-  .status-active { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-  .status-inactive { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
+  .status-active { background: var(--kanso-success-subtle, rgba(16, 185, 129, 0.12)); color: var(--kanso-success); border: 1px solid var(--kanso-success); }
+  .status-inactive { background: var(--kanso-surface); color: var(--kanso-text-secondary); border: 1px solid var(--kanso-border); }
 
   .table-actions {
     display: inline-flex;
@@ -2848,7 +2848,7 @@
   }
   .icon-action-btn.delete-btn:hover {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   /* ─── Audit Log Cells ─── */
@@ -2880,7 +2880,7 @@
     height: 26px;
     border-radius: 50%;
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-weight: 800;
     font-size: 11.5px;
     display: flex;
@@ -2903,10 +2903,10 @@
     border-radius: 4px;
     display: inline-block;
   }
-  .action-success { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-  .action-warning { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
-  .action-danger { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-  .action-info { background: #EBF4FE; color: #043388; border: 1px solid #BFDBFE; }
+  .action-success { background: var(--kanso-success-subtle, rgba(16, 185, 129, 0.12)); color: var(--kanso-success); border: 1px solid var(--kanso-success); }
+  .action-warning { background: var(--kanso-warning-subtle, rgba(245, 158, 11, 0.12)); color: var(--kanso-warning); border: 1px solid var(--kanso-warning); }
+  .action-danger { background: var(--kanso-danger-subtle, rgba(239, 68, 68, 0.12)); color: var(--kanso-danger); border: 1px solid var(--kanso-danger); }
+  .action-info { background: var(--kanso-accent-subtle, rgba(56, 189, 248, 0.12)); color: var(--kanso-accent); border: 1px solid var(--kanso-border); }
 
   .entity-type-badge {
     font-size: 11px;
@@ -3006,13 +3006,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #10B981;
+    color: var(--kanso-success);
     font-weight: 700;
     font-size: 12px;
   }
 
   .tel-badge-azure {
-    color: #21A1F7;
+    color: var(--kanso-accent);
     font-weight: 700;
     font-size: 12px;
   }

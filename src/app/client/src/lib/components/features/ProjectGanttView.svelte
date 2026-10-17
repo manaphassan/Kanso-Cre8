@@ -177,15 +177,15 @@
     switch (status) {
       case 'done':
       case 'approved':
-        return '#107C41';
+        return 'var(--kanso-success)';
       case 'review':
-        return '#8764B8';
+        return 'var(--kanso-accent)';
       case 'revision':
-        return '#D97706';
+        return 'var(--kanso-warning)';
       case 'in-progress':
-        return '#0284C7';
+        return 'var(--kanso-accent)';
       default:
-        return '#6B7280';
+        return 'var(--kanso-text-muted)';
     }
   }
 
@@ -212,10 +212,10 @@
     </div>
 
     <div class="gantt-legend">
-      <span class="legend-item"><span class="legend-dot" style="background: #0284C7;"></span> In Progress</span>
-      <span class="legend-item"><span class="legend-dot" style="background: #8764B8;"></span> Review</span>
-      <span class="legend-item"><span class="legend-dot" style="background: #D97706;"></span> Revision</span>
-      <span class="legend-item"><span class="legend-dot" style="background: #107C41;"></span> Approved/Done</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--kanso-accent);"></span> In Progress</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--kanso-accent);"></span> Review</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--kanso-warning);"></span> Revision</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--kanso-success);"></span> Approved/Done</span>
     </div>
   </div>
 
@@ -424,7 +424,7 @@
     font-family: monospace;
     font-size: 12px;
     font-weight: 800;
-    color: #0078D4;
+    color: var(--kanso-accent);
   }
 
   .proj-row-title {
@@ -452,7 +452,7 @@
     font-size: 9.5px;
     font-weight: 800;
     background: rgba(217, 119, 6, 0.15);
-    color: #D97706;
+    color: var(--kanso-warning);
     padding: 1px 5px;
     border-radius: 4px;
   }
@@ -481,7 +481,7 @@
 
   .day-head-cell.is-today {
     background: rgba(0, 120, 212, 0.12);
-    color: #0078D4;
+    color: var(--kanso-accent);
     font-weight: 800;
   }
 
@@ -506,7 +506,7 @@
 
   .timeline-grid-col.is-today {
     background: rgba(0, 120, 212, 0.05);
-    border-right: 1.5px solid #0078D4;
+    border-right: 1.5px solid var(--kanso-accent);
   }
 
   /* Schedule Bar */
@@ -546,7 +546,7 @@
     justify-content: space-between;
     width: 100%;
     gap: 6px;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 11px;
     font-weight: 700;
   }

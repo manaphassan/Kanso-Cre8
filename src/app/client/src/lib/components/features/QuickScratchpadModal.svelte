@@ -169,8 +169,8 @@
   .scratchpad-modal {
     width: 100%;
     max-width: 680px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -189,7 +189,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--kanso-border, #27272A);
+    border-bottom: 1px solid var(--kanso-border);
   }
 
   .badge-row {
@@ -203,7 +203,7 @@
     font-family: ui-monospace, monospace;
     font-size: 11px;
     font-weight: 700;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     background: rgba(56, 189, 248, 0.1);
     border: 1px solid rgba(56, 189, 248, 0.25);
     padding: 1px 6px;
@@ -213,7 +213,7 @@
   .hotkey-hint {
     font-size: 10px;
     font-family: ui-monospace, monospace;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     background: rgba(255, 255, 255, 0.05);
     padding: 1px 5px;
     border-radius: 3px;
@@ -222,7 +222,7 @@
   .modal-title {
     font-size: 15px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
@@ -234,17 +234,17 @@
 
   .sync-indicator {
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .sync-indicator.saved {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .close-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 14px;
     cursor: pointer;
     padding: 4px;
@@ -252,7 +252,7 @@
   }
 
   .close-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .modal-body {
@@ -262,10 +262,10 @@
   .scratchpad-textarea {
     width: 100%;
     height: 320px;
-    background: #09090B;
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     font-family: ui-monospace, monospace;
     font-size: 13px;
     line-height: 1.6;
@@ -276,7 +276,7 @@
   }
 
   .scratchpad-textarea:focus {
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
   }
 
   .modal-footer {
@@ -284,7 +284,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 20px;
-    border-top: 1px solid var(--kanso-border, #27272A);
+    border-top: 1px solid var(--kanso-border);
     background: rgba(0, 0, 0, 0.2);
   }
 
@@ -293,7 +293,7 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .footer-actions {
@@ -314,17 +314,17 @@
   .text-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .text-btn:hover {
-    color: var(--kanso-danger, #EF4444);
+    color: var(--kanso-danger);
   }
 
   .secondary-btn {
     background: rgba(255, 255, 255, 0.06);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
   }
 
   .secondary-btn:hover {
@@ -332,9 +332,9 @@
   }
 
   .primary-btn {
-    background: var(--kanso-accent, #38BDF8);
-    border: 1px solid var(--kanso-accent, #38BDF8);
-    color: #09090B;
+    background: var(--kanso-accent);
+    border: 1px solid var(--kanso-accent);
+    color: var(--kanso-canvas);
     font-weight: 700;
   }
 

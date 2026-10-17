@@ -304,7 +304,7 @@
     font-size: 10px;
     font-weight: 900;
     border-radius: 3px;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     letter-spacing: 0.05em;
     flex-shrink: 0;
   }
@@ -385,7 +385,7 @@
 
   .gauge-mark.center {
     height: 9px;
-    background: #DE694B;
+    background: var(--kanso-accent);
   }
 
   .spool-slot {
@@ -550,7 +550,7 @@
 
   .status-badge.playing {
     background: rgba(143, 166, 131, 0.18);
-    color: #8FA683;
+    color: var(--kanso-success);
     border: 1px solid rgba(143, 166, 131, 0.35);
   }
 
@@ -558,7 +558,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #8FA683;
+    background: var(--kanso-success);
     animation: status-pulse 1.5s ease-in-out infinite;
   }
 

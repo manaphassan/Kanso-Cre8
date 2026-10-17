@@ -88,16 +88,16 @@
   <meta charset="utf-8">
   <title>Preflight Certificate — ${deliverable.filename}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0D1117; color: #F0F6FC; padding: 30px; }
-    .card { background: #161B22; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto; }
-    h1 { font-size: 20px; color: #38BDF8; margin-top: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--kanso-canvas); color: var(--kanso-text-primary); padding: 30px; }
+    .card { background: var(--kanso-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto; }
+    h1 { font-size: 20px; color: var(--kanso-accent); margin-top: 0; }
     .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
-    .badge-optimal { background: rgba(16,185,129,0.2); color: #10B981; }
-    .badge-warning { background: rgba(245,158,11,0.2); color: #F59E0B; }
-    .badge-critical { background: rgba(239,68,68,0.2); color: #EF4444; }
+    .badge-optimal { background: rgba(16,185,129,0.2); color: var(--kanso-success); }
+    .badge-warning { background: rgba(245,158,11,0.2); color: var(--kanso-warning); }
+    .badge-critical { background: rgba(239,68,68,0.2); color: var(--kanso-danger); }
     .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
-    .label { color: #8B949E; }
-    .footer { margin-top: 20px; font-size: 11px; color: #484F58; text-align: center; }
+    .label { color: var(--kanso-text-muted); }
+    .footer { margin-top: 20px; font-size: 11px; color: var(--kanso-text-muted); text-align: center; }
   </style>
 </head>
 <body>
@@ -139,7 +139,7 @@
       <div class="preflight-header">
         <div class="header-left">
           <div class="preflight-icon-badge">
-            <FluentIcons name="printer" size={20} color="#00CFFF" />
+            <FluentIcons name="printer" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Production Print &amp; POSM Preflight Validator</h2>
@@ -205,7 +205,7 @@
                 <FluentIcons 
                   name={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? 'checkCircle' : 'warning'} 
                   size={16} 
-                  color={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? '#10B981' : '#F59E0B'} 
+                  color={preflightMetrics.avgDpi >= selectedPreset.recommendedDpi ? 'var(--kanso-success)' : 'var(--kanso-warning)'} 
                 />
               </span>
               <div>
@@ -216,7 +216,7 @@
 
             <div class="check-item">
               <span class="check-icon">
-                <FluentIcons name="colorPalette" size={16} color="#00CFFF" />
+                <FluentIcons name="colorPalette" size={16} color="var(--kanso-accent)" />
               </span>
               <div>
                 <span class="check-name">Color Profile Recommendation</span>
@@ -226,7 +226,7 @@
 
             <div class="check-item">
               <span class="check-icon">
-                <FluentIcons name="vector" size={16} color="#A78BFA" />
+                <FluentIcons name="vector" size={16} color="var(--kanso-accent)" />
               </span>
               <div>
                 <span class="check-name">Standard Bleed Safety Margin</span>
@@ -274,7 +274,7 @@
   .preflight-modal {
     width: 95%;
     max-width: 680px;
-    background: #0F172A;
+    background: var(--kanso-surface);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     display: flex;
@@ -294,11 +294,11 @@
 
   .header-left { display: flex; align-items: center; gap: 12px; }
   .preflight-icon { font-size: 24px; }
-  .modal-title { font-size: 16px; font-weight: 800; color: #F8FAFC; }
-  .modal-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--kanso-text-primary); }
+  .modal-sub { font-size: 12px; color: var(--kanso-text-muted); margin-top: 2px; }
 
-  .close-btn { background: transparent; border: none; font-size: 16px; color: #94A3B8; cursor: pointer; padding: 4px 8px; }
-  .close-btn:hover { color: #FFF; }
+  .close-btn { background: transparent; border: none; font-size: 16px; color: var(--kanso-text-muted); cursor: pointer; padding: 4px 8px; }
+  .close-btn:hover { color: var(--kanso-accent-text); }
 
   .preflight-body {
     padding: 20px;
@@ -308,19 +308,19 @@
   }
 
   .preset-card { display: flex; flex-direction: column; gap: 6px; }
-  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94A3B8; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--kanso-text-muted); }
 
   .preset-select {
-    background: #1E293B;
+    background: var(--kanso-surface-hover);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     padding: 10px 12px;
-    color: #FFF;
+    color: var(--kanso-accent-text);
     font-size: 13px;
     font-weight: 600;
     outline: none;
   }
-  .preset-select:focus { border-color: #38BDF8; }
+  .preset-select:focus { border-color: var(--kanso-accent); }
 
   /* Metrics Grid */
   .metrics-grid {
@@ -343,14 +343,14 @@
   .metric-box.status-warning { border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.06); }
   .metric-box.status-critical { border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.06); }
 
-  .metric-tag { font-size: 10px; font-weight: 800; color: #94A3B8; text-transform: uppercase; }
-  .metric-val { font-size: 24px; font-weight: 900; color: #FFF; font-family: monospace; }
-  .metric-val .unit { font-size: 13px; color: #94A3B8; font-weight: 600; }
-  .metric-hint { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+  .metric-tag { font-size: 10px; font-weight: 800; color: var(--kanso-text-muted); text-transform: uppercase; }
+  .metric-val { font-size: 24px; font-weight: 900; color: var(--kanso-accent-text); font-family: monospace; }
+  .metric-val .unit { font-size: 13px; color: var(--kanso-text-muted); font-weight: 600; }
+  .metric-hint { font-size: 11px; color: var(--kanso-text-muted); margin-top: 2px; }
 
-  .text-green { color: #34D399; font-weight: 700; }
-  .text-amber { color: #FBBF24; font-weight: 700; }
-  .text-red { color: #F87171; font-weight: 700; }
+  .text-green { color: var(--kanso-success); font-weight: 700; }
+  .text-amber { color: var(--kanso-warning); font-weight: 700; }
+  .text-red { color: var(--kanso-danger); font-weight: 700; }
 
   /* Checklist */
   .checklist-card {
@@ -362,13 +362,13 @@
     flex-direction: column;
     gap: 10px;
   }
-  .checklist-title { font-size: 12px; font-weight: 800; color: #94A3B8; text-transform: uppercase; }
+  .checklist-title { font-size: 12px; font-weight: 800; color: var(--kanso-text-muted); text-transform: uppercase; }
 
   .checks-list { display: flex; flex-direction: column; gap: 8px; }
   .check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; }
   .check-icon { font-size: 14px; margin-top: 1px; }
-  .check-name { font-weight: 700; color: #FFF; display: block; }
-  .check-sub { font-size: 11px; color: #64748B; }
+  .check-name { font-weight: 700; color: var(--kanso-accent-text); display: block; }
+  .check-sub { font-size: 11px; color: var(--kanso-text-muted); }
 
   /* Footer */
   .preflight-footer {
@@ -382,15 +382,15 @@
 
   .report-dl-btn {
     padding: 8px 14px;
-    background: #043388;
-    color: #FFF;
-    border: 1px solid #21A1F7;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
+    border: 1px solid var(--kanso-accent);
     border-radius: 6px;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
   }
-  .report-dl-btn:hover { background: #0078D4; }
+  .report-dl-btn:hover { background: var(--kanso-accent); }
 
   @media (max-width: 600px) {
     .metrics-grid { grid-template-columns: 1fr; }

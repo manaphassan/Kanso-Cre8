@@ -455,7 +455,7 @@
             <div class="pin-popover" onclick={(e) => e.stopPropagation()}>
               <div class="popover-header">
                 <div class="popover-author">
-                  <span class="author-avatar" style="background: {pin.authorAvatar || '#0284C7'};">
+                  <span class="author-avatar" style="background: {pin.authorAvatar || 'var(--kanso-accent)'};">
                     {(pin.author || 'U').charAt(0).toUpperCase()}
                   </span>
                   <div>
@@ -646,7 +646,7 @@
     width: 100%;
     height: 100%;
     position: relative;
-    background: var(--kanso-canvas, #09090B);
+    background: var(--kanso-canvas);
     overflow: hidden;
   }
 
@@ -656,8 +656,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background: var(--kanso-surface, #18181B);
-    border-bottom: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border-bottom: 1px solid var(--kanso-border);
     z-index: 20;
   }
 
@@ -671,9 +671,9 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--kanso-surface-hover, #27272A);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 11.5px;
@@ -682,12 +682,12 @@
     transition: all 0.15s ease;
   }
   .mode-toggle-btn:hover {
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
   }
   .mode-toggle-btn.active {
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
-    border-color: var(--kanso-accent, #38BDF8);
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
+    border-color: var(--kanso-accent);
   }
 
   .quick-marker-btn {
@@ -695,7 +695,7 @@
     align-items: center;
     background: rgba(56, 189, 248, 0.12);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     padding: 4px 9px;
     border-radius: 6px;
     font-size: 11px;
@@ -711,8 +711,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     padding: 2px 6px;
     border-radius: 6px;
   }
@@ -723,7 +723,7 @@
     gap: 4px;
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-size: 11px;
     font-weight: 600;
     padding: 2px 6px;
@@ -732,23 +732,23 @@
     transition: all 0.12s;
   }
   .filter-pill:hover, .filter-pill.active {
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
   }
   .filter-pill.critical.active {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
   .filter-pill.resolved.active {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
-  .dot-open { width: 6px; height: 6px; border-radius: 50%; background: #38BDF8; }
-  .dot-critical { width: 6px; height: 6px; border-radius: 50%; background: #EF4444; }
+  .dot-open { width: 6px; height: 6px; border-radius: 50%; background: var(--kanso-accent); }
+  .dot-critical { width: 6px; height: 6px; border-radius: 50%; background: var(--kanso-danger); }
 
   .zoom-btn {
-    background: var(--kanso-surface-hover, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border: 1px solid var(--kanso-border);
     padding: 4px 8px;
     border-radius: 5px;
     font-size: 11px;
@@ -784,7 +784,7 @@
     object-fit: contain;
     border-radius: 6px;
     user-select: none;
-    border: 1px solid var(--kanso-border, #27272A);
+    border: 1px solid var(--kanso-border);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   }
   .is-zoomed .base-image {
@@ -807,29 +807,29 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #0284C7;
-    color: #FFFFFF;
+    background: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     font-size: 11.5px;
     font-weight: 900;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    border: 2px solid #FFFFFF;
+    border: 2px solid var(--kanso-surface);
     transition: transform 0.15s ease, background 0.15s ease;
   }
   .pin-marker:hover .pin-badge,
   .pin-marker.is-selected .pin-badge {
     transform: scale(1.2);
-    background: #0369A1;
+    background: var(--kanso-accent);
   }
 
   .pin-marker.is-critical .pin-badge {
-    background: #DC2626;
+    background: var(--kanso-danger);
   }
   .pin-marker.is-resolved .pin-badge {
-    background: #10B981;
-    border-color: #D1FAE5;
+    background: var(--kanso-success);
+    border-color: var(--kanso-success);
   }
 
   .pulse-ring {
@@ -840,12 +840,12 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: 2px solid #EF4444;
+    border: 2px solid var(--kanso-danger);
     animation: pulseRadar 2s infinite;
     pointer-events: none;
   }
   .pulse-ring.active {
-    border-color: #38BDF8;
+    border-color: var(--kanso-accent);
   }
   @keyframes pulseRadar {
     0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
@@ -859,8 +859,8 @@
     left: 50%;
     transform: translateX(-50%);
     width: 260px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
     padding: 12px;
@@ -882,7 +882,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 11px;
     font-weight: 800;
     display: flex;
@@ -892,32 +892,32 @@
   .author-name {
     font-size: 12px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
   .pin-time {
     font-size: 10px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     display: flex;
     align-items: center;
     gap: 4px;
   }
   .timecode-badge {
     font-family: monospace;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-weight: 700;
   }
   .critical-badge {
     font-size: 9px;
     font-weight: 800;
     background: rgba(239, 68, 68, 0.2);
-    color: #EF4444;
+    color: var(--kanso-danger);
     padding: 2px 5px;
     border-radius: 3px;
   }
 
   .pin-content-text {
     font-size: 12px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     line-height: 1.4;
     margin: 0 0 10px 0;
     word-break: break-word;
@@ -927,13 +927,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: 1px solid var(--kanso-border, #27272A);
+    border-top: 1px solid var(--kanso-border);
     padding-top: 8px;
   }
   .resolve-action-btn {
-    background: var(--kanso-surface-hover, #27272A);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     font-size: 11px;
     font-weight: 700;
     padding: 4px 8px;
@@ -942,7 +942,7 @@
   }
   .resolve-action-btn.is-resolved {
     background: rgba(16, 185, 129, 0.2);
-    color: #10B981;
+    color: var(--kanso-success);
     border-color: rgba(16, 185, 129, 0.4);
   }
 
@@ -951,12 +951,12 @@
     border: none;
     cursor: pointer;
     font-size: 13px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     padding: 4px;
     border-radius: 4px;
   }
   .delete-action-btn:hover {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   /* Pin Composer Card */
@@ -966,8 +966,8 @@
     left: 50%;
     transform: translateX(-50%);
     width: 290px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
     padding: 14px;
@@ -988,39 +988,39 @@
   .composer-title {
     font-size: 12px;
     font-weight: 800;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
   .timecode-pill {
     font-size: 10px;
     font-family: monospace;
     background: rgba(56, 189, 248, 0.15);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     padding: 1px 5px;
     border-radius: 4px;
   }
   .close-composer-btn {
     border: none;
     background: transparent;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     cursor: pointer;
     font-size: 12px;
   }
 
   .composer-textarea {
     width: 100%;
-    border: 1px solid var(--kanso-border, #27272A);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 8px;
     font-size: 12px;
     font-family: inherit;
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-canvas, #09090B);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-canvas);
     resize: none;
     box-sizing: border-box;
     outline: none;
   }
   .composer-textarea:focus {
-    border-color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
   }
 
   .composer-footer {
@@ -1034,7 +1034,7 @@
     gap: 8px;
     font-size: 11px;
     font-weight: 600;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
   .priority-option {
     display: flex;
@@ -1043,7 +1043,7 @@
     cursor: pointer;
   }
   .priority-option.critical {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
   .composer-btn-row {
     display: flex;
@@ -1052,8 +1052,8 @@
 
   /* Video Scrubber Deck */
   .video-scrubber-deck {
-    background: var(--kanso-surface, #18181B);
-    border-top: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border-top: 1px solid var(--kanso-border);
     padding: 10px 16px;
     z-index: 20;
   }
@@ -1066,9 +1066,9 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--kanso-surface-hover, #27272A);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1076,19 +1076,19 @@
     transition: all 0.12s ease;
   }
   .play-btn:hover {
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
   }
   .timecode-ticker {
     font-family: monospace;
     font-size: 11.5px;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     display: flex;
     gap: 4px;
     min-width: 90px;
   }
-  .timecode-ticker .slash { color: var(--kanso-text-muted, #71717A); }
-  .timecode-ticker .dur-time { color: var(--kanso-text-muted, #71717A); }
+  .timecode-ticker .slash { color: var(--kanso-text-muted); }
+  .timecode-ticker .dur-time { color: var(--kanso-text-muted); }
 
   .timeline-track-wrap {
     flex: 1;
@@ -1100,10 +1100,10 @@
     width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: #27272A;
+    background: var(--kanso-surface);
     outline: none;
     cursor: pointer;
-    accent-color: var(--kanso-accent, #38BDF8);
+    accent-color: var(--kanso-accent);
   }
   .scrubber-markers-layer {
     position: absolute;
@@ -1121,8 +1121,8 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--kanso-accent, #38BDF8);
-    border: 1.5px solid #09090B;
+    background: var(--kanso-accent);
+    border: 1.5px solid var(--kanso-canvas);
     cursor: pointer;
     pointer-events: auto;
     transition: transform 0.12s;
@@ -1131,19 +1131,19 @@
     transform: translate(-50%, -50%) scale(1.4);
   }
   .scrubber-pin-dot.is-critical {
-    background: #EF4444;
+    background: var(--kanso-danger);
   }
   .scrubber-pin-dot.is-resolved {
-    background: #10B981;
+    background: var(--kanso-success);
   }
 
   .add-timecode-btn {
     display: flex;
     align-items: center;
     gap: 5px;
-    background: var(--kanso-surface-hover, #27272A);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     font-size: 11px;
     font-weight: 700;
     padding: 5px 10px;
@@ -1152,8 +1152,8 @@
     white-space: nowrap;
   }
   .add-timecode-btn:hover {
-    border-color: var(--kanso-accent, #38BDF8);
-    color: var(--kanso-accent, #38BDF8);
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent);
   }
 
   .annotate-hint-bar {
@@ -1162,8 +1162,8 @@
     left: 50%;
     transform: translateX(-50%);
     background: rgba(24, 24, 27, 0.92);
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     font-size: 11px;
     padding: 5px 12px;
     border-radius: 20px;

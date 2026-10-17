@@ -199,7 +199,7 @@
       <div class="handover-header">
         <div class="header-left">
           <div class="header-icon-box">
-            <FluentIcons name="download" size={20} color="var(--kanso-accent, #38BDF8)" />
+            <FluentIcons name="download" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <div class="header-badges">
@@ -282,13 +282,13 @@
                   />
                   <div class="file-type-icon">
                     {#if d.isVideo || d.previewType === 'video'}
-                      <FluentIcons name="video" size={14} color="#A78BFA" />
+                      <FluentIcons name="video" size={14} color="var(--kanso-accent)" />
                     {:else if d.isPdf || d.previewType === 'pdf'}
-                      <FluentIcons name="document" size={14} color="#EF4444" />
+                      <FluentIcons name="document" size={14} color="var(--kanso-danger)" />
                     {:else if d.isImage || d.previewType === 'image'}
-                      <FluentIcons name="image" size={14} color="#38BDF8" />
+                      <FluentIcons name="image" size={14} color="var(--kanso-accent)" />
                     {:else}
-                      <FluentIcons name="document" size={14} color="#94A3B8" />
+                      <FluentIcons name="document" size={14} color="var(--kanso-text-muted)" />
                     {/if}
                   </div>
                   <div class="file-info">
@@ -414,7 +414,7 @@
             disabled={!downloadUrl || selectedDeliverables.length === 0}
             title="Copy direct API download link for client sharing"
           >
-            <FluentIcons name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? '#10B981' : 'currentColor'} />
+            <FluentIcons name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
             <span>{linkCopied ? 'Link Copied!' : 'Copy Direct Link'}</span>
           </button>
         </div>
@@ -461,8 +461,8 @@
     width: 95%;
     max-width: 760px;
     max-height: 90vh;
-    background: var(--kanso-canvas, #09090B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 14px;
     display: flex;
     flex-direction: column;
@@ -475,8 +475,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 22px;
-    border-bottom: 1px solid var(--kanso-border, #27272A);
-    background: var(--kanso-surface, #18181B);
+    border-bottom: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
   }
 
   .header-left {
@@ -515,51 +515,51 @@
 
   .badge-job {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     font-family: monospace;
   }
 
   .badge-brand {
     background: rgba(56, 189, 248, 0.15);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     border: 1px solid rgba(56, 189, 248, 0.3);
   }
 
   .badge-tag {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--kanso-success);
     border: 1px solid rgba(16, 185, 129, 0.3);
   }
 
   .badge-rec {
     background: rgba(56, 189, 248, 0.15);
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-size: 9px;
   }
 
   .badge-warn {
     background: rgba(245, 158, 11, 0.15);
-    color: #F59E0B;
+    color: var(--kanso-warning);
     font-size: 9px;
   }
 
   .modal-title {
     font-size: 16px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .modal-sub {
     font-size: 12px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     margin: 2px 0 0 0;
   }
 
   .close-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     cursor: pointer;
     padding: 6px;
     border-radius: 6px;
@@ -570,8 +570,8 @@
   }
 
   .close-btn:hover {
-    color: var(--kanso-text-primary, #F4F4F5);
-    background: var(--kanso-surface-hover, #27272A);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface-hover);
   }
 
   .handover-body {
@@ -590,8 +590,8 @@
   }
 
   .bento-cell {
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 10px 12px;
     display: flex;
@@ -602,25 +602,25 @@
   .bento-label {
     font-size: 10px;
     font-weight: 700;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     letter-spacing: 0.5px;
   }
 
   .bento-value {
     font-size: 15px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
   }
 
   .bento-sub {
     font-size: 11px;
     font-weight: 500;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     display: block;
   }
 
-  .text-sky { color: var(--kanso-accent, #38BDF8); }
-  .text-green { color: #10B981; }
+  .text-sky { color: var(--kanso-accent); }
+  .text-green { color: var(--kanso-success); }
 
   /* Sections */
   .section-container {
@@ -638,13 +638,13 @@
   .section-title {
     font-size: 13px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
   .section-hint {
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     display: block;
     margin-top: 1px;
   }
@@ -652,7 +652,7 @@
   .action-link-btn {
     background: transparent;
     border: none;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
@@ -668,11 +668,11 @@
   .empty-files-box {
     padding: 20px;
     text-align: center;
-    background: var(--kanso-surface, #18181B);
-    border: 1px dashed var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px dashed var(--kanso-border);
     border-radius: 8px;
     font-size: 12px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   /* Checklist */
@@ -682,9 +682,9 @@
     gap: 6px;
     max-height: 180px;
     overflow-y: auto;
-    border: 1px solid var(--kanso-border, #27272A);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
-    background: var(--kanso-surface, #18181B);
+    background: var(--kanso-surface);
     padding: 6px;
   }
 
@@ -700,7 +700,7 @@
   }
 
   .file-row:hover {
-    background: var(--kanso-surface-hover, #27272A);
+    background: var(--kanso-surface-hover);
   }
 
   .file-row.checked {
@@ -708,7 +708,7 @@
   }
 
   .file-checkbox {
-    accent-color: var(--kanso-accent, #38BDF8);
+    accent-color: var(--kanso-accent);
     cursor: pointer;
     width: 15px;
     height: 15px;
@@ -735,7 +735,7 @@
   .file-name {
     font-size: 12px;
     font-weight: 600;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -743,7 +743,7 @@
 
   .file-meta {
     font-size: 10.5px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .status-pill {
@@ -756,18 +756,18 @@
 
   .status-approved {
     background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .status-pending {
     background: rgba(245, 158, 11, 0.15);
-    color: #F59E0B;
+    color: var(--kanso-warning);
   }
 
   .status-revision,
   .status-rejected {
     background: rgba(239, 68, 68, 0.15);
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   /* Inclusions Grid */
@@ -781,8 +781,8 @@
     display: flex;
     gap: 10px;
     padding: 10px 12px;
-    background: var(--kanso-surface, #18181B);
-    border: 1px solid var(--kanso-border, #27272A);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s;
@@ -798,7 +798,7 @@
   }
 
   .inc-check-col input {
-    accent-color: var(--kanso-accent, #38BDF8);
+    accent-color: var(--kanso-accent);
     cursor: pointer;
     margin-top: 3px;
   }
@@ -812,7 +812,7 @@
   .inc-title {
     font-size: 12px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -820,7 +820,7 @@
 
   .inc-desc {
     font-size: 11px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     margin: 0;
     line-height: 1.4;
   }
@@ -828,7 +828,7 @@
   /* Remittance Preview */
   .remittance-preview {
     background: rgba(24, 24, 27, 0.6);
-    border: 1px solid var(--kanso-border, #27272A);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 10px 14px;
     display: flex;
@@ -845,14 +845,14 @@
   .remit-title {
     font-size: 11px;
     font-weight: 700;
-    color: var(--kanso-text-primary, #F4F4F5);
+    color: var(--kanso-text-primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   .remit-source {
     font-size: 10px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
     font-family: monospace;
   }
 
@@ -871,12 +871,12 @@
 
   .remit-label {
     font-size: 10px;
-    color: var(--kanso-text-muted, #71717A);
+    color: var(--kanso-text-muted);
   }
 
   .remit-code {
     font-family: monospace;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-size: 11px;
   }
 
@@ -886,8 +886,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 22px;
-    border-top: 1px solid var(--kanso-border, #27272A);
-    background: var(--kanso-surface, #18181B);
+    border-top: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
   }
 
   .copy-link-btn {
@@ -895,8 +895,8 @@
     align-items: center;
     gap: 6px;
     background: transparent;
-    border: 1px solid var(--kanso-border, #27272A);
-    color: var(--kanso-text-primary, #F4F4F5);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     padding: 7px 14px;
     border-radius: 6px;
     font-size: 12px;
@@ -906,7 +906,7 @@
   }
 
   .copy-link-btn:hover:not(:disabled) {
-    background: var(--kanso-surface-hover, #27272A);
+    background: var(--kanso-surface-hover);
     border-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -925,8 +925,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--kanso-accent, #38BDF8);
-    color: #09090B;
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
     border: none;
     padding: 8px 18px;
     border-radius: 6px;

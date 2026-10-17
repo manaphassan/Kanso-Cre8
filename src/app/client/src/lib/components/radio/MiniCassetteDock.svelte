@@ -210,7 +210,7 @@
   .mini-red-dot {
     width: 5px;
     height: 3.5px;
-    background: #DE694B;
+    background: var(--kanso-accent);
     border-radius: 1px;
     position: relative;
     z-index: 2;
@@ -222,7 +222,7 @@
     font-weight: 700;
     padding: 1px 5px;
     border-radius: 3px;
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     letter-spacing: -0.02em;
   }
 

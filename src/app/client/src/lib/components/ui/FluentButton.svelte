@@ -110,7 +110,7 @@
   }
   .btn-danger:hover:not(:disabled) {
     background: var(--kanso-danger);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .btn-success {
@@ -120,7 +120,7 @@
   }
   .btn-success:hover:not(:disabled) {
     background: var(--kanso-success);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
   }
 
   .fluent-btn:disabled {

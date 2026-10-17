@@ -573,7 +573,7 @@
                       class="more-dropdown-item item-danger"
                       onclick={() => { showDeleteModal = true; showMoreMenu = false; }}
                     >
-                      <FluentIcons name="delete" size={13} color="#EF4444" />
+                      <FluentIcons name="delete" size={13} color="var(--kanso-danger)" />
                       <span>Delete Project</span>
                     </button>
                   {/if}
@@ -710,12 +710,12 @@
                         </div>
                       {:else if d.isPdf || d.previewType === 'pdf'}
                         <div class="del-pdf-thumb">
-                          <FluentIcons name="file" size={24} color="#EF4444" />
+                          <FluentIcons name="file" size={24} color="var(--kanso-danger)" />
                           <span class="del-thumb-text">PDF DOCUMENT</span>
                         </div>
                       {:else if d.isAudio || d.previewType === 'audio'}
                         <div class="del-audio-thumb">
-                          <FluentIcons name="video" size={24} color="#8B5CF6" />
+                          <FluentIcons name="video" size={24} color="var(--kanso-accent)" />
                           <span class="del-thumb-text">AUDIO TRACK</span>
                         </div>
                       {:else}
@@ -844,7 +844,7 @@
                     type="text"
                     class="form-input"
                     bind:value={currentFrontmatter.creative_direction!.color_palette}
-                    placeholder="e.g. Prussian Blue #022057, SS Blue #043388, Gold #D4AF37"
+                    placeholder="e.g. Acme Ocean Blue, Nexus Deep Violet, Lumina Emerald Mint"
                   />
                 </div>
 
@@ -1071,7 +1071,7 @@
       <div class="delete-dialog-body">
         <div class="delete-warning-banner">
           <div class="warning-title">
-            <FluentIcons name="warning" size={16} color="#EF4444" />
+            <FluentIcons name="warning" size={16} color="var(--kanso-danger)" />
             <span style="margin-left: 6px;">Irreversible Filesystem Operation</span>
           </div>
           <p class="warning-text">
@@ -1177,7 +1177,7 @@
     font-family: inherit;
     font-size: inherit;
   }
-  .crumb-link:hover { color: var(--kanso-accent, #0078D4); }
+  .crumb-link:hover { color: var(--kanso-accent); }
   .crumb-sep { opacity: 0.4; }
   .crumb-tag {
     font-weight: 700;
@@ -1208,7 +1208,7 @@
     font-weight: 800;
     color: var(--kanso-accent);
     background: var(--kanso-accent-muted);
-    border: 1px solid #BFDBFE;
+    border: 1px solid var(--kanso-border);
     padding: 3px 8px;
     border-radius: 6px;
   }
@@ -1234,7 +1234,7 @@
     padding: 5px 10px;
     border-radius: 6px;
     background: rgba(16, 185, 129, 0.12);
-    color: #10B981;
+    color: var(--kanso-success);
     border: 1px solid rgba(16, 185, 129, 0.25);
     font-size: 12px;
     font-weight: 700;
@@ -1321,12 +1321,12 @@
   }
 
   .more-dropdown-item.item-danger {
-    color: #EF4444;
+    color: var(--kanso-danger);
   }
 
   .more-dropdown-item.item-danger:hover {
     background: rgba(239, 68, 68, 0.08);
-    color: #DC2626;
+    color: var(--kanso-danger);
   }
 
   .more-divider {
@@ -1346,12 +1346,12 @@
     outline: none;
     border: 1px solid var(--kanso-border);
   }
-  .status-backlog { background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.3); }
-  .status-in-progress { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent, #38BDF8); border-color: rgba(56, 189, 248, 0.35); }
-  .status-review { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning, #F59E0B); border-color: rgba(245, 158, 11, 0.35); }
-  .status-revision { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger, #EF4444); border-color: rgba(239, 68, 68, 0.35); }
-  .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success, #10B981); border-color: rgba(16, 185, 129, 0.35); }
-  .status-done { background: rgba(168, 85, 247, 0.15); color: #C084FC; border-color: rgba(168, 85, 247, 0.35); }
+  .status-backlog { background: rgba(148, 163, 184, 0.15); color: var(--kanso-text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+  .status-in-progress { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent); border-color: rgba(56, 189, 248, 0.35); }
+  .status-review { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning); border-color: rgba(245, 158, 11, 0.35); }
+  .status-revision { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger); border-color: rgba(239, 68, 68, 0.35); }
+  .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--kanso-success); border-color: rgba(16, 185, 129, 0.35); }
+  .status-done { background: rgba(168, 85, 247, 0.15); color: var(--kanso-accent); border-color: rgba(168, 85, 247, 0.35); }
 
   /* Segmented Nav */
   .canvas-segmented-nav {
@@ -1451,8 +1451,8 @@
 
   .header-chronometer-btn.is-active {
     background: rgba(16, 185, 129, 0.12);
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--kanso-success);
+    color: var(--kanso-success);
   }
 
   .header-chronometer-btn .ticker-text {
@@ -1476,7 +1476,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10B981;
+    background: var(--kanso-success);
     animation: pulse 1.2s infinite;
   }
 
@@ -1564,7 +1564,7 @@
     font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 700;
-    color: #10B981;
+    color: var(--kanso-success);
     background: rgba(16, 185, 129, 0.1);
     padding: 2px 6px;
     border-radius: 4px;
@@ -1663,7 +1663,7 @@
   }
 
   .highlight-earnings {
-    color: #10B981;
+    color: var(--kanso-success);
   }
 
   .spec-timer-toggle-btn {
@@ -1689,8 +1689,8 @@
 
   .spec-timer-toggle-btn.is-active {
     background: rgba(16, 185, 129, 0.12);
-    border-color: #10B981;
-    color: #10B981;
+    border-color: var(--kanso-success);
+    color: var(--kanso-success);
   }
 
   /* Scope row */
@@ -1766,7 +1766,7 @@
 
   .pipeline-action-btn.primary {
     background: var(--kanso-accent);
-    color: #09090B;
+    color: var(--kanso-canvas);
   }
 
   .pipeline-action-btn.primary:hover {
@@ -1820,7 +1820,7 @@
     height: 26px;
     border-radius: 50%;
     background: var(--kanso-accent);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 12px;
     font-weight: 800;
     display: flex;
@@ -1836,7 +1836,7 @@
     border-radius: 50%;
     display: block;
   }
-  .mgr-avatar { background: #0284C7; }
+  .mgr-avatar { background: var(--kanso-accent); }
 
   .user-val-selectable {
     display: flex;
@@ -1890,10 +1890,10 @@
     padding: 2px 8px;
     border-radius: 4px;
   }
-  .priority-urgent { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger, #EF4444); border: 1px solid rgba(239, 68, 68, 0.35); font-weight: 800; }
-  .priority-high { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning, #F59E0B); border: 1px solid rgba(245, 158, 11, 0.35); }
-  .priority-medium { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent, #38BDF8); border: 1px solid rgba(56, 189, 248, 0.35); }
-  .priority-low { background: var(--kanso-surface-hover, #27272A); color: var(--kanso-text-muted, #71717A); border: 1px solid var(--kanso-border, #3F3F46); font-weight: 700; }
+  .priority-urgent { background: rgba(239, 68, 68, 0.15); color: var(--kanso-danger); border: 1px solid rgba(239, 68, 68, 0.35); font-weight: 800; }
+  .priority-high { background: rgba(245, 158, 11, 0.15); color: var(--kanso-warning); border: 1px solid rgba(245, 158, 11, 0.35); }
+  .priority-medium { background: rgba(56, 189, 248, 0.15); color: var(--kanso-accent); border: 1px solid rgba(56, 189, 248, 0.35); }
+  .priority-low { background: var(--kanso-surface-hover); color: var(--kanso-text-muted); border: 1px solid var(--kanso-border); font-weight: 700; }
 
   .approvals-mini-section {
     display: flex;
@@ -1920,8 +1920,8 @@
     font-size: 12px;
     font-weight: 700;
   }
-  .decision-approved .mini-app-decision { color: #047857; }
-  .decision-revision_requested .mini-app-decision { color: #B91C1C; }
+  .decision-approved .mini-app-decision { color: var(--kanso-success); }
+  .decision-revision_requested .mini-app-decision { color: var(--kanso-danger); }
   .mini-app-time { font-size: 12px; color: var(--kanso-text-muted); font-weight: normal; }
   .mini-app-actor { font-size: 12px; color: var(--kanso-text-secondary); margin-top: 2px; }
   .no-approvals-text { font-size: 12px; color: var(--kanso-text-muted); margin: 0; }
@@ -1951,7 +1951,7 @@
     background: rgba(56, 189, 248, 0.12);
     border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 6px;
-    color: var(--kanso-accent, #38BDF8);
+    color: var(--kanso-accent);
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -1959,8 +1959,8 @@
   }
   .handover-btn:hover {
     background: rgba(56, 189, 248, 0.22);
-    border-color: var(--kanso-accent, #38BDF8);
-    color: #FFFFFF;
+    border-color: var(--kanso-accent);
+    color: var(--kanso-accent-text);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(56, 189, 248, 0.25);
   }
@@ -2025,8 +2025,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #0B1120;
-    color: #FFFFFF;
+    background: var(--kanso-canvas);
+    color: var(--kanso-accent-text);
     position: relative;
   }
   .del-video-thumb video {
@@ -2041,7 +2041,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.8);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     font-size: 12px;
     font-weight: 800;
     padding: 4px 10px;
@@ -2056,7 +2056,7 @@
   .del-thumb-text {
     font-size: 12px;
     font-weight: 800;
-    color: #94A3B8;
+    color: var(--kanso-text-muted);
     letter-spacing: 0.5px;
   }
 
@@ -2077,7 +2077,7 @@
     font-size: 12px;
     font-weight: 800;
     background: rgba(0, 0, 0, 0.7);
-    color: #FFFFFF;
+    color: var(--kanso-accent-text);
     padding: 2px 6px;
     border-radius: 4px;
   }
