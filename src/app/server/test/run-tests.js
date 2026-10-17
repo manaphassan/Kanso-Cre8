@@ -881,7 +881,7 @@ This is the project brief content.
       const status = GeminiService.getStatus();
       assert.strictEqual(status.configured, true);
       assert.strictEqual(status.preferredModel, 'gemini-1.5-pro');
-      assert.ok(status.maskedKey.startsWith('AIzaSy'), 'Masked key must begin with prefix');
+      assert.strictEqual(status.maskedKey, undefined, 'Key must never be returned to client');
 
       // 2. Format Gemini Ultra Web Prompt
       const ultraPrompt = GeminiService.formatUltraWebPrompt({

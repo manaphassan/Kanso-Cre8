@@ -475,7 +475,7 @@ export class ApiClient {
   }
 
   // ─── Gemini Creative AI Studio ───
-  static getAiStatus(): Promise<{ configured: boolean; maskedKey: string; preferredModel: string; availableModels: string[] }> {
+  static getAiStatus(): Promise<{ configured: boolean; preferredModel: string; availableModels: string[] }> {
     return this.request('/ai/status');
   }
 

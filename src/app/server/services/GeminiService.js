@@ -81,7 +81,6 @@ class GeminiService {
 
     return {
       configured: Boolean(key && key.length > 5),
-      maskedKey: key ? `${key.substring(0, 6)}...${key.substring(key.length - 4)}` : '',
       preferredModel,
       availableModels: ['gemini-1.5-flash', 'gemini-1.5-pro']
     };

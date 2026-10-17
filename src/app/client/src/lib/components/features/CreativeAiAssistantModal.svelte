@@ -41,9 +41,8 @@
   // Output State
   let generatedOutput = $state<string>('');
   let isGenerating = $state<boolean>(false);
-  let aiStatus = $state<{ configured: boolean; maskedKey: string; preferredModel: string; availableModels: string[] }>({
+  let aiStatus = $state<{ configured: boolean; preferredModel: string; availableModels: string[] }>({
     configured: false,
-    maskedKey: '',
     preferredModel: 'gemini-1.5-flash',
     availableModels: ['gemini-1.5-flash', 'gemini-1.5-pro']
   });
@@ -280,7 +279,7 @@
                 id="api-key-input"
                 type="password" 
                 class="form-input" 
-                placeholder={aiStatus.configured ? `Configured: ${aiStatus.maskedKey}` : 'AIzaSy...'} 
+                placeholder={aiStatus.configured ? 'Configured (enter new key to replace)' : 'AIzaSy...'} 
                 bind:value={newApiKey}
               />
             </div>

@@ -43,9 +43,12 @@ function saveMachineConfig(cfg) {
   try {
     const dir = path.dirname(p);
     if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+      fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     }
     fs.writeFileSync(p, JSON.stringify(cfg, null, 2), { encoding: 'utf8', mode: 0o600 });
+    try {
+      fs.chmodSync(p, 0o600);
+    } catch (e) {}
     return true;
   } catch (e) {
     return false;
