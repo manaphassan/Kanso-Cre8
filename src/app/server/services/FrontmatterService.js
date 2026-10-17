@@ -209,12 +209,103 @@ flowchart LR
     const finalContent = this.serializeContent(finalFrontmatter, finalBody);
 
     // Atomic write via temp file
-    const tempFile = `${readmePath}.tmp.${Date.now()}.${Math.random().toString(36).substring(2, 7)}`;
-    fs.writeFileSync(tempFile, finalContent, 'utf8');
-    fs.renameSync(tempFile, readmePath);
+    this.writeAtomic(readmePath, finalContent, 'utf8');
 
     const newHash = crypto.createHash('sha256').update(finalContent).digest('hex').substring(0, 12);
     return { success: true, versionHash: newHash, frontmatter: finalFrontmatter, body: finalBody };
+  }
+
+  static _debounceTimers = new Map();
+
+  /**
+   * Atomically writes content to a target file using a temp file in the same directory,
+   * then renaming it to the target file. Ensures zero open file handles or locks are held.
+   * 
+   * @param {string} filePath - Absolute path to target file
+   * @param {string|Buffer} content - UTF-8 string or Buffer to write
+   * @param {string} encoding - Default 'utf8'
+   * @returns {boolean} True if successfully written
+   */
+  static writeAtomic(filePath, content, encoding = 'utf8') {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    const tempFile = `${filePath}.tmp.${Date.now()}.${Math.random().toString(36).substring(2, 7)}`;
+    fs.writeFileSync(tempFile, content, encoding);
+
+    try {
+      fs.renameSync(tempFile, filePath);
+    } catch (err) {
+      // Fallback for cross-device or Windows rename lock edge cases
+      fs.writeFileSync(filePath, content, encoding);
+      try {
+        if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+      } catch (_) {}
+    }
+    return true;
+  }
+
+  /**
+   * Debounces writes to a target file (default 300ms) to coalesce rapid writes.
+   * 
+   * @param {string} filePath - Target file path
+   * @param {string|Buffer} content - Content to write
+   * @param {number} delayMs - Debounce window in ms (default 300)
+   * @param {string} encoding - Default 'utf8'
+   * @returns {Promise<boolean>}
+   */
+  static writeDebounced(filePath, content, delayMs = 300, encoding = 'utf8') {
+    return new Promise((resolve, reject) => {
+      if (this._debounceTimers.has(filePath)) {
+        clearTimeout(this._debounceTimers.get(filePath).timer);
+      }
+
+      const timer = setTimeout(() => {
+        try {
+          this._debounceTimers.delete(filePath);
+          const result = this.writeAtomic(filePath, content, encoding);
+          resolve(result);
+        } catch (err) {
+          this._debounceTimers.delete(filePath);
+          reject(err);
+        }
+      }, delayMs);
+
+      this._debounceTimers.set(filePath, { timer, content, encoding, resolve, reject });
+    });
+  }
+
+  /**
+   * Flushes any pending debounced writes immediately.
+   * @param {string|null} filePath - Specific file to flush, or null for all
+   */
+  static flushDebounced(filePath = null) {
+    if (filePath) {
+      const entry = this._debounceTimers.get(filePath);
+      if (entry) {
+        clearTimeout(entry.timer);
+        this._debounceTimers.delete(filePath);
+        try {
+          this.writeAtomic(filePath, entry.content, entry.encoding);
+          entry.resolve(true);
+        } catch (err) {
+          entry.reject(err);
+        }
+      }
+    } else {
+      for (const [fp, entry] of this._debounceTimers.entries()) {
+        clearTimeout(entry.timer);
+        try {
+          this.writeAtomic(fp, entry.content, entry.encoding);
+          entry.resolve(true);
+        } catch (err) {
+          entry.reject(err);
+        }
+      }
+      this._debounceTimers.clear();
+    }
   }
 
   /**

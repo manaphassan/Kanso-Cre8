@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const config = require('../config');
+const FrontmatterService = require('./FrontmatterService');
 
 const CATEGORY_MAP = {
   fleeting: '01_Fleeting',
@@ -75,7 +76,7 @@ Everything here is saved automatically in real-time.
 - Review brand tokens with [[ACME]] design lead
 - Check invoice draft for September design sprints
 `;
-      try { fs.writeFileSync(scratchpad, defaultScratchpad, 'utf8'); } catch (e) {}
+      try { FrontmatterService.writeAtomic(scratchpad, defaultScratchpad, 'utf8'); } catch (e) {}
     }
 
     const permDir = this.getCategoryDir('permanent');
@@ -396,7 +397,7 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
     } catch (e) {}
 
     const serialized = this.serializeNote({ ...noteData, id, type });
-    fs.writeFileSync(filePath, serialized, 'utf8');
+    FrontmatterService.writeAtomic(filePath, serialized, 'utf8');
 
     return this.parseRawNote(serialized, id, type);
   }
@@ -447,7 +448,7 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
   static saveScratchpad(content) {
     const p = this.getScratchpadPath();
     const text = content || '';
-    fs.writeFileSync(p, text, 'utf8');
+    FrontmatterService.writeAtomic(p, text, 'utf8');
     const strObj = new String(text);
     strObj.content = text;
     strObj.success = true;
@@ -521,7 +522,7 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
     const newCheckbox = newCompleted ? '- [x]' : '- [ ]';
 
     fileContent = fileContent.replace(taskRegex, `${newCheckbox}$2`);
-    fs.writeFileSync(targetPath, fileContent, 'utf8');
+    FrontmatterService.writeAtomic(targetPath, fileContent, 'utf8');
 
     return {
       success: true,

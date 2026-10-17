@@ -1296,12 +1296,18 @@ class WorkspaceService {
     const isConflictFilename = (name) => conflictPatterns.some(p => p.test(name));
 
     const deriveBaseFilename = (filename) => {
-      let base = filename;
-      base = base.replace(/\s*\([^)]*conflicted copy[^)]*\)/i, '');
-      base = base.replace(/\s*\(Case Conflict\)/i, '');
-      base = base.replace(/\.sync-conflict-\d+-\w+/i, '');
-      base = base.replace(/\s*\([^)]*conflict[^)]*\)/i, '');
-      return base.trim();
+      const ext = path.extname(filename);
+      let baseWithoutExt = path.basename(filename, ext);
+      baseWithoutExt = baseWithoutExt
+        .replace(/\s*\([^)]*conflicted copy[^)]*\)/gi, '')
+        .replace(/\s*[-_.]*conflicted copy[-_.]*/gi, '')
+        .replace(/\s*\(Case Conflict\)/gi, '')
+        .replace(/\.sync-conflict-\d+-\w+/gi, '')
+        .replace(/\.sync-temp-\d+/gi, '')
+        .replace(/\s*\([^)]*conflict[^)]*\)/gi, '')
+        .replace(/\s*[-_.]*conflict[-_.]*/gi, '')
+        .trim();
+      return `${baseWithoutExt}${ext}`;
     };
 
     const crawl = (dir) => {

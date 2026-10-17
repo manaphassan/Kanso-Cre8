@@ -275,14 +275,7 @@ class CompanyService {
     const finalFm = validation.data;
 
     const serialized = FrontmatterService.serializeContent(finalFm, existingBody);
-    const tempFile = `${filePath}.tmp.${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    fs.writeFileSync(tempFile, serialized, 'utf8');
-    try {
-      fs.renameSync(tempFile, filePath);
-    } catch (_) {
-      fs.writeFileSync(filePath, serialized, 'utf8');
-      try { fs.unlinkSync(tempFile); } catch (e) {}
-    }
+    FrontmatterService.writeAtomic(filePath, serialized, 'utf8');
 
     return this._normalizeClient(finalFm, existingBody, targetFolder, filePath);
   }

@@ -1135,121 +1135,87 @@
           </div>
         </div>
 
-        <!-- Card 3: Cloud Sync Conflict Doctor & Vault Integrity -->
-        <div class="card-surface sync-doctor-card">
-          <div class="card-header">
-            <div class="card-header-badge-row">
-              <div class="flex items-center gap-2">
-                <h2 class="card-title">Cloud Sync Conflict Doctor</h2>
-                {#if syncConflicts.length > 0}
-                  <span class="badge-alert">{syncConflicts.length} Conflict{syncConflicts.length === 1 ? '' : 's'}</span>
-                {:else}
-                  <span class="badge-pristine">Pristine</span>
-                {/if}
+        <!-- Simplified Cloud Sync Conflict Banner in Settings > Vault -->
+        <div class="card-surface sync-conflict-banner-container" class:has-conflicts={syncConflicts.length > 0}>
+          {#if syncConflicts.length > 0}
+            <div class="sync-banner-header">
+              <div class="sync-banner-lead">
+                <span class="sync-banner-glyph alert">⚠️</span>
+                <div>
+                  <div class="sync-banner-title">{syncConflicts.length} Cloud Sync Conflict{syncConflicts.length === 1 ? '' : 's'} Detected</div>
+                  <div class="sync-banner-subtitle">
+                    Collisions created by external cloud sync (e.g. <code>conflicted copy</code>). Resolve to maintain single source of truth.
+                  </div>
+                </div>
               </div>
               <button
                 type="button"
-                class="scan-btn"
+                class="scan-btn compact"
                 onclick={scanConflicts}
                 disabled={isScanningConflicts}
               >
                 <span class:spinning={isScanningConflicts}>🔄</span>
-                <span>{isScanningConflicts ? 'Scanning Vault...' : 'Scan Sync Conflicts'}</span>
+                <span>{isScanningConflicts ? 'Scanning...' : 'Rescan'}</span>
               </button>
             </div>
-            <p class="card-subtitle">
-              Detects and repairs file collisions produced by Dropbox, OneDrive, Google Drive, or Synology Drive (e.g. <code>conflicted copy</code>, <code>.sync-conflict</code>). Ensures your pure Markdown vault remains pristine.
-            </p>
-          </div>
 
-          {#if isScanningConflicts && syncConflicts.length === 0}
-            <div class="sync-scanning-box">
-              <span class="spinning text-lg">⚙️</span>
-              <span>Scanning plain filesystem for cloud conflict artifacts...</span>
-            </div>
-          {:else if syncConflicts.length === 0}
-            <div class="sync-clean-box">
-              <div class="clean-icon-pill">✓</div>
-              <div class="clean-meta">
-                <div class="clean-title">Zero Sync Collisions Detected</div>
-                <div class="clean-desc">
-                  Your client dossiers, invoices, bullet journals, and Zettelkasten knowledge notes are 100% unified without conflicting branches.
-                </div>
-              </div>
-            </div>
-          {:else}
-            <div class="conflicts-list">
+            <div class="conflicts-list-compact">
               {#each syncConflicts as conflict}
-                <div class="conflict-item">
-                  <div class="conflict-item-header">
-                    <span class="conflict-glyph">⚠️</span>
-                    <div class="conflict-file-info">
-                      <div class="conflict-name">{conflict.filename}</div>
-                      <div class="conflict-path">{conflict.relPath}</div>
-                    </div>
-                    <span class="conflict-tag">Collision Artifact</span>
+                <div class="conflict-item-compact">
+                  <div class="conflict-info-compact">
+                    <div class="conflict-name-compact">{conflict.filename}</div>
+                    <div class="conflict-path-compact">{conflict.relPath}</div>
                   </div>
-
-                  <div class="conflict-comparison-grid">
-                    <!-- Left: Conflicted Copy -->
-                    <div class="comparison-card conflicted">
-                      <div class="comp-label">Cloud Conflict Copy</div>
-                      <div class="comp-val font-mono">{conflict.filename}</div>
-                      <div class="comp-meta-row">
-                        <span>Size: {formatFileSize(conflict.sizeBytes)}</span>
-                        <span>Modified: {formatFileDate(conflict.mtime)}</span>
-                      </div>
-                    </div>
-
-                    <!-- Right: Base File -->
-                    <div class="comparison-card base">
-                      <div class="comp-label">Original Vault File</div>
-                      <div class="comp-val font-mono">{conflict.baseFilename}</div>
-                      <div class="comp-meta-row">
-                        <span>Status: {conflict.baseExists ? 'Present on disk' : 'Missing'}</span>
-                        {#if conflict.baseExists}
-                          <span>Size: {formatFileSize(conflict.baseSizeBytes)}</span>
-                          <span>Modified: {formatFileDate(conflict.baseMtime)}</span>
-                        {/if}
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Resolution Actions -->
-                  <div class="conflict-actions">
-                    <span class="actions-label">Resolution:</span>
-                    <div class="actions-buttons">
-                      <button
-                        type="button"
-                        class="btn-resolve keep-local"
-                        onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_local')}
-                        disabled={resolvingConflictPath === conflict.conflictPath}
-                        title="Delete the conflicted copy and preserve the original base file"
-                      >
-                        Keep Base (Purge Conflict)
-                      </button>
-                      <button
-                        type="button"
-                        class="btn-resolve keep-cloud"
-                        onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_cloud')}
-                        disabled={resolvingConflictPath === conflict.conflictPath}
-                        title="Overwrite the original base file with this cloud conflict copy"
-                      >
-                        Adopt Cloud Copy
-                      </button>
-                      <button
-                        type="button"
-                        class="btn-resolve archive"
-                        onclick={() => handleResolveConflict(conflict.conflictPath, 'archive')}
-                        disabled={resolvingConflictPath === conflict.conflictPath}
-                        title="Move conflict copy to _Archive directory for safe keeping"
-                      >
-                        Archive Safely
-                      </button>
-                    </div>
+                  <div class="conflict-actions-compact">
+                    <button
+                      type="button"
+                      class="btn-resolve-compact keep-local"
+                      onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_local')}
+                      disabled={resolvingConflictPath === conflict.conflictPath}
+                      title="Keep local base file and delete conflict artifact"
+                    >
+                      Keep Base
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-resolve-compact keep-cloud"
+                      onclick={() => handleResolveConflict(conflict.conflictPath, 'keep_cloud')}
+                      disabled={resolvingConflictPath === conflict.conflictPath}
+                      title="Adopt cloud copy to overwrite base file"
+                    >
+                      Adopt Cloud
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-resolve-compact archive"
+                      onclick={() => handleResolveConflict(conflict.conflictPath, 'archive')}
+                      disabled={resolvingConflictPath === conflict.conflictPath}
+                      title="Archive conflicted copy safely"
+                    >
+                      Archive
+                    </button>
                   </div>
                 </div>
               {/each}
+            </div>
+          {:else}
+            <div class="sync-banner-pristine">
+              <div class="sync-banner-lead">
+                <span class="clean-icon-pill-mini">✓</span>
+                <div>
+                  <span class="clean-title-inline">Cloud Sync: Pristine</span>
+                  <span class="clean-desc-inline">— Zero conflicted copies or collisions detected across active vault.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="scan-btn compact"
+                onclick={scanConflicts}
+                disabled={isScanningConflicts}
+              >
+                <span class:spinning={isScanningConflicts}>🔄</span>
+                <span>{isScanningConflicts ? 'Scanning...' : 'Scan Sync Conflicts'}</span>
+              </button>
             </div>
           {/if}
         </div>
@@ -2745,186 +2711,135 @@
     to { transform: rotate(360deg); }
   }
 
-  .sync-scanning-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 24px;
-    background: var(--kanso-canvas);
-    border: 1px dashed var(--kanso-border);
+  /* Cloud Sync Conflict Banner in Settings > Vault */
+  .sync-conflict-banner-container {
+    padding: 14px 18px;
     border-radius: 8px;
-    color: var(--kanso-text-muted);
-    font-size: 13.5px;
-  }
-
-  .sync-clean-box {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
-    background: var(--kanso-canvas);
+    background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
-    border-radius: 8px;
+    transition: all 0.2s ease;
   }
 
-  .clean-icon-pill {
-    width: 32px;
-    height: 32px;
+  .sync-conflict-banner-container.has-conflicts {
+    border-color: var(--kanso-warning);
+    background: var(--kanso-surface);
+  }
+
+  .sync-banner-header,
+  .sync-banner-pristine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .sync-banner-lead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .sync-banner-glyph {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .clean-icon-pill-mini {
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    background: rgba(16, 185, 129, 0.15);
+    background: var(--kanso-surface-hover);
     color: var(--kanso-success);
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 13px;
     flex-shrink: 0;
+    border: 1px solid var(--kanso-border);
   }
 
-  .clean-title {
-    font-size: 14px;
+  .clean-title-inline {
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--kanso-text-primary);
   }
 
-  .clean-desc {
+  .clean-desc-inline {
     font-size: 12.5px;
     color: var(--kanso-text-muted);
-    margin-top: 2px;
-    line-height: 1.4;
   }
 
-  .conflicts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .conflict-item {
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .conflict-item-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .conflict-glyph {
-    font-size: 18px;
-  }
-
-  .conflict-file-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .conflict-name {
+  .sync-banner-title {
     font-size: 14px;
-    font-weight: 700;
-    color: var(--kanso-text-primary);
-    word-break: break-all;
-  }
-
-  .conflict-path {
-    font-size: 12px;
-    font-family: monospace;
-    color: var(--kanso-text-muted);
-    margin-top: 2px;
-  }
-
-  .conflict-tag {
-    font-size: 11px;
     font-weight: 700;
     color: var(--kanso-warning);
-    background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    padding: 2px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
   }
 
-  .conflict-comparison-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  @media (max-width: 768px) {
-    .conflict-comparison-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .comparison-card {
-    padding: 10px 12px;
-    border-radius: 6px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .comparison-card.conflicted {
-    border-color: rgba(245, 158, 11, 0.3);
-  }
-
-  .comp-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--kanso-text-muted);
-  }
-
-  .comp-val {
+  .sync-banner-subtitle {
     font-size: 12.5px;
-    color: var(--kanso-text-primary);
-    word-break: break-all;
-  }
-
-  .comp-meta-row {
-    display: flex;
-    gap: 12px;
-    font-size: 11.5px;
     color: var(--kanso-text-muted);
     margin-top: 2px;
   }
 
-  .conflict-actions {
+  .scan-btn.compact {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .conflicts-list-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--kanso-border);
+  }
+
+  .conflict-item-compact {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding-top: 8px;
-    border-top: 1px solid var(--kanso-border);
-    flex-wrap: wrap;
-  }
-
-  .actions-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--kanso-text-muted);
-  }
-
-  .actions-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .btn-resolve {
-    padding: 5px 10px;
+    padding: 8px 12px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
-    font-size: 12px;
+    flex-wrap: wrap;
+  }
+
+  .conflict-info-compact {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .conflict-name-compact {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--kanso-text-primary);
+    word-break: break-all;
+  }
+
+  .conflict-path-compact {
+    font-size: 11.5px;
+    font-family: monospace;
+    color: var(--kanso-text-muted);
+    margin-top: 1px;
+  }
+
+  .conflict-actions-compact {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .btn-resolve-compact {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     border: 1px solid var(--kanso-border);
@@ -2934,25 +2849,25 @@
     font-family: inherit;
   }
 
-  .btn-resolve:hover:not(:disabled) {
+  .btn-resolve-compact:hover:not(:disabled) {
     background: var(--kanso-surface-hover);
   }
 
-  .btn-resolve.keep-local:hover:not(:disabled) {
+  .btn-resolve-compact.keep-local:hover:not(:disabled) {
     border-color: var(--kanso-accent);
     color: var(--kanso-accent);
   }
 
-  .btn-resolve.keep-cloud:hover:not(:disabled) {
+  .btn-resolve-compact.keep-cloud:hover:not(:disabled) {
     border-color: var(--kanso-warning);
     color: var(--kanso-warning);
   }
 
-  .btn-resolve.archive:hover:not(:disabled) {
+  .btn-resolve-compact.archive:hover:not(:disabled) {
     border-color: var(--kanso-text-muted);
   }
 
-  .btn-resolve:disabled {
+  .btn-resolve-compact:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }

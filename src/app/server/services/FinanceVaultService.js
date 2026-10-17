@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const config = require('../config');
+const FrontmatterService = require('./FrontmatterService');
 
 class FinanceVaultService {
   static getFinanceRootDir() {
@@ -254,7 +255,7 @@ class FinanceVaultService {
     const filePath = path.join(this.getInvoicesDir(), filename);
 
     const serialized = this.serializeInvoice(invData);
-    fs.writeFileSync(filePath, serialized, 'utf8');
+    FrontmatterService.writeAtomic(filePath, serialized, 'utf8');
 
     return this.parseInvoiceMarkdown(serialized, filename);
   }
@@ -410,7 +411,7 @@ class FinanceVaultService {
     const filePath = path.join(this.getQuotesDir(), filename);
 
     const serialized = this.serializeDocument(quoteData, 'quote');
-    fs.writeFileSync(filePath, serialized, 'utf8');
+    FrontmatterService.writeAtomic(filePath, serialized, 'utf8');
 
     const parsed = this.parseInvoiceMarkdown(serialized, filename);
     parsed.type = 'quote';
