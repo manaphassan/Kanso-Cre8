@@ -260,12 +260,7 @@ export class ApiClient {
 
   // ─── User & Staff Management ───
   static async getUsers(): Promise<{ success: boolean; users: any[] }> {
-    try {
-      return await this.request('/users');
-    } catch {
-      const res = await this.request('/team/roster');
-      return { success: true, users: res.roster || [] };
-    }
+    return this.request('/users');
   }
 
   static async getStaffAccounts(): Promise<{ success: boolean; users: any[] }> {
@@ -273,40 +268,22 @@ export class ApiClient {
   }
 
   static async getStaffRoster(): Promise<{ roster: any[]; users?: any[] }> {
-    try {
-      return await this.request('/team/roster');
-    } catch {
-      const res = await this.request('/users');
-      return { roster: res.users || [] };
-    }
+    const res = await this.request<any>('/users');
+    return { roster: res.users || [], users: res.users || [] };
   }
 
   static async addStaffMember(payload: any): Promise<{ success: boolean; member: any }> {
-    try {
-      return await this.request('/users', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch {
-      return await this.request('/team/roster', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    }
+    return this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   }
 
   static async updateStaffMember(id: string, payload: any): Promise<{ success: boolean; member: any }> {
-    try {
-      return await this.request(`/users/${encodeURIComponent(id)}`, {
-        method: 'PUT',
-        body: JSON.stringify(payload)
-      });
-    } catch {
-      return await this.request(`/team/roster/${encodeURIComponent(id)}`, {
-        method: 'PUT',
-        body: JSON.stringify(payload)
-      });
-    }
+    return this.request(`/users/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
   }
 
   static deleteUser(id: string): Promise<{ success: boolean; deletedStaffId: string }> {
