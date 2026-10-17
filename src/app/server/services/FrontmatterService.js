@@ -198,8 +198,15 @@ flowchart LR
       ...updatedFrontmatter
     };
 
+    // Validate frontmatter and preserve all keys
+    const validation = this.validate('project', mergedFrontmatter);
+    if (!validation.valid) {
+      console.warn('[FrontmatterService] Validation warnings for project:', validation.errors);
+    }
+    const finalFrontmatter = validation.data;
+
     const finalBody = newBody !== null && newBody !== undefined ? newBody : existingBody;
-    const finalContent = this.serializeContent(mergedFrontmatter, finalBody);
+    const finalContent = this.serializeContent(finalFrontmatter, finalBody);
 
     // Atomic write via temp file
     const tempFile = `${readmePath}.tmp.${Date.now()}.${Math.random().toString(36).substring(2, 7)}`;
@@ -207,7 +214,158 @@ flowchart LR
     fs.renameSync(tempFile, readmePath);
 
     const newHash = crypto.createHash('sha256').update(finalContent).digest('hex').substring(0, 12);
-    return { success: true, versionHash: newHash, frontmatter: mergedFrontmatter, body: finalBody };
+    return { success: true, versionHash: newHash, frontmatter: finalFrontmatter, body: finalBody };
+  }
+
+  /**
+   * Validates frontmatter data against the schema for a given document type.
+   * Unknown keys are strictly preserved and never dropped.
+   * 
+   * @param {string} type - 'project' | 'client' | 'quote' | 'invoice' | 'journal_day' | 'note'
+   * @param {Object} data - Raw frontmatter dictionary
+   * @returns {{ valid: boolean, errors: string[], data: Object }}
+   */
+  static validate(type, data) {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return {
+        valid: false,
+        errors: ['Frontmatter data must be a non-null object'],
+        data: data || {}
+      };
+    }
+
+    // Preserve all unknown and custom user keys
+    const validated = { ...data };
+    const errors = [];
+
+    const normType = String(type || '').toLowerCase();
+
+    // Helper: validate ISO date YYYY-MM-DD
+    const isIsoDate = (str) => {
+      if (!str || typeof str !== 'string') return false;
+      return /^\d{4}-\d{2}-\d{2}$/.test(str.trim());
+    };
+
+    switch (normType) {
+      case 'project': {
+        const allowedStatuses = ['backlog', 'in-progress', 'in_progress', 'review', 'revision', 'approved', 'archived', 'done', 'completed'];
+        if (validated.status && !allowedStatuses.includes(String(validated.status).toLowerCase())) {
+          errors.push(`Invalid project status: "${validated.status}". Expected one of: ${allowedStatuses.join(', ')}`);
+        }
+        if (validated.revision !== undefined) {
+          const rev = Number(validated.revision);
+          if (isNaN(rev) || rev < 0) {
+            errors.push(`Project revision must be a non-negative integer, got: ${validated.revision}`);
+          } else {
+            validated.revision = Math.floor(rev);
+          }
+        }
+        if (validated.deadline && !isIsoDate(validated.deadline)) {
+          errors.push(`Project deadline must be an ISO date (YYYY-MM-DD), got: ${validated.deadline}`);
+        }
+        if (validated.created && !isIsoDate(validated.created)) {
+          errors.push(`Project created date must be an ISO date (YYYY-MM-DD), got: ${validated.created}`);
+        }
+        if (validated.tags) {
+          if (typeof validated.tags === 'string') {
+            validated.tags = validated.tags.replace(/^\[|\]$/g, '').split(',').map(t => t.trim()).filter(Boolean);
+          } else if (!Array.isArray(validated.tags)) {
+            errors.push('Project tags must be an array of strings');
+          }
+        }
+        break;
+      }
+
+      case 'client': {
+        if (!validated.code) {
+          errors.push('Client code is required');
+        } else if (!/^[A-Za-z0-9_-]{2,8}$/.test(String(validated.code).trim())) {
+          errors.push(`Client code should be 2-8 alphanumeric characters, got: "${validated.code}"`);
+        }
+        if (!validated.name) {
+          errors.push('Client name is required');
+        }
+        if (validated.default_hourly_rate !== undefined && (isNaN(Number(validated.default_hourly_rate)) || Number(validated.default_hourly_rate) < 0)) {
+          errors.push('Client default_hourly_rate must be a non-negative number');
+        }
+        if (validated.payment_terms_days !== undefined && (isNaN(Number(validated.payment_terms_days)) || Number(validated.payment_terms_days) < 0)) {
+          errors.push('Client payment_terms_days must be a non-negative integer');
+        }
+        break;
+      }
+
+      case 'quote': {
+        const docNum = validated.documentNumber || validated.id;
+        if (!docNum) {
+          errors.push('Quote requires a documentNumber or id');
+        }
+        if (validated.date && !isIsoDate(validated.date)) {
+          errors.push(`Quote date must be an ISO date (YYYY-MM-DD), got: ${validated.date}`);
+        }
+        if (validated.valid_until && !isIsoDate(validated.valid_until)) {
+          errors.push(`Quote valid_until must be an ISO date (YYYY-MM-DD), got: ${validated.valid_until}`);
+        }
+        if (validated.items && !Array.isArray(validated.items)) {
+          errors.push('Quote items must be an array');
+        }
+        break;
+      }
+
+      case 'invoice': {
+        const docNum = validated.documentNumber || validated.id;
+        if (!docNum) {
+          errors.push('Invoice requires a documentNumber or id');
+        }
+        if (validated.date && !isIsoDate(validated.date)) {
+          errors.push(`Invoice date must be an ISO date (YYYY-MM-DD), got: ${validated.date}`);
+        }
+        if (validated.due_date && !isIsoDate(validated.due_date)) {
+          errors.push(`Invoice due_date must be an ISO date (YYYY-MM-DD), got: ${validated.due_date}`);
+        }
+        if (validated.items && !Array.isArray(validated.items)) {
+          errors.push('Invoice items must be an array');
+        }
+        break;
+      }
+
+      case 'journal_day':
+      case 'journal_daily':
+      case 'daily':
+      case 'daily_log': {
+        if (!validated.date) {
+          errors.push('Daily journal note requires a date');
+        } else if (!isIsoDate(validated.date)) {
+          errors.push(`Daily journal date must be an ISO date (YYYY-MM-DD), got: ${validated.date}`);
+        }
+        if (validated.habits && !Array.isArray(validated.habits)) {
+          errors.push('habits must be an array of strings');
+        }
+        break;
+      }
+
+      case 'note':
+      case 'atomic_note': {
+        if (!validated.title && !validated.id) {
+          errors.push('Atomic note requires a title or id');
+        }
+        const allowedCategories = ['fleeting', 'literature', 'permanent'];
+        const cat = validated.category || validated.type;
+        if (cat && !allowedCategories.includes(String(cat).toLowerCase())) {
+          errors.push(`Invalid note category: "${cat}". Expected one of: ${allowedCategories.join(', ')}`);
+        }
+        break;
+      }
+
+      default:
+        // Generic document type: preserve all keys
+        break;
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+      data: validated
+    };
   }
 }
 

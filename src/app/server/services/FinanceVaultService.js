@@ -183,6 +183,17 @@ class FinanceVaultService {
     if (doc.stamp) fm.stamp = doc.stamp;
     if (doc.showClientAccent !== undefined) fm.show_client_accent = Boolean(doc.showClientAccent);
 
+    try {
+      const FrontmatterService = require('./FrontmatterService');
+      const validation = FrontmatterService.validate(type, fm);
+      if (!validation.valid) {
+        console.warn(`[FinanceVaultService] ${type} validation warnings:`, validation.errors);
+      }
+      if (validation.data) {
+        fm = validation.data;
+      }
+    } catch (_) {}
+
     let md = `---\n${yaml.dump(fm).trim()}\n---\n\n`;
     const label = type === 'quote' ? 'Quote' : 'Invoice';
     md += `# ${label} ${doc.documentNumber}: ${doc.clientName}\n\n`;
