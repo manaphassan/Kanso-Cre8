@@ -475,8 +475,8 @@ class ConfigService {
       }
     }
 
-    // 4. Retire old JSON files: user_passwords.json, staff_directory.json, team-notes.json
-    const retiredFiles = ['user_passwords.json', 'staff_directory.json', 'team-notes.json'];
+    // 4. Retire old JSON files: user_passwords.json, staff_directory.json, team-notes.json, companies.json
+    const retiredFiles = ['user_passwords.json', 'staff_directory.json', 'team-notes.json', 'companies.json'];
     for (const filename of retiredFiles) {
       const fullPath = path.join(configDir, filename);
       if (fs.existsSync(fullPath)) {
