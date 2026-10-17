@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
+  import { fetchStaffList } from '$lib/utils';
   import type { ProjectComment, DeliverableItem } from '$lib/types';
   import FluentButton from '$lib/components/ui/FluentButton.svelte';
 
@@ -36,9 +37,9 @@
 
   async function loadTeamRoster() {
     try {
-      const res = await ApiClient.getStaffAccounts();
-      if (res && res.users) {
-        teamMembers = res.users.map((u: any) => ({
+      const users = await fetchStaffList();
+      if (users && users.length > 0) {
+        teamMembers = users.map((u: any) => ({
           username: u.username,
           name: u.name,
           role: u.role,

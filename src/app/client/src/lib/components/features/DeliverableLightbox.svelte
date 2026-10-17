@@ -6,6 +6,7 @@
   import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
   import DeliverableAnnotationCanvas from '$lib/components/features/DeliverableAnnotationCanvas.svelte';
   import DeliverableVisualDiffSlider from '$lib/components/features/DeliverableVisualDiffSlider.svelte';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     deliverable: DeliverableItem | null;
@@ -51,9 +52,7 @@
   });
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && open && onClose) {
-      onClose();
-    }
+    handleModalKeydown(e, onClose, open);
   }
 
   async function handleApprove() {
@@ -84,7 +83,7 @@
 {#if open && deliverable}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="lightbox-backdrop" onclick={(e) => { if (e.target === e.currentTarget && onClose) onClose(); }}>
+  <div class="lightbox-backdrop" onclick={(e) => handleBackdropClick(e, onClose)}>
     <div class="lightbox-modal">
       <!-- Media Viewer Left Pane -->
       <div class="lightbox-media-viewer">

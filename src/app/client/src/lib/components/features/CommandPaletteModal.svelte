@@ -9,6 +9,7 @@
   import { radioService, ALL_CASSETTE_STATIONS } from '$lib/services/radioService.svelte';
   import { clientService } from '$lib/services/clientService';
   import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
+  import { handleBackdropClick } from '$lib/utils';
 
   interface Props {
     open?: boolean;
@@ -658,7 +659,7 @@
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="palette-backdrop" onclick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
+  <div class="palette-backdrop" onclick={(e) => handleBackdropClick(e, closeModal)}>
     <div class="palette-modal" role="dialog" aria-modal="true" aria-label="Kanso Zen Launcher">
       
       <!-- Search Input Bar -->

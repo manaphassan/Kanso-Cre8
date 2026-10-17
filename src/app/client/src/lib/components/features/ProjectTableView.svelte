@@ -3,6 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
+  import { fetchStaffList } from '$lib/utils';
   import type { Project } from '$lib/types';
   import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
   import { clientService } from '$lib/services/clientService';
@@ -60,24 +61,7 @@
   let staffList = $state<any[]>([]);
 
   async function loadStaffList() {
-    try {
-      const res = await ApiClient.getStaffRoster();
-      if (res && res.roster && Array.isArray(res.roster)) {
-        staffList = res.roster;
-        return;
-      }
-    } catch {
-      // fallback
-    }
-
-    try {
-      const teamRes = await ApiClient.getTeam();
-      if (teamRes && teamRes.team && Array.isArray(teamRes.team)) {
-        staffList = teamRes.team;
-      }
-    } catch (err) {
-      console.warn('[ProjectTableView] Failed to load staff roster:', err);
-    }
+    staffList = await fetchStaffList();
   }
 
   onMount(() => {

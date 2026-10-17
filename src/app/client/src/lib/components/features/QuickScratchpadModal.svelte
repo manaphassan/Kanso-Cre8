@@ -3,6 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { notesService } from '$lib/services/notesService';
   import { appState } from '$lib/stores/appState.svelte';
+  import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
   interface Props {
     open: boolean;
@@ -78,11 +79,13 @@
     }
   }
 
+  function handleClose() {
+    saveContent();
+    onclose();
+  }
+
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      saveContent();
-      onclose();
-    }
+    handleModalKeydown(e, handleClose, open);
   }
 </script>
 
@@ -92,7 +95,7 @@
   <!-- Backdrop -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="scratchpad-overlay" onclick={() => { saveContent(); onclose(); }} role="presentation">
+  <div class="scratchpad-overlay" onclick={(e) => handleBackdropClick(e, handleClose)} role="presentation">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="scratchpad-modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
