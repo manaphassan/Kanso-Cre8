@@ -1151,12 +1151,14 @@ class WorkspaceService {
     this.workspaceRoot = targetPath;
     config.WORKSPACE_ROOT = targetPath;
 
-    // Persist configuration override to server/workspace_config.json
+    // Persist configuration override to Machine tier
     try {
-      const overrideConfigPath = path.resolve(__dirname, '../workspace_config.json');
-      fs.writeFileSync(overrideConfigPath, JSON.stringify({ workspaceRoot: targetPath, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
+      const machineConfig = config.loadMachineConfig();
+      machineConfig.workspaceRoot = targetPath;
+      machineConfig.updatedAt = new Date().toISOString();
+      config.saveMachineConfig(machineConfig);
     } catch (err) {
-      console.warn('[WorkspaceService] Failed to write workspace_config.json override:', err.message);
+      console.warn('[WorkspaceService] Failed to write machine config override:', err.message);
     }
 
     // Restart watcher on new path
