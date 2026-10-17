@@ -27,7 +27,7 @@
   {#if activeProjects.length === 0}
     <div class="empty-projects-card">
       <p>No active projects in progress. Create your first campaign in Project Manager.</p>
-      <a href="#projects" class="btn-primary-mini">New Project</a>
+      <a href="#projects" class="btn-primary-mini">Create project</a>
     </div>
   {:else}
     <div class="projects-glance-grid">

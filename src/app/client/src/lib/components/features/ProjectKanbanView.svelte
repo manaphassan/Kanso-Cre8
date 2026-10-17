@@ -388,7 +388,7 @@
                     <span class="client-color-dot" style="background: {clientColor};"></span>
                     <span class="client-name-label">{client?.name || p.brand || 'Client'}</span>
                     {#if copiedHex === clientColor}
-                      <span class="swatch-copied-label">Copied!</span>
+                      <span class="swatch-copied-label">Copied</span>
                     {/if}
                   </button>
 

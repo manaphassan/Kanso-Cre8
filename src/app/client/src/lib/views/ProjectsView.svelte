@@ -162,7 +162,7 @@
         title="Scaffold a new 5-folder project vault"
       >
         <Icon name="plus" size={14} />
-        <span>New Project</span>
+        <span>Create project</span>
       </button>
     </div>
   </div>

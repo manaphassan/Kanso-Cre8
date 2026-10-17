@@ -415,7 +415,7 @@
             title="Copy direct API download link for client sharing"
           >
             <Icon name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
-            <span>{linkCopied ? 'Link Copied!' : 'Copy Direct Link'}</span>
+            <span>{linkCopied ? 'Link copied' : 'Copy link'}</span>
           </button>
         </div>
 

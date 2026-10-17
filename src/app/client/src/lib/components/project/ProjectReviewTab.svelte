@@ -39,11 +39,7 @@
 
   {#if projectStore.activeDeliverables.length === 0}
     <div class="empty-gallery">
-      <div class="empty-icon-box">
-        <Icon name="folder" size={36} color="rgba(255,255,255,0.2)" />
-      </div>
       <p>No output media found in <code>05_DELIVERABLES</code>.</p>
-      <p class="empty-sub">Export output media (PNG, JPG, MP4, PDF) from Photoshop, Illustrator, or Figma into the project folder.</p>
     </div>
   {:else}
     <div class="deliverables-grid">

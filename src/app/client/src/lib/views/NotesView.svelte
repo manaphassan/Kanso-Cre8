@@ -185,7 +185,7 @@
     updateTopology();
     activeTab = 'notes';
     selectNote(newNote);
-    appState.addToast('Promoted scratchpad into new fleeting note!', 'success');
+    appState.addToast('Promoted scratchpad into new fleeting note.', 'success');
   }
 
   // Derived filtered notes
@@ -678,7 +678,7 @@
               class="primary-cta-btn"
               onclick={() => createNewNote('permanent')}
             >
-              + Create New Note
+              Create note
             </button>
           </div>
         {/if}

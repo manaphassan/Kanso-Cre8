@@ -72,7 +72,7 @@
 
     <div class="form-actions-row" style="margin-top: 20px;">
       <button type="button" class="btn-primary" onclick={handleSavePreferences}>
-        Save Preferences
+        Save preferences
       </button>
     </div>
   </div>

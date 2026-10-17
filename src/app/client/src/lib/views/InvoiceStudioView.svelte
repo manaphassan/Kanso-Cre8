@@ -264,7 +264,7 @@
       subtotal: 2800,
       taxAmount: 0,
       total: 2800,
-      notes: sp.defaultPaymentTerms || 'Payment settlement via direct wire / ACH transfer within 14 days. Thank you!'
+      notes: sp.defaultPaymentTerms || 'Payment settlement via direct wire / ACH transfer within 14 days. Thank you.'
     };
 
     financeService.saveDocument(newDoc);
@@ -416,7 +416,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>New Invoice</span>
+          <span>Create invoice</span>
         </button>
       {:else}
         <button
@@ -426,7 +426,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>New Quote</span>
+          <span>Create quote</span>
         </button>
       {/if}
 
@@ -1066,7 +1066,7 @@
                 </div>
               </div>
               {#if copiedHex}
-                <span class="text-xs font-semibold text-emerald-500 animate-fadeIn"><Icon name="check" size={12} /> Copied {copiedHex}!</span>
+                <span class="text-xs font-semibold text-emerald-500 animate-fadeIn"><Icon name="check" size={12} /> Copied {copiedHex}</span>
               {/if}
             </div>
           {/if}

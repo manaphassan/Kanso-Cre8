@@ -256,7 +256,7 @@
             onclick={handleSave}
             class="px-5 py-2 text-sm bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors"
           >
-            Save Profile
+            Save client
           </button>
         </div>
       </div>

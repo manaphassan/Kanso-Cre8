@@ -96,7 +96,7 @@
       </label>
 
       <div class="stop-modal-actions">
-        <button type="button" class="modal-btn secondary" onclick={onCancel}>Resume Session</button>
+        <button type="button" class="modal-btn secondary" onclick={onCancel}>Resume timer</button>
         <button type="button" class="modal-btn primary" onclick={() => onConfirm(note, appendToInvoice)}>
           Log &amp; Finish
         </button>
