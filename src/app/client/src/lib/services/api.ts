@@ -762,6 +762,37 @@ export class ApiClient {
       body: JSON.stringify({ conflictPath, resolution })
     });
   }
+
+  // ─── Machine Tier Live Chronometer ───
+  static getTimerState(): Promise<{ success: boolean; timer: any }> {
+    return this.request('/system/timer');
+  }
+
+  static startTimer(payload: any): Promise<{ success: boolean; timer: any }> {
+    return this.request('/system/timer/start', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  static pauseTimer(): Promise<{ success: boolean; timer: any }> {
+    return this.request('/system/timer/pause', {
+      method: 'POST'
+    });
+  }
+
+  static resumeTimer(): Promise<{ success: boolean; timer: any }> {
+    return this.request('/system/timer/resume', {
+      method: 'POST'
+    });
+  }
+
+  static stopTimer(payload: { appendToInvoice?: boolean; note?: string } = {}): Promise<{ success: boolean; sessionLog?: any; invoice?: any; totalSeconds?: number }> {
+    return this.request('/system/timer/stop', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
 }
 
 

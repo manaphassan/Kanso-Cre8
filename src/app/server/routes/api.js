@@ -22,6 +22,7 @@ const WebhookService = require('../services/WebhookService');
 const JournalVaultService = require('../services/JournalVaultService');
 const FinanceVaultService = require('../services/FinanceVaultService');
 const NotesVaultService = require('../services/NotesVaultService');
+const TimerService = require('../services/TimerService');
 
 // ─── REAL-TIME SERVER-SENT EVENTS (SSE) ROUTE ───────────────────────
 
@@ -2334,6 +2335,70 @@ router.post('/system/sync-conflicts/resolve', (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('[System] resolveSyncConflict error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─── LIVE CHRONOMETER & BILLABLE TIMER ROUTES (MACHINE TIER) ──────────
+
+// GET /api/system/timer (and /api/timer) — Get live timer state with accurate elapsed time
+router.get(['/system/timer', '/timer'], (req, res) => {
+  try {
+    const state = TimerService.getState();
+    res.json({ success: true, timer: state });
+  } catch (err) {
+    console.error('[Timer] getState error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/system/timer/start (and /api/timer/start) — Start chronometer
+router.post(['/system/timer/start', '/timer/start'], (req, res) => {
+  try {
+    const state = TimerService.start(req.body);
+    SseService.broadcast('timer:started', { timer: state });
+    res.json({ success: true, timer: state });
+  } catch (err) {
+    console.error('[Timer] start error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/system/timer/pause (and /api/timer/pause) — Pause chronometer
+router.post(['/system/timer/pause', '/timer/pause'], (req, res) => {
+  try {
+    const state = TimerService.pause();
+    SseService.broadcast('timer:paused', { timer: state });
+    res.json({ success: true, timer: state });
+  } catch (err) {
+    console.error('[Timer] pause error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/system/timer/resume (and /api/timer/resume) — Resume chronometer
+router.post(['/system/timer/resume', '/timer/resume'], (req, res) => {
+  try {
+    const state = TimerService.resume();
+    SseService.broadcast('timer:resumed', { timer: state });
+    res.json({ success: true, timer: state });
+  } catch (err) {
+    console.error('[Timer] resume error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/system/timer/stop (and /api/timer/stop) — Stop chronometer and append to draft invoice
+router.post(['/system/timer/stop', '/timer/stop'], (req, res) => {
+  try {
+    const result = TimerService.stop(req.body);
+    SseService.broadcast('timer:stopped', { timer: result.state, sessionLog: result.sessionLog });
+    if (result.invoice) {
+      SseService.broadcast('finance:session-appended', { invoice: result.invoice });
+    }
+    res.json(result);
+  } catch (err) {
+    console.error('[Timer] stop error:', err.message);
     res.status(400).json({ error: err.message });
   }
 });
