@@ -52,6 +52,7 @@ class AppStateStore {
   globalSearch = $state<string>('');
   notificationCount = $state<number>(0);
   notificationDrawerOpen = $state<boolean>(false);
+  radioDrawerOpen = $state<boolean>(false);
   userMenuOpen = $state<boolean>(false);
   contextDrawerOpen = $state<boolean>(false);
   sseStatus = $state<'connected' | 'reconnecting' | 'disconnected'>('disconnected');

@@ -7,7 +7,7 @@
   const state = $derived(radioService.state);
 
   function openRadioStudio() {
-    appState.navigate('radio');
+    appState.radioDrawerOpen = !appState.radioDrawerOpen;
   }
 </script>
 

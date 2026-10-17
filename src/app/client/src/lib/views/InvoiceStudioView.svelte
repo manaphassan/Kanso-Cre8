@@ -10,7 +10,12 @@
   import { Icon } from '$lib/components/ui';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
-  let docType: 'invoices' | 'quotes' = $state('invoices');
+  interface Props {
+    initialDocType?: 'invoices' | 'quotes';
+  }
+
+  let { initialDocType = 'invoices' }: Props = $props();
+  let docType: 'invoices' | 'quotes' = $state(initialDocType);
   let invoices: InvoiceDocument[] = $state([]);
   let quotes: InvoiceDocument[] = $state([]);
   let clients: ClientProfile[] = $state([]);
@@ -18,6 +23,12 @@
   let viewMode: 'edit' | 'markdown' = $state('edit');
   let activeFilter: string = $state('all');
   let isConverting = $state(false);
+
+  $effect(() => {
+    if (initialDocType && initialDocType !== docType) {
+      switchDocType(initialDocType);
+    }
+  });
   let showFiscalDrawer = $state(false);
   let showScopeModal = $state(false);
   let copiedHex: string | null = $state(null);
