@@ -93,7 +93,10 @@
     | 'star'
     | 'music'
     | 'volume'
-    | 'volumeMute';
+    | 'volumeMute'
+    | 'play'
+    | 'pause'
+    | 'stop';
 
   interface Props {
     name: IconName;
@@ -362,6 +365,18 @@
   {:else if name === 'eye'}
     <svg viewBox="0 0 20 20" fill="currentColor" width="100%" height="100%">
       <path d="M10 4.5C5.5 4.5 2.08 7.6 1.15 9.5a1.2 1.2 0 0 0 0 1c.93 1.9 4.35 5 8.85 5s7.92-3.1 8.85-5a1.2 1.2 0 0 0 0-1c-.93-1.9-4.35-5-8.85-5zm0 8.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+    </svg>
+  {:else if name === 'play'}
+    <svg viewBox="0 0 20 20" fill="currentColor" width="100%" height="100%">
+      <path d="M6 4l10 6-10 6V4z"/>
+    </svg>
+  {:else if name === 'pause'}
+    <svg viewBox="0 0 20 20" fill="currentColor" width="100%" height="100%">
+      <path d="M6 4h3v12H6V4zm5 0h3v12h-3V4z"/>
+    </svg>
+  {:else if name === 'stop'}
+    <svg viewBox="0 0 20 20" fill="currentColor" width="100%" height="100%">
+      <path d="M5 5h10v10H5V5z"/>
     </svg>
   {:else}
     <!-- Default generic bullet icon -->

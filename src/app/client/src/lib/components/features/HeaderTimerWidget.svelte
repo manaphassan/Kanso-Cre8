@@ -5,14 +5,15 @@
   import { clientService, DEFAULT_CLIENTS } from '$lib/services/clientService';
   import { financeService } from '$lib/services/financeService';
   import { projectStore } from '$lib/stores/projectStore.svelte';
+  import { Icon } from '$lib/components/ui';
+  import StopSessionModal from './StopSessionModal.svelte';
 
   let showRatePopover = $state(false);
   let showClientPopover = $state(false);
   let showStopModal = $state(false);
   let stopSessionNote = $state('');
-  let appendToInvoiceChoice = $state(true);
 
-  // Client swatches mapping
+  // Active client profile
   const clientProfiles = $derived(clientService.getClients());
   const activeClient = $derived(
     clientProfiles.find(c => c.code === timerStore.clientCode) || clientProfiles[0] || DEFAULT_CLIENTS[0]
@@ -28,7 +29,7 @@
     }
   }
 
-  // Tactile Global Keyboard Shortcut: Ctrl+Alt+T (or Cmd+Alt+T) to Toggle Play/Pause
+  // Tactile Global Shortcut: Ctrl+Alt+T
   $effect(() => {
     function handleGlobalKeyDown(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === 't' || e.key === 'T')) {
@@ -45,30 +46,24 @@
   // Idle Activity Detection (15-Minute Focus & Inactivity Threshold)
   let lastActiveTimestamp = $state<number>(Date.now());
   let showIdlePrompt = $state<boolean>(false);
-  const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+  const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 
   $effect(() => {
     if (!timerStore.isRunning) {
       showIdlePrompt = false;
       return;
     }
-
     function recordActivity() {
       lastActiveTimestamp = Date.now();
-      if (showIdlePrompt) {
-        showIdlePrompt = false;
-      }
+      if (showIdlePrompt) showIdlePrompt = false;
     }
-
     const events = ['mousemove', 'keydown', 'pointerdown', 'wheel', 'touchstart'];
     events.forEach(evt => window.addEventListener(evt, recordActivity, { passive: true }));
-
     const checkInterval = setInterval(() => {
       if (timerStore.isRunning && Date.now() - lastActiveTimestamp >= IDLE_TIMEOUT_MS) {
         showIdlePrompt = true;
       }
     }, 10000);
-
     return () => {
       events.forEach(evt => window.removeEventListener(evt, recordActivity));
       clearInterval(checkInterval);
@@ -78,12 +73,10 @@
   function dismissIdlePrompt(keepRunning = true) {
     lastActiveTimestamp = Date.now();
     showIdlePrompt = false;
-    if (!keepRunning) {
-      timerStore.pause();
-    }
+    if (!keepRunning) timerStore.pause();
   }
 
-  // Client Swatch Auto-Match: Automatically adapt active client when viewing project detail
+  // Auto-adapt client from active project
   $effect(() => {
     if (!timerStore.isRunning && !timerStore.isPaused) {
       const activeProjId = appState.routeParams?.id;
@@ -107,8 +100,8 @@
     showStopModal = true;
   }
 
-  function confirmStop() {
-    timerStore.sessionNote = stopSessionNote;
+  function confirmStop(note: string, appendToInvoice: boolean) {
+    timerStore.sessionNote = note;
     const log = timerStore.stop();
     showStopModal = false;
 
@@ -117,21 +110,14 @@
         `Session saved: ${log.durationFormatted} (${log.earnedFormatted}) on ${log.clientCode}`,
         'success'
       );
-
-      if (appendToInvoiceChoice) {
+      if (appendToInvoice) {
         financeService.appendSession(log.clientCode, log).then(inv => {
-          if (inv) {
-            appState.addToast(`Appended ${log.durationFormatted} to invoice ${inv.documentNumber}`, 'info');
-          }
+          if (inv) appState.addToast(`Appended ${log.durationFormatted} to invoice ${inv.documentNumber}`, 'info');
         }).catch(e => {
           console.warn('[HeaderTimerWidget] Error appending to draft invoice:', e);
         });
       }
     }
-  }
-
-  function cancelStop() {
-    showStopModal = false;
   }
 
   function copySwatch(hex: string, label: string) {
@@ -152,9 +138,10 @@
 </script>
 
 <div class="timer-widget-wrap" class:is-active={timerStore.isRunning}>
-  <!-- Tactile Transport Controls -->
+  <!-- Transport Controls -->
   <div class="transport-buttons">
     <button
+      type="button"
       class="transport-btn play-btn"
       class:running={timerStore.isRunning}
       class:paused={timerStore.isPaused}
@@ -162,80 +149,108 @@
       title={timerStore.isRunning ? 'Pause Timer (Ctrl+Alt+T)' : 'Start Billable Timer (Ctrl+Alt+T)'}
       aria-label="Start or pause timer"
     >
-      {#if timerStore.isRunning}
-        <!-- Pause Icon -->
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-        </svg>
-      {:else}
-        <!-- Play Icon -->
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      {/if}
+      <Icon name={timerStore.isRunning ? 'pause' : 'play'} size={12} />
     </button>
 
     <button
+      type="button"
       class="transport-btn stop-btn"
       disabled={!timerStore.isRunning && !timerStore.isPaused && timerStore.elapsedSeconds === 0}
       onclick={handleStopClick}
       title="Stop & Log Session"
       aria-label="Stop timer"
     >
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 6h12v12H6z"/>
-      </svg>
+      <Icon name="stop" size={10} />
     </button>
   </div>
 
   <!-- Monospaced Ticker Display -->
   <div class="ticker-display" class:pulse={timerStore.isRunning}>
-    <span class="time-readout">{timerStore.formattedTime}</span>
+    <span class="time-readout font-mono">{timerStore.formattedTime}</span>
   </div>
 
-  <!-- Real-Time Auto-Calculated Earned Rate Badge -->
-  <div class="earned-badge" title="Live accrued earnings based on hourly rate">
-    <span class="earned-amount">{timerStore.formattedEarned}</span>
+  <!-- Collapsed Rate + Accrued Earnings Compact Control -->
+  <div class="rate-earnings-wrap">
+    <button
+      type="button"
+      class="rate-earnings-pill font-mono"
+      onclick={() => { showRatePopover = !showRatePopover; showClientPopover = false; }}
+      title="Edit hourly rate ({settingsStore.settings.currencySymbol || '$'}{timerStore.hourlyRate}/h) · Accrued {timerStore.formattedEarned}"
+      aria-label="Edit rate and view earnings"
+    >
+      <span class="rate-part">@{settingsStore.settings.currencySymbol || '$'}{timerStore.hourlyRate}/h</span>
+      <span class="pill-dot">·</span>
+      <span class="earn-part" class:has-earnings={timerStore.earnings > 0}>{timerStore.formattedEarned}</span>
+    </button>
+
+    {#if showRatePopover}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="popover-backdrop" onclick={() => (showRatePopover = false)}></div>
+      <div class="rate-popover" role="dialog" aria-label="Hourly Rate Selector">
+        <div class="popover-title">Design Hourly Rate</div>
+        <div class="rate-input-row">
+          <span class="curr-prefix">{settingsStore.settings.currencySymbol}</span>
+          <input
+            type="number"
+            min="10"
+            max="1000"
+            step="5"
+            value={timerStore.hourlyRate}
+            onchange={(e) => timerStore.setRate(Number((e.target as HTMLInputElement).value))}
+            class="rate-input"
+          />
+          <span class="curr-suffix">/ hour</span>
+        </div>
+        <div class="rate-presets">
+          {#each [100, 140, 160, 180, 200, 220] as preset}
+            <button
+              type="button"
+              class="preset-chip"
+              class:selected={timerStore.hourlyRate === preset}
+              onclick={() => { timerStore.setRate(preset); showRatePopover = false; }}
+            >
+              {settingsStore.settings.currencySymbol} {preset}
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
   </div>
 
-  <!-- Subtle divider between timer and billing -->
   <div class="strip-divider" aria-hidden="true"></div>
 
-  <!-- Client & Hourly Rate Selector Strip -->
-  <div class="client-rate-strip">
-    <!-- Client Selector Popover Trigger -->
+  <!-- Active Client Selector & Swatches (shows only active client) -->
+  <div class="client-swatch-strip">
     <div class="client-picker-wrap">
       <button
-        class="client-trigger-btn"
+        type="button"
+        class="client-trigger-btn font-mono"
         onclick={() => { showClientPopover = !showClientPopover; showRatePopover = false; }}
-        title="Active Client Billing Profile: {activeClient?.name || timerStore.clientCode}"
+        title="Active Client: {activeClient?.name || timerStore.clientCode}"
         aria-label="Select client profile"
       >
         <span class="client-code-badge">{activeClient?.code || timerStore.clientCode}</span>
-        <svg class="client-caret" width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7 10l5 5 5-5z"/>
-        </svg>
+        <Icon name="chevronDown" size={10} />
       </button>
 
       {#if showClientPopover}
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="client-popover-backdrop" onclick={() => (showClientPopover = false)}></div>
+        <div class="popover-backdrop" onclick={() => (showClientPopover = false)}></div>
         <div class="client-popover" role="menu">
           <div class="popover-title">Active Client</div>
           <div class="client-list">
             {#each clientProfiles as client}
               <button
+                type="button"
                 class="client-option-btn"
                 class:selected={client.code === timerStore.clientCode}
-                onclick={() => {
-                  selectClient(client.code);
-                  showClientPopover = false;
-                }}
+                onclick={() => { selectClient(client.code); showClientPopover = false; }}
               >
-                <span class="client-opt-code">{client.code}</span>
+                <span class="client-opt-code font-mono">{client.code}</span>
                 <span class="client-opt-name">{client.name}</span>
-                <span class="client-opt-rate">{settingsStore.settings.currencySymbol} {client.defaultHourlyRate}/h</span>
+                <span class="client-opt-rate font-mono">{settingsStore.settings.currencySymbol} {client.defaultHourlyRate}/h</span>
               </button>
             {/each}
           </div>
@@ -243,71 +258,32 @@
       {/if}
     </div>
 
-    <!-- Inline Rate Trigger -->
-    <div class="rate-badge-wrap">
-      <button
-        class="rate-trigger"
-        onclick={() => { showRatePopover = !showRatePopover; showClientPopover = false; }}
-        title="Click to edit design hourly rate"
-      >
-        @{settingsStore.settings.currencySymbol} {timerStore.hourlyRate}/h
-      </button>
-
-      {#if showRatePopover}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="rate-popover-backdrop" onclick={() => (showRatePopover = false)}></div>
-        <div class="rate-popover" role="dialog" aria-label="Hourly Rate Selector">
-          <div class="popover-title">Design Hourly Rate</div>
-          <div class="rate-input-row">
-            <span class="curr-prefix">{settingsStore.settings.currencySymbol}</span>
-            <input
-              type="number"
-              min="10"
-              max="1000"
-              step="5"
-              value={timerStore.hourlyRate}
-              onchange={(e) => timerStore.setRate(Number((e.target as HTMLInputElement).value))}
-              class="rate-input"
-            />
-            <span class="curr-suffix">/ hour</span>
-          </div>
-          <div class="rate-presets">
-            {#each [100, 140, 160, 180, 200, 220] as preset}
-              <button
-                class="preset-chip"
-                class:selected={timerStore.hourlyRate === preset}
-                onclick={() => { timerStore.setRate(preset); showRatePopover = false; }}
-              >
-                {settingsStore.settings.currencySymbol} {preset}
-              </button>
-            {/each}
-          </div>
-        </div>
-      {/if}
-    </div>
-
-    <!-- Active Client Swatch Strip with 1-Click Hex Copy -->
+    <!-- Active Client Palette Swatch with 1-Click Copy -->
     {#if activeClient?.palette}
-      <div class="strip-divider" aria-hidden="true"></div>
-      <div class="client-swatches" title="1-Click copy {activeClient.name} brand color">
+      <div class="active-swatches">
         <button
+          type="button"
           class="swatch-dot"
           style="background: {activeClient.palette.primary};"
           onclick={() => copySwatch(activeClient.palette.primary, 'Primary')}
           title="Primary: {activeClient.palette.primary}"
+          aria-label="Copy primary color {activeClient.palette.primary}"
         ></button>
         <button
+          type="button"
           class="swatch-dot"
           style="background: {activeClient.palette.secondary};"
           onclick={() => copySwatch(activeClient.palette.secondary, 'Secondary')}
           title="Secondary: {activeClient.palette.secondary}"
+          aria-label="Copy secondary color {activeClient.palette.secondary}"
         ></button>
         <button
+          type="button"
           class="swatch-dot"
           style="background: {activeClient.palette.accent};"
           onclick={() => copySwatch(activeClient.palette.accent, 'Accent')}
           title="Accent: {activeClient.palette.accent}"
+          aria-label="Copy accent color {activeClient.palette.accent}"
         ></button>
       </div>
     {/if}
@@ -316,8 +292,8 @@
   <!-- Smart Idle Chronometer Pill -->
   {#if showIdlePrompt}
     <div class="idle-prompt-pill" role="alert">
-      <span class="idle-alert-icon">⏱️</span>
-      <span class="idle-prompt-text">Still crafting on [{timerStore.clientCode}]?</span>
+      <span class="idle-alert-icon"><Icon name="clock" size={13} /></span>
+      <span class="idle-prompt-text font-mono">Still crafting on [{timerStore.clientCode}]?</span>
       <button type="button" class="idle-action-btn keep" onclick={() => dismissIdlePrompt(true)}>
         Keep Running
       </button>
@@ -329,691 +305,58 @@
 </div>
 
 <!-- Stop Session Dialog -->
-{#if showStopModal}
-  <div class="stop-modal-backdrop" onclick={cancelStop} role="presentation">
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="stop-modal-card" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
-      <div class="stop-modal-header">
-        <div class="stop-title-wrap">
-          <span class="stop-badge-icon">⏱️</span>
-          <div>
-            <h3 class="stop-modal-title">Session Complete</h3>
-            <p class="stop-modal-sub">Log hours to creative ledger &amp; client invoice</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="stop-metrics-bento">
-        <div class="bento-box">
-          <span class="bbox-label">TIME LOGGED</span>
-          <span class="bbox-value time-val">{timerStore.formattedTime}</span>
-        </div>
-        <div class="bento-box">
-          <span class="bbox-label">CLIENT</span>
-          <span class="bbox-value client-val">{timerStore.clientCode}</span>
-        </div>
-        <div class="bento-box">
-          <span class="bbox-label">ACCRUED EARNED</span>
-          <span class="bbox-value earn-val">{timerStore.formattedEarned}</span>
-        </div>
-      </div>
-
-      <div class="stop-input-group">
-        <label for="stop-note" class="stop-label">Session Deliverable Note / Summary</label>
-        <input
-          id="stop-note"
-          type="text"
-          bind:value={stopSessionNote}
-          placeholder="e.g. 4K Mobile Hero 3D renders, revision round 2..."
-          class="stop-input"
-        />
-      </div>
-
-      <label class="stop-checkbox-row">
-        <input type="checkbox" bind:checked={appendToInvoiceChoice} class="stop-checkbox" />
-        <span class="checkbox-text">
-          <strong>1-Click Append to Draft Invoice</strong> ({timerStore.clientCode})
-        </span>
-      </label>
-
-      <div class="stop-modal-actions">
-        <button class="modal-btn secondary" onclick={cancelStop}>Resume Session</button>
-        <button class="modal-btn primary" onclick={confirmStop}>Log &amp; Finish</button>
-      </div>
-    </div>
-  </div>
-{/if}
+<StopSessionModal
+  open={showStopModal}
+  formattedTime={timerStore.formattedTime}
+  clientCode={timerStore.clientCode}
+  formattedEarned={timerStore.formattedEarned}
+  initialNote={stopSessionNote}
+  onConfirm={confirmStop}
+  onCancel={() => (showStopModal = false)}
+/>
 
 <style>
-  .timer-widget-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 30px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 9999px;
-    padding: 2px 8px 2px 4px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    box-sizing: border-box;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  }
-
-  .timer-widget-wrap.is-active {
-    border-color: rgba(56, 189, 248, 0.4);
-    background: rgba(56, 189, 248, 0.04);
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.12);
-  }
-
-  /* Smart Idle Prompt Pill */
-  .idle-prompt-pill {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--kanso-surface);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 11.5px;
-    white-space: nowrap;
-    animation: idleSlide 0.15s ease-out;
-  }
-
-  .idle-alert-icon {
-    font-size: 12px;
-  }
-
-  .idle-prompt-text {
-    color: var(--kanso-warning);
-    font-weight: 500;
-  }
-
-  .idle-action-btn {
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.12s ease;
-  }
-
-  .idle-action-btn.keep {
-    background: rgba(16, 185, 129, 0.2);
-    color: var(--kanso-success);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-  }
-
-  .idle-action-btn.keep:hover {
-    background: rgba(16, 185, 129, 0.35);
-  }
-
-  .idle-action-btn.pause {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--kanso-danger);
-    border: 1px solid rgba(239, 68, 68, 0.35);
-  }
-
-  .idle-action-btn.pause:hover {
-    background: rgba(239, 68, 68, 0.3);
-  }
-
-  @keyframes idleSlide {
-    from { transform: translateY(-4px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .transport-buttons {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    flex-shrink: 0;
-  }
-
-  .transport-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    color: var(--kanso-text-primary);
-    background: transparent;
-    flex-shrink: 0;
-    padding: 0;
-  }
-
-  .transport-btn.play-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: var(--kanso-border);
-  }
-
-  .transport-btn.play-btn:hover {
-    background: var(--kanso-accent);
-    color: var(--kanso-canvas);
-    border-color: var(--kanso-accent);
-  }
-
-  .transport-btn.play-btn.running {
-    background: var(--kanso-accent);
-    color: var(--kanso-canvas);
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
-    animation: pulseGlow 2s infinite ease-in-out;
-  }
-
-  @keyframes pulseGlow {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.88; transform: scale(0.96); }
-  }
-
-  .transport-btn.stop-btn {
-    background: transparent;
-    color: var(--kanso-text-muted);
-  }
-
-  .transport-btn.stop-btn:hover:not(:disabled) {
-    color: var(--kanso-danger);
-    background: rgba(239, 68, 68, 0.12);
-  }
-
-  .transport-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  .ticker-display {
-    display: inline-flex;
-    align-items: center;
-    padding: 0 3px;
-    font-family: var(--kanso-font-mono, ui-monospace, monospace);
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--kanso-text-muted);
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .ticker-display.pulse {
-    color: var(--kanso-text-primary);
-  }
-
-  .earned-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    color: var(--kanso-success);
-    font-size: 11.5px;
-    font-weight: 700;
-    font-family: var(--kanso-font-mono, ui-monospace, monospace);
-    padding: 0 7px;
-    height: 22px;
-    line-height: 22px;
-    border-radius: 4px;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    flex-shrink: 0;
-    box-sizing: border-box;
-  }
-
-  .earned-amount {
-    white-space: nowrap;
-    line-height: 1;
-    display: inline-block;
-  }
-
-  .strip-divider {
-    width: 1px;
-    height: 14px;
-    background: var(--kanso-border);
-    margin: 0 2px;
-    flex-shrink: 0;
-    opacity: 0.7;
-  }
-
-  .client-rate-strip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  /* Client Picker Popover */
-  .client-picker-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .client-trigger-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    height: 22px;
-    padding: 0 6px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--kanso-border);
-    border-radius: 4px;
-    color: var(--kanso-text-primary);
-    font-size: 11.5px;
-    font-weight: 700;
-    font-family: var(--kanso-font-mono, monospace);
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .client-trigger-btn:hover {
-    background: var(--kanso-surface-hover);
-    border-color: var(--kanso-accent);
-  }
-
-  .client-caret {
-    color: var(--kanso-text-muted);
-    transition: transform 0.15s ease;
-  }
-
-  .client-popover-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 99;
-  }
-
-  .client-popover {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    min-width: 240px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    z-index: 100;
-  }
-
-  .client-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .client-option-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-    padding: 6px 8px;
-    border-radius: 5px;
-    background: transparent;
-    border: none;
-    color: var(--kanso-text-primary);
-    cursor: pointer;
-    font-size: 12px;
-    text-align: left;
-    transition: background 0.12s ease;
-  }
-
-  .client-option-btn:hover {
-    background: var(--kanso-surface-hover);
-  }
-
-  .client-option-btn.selected {
-    background: rgba(56, 189, 248, 0.12);
-    color: var(--kanso-accent);
-  }
-
-  .client-opt-code {
-    font-weight: 700;
-    font-family: var(--kanso-font-mono, monospace);
-    font-size: 12px;
-    width: 44px;
-    flex-shrink: 0;
-  }
-
-  .client-opt-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--kanso-text-muted);
-    font-size: 12px;
-  }
-
-  .client-option-btn.selected .client-opt-name {
-    color: var(--kanso-text-primary);
-  }
-
-  .client-opt-rate {
-    font-family: var(--kanso-font-mono, monospace);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--kanso-text-muted);
-    flex-shrink: 0;
-  }
-
-  /* Rate Trigger */
-  .rate-badge-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .rate-trigger {
-    display: inline-flex;
-    align-items: center;
-    height: 22px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--kanso-border);
-    border-radius: 4px;
-    font-size: 11.5px;
-    font-weight: 600;
-    font-family: var(--kanso-font-mono, monospace);
-    color: var(--kanso-text-muted);
-    padding: 0 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .rate-trigger:hover {
-    color: var(--kanso-text-primary);
-    border-color: var(--kanso-accent);
-  }
-
-  .rate-popover-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 99;
-  }
-
-  .rate-popover {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    width: 210px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    z-index: 100;
-  }
-
-  .popover-title {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--kanso-text-muted);
-    margin-bottom: 6px;
-  }
-
-  .rate-input-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: 6px;
-    padding: 4px 8px;
-  }
-
-  .curr-prefix, .curr-suffix {
-    font-size: 12px;
-    color: var(--kanso-text-muted);
-  }
-
-  .rate-input {
-    width: 60px;
-    background: transparent;
-    border: none;
-    color: var(--kanso-text-primary);
-    font-size: 14px;
-    font-weight: 700;
-    outline: none;
-  }
-
-  .rate-presets {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    margin-top: 8px;
-  }
-
-  .preset-chip {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--kanso-border);
-    border-radius: 4px;
-    color: var(--kanso-text-primary);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 0;
-    cursor: pointer;
-  }
-
-  .preset-chip:hover, .preset-chip.selected {
-    background: var(--kanso-accent);
-    color: var(--kanso-canvas);
-    border-color: var(--kanso-accent);
-  }
-
-  .client-swatches {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding-left: 2px;
-    flex-shrink: 0;
-  }
-
-  .swatch-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .swatch-dot:hover {
-    transform: scale(1.35);
-    border-color: var(--kanso-accent-text);
-  }
-
-  /* --- STOP MODAL --- */
-  .stop-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.15s ease;
-  }
-
-  .stop-modal-card {
-    width: 100%;
-    max-width: 440px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .stop-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .stop-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .stop-badge-icon {
-    font-size: 24px;
-  }
-
-  .stop-modal-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--kanso-text-primary);
-    margin: 0;
-  }
-
-  .stop-modal-sub {
-    font-size: 13px;
-    color: var(--kanso-text-muted);
-    margin: 2px 0 0 0;
-  }
-
-  .stop-metrics-bento {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 10px;
-  }
-
-  .bento-box {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .bbox-label {
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--kanso-text-muted);
-    letter-spacing: 0.05em;
-  }
-
-  .bbox-value {
-    font-size: 14px;
-    font-weight: 700;
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    color: var(--kanso-text-primary);
-  }
-
-  .bbox-value.time-val { color: var(--kanso-accent); }
-  .bbox-value.client-val { color: var(--kanso-warning); }
-  .bbox-value.earn-val { color: var(--kanso-success); }
-
-  .stop-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .stop-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--kanso-text-primary);
-  }
-
-  .stop-input {
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 13px;
-    color: var(--kanso-text-primary);
-    outline: none;
-  }
-
-  .stop-input:focus {
-    border-color: var(--kanso-accent);
-  }
-
-  .stop-checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--kanso-text-primary);
-    cursor: pointer;
-  }
-
-  .stop-checkbox {
-    width: 15px;
-    height: 15px;
-    accent-color: var(--kanso-accent);
-    cursor: pointer;
-  }
-
-  .stop-modal-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 4px;
-  }
-
-  .modal-btn {
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .modal-btn.secondary {
-    background: transparent;
-    border: 1px solid var(--kanso-border);
-    color: var(--kanso-text-primary);
-  }
-
-  .modal-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .modal-btn.primary {
-    background: var(--kanso-accent);
-    border: 1px solid var(--kanso-accent);
-    color: var(--kanso-canvas);
-  }
-
-  .modal-btn.primary:hover {
-    filter: brightness(1.1);
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  .timer-widget-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 30px; background: var(--kanso-surface); border: 1px solid var(--kanso-border); border-radius: 9999px; padding: 2px 8px 2px 4px; white-space: nowrap; flex-shrink: 0; box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+  .timer-widget-wrap.is-active { border-color: var(--kanso-accent); }
+  .transport-buttons { display: flex; align-items: center; gap: 2px; }
+  .transport-btn { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; border: none; cursor: pointer; background: transparent; color: var(--kanso-text-muted); transition: all 0.12s ease; }
+  .transport-btn:hover:not(:disabled) { background: var(--kanso-surface-hover); color: var(--kanso-text-primary); }
+  .play-btn.running { background: var(--kanso-accent); color: #FFFFFF; }
+  .transport-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .ticker-display { padding: 0 4px; }
+  .time-readout { font-size: 12px; font-weight: 700; color: var(--kanso-text-primary); letter-spacing: 0.04em; }
+  .ticker-display.pulse .time-readout { color: var(--kanso-accent); }
+  .rate-earnings-wrap { position: relative; }
+  .rate-earnings-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 9999px; font-size: 11px; color: var(--kanso-text-muted); cursor: pointer; transition: all 0.12s ease; }
+  .rate-earnings-pill:hover { border-color: var(--kanso-accent); color: var(--kanso-text-primary); }
+  .pill-dot { opacity: 0.5; }
+  .earn-part.has-earnings { color: var(--kanso-success); font-weight: 700; }
+  .strip-divider { width: 1px; height: 14px; background: var(--kanso-border); }
+  .client-swatch-strip { display: flex; align-items: center; gap: 6px; }
+  .client-picker-wrap { position: relative; }
+  .client-trigger-btn { display: inline-flex; align-items: center; gap: 3px; background: transparent; border: none; cursor: pointer; padding: 2px 4px; font-size: 11px; font-weight: 700; color: var(--kanso-text-primary); }
+  .client-code-badge { color: var(--kanso-accent); }
+  .active-swatches { display: flex; align-items: center; gap: 4px; }
+  .swatch-dot { width: 10px; height: 10px; border-radius: 9999px; border: 1px solid var(--kanso-border); padding: 0; cursor: pointer; transition: transform 0.1s ease; }
+  .swatch-dot:hover { transform: scale(1.3); }
+  .popover-backdrop { position: fixed; inset: 0; z-index: 100; }
+  .rate-popover, .client-popover { position: absolute; top: calc(100% + 8px); right: 0; z-index: 101; background: var(--kanso-surface); border: 1px solid var(--kanso-border); border-radius: 8px; padding: 12px; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4); min-width: 200px; }
+  .popover-title { font-size: 11px; font-weight: 700; color: var(--kanso-text-muted); text-transform: uppercase; margin-bottom: 8px; }
+  .rate-input-row { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+  .rate-input { width: 70px; height: 28px; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 4px; padding: 0 6px; font-size: 12px; color: var(--kanso-text-primary); }
+  .rate-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .preset-chip { padding: 3px 6px; font-size: 10px; font-family: monospace; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 4px; color: var(--kanso-text-muted); cursor: pointer; }
+  .preset-chip.selected { background: var(--kanso-accent); color: #FFFFFF; border-color: var(--kanso-accent); }
+  .client-list { display: flex; flex-direction: column; gap: 4px; }
+  .client-option-btn { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 4px; cursor: pointer; font-size: 11px; color: var(--kanso-text-primary); }
+  .client-option-btn.selected { border-color: var(--kanso-accent); }
+  .client-opt-code { font-weight: 700; color: var(--kanso-accent); }
+  .client-opt-name { flex: 1; color: var(--kanso-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .client-opt-rate { color: var(--kanso-text-muted); }
+  .idle-prompt-pill { position: absolute; top: calc(100% + 6px); left: 0; z-index: 100; display: flex; align-items: center; gap: 8px; background: var(--kanso-surface); border: 1px solid var(--kanso-warning); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45); border-radius: 8px; padding: 5px 10px; font-size: 11.5px; white-space: nowrap; }
+  .idle-alert-icon { display: flex; align-items: center; color: var(--kanso-warning); }
+  .idle-prompt-text { color: var(--kanso-warning); font-weight: 500; }
+  .idle-action-btn { padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: 4px; cursor: pointer; border: none; }
+  .idle-action-btn.keep { background: var(--kanso-accent); color: #FFFFFF; }
+  .idle-action-btn.pause { background: var(--kanso-canvas); border: 1px solid var(--kanso-border); color: var(--kanso-text-muted); }
 </style>
