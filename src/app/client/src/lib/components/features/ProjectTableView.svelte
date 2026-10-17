@@ -299,11 +299,11 @@
 
 <style>
   .table-view-container {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     width: 100%;
     flex: 1;
     display: flex;
@@ -327,12 +327,12 @@
   }
 
   .fluent-data-table th {
-    background: var(--surface-card-subtle, #F9FAFB);
-    color: var(--text-secondary, #6B7280);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-secondary);
     font-weight: 700;
     font-size: 12px;
     padding: 12px 14px;
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border);
     user-select: none;
     white-space: nowrap;
   }
@@ -343,7 +343,7 @@
   }
 
   .th-sortable:hover {
-    color: var(--brand-accent, #0078D4);
+    color: var(--kanso-accent);
   }
 
   .sort-arrow {
@@ -353,7 +353,7 @@
   }
 
   .table-row-item {
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border);
     cursor: pointer;
     transition: background 0.15s ease;
   }
@@ -365,7 +365,7 @@
   .fluent-data-table td {
     padding: 12px 14px;
     vertical-align: middle;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
   }
 
   .td-job-id {
@@ -382,7 +382,7 @@
 
   .title-main {
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     line-height: 1.35;
   }
 
@@ -396,16 +396,16 @@
   .preset-pill {
     font-size: 10px;
     font-weight: 600;
-    background: var(--surface-card-subtle, #F3F4F6);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     padding: 1px 5px;
     border-radius: 4px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .folder-name-sub {
     font-size: 10.5px;
-    color: var(--text-tertiary, #9CA3AF);
+    color: var(--kanso-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -433,7 +433,7 @@
   }
 
   .table-client-code {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     color: var(--kanso-text-muted);
   }
@@ -533,8 +533,8 @@
     font-weight: 700;
     padding: 4px 8px;
     border-radius: 6px;
-    border: 1px solid var(--surface-card-border, #E5E7EB);
-    background: var(--surface-card, #FFFFFF);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
     cursor: pointer;
     outline: none;
   }
@@ -570,7 +570,7 @@
   }
 
   .no-rev-label {
-    color: var(--text-tertiary, #9CA3AF);
+    color: var(--kanso-text-muted);
     font-size: 12px;
   }
 
@@ -599,7 +599,7 @@
   }
 
   .text-muted {
-    color: var(--text-tertiary, #9CA3AF);
+    color: var(--kanso-text-muted);
     font-size: 12px;
   }
 
@@ -611,9 +611,9 @@
   }
 
   .btn-action-open {
-    background: var(--surface-card-subtle, #F3F4F6);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
-    color: var(--text-primary, #111827);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     font-size: 11.5px;
     font-weight: 600;
     padding: 4px 10px;
@@ -647,7 +647,7 @@
   .td-empty {
     text-align: center;
     padding: 48px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     font-size: 14px;
   }
 </style>

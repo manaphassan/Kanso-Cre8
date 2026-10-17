@@ -103,7 +103,7 @@
     margin-bottom: 20px;
     background: var(--kanso-surface);
     border: 1px solid var(--kanso-border);
-    border-radius: var(--radius-lg, 10px);
+    border-radius: var(--kanso-radius-lg);
     padding: 10px 14px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
@@ -114,7 +114,7 @@
     gap: 8px;
     background: var(--kanso-canvas);
     border: 1px solid var(--kanso-border);
-    border-radius: var(--radius-md, 6px);
+    border-radius: var(--kanso-radius-md);
     padding: 6px 12px;
     flex: 1;
     min-width: 240px;
@@ -160,7 +160,7 @@
     align-items: center;
     gap: 6px;
     padding: 4px 11px;
-    border-radius: var(--radius-pill, 9999px);
+    border-radius: var(--kanso-radius-full);
     font-size: 12px;
     font-weight: 500;
     color: var(--kanso-text-muted);
@@ -195,7 +195,7 @@
   }
 
   .client-code-text {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11.5px;
     letter-spacing: 0.02em;
   }

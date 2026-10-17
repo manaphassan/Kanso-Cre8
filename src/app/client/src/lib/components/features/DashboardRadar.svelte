@@ -177,7 +177,7 @@
       onclick={() => (showGuideModal = true)}
       title="How to read this radar competency matrix"
     >
-      <FluentIcons name="info" size={13} color="var(--brand-accent)" />
+      <FluentIcons name="info" size={13} color="var(--kanso-accent)" />
       <span>How to Read Matrix</span>
     </button>
   </div>
@@ -206,7 +206,7 @@
           cy={cy}
           r={maxR * ring}
           fill="none"
-          stroke="var(--surface-card-border)"
+          stroke="var(--kanso-border)"
           stroke-dasharray="3 3"
           stroke-width="0.8"
         />
@@ -214,7 +214,7 @@
           x={cx + 3}
           y={cy - maxR * ring - 2}
           font-size="8"
-          fill="var(--text-secondary)"
+          fill="var(--kanso-text-secondary)"
           opacity="0.6"
           font-family="monospace"
         >
@@ -231,7 +231,7 @@
           y1={cy}
           x2={x}
           y2={y}
-          stroke={isHighlighted ? 'var(--brand-accent)' : 'var(--surface-card-border)'}
+          stroke={isHighlighted ? 'var(--kanso-accent)' : 'var(--kanso-border)'}
           stroke-width={isHighlighted ? '2' : '1'}
           stroke-opacity={isHighlighted ? '0.9' : '0.6'}
         />
@@ -241,7 +241,7 @@
       <polygon
         points={targetPolygon}
         fill="rgba(33, 161, 247, 0.12)"
-        stroke="var(--brand-accent)"
+        stroke="var(--kanso-accent)"
         stroke-width="1.8"
         stroke-dasharray="4 2.5"
       />
@@ -268,7 +268,7 @@
           cx={tgt.x}
           cy={tgt.y}
           r="2.5"
-          fill="var(--brand-accent)"
+          fill="var(--kanso-accent)"
           opacity={isCurrent ? '0.9' : '0.4'}
         />
 
@@ -305,7 +305,7 @@
           y={lbl.y}
           font-size={isCurrent ? '11' : '10'}
           font-weight={isCurrent ? '800' : '600'}
-          fill={isCurrent ? 'var(--text-primary)' : 'var(--text-secondary)'}
+          fill={isCurrent ? 'var(--kanso-text-primary)' : 'var(--kanso-text-secondary)'}
           text-anchor="middle"
           dominant-baseline="central"
           class="radar-label-text"
@@ -463,7 +463,7 @@
     <div class="guidance-grid">
       <div class="guidance-col measure">
         <div class="guidance-heading">
-          <FluentIcons name="target" size={13} color="var(--brand-accent)" />
+          <FluentIcons name="target" size={13} color="var(--kanso-accent)" />
           <span>What It Measures</span>
         </div>
         <p class="guidance-text">{activeMeta.whatItMeasures}</p>
@@ -486,7 +486,7 @@
 
     <!-- Action Tip -->
     <div class="action-tip-banner">
-      <FluentIcons name="sparkle" size={14} color="var(--brand-accent)" />
+      <FluentIcons name="sparkle" size={14} color="var(--kanso-accent)" />
       <span class="action-tip-text"><strong>Art Director Action:</strong> {activeMeta.actionAdvice}</span>
     </div>
   </div>
@@ -619,7 +619,7 @@
     display: flex;
     gap: 16px;
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .legend-item {
@@ -636,7 +636,7 @@
 
   .legend-box.benchmark {
     background: rgba(33, 161, 247, 0.2);
-    border: 1px dashed var(--brand-accent);
+    border: 1px dashed var(--kanso-accent);
   }
 
   .legend-box.actual {
@@ -654,7 +654,7 @@
     gap: 5px;
     background: rgba(33, 161, 247, 0.08);
     border: 1px solid rgba(33, 161, 247, 0.25);
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
     padding: 3px 9px;
     border-radius: 12px;
     font-size: 11px;
@@ -665,7 +665,7 @@
 
   .guide-trigger-btn:hover {
     background: rgba(33, 161, 247, 0.16);
-    border-color: var(--brand-accent);
+    border-color: var(--kanso-accent);
     transform: translateY(-1px);
   }
 
@@ -694,7 +694,7 @@
 
   .radar-label-text:hover,
   .radar-label-text.active {
-    fill: var(--brand-accent) !important;
+    fill: var(--kanso-accent) !important;
   }
 
   .radar-hit-target {
@@ -707,8 +707,8 @@
     transform: translate(-50%, -100%);
     margin-top: -10px;
     width: 230px;
-    background: var(--surface-card-background, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
     padding: 9px 11px;
@@ -729,7 +729,7 @@
     align-items: center;
     gap: 6px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .tooltip-icon {
@@ -764,22 +764,22 @@
     gap: 6px;
     margin: 4px 0 3px 0;
     font-size: 10.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .tooltip-scores strong {
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .tooltip-desc {
     font-size: 10px;
     line-height: 1.35;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     margin-bottom: 4px;
   }
 
   .tooltip-footer {
-    border-top: 1px solid var(--surface-card-border);
+    border-top: 1px solid var(--kanso-border);
     padding-top: 4px;
     font-size: 9.5px;
     font-weight: 600;
@@ -806,27 +806,27 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: var(--surface-card-background, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 16px;
     padding: 4px 9px;
     font-size: 11px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     cursor: pointer;
     transition: all 0.18s ease;
   }
 
   .skill-chip:hover {
-    border-color: var(--brand-accent);
+    border-color: var(--kanso-accent);
     background: rgba(33, 161, 247, 0.05);
     transform: translateY(-1px);
   }
 
   .skill-chip.selected {
-    border-color: var(--brand-accent);
+    border-color: var(--kanso-accent);
     background: rgba(33, 161, 247, 0.12);
     font-weight: 700;
-    box-shadow: 0 0 0 1px var(--brand-accent);
+    box-shadow: 0 0 0 1px var(--kanso-accent);
   }
 
   .chip-icon {
@@ -877,8 +877,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background: var(--surface-card-background, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 10px;
     padding: 14px 16px;
     gap: 12px;
@@ -898,7 +898,7 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -906,7 +906,7 @@
 
   .project-count-pill {
     background: rgba(33, 161, 247, 0.1);
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
     padding: 1px 6px;
     border-radius: 8px;
     font-size: 9.5px;
@@ -918,7 +918,7 @@
     margin: 2px 0 0 0;
     font-size: 16px;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .detail-scores-col {
@@ -942,7 +942,7 @@
 
   .score-label {
     font-size: 9px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     text-transform: uppercase;
     font-weight: 600;
   }
@@ -957,12 +957,12 @@
   }
 
   .score-value.blue {
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
   }
 
   .score-vs {
     font-size: 10px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-weight: 600;
   }
 
@@ -1001,7 +1001,7 @@
   .progress-track {
     position: relative;
     height: 8px;
-    background: var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-border);
     border-radius: 4px;
     overflow: visible;
   }
@@ -1018,7 +1018,7 @@
     top: -3px;
     bottom: -3px;
     width: 2px;
-    background: var(--brand-accent);
+    background: var(--kanso-accent);
     transform: translateX(-50%);
   }
 
@@ -1027,7 +1027,7 @@
     bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--brand-accent);
+    background: var(--kanso-accent);
     color: #FFFFFF;
     font-size: 8.5px;
     font-weight: 700;
@@ -1051,7 +1051,7 @@
 
   .guidance-col {
     background: rgba(0, 0, 0, 0.02);
-    border: 1px solid var(--surface-card-border);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     padding: 8px 10px;
     font-size: 11px;
@@ -1062,7 +1062,7 @@
     align-items: center;
     gap: 5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin-bottom: 4px;
   }
 
@@ -1082,7 +1082,7 @@
   .guidance-text {
     margin: 0;
     line-height: 1.4;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-size: 10.5px;
   }
 
@@ -1091,11 +1091,11 @@
     align-items: center;
     gap: 8px;
     background: rgba(33, 161, 247, 0.07);
-    border-left: 3px solid var(--brand-accent);
+    border-left: 3px solid var(--kanso-accent);
     padding: 6px 10px;
     border-radius: 0 4px 4px 0;
     font-size: 11px;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   /* Modal Content Styles */
@@ -1115,14 +1115,14 @@
     padding: 10px 14px;
     font-size: 12.5px;
     line-height: 1.5;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .guide-section h4 {
     margin: 0 0 8px 0;
     font-size: 13.5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .rings-explainer-grid {
@@ -1132,8 +1132,8 @@
   }
 
   .ring-card {
-    background: var(--surface-card-background);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 10px 12px;
     font-size: 11.5px;
@@ -1141,7 +1141,7 @@
 
   .ring-tag {
     font-weight: 700;
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
     margin-bottom: 6px;
     text-transform: uppercase;
     font-size: 10.5px;
@@ -1151,7 +1151,7 @@
     margin: 0;
     padding-left: 16px;
     line-height: 1.5;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .swatch {
@@ -1165,7 +1165,7 @@
 
   .swatch.blue {
     background: rgba(33, 161, 247, 0.4);
-    border: 1px dashed var(--brand-accent);
+    border: 1px dashed var(--kanso-accent);
   }
 
   .swatch.green {
@@ -1223,21 +1223,21 @@
     text-align: left;
     padding: 8px 10px;
     background: rgba(0, 0, 0, 0.04);
-    border-bottom: 2px solid var(--surface-card-border);
-    color: var(--text-primary);
+    border-bottom: 2px solid var(--kanso-border);
+    color: var(--kanso-text-primary);
     font-weight: 700;
   }
 
   .guide-table td {
     padding: 8px 10px;
-    border-bottom: 1px solid var(--surface-card-border);
+    border-bottom: 1px solid var(--kanso-border);
     vertical-align: top;
     line-height: 1.4;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .discipline-cell strong {
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     display: block;
   }
 
@@ -1248,7 +1248,7 @@
 
   .target-cell {
     font-weight: 700;
-    color: var(--brand-accent);
+    color: var(--kanso-accent);
   }
 
   .good-cell {

@@ -1334,7 +1334,7 @@
     background: #ffffff;
     color: #18181b;
     border-color: #e4e4e7;
-    font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+    font-family: var(--kanso-font-ui);
   }
   .theme-geist .doc-header-row,
   .theme-geist .table-header-row,
@@ -1504,7 +1504,7 @@
     z-index: 20;
     pointer-events: none;
     user-select: none;
-    font-family: var(--font-mono, ui-monospace, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 900;
     text-transform: uppercase;
     text-align: center;

@@ -1593,7 +1593,7 @@
   }
 
   .view-title {
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -2446,7 +2446,7 @@
     border: 1px solid var(--kanso-border);
     border-radius: 10px;
     overflow: hidden;
-    font-family: var(--font-ui);
+    font-family: var(--kanso-font-ui);
   }
 
   .tree-root-bar {
@@ -2948,7 +2948,7 @@
   }
 
   .about-hero-title {
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -2968,7 +2968,7 @@
   }
 
   .about-hero-subtitle {
-    font-family: var(--font-ui);
+    font-family: var(--kanso-font-ui);
     font-size: 14.5px;
     line-height: 1.55;
     color: var(--kanso-text-muted);
@@ -3085,7 +3085,7 @@
 
   /* Studio Edition & Offline License Styles */
   .tab-pro-pill {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 10px;
     font-weight: 800;
     color: #F59E0B;
@@ -3191,7 +3191,7 @@
   }
 
   .key-display-box code {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 13px;
     color: var(--kanso-accent);
     word-break: break-all;

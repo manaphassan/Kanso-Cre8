@@ -78,7 +78,7 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: var(--glass-blur);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,10 +87,9 @@
   }
 
   .modal-dialog {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
     width: 90%;
     max-width: 540px;
     max-height: 90vh;
@@ -105,34 +104,34 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--surface-card-border);
+    border-bottom: 1px solid var(--kanso-border);
   }
 
   .modal-title {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   .close-btn {
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     font-size: 14px;
     cursor: pointer;
     padding: 4px 8px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--kanso-radius-sm);
   }
   .close-btn:hover {
-    background: var(--surface-card-hover);
-    color: var(--text-primary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
   }
 
   .modal-body {
     padding: 20px;
     overflow-y: auto;
     font-size: 13.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .modal-footer {
@@ -141,8 +140,8 @@
     justify-content: flex-end;
     gap: 10px;
     padding: 14px 20px;
-    border-top: 1px solid var(--surface-card-border);
-    background: var(--surface-card-subtle);
+    border-top: 1px solid var(--kanso-border);
+    background: var(--kanso-surface-hover);
   }
 
   @keyframes fadeIn {

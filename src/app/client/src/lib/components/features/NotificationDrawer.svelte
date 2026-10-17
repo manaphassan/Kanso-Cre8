@@ -186,9 +186,9 @@
     bottom: 0;
     width: 380px;
     max-width: 90vw;
-    background: var(--surface-card);
-    border-left: 1px solid var(--surface-card-border);
-    box-shadow: var(--shadow-xl);
+    background: var(--kanso-surface);
+    border-left: 1px solid var(--kanso-border);
+    box-shadow: none;
     z-index: 450;
     display: flex;
     flex-direction: column;
@@ -203,11 +203,11 @@
   .drawer-header {
     height: 56px;
     padding: 0 16px;
-    border-bottom: 1px solid var(--surface-card-border);
+    border-bottom: 1px solid var(--kanso-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--surface-card);
+    background: var(--kanso-surface);
     flex-shrink: 0;
   }
 
@@ -220,7 +220,7 @@
   .drawer-title {
     font-size: 14px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin: 0;
   }
 
@@ -242,7 +242,7 @@
   .text-btn {
     border: none;
     background: none;
-    color: var(--text-brand, #043388);
+    color: var(--kanso-accent);
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -254,9 +254,9 @@
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    border: 1px solid var(--surface-card-border);
-    background: var(--bg-app);
-    color: var(--text-secondary);
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-canvas);
+    color: var(--kanso-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -264,7 +264,7 @@
     font-size: 13px;
     transition: all 0.12s;
   }
-  .close-btn:hover { color: var(--text-primary); border-color: var(--brand-accent); }
+  .close-btn:hover { color: var(--kanso-text-primary); border-color: var(--kanso-accent); }
 
   .drawer-body {
     flex: 1;
@@ -275,12 +275,12 @@
   .loading-state, .empty-state {
     text-align: center;
     padding: 48px 16px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
   }
 
   .empty-icon { font-size: 32px; margin-bottom: 8px; }
-  .empty-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
-  .empty-desc { font-size: 12px; color: var(--text-secondary); margin: 0; }
+  .empty-title { font-size: 14px; font-weight: 700; color: var(--kanso-text-primary); margin: 0 0 4px 0; }
+  .empty-desc { font-size: 12px; color: var(--kanso-text-secondary); margin: 0; }
 
   .notif-list {
     display: flex;
@@ -292,8 +292,8 @@
     display: flex;
     gap: 12px;
     padding: 12px 14px;
-    background: var(--surface-card-subtle, #F8FAFC);
-    border: 1px solid var(--surface-card-border);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     cursor: pointer;
     text-align: left;
@@ -301,14 +301,14 @@
     position: relative;
   }
   .notif-card:hover {
-    background: var(--surface-card);
-    border-color: var(--brand-accent);
+    background: var(--kanso-surface);
+    border-color: var(--kanso-accent);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
   }
   .notif-card.is-unread {
-    border-left: 3px solid var(--brand-accent, #21A1F7);
-    background: var(--surface-card);
+    border-left: 3px solid var(--kanso-accent);
+    background: var(--kanso-surface);
   }
 
   .notif-icon-col {
@@ -346,7 +346,7 @@
   .notif-title {
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -354,13 +354,13 @@
 
   .notif-time {
     font-size: 10.5px;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     flex-shrink: 0;
   }
 
   .notif-message {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     line-height: 1.35;
     margin: 0;
     display: -webkit-box;
@@ -379,12 +379,12 @@
   .actor-tag {
     font-size: 10.5px;
     font-weight: 600;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
   }
 
   .target-tag {
     font-size: 10.5px;
     font-weight: 700;
-    color: var(--text-brand, #043388);
+    color: var(--kanso-accent);
   }
 </style>

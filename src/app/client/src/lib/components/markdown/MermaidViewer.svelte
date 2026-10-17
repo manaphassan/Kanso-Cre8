@@ -94,13 +94,13 @@
 
 <style>
   .mermaid-diagram-card {
-    background: var(--surface-card-subtle);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-lg);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
     padding: 16px;
     margin: 18px 0;
     position: relative;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
   }
 
   .mermaid-badge {
@@ -112,7 +112,7 @@
     gap: 4px;
     font-size: 10.5px;
     font-weight: 700;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -130,11 +130,11 @@
   }
 
   .mermaid-error {
-    background: var(--color-danger-bg);
-    border: 1px solid var(--color-danger-border);
-    border-radius: var(--radius-md);
+    background: var(--kanso-danger-muted);
+    border: 1px solid var(--kanso-danger);
+    border-radius: var(--kanso-radius-md);
     padding: 12px;
-    color: var(--color-danger);
+    color: var(--kanso-danger);
     font-size: 12px;
   }
 
@@ -145,7 +145,7 @@
 
   .mermaid-error pre {
     white-space: pre-wrap;
-    font-family: var(--font-mono);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     background: transparent;
     border: none;
@@ -156,7 +156,7 @@
   .mermaid-loading {
     text-align: center;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     padding: 20px 0;
   }
 </style>

@@ -185,11 +185,11 @@
 
 <style>
   .calendar-view-container {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     padding: 16px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -206,7 +206,7 @@
     gap: 16px;
     flex-wrap: wrap;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border);
   }
 
   .cal-nav-group {
@@ -218,7 +218,7 @@
   .cal-month-title {
     font-size: 16px;
     font-weight: 800;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0;
     min-width: 170px;
     text-align: center;
@@ -229,7 +229,7 @@
     align-items: center;
     gap: 12px;
     font-size: 12px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .legend-badge {
@@ -250,11 +250,11 @@
     text-align: center;
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     padding: 6px 0;
-    background: var(--surface-card-subtle, #F9FAFB);
+    background: var(--kanso-surface-hover);
     border-radius: 6px;
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    border: 1px solid var(--kanso-border);
   }
 
   .calendar-days-grid {
@@ -266,8 +266,8 @@
   }
 
   .cal-day-cell {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 8px;
     min-height: 110px;
     padding: 8px;
@@ -283,7 +283,7 @@
   }
 
   .cal-day-cell.is-other-month {
-    background: var(--surface-card-subtle, #F9FAFB);
+    background: var(--kanso-surface-hover);
     opacity: 0.45;
   }
 
@@ -301,7 +301,7 @@
   .day-number {
     font-size: 12.5px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
   }
 
   .day-number.today-num {
@@ -335,8 +335,8 @@
 
   .cal-project-chip {
     text-align: left;
-    background: var(--surface-card-subtle, #F3F4F6);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-left: 3px solid #0078D4;
     border-radius: 4px;
     padding: 4px 6px;
@@ -363,7 +363,7 @@
   .chip-title {
     font-size: 11px;
     font-weight: 600;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

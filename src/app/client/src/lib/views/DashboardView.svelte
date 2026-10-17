@@ -1074,7 +1074,7 @@
     flex-shrink: 0;
   }
   .deck-title {
-    font-family: var(--font-display);
+    font-family: var(--kanso-font-display);
     font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -1082,7 +1082,7 @@
     margin: 0;
   }
   .deck-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     padding: 2px 8px;
@@ -1110,7 +1110,7 @@
     gap: 8px;
     padding: 6px 12px;
     border-radius: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 700;
   }
@@ -1223,7 +1223,7 @@
     color: var(--kanso-text-muted, #71717A);
   }
   .card-pill {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     padding: 2px 7px;
@@ -1257,7 +1257,7 @@
     border: 1px solid var(--kanso-border, #27272A);
   }
   .card-amount {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -1311,7 +1311,7 @@
     gap: 6px;
   }
   .panel-title-sub {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 13px;
     font-weight: 400;
     color: var(--kanso-text-muted, #71717A);
@@ -1322,7 +1322,7 @@
     margin: 3px 0 0 0;
   }
   .path-code {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-accent, #38BDF8);
     font-size: 12.5px;
   }
@@ -1357,7 +1357,7 @@
     font-weight: 700;
   }
   .counter-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12.5px;
     font-weight: 800;
     padding: 3px 8px;
@@ -1408,7 +1408,7 @@
     justify-content: center;
   }
   .bujo-symbol {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     background: rgba(245, 158, 11, 0.2);
     padding: 3px 7px;
@@ -1429,7 +1429,7 @@
     gap: 6px;
   }
   .rollover-date {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11.5px;
     font-weight: 600;
     color: #FBBF24;
@@ -1533,7 +1533,7 @@
     color: var(--kanso-text-muted, #71717A);
   }
   .priority-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     padding: 2px 7px;
@@ -1543,7 +1543,7 @@
     border: 1px solid rgba(239, 68, 68, 0.25);
   }
   .wikilink-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     color: var(--kanso-accent, #38BDF8);
     background: rgba(56, 189, 248, 0.08);
@@ -1552,7 +1552,7 @@
     border-radius: 4px;
   }
   .due-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     color: #F59E0B;
     background: rgba(245, 158, 11, 0.08);
@@ -1576,7 +1576,7 @@
   .input-symbol {
     position: absolute;
     left: 12px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 13px;
     color: var(--kanso-text-muted, #71717A);
     pointer-events: none;
@@ -1588,7 +1588,7 @@
     border: 1px solid var(--kanso-border, #27272A);
     background: var(--kanso-canvas, #09090B);
     color: var(--kanso-text-primary, #F4F4F5);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 14px;
     outline: none;
     transition: border-color 0.14s;
@@ -1640,7 +1640,7 @@
     color: var(--kanso-text-muted, #71717A);
   }
   .metric-value {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 24px;
     font-weight: 800;
     color: var(--kanso-text-primary, #F4F4F5);
@@ -1689,7 +1689,7 @@
     justify-content: space-between;
   }
   .client-code-tag {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     color: #FFFFFF;
@@ -1698,7 +1698,7 @@
     letter-spacing: 0.04em;
   }
   .stage-tag {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
@@ -1738,7 +1738,7 @@
     line-height: 1.35;
   }
   .project-job-id {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
     margin: 0;
@@ -1754,7 +1754,7 @@
   .progress-labels {
     display: flex;
     justify-content: space-between;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 12px;
     color: var(--kanso-text-muted, #71717A);
   }
@@ -1782,7 +1782,7 @@
     color: var(--kanso-text-muted, #71717A);
   }
   .days-remaining {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 700;
     color: var(--kanso-text-primary, #F4F4F5);
   }
@@ -2011,7 +2011,7 @@
   .legend-dot.muted { background: var(--kanso-text-muted, #71717A); }
   .total-tasks-pill {
     margin-left: auto;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11.5px;
     font-weight: 700;
     padding: 2px 8px;
@@ -2032,7 +2032,7 @@
     gap: 4px;
   }
   .split-value {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 22px;
     font-weight: 800;
     color: var(--kanso-text-primary, #F4F4F5);
@@ -2063,7 +2063,7 @@
     font-weight: 600;
   }
   .client-mini-tag {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 11px;
     font-weight: 700;
     padding: 2px 8px;
@@ -2119,7 +2119,7 @@
   }
   .cadence-day-label {
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted, #71717A);
   }
   .cadence-day-count {

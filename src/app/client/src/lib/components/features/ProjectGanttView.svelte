@@ -306,11 +306,11 @@
 
 <style>
   .gantt-container {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E5E7EB);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     border-radius: 12px;
     padding: 16px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     width: 100%;
     flex: 1;
     display: flex;
@@ -327,7 +327,7 @@
     flex-wrap: wrap;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border);
   }
 
   .month-selector {
@@ -339,7 +339,7 @@
   .month-title {
     font-size: 16px;
     font-weight: 800;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     margin: 0;
     min-width: 160px;
     text-align: center;
@@ -350,7 +350,7 @@
     align-items: center;
     gap: 14px;
     font-size: 12px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .legend-item {
@@ -378,16 +378,16 @@
 
   .gantt-row {
     display: flex;
-    border-bottom: 1px solid var(--surface-card-border, #E5E7EB);
+    border-bottom: 1px solid var(--kanso-border);
     min-height: 52px;
   }
 
   .gantt-head-row {
-    background: var(--surface-card-subtle, #F9FAFB);
+    background: var(--kanso-surface-hover);
     font-size: 12px;
     font-weight: 700;
     min-height: 44px;
-    border-top: 1px solid var(--surface-card-border, #E5E7EB);
+    border-top: 1px solid var(--kanso-border);
   }
 
   .project-data-row {
@@ -408,7 +408,7 @@
     flex-direction: column;
     justify-content: center;
     gap: 4px;
-    border-right: 1.5px solid var(--surface-card-border, #E5E7EB);
+    border-right: 1.5px solid var(--kanso-border);
     background: inherit;
     z-index: 2;
   }
@@ -430,7 +430,7 @@
   .proj-row-title {
     font-size: 13px;
     font-weight: 700;
-    color: var(--text-primary, #111827);
+    color: var(--kanso-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -441,7 +441,7 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
   }
 
   .designer-sub {
@@ -470,13 +470,13 @@
     align-items: center;
     justify-content: center;
     padding: 4px 0;
-    border-right: 1px solid var(--surface-card-border, #E5E7EB);
+    border-right: 1px solid var(--kanso-border);
     font-size: 11px;
   }
 
   .day-head-cell.is-weekend {
     background: rgba(0, 0, 0, 0.02);
-    color: var(--text-tertiary, #9CA3AF);
+    color: var(--kanso-text-muted);
   }
 
   .day-head-cell.is-today {
@@ -496,7 +496,7 @@
 
   /* Track Grid & Columns */
   .timeline-grid-col {
-    border-right: 1px solid var(--surface-card-border, #F3F4F6);
+    border-right: 1px solid var(--kanso-border);
     height: 100%;
   }
 
@@ -568,7 +568,7 @@
   .gantt-empty-state {
     padding: 40px;
     text-align: center;
-    color: var(--text-secondary, #6B7280);
+    color: var(--kanso-text-secondary);
     font-size: 13px;
   }
 

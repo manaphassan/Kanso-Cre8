@@ -66,47 +66,46 @@
   .fluent-label {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
 
   .req-star {
-    color: var(--color-danger);
+    color: var(--kanso-danger);
     margin-left: 2px;
   }
 
   .fluent-input {
     width: 100%;
     padding: 8px 12px;
-    font-family: var(--font-family);
+    font-family: var(--kanso-font-ui);
     font-size: 13px;
-    color: var(--text-primary);
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-md);
     outline: none;
-    transition: all var(--transition-fast);
+    transition: all var(--kanso-duration-fast) var(--kanso-ease);
   }
 
   .fluent-input:focus {
-    border-color: var(--brand-accent);
-    box-shadow: 0 0 0 2px var(--brand-tint);
+    border-color: var(--kanso-accent);
   }
 
   .fluent-input:disabled {
-    background: var(--surface-card-subtle);
-    color: var(--text-tertiary);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-muted);
     cursor: not-allowed;
   }
 
   .fluent-input.has-error {
-    border-color: var(--color-danger);
+    border-color: var(--kanso-danger);
   }
 
   .fluent-error-msg {
     font-size: 11.5px;
-    color: var(--color-danger);
+    color: var(--kanso-danger);
     font-weight: 600;
   }
 </style>

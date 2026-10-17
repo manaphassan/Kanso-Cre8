@@ -261,9 +261,9 @@
   }
 
   .lightbox-modal {
-    background: var(--surface-card, #FFFFFF);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
-    border-radius: var(--radius-xl, 16px);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg);
     display: grid;
     grid-template-columns: 1fr 360px;
     width: 95%;
@@ -328,7 +328,7 @@
   }
 
   .view-toggle-pill.active {
-    background: var(--brand-primary, #043388);
+    background: var(--kanso-accent);
     color: #FFFFFF;
     box-shadow: 0 2px 8px rgba(33, 161, 247, 0.3);
   }
@@ -435,7 +435,7 @@
   .file-ext {
     font-size: 28px;
     font-weight: 900;
-    background: var(--brand-primary, #043388);
+    background: var(--kanso-accent);
     padding: 12px 24px;
     border-radius: 10px;
     letter-spacing: 1px;
@@ -456,8 +456,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: var(--surface-card, #FFFFFF);
-    border-left: 1px solid var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-surface);
+    border-left: 1px solid var(--kanso-border);
     overflow-y: auto;
   }
 
@@ -471,8 +471,8 @@
   .badge-brand {
     font-size: 11px;
     font-weight: 800;
-    background: var(--brand-tint, #EBF4FE);
-    color: var(--text-brand, #043388);
+    background: var(--kanso-accent-muted);
+    color: var(--kanso-accent);
     padding: 2px 8px;
     border-radius: 4px;
   }
@@ -480,7 +480,7 @@
   .close-btn {
     border: none;
     background: transparent;
-    color: var(--text-secondary, #64748B);
+    color: var(--kanso-text-secondary);
     font-size: 13px;
     cursor: pointer;
     font-weight: 700;
@@ -489,14 +489,14 @@
     transition: all 0.12s;
   }
   .close-btn:hover {
-    color: var(--text-primary, #0F172A);
-    background: var(--bg-app, #F1F5F9);
+    color: var(--kanso-text-primary);
+    background: var(--kanso-canvas);
   }
 
   .deliverable-title {
     font-size: 17px;
     font-weight: 800;
-    color: var(--text-primary, #0F172A);
+    color: var(--kanso-text-primary);
     margin-bottom: 6px;
     line-height: 1.3;
     word-break: break-word;
@@ -504,7 +504,7 @@
 
   .project-subtitle {
     font-size: 13px;
-    color: var(--text-secondary, #64748B);
+    color: var(--kanso-text-secondary);
     margin-bottom: 18px;
     display: flex;
     align-items: center;
@@ -521,9 +521,9 @@
   }
 
   .metadata-box {
-    background: var(--surface-card-subtle, #F8FAFC);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
-    border-radius: var(--radius-md, 8px);
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-md);
     padding: 14px;
     display: flex;
     flex-direction: column;
@@ -535,10 +535,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--text-secondary, #64748B);
+    color: var(--kanso-text-secondary);
   }
   .meta-row b {
-    color: var(--text-primary, #0F172A);
+    color: var(--kanso-text-primary);
     font-weight: 700;
     text-align: right;
     max-width: 60%;
@@ -567,7 +567,7 @@
     flex-direction: column;
     gap: 10px;
     padding-top: 18px;
-    border-top: 1px solid var(--surface-card-border, #E2E8F0);
+    border-top: 1px solid var(--kanso-border);
   }
 
   .download-btn {
@@ -575,10 +575,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: var(--surface-card-subtle, #F8FAFC);
-    color: var(--text-primary, #0F172A);
-    border: 1px solid var(--surface-card-border, #CBD5E1);
-    border-radius: var(--radius-md, 8px);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-md);
     padding: 9px 14px;
     font-size: 13px;
     font-weight: 700;
@@ -598,11 +598,11 @@
 
   .non-approver-notice {
     font-size: 12px;
-    color: var(--text-secondary, #64748B);
+    color: var(--kanso-text-secondary);
     text-align: center;
     padding: 10px;
-    background: var(--surface-card-subtle, #F8FAFC);
-    border-radius: var(--radius-md, 8px);
-    border: 1px solid var(--surface-card-border, #E2E8F0);
+    background: var(--kanso-surface-hover);
+    border-radius: var(--kanso-radius-md);
+    border: 1px solid var(--kanso-border);
   }
 </style>

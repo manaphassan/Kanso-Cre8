@@ -254,7 +254,7 @@
   }
 
   .bujo-symbol-badge {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 0.75rem;
     font-weight: 700;
     color: var(--kanso-accent, #38BDF8);
@@ -266,7 +266,7 @@
   }
 
   .header-vault-path {
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 0.75rem;
     color: var(--kanso-text-muted, #71717A);
   }
@@ -288,7 +288,7 @@
 
   .date-highlight {
     color: var(--kanso-text-primary, #F4F4F5);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
   }
 
   .selection-bar {
@@ -313,7 +313,7 @@
 
   .selection-meta {
     color: var(--kanso-text-muted, #71717A);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-size: 0.75rem;
   }
 
@@ -380,7 +380,7 @@
 
   .type-pill {
     font-size: 0.6875rem;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     padding: 1px 6px;
     border-radius: 4px;
     font-weight: 500;
@@ -400,7 +400,7 @@
 
   .time-pill {
     font-size: 0.6875rem;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     color: var(--kanso-text-muted, #71717A);
   }
 

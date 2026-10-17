@@ -22,46 +22,34 @@
     align-items: center;
     gap: 6px;
     padding: 4px 12px;
-    border-radius: var(--radius-pill);
+    border-radius: var(--kanso-radius-full);
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary);
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
+    color: var(--kanso-text-secondary);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--kanso-duration-fast) var(--kanso-ease);
     outline: none;
   }
 
   .fluent-pill:hover {
-    background: var(--surface-card-subtle);
-    color: var(--text-primary);
-    border-color: var(--brand-accent);
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+    border-color: var(--kanso-accent);
   }
 
   .fluent-pill.active {
-    background: var(--brand-tint);
-    color: var(--brand-primary);
-    border-color: var(--brand-primary);
+    background: var(--kanso-accent-muted);
+    color: var(--kanso-accent);
+    border-color: var(--kanso-accent);
     font-weight: 700;
-  }
-
-  :global([data-theme="metamorphosis"]) .fluent-pill.active {
-    background: rgba(0, 207, 255, 0.18);
-    color: #00CFFF;
-    border-color: #00CFFF;
-  }
-
-  :global([data-theme="catppuccin"]) .fluent-pill.active {
-    background: rgba(203, 166, 247, 0.18);
-    color: #CBA6F7;
-    border-color: #CBA6F7;
   }
 
   .pill-count {
     font-size: 10.5px;
     padding: 1px 5px;
-    border-radius: var(--radius-pill);
+    border-radius: var(--kanso-radius-full);
     background: rgba(0, 0, 0, 0.08);
   }
 </style>

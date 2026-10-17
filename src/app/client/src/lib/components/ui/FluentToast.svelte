@@ -32,10 +32,9 @@
 
   .toast-item {
     pointer-events: auto;
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-xl);
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-md);
     padding: 12px 14px;
     display: flex;
     align-items: flex-start;
@@ -46,14 +45,14 @@
   .toast-indicator {
     width: 4px;
     height: 100%;
-    border-radius: var(--radius-pill);
-    background: var(--brand-accent);
+    border-radius: var(--kanso-radius-full);
+    background: var(--kanso-accent);
   }
 
-  .toast-success .toast-indicator { background: var(--color-success); }
-  .toast-warning .toast-indicator { background: var(--color-warning); }
-  .toast-error .toast-indicator { background: var(--color-danger); }
-  .toast-info .toast-indicator { background: var(--color-info); }
+  .toast-success .toast-indicator { background: var(--kanso-success); }
+  .toast-warning .toast-indicator { background: var(--kanso-warning); }
+  .toast-error .toast-indicator { background: var(--kanso-danger); }
+  .toast-info .toast-indicator { background: var(--kanso-accent); }
 
   .toast-content {
     flex: 1;
@@ -62,26 +61,26 @@
   .toast-title {
     font-size: 13px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
     margin-bottom: 2px;
   }
 
   .toast-message {
     font-size: 12.5px;
-    color: var(--text-secondary);
+    color: var(--kanso-text-secondary);
     line-height: 1.4;
   }
 
   .toast-close {
     background: transparent;
     border: none;
-    color: var(--text-tertiary);
+    color: var(--kanso-text-muted);
     font-size: 12px;
     cursor: pointer;
     padding: 2px 4px;
   }
   .toast-close:hover {
-    color: var(--text-primary);
+    color: var(--kanso-text-primary);
   }
 
   @keyframes slideIn {

@@ -215,7 +215,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--kanso-text-primary);
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     letter-spacing: 0.05em;
   }
 
@@ -232,7 +232,7 @@
 
   .blank-tag {
     font-size: 9px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     color: var(--kanso-text-muted);
     letter-spacing: 0.05em;
@@ -393,7 +393,7 @@
 
   .blank-rec-badge {
     font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    font-family: var(--kanso-font-mono);
     font-weight: 800;
     padding: 1px 6px;
     border-radius: 3px;
