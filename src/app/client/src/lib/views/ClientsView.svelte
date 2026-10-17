@@ -4,28 +4,13 @@
   import { clientService } from '../services/clientService';
   import { timerStore } from '../stores/timerStore.svelte';
   import { settingsStore, getCurrencySymbol } from '../stores/settingsStore.svelte';
-  import { licenseStore } from '../stores/licenseStore.svelte';
+  import ClientEditModal from '$lib/components/features/ClientEditModal.svelte';
   import type { ClientProfile } from '../types/kanso';
 
   let clients: ClientProfile[] = $state([]);
   let copiedSwatch: string | null = $state(null);
   let selectedClient: ClientProfile | null = $state(null);
   let isEditingClient = $state(false);
-
-  // Form State
-  let formName = $state('');
-  let formCode = $state('');
-  let formContact = $state('');
-  let formEmail = $state('');
-  let formPhone = $state('');
-  let formAddress = $state('');
-  let formRate = $state(180);
-  let formCurrency = $state(settingsStore.settings.currency || 'MYR');
-  let formPrimary = $state('#0EA5E9');
-  let formSecondary = $state('#0284C7');
-  let formDark = $state('#0F172A');
-  let formAccent = $state('#38BDF8');
-  let formNotes = $state('');
 
   onMount(() => {
     clients = clientService.getClients();
@@ -40,84 +25,30 @@
   }
 
   function openNewClientModal() {
-    if (!licenseStore.isPro && clients.length >= 1) {
-      licenseStore.requirePro('Unlimited Clients Hub');
-      return;
-    }
     selectedClient = null;
-    formName = '';
-    formCode = '';
-    formContact = '';
-    formEmail = '';
-    formPhone = '';
-    formAddress = '';
-    formRate = settingsStore.settings.defaultHourlyRate || 180;
-    formCurrency = settingsStore.settings.currency || 'MYR';
-    formPrimary = '#0EA5E9';
-    formSecondary = '#0284C7';
-    formDark = '#0F172A';
-    formAccent = '#38BDF8';
-    formNotes = '';
     isEditingClient = true;
   }
 
   function openEditClientModal(client: ClientProfile) {
     selectedClient = client;
-    formName = client.name;
-    formCode = client.code;
-    formContact = client.contactPerson;
-    formEmail = client.email;
-    formPhone = client.phone || '';
-    formAddress = client.billingAddress;
-    formRate = client.defaultHourlyRate;
-    formCurrency = client.currency;
-    formPrimary = client.palette.primary;
-    formSecondary = client.palette.secondary;
-    formDark = client.palette.dark;
-    formAccent = client.palette.accent;
-    formNotes = client.notes || '';
     isEditingClient = true;
   }
 
-  function saveClientForm() {
-    if (!formName || !formCode) return;
-
-    const payload: ClientProfile = {
-      id: selectedClient ? selectedClient.id : formName.toLowerCase().replace(/[^a-z0-9]/g, '_'),
-      name: formName,
-      code: formCode.toUpperCase(),
-      contactPerson: formContact,
-      email: formEmail,
-      phone: formPhone,
-      billingAddress: formAddress,
-      currency: formCurrency,
-      defaultHourlyRate: Number(formRate),
-      paymentTermsDays: selectedClient ? selectedClient.paymentTermsDays : 14,
-      palette: {
-        primary: formPrimary,
-        secondary: formSecondary,
-        dark: formDark,
-        accent: formAccent
-      },
-      notes: formNotes,
-      activeProjectsCount: selectedClient ? selectedClient.activeProjectsCount : 0,
-      totalInvoiced: selectedClient ? selectedClient.totalInvoiced : 0
-    };
-
+  function handleSaveClient(payload: ClientProfile) {
     if (selectedClient) {
       clientService.updateClient(payload);
     } else {
       clientService.addClient(payload);
     }
-
     clients = clientService.getClients();
     isEditingClient = false;
   }
 
-  function deleteClient(id: string) {
+  function handleDeleteClient(id: string) {
     if (confirm('Are you sure you want to remove this client profile?')) {
       clientService.deleteClient(id);
       clients = clientService.getClients();
+      isEditingClient = false;
     }
   }
 </script>
@@ -315,165 +246,11 @@
   </div>
 
   <!-- Client Edit / Add Modal -->
-  {#if isEditingClient}
-    <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-card border border-border rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-border pb-4">
-          <h2 class="text-lg font-bold text-foreground">
-            {selectedClient ? 'Edit Client Profile' : 'Add New Client Profile'}
-          </h2>
-          <button
-            onclick={() => isEditingClient = false}
-            class="text-muted-foreground hover:text-foreground p-1 rounded-md"
-            aria-label="Close"
-          >
-            <Icon name="close" size={14} />
-          </button>
-        </div>
-
-        <div class="space-y-4 text-sm">
-          <div class="grid grid-cols-3 gap-3">
-            <div class="col-span-2 space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Client Name</label>
-              <input
-                type="text"
-                bind:value={formName}
-                placeholder="e.g. Acme Corporation"
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Code Prefix</label>
-              <input
-                type="text"
-                bind:value={formCode}
-                placeholder="ACME"
-                maxlength="5"
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono uppercase focus:outline-none focus:border-primary"
-              />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Contact Person</label>
-              <input
-                type="text"
-                bind:value={formContact}
-                placeholder="Sarah Jenkins"
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Email</label>
-              <input
-                type="email"
-                bind:value={formEmail}
-                placeholder="sarah.j@acmefintech.io"
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-              />
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <label class="text-xs font-semibold text-muted-foreground">Billing Address</label>
-            <textarea
-              bind:value={formAddress}
-              rows="2"
-              placeholder="Full official billing address..."
-              class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Hourly Rate</label>
-              <input
-                type="number"
-                bind:value={formRate}
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div class="space-y-1">
-              <label class="text-xs font-semibold text-muted-foreground">Currency</label>
-              <select
-                bind:value={formCurrency}
-                class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono text-sm focus:outline-none focus:border-primary"
-              >
-                <option value="MYR">MYR (RM)</option>
-                <option value="USD">USD ($)</option>
-                <option value="SGD">SGD (S$)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="AUD">AUD (A$)</option>
-                <option value="CAD">CAD (CA$)</option>
-                <option value="JPY">JPY (¥)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Color Swatches Input -->
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-muted-foreground">Brand Color Palette (HEX)</label>
-            <div class="grid grid-cols-4 gap-2">
-              <div>
-                <span class="text-xs font-semibold text-muted-foreground">Primary</span>
-                <input type="text" bind:value={formPrimary} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
-              </div>
-              <div>
-                <span class="text-xs font-semibold text-muted-foreground">Secondary</span>
-                <input type="text" bind:value={formSecondary} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
-              </div>
-              <div>
-                <span class="text-xs font-semibold text-muted-foreground">Dark</span>
-                <input type="text" bind:value={formDark} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
-              </div>
-              <div>
-                <span class="text-xs font-semibold text-muted-foreground">Accent</span>
-                <input type="text" bind:value={formAccent} class="w-full px-2 py-1.5 text-xs font-mono rounded border border-border bg-background" />
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <label class="text-xs font-semibold text-muted-foreground">Brand Notes &amp; Style Guidelines</label>
-            <textarea
-              bind:value={formNotes}
-              rows="2"
-              placeholder="Export guidelines, tone of voice, etc."
-              class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:border-primary"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between pt-4 border-t border-border">
-          {#if selectedClient}
-            <button
-              onclick={() => deleteClient(selectedClient!.id)}
-              class="px-3 py-2 text-xs text-rose-500 hover:bg-rose-500/10 rounded-lg font-medium transition-colors"
-            >
-              Delete Client
-            </button>
-          {:else}
-            <div></div>
-          {/if}
-
-          <div class="flex items-center gap-3">
-            <button
-              onclick={() => isEditingClient = false}
-              class="px-4 py-2 text-sm text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onclick={saveClientForm}
-              class="px-5 py-2 text-sm bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors"
-            >
-              Save Profile
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <ClientEditModal
+    open={isEditingClient}
+    client={selectedClient}
+    onclose={() => (isEditingClient = false)}
+    onsave={handleSaveClient}
+    ondelete={handleDeleteClient}
+  />
 </div>

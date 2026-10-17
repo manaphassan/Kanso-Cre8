@@ -20,8 +20,7 @@
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
   import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
-  import StudioProModal from '$lib/components/features/StudioProModal.svelte';
-  import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
+    import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
@@ -370,8 +369,6 @@
     bind:open={scratchpadOpen}
     onclose={() => (scratchpadOpen = false)}
   />
-
-  <StudioProModal />
 
   <VaultSwitcherModal
     bind:open={vaultSwitcherOpen}
