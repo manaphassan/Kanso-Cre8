@@ -1,124 +1,148 @@
 /**
- * Kanso Cre8 — Vorxs Scandinavian Utilitarian / Technical Minimalist Tokens
- * High-craft, tactile, organic studio environment inspired by Nordic design (Stockholm).
- * Preserves baseline compatibility: --kanso-canvas: #09090B (Dark) / --kanso-canvas: #F8FAFC (Light)
+ * Kanso Cre8 — Linear / Geist Studio Tokens & 4 Atelier Lighting Themes
+ * Mindful, tactile, high-craft creative environment.
+ * The single source of truth for color, typography, spacing, geometry, and motion.
  */
 
 :root {
-  /* ═══ VORXS SCANDINAVIAN LIGHT MODE (STONE PAPER & CHARCOAL INK) ═══ */
-  /* Baseline fallback reference: --kanso-canvas: #F8FAFC; */
-  --kanso-canvas: #ECE8DF;
-  --kanso-surface: #F7F5F0;
-  --kanso-surface-hover: #E2DDD1;
-  --kanso-surface-active: #D5D0C2;
-  --kanso-border: #D3CEBF;
-  --kanso-border-subtle: #E2DDD1;
-  --kanso-border-focus: #DE694B;
+  /* ═══ SPACING SCALE (--kanso-space-1..8) ═══ */
+  --kanso-space-1: 4px;
+  --kanso-space-2: 8px;
+  --kanso-space-3: 12px;
+  --kanso-space-4: 16px;
+  --kanso-space-5: 20px;
+  --kanso-space-6: 24px;
+  --kanso-space-7: 32px;
+  --kanso-space-8: 48px;
 
-  --kanso-text-primary: #161913;
-  --kanso-text-secondary: #4A5445;
-  --kanso-text-muted: #6B7564;
-  --kanso-text-faint: #96A08F;
-
-  /* Vorxs Terracotta Tangerine Hero Accent */
-  --kanso-accent: #DE694B;
-  --kanso-accent-hover: #C95A3E;
-  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
-  --kanso-accent-text: #FFFFFF;
-
-  /* Vorxs Secondary Nordic Accents */
-  --kanso-success: #5D6B55;
-  --kanso-success-muted: rgba(93, 107, 85, 0.12);
-  --kanso-warning: #DEB841;
-  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
-  --kanso-danger: #D04838;
-  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
-
-  /* Geometry & Radius */
+  /* ═══ GEOMETRY & RADIUS ═══ */
   --kanso-radius-sm: 6px;
   --kanso-radius-md: 10px;
   --kanso-radius-lg: 14px;
   --kanso-radius-full: 9999px;
 
-  /* ═══ TYPOGRAPHY TOKENS ═══ */
-  /* Primary Display Font: Red Hat Display (Wordmark, display headlines, section openers, marketing hero, >= 24pt) */
-  --font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  /* Accent / App UI & Body Font: Nunito (App UI, body copy, buttons, form inputs, pills/badges, prices, captions, tables, < 24pt) */
-  --font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family: var(--font-ui);
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  /* ═══ MOTION & EASING ═══ */
+  --kanso-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --kanso-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --kanso-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --kanso-duration-fast: 150ms;
+  --kanso-duration-normal: 200ms;
+  --kanso-duration-slow: 300ms;
 
-  /* Generous Legible Typography Scale (Zero micro-text, high legibility) */
-  --kanso-text-2xs: 12px;
-  --kanso-text-xs: 13px;
-  --kanso-text-sm: 14px;
-  --kanso-text-base: 15px;
-  --kanso-text-md: 16px;
-  --kanso-text-lg: 17px;
-  --kanso-text-xl: 19px;
-  --kanso-text-2xl: 22px;
-  --kanso-text-3xl: 26px;
+  /* ═══ TYPOGRAPHY FAMILIES (--kanso-font-*) ═══ */
+  --kanso-font-display: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --kanso-font-ui: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --kanso-font-accent: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --kanso-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Typography Scale */
+  --kanso-font-2xs: 11px;
+  --kanso-font-xs: 12px;
+  --kanso-font-sm: 13px;
+  --kanso-font-base: 14px;
+  --kanso-font-md: 15px;
+  --kanso-font-lg: 17px;
+  --kanso-font-xl: 20px;
+  --kanso-font-2xl: 24px;
+  --kanso-font-3xl: 30px;
+
+  /* Backward Compatibility Aliases */
+  --font-display: var(--kanso-font-display);
+  --font-ui: var(--kanso-font-ui);
+  --font-accent: var(--kanso-font-accent);
+  --font-family: var(--kanso-font-ui);
+  --font-mono: var(--kanso-font-mono);
+  --kanso-text-2xs: var(--kanso-font-2xs);
+  --kanso-text-xs: var(--kanso-font-xs);
+  --kanso-text-sm: var(--kanso-font-sm);
+  --kanso-text-base: var(--kanso-font-base);
+  --kanso-text-md: var(--kanso-font-md);
+  --kanso-text-lg: var(--kanso-font-lg);
+  --kanso-text-xl: var(--kanso-font-xl);
+  --kanso-text-2xl: var(--kanso-font-2xl);
+  --kanso-text-3xl: var(--kanso-font-3xl);
+
+  /* ═══ CANONICAL LIGHT MODE (LINEAR / GEIST MINIMALIST LIGHT) ═══ */
+  --kanso-canvas: #F8FAFC;
+  --kanso-surface: #FFFFFF;
+  --kanso-surface-hover: #F1F5F9;
+  --kanso-surface-active: #E2E8F0;
+  --kanso-border: #E2E8F0;
+  --kanso-border-subtle: #F1F5F9;
+  --kanso-border-focus: #0078D4;
+
+  --kanso-text-primary: #0F172A;
+  --kanso-text-secondary: #475569;
+  --kanso-text-muted: #64748B;
+  --kanso-text-faint: #94A3B8;
+
+  --kanso-accent: #0078D4;
+  --kanso-accent-hover: #106EBE;
+  --kanso-accent-muted: rgba(0, 120, 212, 0.12);
+  --kanso-accent-text: #FFFFFF;
+
+  --kanso-success: #10B981;
+  --kanso-success-muted: rgba(16, 185, 129, 0.12);
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: rgba(245, 158, 11, 0.14);
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: rgba(239, 68, 68, 0.12);
 }
 
+/* ═══ THEME 1: LIGHT (LINEAR / GEIST MINIMALIST LIGHT) ═══ */
 [data-theme="light"] {
-  /* ═══ VORXS SCANDINAVIAN LIGHT MODE (ATELIER STONE PAPER) ═══ */
-  /* Baseline fallback reference: --kanso-canvas: #F8FAFC; */
-  --kanso-canvas: #ECE8DF;
-  --kanso-surface: #F7F5F0;
-  --kanso-surface-hover: #E2DDD1;
-  --kanso-surface-active: #D5D0C2;
-  --kanso-border: #D3CEBF;
-  --kanso-border-subtle: #E2DDD1;
-  --kanso-border-focus: #DE694B;
+  --kanso-canvas: #F8FAFC;
+  --kanso-surface: #FFFFFF;
+  --kanso-surface-hover: #F1F5F9;
+  --kanso-surface-active: #E2E8F0;
+  --kanso-border: #E2E8F0;
+  --kanso-border-subtle: #F1F5F9;
+  --kanso-border-focus: #0078D4;
 
-  --kanso-text-primary: #161913;
-  --kanso-text-secondary: #4A5445;
-  --kanso-text-muted: #6B7564;
-  --kanso-text-faint: #96A08F;
+  --kanso-text-primary: #0F172A;
+  --kanso-text-secondary: #475569;
+  --kanso-text-muted: #64748B;
+  --kanso-text-faint: #94A3B8;
 
-  --kanso-accent: #DE694B;
-  --kanso-accent-hover: #C95A3E;
-  --kanso-accent-muted: rgba(222, 105, 75, 0.12);
+  --kanso-accent: #0078D4;
+  --kanso-accent-hover: #106EBE;
+  --kanso-accent-muted: rgba(0, 120, 212, 0.12);
   --kanso-accent-text: #FFFFFF;
 
-  --kanso-success: #5D6B55;
-  --kanso-success-muted: rgba(93, 107, 85, 0.12);
-  --kanso-warning: #DEB841;
-  --kanso-warning-muted: rgba(222, 184, 65, 0.14);
-  --kanso-danger: #D04838;
-  --kanso-danger-muted: rgba(208, 72, 56, 0.12);
+  --kanso-success: #10B981;
+  --kanso-success-muted: rgba(16, 185, 129, 0.12);
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: rgba(245, 158, 11, 0.14);
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: rgba(239, 68, 68, 0.12);
 }
 
+/* ═══ THEME 2: DARK (LINEAR / GEIST OBSIDIAN DARK) ═══ */
 .dark, [data-theme="dark"] {
-  /* ═══ VORXS SCANDINAVIAN DARK MODE (ORGANIC OLIVE OBSIDIAN) ═══ */
-  /* Baseline fallback reference: --kanso-canvas: #09090B; */
-  --kanso-canvas: #151813;
-  --kanso-surface: #1E251A;
-  --kanso-surface-hover: #283223;
-  --kanso-surface-active: #333F2C;
-  --kanso-border: #2D3728;
-  --kanso-border-subtle: #21291D;
-  --kanso-border-focus: #DE694B;
+  --kanso-canvas: #09090B;
+  --kanso-surface: #18181B;
+  --kanso-surface-hover: #27272A;
+  --kanso-surface-active: #3F3F46;
+  --kanso-border: #27272A;
+  --kanso-border-subtle: #1E1E22;
+  --kanso-border-focus: #38BDF8;
 
-  --kanso-text-primary: #EDE9DF;
-  --kanso-text-secondary: #B4BBAE;
-  --kanso-text-muted: #75816E;
-  --kanso-text-faint: #505A4A;
+  --kanso-text-primary: #F4F4F5;
+  --kanso-text-secondary: #A1A1AA;
+  --kanso-text-muted: #71717A;
+  --kanso-text-faint: #52525B;
 
-  /* Vorxs Terracotta Hero Accent */
-  --kanso-accent: #DE694B;
-  --kanso-accent-hover: #E87A5E;
-  --kanso-accent-muted: rgba(222, 105, 75, 0.16);
-  --kanso-accent-text: #FFFFFF;
+  --kanso-accent: #38BDF8;
+  --kanso-accent-hover: #0EA5E9;
+  --kanso-accent-muted: rgba(56, 189, 248, 0.16);
+  --kanso-accent-text: #09090B;
 
-  /* Vorxs Tactical Accents */
-  --kanso-success: #8FA683;
-  --kanso-success-muted: rgba(143, 166, 131, 0.16);
-  --kanso-warning: #DEB841;
-  --kanso-warning-muted: rgba(222, 184, 65, 0.16);
-  --kanso-danger: #D04838;
-  --kanso-danger-muted: rgba(208, 72, 56, 0.16);
+  --kanso-success: #10B981;
+  --kanso-success-muted: rgba(16, 185, 129, 0.16);
+  --kanso-warning: #F59E0B;
+  --kanso-warning-muted: rgba(245, 158, 11, 0.16);
+  --kanso-danger: #EF4444;
+  --kanso-danger-muted: rgba(239, 68, 68, 0.16);
 }
 
 [data-theme="eink"] {
