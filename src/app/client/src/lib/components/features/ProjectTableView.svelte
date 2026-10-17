@@ -5,7 +5,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { fetchStaffList } from '$lib/utils';
   import type { Project } from '$lib/types';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
   import { clientService } from '$lib/services/clientService';
 
   interface Props {

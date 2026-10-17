@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     open?: boolean;
@@ -119,7 +119,7 @@
       <div class="share-header">
         <div class="header-left">
           <div class="share-icon-badge">
-            <FluentIcons name="link" size={20} color="var(--kanso-accent)" />
+            <Icon name="link" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Client Review &amp; Share Links</h2>
@@ -127,7 +127,7 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close Modal">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
@@ -166,10 +166,10 @@
           </div>
 
           <div class="form-actions">
-            <FluentButton appearance="primary" loading={isGenerating} onclick={handleCreateLink}>
-              <FluentIcons name="link" size={14} />
+            <Button appearance="primary" loading={isGenerating} onclick={handleCreateLink}>
+              <Icon name="link" size={14} />
               <span style="margin-left: 6px;">Generate Client Review Link</span>
-            </FluentButton>
+            </Button>
           </div>
         </div>
 
@@ -189,18 +189,18 @@
             <div class="link-url-row">
               <input type="text" readonly class="url-input" value={getShareUrl(generatedShare.token)} />
               <button class="copy-btn" onclick={() => copyShareUrl(generatedShare.token)}>
-                <FluentIcons name="copy" size={13} />
+                <Icon name="copy" size={13} />
                 <span style="margin-left: 5px;">Copy Link</span>
               </button>
             </div>
 
             <div class="share-quick-btns">
               <button class="whatsapp-btn" onclick={() => shareViaWhatsApp(generatedShare.token)}>
-                <FluentIcons name="chat" size={13} />
+                <Icon name="chat" size={13} />
                 <span style="margin-left: 5px;">Share via WhatsApp</span>
               </button>
               <a href={getShareUrl(generatedShare.token)} target="_blank" rel="noreferrer" class="preview-btn">
-                <FluentIcons name="externalLink" size={13} />
+                <Icon name="externalLink" size={13} />
                 <span style="margin-left: 5px;">Test Client View</span>
               </a>
             </div>
@@ -223,7 +223,7 @@
                       <span class="perm-pill {link.permissions}">{link.permissions === 'review_approve' ? 'Sign-Off Allowed' : 'View Only'}</span>
                       <span class="created-meta">Created by {link.createdBy} on {new Date(link.createdAt).toLocaleDateString()}</span>
                       <span class="access-count">
-                        <FluentIcons name="eye" size={11} />
+                        <Icon name="eye" size={11} />
                         <span style="margin-left: 3px;">{link.accessCount || 0} views</span>
                       </span>
                     </div>
@@ -233,10 +233,10 @@
                   </div>
                   <div class="link-actions">
                     <button class="icon-action-btn" title="Copy Link" onclick={() => copyShareUrl(link.token)}>
-                      <FluentIcons name="copy" size={13} />
+                      <Icon name="copy" size={13} />
                     </button>
                     <button class="icon-action-btn" title="Share WhatsApp" onclick={() => shareViaWhatsApp(link.token)}>
-                      <FluentIcons name="chat" size={13} />
+                      <Icon name="chat" size={13} />
                     </button>
                     <button class="revoke-btn" onclick={() => handleRevoke(link.token)}>Revoke</button>
                   </div>
@@ -249,10 +249,10 @@
 
       <div class="share-footer">
         <span class="security-tip">
-          <FluentIcons name="lock" size={12} color="var(--kanso-accent)" />
+          <Icon name="lock" size={12} color="var(--kanso-accent)" />
           <span style="margin-left: 6px;">Cryptographic tokenized access — zero credentials leaked.</span>
         </span>
-        <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
+        <Button appearance="subtle" onclick={closeModal}>Close</Button>
       </div>
     </div>
   </div>

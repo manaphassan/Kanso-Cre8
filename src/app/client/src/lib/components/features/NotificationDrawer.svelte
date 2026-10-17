@@ -3,7 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
   import type { ActivityNotification } from '$lib/types';
-  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
+  import Icon, { type IconName } from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     open?: boolean;
@@ -98,7 +98,7 @@
   <aside class="notification-drawer" aria-label="Activity Notifications">
     <div class="drawer-header">
       <div class="header-left">
-        <FluentIcons name="bell" size={18} color="var(--kanso-accent)" />
+        <Icon name="bell" size={18} color="var(--kanso-accent)" />
         <h3 class="drawer-title">Activity &amp; Notifications</h3>
         {#if appState.notificationCount > 0}
           <span class="unread-pill">{appState.notificationCount} new</span>
@@ -110,7 +110,7 @@
           <button class="text-btn" onclick={markAllRead}>Mark all read</button>
         {/if}
         <button class="close-btn" onclick={onclose} aria-label="Close drawer" title="Close drawer">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
     </div>
@@ -121,7 +121,7 @@
       {:else if notifications.length === 0}
         <div class="empty-state">
           <div class="empty-icon-box">
-            <FluentIcons name="checkCircle" size={32} color="var(--kanso-success)" />
+            <Icon name="checkCircle" size={32} color="var(--kanso-success)" />
           </div>
           <p class="empty-title">All caught up</p>
           <p class="empty-desc">No new mentions, approval milestones, or revision alerts at this time.</p>
@@ -140,7 +140,7 @@
             >
               <div class="notif-icon-col">
                 <span class="type-icon">
-                  <FluentIcons name={getIconName(notif.type)} size={15} color={getIconColor(notif.type)} />
+                  <Icon name={getIconName(notif.type)} size={15} color={getIconColor(notif.type)} />
                 </span>
                 {#if notif.unread}
                   <span class="unread-dot"></span>

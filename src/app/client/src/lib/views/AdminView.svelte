@@ -4,9 +4,9 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import type { Company, StaffAccount } from '$lib/types';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentDialog from '$lib/components/ui/FluentDialog.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Dialog from '$lib/components/ui/Dialog.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
   import { VaultService } from '$lib/services/vaultService';
 
@@ -634,22 +634,22 @@
     </div>
 
     <div class="header-right-actions">
-      <FluentButton appearance="secondary" onclick={exportAuditLogsCSV} title="Download CSV compliance report">
+      <Button appearance="secondary" onclick={exportAuditLogsCSV} title="Download CSV compliance report">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         <span>Export Audit CSV</span>
-      </FluentButton>
+      </Button>
 
-      <FluentButton appearance="primary" onclick={refreshData} disabled={isLoading}>
+      <Button appearance="primary" onclick={refreshData} disabled={isLoading}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class:spinning={isLoading} style="margin-right: 5px;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
         <span>{isLoading ? 'Syncing...' : 'Refresh Telemetry'}</span>
-      </FluentButton>
+      </Button>
     </div>
   </div>
 
   <!-- ─── 4-METRIC EXECUTIVE KPI TELEMETRY STRIP ─── -->
   <div class="kpi-telemetry-deck">
     <!-- Metric 1: Entities -->
-    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'companies')}>
+    <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'companies')}>
       <div class="kpi-top">
         <span class="kpi-label">Registered Entities</span>
         <span class="kpi-icon-pill" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">🏢</span>
@@ -658,10 +658,10 @@
       <div class="kpi-detail">
         <b>{stats.parentCount} Parent Holding</b> • <b>{stats.activeCompanies} Active</b>
       </div>
-    </FluentCard>
+    </Card>
 
     <!-- Metric 2: Staff Roster -->
-    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'users')}>
+    <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'users')}>
       <div class="kpi-top">
         <span class="kpi-label">Staff Personnel Roster</span>
         <span class="kpi-icon-pill" style="background: rgba(2, 132, 199, 0.15); color: var(--kanso-accent);">👥</span>
@@ -670,10 +670,10 @@
       <div class="kpi-detail">
         <span class="text-rose">Admin: {stats.adminsCount}</span> • <span class="text-amber">Mgr: {stats.managersCount}</span> • <span class="text-azure">User: {stats.standardUsersCount}</span>
       </div>
-    </FluentCard>
+    </Card>
 
     <!-- Metric 3: Audit Volume -->
-    <FluentCard hoverLift borderAccent="var(--kanso-success)" onclick={() => (activeTab = 'audit')}>
+    <Card hoverLift borderAccent="var(--kanso-success)" onclick={() => (activeTab = 'audit')}>
       <div class="kpi-top">
         <span class="kpi-label">Security Audit Trail</span>
         <span class="kpi-icon-pill" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">🛡️</span>
@@ -683,10 +683,10 @@
         <span class="status-dot-green"></span>
         <span>Immutable JSONL logging active</span>
       </div>
-    </FluentCard>
+    </Card>
 
     <!-- Metric 4: Synology Vault -->
-    <FluentCard hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'system')}>
+    <Card hoverLift borderAccent="var(--kanso-accent)" onclick={() => (activeTab = 'system')}>
       <div class="kpi-top">
         <span class="kpi-label">Synology NAS Engine</span>
         <span class="kpi-icon-pill" style="background: rgba(135, 100, 184, 0.15); color: var(--kanso-accent);">⚡</span>
@@ -697,7 +697,7 @@
       <div class="kpi-detail">
         <b>{systemStatus?.cachedProjects || 0} Projects Cached</b> • <b>Volume 2 RW</b>
       </div>
-    </FluentCard>
+    </Card>
   </div>
 
   <!-- ─── SEGMENTED TAB NAVIGATION (NO WRAPPING) ─── -->
@@ -775,16 +775,16 @@
           </p>
         </div>
         <div class="deck-actions-right">
-          <FluentButton appearance="secondary" onclick={() => vaultStore.config.lastSyncedAt = new Date().toISOString()}>
+          <Button appearance="secondary" onclick={() => vaultStore.config.lastSyncedAt = new Date().toISOString()}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 5px;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
             <span>Rescan Vault</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
 
       <!-- Vault Configuration & Provider Card -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <FluentCard>
+        <Card>
           <div class="p-3">
             <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Sync Root Path</span>
             <div class="font-mono text-sm font-semibold text-[var(--kanso-text-primary)] mt-1 truncate" title={vaultStore.config.rootPath}>
@@ -799,9 +799,9 @@
               </span>
             </div>
           </div>
-        </FluentCard>
+        </Card>
 
-        <FluentCard>
+        <Card>
           <div class="p-3">
             <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Storage Architecture</span>
             <div class="text-sm font-semibold text-[var(--kanso-text-primary)] mt-1">
@@ -811,9 +811,9 @@
               Zero SQL, SQLite, or Prisma binary locks. Openable in Obsidian &amp; VS Code anytime.
             </div>
           </div>
-        </FluentCard>
+        </Card>
 
-        <FluentCard>
+        <Card>
           <div class="p-3">
             <span class="text-xs uppercase tracking-wider text-[var(--kanso-text-muted)] font-mono">Universal Task Rollup</span>
             <div class="text-sm font-semibold text-[var(--kanso-text-primary)] mt-1">
@@ -823,11 +823,11 @@
               {vaultStore.urgentTaskCount} urgent tasks auto-extracted from notes
             </div>
           </div>
-        </FluentCard>
+        </Card>
       </div>
 
       <!-- Canonical 8-Folder Layout Card -->
-      <FluentCard>
+      <Card>
         <div class="p-4">
           <h3 class="text-sm font-bold text-[var(--kanso-text-primary)] mb-1">Canonical 8-Folder Creative Vault Layout</h3>
           <p class="text-xs text-[var(--kanso-text-muted)] mb-4">
@@ -846,11 +846,11 @@
             {/each}
           </div>
         </div>
-      </FluentCard>
+      </Card>
 
       <!-- Active Tasks Rollup Preview -->
       <div class="mt-6">
-        <FluentCard>
+        <Card>
           <div class="p-4">
             <h3 class="text-sm font-bold text-[var(--kanso-text-primary)] mb-1">Extracted Tasks from Vault Markdown Notes</h3>
             <p class="text-xs text-[var(--kanso-text-muted)] mb-3">
@@ -885,7 +885,7 @@
               {/each}
             </div>
           </div>
-        </FluentCard>
+        </Card>
       </div>
     </div>
   {/if}
@@ -937,10 +937,10 @@
             />
           </div>
 
-          <FluentButton appearance="primary" onclick={openCreateModal}>
+          <Button appearance="primary" onclick={openCreateModal}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             <span>Add Subsidiary</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
 
@@ -1023,7 +1023,7 @@
         </div>
       {:else}
         <!-- TABLE VIEW -->
-        <FluentCard elevated padding="0" class="table-container-card">
+        <Card elevated padding="0" class="table-container-card">
           <div class="fluent-table-wrapper">
             <table class="fluent-data-table">
               <thead>
@@ -1104,7 +1104,7 @@
               </tbody>
             </table>
           </div>
-        </FluentCard>
+        </Card>
       {/if}
     </div>
   {/if}
@@ -1175,15 +1175,15 @@
             />
           </div>
 
-          <FluentButton appearance="primary" onclick={openCreateUserModal}>
+          <Button appearance="primary" onclick={openCreateUserModal}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             <span>Add Team Member</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
 
       <!-- User Data Table -->
-      <FluentCard elevated padding="0" class="table-container-card">
+      <Card elevated padding="0" class="table-container-card">
         <div class="fluent-table-wrapper">
           <table class="fluent-data-table">
             <thead>
@@ -1268,7 +1268,7 @@
             </tbody>
           </table>
         </div>
-      </FluentCard>
+      </Card>
     </div>
   {/if}
 
@@ -1306,15 +1306,15 @@
             />
           </div>
 
-          <FluentButton appearance="secondary" onclick={exportAuditLogsCSV}>
+          <Button appearance="secondary" onclick={exportAuditLogsCSV}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             <span>Export CSV</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
 
       <!-- Audit Logs Table -->
-      <FluentCard elevated padding="0" class="table-container-card">
+      <Card elevated padding="0" class="table-container-card">
         <div class="fluent-table-wrapper">
           <table class="fluent-data-table">
             <thead>
@@ -1371,7 +1371,7 @@
             </tbody>
           </table>
         </div>
-      </FluentCard>
+      </Card>
     </div>
   {/if}
 
@@ -1382,7 +1382,7 @@
     <div class="tab-pane-content">
       <div class="system-telemetry-grid">
         <!-- Card 1: Workspace & Storage -->
-        <FluentCard elevated>
+        <Card elevated>
           <div class="telemetry-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div class="telemetry-icon-box" style="background: rgba(33, 161, 247, 0.15); color: var(--kanso-accent);">
@@ -1393,12 +1393,12 @@
                 <p class="telemetry-card-sub">SMB workspace share connectivity and file sync</p>
               </div>
             </div>
-            <FluentButton appearance="secondary" onclick={openWorkspaceModal} title="Change Synology NAS Workspace Root Path">
+            <Button appearance="secondary" onclick={openWorkspaceModal} title="Change Synology NAS Workspace Root Path">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
               </svg>
               Change Mount Path
-            </FluentButton>
+            </Button>
           </div>
 
           <div class="telemetry-detail-list">
@@ -1433,10 +1433,10 @@
               <span>{systemStatus?.lastScan ? new Date(systemStatus.lastScan).toLocaleString() : 'Live Background Watcher'}</span>
             </div>
           </div>
-        </FluentCard>
+        </Card>
 
         <!-- Card 2: Process & Runtime Engine -->
-        <FluentCard elevated>
+        <Card elevated>
           <div class="telemetry-card-header">
             <div class="telemetry-icon-box" style="background: rgba(16, 124, 65, 0.15); color: var(--kanso-success);">
               ⚡
@@ -1465,11 +1465,11 @@
               <b>JWT + BCrypt Persistent NAS Store</b>
             </div>
           </div>
-        </FluentCard>
+        </Card>
       </div>
 
       <!-- Maintenance Deck -->
-      <FluentCard elevated style="margin-top: 16px;">
+      <Card elevated style="margin-top: 16px;">
         <div class="maintenance-bar">
           <div>
             <h3 style="margin: 0; font-size: 15px; font-weight: 800;">Workspace Maintenance & Cache Management</h3>
@@ -1478,7 +1478,7 @@
             </p>
           </div>
           <div class="maintenance-buttons">
-            <FluentButton
+            <Button
               appearance="secondary"
               onclick={() => {
                 projectStore.loadProjects();
@@ -1489,10 +1489,10 @@
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 5px;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
               <span>Rescan Synology Workspace</span>
-            </FluentButton>
+            </Button>
           </div>
         </div>
-      </FluentCard>
+      </Card>
     </div>
   {/if}
 
@@ -1512,7 +1512,7 @@
       </div>
 
       <!-- Register New Webhook Card -->
-      <FluentCard elevated style="margin-bottom: 20px;">
+      <Card elevated style="margin-bottom: 20px;">
         <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 800;">➕ Register New Studio Webhook</h3>
         <div style="display: grid; grid-template-columns: 1.2fr 2fr 1fr auto; gap: 12px; align-items: flex-end;">
           <div>
@@ -1532,11 +1532,11 @@
               <option value="generic">Generic / WhatsApp Gateway</option>
             </select>
           </div>
-          <FluentButton appearance="primary" loading={isAddingHook} onclick={handleAddWebhook}>
+          <Button appearance="primary" loading={isAddingHook} onclick={handleAddWebhook}>
             Register Webhook
-          </FluentButton>
+          </Button>
         </div>
-      </FluentCard>
+      </Card>
 
       <!-- Active Webhooks List -->
       <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -1548,7 +1548,7 @@
           </div>
         {:else}
           {#each webhooks as hook}
-            <FluentCard hoverLift padding="16px">
+            <Card hoverLift padding="16px">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span style="font-size: 24px;">{hook.serviceType === 'discord' ? '🎮' : hook.serviceType === 'slack' ? '💬' : '🔔'}</span>
@@ -1567,15 +1567,15 @@
                 </div>
 
                 <div style="display: flex; gap: 8px;">
-                  <FluentButton appearance="secondary" size="xs" loading={isTestingHook === hook.id} onclick={() => handleTestWebhook(hook)}>
+                  <Button appearance="secondary" size="xs" loading={isTestingHook === hook.id} onclick={() => handleTestWebhook(hook)}>
                     🔔 Test Ping
-                  </FluentButton>
-                  <FluentButton appearance="danger" size="xs" onclick={() => handleDeleteWebhook(hook.id)}>
+                  </Button>
+                  <Button appearance="danger" size="xs" onclick={() => handleDeleteWebhook(hook.id)}>
                     🗑 Remove
-                  </FluentButton>
+                  </Button>
                 </div>
               </div>
-            </FluentCard>
+            </Card>
           {/each}
         {/if}
       </div>
@@ -1586,7 +1586,7 @@
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: ADD / EDIT COMPANY                                          -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
-<FluentDialog
+<Dialog
   open={showEditModal}
   title={isEditing ? `Edit Subsidiary (${editingCompany.code})` : 'Register New Subsidiary / Entity'}
   onclose={() => (showEditModal = false)}
@@ -1698,19 +1698,19 @@
   </div>
 
   {#snippet footer()}
-    <FluentButton appearance="subtle" onclick={() => (showEditModal = false)}>
+    <Button appearance="subtle" onclick={() => (showEditModal = false)}>
       Cancel
-    </FluentButton>
-    <FluentButton appearance="primary" onclick={handleSaveCompany} disabled={isSaving}>
+    </Button>
+    <Button appearance="primary" onclick={handleSaveCompany} disabled={isSaving}>
       {isSaving ? 'Saving to NAS...' : isEditing ? 'Update Subsidiary' : 'Register Subsidiary'}
-    </FluentButton>
+    </Button>
   {/snippet}
-</FluentDialog>
+</Dialog>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: PROVISION / EDIT USER                                       -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
-<FluentDialog
+<Dialog
   open={showUserModal}
   title={isEditingUser ? `Edit Staff Account (${editingUser.staffId})` : 'Provision New Staff Account'}
   onclose={() => (showUserModal = false)}
@@ -1878,19 +1878,19 @@
   </div>
 
   {#snippet footer()}
-    <FluentButton appearance="subtle" onclick={() => (showUserModal = false)}>
+    <Button appearance="subtle" onclick={() => (showUserModal = false)}>
       Cancel
-    </FluentButton>
-    <FluentButton appearance="primary" onclick={handleSaveUser} disabled={isSavingUser}>
+    </Button>
+    <Button appearance="primary" onclick={handleSaveUser} disabled={isSavingUser}>
       {isSavingUser ? 'Saving...' : isEditingUser ? 'Update Staff Member' : 'Provision User Account'}
-    </FluentButton>
+    </Button>
   {/snippet}
-</FluentDialog>
+</Dialog>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: PASSWORD RESET                                              -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
-<FluentDialog
+<Dialog
   open={showPasswordModal}
   title="Admin Password Reset"
   onclose={() => (showPasswordModal = false)}
@@ -1912,19 +1912,19 @@
   </div>
 
   {#snippet footer()}
-    <FluentButton appearance="subtle" onclick={() => (showPasswordModal = false)}>
+    <Button appearance="subtle" onclick={() => (showPasswordModal = false)}>
       Cancel
-    </FluentButton>
-    <FluentButton appearance="primary" onclick={handleResetPassword} disabled={isResettingPassword}>
+    </Button>
+    <Button appearance="primary" onclick={handleResetPassword} disabled={isResettingPassword}>
       {isResettingPassword ? 'Resetting...' : 'Confirm Reset Password'}
-    </FluentButton>
+    </Button>
   {/snippet}
-</FluentDialog>
+</Dialog>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: AUDIT EVENT JSON INSPECTOR                                 -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
-<FluentDialog
+<Dialog
   open={showLogDetailModal}
   title={`Audit Event: ${selectedLogDetail?.action || 'Record'}`}
   onclose={() => (showLogDetailModal = false)}
@@ -1946,16 +1946,16 @@
   {/if}
 
   {#snippet footer()}
-    <FluentButton appearance="primary" onclick={() => (showLogDetailModal = false)}>
+    <Button appearance="primary" onclick={() => (showLogDetailModal = false)}>
       Close Inspector
-    </FluentButton>
+    </Button>
   {/snippet}
-</FluentDialog>
+</Dialog>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
 <!-- MODAL: CHANGE SYNOLOGY NAS WORKSPACE ROOT MOUNT                    -->
 <!-- ══════════════════════════════════════════════════════════════════ -->
-<FluentDialog
+<Dialog
   open={showWorkspaceModal}
   title="Change Synology NAS Storage Mount Path"
   onclose={() => (showWorkspaceModal = false)}
@@ -1978,18 +1978,18 @@
   </div>
 
   {#snippet footer()}
-    <FluentButton appearance="subtle" onclick={() => (showWorkspaceModal = false)}>
+    <Button appearance="subtle" onclick={() => (showWorkspaceModal = false)}>
       Cancel
-    </FluentButton>
-    <FluentButton
+    </Button>
+    <Button
       appearance="primary"
       onclick={handleUpdateWorkspace}
       disabled={isUpdatingWorkspace}
     >
       {isUpdatingWorkspace ? 'Switching Mount & Scanning...' : 'Validate & Switch Mount'}
-    </FluentButton>
+    </Button>
   {/snippet}
-</FluentDialog>
+</Dialog>
 
 <style>
   .admin-view-container {

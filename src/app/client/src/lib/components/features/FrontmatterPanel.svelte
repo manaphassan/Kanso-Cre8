@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { ProjectFrontmatter, ProjectStatus, ProjectPriority } from '$lib/types';
-  import FluentInput from '$lib/components/ui/FluentInput.svelte';
-  import FluentSelect from '$lib/components/ui/FluentSelect.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
+  import Select from '$lib/components/ui/Select.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
 
   interface Props {
     frontmatter: ProjectFrontmatter;
@@ -66,42 +66,42 @@
   </div>
 
   <div class="fields-grid">
-    <FluentSelect
+    <Select
       label="Workflow Stage (status)"
       bind:value={frontmatter.status}
       options={statusOptions}
       disabled={readonly}
     />
 
-    <FluentSelect
+    <Select
       label="Priority (priority)"
       bind:value={frontmatter.priority}
       options={priorityOptions}
       disabled={readonly}
     />
 
-    <FluentInput
+    <Input
       label="Assigned Designer"
       bind:value={frontmatter.designer}
       placeholder="e.g. 0001D (Farhan)"
       disabled={readonly}
     />
 
-    <FluentInput
+    <Input
       label="Target Deadline"
       type="date"
       bind:value={frontmatter.deadline}
       disabled={readonly}
     />
 
-    <FluentInput
+    <Input
       label="Brand / Client"
       bind:value={frontmatter.brand}
       placeholder="e.g. SS, SSE, SSH"
       disabled={readonly}
     />
 
-    <FluentInput
+    <Input
       label="Requesting Department"
       bind:value={frontmatter.department}
       placeholder="e.g. Marketing, Clinic, Brand"
@@ -127,7 +127,7 @@
         </a>
       {/if}
     </div>
-    <FluentInput
+    <Input
       bind:value={frontmatter.canva_url}
       placeholder="https://www.canva.com/design/..."
       disabled={readonly}
@@ -161,9 +161,9 @@
 
   {#if onSave && !readonly}
     <div class="panel-actions">
-      <FluentButton appearance="primary" loading={isSaving} onclick={handleSave}>
+      <Button appearance="primary" loading={isSaving} onclick={handleSave}>
         Save Metadata to Synology NAS
-      </FluentButton>
+      </Button>
     </div>
   {/if}
 </div>

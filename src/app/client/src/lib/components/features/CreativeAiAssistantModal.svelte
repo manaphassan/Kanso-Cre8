@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     open?: boolean;
@@ -219,7 +219,7 @@
       <div class="ai-header">
         <div class="header-left">
           <div class="ai-icon-badge">
-            <FluentIcons name="sparkles" size={20} color="var(--kanso-accent)" />
+            <Icon name="sparkles" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <div class="title-row">
@@ -233,30 +233,30 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close Modal">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="ai-tabs-bar">
         <button class="tab-btn {activeTab === 'hooks' ? 'active' : ''}" onclick={() => activeTab = 'hooks'}>
-          <FluentIcons name="bolt" size={14} />
+          <Icon name="bolt" size={14} />
           <span>Viral Hooks</span>
         </button>
         <button class="tab-btn {activeTab === 'scripts' ? 'active' : ''}" onclick={() => activeTab = 'scripts'}>
-          <FluentIcons name="file" size={14} />
+          <Icon name="file" size={14} />
           <span>Ad Scripts</span>
         </button>
         <button class="tab-btn {activeTab === 'image_prompts' ? 'active' : ''}" onclick={() => activeTab = 'image_prompts'}>
-          <FluentIcons name="image" size={14} />
+          <Icon name="image" size={14} />
           <span>3D &amp; Photo Prompts</span>
         </button>
         <button class="tab-btn {activeTab === 'ultra_prompt' ? 'active' : ''}" onclick={() => { activeTab = 'ultra_prompt'; handleFormatUltraPrompt(); }}>
-          <FluentIcons name="rocket" size={14} />
+          <Icon name="rocket" size={14} />
           <span>Gemini Ultra Web</span>
         </button>
         <button class="tab-btn {activeTab === 'settings' ? 'active' : ''}" onclick={() => activeTab = 'settings'}>
-          <FluentIcons name="settings" size={14} />
+          <Icon name="settings" size={14} />
           <span>AI Configuration</span>
         </button>
       </div>
@@ -293,10 +293,10 @@
             </div>
 
             <div class="settings-actions">
-              <FluentButton appearance="primary" loading={isSavingSettings} onclick={saveAiSettings}>
-                <FluentIcons name="save" size={14} />
+              <Button appearance="primary" loading={isSavingSettings} onclick={saveAiSettings}>
+                <Icon name="save" size={14} />
                 <span style="margin-left: 6px;">Save Configuration</span>
-              </FluentButton>
+              </Button>
             </div>
           </div>
 
@@ -347,10 +347,10 @@
                   </div>
 
                   <div class="btn-block">
-                    <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateHooks}>
-                      <FluentIcons name="bolt" size={14} />
+                    <Button appearance="primary" loading={isGenerating} onclick={handleGenerateHooks}>
+                      <Icon name="bolt" size={14} />
                       <span style="margin-left: 6px;">Generate 5 Viral Hooks</span>
-                    </FluentButton>
+                    </Button>
                   </div>
 
                 {:else if activeTab === 'scripts'}
@@ -364,10 +364,10 @@
                   </div>
 
                   <div class="btn-block">
-                    <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateScript}>
-                      <FluentIcons name="file" size={14} />
+                    <Button appearance="primary" loading={isGenerating} onclick={handleGenerateScript}>
+                      <Icon name="file" size={14} />
                       <span style="margin-left: 6px;">Generate Complete Ad Script</span>
-                    </FluentButton>
+                    </Button>
                   </div>
 
                 {:else if activeTab === 'image_prompts'}
@@ -382,10 +382,10 @@
                   </div>
 
                   <div class="btn-block">
-                    <FluentButton appearance="primary" loading={isGenerating} onclick={handleGenerateImagePrompts}>
-                      <FluentIcons name="image" size={14} />
+                    <Button appearance="primary" loading={isGenerating} onclick={handleGenerateImagePrompts}>
+                      <Icon name="image" size={14} />
                       <span style="margin-left: 6px;">Generate Photography Prompts</span>
-                    </FluentButton>
+                    </Button>
                   </div>
 
                 {:else if activeTab === 'ultra_prompt'}
@@ -395,7 +395,7 @@
                   </div>
                   <div class="btn-block">
                     <a href="https://gemini.google.com" target="_blank" rel="noreferrer" class="gemini-web-link">
-                      <FluentIcons name="externalLink" size={14} />
+                      <Icon name="externalLink" size={14} />
                       <span style="margin-left: 6px;">Open Gemini Ultra Web</span>
                     </a>
                   </div>
@@ -410,12 +410,12 @@
                 {#if generatedOutput}
                   <div class="out-actions">
                     <button class="out-action-btn" onclick={copyOutput}>
-                      <FluentIcons name="copy" size={13} />
+                      <Icon name="copy" size={13} />
                       <span style="margin-left: 4px;">Copy</span>
                     </button>
                     {#if onInsertCopy}
                       <button class="out-action-btn insert-btn" onclick={handleInsertIntoCopy}>
-                        <FluentIcons name="edit" size={13} />
+                        <Icon name="edit" size={13} />
                         <span style="margin-left: 4px;">Insert to COPY.md</span>
                       </button>
                     {/if}
@@ -431,7 +431,7 @@
                   </div>
                 {:else if !generatedOutput}
                   <div class="output-empty">
-                    <FluentIcons name="sparkles" size={32} color="rgba(255,255,255,0.2)" />
+                    <Icon name="sparkles" size={32} color="rgba(255,255,255,0.2)" />
                     <p>Select your parameters and click generate to compose studio-grade copy and prompts.</p>
                   </div>
                 {:else}
@@ -446,7 +446,7 @@
       <!-- Footer -->
       <div class="ai-footer">
         <span class="footer-tip">Powered by Google Gemini 1.5 Pro/Flash · Kanso Cre8 Copywriting Engine</span>
-        <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
+        <Button appearance="subtle" onclick={closeModal}>Close</Button>
       </div>
     </div>
   </div>

@@ -4,10 +4,10 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
   import type { DeliverableItem } from '$lib/types';
-  import FluentCard from '$lib/components/ui/FluentCard.svelte';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import DeliverableLightbox from '$lib/components/features/DeliverableLightbox.svelte';
   import VaultIngesterModal from '$lib/components/features/VaultIngesterModal.svelte';
   import BatchResizerModal from '$lib/components/features/BatchResizerModal.svelte';
@@ -298,7 +298,7 @@
     </div>
 
     <div class="header-actions">
-      <FluentButton 
+      <Button 
         appearance="primary" 
         size="sm" 
         onclick={() => { 
@@ -312,14 +312,14 @@
           <line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
         <span style="margin-left: 5px;">Ingest Deliverables</span>
-      </FluentButton>
+      </Button>
 
-      <FluentButton appearance="secondary" size="sm" onclick={() => projectStore.loadDeliverables()}>
+      <Button appearance="secondary" size="sm" onclick={() => projectStore.loadDeliverables()}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
         </svg>
         <span style="margin-left: 5px;">Refresh</span>
-      </FluentButton>
+      </Button>
     </div>
   </div>
 
@@ -398,24 +398,24 @@
           onclick={() => groupByProject = true} 
           title="Group by Project Folder"
         >
-          <FluentIcons name="folder" size={13} />
+          <Icon name="folder" size={13} />
         </button>
         <button 
           class="mode-btn {!groupByProject ? 'active' : ''}" 
           onclick={() => groupByProject = false} 
           title="Flat Asset List"
         >
-          <FluentIcons name="box" size={13} />
+          <Icon name="box" size={13} />
         </button>
       </div>
 
       <!-- View Mode Toggle -->
       <div class="view-mode-toggle">
         <button class="mode-btn {viewMode === 'grid' ? 'active' : ''}" onclick={() => viewMode = 'grid'} title="Grid Card View">
-          <FluentIcons name="grid" size={13} />
+          <Icon name="grid" size={13} />
         </button>
         <button class="mode-btn {viewMode === 'table' ? 'active' : ''}" onclick={() => viewMode = 'table'} title="Metadata Table View">
-          <FluentIcons name="table" size={13} />
+          <Icon name="table" size={13} />
         </button>
       </div>
     </div>
@@ -431,13 +431,13 @@
   {:else if filteredDeliverables.length === 0}
     <div class="state-card empty-state">
       <div class="empty-icon-box">
-        <FluentIcons name="folder" size={36} color="rgba(255,255,255,0.2)" />
+        <Icon name="folder" size={36} color="rgba(255,255,255,0.2)" />
       </div>
       <p class="state-title">No deliverables match the active filter</p>
       <p class="state-desc">Try clearing your search query or selecting "All Deliverables".</p>
-      <FluentButton appearance="secondary" size="sm" onclick={() => { filterStatus = 'all'; searchQuery = ''; filterBrand = 'all'; filterMediaClass = 'all'; filterAspectRatio = 'all'; }}>
+      <Button appearance="secondary" size="sm" onclick={() => { filterStatus = 'all'; searchQuery = ''; filterBrand = 'all'; filterMediaClass = 'all'; filterAspectRatio = 'all'; }}>
         Reset Filters
-      </FluentButton>
+      </Button>
     </div>
   {:else if viewMode === 'grid'}
     {#if groupByProject}
@@ -453,7 +453,7 @@
               <div class="group-header-left">
                 <span class="chevron-arrow {isCollapsed ? 'collapsed' : ''}">▾</span>
                 <div class="group-folder-icon">
-                  <FluentIcons name="folder" size={15} color="var(--kanso-accent)" />
+                  <Icon name="folder" size={15} color="var(--kanso-accent)" />
                 </div>
                 <span class="group-job-badge">{group.jobId}</span>
                 <span class="group-brand-badge">{group.brand}</span>
@@ -501,7 +501,7 @@
                   onclick={() => openHandoverModal(group)}
                   title="Configure and Build 1-Click Client Handover Package (ZIP + Manifest + Checksums)"
                 >
-                  <FluentIcons name="download" size={12} />
+                  <Icon name="download" size={12} />
                   <span>Handover Package</span>
                 </button>
 
@@ -511,7 +511,7 @@
                   onclick={(e) => toggleSelectGroup(e, group)}
                   title={isGroupAllSelected(group) ? 'Deselect Project Files' : 'Select All Files in Project'}
                 >
-                  <FluentIcons name={isGroupAllSelected(group) ? 'check' : 'grid'} size={12} />
+                  <Icon name={isGroupAllSelected(group) ? 'check' : 'grid'} size={12} />
                   <span>{isGroupAllSelected(group) ? 'Deselect All' : 'Select Project'}</span>
                 </button>
               </div>
@@ -551,7 +551,7 @@
                           {:else if d.isVideo || d.previewType === 'video'}
                             <div class="doc-sheet video-sheet">
                               <div class="sheet-icon-circle video-circle">
-                                <FluentIcons name="video" size={20} />
+                                <Icon name="video" size={20} />
                               </div>
                               <span class="sheet-type-tag">VIDEO MASTER</span>
                             </div>
@@ -571,7 +571,7 @@
                           {:else}
                             <div class="doc-sheet generic-sheet">
                               <div class="sheet-icon-circle generic-circle">
-                                <FluentIcons name="file" size={20} />
+                                <Icon name="file" size={20} />
                               </div>
                               <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
                             </div>
@@ -598,7 +598,7 @@
 
                           <div class="del-footer-row">
                             <span class="meta-designer">
-                              <FluentIcons name="user" size={11} />
+                              <Icon name="user" size={11} />
                               <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
                             </span>
                             <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
@@ -617,18 +617,18 @@
                             <div class="action-icons-right">
                               {#if d.isImage || d.previewType === 'image'}
                                 <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
-                                  <FluentIcons name="vector" size={12} />
+                                  <Icon name="vector" size={12} />
                                 </button>
                                 <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
-                                  <FluentIcons name="printer" size={12} />
+                                  <Icon name="printer" size={12} />
                                 </button>
                               {/if}
                               <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
-                                <FluentIcons name="link" size={12} />
+                                <Icon name="link" size={12} />
                               </button>
                               {#if d.downloadUrl}
                                 <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
-                                  <FluentIcons name="download" size={12} />
+                                  <Icon name="download" size={12} />
                                 </a>
                               {/if}
                             </div>
@@ -676,7 +676,7 @@
                 {:else if d.isVideo || d.previewType === 'video'}
                   <div class="doc-sheet video-sheet">
                     <div class="sheet-icon-circle video-circle">
-                      <FluentIcons name="video" size={20} />
+                      <Icon name="video" size={20} />
                     </div>
                     <span class="sheet-type-tag">VIDEO MASTER</span>
                   </div>
@@ -696,7 +696,7 @@
                 {:else}
                   <div class="doc-sheet generic-sheet">
                     <div class="sheet-icon-circle generic-circle">
-                      <FluentIcons name="file" size={20} />
+                      <Icon name="file" size={20} />
                     </div>
                     <span class="sheet-type-tag">{(d.ext || d.extension || (d.filename ? d.filename.split('.').pop() : '') || 'FILE').replace('.', '').toUpperCase()}</span>
                   </div>
@@ -731,7 +731,7 @@
 
                 <div class="del-footer-row">
                   <span class="meta-designer">
-                    <FluentIcons name="user" size={11} />
+                    <Icon name="user" size={11} />
                     <span>{d.project?.designer || d.projectDesigner || 'Unassigned'}</span>
                   </span>
                   <span class="meta-size">{d.sizeBytes ? (d.sizeBytes / (1024 * 1024)).toFixed(2) : '0.00'} MB</span>
@@ -750,18 +750,18 @@
                   <div class="action-icons-right">
                     {#if d.isImage || d.previewType === 'image'}
                       <button class="tool-icon-btn" title="Smart Social Resizer" onclick={() => openResizer(d)}>
-                        <FluentIcons name="vector" size={12} />
+                        <Icon name="vector" size={12} />
                       </button>
                       <button class="tool-icon-btn" title="Print Preflight Validator" onclick={() => openPreflight(d)}>
-                        <FluentIcons name="printer" size={12} />
+                        <Icon name="printer" size={12} />
                       </button>
                     {/if}
                     <button class="tool-icon-btn" title="Copy Client Review Link" onclick={() => openShare(d)}>
-                      <FluentIcons name="link" size={12} />
+                      <Icon name="link" size={12} />
                     </button>
                     {#if d.downloadUrl}
                       <a href={d.downloadUrl} download={d.filename} class="tool-icon-btn" title="Download Master File">
-                        <FluentIcons name="download" size={12} />
+                        <Icon name="download" size={12} />
                       </a>
                     {/if}
                   </div>
@@ -814,17 +814,17 @@
                   <img src={d.previewUrl} alt={d.filename} class="table-thumb" />
                 {:else if d.isVideo}
                   <span class="table-icon-pill">
-                    <FluentIcons name="video" size={12} />
+                    <Icon name="video" size={12} />
                     <span style="margin-left: 3px;">Video</span>
                   </span>
                 {:else if d.isPdf}
                   <span class="table-icon-pill">
-                    <FluentIcons name="file" size={12} color="var(--kanso-danger)" />
+                    <Icon name="file" size={12} color="var(--kanso-danger)" />
                     <span style="margin-left: 3px;">PDF</span>
                   </span>
                 {:else}
                   <span class="table-icon-pill">
-                    <FluentIcons name="folder" size={12} />
+                    <Icon name="folder" size={12} />
                     <span style="margin-left: 3px;">File</span>
                   </span>
                 {/if}
@@ -844,18 +844,18 @@
                 <div class="table-actions">
                   {#if d.isImage || d.previewType === 'image'}
                     <button class="tool-icon-btn" title="Social Resizer" onclick={() => openResizer(d)}>
-                      <FluentIcons name="vector" size={13} />
+                      <Icon name="vector" size={13} />
                     </button>
                     <button class="tool-icon-btn" title="Print Preflight" onclick={() => openPreflight(d)}>
-                      <FluentIcons name="printer" size={13} />
+                      <Icon name="printer" size={13} />
                     </button>
                   {/if}
                   <button class="tool-icon-btn" title="Share Link" onclick={() => openShare(d)}>
-                    <FluentIcons name="link" size={13} />
+                    <Icon name="link" size={13} />
                   </button>
                   {#if d.downloadUrl}
                     <a href={d.downloadUrl} download={d.filename} class="download-link" title="Download">
-                      <FluentIcons name="download" size={13} />
+                      <Icon name="download" size={13} />
                     </a>
                   {/if}
                 </div>
@@ -885,7 +885,7 @@
           disabled={isBatchOperating}
           onclick={handleBatchApprove}
         >
-          <FluentIcons name="check" size={13} />
+          <Icon name="check" size={13} />
           <span>{isBatchOperating ? 'Approving...' : 'Batch Approve'}</span>
         </button>
 
@@ -908,7 +908,7 @@
           class="batch-btn batch-download-btn"
           onclick={handleBatchDownload}
         >
-          <FluentIcons name="download" size={13} />
+          <Icon name="download" size={13} />
           <span>Download Files</span>
         </button>
 

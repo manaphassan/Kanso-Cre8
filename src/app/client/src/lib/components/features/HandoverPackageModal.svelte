@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import type { DeliverableItem } from '$lib/types';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
 
@@ -199,7 +199,7 @@
       <div class="handover-header">
         <div class="header-left">
           <div class="header-icon-box">
-            <FluentIcons name="download" size={20} color="var(--kanso-accent)" />
+            <Icon name="download" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <div class="header-badges">
@@ -212,7 +212,7 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} aria-label="Close dialog">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
@@ -282,13 +282,13 @@
                   />
                   <div class="file-type-icon">
                     {#if d.isVideo || d.previewType === 'video'}
-                      <FluentIcons name="video" size={14} color="var(--kanso-accent)" />
+                      <Icon name="video" size={14} color="var(--kanso-accent)" />
                     {:else if d.isPdf || d.previewType === 'pdf'}
-                      <FluentIcons name="document" size={14} color="var(--kanso-danger)" />
+                      <Icon name="document" size={14} color="var(--kanso-danger)" />
                     {:else if d.isImage || d.previewType === 'image'}
-                      <FluentIcons name="image" size={14} color="var(--kanso-accent)" />
+                      <Icon name="image" size={14} color="var(--kanso-accent)" />
                     {:else}
-                      <FluentIcons name="document" size={14} color="var(--kanso-text-muted)" />
+                      <Icon name="document" size={14} color="var(--kanso-text-muted)" />
                     {/if}
                   </div>
                   <div class="file-info">
@@ -414,19 +414,19 @@
             disabled={!downloadUrl || selectedDeliverables.length === 0}
             title="Copy direct API download link for client sharing"
           >
-            <FluentIcons name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
+            <Icon name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
             <span>{linkCopied ? 'Link Copied!' : 'Copy Direct Link'}</span>
           </button>
         </div>
 
         <div class="footer-right">
-          <FluentButton appearance="subtle" onclick={closeModal}>Cancel</FluentButton>
+          <Button appearance="subtle" onclick={closeModal}>Cancel</Button>
           <button 
             class="download-package-btn" 
             onclick={triggerDownload} 
             disabled={!downloadUrl || selectedDeliverables.length === 0}
           >
-            <FluentIcons name="download" size={15} />
+            <Icon name="download" size={15} />
             <span>Download Handover ZIP ({formatBytes(selectedSizeBytes)})</span>
           </button>
         </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { appState } from '$lib/stores/appState.svelte';
   import type { Project } from '$lib/types';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
 
   interface Props {
     projects: Project[];
@@ -124,10 +124,10 @@
   <!-- Top Navigation & Controls -->
   <div class="calendar-header-bar">
     <div class="cal-nav-group">
-      <FluentButton appearance="subtle" onclick={prevMonth} title="Previous Month">‹ Prev</FluentButton>
+      <Button appearance="subtle" onclick={prevMonth} title="Previous Month">‹ Prev</Button>
       <h3 class="cal-month-title">{calendarGrid.monthName}</h3>
-      <FluentButton appearance="subtle" onclick={nextMonth} title="Next Month">Next ›</FluentButton>
-      <FluentButton appearance="secondary" onclick={goToday}>Today</FluentButton>
+      <Button appearance="subtle" onclick={nextMonth} title="Next Month">Next ›</Button>
+      <Button appearance="secondary" onclick={goToday}>Today</Button>
     </div>
 
     <div class="cal-legend-row">

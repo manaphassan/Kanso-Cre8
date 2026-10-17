@@ -2,8 +2,8 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     open?: boolean;
@@ -182,7 +182,7 @@
       <div class="ingester-header">
         <div class="header-left">
           <div class="ingest-icon-badge">
-            <FluentIcons name="upload" size={20} color="var(--kanso-accent)" />
+            <Icon name="upload" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Drag &amp; Drop Vault Ingester</h2>
@@ -191,7 +191,7 @@
         </div>
         {#if !isIngesting}
           <button class="close-btn" onclick={closeModal} title="Close Modal">
-            <FluentIcons name="close" size={16} />
+            <Icon name="close" size={16} />
           </button>
         {/if}
       </div>
@@ -213,7 +213,7 @@
           onchange={(e) => handleFilesAdded((e.target as HTMLInputElement).files)} 
         />
         <div class="dropzone-content">
-          <FluentIcons name="upload" size={36} color="var(--kanso-accent)" />
+          <Icon name="upload" size={36} color="var(--kanso-accent)" />
           <div class="drop-text" style="margin-top: 10px;">
             <b>Drag and drop files here</b> or <span class="browse-link">browse workstation</span>
           </div>
@@ -240,7 +240,7 @@
                 <!-- Auto-routed Folder Selector -->
                 <div class="folder-select-col">
                   <span class="arrow-indicator">
-                    <FluentIcons name="arrowRight" size={13} />
+                    <Icon name="arrowRight" size={13} />
                   </span>
                   <select 
                     class="folder-dropdown" 
@@ -257,7 +257,7 @@
                 <div class="status-col">
                   {#if item.status === 'pending'}
                     <button class="remove-btn" onclick={() => removeStagedFile(item.id)} disabled={isIngesting} title="Remove File">
-                      <FluentIcons name="close" size={13} />
+                      <Icon name="close" size={13} />
                     </button>
                   {:else if item.status === 'uploading'}
                     <span class="status-badge uploading">Syncing...</span>
@@ -283,18 +283,18 @@
           {/if}
         </div>
         <div class="footer-actions">
-          <FluentButton appearance="subtle" onclick={closeModal} disabled={isIngesting}>
+          <Button appearance="subtle" onclick={closeModal} disabled={isIngesting}>
             Cancel
-          </FluentButton>
-          <FluentButton 
+          </Button>
+          <Button 
             appearance="primary" 
             disabled={stagedFiles.length === 0 || isIngesting} 
             loading={isIngesting} 
             onclick={startBatchIngestion}
           >
-            <FluentIcons name="upload" size={14} />
+            <Icon name="upload" size={14} />
             <span style="margin-left: 6px;">Ingest &amp; Auto-Sort ({stagedFiles.length} files)</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
     </div>

@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { ApiClient } from '$lib/services/api';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
 
   interface ProjectSnapshot {
     id: string;
@@ -109,7 +109,7 @@
       <div class="timeline-header">
         <div class="header-left">
           <div class="timeline-icon-badge">
-            <FluentIcons name="timeline" size={20} color="var(--kanso-accent)" />
+            <Icon name="timeline" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Creative Version Timeline &amp; Rollback</h2>
@@ -117,7 +117,7 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close Modal">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
@@ -131,10 +131,10 @@
             placeholder="Add note for this milestone (e.g. Pre-Ramadan campaign final copy)..." 
             bind:value={customNote}
           />
-          <FluentButton appearance="primary" size="sm" loading={isCapturing} onclick={handleCreateSnapshot}>
-            <FluentIcons name="camera" size={14} />
+          <Button appearance="primary" size="sm" loading={isCapturing} onclick={handleCreateSnapshot}>
+            <Icon name="camera" size={14} />
             <span style="margin-left: 6px;">Capture Snapshot</span>
-          </FluentButton>
+          </Button>
         </div>
 
         <!-- Visual Milestone Tree -->
@@ -143,7 +143,7 @@
             <div class="loading-box">Loading revision timeline...</div>
           {:else if snapshots.length === 0}
             <div class="empty-box">
-              <FluentIcons name="timeline" size={36} color="rgba(255,255,255,0.2)" />
+              <Icon name="timeline" size={36} color="rgba(255,255,255,0.2)" />
               <p style="margin-top: 10px;">No historical snapshots captured yet.</p>
               <span class="empty-sub">Snapshots are automatically created during client reviews, decisions, and manual saves.</span>
             </div>
@@ -174,11 +174,11 @@
 
                     <div class="milestone-meta-row">
                       <span class="actor-tag">
-                        <FluentIcons name="user" size={12} />
+                        <Icon name="user" size={12} />
                         <span style="margin-left: 4px;">{snap.actor || 'Designer'}</span>
                       </span>
                       <span class="trigger-tag">
-                        <FluentIcons name="bolt" size={12} />
+                        <Icon name="bolt" size={12} />
                         <span style="margin-left: 4px;">{snap.trigger || 'SNAPSHOT'}</span>
                       </span>
                       <span class="snap-id-tag">{snap.id}</span>
@@ -191,7 +191,7 @@
                           disabled={isRollingBack === snap.id}
                           onclick={() => handleRollback(snap)}
                         >
-                          <FluentIcons name="history" size={13} />
+                          <Icon name="history" size={13} />
                           <span style="margin-left: 6px;">{isRollingBack === snap.id ? 'Restoring...' : 'Rollback to this Revision'}</span>
                         </button>
                       </div>
@@ -207,10 +207,10 @@
       <!-- Footer -->
       <div class="timeline-footer">
         <span class="security-tip">
-          <FluentIcons name="lock" size={12} color="var(--kanso-accent)" />
+          <Icon name="lock" size={12} color="var(--kanso-accent)" />
           <span style="margin-left: 6px;">Pre-rollback safety backups are created automatically prior to any restoration.</span>
         </span>
-        <FluentButton appearance="subtle" onclick={closeModal}>Close</FluentButton>
+        <Button appearance="subtle" onclick={closeModal}>Close</Button>
       </div>
     </div>
   </div>

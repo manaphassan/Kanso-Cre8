@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import type { DeliverableItem } from '$lib/types';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons, { type IconName } from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon, { type IconName } from '$lib/components/ui/Icon.svelte';
 
   interface Props {
     open?: boolean;
@@ -254,7 +254,7 @@
       <div class="resizer-header">
         <div class="header-left">
           <div class="resizer-icon-badge">
-            <FluentIcons name="vector" size={20} color="var(--kanso-accent)" />
+            <Icon name="vector" size={20} color="var(--kanso-accent)" />
           </div>
           <div>
             <h2 class="modal-title">Multi-Format Asset Converter & Proofing Engine</h2>
@@ -262,7 +262,7 @@
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close Modal">
-          <FluentIcons name="close" size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
 
@@ -376,7 +376,7 @@
                 onclick={() => { fillMode = 'ambient_blur'; generateAllPreviews(); }}
               >
                 <div class="fill-title">
-                  <FluentIcons name="sparkles" size={13} />
+                  <Icon name="sparkles" size={13} />
                   <span style="margin-left: 6px;">Ambient Blur</span>
                 </div>
                 <span class="fill-desc">Smart blurred edge expansion</span>
@@ -387,7 +387,7 @@
                 onclick={() => { fillMode = 'solid_color'; generateAllPreviews(); }}
               >
                 <div class="fill-title">
-                  <FluentIcons name="colorPalette" size={13} />
+                  <Icon name="colorPalette" size={13} />
                   <span style="margin-left: 6px;">Brand Solid Canvas</span>
                 </div>
                 <span class="fill-desc">Contained with brand color fill</span>
@@ -398,7 +398,7 @@
                 onclick={() => { fillMode = 'center_crop'; generateAllPreviews(); }}
               >
                 <div class="fill-title">
-                  <FluentIcons name="grid" size={13} />
+                  <Icon name="grid" size={13} />
                   <span style="margin-left: 6px;">Center Crop</span>
                 </div>
                 <span class="fill-desc">Full bleed focus crop</span>
@@ -427,7 +427,7 @@
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <div class="preset-info" onclick={() => activePreviewTab = p.id}>
                     <span class="preset-icon">
-                      <FluentIcons name={p.icon} size={16} />
+                      <Icon name={p.icon} size={16} />
                     </span>
                     <div>
                       <div class="preset-label-row">
@@ -438,7 +438,7 @@
                     </div>
                   </div>
                   <button class="single-dl-btn" title="Download this format ({exportFormat.toUpperCase()})" onclick={() => downloadSingle(p.id)}>
-                    <FluentIcons name="download" size={12} />
+                    <Icon name="download" size={12} />
                   </button>
                 </div>
               {/each}
@@ -454,7 +454,7 @@
                 class="stage-tab {activePreviewTab === p.id ? 'active' : ''}" 
                 onclick={() => activePreviewTab = p.id}
               >
-                <FluentIcons name={p.icon} size={12} />
+                <Icon name={p.icon} size={12} />
                 <span style="margin-left: 5px;">{p.ratio}</span>
               </button>
             {/each}
@@ -474,15 +474,15 @@
       <div class="resizer-footer">
         <span class="footer-tip">100% offline client-side GPU canvas. Zero telemetry or phone-home.</span>
         <div class="footer-actions">
-          <FluentButton appearance="subtle" onclick={closeModal}>Cancel</FluentButton>
-          <FluentButton 
+          <Button appearance="subtle" onclick={closeModal}>Cancel</Button>
+          <Button 
             appearance="primary" 
             loading={isGeneratingZip} 
             onclick={downloadBatchZip}
           >
-            <FluentIcons name="download" size={14} />
+            <Icon name="download" size={14} />
             <span style="margin-left: 6px;">Download Selected ({exportFormat.toUpperCase()})</span>
-          </FluentButton>
+          </Button>
         </div>
       </div>
     </div>

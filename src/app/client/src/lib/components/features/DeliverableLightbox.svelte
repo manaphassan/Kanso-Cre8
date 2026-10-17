@@ -2,8 +2,8 @@
   import type { DeliverableItem } from '$lib/types';
   import { appState } from '$lib/stores/appState.svelte';
   import { projectStore } from '$lib/stores/projectStore.svelte';
-  import FluentButton from '$lib/components/ui/FluentButton.svelte';
-  import FluentIcons from '$lib/components/ui/FluentIcons.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Icon from '$lib/components/ui/Icon.svelte';
   import DeliverableAnnotationCanvas from '$lib/components/features/DeliverableAnnotationCanvas.svelte';
   import DeliverableVisualDiffSlider from '$lib/components/features/DeliverableVisualDiffSlider.svelte';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
@@ -91,11 +91,11 @@
           <div class="diff-container-pane">
             <div class="pane-view-toggle">
               <button class="view-toggle-pill" onclick={() => isDiffMode = false}>
-                <FluentIcons name="pin" size={13} />
+                <Icon name="pin" size={13} />
                 <span style="margin-left: 5px;">Pins &amp; Annotations</span>
               </button>
               <button class="view-toggle-pill active" onclick={() => isDiffMode = true}>
-                <FluentIcons name="diff" size={13} />
+                <Icon name="diff" size={13} />
                 <span style="margin-left: 5px;">Version Diff Slider</span>
               </button>
             </div>
@@ -110,11 +110,11 @@
             {#if hasCompanionImages}
               <div class="pane-view-toggle">
                 <button class="view-toggle-pill active" onclick={() => isDiffMode = false}>
-                  <FluentIcons name="pin" size={13} />
+                  <Icon name="pin" size={13} />
                   <span style="margin-left: 5px;">Pins &amp; Annotations</span>
                 </button>
                 <button class="view-toggle-pill" onclick={() => isDiffMode = true}>
-                  <FluentIcons name="diff" size={13} />
+                  <Icon name="diff" size={13} />
                   <span style="margin-left: 5px;">Version Diff Slider</span>
                 </button>
               </div>
@@ -143,7 +143,7 @@
         {:else if deliverable.isAudio || deliverable.previewType === 'audio'}
           <div class="audio-wrapper">
             <div class="audio-disc">
-              <FluentIcons name="video" size={32} color="var(--kanso-accent)" />
+              <Icon name="video" size={32} color="var(--kanso-accent)" />
             </div>
             <div class="audio-track-title">{deliverable.filename}</div>
             <!-- svelte-ignore a11y_media_has_caption -->
@@ -164,7 +164,7 @@
           <div class="header-row">
             <span class="badge badge-brand">{deliverable.project?.brand || deliverable.projectBrand || 'ACME'}</span>
             <button class="close-btn" onclick={onClose} aria-label="Close dialog">
-              <FluentIcons name="close" size={14} />
+              <Icon name="close" size={14} />
               <span style="margin-left: 4px;">Close</span>
             </button>
           </div>
@@ -212,20 +212,20 @@
             class="download-btn"
             title="Download full quality asset"
           >
-            <FluentIcons name="download" size={15} />
+            <Icon name="download" size={15} />
             <span style="margin-left: 6px;">Download Master Asset</span>
           </a>
 
           {#if appState.canApprove()}
             <div class="decision-group">
-              <FluentButton appearance="danger" size="md" style="width: 100%;" loading={isSubmitting} onclick={handleRevision}>
-                <FluentIcons name="warning" size={14} />
+              <Button appearance="danger" size="md" style="width: 100%;" loading={isSubmitting} onclick={handleRevision}>
+                <Icon name="warning" size={14} />
                 <span style="margin-left: 6px;">Request Revision</span>
-              </FluentButton>
-              <FluentButton appearance="success" size="md" style="width: 100%;" loading={isSubmitting} onclick={handleApprove}>
-                <FluentIcons name="checkCircle" size={14} />
+              </Button>
+              <Button appearance="success" size="md" style="width: 100%;" loading={isSubmitting} onclick={handleApprove}>
+                <Icon name="checkCircle" size={14} />
                 <span style="margin-left: 6px;">Approve Deliverable</span>
-              </FluentButton>
+              </Button>
             </div>
           {:else}
             <div class="non-approver-notice">

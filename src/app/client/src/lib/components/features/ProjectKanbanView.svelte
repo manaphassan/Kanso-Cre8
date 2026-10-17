@@ -5,7 +5,7 @@
   import { appState } from '$lib/stores/appState.svelte';
   import { fetchStaffList } from '$lib/utils';
   import type { Project } from '$lib/types';
-  import FluentBadge from '$lib/components/ui/FluentBadge.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
   import { notesService } from '$lib/services/notesService';
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
@@ -319,7 +319,7 @@
                     >
                       {p.jobId || p.id}
                     </a>
-                    <FluentBadge type="brand" value={p.brand || 'ACME'}>{p.brand || 'ACME'}</FluentBadge>
+                    <Badge type="brand" value={p.brand || 'ACME'}>{p.brand || 'ACME'}</Badge>
                   </div>
 
                   <div class="card-action-group">
