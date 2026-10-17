@@ -485,7 +485,8 @@
                 class="icon-action-btn"
                 onclick={copyNoteMarkdown}
                 title="Copy raw Markdown to clipboard"
-              >
+              
+        aria-label="Note action">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -497,7 +498,8 @@
                 class="icon-action-btn delete"
                 onclick={deleteCurrentNote}
                 title="Delete note from vault"
-              >
+              
+        aria-label="Note action">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -780,8 +782,17 @@
 
   <!-- ═══════════ GLOBAL VAULT TASKS MODAL DRAWER ═══════════ -->
   {#if showTaskDrawer}
-    <div class="modal-backdrop" onclick={() => showTaskDrawer = false}>
-      <div class="task-drawer-modal" onclick={(e) => e.stopPropagation()}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div class="modal-backdrop" onclick={() => showTaskDrawer = false} role="presentation">
+      <div
+        class="task-drawer-modal"
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.key === 'Escape' && (showTaskDrawer = false)}
+      >
         <div class="modal-header">
           <div class="modal-title-group">
             <span class="modal-icon"><Icon name="check" size={16} /></span>

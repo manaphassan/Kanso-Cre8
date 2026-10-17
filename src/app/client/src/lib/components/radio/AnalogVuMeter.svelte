@@ -100,6 +100,7 @@
         class="meter-action-btn"
         onclick={toggleBacklight}
         title="Toggle Meter Warm Filament Backlight"
+        aria-label="Toggle meter backlight"
       >
         <Icon name="lightbulb" size={12} /> {isBacklightHigh ? 'WARM' : 'DIM'}
       </button>

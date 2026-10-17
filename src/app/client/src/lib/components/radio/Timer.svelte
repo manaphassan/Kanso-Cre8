@@ -80,7 +80,8 @@
       class="btn-timer-toggle"
       class:is-running={isRunning}
       onclick={toggleTimer}
-    >
+    
+        aria-label="Start or pause focus timer">
       <Icon name={isRunning ? 'pause' : 'play'} size={12} />
       <span>{isRunning ? 'Pause' : 'Start Sprint'}</span>
     </button>
@@ -89,7 +90,8 @@
       class="btn-timer-reset"
       onclick={resetTimer}
       title="Reset to 25 minutes"
-    >
+    
+        aria-label="Reset focus timer">
       <Icon name="refresh" size={12} />
     </button>
   </div>

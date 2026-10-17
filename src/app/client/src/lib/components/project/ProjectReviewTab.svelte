@@ -44,7 +44,14 @@
   {:else}
     <div class="deliverables-grid">
       {#each projectStore.activeDeliverables as d}
-        <div class="deliverable-card" onclick={() => openLightbox(d)} role="button" tabindex="0">
+        <div
+          class="deliverable-card"
+          onclick={() => openLightbox(d)}
+          onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && openLightbox(d)}
+          role="button"
+          tabindex="0"
+          aria-label={"Open deliverable " + d.filename}
+        >
           <div class="del-preview-box">
             {#if d.isImage || d.previewType === 'image'}
               <img src={d.previewUrl} alt={d.filename} loading="lazy" />
