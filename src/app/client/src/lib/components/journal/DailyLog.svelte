@@ -41,7 +41,7 @@
 
   async function handleSaveReflection() {
     await journalService.saveReflection(dailyNote.date, reflectionText);
-    appState.addToast('Evening creative reflection saved.', 'success');
+    appState.addToast('Daily reflection saved.', 'success');
   }
 
   function handlePrevDay() {
@@ -89,7 +89,7 @@
 
     <div class="entries-list">
       {#if (dailyNote.entries || []).length === 0}
-        <div class="empty-log-state">Zero rapid log entries for this day. Record tasks, notes, or milestones below.</div>
+        <div class="empty-log-state">No entries for this day. Record tasks, notes, or events below.</div>
       {:else}
         {#each dailyNote.entries as item}
           <div class="entry-row type-{item.type}" class:completed={item.completed}>
@@ -127,13 +127,13 @@
     </form>
   </div>
 
-  <!-- Creative Reflection -->
+  <!-- Reflection -->
   <div class="card-surface reflection-card">
     <div class="reflection-header">
-      <h3 class="log-title">Evening Creative Reflection</h3>
+      <h3 class="log-title">Daily reflection</h3>
       <button type="button" class="btn-primary-mini" onclick={handleSaveReflection}>Save reflection</button>
     </div>
-    <textarea class="reflection-textarea" rows="3" bind:value={reflectionText} placeholder="Mindful notes on today's craft, client interactions, or energy levels..."></textarea>
+    <textarea class="reflection-textarea" rows="3" bind:value={reflectionText} placeholder="Notes on today's work, client interactions, or energy levels..."></textarea>
   </div>
 </div>
 

@@ -18,13 +18,13 @@
     { id: 'focus_deep_work', name: 'Deep Work Sprint', description: '2+ hours uninterrupted design focus', icon: 'clock' },
     { id: 'visual_research', name: 'Visual Research', description: 'Curate 3+ references or typography studies', icon: 'edit' },
     { id: 'client_touchpoint', name: 'Client Touchpoint', description: 'Async status update or proof delivery', icon: 'check' },
-    { id: 'mindful_walk', name: 'Mindful Walk / Rest', description: 'Away from screens for physical recovery', icon: 'play' }
+    { id: 'mindful_walk', name: 'Walk / Rest', description: 'Away from screens for physical recovery', icon: 'play' }
   ];
 </script>
 
 <div class="habits-bar-card">
   <div class="habits-left">
-    <span class="habits-section-label">STUDIO CRAFT HABITS</span>
+    <span class="habits-section-label">Habits</span>
     <div class="habits-pill-row">
       {#each CANONICAL_HABITS as habit}
         {@const isActive = (dailyNote.habits || []).includes(habit.id)}

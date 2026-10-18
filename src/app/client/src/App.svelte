@@ -44,7 +44,7 @@
 
   // Canonical 6-Item Navigation System (kanso-ui-minimal)
   const navItems: NavItem[] = [
-    { id: 'deck', label: 'Deck', route: 'dashboard', icon: 'dashboard', shortcut: '⌘1', matchRoutes: ['dashboard'] },
+    { id: 'deck', label: 'Home', route: 'dashboard', icon: 'dashboard', shortcut: '⌘1', matchRoutes: ['dashboard'] },
     { id: 'projects', label: 'Projects', route: 'projects', icon: 'folder', shortcut: '⌘2', matchRoutes: ['projects', 'project-detail', 'deliverables', 'copy-studio'] },
     { id: 'journal', label: 'Journal', route: 'journal', icon: 'calendar', shortcut: '⌘3', matchRoutes: ['journal'] },
     { id: 'notes', label: 'Notes', route: 'notes', icon: 'file', shortcut: '⌘4', matchRoutes: ['notes', 'zettel'] },
@@ -57,25 +57,25 @@
   }
 
   const pageTitles: Record<string, string> = {
-    dashboard: 'Studio Deck',
+    dashboard: 'Home',
     projects: 'Projects',
     'project-detail': 'Project Workspace',
     deliverables: 'Review Queue',
-    journal: 'Bullet Journal',
-    clients: 'Clients & Brand Hub',
-    invoices: 'Quotes & Invoices',
-    notes: 'Atelier Notes',
-    zettel: 'Atelier Notes',
+    journal: 'Journal',
+    clients: 'Clients',
+    invoices: 'Invoices',
+    notes: 'Notes',
+    zettel: 'Notes',
     radio: 'Focus Radio',
     'copy-studio': 'Copywriting Studio',
-    settings: 'Studio Settings',
-    profile: 'Studio Settings'
+    settings: 'Settings',
+    profile: 'Settings'
   };
 
   const currentTitle = $derived(
     appState.currentRoute === 'project-detail' && appState.routeParams.id
       ? appState.routeParams.id
-      : (pageTitles[appState.currentRoute] ?? 'Studio Deck')
+      : (pageTitles[appState.currentRoute] ?? 'Home')
   );
 
   function handleGlobalKeydown(e: KeyboardEvent) {

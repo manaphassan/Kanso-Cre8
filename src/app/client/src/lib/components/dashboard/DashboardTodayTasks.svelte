@@ -88,7 +88,7 @@
 
   <div class="tasks-list">
     {#if todayTasks.length === 0}
-      <div class="empty-tasks-hint">No tasks scheduled for today. Rapid log below or in the daily journal.</div>
+      <div class="empty-tasks-hint">No tasks for today. Rapid log below or in the journal.</div>
     {:else}
       {#each todayTasks as t}
         <div class="task-row" class:completed={t.completed || t.type === 'done'}>

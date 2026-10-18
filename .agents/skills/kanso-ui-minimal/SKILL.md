@@ -32,7 +32,7 @@ Kanso (simplicity). Remove before adding. One primary action per screen. Calm, t
 
 ## Component budget
 
-- Studio Deck keeps 5 blocks in this order: Today's Tasks, Design Metrics Bento (max 4 tiles: hours, effective rate, first-time-right, velocity), Project Status at a Glance, Smart Suggestions (one line unless there is an alert), Total Income and Cashflow.
+- Home keeps 5 blocks in this order: Today's Tasks, Weekly Metrics (max 4 tiles: hours, effective rate, first-time-right, velocity), Projects in progress, Smart Suggestions (one line unless there is an alert), Total Income and Cashflow.
 - Header chronometer: Play and Stop, `HH:MM:SS`, one compact rate control with `+$` earnings, active client swatch with 1-click HEX copy, Append Session on stop.
 - Project views: Kanban and Table only. Filters live in one popover.
 - Empty state: one line, one icon, one button.

@@ -43,42 +43,42 @@
       type: 'timer',
       id: 'timer-acme',
       label: 'Start Billable Timer: Acme Corp',
-      sublabel: '$150/hr · Enterprise cloud & creative operations',
+      sublabel: `${settingsStore.settings.currencySymbol || 'RM'}180/hr · Enterprise cloud & creative operations`,
       icon: 'history',
-      badge: '$150/h',
+      badge: `${settingsStore.settings.currencySymbol || 'RM'}180/h`,
       category: 'Billable Timer',
       execute: () => {
-        timerStore.setClient('ACME', 150);
+        timerStore.setClient('ACME', 180);
         timerStore.start();
-        appState.addToast('Timer started: Acme Corp @ $150/hr', 'success');
+        appState.addToast(`Timer started: Acme Corp @ ${settingsStore.settings.currencySymbol || 'RM'}180/hr`, 'success');
       }
     },
     {
       type: 'timer',
       id: 'timer-nex',
       label: 'Start Billable Timer: Nexus Studio',
-      sublabel: '£140/hr · Motion design & interactive 3D visual campaigns',
+      sublabel: `${settingsStore.settings.currencySymbol || 'RM'}150/hr · Motion design & interactive visual campaigns`,
       icon: 'history',
-      badge: '£140/h',
+      badge: `${settingsStore.settings.currencySymbol || 'RM'}150/h`,
       category: 'Billable Timer',
       execute: () => {
-        timerStore.setClient('NEX', 140);
+        timerStore.setClient('NEX', 150);
         timerStore.start();
-        appState.addToast('Timer started: Nexus Studio @ £140/hr', 'success');
+        appState.addToast(`Timer started: Nexus Studio @ ${settingsStore.settings.currencySymbol || 'RM'}150/hr`, 'success');
       }
     },
     {
       type: 'timer',
       id: 'timer-lum',
       label: 'Start Billable Timer: Lumina Labs',
-      sublabel: 'S$160/hr · Biotech intelligence & generative research UI',
+      sublabel: `${settingsStore.settings.currencySymbol || 'RM'}160/hr · Biotech intelligence & research UI`,
       icon: 'history',
-      badge: 'S$160/h',
+      badge: `${settingsStore.settings.currencySymbol || 'RM'}160/h`,
       category: 'Billable Timer',
       execute: () => {
         timerStore.setClient('LUM', 160);
         timerStore.start();
-        appState.addToast('Timer started: Lumina Labs @ S$160/hr', 'success');
+        appState.addToast(`Timer started: Lumina Labs @ ${settingsStore.settings.currencySymbol || 'RM'}160/hr`, 'success');
       }
     },
     {
@@ -105,18 +105,18 @@
     {
       type: 'action',
       id: 'act-invoice-new',
-      label: 'Create New Invoice in RM (Ringgit Malaysia)',
-      sublabel: 'Offline-first Markdown invoice in _Finance/Invoices/',
+      label: 'Create New Invoice',
+      sublabel: 'Markdown invoice in _Finance/Invoices/',
       icon: 'document',
-      badge: 'RM Draft',
+      badge: 'Invoice',
       category: 'Quotes & Invoices',
       execute: () => appState.navigate('invoices')
     },
     {
       type: 'action',
       id: 'act-quote-new',
-      label: 'Create New Quote & Proposal in RM',
-      sublabel: 'Formal design quotation in _Finance/Quotes/',
+      label: 'Create New Quote & Proposal',
+      sublabel: 'Design quotation in _Finance/Quotes/',
       icon: 'document',
       badge: 'Proposal',
       category: 'Quotes & Invoices',
@@ -209,8 +209,8 @@
     {
       type: 'nav',
       id: 'nav-1-dashboard',
-      label: 'Go to Studio Deck',
-      sublabel: 'Executive dashboard, daily pulse & active cashflow',
+      label: 'Go to Home',
+      sublabel: 'Overview, tasks, projects, and cashflow',
       icon: 'dashboard',
       badge: '⌘1',
       category: 'Navigation',
@@ -220,7 +220,7 @@
       type: 'nav',
       id: 'nav-2-projects',
       label: 'Open Projects',
-      sublabel: 'Coordinate creative campaigns, briefs, review queue & copy',
+      sublabel: 'Active projects, deliverables, and briefs',
       icon: 'folder',
       badge: '⌘2',
       category: 'Navigation',
@@ -229,8 +229,8 @@
     {
       type: 'nav',
       id: 'nav-3-journal',
-      label: 'Open Bullet Journal (BuJo Rapid Log)',
-      sublabel: 'Daily notes, task rollover & monthly reviews',
+      label: 'Open Journal',
+      sublabel: 'Daily notes, task rollover & reviews',
       icon: 'calendar',
       badge: '⌘3',
       category: 'Navigation',
@@ -239,8 +239,8 @@
     {
       type: 'nav',
       id: 'nav-4-notes',
-      label: 'Open Atelier Notes',
-      sublabel: 'Second brain, fleeting notes & universal #tasks',
+      label: 'Open Notes',
+      sublabel: 'Atomic notes, swipe files, and scratchpad',
       icon: 'file',
       badge: '⌘4',
       category: 'Navigation',
@@ -250,7 +250,7 @@
       type: 'nav',
       id: 'nav-5-clients-money',
       label: 'Open Clients & Money',
-      sublabel: 'Client profiles, quotes, proposals & invoices hub',
+      sublabel: 'Client profiles, quotes, and invoices',
       icon: 'wallet',
       badge: '⌘5',
       category: 'Navigation',
@@ -259,8 +259,8 @@
     {
       type: 'nav',
       id: 'nav-6-settings',
-      label: 'Open Studio Settings',
-      sublabel: 'Vault configuration, lighting themes & preferences',
+      label: 'Open Settings',
+      sublabel: 'Vault configuration, themes & preferences',
       icon: 'settings',
       badge: '⌘6',
       category: 'Navigation',

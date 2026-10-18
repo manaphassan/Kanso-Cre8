@@ -18,9 +18,9 @@
 <section class="bento-section">
   <div class="bento-header">
     <div class="bento-title-row">
-      <h2 class="bento-title">Project Status at a Glance</h2>
+      <h2 class="bento-title">Projects in progress</h2>
     </div>
-    <a href="#projects" class="bento-action-link">Open Project Manager →</a>
+    <a href="#projects" class="bento-action-link">Open Projects →</a>
   </div>
 
   {#if activeProjects.length === 0}
