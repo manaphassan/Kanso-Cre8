@@ -22,6 +22,7 @@
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
   import ZenMicroBar from '$lib/components/features/ZenMicroBar.svelte';
   import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
+  import VaultStartupGate from '$lib/components/vault/VaultStartupGate.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
@@ -405,6 +406,8 @@
     bind:open={vaultSwitcherOpen}
     onclose={() => (vaultSwitcherOpen = false)}
   />
+
+  <VaultStartupGate />
 
   <RadioDrawer
     bind:open={appState.radioDrawerOpen}

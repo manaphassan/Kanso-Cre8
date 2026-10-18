@@ -315,6 +315,7 @@ class FinanceVaultService {
   }
 
   static ensureQuotesSeeded() {
+    if (!require('./DemoDataService').isEnabled()) return;
     const dir = this.getQuotesDir();
     try {
       const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));

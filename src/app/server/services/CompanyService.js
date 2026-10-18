@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 const FrontmatterService = require('./FrontmatterService');
+const DemoDataService = require('./DemoDataService');
 
 /**
  * CompanyService (Client Hub) — Kanso Cre8
@@ -115,6 +116,7 @@ class CompanyService {
   }
 
   ensureCanonicalSeeds() {
+    if (!DemoDataService.isEnabled()) return;
     const clientsDir = this.getClientsDir();
     for (const seed of CANONICAL_SEEDS) {
       const folderPath = path.join(clientsDir, seed.folder);
@@ -131,6 +133,11 @@ class CompanyService {
     }
   }
 
+  _demoFallback() {
+    if (!DemoDataService.isEnabled()) return [];
+    return CANONICAL_SEEDS.map(s => this._normalizeClient(s.frontmatter, s.body, s.folder, ''));
+  }
+
   getAll() {
     const clientsDir = this.getClientsDir();
     if (!fs.existsSync(clientsDir)) {
@@ -141,7 +148,7 @@ class CompanyService {
     try {
       entries = fs.readdirSync(clientsDir, { withFileTypes: true });
     } catch (err) {
-      return CANONICAL_SEEDS.map(s => this._normalizeClient(s.frontmatter, s.body, s.folder, ''));
+      return this._demoFallback();
     }
 
     const clientFolders = entries.filter(e => e.isDirectory() && !e.name.startsWith('.') && !e.name.startsWith('_'));
@@ -168,7 +175,7 @@ class CompanyService {
     }
 
     if (results.length === 0) {
-      return CANONICAL_SEEDS.map(s => this._normalizeClient(s.frontmatter, s.body, s.folder, ''));
+      return this._demoFallback();
     }
 
     // Sort: ACME first, then alphabetical by code

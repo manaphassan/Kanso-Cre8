@@ -27,6 +27,7 @@ const GeminiService = require('../services/GeminiService');
 const WebhookService = require('../services/WebhookService');
 const SnapshotService = require('../services/SnapshotService');
 const TimerService = require('../services/TimerService');
+const VaultPathService = require('../services/VaultPathService');
 
 
 
@@ -317,6 +318,86 @@ module.exports = async function run(test, context = {}) {
       config.WORKSPACE_ROOT = origRoot;
       WorkspaceService.workspaceRoot = origRoot;
       try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
+  test('VaultPathService.getVaultStatus returns missing_root for absent path without creating folder', () => {
+    const absentPath = path.join(__dirname, 'temp-absent-vault-' + Date.now());
+    assert.strictEqual(fs.existsSync(absentPath), false);
+
+    const status = VaultPathService.getVaultStatus(absentPath);
+    assert.strictEqual(status.ok, false);
+    assert.strictEqual(status.status, 'missing_root');
+    assert.strictEqual(status.reason, 'missing_root');
+    assert.strictEqual(fs.existsSync(absentPath), false, 'Absent directory must NOT be quietly created');
+  });
+
+  test('VaultPathService.resetVaultStructure requires matching folder name confirmation', () => {
+    const testWs = path.join(__dirname, 'temp-reset-confirm-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWsRoot = WorkspaceService.workspaceRoot;
+    fs.mkdirSync(testWs, { recursive: true });
+
+    try {
+      WorkspaceService.workspaceRoot = testWs;
+      config.WORKSPACE_ROOT = testWs;
+
+      assert.throws(() => {
+        VaultPathService.resetVaultStructure('WrongFolderName', 'Tester');
+      }, /Confirmation failed/);
+
+      assert.throws(() => {
+        VaultPathService.resetVaultStructure('', 'Tester');
+      }, /Confirmation failed/);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWsRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
+  test('VaultPathService.resetVaultStructure archives canonical folders to _Archive and leaves non-canonical files intact', () => {
+    const testWs = path.join(__dirname, 'temp-reset-archive-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWsRoot = WorkspaceService.workspaceRoot;
+    fs.mkdirSync(testWs, { recursive: true });
+
+    try {
+      WorkspaceService.workspaceRoot = testWs;
+      config.WORKSPACE_ROOT = testWs;
+
+      VaultPathService.ensureVaultStructure(testWs, true);
+      const userClientDir = path.join(testWs, '_Clients', 'TEST_Client');
+      fs.mkdirSync(userClientDir, { recursive: true });
+      fs.writeFileSync(path.join(userClientDir, 'client.md'), '# Test Client\n', 'utf8');
+
+      const nonCanonicalFile = path.join(testWs, 'my-custom-notes.txt');
+      fs.writeFileSync(nonCanonicalFile, 'Important non-canonical notes', 'utf8');
+      const nonCanonicalDir = path.join(testWs, 'PersonalPortfolio');
+      fs.mkdirSync(nonCanonicalDir, { recursive: true });
+      fs.writeFileSync(path.join(nonCanonicalDir, 'art.png'), 'fake-png', 'utf8');
+
+      const expectedName = path.basename(testWs);
+      const res = VaultPathService.resetVaultStructure(expectedName, 'Tester');
+
+      assert.strictEqual(res.success, true);
+      assert.ok(res.archivePath, 'Archive path must be returned');
+      assert.ok(fs.existsSync(res.archivePath), 'Archive directory must exist on disk');
+
+      assert.ok(fs.existsSync(path.join(res.archivePath, '_Clients', 'TEST_Client', 'client.md')), 'User client must be preserved inside _Archive');
+
+      assert.ok(fs.existsSync(path.join(testWs, '_Clients')));
+      assert.ok(fs.existsSync(path.join(testWs, '_Finance', 'Quotes')));
+      assert.ok(fs.existsSync(path.join(testWs, '_Notes', 'Scratchpad.md')));
+      assert.strictEqual(fs.existsSync(path.join(testWs, '_Clients', 'TEST_Client')), false, 'User client in root should have moved to _Archive');
+
+      assert.ok(fs.existsSync(nonCanonicalFile), 'Non-canonical file must remain in root');
+      assert.strictEqual(fs.readFileSync(nonCanonicalFile, 'utf8'), 'Important non-canonical notes');
+      assert.ok(fs.existsSync(path.join(nonCanonicalDir, 'art.png')), 'Non-canonical folder must remain in root');
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWsRoot;
+      try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
     }
   });
 };

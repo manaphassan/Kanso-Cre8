@@ -882,6 +882,33 @@ export class ApiClient {
     return this.request('/system/vault-health');
   }
 
+  static getVaultStatus(): Promise<{ success: boolean; ok: boolean; status?: 'ok' | 'missing_root' | 'not_writable' | 'repair_failed'; reason?: 'missing_root' | 'not_writable' | 'repair_failed'; message?: string; root: string; repaired: string[]; errors?: string[] }> {
+    return this.request('/system/vault-status');
+  }
+
+  static resetVaultStructure(confirmationName: string): Promise<{ success: boolean; message: string; root: string; archivePath?: string | null; repaired?: string[] }> {
+    return this.request('/system/vault/reset', {
+      method: 'POST',
+      body: JSON.stringify({ confirmationName })
+    });
+  }
+
+  static getDemoDataStatus(): Promise<{ success: boolean; workspaceRoot: string; enabled: boolean; present: boolean; counts: Record<string, number>; totalFiles: number; items: Array<{ kind: string; label: string; files: number }> }> {
+    return this.request('/system/demo-data');
+  }
+
+  static loadDemoData(): Promise<{ success: boolean; enabled: boolean; present: boolean; counts: Record<string, number> }> {
+    return this.request('/system/demo-data/load', { method: 'POST' });
+  }
+
+  static clearDemoData(confirm: string): Promise<{ success: boolean; removed: any[]; skipped: Array<{ label: string; reason: string }>; enabled: boolean; present: boolean }> {
+    return this.request('/system/demo-data/clear', { method: 'POST', body: JSON.stringify({ confirm }) });
+  }
+
+  static repairVaultStructure(): Promise<{ success: boolean; root: string; createdDirs: string[]; createdFiles: string[]; errors: string[] }> {
+    return this.request('/system/vault-health/repair', { method: 'POST' });
+  }
+
   static cleanVaultSyncConflicts(resolution = 'keep_local'): Promise<{ success: boolean; resolvedCount: number; totalCount: number; details: any[] }> {
     return this.request('/system/vault-health/clean-conflicts', {
       method: 'POST',

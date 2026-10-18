@@ -17,6 +17,171 @@ class VaultPathService {
     config.WORKSPACE_ROOT = newPath;
   }
 
+  /**
+   * Idempotent check-and-repair of the canonical Kanso Zen layout.
+   * Only creates what is missing; never overwrites or deletes user files.
+   * @param {string} root - Vault root path
+   * @param {boolean} autoCreateRoot - Whether to create root if it does not exist
+   * @returns {{ root: string, createdDirs: string[], createdFiles: string[], errors: string[] }}
+   */
+  ensureVaultStructure(root = this.workspaceRoot, autoCreateRoot = false) {
+    const createdDirs = [];
+    const createdFiles = [];
+    const errors = [];
+    const rel = (p) => path.relative(root, p).replace(/\\/g, '/');
+
+    const dirs = [
+      '_Clients',
+      '_Finance/Quotes',
+      '_Finance/Invoices',
+      `_Projects/${new Date().getFullYear()}`,
+      '_Journal/Daily',
+      '_Journal/Monthly',
+      '_Journal/Yearly',
+      '_Notes/01_Fleeting',
+      '_Notes/02_Literature',
+      '_Notes/03_Permanent',
+      '_Team/_Config'
+    ];
+    const files = [
+      {
+        rel: '_Notes/Scratchpad.md',
+        content: '# Atelier Scratchpad\n\nTransient capture buffer for clipboard snippets and scratch ideas.\n'
+      }
+    ];
+
+    try {
+      if (!fs.existsSync(root)) {
+        if (!autoCreateRoot) {
+          return { root, createdDirs, createdFiles, errors: [`Vault root folder does not exist: ${root}`] };
+        }
+        fs.mkdirSync(root, { recursive: true });
+      }
+    } catch (err) {
+      return { root, createdDirs, createdFiles, errors: [`Cannot create vault root: ${err.message}`] };
+    }
+
+    for (const d of dirs) {
+      const full = path.join(root, d);
+      try {
+        if (!fs.existsSync(full)) {
+          fs.mkdirSync(full, { recursive: true });
+          createdDirs.push(rel(full));
+        }
+      } catch (err) {
+        errors.push(`${d}: ${err.message}`);
+      }
+    }
+
+    for (const f of files) {
+      const full = path.join(root, f.rel);
+      try {
+        if (!fs.existsSync(full)) {
+          fs.writeFileSync(full, f.content, 'utf8');
+          createdFiles.push(rel(full));
+        }
+      } catch (err) {
+        errors.push(`${f.rel}: ${err.message}`);
+      }
+    }
+
+    if (createdDirs.length || createdFiles.length) {
+      console.log(`[VaultPathService] Repaired vault structure at ${root}: +${createdDirs.length} dirs, +${createdFiles.length} files`);
+    }
+    return { root, createdDirs, createdFiles, errors };
+  }
+
+  /**
+   * Startup/boot check: is the mounted vault reachable, writable and structurally complete?
+   * Repairs missing canonical folders as a side effect.
+   * @param {string} root
+   * @returns {{ ok: boolean, status: 'ok'|'missing_root'|'not_writable'|'repair_failed', reason?: string, message?: string, root: string, repaired: string[], errors: string[] }}
+   */
+  getVaultStatus(root = this.workspaceRoot) {
+    if (!root || !fs.existsSync(root)) {
+      return { ok: false, status: 'missing_root', reason: 'missing_root', message: `Vault folder not found: ${root}`, root: root || '', repaired: [], errors: ['Vault root folder not found on disk.'] };
+    }
+    try {
+      const probe = path.join(root, `.kanso-probe-${Date.now()}`);
+      fs.writeFileSync(probe, 'ok', 'utf8');
+      fs.unlinkSync(probe);
+    } catch (err) {
+      return { ok: false, status: 'not_writable', reason: 'not_writable', message: `Vault folder is not readable/writable: ${err.message}`, root, repaired: [], errors: [`Vault folder is not writable: ${err.message}`] };
+    }
+    const repair = this.ensureVaultStructure(root, false);
+    const repaired = [...repair.createdDirs, ...repair.createdFiles];
+    if (repair.errors.length) {
+      return { ok: false, status: 'repair_failed', reason: 'repair_failed', message: repair.errors[0], root, repaired, errors: repair.errors };
+    }
+    return { ok: true, status: 'ok', root, repaired, errors: [] };
+  }
+
+  /**
+   * Reset the 6 canonical folders in the vault with Archive First safety.
+   * Leaves non-canonical files and folders intact.
+   * @param {string} confirmationName - Must match path.basename(workspaceRoot)
+   * @param {string} actor - Identity for audit logging
+   * @returns {{ success: boolean, message: string, root: string, archivePath: string|null, repaired: string[] }}
+   */
+  resetVaultStructure(confirmationName, actor = 'Administrator') {
+    if (!this.workspaceRoot || !fs.existsSync(this.workspaceRoot)) {
+      throw new Error(`Vault root directory does not exist: ${this.workspaceRoot}`);
+    }
+
+    const expectedName = path.basename(path.resolve(this.workspaceRoot));
+    if (!confirmationName || confirmationName.trim().toLowerCase() !== expectedName.toLowerCase()) {
+      throw new Error(`Confirmation failed: typed folder name "${confirmationName || ''}" does not match "${expectedName}".`);
+    }
+
+    const CANONICAL_FOLDERS = ['_Clients', '_Finance', '_Projects', '_Journal', '_Notes', '_Team'];
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const archiveDir = path.join(this.workspaceRoot, '_Archive', `reset-${timestamp}`);
+    let hasArchived = false;
+
+    for (const folder of CANONICAL_FOLDERS) {
+      const src = path.join(this.workspaceRoot, folder);
+      if (fs.existsSync(src)) {
+        if (!hasArchived) {
+          fs.mkdirSync(archiveDir, { recursive: true });
+          hasArchived = true;
+        }
+        fs.renameSync(src, path.join(archiveDir, folder));
+      }
+    }
+
+    const repair = this.ensureVaultStructure(this.workspaceRoot, true);
+
+    AuditService.logEvent({
+      actor,
+      action: 'VAULT_STRUCTURE_RESET',
+      entityType: 'System',
+      entityId: 'VaultStructure',
+      details: {
+        root: this.workspaceRoot,
+        archiveDir: hasArchived ? archiveDir : null,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    try {
+      const ProjectService = require('./ProjectService');
+      ProjectService.scan(true);
+    } catch (_) {}
+
+    try {
+      const SseService = require('./SseService');
+      SseService.broadcast('workspace:updated', { reason: 'vault_reset', root: this.workspaceRoot });
+    } catch (_) {}
+
+    return {
+      success: true,
+      message: 'Vault structure reset successfully with canonical items archived.',
+      root: this.workspaceRoot,
+      archivePath: hasArchived ? archiveDir : null,
+      repaired: [...repair.createdDirs, ...repair.createdFiles]
+    };
+  }
+
   ensureWorkspace() {
     if (!fs.existsSync(this.workspaceRoot)) {
       try {
@@ -269,25 +434,6 @@ class VaultPathService {
       try {
         fs.mkdirSync(targetPath, { recursive: true });
         console.log(`[VaultPathService] Provisioned new vault directory at: ${targetPath}`);
-        const canonicalDirs = [
-          '_Clients',
-          '_Finance/Quotes',
-          '_Finance/Invoices',
-          `_Projects/${new Date().getFullYear()}`,
-          '_Journal/Daily',
-          '_Journal/Monthly',
-          '_Journal/Yearly',
-          '_Notes/01_Fleeting',
-          '_Notes/02_Literature',
-          '_Notes/03_Permanent'
-        ];
-        canonicalDirs.forEach(dir => {
-          fs.mkdirSync(path.join(targetPath, dir), { recursive: true });
-        });
-        const scratchpadPath = path.join(targetPath, '_Notes', 'Scratchpad.md');
-        if (!fs.existsSync(scratchpadPath)) {
-          fs.writeFileSync(scratchpadPath, '# Atelier Scratchpad\n\nTransient capture buffer for clipboard snippets and scratch ideas.\n', 'utf8');
-        }
       } catch (err) {
         throw new Error(`Path does not exist and could not be created at ${targetPath}: ${err.message}`);
       }
@@ -298,6 +444,9 @@ class VaultPathService {
     } catch (err) {
       throw new Error(`Path is not accessible or permission denied: ${err.message}`);
     }
+
+    // Existing-but-empty (or partial) folders get the canonical layout too.
+    this.ensureVaultStructure(targetPath);
 
     const oldPath = this.workspaceRoot;
     this.workspaceRoot = targetPath;

@@ -31,6 +31,9 @@ const REVERSE_CATEGORY_MAP = {
 };
 
 class NotesVaultService {
+  /** IDs of the sample notes written by ensureSeeded() when demo data is enabled. */
+  static DEMO_NOTE_IDS = ['zettel_001', 'zettel_002', 'zettel_003'];
+
   static getNotesRootDir() {
     let wsRoot = config.WORKSPACE_ROOT;
     try {
@@ -66,18 +69,21 @@ class NotesVaultService {
   static ensureSeeded() {
     const root = this.getNotesRootDir();
     const scratchpad = this.getScratchpadPath();
+    const demo = require('./DemoDataService').isEnabled();
     if (!fs.existsSync(scratchpad)) {
       const defaultScratchpad = `# Scratchpad (_Notes/Scratchpad.md)
 
 Use this space for instant clipboard dumps, fleeting ideas, temporary hex codes, or quick meeting scribbles.
 Everything here is saved automatically in real-time.
-
+${demo ? `
 - Quick hex: #38BDF8 (Electric Sky Accent)
 - Review brand tokens with [[ACME]] design lead
 - Check invoice draft for September design sprints
-`;
+` : ''}`;
       try { FrontmatterService.writeAtomic(scratchpad, defaultScratchpad, 'utf8'); } catch (e) {}
     }
+
+    if (!demo) return;
 
     const permDir = this.getCategoryDir('permanent');
     const fleetingDir = this.getCategoryDir('fleeting');
