@@ -274,6 +274,41 @@ module.exports = async function run(test, context = {}) {
     try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
   });
 
+  await test('ExportService.streamFullVault packages the 6 canonical compartments into UTF-8 archive with manifest', async () => {
+    const ExportService = require('../services/ExportService');
+    const testWs = path.join(__dirname, 'temp-vault-export-ws');
+    fs.mkdirSync(path.join(testWs, '_Clients'), { recursive: true });
+    fs.mkdirSync(path.join(testWs, '_Finance', 'Invoices'), { recursive: true });
+    fs.mkdirSync(path.join(testWs, '_Projects', '2026', 'ACME-01'), { recursive: true });
+    fs.mkdirSync(path.join(testWs, '_Journal', 'Daily'), { recursive: true });
+    fs.mkdirSync(path.join(testWs, '_Notes', '01_Fleeting'), { recursive: true });
+    fs.mkdirSync(path.join(testWs, '_Team', '_Config'), { recursive: true });
+
+    fs.writeFileSync(path.join(testWs, '_Clients', 'ACME.md'), '# Acme Corp\n', 'utf8');
+    fs.writeFileSync(path.join(testWs, '_Notes', '01_Fleeting', 'Idea.md'), '# Fleeting Idea\n', 'utf8');
+
+    const tempZipOut = path.join(__dirname, 'temp-vault-export.zip');
+    const outStream = fs.createWriteStream(tempZipOut);
+    let headers = {};
+    outStream.setHeader = (k, v) => { headers[k] = v; };
+    outStream.writeHead = () => {};
+    outStream.headersSent = false;
+
+    const streamFinishedPromise = new Promise(resolve => {
+      outStream.on('finish', resolve);
+      outStream.on('close', resolve);
+    });
+
+    ExportService.streamFullVault(testWs, outStream);
+
+    assert.strictEqual(headers['Content-Type'], 'application/zip');
+    assert.ok(headers['Content-Disposition'].includes('Kanso_Vault_Archive_'));
+
+    await streamFinishedPromise;
+    try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (e) {}
+    try { if (fs.existsSync(tempZipOut)) fs.unlinkSync(tempZipOut); } catch (e) {}
+  });
+
   await test('ExportService computes SHA-256 and generates compliant DELIVERY.md manifest with colophon', async () => {
     const ExportService = require('../services/ExportService');
     const CommentService = require('../services/CommentService');
