@@ -33,3 +33,7 @@
 - 2026-10-18 | scripts/ | P5.6: Consolidated platform build scripts into build-platforms.ps1 as single entry; moved one-off asset tools to scripts/tools/.
 - 2026-10-18 | src/windows-launcher/, scripts/ | P5.7: Consolidated Windows shell exclusively on Tauri v2 (Decision D8) and removed legacy WPF/WebView2 launcher and companion DLLs.
 
+## Phase 6 - Governance and Docs
+- 2026-10-18 | .agents/skills/kanso-guardian/scripts/verify-kanso.ps1 | P6.1: Extended auditor with 6 automated checks (emoji hygiene, hex color allowlist, secret/binary hygiene, legacy brand/token sanitization, modular line limits, real-name denylist). All 16 checks passing (16 passed / 0 warned / 0 failed).
+- 2026-10-18 | docs/DESIGN.md, README.md, AGENTS.md | P6.2: Authored unified Master Design Guide (DESIGN.md), streamlined README.md, updated AGENTS.md to 16-check standard, and purged redundant legacy documentation files.
+- 2026-10-18 | package.json, tauri.conf.json, Cargo.toml, scripts/, CHANGELOG.md | P6.3: Version bump to 0.8.0 across application manifests, native configs, build scripts, splash screens, and changelog.
