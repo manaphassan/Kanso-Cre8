@@ -1,8 +1,8 @@
 param()
 
-$repoRoot = (Get-Item "$PSScriptRoot\..").FullName
-$csSource = Join-Path $repoRoot "scripts\GenerateKansoIcons.cs"
-$exePath = Join-Path $repoRoot "scripts\GenerateKansoIcons.exe"
+$repoRoot = (Get-Item "$PSScriptRoot\..\..").FullName
+$csSource = Join-Path $PSScriptRoot "GenerateKansoIcons.cs"
+$exePath = Join-Path $PSScriptRoot "GenerateKansoIcons.exe"
 
 $cscPath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 if (-not (Test-Path $cscPath)) {
