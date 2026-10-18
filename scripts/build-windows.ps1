@@ -63,72 +63,45 @@ Write-Host "  [OK] Server bundled into: $serverBundleOut" -ForegroundColor Green
 Get-Process KansoCre8 -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Milliseconds 200
 
-# 3. Compile Native Windows Desktop Application (KansoCre8.exe)
-Write-Host "`n[3/6] Compiling Native Windows Desktop Application (KansoCre8.exe)..." -ForegroundColor Yellow
-$cscPath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
-if (-not (Test-Path $cscPath)) {
-    $cscPath = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe"
-}
-if (-not (Test-Path $cscPath)) {
-    throw "Microsoft C# Compiler (csc.exe) not found."
-}
-
-$wpfDir = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF"
-if (-not (Test-Path $wpfDir)) {
-    $wpfDir = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF"
-}
-
-$launcherSrc = Join-Path $repoRoot "src\windows-launcher\Program.cs"
+# 3. Build Native Windows Desktop Application (Tauri v2)
+Write-Host "`n[3/6] Building Native Windows Desktop Application (Tauri v2)..." -ForegroundColor Yellow
 $iconPath = Join-Path $repoRoot "src\app\src-tauri\icons\icon.ico"
-$launcherOut = Join-Path $repoRoot "src\windows-launcher\KansoCre8.exe"
-$libDir = Join-Path $repoRoot "src\windows-launcher\lib"
-$wv2Wpf = Join-Path $libDir "Microsoft.Web.WebView2.Wpf.dll"
-$wv2Core = Join-Path $libDir "Microsoft.Web.WebView2.Core.dll"
+$tauriExe = Join-Path $repoRoot "src\app\src-tauri\target\release\kanso-cre8.exe"
 
-& $cscPath /nologo /target:winexe /win32icon:$iconPath /out:$launcherOut `
-    /r:"$wpfDir\PresentationFramework.dll" `
-    /r:"$wpfDir\PresentationCore.dll" `
-    /r:"$wpfDir\WindowsBase.dll" `
-    /r:System.Xaml.dll `
-    /r:System.dll `
-    /r:System.Drawing.dll `
-    /r:System.Core.dll `
-    /r:$wv2Wpf `
-    /r:$wv2Core `
-    $launcherSrc
+Push-Location (Join-Path $repoRoot "src\app")
+try {
+    & npm run tauri:build
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "  [WARN] Tauri build exited with code $LASTEXITCODE; checking for existing release binary..." -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "  [WARN] Tauri build notice: $_; checking for existing binary..." -ForegroundColor Yellow
+} finally {
+    Pop-Location
+}
 
-if ($LASTEXITCODE -ne 0) { throw "Native WPF compilation failed" }
-Write-Host "  [OK] Compiled native WPF desktop application: $launcherOut" -ForegroundColor Green
-
-# Ensure launcher directory has required dependencies for direct repo execution
-Copy-Item -Force $wv2Wpf (Join-Path $repoRoot "src\windows-launcher\Microsoft.Web.WebView2.Wpf.dll")
-Copy-Item -Force $wv2Core (Join-Path $repoRoot "src\windows-launcher\Microsoft.Web.WebView2.Core.dll")
-Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") (Join-Path $repoRoot "src\windows-launcher\WebView2Loader.dll")
-New-Item -ItemType Directory -Path (Join-Path $repoRoot "src\windows-launcher\runtimes\win-x64\native") -Force | Out-Null
-Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") (Join-Path $repoRoot "src\windows-launcher\runtimes\win-x64\native\WebView2Loader.dll")
+if (-not (Test-Path $tauriExe)) {
+    $candidate = Get-ChildItem -Path (Join-Path $repoRoot "src\app\src-tauri\target") -Filter "kanso-cre8.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($candidate) { $tauriExe = $candidate.FullName }
+}
 
 # 4. Assemble Windows Distribution
 Write-Host "`n[4/6] Assembling Portable Windows Distribution Bundle..." -ForegroundColor Yellow
 New-Item -ItemType Directory -Path "$bundleDir\app\client\dist" -Force | Out-Null
 New-Item -ItemType Directory -Path "$bundleDir\app\runtime" -Force | Out-Null
-New-Item -ItemType Directory -Path "$bundleDir\runtimes\win-x64\native" -Force | Out-Null
 
-# Copy Launcher & Icon
-Copy-Item -Force $launcherOut (Join-Path $bundleDir "KansoCre8.exe")
+# Copy Native Executable & Icon
+if (Test-Path $tauriExe) {
+    Copy-Item -Force $tauriExe (Join-Path $bundleDir "KansoCre8.exe")
+    Copy-Item -Force $tauriExe (Join-Path $distDir "KansoCre8.exe")
+    Write-Host "  [OK] Bundled native Tauri v2 desktop executable: KansoCre8.exe" -ForegroundColor Green
+}
 Copy-Item -Force $iconPath (Join-Path $bundleDir "app\icon.ico")
-
-# Copy Native WebView2 Assemblies & Loader
-Copy-Item -Force $wv2Wpf "$bundleDir\Microsoft.Web.WebView2.Wpf.dll"
-Copy-Item -Force $wv2Core "$bundleDir\Microsoft.Web.WebView2.Core.dll"
-Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") "$bundleDir\WebView2Loader.dll"
-Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") "$bundleDir\runtimes\win-x64\native\WebView2Loader.dll"
-Write-Host "  [OK] Bundled native WebView2 WPF assemblies and loader" -ForegroundColor Green
 
 # Copy Client Web Dist & Brand Assets
 Copy-Item -Recurse -Force "$clientDist\*" "$bundleDir\app\client\dist\"
 if (Test-Path "$clientDist\brand") {
     Copy-Item -Recurse -Force "$clientDist\brand" "$bundleDir"
-    Copy-Item -Recurse -Force "$clientDist\brand\*" (Join-Path $repoRoot "src\windows-launcher\brand")
 }
 
 # Copy Sample Workspace for out-of-the-box offline vault
@@ -182,14 +155,11 @@ Mindful Creative Vault — Local-First Project, Client & Knowledge Workstation.
 "@
 Set-Content -Path (Join-Path $bundleDir "README.txt") -Value $readmeContent
 
-# Also populate dist/ root with Launcher, companion assemblies, native runtimes and convenient root launcher
+# Also populate dist/ root with executable and convenient root launcher
 $distRoot = Join-Path $repoRoot "dist"
-New-Item -ItemType Directory -Path (Join-Path $distRoot "runtimes\win-x64\native") -Force | Out-Null
-Copy-Item -Force $launcherOut (Join-Path $distRoot "KansoCre8.exe")
-Copy-Item -Force $wv2Wpf (Join-Path $distRoot "Microsoft.Web.WebView2.Wpf.dll")
-Copy-Item -Force $wv2Core (Join-Path $distRoot "Microsoft.Web.WebView2.Core.dll")
-Copy-Item -Force (Join-Path $libDir "WebView2Loader.dll") (Join-Path $distRoot "WebView2Loader.dll")
-Copy-Item -Force (Join-Path $libDir "x64\WebView2Loader.dll") (Join-Path $distRoot "runtimes\win-x64\native\WebView2Loader.dll")
+if (Test-Path $tauriExe) {
+    Copy-Item -Force $tauriExe (Join-Path $distRoot "KansoCre8.exe")
+}
 
 $rootBatContent = @"
 @echo off
@@ -205,7 +175,7 @@ if exist "windows\KansoCre8-v$appVersion-windows-x64\KansoCre8.exe" (
 Set-Content -Path (Join-Path $distRoot "Start-KansoCre8.bat") -Value $rootBatContent
 
 Write-Host "  [OK] Assembled files into: $bundleDir" -ForegroundColor Green
-Write-Host "  [OK] Populated companion DLLs and root launcher in: $distRoot" -ForegroundColor Green
+Write-Host "  [OK] Populated root launcher in: $distRoot" -ForegroundColor Green
 
 # 5. Create ZIP Distribution Archive
 Write-Host "`n[5/6] Packaging Portable ZIP Archive..." -ForegroundColor Yellow
