@@ -23,12 +23,14 @@
   import ZenMicroBar from '$lib/components/features/ZenMicroBar.svelte';
   import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
   import VaultStartupGate from '$lib/components/vault/VaultStartupGate.svelte';
+  import KeyboardOnboardingModal from '$lib/components/features/KeyboardOnboardingModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
   let commandPaletteOpen = $state(false);
   let scratchpadOpen = $state(false);
   let vaultSwitcherOpen = $state(false);
+  let keyboardOnboardingOpen = $state(false);
 
   interface NavItem {
     id: string;
@@ -83,8 +85,25 @@
     }
 
     const isCmdOrCtrl = e.ctrlKey || e.metaKey;
-    if (!isCmdOrCtrl) return;
+    if (!isCmdOrCtrl) {
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        const active = document.activeElement;
+        const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active as HTMLElement).isContentEditable);
+        if (!isInput) {
+          e.preventDefault();
+          keyboardOnboardingOpen = !keyboardOnboardingOpen;
+        }
+      }
+      return;
+    }
     const key = e.key.toLowerCase();
+
+    // Ctrl+/ or Cmd+/: Toggle Shortcuts Cheatsheet
+    if (key === '/') {
+      e.preventDefault();
+      keyboardOnboardingOpen = !keyboardOnboardingOpen;
+      return;
+    }
 
     // Ctrl+Shift+Z: Toggle Quiet Mode / Zen Atelier Mode
     if (e.shiftKey && key === 'z') {
@@ -158,6 +177,18 @@
         }
       }, 500);
     });
+
+    // Show keyboard onboarding on first run if not dismissed
+    try {
+      const dismissed = localStorage.getItem('kanso.onboarding_dismissed');
+      if (dismissed !== 'true') {
+        setTimeout(() => {
+          if (appState.currentRoute !== 'review') {
+            keyboardOnboardingOpen = true;
+          }
+        }, 1200);
+      }
+    } catch (_) {}
 
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
@@ -340,6 +371,15 @@
 
           <button
             class="icon-btn"
+            onclick={() => (keyboardOnboardingOpen = true)}
+            title="Keyboard Shortcuts (?)"
+            aria-label="Keyboard Shortcuts"
+          >
+            <Icon name="lightbulb" size={15} />
+          </button>
+
+          <button
+            class="icon-btn"
             onclick={() => { appState.addToast('Rescanning workspace…', 'info'); projectStore.loadProjects(); projectStore.loadDashboard(); }}
             title="Rescan Workspace"
             aria-label="Rescan workspace"
@@ -408,6 +448,11 @@
   />
 
   <VaultStartupGate />
+
+  <KeyboardOnboardingModal
+    bind:open={keyboardOnboardingOpen}
+    onClose={() => (keyboardOnboardingOpen = false)}
+  />
 
   <RadioDrawer
     bind:open={appState.radioDrawerOpen}
