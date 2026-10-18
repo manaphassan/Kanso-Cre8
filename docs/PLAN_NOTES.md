@@ -37,3 +37,11 @@
 - 2026-10-18 | .agents/skills/kanso-guardian/scripts/verify-kanso.ps1 | P6.1: Extended auditor with 6 automated checks (emoji hygiene, hex color allowlist, secret/binary hygiene, legacy brand/token sanitization, modular line limits, real-name denylist). All 16 checks passing (16 passed / 0 warned / 0 failed).
 - 2026-10-18 | docs/DESIGN.md, README.md, AGENTS.md | P6.2: Authored unified Master Design Guide (DESIGN.md), streamlined README.md, updated AGENTS.md to 16-check standard, and purged redundant legacy documentation files.
 - 2026-10-18 | package.json, tauri.conf.json, Cargo.toml, scripts/, CHANGELOG.md | P6.3: Version bump to 0.8.0 across application manifests, native configs, build scripts, splash screens, and changelog.
+
+## Track A - Creative Flow & Atelier Refinements (Post-0.8.0)
+- 2026-10-18 | src/app/server/routes/finance.js, src/app/client/src/lib/components/finance/ | Phase A1: Unified quote -> project -> invoice pipeline with deposit splits, automated vault folder scaffolding, and draft invoice generation.
+- 2026-10-18 | src/app/client/src/lib/components/features/HeaderTimerWidget.svelte, UnbilledSessionsModal.svelte | Phase A2: Tactile unbilled time nudge pill, unbilled sessions inspector, and 1-click batch append to draft invoice.
+- 2026-10-18 | src/app/server/services/JournalVaultService.js, src/app/client/src/lib/components/journal/WeeklyReview.svelte | Phase A3: Weekly review ritual in _Journal/Weekly/ with rapid-log task aggregation, metrics telemetry bento, and top-3 priorities planning.
+- 2026-10-18 | src/app/server/services/VaultHealthService.js, src/app/client/src/lib/components/settings/VaultHealthInspector.svelte | Phase A4: Vault health & link integrity inspector checking broken WikiLinks, orphan atomic notes, frontmatter validity, cloud sync conflicts, and compartment telemetry.
+- 2026-10-18 | src/app/client/src/lib/components/features/ZenMicroBar.svelte, App.svelte | Phase A5: Quiet Mode / Zen Atelier Mode (Ctrl+Shift+Z / Cmd+Shift+Z) with floating micro-bar, live billable chronometer, lo-fi radio strip, scratchpad trigger, and full-bleed distraction-free canvas.
+
