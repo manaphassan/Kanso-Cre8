@@ -34,7 +34,7 @@ Deliver high-impact visual design and production collateral for LUM.
 - Client-ready delivery assets in `05_DELIVERABLES/`
 
 ## Sprint Checklist
-- [ ] #task Review client brief and references in 01_BRIEF/ 📅 2026-09-30 ⏫ normal
+- [ ] #task Review client brief and references in 01_BRIEF/ due: 2026-09-30 ⏫ normal
 - [ ] #task Prepare design source files in 02_SOURCE/
 - [ ] #task Finalize copy and messaging in 03_COPY/
 - [ ] #task Export review renders to 04_WIP/

@@ -13,4 +13,4 @@ updated: '2026-09-16'
 
 Capture your thought here. Connect ideas with [[WikiLinks]] or tag clients like [[ACME]] or [[NEX]].
 
-- [ ] #task Next creative step 📅 2026-09-16
+- [ ] #task Next creative step due: 2026-09-16

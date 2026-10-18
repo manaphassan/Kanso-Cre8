@@ -1,0 +1,43 @@
+# Kanso Cre8 Hex Color Allow-List
+# Only canonical exceptions permitted: inline logo SVG, client brand palette defaults,
+# canvas graphics tools, retro cassette mechanical artwork, and theme palette swatches.
+
+src/app/client/src/App.svelte
+src/app/client/src/lib/components/dashboard/DashboardProjectGlance.svelte
+src/app/client/src/lib/components/dashboard/DashboardTodayTasks.svelte
+src/app/client/src/lib/components/features/BatchResizerModal.svelte
+src/app/client/src/lib/components/features/ClientEditModal.svelte
+src/app/client/src/lib/components/features/CommandPaletteModal.svelte
+src/app/client/src/lib/components/features/DashboardRadar.svelte
+src/app/client/src/lib/components/features/DeliverableVisualDiffSlider.svelte
+src/app/client/src/lib/components/features/HeaderTimerWidget.svelte
+src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
+src/app/client/src/lib/components/features/LocalGraphMini.svelte
+src/app/client/src/lib/components/features/ProjectFilterBar.svelte
+src/app/client/src/lib/components/features/ShareLinkModal.svelte
+src/app/client/src/lib/components/features/StopSessionModal.svelte
+src/app/client/src/lib/components/journal/DailyLog.svelte
+src/app/client/src/lib/components/markdown/MermaidViewer.svelte
+src/app/client/src/lib/components/project/ProjectDirectionTab.svelte
+src/app/client/src/lib/components/project/ProjectReviewTab.svelte
+src/app/client/src/lib/components/settings/AboutHero.svelte
+src/app/client/src/lib/components/settings/EditionLicense.svelte
+src/app/client/src/lib/components/settings/Preferences.svelte
+src/app/client/src/lib/components/settings/StationeryPreview.svelte
+src/app/client/src/lib/components/settings/StudioIdentity.svelte
+src/app/client/src/lib/components/settings/StudioRemittance.svelte
+src/app/client/src/lib/components/settings/SyncConflictDoctor.svelte
+src/app/client/src/lib/components/settings/ThemeSelector.svelte
+src/app/client/src/lib/components/settings/VaultMount.svelte
+src/app/client/src/lib/views/CopyStudioView.svelte
+src/app/client/src/lib/views/InvoiceStudioView.svelte
+src/app/client/src/lib/views/ProjectsView.svelte
+
+# Retro Cassette Focus Radio Artwork
+src/app/client/src/lib/components/radio/AnalogVuMeter.svelte
+src/app/client/src/lib/components/radio/CassetteBlankCard.svelte
+src/app/client/src/lib/components/radio/CassetteSpoolWheel.svelte
+src/app/client/src/lib/components/radio/CassetteTapeCard.svelte
+src/app/client/src/lib/components/radio/Deck.svelte
+src/app/client/src/lib/components/radio/MiniCassetteDock.svelte
+src/app/client/src/lib/components/radio/Presets.svelte

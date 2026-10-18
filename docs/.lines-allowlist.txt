@@ -1,0 +1,42 @@
+# Kanso Cre8 File Length Allow-List
+# Grandfathered views and complex modals in src/app/client/src awaiting future decomposition.
+# All other components MUST adhere to <= 400 lines. All server routes MUST adhere to <= 300 lines.
+
+src/app/client/src/App.svelte
+src/app/client/src/lib/components/features/BatchResizerModal.svelte
+src/app/client/src/lib/components/features/CommandPaletteModal.svelte
+src/app/client/src/lib/components/features/CreativeAiAssistantModal.svelte
+src/app/client/src/lib/components/features/DashboardRadar.svelte
+src/app/client/src/lib/components/features/DeliverableAnnotationCanvas.svelte
+src/app/client/src/lib/components/features/DeliverableLightbox.svelte
+src/app/client/src/lib/components/features/DeliverableVisualDiffSlider.svelte
+src/app/client/src/lib/components/features/HandoverPackageModal.svelte
+src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
+src/app/client/src/lib/components/features/ProjectComments.svelte
+src/app/client/src/lib/components/features/ProjectKanbanView.svelte
+src/app/client/src/lib/components/features/ProjectTableView.svelte
+src/app/client/src/lib/components/features/ProjectVersionTimelineModal.svelte
+src/app/client/src/lib/components/features/ShareLinkModal.svelte
+src/app/client/src/lib/components/features/StudioProModal.svelte
+src/app/client/src/lib/components/features/TaskRolloverModal.svelte
+src/app/client/src/lib/components/features/VaultIngesterModal.svelte
+src/app/client/src/lib/components/features/VaultSwitcherModal.svelte
+src/app/client/src/lib/components/markdown/MarkdownEditor.svelte
+src/app/client/src/lib/components/radio/AnalogVuMeter.svelte
+src/app/client/src/lib/components/radio/CassetteBlankCard.svelte
+src/app/client/src/lib/components/radio/CassetteTapeCard.svelte
+src/app/client/src/lib/services/api.ts
+src/app/client/src/lib/services/financeService.ts
+src/app/client/src/lib/services/journalService.ts
+src/app/client/src/lib/services/notesService.ts
+src/app/client/src/lib/services/radioService.svelte.ts
+src/app/client/src/lib/stores/timerStore.svelte.ts
+src/app/client/src/lib/styles/kanso-tokens.css
+src/app/client/src/lib/views/AdminView.svelte
+src/app/client/src/lib/views/ClientReviewView.svelte
+src/app/client/src/lib/views/CopyStudioView.svelte
+src/app/client/src/lib/views/DeliverablesView.svelte
+src/app/client/src/lib/views/InvoiceStudioView.svelte
+src/app/client/src/lib/views/LoginView.svelte
+src/app/client/src/lib/views/NotesView.svelte
+src/app/client/src/lib/views/TeamView.svelte
