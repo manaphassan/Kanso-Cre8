@@ -7,10 +7,12 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { Icon } from '$lib/components/ui';
   import StopSessionModal from './StopSessionModal.svelte';
+  import UnbilledSessionsModal from './UnbilledSessionsModal.svelte';
 
   let showRatePopover = $state(false);
   let showClientPopover = $state(false);
   let showStopModal = $state(false);
+  let showUnbilledModal = $state(false);
   let stopSessionNote = $state('');
 
   // Active client profile
@@ -112,7 +114,10 @@
       );
       if (appendToInvoice) {
         financeService.appendSession(log.clientCode, log).then(inv => {
-          if (inv) appState.addToast(`Appended ${log.durationFormatted} to invoice ${inv.documentNumber}`, 'info');
+          if (inv) {
+            timerStore.markSessionAppended(log.id);
+            appState.addToast(`Appended ${log.durationFormatted} to invoice ${inv.documentNumber}`, 'info');
+          }
         }).catch(e => {
           console.warn('[HeaderTimerWidget] Error appending to draft invoice:', e);
         });
@@ -287,6 +292,21 @@
         ></button>
       </div>
     {/if}
+
+    <!-- Ambient Unbilled Time Nudge Pill -->
+    {#if timerStore.unbilledCount > 0}
+      <div class="strip-divider" aria-hidden="true"></div>
+      <button
+        type="button"
+        class="unbilled-nudge-btn font-mono"
+        onclick={() => (showUnbilledModal = true)}
+        title="{timerStore.unbilledCount} unbilled session(s) ({timerStore.unbilledFormatted}) · Click to review & append to invoice"
+        aria-label="Review {timerStore.unbilledCount} unbilled sessions"
+      >
+        <span class="unbilled-dot" aria-hidden="true"></span>
+        <span class="unbilled-text">{timerStore.unbilledCount} unbilled</span>
+      </button>
+    {/if}
   </div>
 
   <!-- Smart Idle Chronometer Pill -->
@@ -315,7 +335,16 @@
   onCancel={() => (showStopModal = false)}
 />
 
+<!-- Unbilled Sessions Intelligence Modal -->
+<UnbilledSessionsModal
+  open={showUnbilledModal}
+  onClose={() => (showUnbilledModal = false)}
+/>
+
 <style>
+  .unbilled-nudge-btn { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 7px; border-radius: 9999px; background: var(--kanso-canvas); border: 1px solid var(--kanso-warning); color: var(--kanso-warning); font-size: 10.5px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; }
+  .unbilled-nudge-btn:hover { background: var(--kanso-surface-hover); transform: translateY(-0.5px); }
+  .unbilled-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--kanso-warning); box-shadow: 0 0 5px var(--kanso-warning); }
   .timer-widget-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 30px; background: var(--kanso-surface); border: 1px solid var(--kanso-border); border-radius: 9999px; padding: 2px 8px 2px 4px; white-space: nowrap; flex-shrink: 0; box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
   .timer-widget-wrap.is-active { border-color: var(--kanso-accent); }
   .transport-buttons { display: flex; align-items: center; gap: 2px; }
