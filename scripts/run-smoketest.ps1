@@ -84,7 +84,7 @@ if (-not (Test-Path $distExe)) {
     if ($fallbackExe) { $distExe = $fallbackExe.FullName }
 }
 
-$launcherExe = Join-Path $repoRoot "src\windows-launcher\KansoCre8.exe"
+$tauriConf = Join-Path $repoRoot "src\app\src-tauri\tauri.conf.json"
 $distZip = Join-Path $repoRoot "dist\windows\kanso-cre8-v$appVer-windows-x64.zip"
 if (-not (Test-Path $distZip)) {
     $fallbackZip = Get-ChildItem -Path (Join-Path $repoRoot "dist\windows") -Filter "kanso-cre8-v*-windows-x64.zip" -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -93,7 +93,7 @@ if (-not (Test-Path $distZip)) {
 $icoPath = Join-Path $repoRoot "src\app\src-tauri\icons\icon.ico"
 
 Report-Result -Name "Standalone KansoCre8.exe exists in dist/" -Passed (Test-Path $distExe)
-Report-Result -Name "Compiled KansoCre8.exe exists in src/windows-launcher/" -Passed (Test-Path $launcherExe)
+Report-Result -Name "Tauri v2 shell configuration exists in src/app/src-tauri/" -Passed (Test-Path $tauriConf)
 Report-Result -Name "Distribution ZIP exists in dist/windows/" -Passed (Test-Path $distZip)
 Report-Result -Name "Multi-resolution icon.ico exists" -Passed (Test-Path $icoPath)
 

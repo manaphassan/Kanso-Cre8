@@ -115,7 +115,6 @@ public class GenerateKansoIcons
             string[] icoTargets = new string[]
             {
                 Path.Combine(repoRoot, @"src\app\src-tauri\icons\icon.ico"),
-                Path.Combine(repoRoot, @"src\windows-launcher\icon.ico"),
                 Path.Combine(repoRoot, @"dist\windows\KansoCre8-v0.1.0-windows-x64\app\icon.ico")
             };
 
