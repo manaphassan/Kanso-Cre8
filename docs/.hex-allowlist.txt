@@ -8,7 +8,6 @@ src/app/client/src/lib/components/dashboard/DashboardTodayTasks.svelte
 src/app/client/src/lib/components/features/BatchResizerModal.svelte
 src/app/client/src/lib/components/features/ClientEditModal.svelte
 src/app/client/src/lib/components/features/CommandPaletteModal.svelte
-src/app/client/src/lib/components/features/DashboardRadar.svelte
 src/app/client/src/lib/components/features/DeliverableVisualDiffSlider.svelte
 src/app/client/src/lib/components/features/HeaderTimerWidget.svelte
 src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
