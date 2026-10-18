@@ -6,10 +6,11 @@
   import ProjectBriefTab from '$lib/components/project/ProjectBriefTab.svelte';
   import ProjectReviewTab from '$lib/components/project/ProjectReviewTab.svelte';
   import ProjectCopyTab from '$lib/components/project/ProjectCopyTab.svelte';
+  import ProjectTimelineTab from '$lib/components/project/ProjectTimelineTab.svelte';
   import ProjectDirectionTab from '$lib/components/project/ProjectDirectionTab.svelte';
   import ProjectInspector from '$lib/components/project/ProjectInspector.svelte';
 
-  type MainCanvasView = 'brief' | 'deliverables' | 'copywriting' | 'direction';
+  type MainCanvasView = 'brief' | 'deliverables' | 'copywriting' | 'timeline' | 'direction';
 
   interface Props {
     projectId?: string;
@@ -98,6 +99,13 @@
         </button>
         <button
           class="tab-btn"
+          class:active={activeCanvasView === 'timeline'}
+          onclick={() => (activeCanvasView = 'timeline')}
+        >
+          <span>Timeline</span>
+        </button>
+        <button
+          class="tab-btn"
           class:active={activeCanvasView === 'direction'}
           onclick={() => (activeCanvasView = 'direction')}
         >
@@ -116,6 +124,8 @@
           <ProjectReviewTab {project} />
         {:else if activeCanvasView === 'copywriting'}
           <ProjectCopyTab {project} />
+        {:else if activeCanvasView === 'timeline'}
+          <ProjectTimelineTab {project} />
         {:else if activeCanvasView === 'direction'}
           <ProjectDirectionTab
             direction={project.direction || {}}
