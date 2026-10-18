@@ -633,7 +633,119 @@ Sarah likes bold, high-contrast dark enterprise UI with subtle 1px cyan hairline
     };
   }
 
+  // ─── QUICK NOTES HELPERS ─────────────────────────────────────────────
+  static getAllQuickNotesDirs(targetUser = null) {
+    let wsRoot = config.WORKSPACE_ROOT;
+    try {
+      const WorkspaceService = require('./WorkspaceService');
+      if (WorkspaceService && WorkspaceService.workspaceRoot) {
+        wsRoot = WorkspaceService.workspaceRoot;
+      }
+    } catch (e) {}
+    const configDir = path.join(wsRoot, '_Team', '_Config');
+    const dirs = [];
+    
+    if (fs.existsSync(configDir)) {
+      try {
+        const entries = fs.readdirSync(configDir, { withFileTypes: true });
+        for (const ent of entries) {
+          if (ent.isDirectory() && (ent.name === 'Notes' || ent.name.startsWith('Notes_'))) {
+            const fullPath = path.join(configDir, ent.name);
+            const owner = ent.name === 'Notes' ? 'team' : ent.name.replace('Notes_', '');
+            dirs.push({ path: fullPath, folderName: ent.name, owner });
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (dirs.length === 0) {
+      const primary = path.join(configDir, 'Notes');
+      try {
+        fs.mkdirSync(primary, { recursive: true });
+        dirs.push({ path: primary, folderName: 'Notes', owner: 'team' });
+      } catch (e) {
+        const fallback = path.resolve(__dirname, '../sample-workspace/_Team/_Config/Notes');
+        fs.mkdirSync(fallback, { recursive: true });
+        dirs.push({ path: fallback, folderName: 'Notes', owner: 'team' });
+      }
+    }
+
+    if (targetUser) {
+      const userClean = String(targetUser).toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const userSpecificDir = path.join(configDir, `Notes_${userClean}`);
+      if (!dirs.some(d => d.path === userSpecificDir) && fs.existsSync(userSpecificDir)) {
+        dirs.unshift({ path: userSpecificDir, folderName: `Notes_${userClean}`, owner: userClean });
+      }
+    }
+
+    return dirs;
+  }
+
+  static getTargetWriteDir(targetUser = null) {
+    let wsRoot = config.WORKSPACE_ROOT;
+    try {
+      const WorkspaceService = require('./WorkspaceService');
+      if (WorkspaceService && WorkspaceService.workspaceRoot) {
+        wsRoot = WorkspaceService.workspaceRoot;
+      }
+    } catch (e) {}
+    const configDir = path.join(wsRoot, '_Team', '_Config');
+    if (targetUser) {
+      const userClean = String(targetUser).toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const userDir = path.join(configDir, `Notes_${userClean}`);
+      if (!fs.existsSync(userDir)) {
+        try { fs.mkdirSync(userDir, { recursive: true }); } catch (e) {}
+      }
+      if (fs.existsSync(userDir)) return { path: userDir, owner: userClean };
+    }
+
+    const allDirs = this.getAllQuickNotesDirs();
+    const userFolder = allDirs.find(d => d.owner !== 'team') || allDirs[0];
+    return userFolder || { path: path.join(configDir, 'Notes'), owner: 'team' };
+  }
+
+  static parseQuickNoteMarkdown(content, filename, stat, owner = 'team') {
+    let isPinned = false;
+    let priority = 'normal';
+    const cleanContent = (content || '').replace(/^\uFEFF/, '');
+    let body = cleanContent;
+    const match = cleanContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+    if (match) {
+      const yaml = match[1];
+      body = match[2];
+      if (/pinned:\s*true/i.test(yaml)) isPinned = true;
+      const prioMatch = yaml.match(/priority:\s*(high|medium|normal)/i);
+      if (prioMatch) priority = prioMatch[1].toLowerCase();
+    }
+    const lines = body.split(/\r?\n/);
+    let title = path.basename(filename, '.md');
+    for (const l of lines) {
+      const trimmed = l.trim().replace(/^\uFEFF/, '');
+      if (trimmed.startsWith('# ')) {
+        title = trimmed.replace(/^#+\s*/, '');
+        break;
+      } else if (trimmed && !trimmed.startsWith('_') && !trimmed.startsWith('*')) {
+        title = trimmed;
+        break;
+      }
+    }
+    return {
+      id: path.basename(filename, '.md'),
+      filename,
+      title,
+      body: body.trim(),
+      pinned: isPinned,
+      isPinned,
+      priority,
+      owner,
+      mtime: stat ? stat.mtimeMs : Date.now(),
+      updatedAt: stat ? stat.mtime.toISOString() : new Date().toISOString()
+    };
+  }
+
   // Convenience aliases for flexible consumption
+  static getAllNotesDirs(targetUser = null) { return this.getAllQuickNotesDirs(targetUser); }
+  static parseNoteMarkdown(content, filename, stat, owner = 'team') { return this.parseQuickNoteMarkdown(content, filename, stat, owner); }
   static saveAtomicNote(noteData) { return this.saveNote(noteData); }
   static getAtomicNotes() { return this.listNotes(); }
   static getUniversalTasks() { return this.getAllTasks(); }

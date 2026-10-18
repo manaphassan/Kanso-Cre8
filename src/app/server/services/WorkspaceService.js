@@ -1418,6 +1418,214 @@ class WorkspaceService {
       resolution
     };
   }
+
+  getWorkspaceCandidates() {
+    const userDocs = path.join(process.env.USERPROFILE || '', 'Documents', 'KansoCre8');
+    const userOneDriveDocs = path.join(process.env.USERPROFILE || '', 'OneDrive', 'Documents', 'KansoCre8');
+    const candidates = [
+      userDocs,
+      userOneDriveDocs,
+      'D:\\KansoCre8',
+      'D:\\OneDrive\\Völundr',
+      path.resolve(__dirname, '../sample-workspace')
+    ];
+
+    const currentRoot = this.workspaceRoot || config.WORKSPACE_ROOT;
+    const results = candidates.map(p => {
+      let accessible = false;
+      let count = 0;
+      try {
+        if (fs.existsSync(p)) {
+          const items = fs.readdirSync(p);
+          accessible = true;
+          count = items.length;
+        }
+      } catch (e) {
+        accessible = false;
+      }
+      return {
+        path: p,
+        accessible,
+        exists: accessible,
+        itemCount: count,
+        isCurrent: path.resolve(p) === path.resolve(currentRoot)
+      };
+    });
+
+    return { candidates: results, current: currentRoot };
+  }
+
+  updateProject(projectId, payload, actor = 'Administrator', role = 'Admin') {
+    const project = this.getProjectById(projectId);
+    if (!project) throw new Error('Project not found');
+
+    const { frontmatter, status, priority, manager, designer, department, brand, deadline, body, expectedHash } = payload;
+    const { frontmatter: existingFm, body: existingBody } = FrontmatterService.readProjectReadme(project.fullPath);
+
+    const mergedFm = {
+      ...existingFm,
+      ...(frontmatter || {}),
+      ...(status ? { status } : {}),
+      ...(priority ? { priority } : {}),
+      ...(manager !== undefined ? { manager } : {}),
+      ...(designer !== undefined ? { designer } : {}),
+      ...(department !== undefined ? { department } : {}),
+      ...(brand !== undefined ? { brand } : {}),
+      ...(deadline !== undefined ? { deadline } : {})
+    };
+
+    const result = FrontmatterService.writeProjectReadme(
+      project.fullPath,
+      mergedFm,
+      body !== undefined && body !== null ? body : existingBody,
+      expectedHash || null
+    );
+
+    if (project) {
+      if (mergedFm.manager !== undefined) project.manager = mergedFm.manager;
+      if (mergedFm.status !== undefined) project.status = mergedFm.status;
+      if (mergedFm.priority !== undefined) project.priority = mergedFm.priority;
+      if (mergedFm.designer !== undefined) project.designer = mergedFm.designer;
+      if (mergedFm.brand !== undefined) project.brand = mergedFm.brand;
+      if (mergedFm.department !== undefined) project.department = mergedFm.department;
+      if (mergedFm.deadline !== undefined) project.deadline = mergedFm.deadline;
+      project.versionHash = result.versionHash;
+    }
+
+    AuditService.logEvent({
+      actor,
+      role,
+      action: 'PROJECT_UPDATED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id,
+      details: { manager: mergedFm.manager, status: mergedFm.status, priority: mergedFm.priority }
+    });
+
+    this.scan(true);
+    const SseService = require('./SseService');
+    SseService.broadcast('project:updated', { 
+      projectId, 
+      manager: mergedFm.manager,
+      status: mergedFm.status, 
+      priority: mergedFm.priority 
+    });
+
+    const refreshed = this.getProjectById(projectId) || project;
+    return { success: true, project: refreshed, versionHash: result.versionHash };
+  }
+
+  updateProjectBrief(projectId, briefMarkdown, expectedHash = null, actor = 'Designer') {
+    const project = this.getProjectById(projectId);
+    if (!project) throw new Error('Project not found');
+
+    const { frontmatter } = FrontmatterService.readProjectReadme(project.fullPath);
+    const result = FrontmatterService.writeProjectReadme(
+      project.fullPath,
+      frontmatter,
+      briefMarkdown,
+      expectedHash
+    );
+
+    AuditService.logEvent({
+      actor,
+      action: 'PROJECT_BRIEF_UPDATED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id
+    });
+
+    this.scan();
+    const SseService = require('./SseService');
+    SseService.broadcast('project:updated', { projectId });
+    return { success: true, versionHash: result.versionHash };
+  }
+
+  updateProjectDirection(projectId, directionData, actor = 'Lead Designer') {
+    const project = this.getProjectById(projectId);
+    if (!project) throw new Error('Project not found');
+
+    const { visual_concept, color_palette, target_audience, aspect_ratio, mood_keywords, reference_links } = directionData;
+    const { frontmatter, body } = FrontmatterService.readProjectReadme(project.fullPath);
+
+    const updatedFm = {
+      ...frontmatter,
+      creative_direction: {
+        ...(frontmatter.creative_direction || {}),
+        visual_concept: visual_concept || '',
+        color_palette: color_palette || '',
+        target_audience: target_audience || '',
+        ...(aspect_ratio !== undefined ? { aspect_ratio } : {}),
+        ...(mood_keywords !== undefined ? { mood_keywords } : {}),
+        ...(reference_links !== undefined ? { reference_links } : {}),
+        updatedBy: actor,
+        updatedAt: new Date().toISOString()
+      }
+    };
+
+    FrontmatterService.writeProjectReadme(project.fullPath, updatedFm, body);
+
+    if (project) {
+      project.creativeDirection = updatedFm.creative_direction;
+    }
+
+    AuditService.logEvent({
+      actor,
+      action: 'CREATIVE_DIRECTION_UPDATED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id
+    });
+
+    this.scan(true);
+    const SseService = require('./SseService');
+    SseService.broadcast('project:updated', { 
+      projectId, 
+      creativeDirection: updatedFm.creative_direction 
+    });
+    return { success: true, creativeDirection: updatedFm.creative_direction };
+  }
+
+  reassignProject(projectId, newDesigner, reason = '', actor = 'Studio Lead', role = 'Manager') {
+    const project = this.getProjectById(projectId);
+    if (!project) throw new Error('Project not found');
+    if (!newDesigner) throw new Error('newDesigner name is required');
+
+    const oldDesigner = project.designer || 'Unassigned';
+    const { frontmatter, body } = FrontmatterService.readProjectReadme(project.fullPath);
+    const updatedFm = { ...frontmatter, designer: newDesigner.trim() };
+    FrontmatterService.writeProjectReadme(project.fullPath, updatedFm, body);
+
+    AuditService.logEvent({
+      actor,
+      role,
+      action: 'PROJECT_REASSIGNED',
+      entityType: 'Project',
+      entityId: project.jobId || project.id,
+      details: {
+        projectId: project.id,
+        oldDesigner,
+        newDesigner: newDesigner.trim(),
+        reason
+      }
+    });
+
+    const SseService = require('./SseService');
+    SseService.broadcast('project:updated', {
+      projectId: project.id,
+      action: 'reassigned',
+      designer: newDesigner.trim(),
+      actor
+    });
+
+    const WebhookService = require('./WebhookService');
+    WebhookService.dispatch('PROJECT_REASSIGNED', {
+      jobId: project.jobId,
+      projectTitle: project.title,
+      actor,
+      brand: project.brand,
+      message: `Project reassigned from ${oldDesigner} to ${newDesigner.trim()}`
+    });
+
+    return { success: true, designer: newDesigner.trim(), message: `Project reassigned to ${newDesigner.trim()}` };
+  }
 }
 
 module.exports = new WorkspaceService();
