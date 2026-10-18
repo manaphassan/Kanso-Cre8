@@ -96,6 +96,24 @@ router.post('/finance/convert-quote', (req, res) => {
   }
 });
 
+router.post('/finance/convert-quote-full', (req, res) => {
+  try {
+    const { quoteId, projectTitle, depositPercentage, deadline, deliverableType, description } = req.body;
+    if (!quoteId) return res.status(400).json({ error: 'quoteId is required.' });
+    const result = FinanceVaultService.convertQuoteToProjectAndInvoice(quoteId, {
+      projectTitle,
+      depositPercentage,
+      deadline,
+      deliverableType,
+      description
+    });
+    SseService.broadcast('finance:quote-converted-full', result);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 router.delete('/finance/quotes/:id', (req, res) => {
   try {
     const deleted = FinanceVaultService.deleteQuote(req.params.id);

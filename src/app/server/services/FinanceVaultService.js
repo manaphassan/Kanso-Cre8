@@ -484,6 +484,122 @@ class FinanceVaultService {
     };
   }
 
+  static convertQuoteToProjectAndInvoice(quoteId, options = {}) {
+    const quote = this.getQuote(quoteId);
+    if (!quote) {
+      throw new Error(`Quote "${quoteId}" not found in _Finance/Quotes/.`);
+    }
+
+    const ScaffoldService = require('./ScaffoldService');
+    const ProjectService = require('./ProjectService');
+
+    quote.status = 'accepted';
+
+    const clientCode = (quote.clientCode || quote.client || 'ACME').toUpperCase().trim();
+    const clientName = quote.clientName || clientCode;
+    const title = (options.projectTitle || quote.title || `Sprint_${quote.documentNumber}`).trim();
+    const totalAmount = Number(quote.total || quote.totalAmount || quote.amount || 0);
+    const currency = quote.currency || 'USD';
+    const depositPct = options.depositPercentage !== undefined ? Number(options.depositPercentage) : 100;
+
+    // 1. Scaffold 5-folder project vault
+    const scaffoldRes = ScaffoldService.scaffoldProject({
+      title,
+      clientCode,
+      clientName,
+      budget: totalAmount,
+      currency,
+      deadline: options.deadline || quote.validUntil || quote.dueDate,
+      deliverableType: options.deliverableType || 'Brand Identity',
+      description: options.description || quote.notes || `Scaffolded from Quote ${quote.documentNumber}`,
+      linkedQuoteId: quote.documentNumber
+    });
+
+    const project = scaffoldRes.project || { id: scaffoldRes.folderName, jobId: scaffoldRes.folderName, folderName: scaffoldRes.folderName };
+
+    // 2. Determine invoice line items and totals
+    const invoices = this.getInvoices();
+    const nextNum = invoices.length + 1;
+    const invNumber = `INV-${new Date().getFullYear()}-${String(nextNum).padStart(3, '0')}`;
+
+    let invoiceItems = [];
+    let invoiceTotal = totalAmount;
+
+    if (depositPct > 0 && depositPct < 100) {
+      const depositAmount = Math.round((totalAmount * (depositPct / 100)) * 100) / 100;
+      invoiceTotal = depositAmount;
+      invoiceItems = [
+        {
+          id: 'item-dep-1',
+          description: `Initial Deposit (${depositPct}%) - ${title}`,
+          quantity: 1,
+          unitPrice: depositAmount,
+          rate: depositAmount,
+          amount: depositAmount
+        }
+      ];
+    } else {
+      invoiceItems = Array.isArray(quote.items) && quote.items.length > 0
+        ? JSON.parse(JSON.stringify(quote.items))
+        : [{ id: 'item-1', description: title, quantity: 1, unitPrice: totalAmount, rate: totalAmount, amount: totalAmount }];
+    }
+
+    const newInvoice = {
+      ...quote,
+      id: invNumber.toLowerCase(),
+      type: 'invoice',
+      documentNumber: invNumber,
+      title: depositPct < 100 ? `${title} (Deposit ${depositPct}%)` : title,
+      date: new Date().toISOString().split('T')[0],
+      dueDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+      status: 'draft',
+      items: invoiceItems,
+      subtotal: invoiceTotal,
+      totalAmount: invoiceTotal,
+      total: invoiceTotal,
+      linkedQuoteId: quote.documentNumber,
+      linkedProjectId: project.id || project.jobId || project.folderName,
+      notes: quote.notes ? `${quote.notes}\n\n(Generated from Quote ${quote.documentNumber})` : `Generated from Quote ${quote.documentNumber}`
+    };
+
+    const savedInvoice = this.saveInvoice(newInvoice);
+
+    // 3. Link invoice & project back to quote
+    quote.linkedInvoiceId = savedInvoice.documentNumber;
+    quote.linkedProjectId = project.id || project.jobId || project.folderName;
+    this.saveQuote(quote);
+
+    // 4. Update project frontmatter with linkedInvoiceId
+    const projectDir = scaffoldRes.targetDir || project.fullPath || project.path || project.targetDir;
+    if (projectDir) {
+      try {
+        FrontmatterService.writeProjectReadme(projectDir, {
+          linkedQuoteId: quote.documentNumber,
+          linkedInvoiceId: savedInvoice.documentNumber
+        });
+      } catch (e) {
+        console.warn('[FinanceVaultService] Could not update project README links:', e.message);
+      }
+    }
+
+    // Refresh ProjectService cache if available
+    try {
+      if (ProjectService && typeof ProjectService.scanProjects === 'function') {
+        ProjectService.scanProjects();
+      }
+    } catch (_) {}
+
+    return {
+      success: true,
+      quote,
+      project: {
+        ...project,
+        targetDir: projectDir
+      },
+      invoice: savedInvoice
+    };
+  }
+
   static generateStandaloneHtml(doc, studioProfile = {}) {
     const escapeHtml = (str) => {
       if (!str) return '';

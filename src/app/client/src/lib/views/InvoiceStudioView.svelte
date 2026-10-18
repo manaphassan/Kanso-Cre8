@@ -6,6 +6,7 @@
     import { settingsStore, SUPPORTED_CURRENCIES, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import { appState } from '../stores/appState.svelte';
   import ScopeTemplateModal from '../components/features/ScopeTemplateModal.svelte';
+  import ConvertQuoteModal from '$lib/components/features/ConvertQuoteModal.svelte';
   import { Icon } from '$lib/components/ui';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
@@ -22,6 +23,7 @@
   let viewMode: 'edit' | 'markdown' = $state('edit');
   let activeFilter: string = $state('all');
   let isConverting = $state(false);
+  let showConvertModal = $state(false);
 
   $effect(() => {
     if (initialDocType && initialDocType !== docType) {
@@ -581,21 +583,47 @@
               <div class="p-3 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between">
                 <div>
                   <div class="text-sm font-bold text-foreground">Quote Actions</div>
-                  <div class="text-xs text-muted-foreground">Convert to draft invoice on client acceptance</div>
+                  <div class="text-xs text-muted-foreground">Convert to project vault and initial invoice on client acceptance</div>
                 </div>
-                {#if activeDoc.linkedInvoiceId}
-                  <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold">
-                    <Icon name="check" size={12} /> {activeDoc.linkedInvoiceId}
-                  </span>
-                {:else}
-                  <button
-                    onclick={handleConvertQuote}
-                    disabled={isConverting}
-                    class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
-                  >
-                    <span><Icon name="bolt" size={14} /> Convert to Invoice</span>
-                  </button>
-                {/if}
+                <div class="flex items-center gap-2">
+                  {#if activeDoc.linkedProjectId}
+                    <button
+                      type="button"
+                      onclick={() => appState.navigate('projects', { id: activeDoc?.linkedProjectId })}
+                      class="px-2.5 py-1 rounded bg-sky-500/20 text-sky-400 font-mono text-xs font-bold hover:bg-sky-500/30 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Open linked project"
+                      aria-label="Open linked project"
+                    >
+                      <Icon name="folder" size={12} /> {activeDoc.linkedProjectId}
+                    </button>
+                  {/if}
+                  {#if activeDoc.linkedInvoiceId}
+                    <button
+                      type="button"
+                      onclick={() => {
+                        const inv = invoices.find(i => i.documentNumber === activeDoc?.linkedInvoiceId);
+                        if (inv) {
+                          docType = 'invoices';
+                          activeDoc = inv;
+                        }
+                      }}
+                      class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold hover:bg-emerald-500/30 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Open linked invoice"
+                      aria-label="Open linked invoice"
+                    >
+                      <Icon name="check" size={12} /> {activeDoc.linkedInvoiceId}
+                    </button>
+                  {:else}
+                    <button
+                      type="button"
+                      onclick={() => (showConvertModal = true)}
+                      class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      aria-label="Open project and invoice conversion dialog"
+                    >
+                      <span><Icon name="bolt" size={14} /> Convert to Project & Invoice</span>
+                    </button>
+                  {/if}
+                </div>
               </div>
             {/if}
 
@@ -1333,6 +1361,19 @@
     onApply={handleApplyScopePreset}
     onClose={() => showScopeModal = false}
   />
+
+  {#if showConvertModal && activeDoc && activeDoc.type === 'quote'}
+    <ConvertQuoteModal
+      quote={activeDoc}
+      onClose={() => (showConvertModal = false)}
+      onConverted={(result) => {
+        showConvertModal = false;
+        quotes = financeService.getQuotes();
+        invoices = financeService.getDocuments();
+        activeDoc = result.quote;
+      }}
+    />
+  {/if}
 </div>
 
 <style>

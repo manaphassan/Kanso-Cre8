@@ -213,7 +213,9 @@ class ScaffoldService {
         status: 'draft',
         headline: title,
         body_copy: ''
-      }
+      },
+      ...(options.linkedQuoteId ? { linkedQuoteId: options.linkedQuoteId } : {}),
+      ...(options.linkedInvoiceId ? { linkedInvoiceId: options.linkedInvoiceId } : {})
     };
 
     const readmeBody = `# ${title}\n\n> [!NOTE]\n> ${options.description || 'Standardized 5-folder creative project vault.'}\n\n## Sprint Checklist\n- [ ] #task Review client brief and vector assets in 01_BRIEF/ due: ${deadline} priority: normal\n- [ ] #task Prepare master design source files in 02_SOURCE/\n- [ ] #task Compose hooks and copywriting in 03_COPY/\n- [ ] #task Export review renders to 04_WIP/\n- [ ] #task Package final deliverables in 05_DELIVERABLES/\n`;
@@ -240,7 +242,9 @@ class ScaffoldService {
 
     return {
       success: true,
-      project: ProjectService.getProjectById(folderName) || { id: folderName, title, folderName, fullPath: targetDir }
+      folderName,
+      targetDir,
+      project: ProjectService.getProjectById(folderName) || { id: folderName, title, folderName, fullPath: targetDir, targetDir }
     };
   }
 

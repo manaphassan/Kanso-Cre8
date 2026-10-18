@@ -623,6 +623,74 @@ notes: Initial deposit invoice.
       try { fs.rmSync(testWs, { recursive: true, force: true }); } catch (_) {}
     }
   });
+  await test('FinanceVaultService.convertQuoteToProjectAndInvoice scaffolds project, generates invoice, and links all entities', async () => {
+    const testDir = path.join(__dirname, 'temp-finance-convert-full-test');
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Quotes'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Finance', 'Invoices'), { recursive: true });
+    fs.mkdirSync(path.join(testDir, '_Projects', String(new Date().getFullYear())), { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const quote = FinanceVaultService.saveQuote({
+        documentNumber: 'QTE-2026-999',
+        clientCode: 'ACME',
+        clientName: 'Acme Corporation',
+        date: '2026-09-08',
+        validUntil: '2026-09-22',
+        status: 'draft',
+        currency: 'USD',
+        hourlyRate: 150,
+        items: [
+          { description: 'Design Sprint Assets', quantity: 20, unitPrice: 150, amount: 3000 }
+        ],
+        subtotal: 3000,
+        taxRatePercent: 0,
+        taxAmount: 0,
+        total: 3000,
+        notes: '2 revisions included.'
+      });
+
+      const conversion = FinanceVaultService.convertQuoteToProjectAndInvoice(quote.documentNumber, {
+        projectTitle: 'Mobile Design Sprint',
+        depositPercentage: 50,
+        deliverableType: 'UI/UX'
+      });
+
+      assert.strictEqual(conversion.success, true);
+      assert.ok(conversion.project, 'Project must be created');
+      assert.ok(conversion.invoice, 'Invoice must be created');
+      assert.strictEqual(conversion.invoice.total, 1500, '50% deposit must equal 1500');
+      assert.strictEqual(conversion.invoice.linkedQuoteId, 'QTE-2026-999');
+      assert.strictEqual(conversion.invoice.linkedProjectId, conversion.project.id);
+
+      // Verify Quote updated
+      const updatedQuote = FinanceVaultService.getQuote(quote.documentNumber);
+      assert.strictEqual(updatedQuote.status, 'accepted');
+      assert.strictEqual(updatedQuote.linkedInvoiceId, conversion.invoice.documentNumber);
+      assert.strictEqual(updatedQuote.linkedProjectId, conversion.project.id);
+
+      // Verify project folder created with standard subfolders
+      assert.ok(conversion.project.targetDir && fs.existsSync(conversion.project.targetDir));
+      const subfolders = ['01_BRIEF', '02_SOURCE', '03_COPY', '04_WIP', '05_DELIVERABLES'];
+      for (const sf of subfolders) {
+        assert.ok(fs.existsSync(path.join(conversion.project.targetDir, sf)), `Subfolder ${sf} must exist`);
+      }
+
+      // Verify project README has linked frontmatter
+      const { frontmatter } = FrontmatterService.parseRawContent(fs.readFileSync(path.join(conversion.project.targetDir, 'README.md'), 'utf8'));
+      assert.strictEqual(frontmatter.linkedQuoteId, 'QTE-2026-999');
+      assert.strictEqual(frontmatter.linkedInvoiceId, conversion.invoice.documentNumber);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
+
 };
 
 if (require.main === module) {
