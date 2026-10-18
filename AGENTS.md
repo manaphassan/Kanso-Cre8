@@ -5,8 +5,8 @@
 **Kanso Cre8 (簡素)** is the Mindful Creative Vault — an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.
 
 **Platform**:
-- Windows 11/10 (x64)
-- Linux (x64 / ARM64)
+- Windows 11/10 (x64 Tauri v2 native desktop)
+- Linux (x64 / ARM64 Tauri v2 native desktop)
 - Android Companion (APK)
 
 **Technology Stack**:
@@ -116,7 +116,7 @@ Never use hardcoded hex colors in components. Always use:
 
 # CANONICAL RETRO CASSETTE RADIO
 
-The Retro Cassette Focus Radio is ported faithfully from the mechanical cassette player in SS-CAM Android:
+The Retro Cassette Focus Radio is ported faithfully from the mechanical cassette player:
 - 4 corner silver screws, trapezoidal head/roller, Side A label badge, clear tape window.
 - Dual 6-spoke gear spool wheels rotating at 33 RPM via smooth CSS animations during playback.
 - Curated focus streams (Chillhop Cafe, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus).
@@ -134,11 +134,14 @@ Before committing changes, always run the brand and architecture auditor:
 powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
 ```
 
-All 10 checks must pass with `0 warned / 0 failed`.
+All 16 checks must pass with `0 warned / 0 failed`.
 
 ---
 
 # WORKSPACE AGENT SKILLS
 
-- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Zettelkasten knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
-- `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards. Safely cleans, organizes, standardizes, audits, and secures repositories without breaking behavior.
+- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Atelier Notes knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
+- `kanso-scope-lock`: Execution discipline for Kanso Cre8 plan work. Keeps the agent inside the current task of docs/MASTER_PLAN.md: one task per commit, a file allow-list, mandatory gates, and a stop-and-ask list.
+- `kanso-vault-schema`: Source of truth for how Kanso Cre8 stores, names, and migrates data and config across the three storage tiers, vault folder and filename rules, and frontmatter contracts.
+- `kanso-ui-minimal`: UI and UX rules for Kanso Cre8: six-item navigation, component budget, token-only color, single icon system with emoji-to-icon map, copy rules, accessibility minimums, and 400-line component cap.
+- `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards.
