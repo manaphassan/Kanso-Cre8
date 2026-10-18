@@ -1,7 +1,7 @@
 # Kanso Cre8 Plan Execution Notes
 
-## Phase 0 - Security and Repo Hygiene
 - 2026-10-17 | git / android keystore | Task P0.3 held pending Decision D5 and user confirmation of verified local repository backup.
+- 2026-10-18 | git / filter-repo | Task P0.3 / Decision D5 completed: verified standalone backup created (kansoCre8_pre_history_rewrite.bundle, 450MB); purged legacy SS-CAM/SSNAS history, dead artifacts, and legacy keystore; reduced .git from 453.67MB to 45.04MB (90% reduction); origin remote restored; all 16 auditor checks and 71 unit tests verified clean.
 
 ## Phase 2 - Data and Config Reorganization
 - 2026-10-17 | src/app/server/services/ConfigService.js | Vault migration normalizes legacy config files to studio_profile.json, preferences.json, and license.json with .migrated.bak backups stored outside the vault in the machine tier.
@@ -58,4 +58,9 @@
 ## Track D - Vault Safety & Lifecycle (Post-0.8.0)
 - 2026-10-18 | src/app/server/services/VaultPathService.js, src/app/client/src/lib/components/vault/VaultStartupGate.svelte, VaultStartupActions.svelte | Phase D1: Startup vault status probe and relocation gate preventing silent folder creation on disconnected or absent storage.
 - 2026-10-18 | src/app/server/services/VaultPathService.js, src/app/client/src/lib/components/settings/VaultResetDangerZone.svelte, VaultResetModal.svelte | Phase D2: Safe archive-first vault structure reset moving canonical compartments to _Archive/reset-<timestamp>/ with folder-name typed confirmation and preservation of custom user files.
+
+## Track E - Atelier Onboarding & Desktop Distribution (Post-0.8.0)
+- 2026-10-18 | src/app/client/src/lib/components/features/KeyboardOnboardingModal.svelte, App.svelte | Phase E1: Keyboard-first onboarding cheatsheet with 5 essential flow-state shortcuts (Cmd/Ctrl+1..6, Cmd/Ctrl+K, Cmd/Ctrl+Shift+K, Cmd/Ctrl+Shift+Z, Space), platform-aware key badge detection (macOS vs Windows/Linux), topbar trigger, Shift+? shortcut, and soft first-run auto-prompt.
+- 2026-10-18 | scripts/build-windows.ps1, src/app/src-tauri/Cargo.toml, FinanceVaultService.js | Phase E2: Validated desktop packaging pipeline producing 35.45 MB portable distribution zip with standalone Node runtime; fixed bundling reassignment in FinanceVaultService; added tray-icon cargo feature.
+
 
