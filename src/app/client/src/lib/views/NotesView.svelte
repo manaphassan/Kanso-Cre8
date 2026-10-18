@@ -5,7 +5,6 @@
   import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem, GraphTopology } from '../types/notes';
   import MarkdownEditor from '../components/markdown/MarkdownEditor.svelte';
   import KnowledgeGraphCanvas from '../components/features/KnowledgeGraphCanvas.svelte';
-  import LocalGraphMini from '../components/features/LocalGraphMini.svelte';
   import { appState } from '../stores/appState.svelte';
 
   let notes: ZettelNote[] = $state([]);
@@ -235,12 +234,8 @@
   <!-- ═══════════ NOTION/EVERNOTE INSPIRED ZEN ATELIER HEADER ═══════════ -->
   <header class="atelier-notes-header">
     <div class="header-left">
-      <div class="header-tag-pill">
-        <span class="vault-root">_Notes/</span>
-        <span class="vault-count">{notes.length} Atomic Notes</span>
-      </div>
-      <h1 class="atelier-title">Atelier Notes</h1>
-      <p class="atelier-sub">Minimalist creative knowledge engine. Interconnected atomic notes, swipe files, and rapid scratchpad.</p>
+      <h1 class="atelier-title">Notes</h1>
+      <p class="atelier-sub">Interconnected atomic notes, swipe files, and scratchpad.</p>
     </div>
 
     <div class="header-right">
@@ -613,17 +608,7 @@
               </div>
             {/if}
 
-            <!-- Local Constellation Mini Graph -->
-            <LocalGraphMini
-              focalNoteId={activeNote.id}
-              topology={graphTopology}
-              onSelectNode={(node) => {
-                const found = zettelService.getNoteById(node.id) || zettelService.getNoteByTitle(node.label);
-                if (found) selectNote(found);
-              }}
-            />
-
-            <!-- Inbound Bi-Directional Backlinks -->
+            <!-- Inbound Linked Notes -->
             <div class="drawer-tray-card">
               <div class="drawer-tray-header">
                 <span class="tray-title">
@@ -634,7 +619,7 @@
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                   </svg>
-                  Bi-Directional Backlinks ({incomingBacklinks.length})
+                  Linked notes ({incomingBacklinks.length})
                 </span>
                 <button
                   type="button"
@@ -648,7 +633,7 @@
               {#if showBacklinksTray}
                 {#if incomingBacklinks.length === 0}
                   <p class="empty-tray-msg">
-                    Zero notes currently link here. Use <code class="mono-code">[[{activeNote.title}]]</code> in other notes to create links.
+                    No notes currently link here. Use <code class="mono-code">[[{activeNote.title}]]</code> in other notes to create links.
                   </p>
                 {:else}
                   <div class="backlinks-grid">

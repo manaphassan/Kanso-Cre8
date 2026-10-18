@@ -7,11 +7,9 @@ src/app/client/src/lib/components/dashboard/DashboardProjectGlance.svelte
 src/app/client/src/lib/components/dashboard/DashboardTodayTasks.svelte
 src/app/client/src/lib/components/features/BatchResizerModal.svelte
 src/app/client/src/lib/components/features/ClientEditModal.svelte
-src/app/client/src/lib/components/features/CommandPaletteModal.svelte
 src/app/client/src/lib/components/features/DeliverableVisualDiffSlider.svelte
 src/app/client/src/lib/components/features/HeaderTimerWidget.svelte
 src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
-src/app/client/src/lib/components/features/LocalGraphMini.svelte
 src/app/client/src/lib/components/features/ProjectFilterBar.svelte
 src/app/client/src/lib/components/features/ShareLinkModal.svelte
 src/app/client/src/lib/components/features/StopSessionModal.svelte

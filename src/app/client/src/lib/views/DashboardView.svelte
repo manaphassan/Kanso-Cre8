@@ -155,12 +155,8 @@
   <!-- Top Executive Header -->
   <header class="deck-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_StudioDeck/</span>
-        <span class="tag-meta">{dailyNote.date} · Executive Overview</span>
-      </div>
       <h1 class="view-title">Studio Deck</h1>
-      <p class="view-subtitle">Executive creative operations, client deliverables, BuJo rapid logs, and studio cashflow.</p>
+      <p class="view-subtitle">Today's tasks, weekly metrics, active projects, and cashflow.</p>
     </div>
   </header>
 
@@ -170,14 +166,12 @@
       <DashboardTodayTasks
         {dailyNote}
         {previousTaskInfo}
-        {universalTasks}
         onTaskUpdated={refreshDashboardData}
       />
     </div>
 
     <div class="deck-column-right card-surface">
       <div class="bento-header-compact">
-        <span class="bento-badge">DESIGN TELEMETRY</span>
         <h3 class="bento-title-compact">Craft &amp; Velocity Bento</h3>
       </div>
       <DashboardMetricsBento
@@ -218,20 +212,6 @@
     flex-direction: column;
     gap: 4px;
   }
-  .header-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-  }
-  .tag-badge {
-    font-weight: 700;
-    color: var(--kanso-accent);
-    font-family: monospace;
-  }
-  .tag-meta {
-    color: var(--kanso-text-muted);
-  }
   .view-title {
     margin: 0;
     font-size: 22px;
@@ -258,18 +238,6 @@
     border: 1px solid var(--kanso-border);
     border-radius: 8px;
     padding: 24px;
-  }
-  .bento-header-compact {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-bottom: 16px;
-  }
-  .bento-badge {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--kanso-accent);
   }
   .bento-title-compact {
     margin: 0;

@@ -7,11 +7,9 @@
   import type { Project } from '$lib/types';
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Icon, type IconName } from '$lib/components/ui';
-  import { notesService } from '$lib/services/notesService';
   import { clientService } from '$lib/services/clientService';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
-  import type { NoteTask } from '$lib/types/notes';
 
   interface Props {
     projects: Project[];
@@ -20,20 +18,6 @@
   }
 
   let { projects, isAdminUser = false, onDelete }: Props = $props();
-
-  let showTaskBar = $state(false);
-  let vaultTasks = $state<NoteTask[]>([]);
-
-  onMount(() => {
-    vaultTasks = notesService.getAllTasks();
-  });
-
-  let pendingVaultTasks = $derived(vaultTasks.filter(t => !t.completed));
-
-  function handleToggleVaultTask(task: NoteTask) {
-    notesService.toggleTask(task);
-    vaultTasks = notesService.getAllTasks();
-  }
 
   const columns: Array<{ id: string; label: string; icon: IconName; color: string; hint: string }> = [
     { id: 'backlog', label: 'Backlog', icon: 'file', color: 'var(--kanso-text-muted)', hint: 'Project scoping & queued briefs' },
@@ -208,53 +192,6 @@
 </script>
 
 <div class="kanban-board-container">
-  <!-- Universal Task Rollup Bar -->
-  <div class="vault-task-rollup-bar">
-    <div class="task-rollup-left">
-      <span class="task-rollup-icon"><Icon name="file" size={14} /></span>
-      <span class="task-rollup-title">Vault Task Rollup</span>
-      <span class="task-rollup-badge">{pendingVaultTasks.length} active tasks</span>
-    </div>
-    <button
-      type="button"
-      class="task-rollup-toggle-btn"
-      onclick={() => showTaskBar = !showTaskBar}
-    >
-      {showTaskBar ? 'Hide Tasks' : 'Show Tasks'}
-    </button>
-  </div>
-
-  {#if showTaskBar}
-    <div class="vault-tasks-shelf">
-      {#if vaultTasks.length === 0}
-        <div class="tasks-empty">No inline tasks found. Add <code>- [ ] #task Action item</code> in notes or briefs.</div>
-      {:else}
-        <div class="tasks-chips-grid">
-          {#each vaultTasks as task}
-            <label class="task-chip-card" class:is-done={task.completed}>
-              <input
-                type="checkbox"
-                checked={task.completed}
-                onchange={() => handleToggleVaultTask(task)}
-                class="task-chip-check"
-              />
-              <span class="task-chip-desc">{task.description}</span>
-              {#if task.dueDate}
-                <span class="task-chip-date"><Icon name="calendar" size={12} /> {task.dueDate}</span>
-              {/if}
-              {#if task.priority && task.priority !== 'normal'}
-                <span class="task-chip-priority" class:is-high={task.priority === 'high' || task.priority === 'urgent'}>
-                  {task.priority}
-                </span>
-              {/if}
-              <span class="task-chip-source">({task.sourceNoteTitle})</span>
-            </label>
-          {/each}
-        </div>
-      {/if}
-    </div>
-  {/if}
-
   <div class="kanban-scroll">
   <div class="kanban-columns-grid">
     {#each columns as col}
@@ -943,146 +880,5 @@
     color: var(--kanso-text-primary);
     outline: none;
     cursor: pointer;
-  }
-
-  /* ═══ VAULT TASK ROLLUP ═══════════════════════════════════════ */
-  .vault-task-rollup-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    margin-bottom: 12px;
-  }
-
-  .task-rollup-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .task-rollup-icon {
-    font-size: 14px;
-  }
-
-  .task-rollup-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--kanso-text-primary);
-  }
-
-  .task-rollup-badge {
-    font-size: 11px;
-    font-weight: 600;
-    font-family: monospace;
-    background: rgba(56, 189, 248, 0.12);
-    color: var(--kanso-accent);
-    padding: 1px 6px;
-    border-radius: 4px;
-  }
-
-  .task-rollup-toggle-btn {
-    background: transparent;
-    border: 1px solid var(--kanso-border);
-    color: var(--kanso-text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .task-rollup-toggle-btn:hover {
-    color: var(--kanso-text-primary);
-    background: var(--kanso-surface-hover);
-  }
-
-  .vault-tasks-shelf {
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 14px;
-  }
-
-  .tasks-empty {
-    font-size: 12px;
-    color: var(--kanso-text-muted);
-    text-align: center;
-    padding: 12px;
-  }
-
-  .tasks-chips-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .task-chip-card {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 11px;
-    color: var(--kanso-text-primary);
-    cursor: pointer;
-    transition: border-color 0.15s ease;
-  }
-
-  .task-chip-card:hover {
-    border-color: var(--kanso-accent);
-  }
-
-  .task-chip-card.is-done {
-    opacity: 0.5;
-  }
-
-  .task-chip-card.is-done .task-chip-desc {
-    text-decoration: line-through;
-    color: var(--kanso-text-muted);
-  }
-
-  .task-chip-check {
-    cursor: pointer;
-  }
-
-  .task-chip-desc {
-    font-weight: 500;
-  }
-
-  .task-chip-date {
-    font-family: monospace;
-    font-size: 10px;
-    color: var(--kanso-text-muted);
-    background: var(--kanso-surface);
-    padding: 1px 4px;
-    border-radius: 3px;
-  }
-
-  .task-chip-priority {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--kanso-warning);
-    background: rgba(245, 158, 11, 0.12);
-    padding: 1px 4px;
-    border-radius: 3px;
-  }
-
-  .task-chip-priority.is-high {
-    color: var(--kanso-danger);
-    background: rgba(239, 68, 68, 0.12);
-  }
-
-  .task-chip-source {
-    font-size: 9px;
-    color: var(--kanso-accent);
-    opacity: 0.8;
   }
 </style>

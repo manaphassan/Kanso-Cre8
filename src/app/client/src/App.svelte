@@ -31,6 +31,7 @@
   let scratchpadOpen = $state(false);
   let vaultSwitcherOpen = $state(false);
   let keyboardOnboardingOpen = $state(false);
+  let overflowMenuOpen = $state(false);
 
   interface NavItem {
     id: string;
@@ -78,8 +79,9 @@
   );
 
   function handleGlobalKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && appState.viewSwitcherOpen) {
+    if (e.key === 'Escape' && (appState.viewSwitcherOpen || overflowMenuOpen)) {
       appState.viewSwitcherOpen = false;
+      overflowMenuOpen = false;
       return;
     }
     if (e.key === 'Escape' && appState.isZenMode) {
@@ -273,7 +275,7 @@
   });
 </script>
 
-<svelte:window onkeydown={handleGlobalKeydown} onclick={() => (appState.viewSwitcherOpen = false)} />
+<svelte:window onkeydown={handleGlobalKeydown} onclick={() => { appState.viewSwitcherOpen = false; overflowMenuOpen = false; }} />
 
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
@@ -373,33 +375,64 @@
             <Icon name="edit" size={15} />
           </button>
 
-          <button
-            class="icon-btn zen-toggle-btn"
-            class:active={appState.isZenMode}
-            onclick={() => appState.toggleZenMode()}
-            title="Quiet Mode / Zen Atelier Mode (Ctrl+Shift+Z)"
-            aria-label="Toggle Quiet Mode"
-          >
-            <Icon name="sparkle" size={15} />
-          </button>
+          <div class="overflow-menu-wrapper">
+            <button
+              class="icon-btn overflow-btn"
+              class:active={overflowMenuOpen}
+              onclick={(e) => { e.stopPropagation(); overflowMenuOpen = !overflowMenuOpen; }}
+              title="More actions"
+              aria-label="More actions"
+              aria-haspopup="menu"
+              aria-expanded={overflowMenuOpen}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="5" r="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <circle cx="12" cy="19" r="2"/>
+              </svg>
+            </button>
 
-          <button
-            class="icon-btn"
-            onclick={() => (keyboardOnboardingOpen = true)}
-            title="Keyboard Shortcuts (?)"
-            aria-label="Keyboard Shortcuts"
-          >
-            <Icon name="lightbulb" size={15} />
-          </button>
+            {#if overflowMenuOpen}
+              <!-- svelte-ignore a11y_no_static_element_interactions -->
+              <!-- svelte-ignore a11y_interactive_supports_focus -->
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
+              <div class="overflow-dropdown" role="menu" tabindex="-1" aria-label="More actions" onclick={(e) => e.stopPropagation()}>
+                <button
+                  class="overflow-item-btn"
+                  role="menuitem"
+                  onclick={() => { appState.toggleZenMode(); overflowMenuOpen = false; }}
+                >
+                  <span class="overflow-icon"><Icon name="sparkle" size={15} /></span>
+                  <span class="overflow-label">{appState.isZenMode ? 'Exit Quiet Mode' : 'Quiet Mode'}</span>
+                  <kbd class="overflow-kbd">⌘⇧Z</kbd>
+                </button>
 
-          <button
-            class="icon-btn"
-            onclick={() => { appState.addToast('Rescanning workspace…', 'info'); projectStore.loadProjects(); projectStore.loadDashboard(); }}
-            title="Rescan Workspace"
-            aria-label="Rescan workspace"
-          >
-            <Icon name="refresh" size={15} />
-          </button>
+                <button
+                  class="overflow-item-btn"
+                  role="menuitem"
+                  onclick={() => { keyboardOnboardingOpen = true; overflowMenuOpen = false; }}
+                >
+                  <span class="overflow-icon"><Icon name="lightbulb" size={15} /></span>
+                  <span class="overflow-label">Keyboard Shortcuts</span>
+                  <kbd class="overflow-kbd">?</kbd>
+                </button>
+
+                <button
+                  class="overflow-item-btn"
+                  role="menuitem"
+                  onclick={() => {
+                    overflowMenuOpen = false;
+                    appState.addToast('Rescanning workspace…', 'info');
+                    projectStore.loadProjects();
+                    projectStore.loadDashboard();
+                  }}
+                >
+                  <span class="overflow-icon"><Icon name="refresh" size={15} /></span>
+                  <span class="overflow-label">Rescan Workspace</span>
+                </button>
+              </div>
+            {/if}
+          </div>
         </div>
       </header>
 
@@ -496,12 +529,6 @@
   }
   .app-shell.zen-mode-active .page-body {
     padding-bottom: 84px;
-  }
-
-  .icon-btn.zen-toggle-btn.active {
-    color: var(--kanso-accent);
-    background: var(--kanso-surface-hover);
-    border-color: var(--kanso-accent);
   }
 
   /* ═══ FLOATING NAV DROPDOWN (hamburger) ═════════════════════════════ */
@@ -754,6 +781,81 @@
     background: var(--kanso-surface-hover);
     color: var(--kanso-text-primary);
     border-color: var(--kanso-border);
+  }
+
+  .overflow-menu-wrapper {
+    position: relative;
+  }
+
+  .overflow-btn.active {
+    color: var(--kanso-accent);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-border);
+  }
+
+  .overflow-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background: var(--kanso-surface);
+    border: 1px solid var(--kanso-border);
+    border-radius: var(--kanso-radius-lg, 10px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    z-index: 600;
+    padding: var(--kanso-space-1);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    user-select: none;
+    animation: navDropIn 0.15s ease;
+  }
+
+  .overflow-item-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--kanso-space-2);
+    padding: var(--kanso-space-2) var(--kanso-space-3);
+    border-radius: var(--kanso-radius-md);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--kanso-text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .overflow-item-btn:hover {
+    background: var(--kanso-surface-hover);
+    color: var(--kanso-text-primary);
+  }
+
+  .overflow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .overflow-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .overflow-kbd {
+    font-family: var(--kanso-font-mono);
+    font-size: 10.5px;
+    color: var(--kanso-text-muted);
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    padding: 1px 4px;
+    border-radius: 4px;
   }
 
   .page-body {

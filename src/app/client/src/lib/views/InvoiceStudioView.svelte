@@ -400,13 +400,9 @@
   <!-- Top Navigation & Actions (Hidden in Print) -->
   <div class="view-header print:hidden">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Finance/</span>
-        <span class="tag-meta">{invoices.length} Invoices · {quotes.length} Quotes · Pure Markdown Storage</span>
-      </div>
       <h1 class="view-title">Quotes &amp; Invoices</h1>
       <p class="view-subtitle">
-        Offline-first Markdown financial desk. Pure <code class="font-mono text-primary text-xs">_Finance/Quotes/</code> &amp; <code class="font-mono text-primary text-xs">_Finance/Invoices/</code> storage.
+        Track estimates, create invoices, and log billable payments.
       </p>
     </div>
 

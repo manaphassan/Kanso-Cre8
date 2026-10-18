@@ -17,7 +17,6 @@
 <section class="bento-section">
   <div class="bento-header">
     <div class="bento-title-row">
-      <span class="bento-badge">FINANCE &amp; EARNINGS</span>
       <h2 class="bento-title">Income &amp; Studio Cashflow</h2>
     </div>
     <a href="#invoices" class="bento-action-link">Open Invoice Studio →</a>
@@ -96,17 +95,6 @@
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 20px;
-  }
-  .bento-title-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .bento-badge {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--kanso-accent);
   }
   .bento-title {
     margin: 0;

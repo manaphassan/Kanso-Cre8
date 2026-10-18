@@ -18,7 +18,6 @@
 <section class="bento-section">
   <div class="bento-header">
     <div class="bento-title-row">
-      <span class="bento-badge">ACTIVE CAMPAIGNS</span>
       <h2 class="bento-title">Project Status at a Glance</h2>
     </div>
     <a href="#projects" class="bento-action-link">Open Project Manager →</a>

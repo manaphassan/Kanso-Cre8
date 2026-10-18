@@ -33,12 +33,8 @@
 <div class="journal-view-container">
   <header class="journal-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Journal/</span>
-        <span class="tag-meta">Bullet Journal · Rapid Logging · Habit Cadence</span>
-      </div>
-      <h1 class="view-title">Bullet Journal</h1>
-      <p class="view-subtitle">Rapid daily logs, mindful studio craft habits, and reflective retrospectives.</p>
+      <h1 class="view-title">Journal</h1>
+      <p class="view-subtitle">Rapid daily logs, habits, and weekly reviews.</p>
     </div>
   </header>
 
@@ -103,20 +99,6 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-  }
-  .header-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-  }
-  .tag-badge {
-    font-weight: 700;
-    color: var(--kanso-accent);
-    font-family: monospace;
-  }
-  .tag-meta {
-    color: var(--kanso-text-muted);
   }
   .view-title {
     margin: 0;
