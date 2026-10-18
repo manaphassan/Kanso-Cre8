@@ -196,6 +196,11 @@ module.exports = async function run(test, context = {}) {
 
       const list = SnapshotService.getSnapshots(projDir);
       assert.strictEqual(list.length, 2, 'Must list 2 snapshots');
+      // Inspect snapshot details without rollback
+      const details = SnapshotService.getSnapshotDetails(projDir, snap1.id);
+      assert.ok(details && details.meta, 'Snapshot details must return meta');
+      assert.ok(details.readme.includes('Rev 1 Initial'), 'Readme in details must match snap1');
+      assert.ok(details.copy.includes('Initial Draft Headline'), 'Copy in details must match snap1');
 
       // 4. Rollback to snap1
       const rollbackResult = SnapshotService.rollback(projDir, snap1.id, 'Art Director');

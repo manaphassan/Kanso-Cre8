@@ -102,7 +102,19 @@ router.get('/projects/:id/snapshots', authenticateToken, (req, res) => {
   }
 });
 
-router.post('/projects/:id/snapshot', authenticateToken, (req, res) => {
+router.get('/projects/:id/snapshots/:snapId', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const details = SnapshotService.getSnapshotDetails(project.fullPath, req.params.snapId);
+    if (!details) return res.status(404).json({ error: 'Snapshot not found' });
+    res.json({ success: true, snapshot: details });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const handleCreateSnapshot = (req, res) => {
   try {
     const project = WorkspaceService.getProjectById(req.params.id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
@@ -113,7 +125,10 @@ router.post('/projects/:id/snapshot', authenticateToken, (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+};
+
+router.post('/projects/:id/snapshot', authenticateToken, handleCreateSnapshot);
+router.post('/projects/:id/snapshots', authenticateToken, handleCreateSnapshot);
 
 router.post('/projects/:id/rollback', authenticateToken, requirePermission('project:edit'), (req, res) => {
   try {

@@ -40,6 +40,21 @@ class SnapshotService {
       } catch (e) {}
     }
 
+    const reviewPath = path.join(projectFullPath, '_review.md');
+    if (fs.existsSync(reviewPath)) {
+      try {
+        fs.copyFileSync(reviewPath, path.join(snapDir, '_review.md'));
+      } catch (e) {}
+    }
+
+    let deliverableCount = 0;
+    const delivDir = path.join(projectFullPath, '05_DELIVERABLES');
+    if (fs.existsSync(delivDir)) {
+      try {
+        deliverableCount = fs.readdirSync(delivDir).filter(f => !f.startsWith('.')).length;
+      } catch (e) {}
+    }
+
     const meta = {
       id: snapId,
       timestamp: new Date().toISOString(),
@@ -47,6 +62,7 @@ class SnapshotService {
       actor,
       revision: currentRevision,
       status: currentStatus,
+      deliverableCount,
       note: note || `Snapshot captured during ${trigger}`
     };
 
@@ -106,6 +122,12 @@ class SnapshotService {
       fs.copyFileSync(snapCopy, path.join(targetCopyDir, 'COPY.md'));
     }
 
+    // 4. Restore _review.md
+    const snapReview = path.join(targetSnapDir, '_review.md');
+    if (fs.existsSync(snapReview)) {
+      fs.copyFileSync(snapReview, path.join(projectFullPath, '_review.md'));
+    }
+
     // Read restored meta
     let targetMeta = { revision: 1 };
     const metaPath = path.join(targetSnapDir, 'meta.json');
@@ -141,6 +163,38 @@ class SnapshotService {
       restoredSnapshot: targetMeta,
       message: `Project successfully restored to snapshot ${snapshotId}`
     };
+  }
+
+  getSnapshotDetails(projectFullPath, snapshotId) {
+    if (!fs.existsSync(projectFullPath)) return null;
+    const snapDir = path.join(this.getSnapshotsDir(projectFullPath), snapshotId);
+    if (!fs.existsSync(snapDir)) return null;
+
+    let meta = null;
+    const metaPath = path.join(snapDir, 'meta.json');
+    if (fs.existsSync(metaPath)) {
+      try { meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')); } catch (e) {}
+    }
+
+    let readme = '';
+    const readmePath = path.join(snapDir, 'README.md');
+    if (fs.existsSync(readmePath)) {
+      try { readme = fs.readFileSync(readmePath, 'utf8'); } catch (e) {}
+    }
+
+    let copy = '';
+    const copyPath = path.join(snapDir, 'COPY.md');
+    if (fs.existsSync(copyPath)) {
+      try { copy = fs.readFileSync(copyPath, 'utf8'); } catch (e) {}
+    }
+
+    let review = '';
+    const reviewPath = path.join(snapDir, '_review.md');
+    if (fs.existsSync(reviewPath)) {
+      try { review = fs.readFileSync(reviewPath, 'utf8'); } catch (e) {}
+    }
+
+    return { meta, readme, copy, review };
   }
 }
 
