@@ -60,13 +60,9 @@
   <!-- Standard Canonical Atelier Header -->
   <div class="view-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Clients/</span>
-        <span class="tag-meta">{clients.length} Client Profiles &amp; Brand Swatches</span>
-      </div>
-      <h1 class="view-title">Clients &amp; Brand Hub</h1>
+      <h1 class="view-title">Clients</h1>
       <p class="view-subtitle">
-        Manage your freelance client profiles, brand color swatches, contact info, and billing rates.
+        Manage client profiles, brand color swatches, contact info, and billing rates.
       </p>
     </div>
 

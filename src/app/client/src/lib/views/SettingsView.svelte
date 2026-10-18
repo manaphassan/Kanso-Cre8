@@ -11,18 +11,14 @@
 <div class="settings-view-container">
   <div class="view-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Settings/</span>
-        <span class="tag-meta">Atelier Environment &amp; Storage · Zero SQL</span>
-      </div>
-      <h1 class="view-title">Studio Settings</h1>
-      <p class="view-subtitle">Precision controls for designer identity, visual themes, vault storage, and studio preferences.</p>
+      <h1 class="view-title">Settings</h1>
+      <p class="view-subtitle">Designer identity, visual themes, vault storage, and studio preferences.</p>
     </div>
 
     <div class="header-actions">
       <div class="sync-status-pill">
         <span class="status-dot"></span>
-        <span>Vault Synced · Zero SQL</span>
+        <span>Vault Synced</span>
       </div>
     </div>
   </div>
@@ -89,20 +85,6 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-  }
-  .header-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-  }
-  .tag-badge {
-    font-weight: 700;
-    color: var(--kanso-accent);
-    font-family: monospace;
-  }
-  .tag-meta {
-    color: var(--kanso-text-muted);
   }
   .view-title {
     margin: 0;

@@ -115,10 +115,6 @@
   <!-- View Header & Controls -->
   <div class="view-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Projects/</span>
-        <span class="tag-meta">Active Vaults</span>
-      </div>
       <h1 class="view-title">Projects</h1>
       <p class="view-subtitle">Coordinate creative campaigns, Kanban pipelines, and production schedules</p>
     </div>
@@ -331,9 +327,6 @@
   .projects-container { display: flex; flex-direction: column; gap: 16px; width: 100%; flex: 1; min-height: 0; }
   .view-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
   .header-titles { display: flex; flex-direction: column; gap: 4px; }
-  .header-tag { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; }
-  .tag-badge { color: var(--kanso-accent); font-family: var(--kanso-font-mono); }
-  .tag-meta { color: var(--kanso-text-muted); }
   .view-title { margin: 0; font-size: 24px; font-weight: 700; color: var(--kanso-text-primary); }
   .view-subtitle { margin: 0; font-size: 13px; color: var(--kanso-text-muted); }
   .view-controls-wrap { display: flex; align-items: center; gap: 10px; }

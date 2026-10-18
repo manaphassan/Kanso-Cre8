@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { appState } from '$lib/stores/appState.svelte';
-  import type { ThemeName } from '$lib/types';
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { settingsStore } from '$lib/stores/settingsStore.svelte';
@@ -23,99 +22,8 @@
 
   let query = $state<string>('');
   let selectedIndex = $state<number>(0);
-  let activeFilter = $state<'all' | 'themes' | 'actions' | 'swatches' | 'projects' | 'nav'>('all');
+  let activeFilter = $state<'all' | 'nav' | 'actions' | 'projects'>('all');
   let inputRef: HTMLInputElement | null = $state(null);
-
-  // Canonical Studio Themes for Quick Switcher Strip & Palette
-  const THEME_OPTIONS: Array<{
-    id: ThemeName;
-    name: string;
-    label: string;
-    sublabel: string;
-    swatchBg: string;
-    swatchBorder: string;
-    swatchAccent: string;
-  }> = [
-    {
-      id: 'dark',
-      name: 'Obsidian',
-      label: 'Obsidian Dark',
-      sublabel: 'Vorxs Olive Obsidian',
-      swatchBg: '#151813',
-      swatchBorder: '#272F22',
-      swatchAccent: '#DE694B'
-    },
-    {
-      id: 'light',
-      name: 'Stone',
-      label: 'Stone Paper',
-      sublabel: 'Vorxs Stone Paper',
-      swatchBg: '#ECE8DF',
-      swatchBorder: '#D8D3C5',
-      swatchAccent: '#DE694B'
-    },
-    {
-      id: 'oceanic',
-      name: 'Kai-Zen',
-      label: 'Kai-Zen Blue',
-      sublabel: 'Oceanic Cerulean',
-      swatchBg: '#064169',
-      swatchBorder: '#0F5485',
-      swatchAccent: '#21A8C3'
-    },
-    {
-      id: 'oceanic-light',
-      name: 'Marina',
-      label: 'Marina Light',
-      sublabel: 'Kai-Zen Daylight',
-      swatchBg: '#F0F4F8',
-      swatchBorder: '#CBD5E1',
-      swatchAccent: '#21A8C3'
-    },
-    {
-      id: 'eink',
-      name: 'E-Ink',
-      label: 'Paperlike E-Ink',
-      sublabel: 'High-Contrast Monochrome',
-      swatchBg: '#FFFFFF',
-      swatchBorder: '#000000',
-      swatchAccent: '#000000'
-    },
-    {
-      id: 'neumorphic',
-      name: 'Soft Clay',
-      label: 'Neumorphic Clay',
-      sublabel: 'Tactile Soft UI Light',
-      swatchBg: '#E0E5EC',
-      swatchBorder: '#CBD5E1',
-      swatchAccent: '#3B82F6'
-    },
-    {
-      id: 'neumorphic-dark',
-      name: 'Soft Obsidian',
-      label: 'Neumorphic Obsidian',
-      sublabel: 'Tactile Soft UI Dark',
-      swatchBg: '#1E2026',
-      swatchBorder: '#333742',
-      swatchAccent: '#38BDF8'
-    }
-  ];
-
-  // Brand Palette Swatches for 1-Click Copy (Canonical Brand Tokens + Kanso Tokens)
-  const BRAND_PALETTES = [
-    { type: 'token' as const, name: 'Acme Ocean Blue', code: '#0284C7', brand: 'ACME', description: 'Acme Corp Brand Primary' },
-    { type: 'token' as const, name: 'Acme Deep Sky', code: '#0369A1', brand: 'ACME', description: 'Acme Corp Deep Sky' },
-    { type: 'token' as const, name: 'Acme Electric Cyan', code: '#38BDF8', brand: 'ACME', description: 'Acme Corp Active Accent' },
-    { type: 'token' as const, name: 'Nexus Purple Haze', code: '#8B5CF6', brand: 'NEX', description: 'Nexus Studio Brand Primary' },
-    { type: 'token' as const, name: 'Nexus Deep Violet', code: '#6D28D9', brand: 'NEX', description: 'Nexus Studio Deep Violet' },
-    { type: 'token' as const, name: 'Nexus Electric Glow', code: '#A855F7', brand: 'NEX', description: 'Nexus Studio Vivid Accent' },
-    { type: 'token' as const, name: 'Lumina Emerald Mint', code: '#10B981', brand: 'LUM', description: 'Lumina Labs Brand Primary' },
-    { type: 'token' as const, name: 'Lumina Forest Deep', code: '#047857', brand: 'LUM', description: 'Lumina Labs Deep Forest' },
-    { type: 'token' as const, name: 'Lumina Amber Gold', code: '#F59E0B', brand: 'LUM', description: 'Lumina Labs Warm Accent' },
-    { type: 'token' as const, name: 'Kanso Electric Sky', code: '#38BDF8', brand: 'KANSO', description: 'Studio CTA & Active Focus' },
-    { type: 'token' as const, name: 'Kanso Studio Obsidian', code: '#09090B', brand: 'KANSO', description: 'Pure Zen Canvas Dark' },
-    { type: 'token' as const, name: 'Kanso Surface Panel', code: '#18181B', brand: 'KANSO', description: 'Studio Card Surface' },
-  ];
 
   interface PaletteAction {
     type: 'action' | 'nav' | 'timer' | 'radio';
@@ -295,98 +203,7 @@
       execute: () => radioService.toggle()
     },
 
-    // Studio Theme Switching (Kai-Zen / Dark / Light / E-Ink)
-    {
-      type: 'action',
-      id: 'theme-oceanic',
-      label: 'Switch Theme: Kai-Zen (海禅 — Oceanic Cerulean)',
-      sublabel: 'Deep Ocean #064169 with vibrant Cerulean #21A8C3 & Poppins typography',
-      icon: 'sparkles',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('oceanic');
-        appState.addToast('Switched to Kai-Zen (海禅 Oceanic Zen)', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-oceanic-light',
-      label: 'Switch Theme: Kai-Zen Daylight (Marina White)',
-      sublabel: 'Light blue-grey #F0F4F8 with Cerulean #21A8C3 & Ocean Navy titles',
-      icon: 'sparkles',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('oceanic-light');
-        appState.addToast('Switched to Kai-Zen Daylight', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-dark',
-      label: 'Switch Theme: Vorxs Olive Obsidian (Dark)',
-      sublabel: 'Organic olive obsidian canvas with tactical terracotta pops',
-      icon: 'colorPalette',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('dark');
-        appState.addToast('Switched to Vorxs Dark Mode', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-light',
-      label: 'Switch Theme: Vorxs Stone Paper (Light)',
-      sublabel: 'Scandinavian raw stone paper canvas with deep charcoal ink',
-      icon: 'colorPalette',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('light');
-        appState.addToast('Switched to Vorxs Light Mode', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-eink',
-      label: 'Switch Theme: Paperlike E-Ink (ampresent High Contrast)',
-      sublabel: 'Pure white #FFFFFF canvas, pure #000000 text, zero color jitter for E-Ink monitors',
-      icon: 'colorPalette',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('eink');
-        appState.addToast('Switched to Paperlike E-Ink Mode', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-neumorphic',
-      label: 'Switch Theme: Neumorphic Clay (Soft UI Light)',
-      sublabel: 'Tactile extruded surfaces in soft alabaster clay with electric azure CTAs',
-      icon: 'colorPalette',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('neumorphic');
-        appState.addToast('Switched to Neumorphic Clay Mode', 'success');
-      }
-    },
-    {
-      type: 'action',
-      id: 'theme-neumorphic-dark',
-      label: 'Switch Theme: Neumorphic Obsidian (Soft UI Dark)',
-      sublabel: 'Deep charcoal slate with ambient extruded shadows and electric sky glints',
-      icon: 'colorPalette',
-      badge: 'Theme',
-      category: 'Themes',
-      execute: () => {
-        appState.setTheme('neumorphic-dark');
-        appState.addToast('Switched to Neumorphic Obsidian Mode', 'success');
-      }
-    },
+
 
     // Canonical 6-Item Navigation (⌘1 to ⌘6)
     {
@@ -499,22 +316,13 @@
     }
   }
 
-  async function copyToken(code: string, name: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      appState.addToast(`Copied ${code} (${name}) to clipboard`, 'success');
-    } catch (err) {
-      appState.addToast(`Code: ${code}`, 'info');
-    }
-  }
-
-  // Combined Search Results with Raycast Category Filtering
+  // Combined Search Results with Category Filtering (Navigate, Actions, Projects)
   const searchResults = $derived.by(() => {
     const q = query.trim().toLowerCase();
     const rawQ = query.trim();
 
     // Quick BuJo Task Creator (when typing any text)
-    const bujoItem = rawQ ? [{
+    const bujoItem = (rawQ && (activeFilter === 'all' || activeFilter === 'actions')) ? [{
       type: 'bujo' as const,
       id: 'bujo-quick-add',
       label: `Add to Today's BuJo: "${rawQ}"`,
@@ -530,7 +338,7 @@
           if (!q) return activeFilter === 'projects';
           const text = `${p.jobId || ''} ${p.title || ''} ${p.designer || ''} ${p.brand || ''} ${(p.tags || []).join(' ')} ${p.status || ''}`.toLowerCase();
           return text.includes(q);
-        }).slice(0, 6).map(p => ({
+        }).slice(0, 8).map(p => ({
           type: 'project' as const,
           id: p.id,
           jobId: p.jobId || p.id,
@@ -544,25 +352,11 @@
         }))
       : [];
 
-    // Filter Tokens & Brand Colors
-    const swatches = (activeFilter === 'all' || activeFilter === 'swatches')
-      ? BRAND_PALETTES.filter(t => {
-          if (!q) return activeFilter === 'swatches';
-          return t.name.toLowerCase().includes(q) || t.code.toLowerCase().includes(q) || t.brand.toLowerCase().includes(q) || t.description.toLowerCase().includes(q);
-        }).slice(0, 6).map(t => ({
-          ...t,
-          category: 'Brand Swatches',
-          badge: t.code,
-          execute: () => copyToken(t.code, t.name)
-        }))
-      : [];
-
-    // Filter Actions, Themes & Navigation
+    // Filter Actions & Navigation
     const actions = STUDIO_ACTIONS.filter(a => {
-      if (activeFilter === 'themes') return a.category === 'Themes';
       if (activeFilter === 'nav') return a.type === 'nav';
-      if (activeFilter === 'actions') return a.type !== 'nav' && a.category !== 'Themes';
-      if (activeFilter === 'swatches' || activeFilter === 'projects') return false;
+      if (activeFilter === 'actions') return a.type !== 'nav';
+      if (activeFilter === 'projects') return false;
 
       if (!q) return true; // Show all by default when query is empty
       return a.label.toLowerCase().includes(q) ||
@@ -571,11 +365,11 @@
              (a.badge && a.badge.toLowerCase().includes(q));
     });
 
-    // Merge in natural Raycast hierarchy
+    // Merge in natural hierarchy
     if (rawQ) {
-      return [...bujoItem, ...projects, ...swatches, ...actions];
+      return [...bujoItem, ...projects, ...actions];
     }
-    return [...swatches, ...actions, ...projects];
+    return [...actions, ...projects];
   });
 
   function handleSelect(item: any) {
@@ -603,7 +397,7 @@
     } else if (e.key === 'Tab') {
       e.preventDefault();
       // Cycle filters
-      const filters: Array<'all' | 'themes' | 'actions' | 'swatches' | 'projects' | 'nav'> = ['all', 'themes', 'actions', 'swatches', 'projects', 'nav'];
+      const filters: Array<'all' | 'nav' | 'actions' | 'projects'> = ['all', 'nav', 'actions', 'projects'];
       const nextIdx = (filters.indexOf(activeFilter) + 1) % filters.length;
       activeFilter = filters[nextIdx];
       selectedIndex = 0;
@@ -651,7 +445,7 @@
           bind:this={inputRef}
           type="text" 
           class="palette-input" 
-          placeholder="Type a task, color token, project, or command (⌘1-9)..." 
+          placeholder="Type a command, project, or task (⌘1-6)..." 
           bind:value={query}
         />
         {#if query}
@@ -660,38 +454,6 @@
           </button>
         {/if}
         <span class="esc-badge" onclick={closeModal}>ESC</span>
-      </div>
-
-      <!-- Quick Theme Switcher Strip -->
-      <div class="quick-theme-strip" role="radiogroup" aria-label="Quick Theme Switcher">
-        <span class="quick-theme-label">Theme:</span>
-        <div class="quick-theme-chips">
-          {#each THEME_OPTIONS as t}
-            <button
-              type="button"
-              class="quick-theme-btn"
-              class:active={appState.theme === t.id}
-              role="radio"
-              aria-checked={appState.theme === t.id}
-              title="{t.label} ({t.sublabel})"
-              onclick={() => {
-                appState.setTheme(t.id);
-                appState.addToast(`Switched to ${t.label}`, 'success');
-              }}
-            >
-              <span 
-                class="theme-preview-dot" 
-                style="background: {t.swatchBg}; border-color: {t.swatchBorder};"
-              >
-                <span class="theme-dot-accent" style="background: {t.swatchAccent};"></span>
-              </span>
-              <span class="theme-name">{t.name}</span>
-              {#if appState.theme === t.id}
-                <span class="active-check"><Icon name="check" size={12} /></span>
-              {/if}
-            </button>
-          {/each}
-        </div>
       </div>
 
       <!-- Category Filter Pills -->
@@ -705,10 +467,10 @@
         </button>
         <button
           class="filter-chip"
-          class:active={activeFilter === 'themes'}
-          onclick={() => { activeFilter = 'themes'; selectedIndex = 0; }}
+          class:active={activeFilter === 'nav'}
+          onclick={() => { activeFilter = 'nav'; selectedIndex = 0; }}
         >
-          Themes
+          Navigate
         </button>
         <button
           class="filter-chip"
@@ -719,24 +481,10 @@
         </button>
         <button
           class="filter-chip"
-          class:active={activeFilter === 'swatches'}
-          onclick={() => { activeFilter = 'swatches'; selectedIndex = 0; }}
-        >
-          Swatches
-        </button>
-        <button
-          class="filter-chip"
           class:active={activeFilter === 'projects'}
           onclick={() => { activeFilter = 'projects'; selectedIndex = 0; }}
         >
           Projects
-        </button>
-        <button
-          class="filter-chip"
-          class:active={activeFilter === 'nav'}
-          onclick={() => { activeFilter = 'nav'; selectedIndex = 0; }}
-        >
-          Nav (Ctrl+1..6)
         </button>
       </div>
 
@@ -798,20 +546,7 @@
                     <Icon name="arrowRight" size={11} />
                   </span>
 
-                {:else if item.type === 'token'}
-                  <!-- Brand Color Swatch 1-Click Copy -->
-                  <div class="color-swatch-box" style="background: {item.code};"></div>
-                  <div class="result-info">
-                    <div class="result-title-row">
-                      <span class="item-title">{item.name}</span>
-                      <code class="hex-badge">{item.code}</code>
-                    </div>
-                    <div class="result-sub">{item.description}</div>
-                  </div>
-                  <span class="action-shortcut">
-                    <span>Copy HEX</span>
-                    <Icon name="copy" size={11} />
-                  </span>
+
 
                 {:else}
                   <!-- General / Nav / Timer / Radio Action -->
@@ -968,89 +703,7 @@
     letter-spacing: 0.05em;
   }
 
-  /* Quick Theme Switcher Strip */
-  .quick-theme-strip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 18px;
-    background: var(--kanso-canvas);
-    border-bottom: 1px solid var(--kanso-border);
-    font-size: 11.5px;
-    overflow-x: auto;
-  }
 
-  .quick-theme-label {
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--kanso-text-muted);
-    flex-shrink: 0;
-  }
-
-  .quick-theme-chips {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: nowrap;
-  }
-
-  .quick-theme-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 9px;
-    border-radius: 6px;
-    background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border);
-    color: var(--kanso-text-primary);
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.12s ease;
-    white-space: nowrap;
-  }
-
-  .quick-theme-btn:hover {
-    background: var(--kanso-surface-hover);
-    border-color: rgba(56, 189, 248, 0.35);
-  }
-
-  .quick-theme-btn.active {
-    background: var(--kanso-surface-hover);
-    border-color: var(--kanso-accent);
-    box-shadow: 0 0 0 1px var(--kanso-accent);
-  }
-
-  .theme-preview-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-
-  .theme-dot-accent {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-  }
-
-  .theme-name {
-    font-size: 11px;
-  }
-
-  .active-check {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--kanso-accent);
-    line-height: 1;
-  }
 
   /* Category Filter Pills */
   .filter-pill-bar {
@@ -1136,15 +789,6 @@
     border-color: rgba(56, 189, 248, 0.3);
   }
 
-  .color-swatch-box {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  }
-
   .result-info {
     flex: 1;
     display: flex;
@@ -1170,7 +814,7 @@
   }
 
   .badge-brand.brand-acme { background: var(--kanso-accent); }
-  .badge-brand.brand-nex  { background: var(--kanso-brand-nex, #8B5CF6); }
+  .badge-brand.brand-nex  { background: var(--kanso-brand-nex, var(--kanso-accent)); }
   .badge-brand.brand-lum  { background: var(--kanso-success); }
 
   .job-id-tag {
@@ -1191,16 +835,6 @@
 
   .item-title.font-highlight {
     color: var(--kanso-accent);
-  }
-
-  .hex-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 6px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 4px;
-    color: var(--kanso-accent);
-    font-family: var(--kanso-font-mono);
   }
 
   .result-sub {
@@ -1344,31 +978,10 @@
   }
 
   :global([data-theme="eink"]) .palette-search-header,
-  :global([data-theme="eink"]) .quick-theme-strip,
   :global([data-theme="eink"]) .filter-pill-bar,
   :global([data-theme="eink"]) .palette-footer {
     background: var(--kanso-surface) !important;
     border-color: var(--kanso-border) !important;
-  }
-
-  :global([data-theme="eink"]) .quick-theme-btn {
-    background: var(--kanso-surface) !important;
-    border: 1px solid var(--kanso-border) !important;
-    color: var(--kanso-text-primary) !important;
-  }
-
-  :global([data-theme="eink"]) .quick-theme-btn.active {
-    background: var(--kanso-text-primary) !important;
-    color: var(--kanso-surface) !important;
-    border-color: var(--kanso-text-primary) !important;
-  }
-
-  :global([data-theme="eink"]) .quick-theme-btn.active .active-check {
-    color: var(--kanso-surface) !important;
-  }
-
-  :global([data-theme="eink"]) .quick-theme-btn.active .theme-name {
-    color: var(--kanso-surface) !important;
   }
 
   :global([data-theme="eink"]) .filter-chip {

@@ -151,12 +151,8 @@
   <!-- View Header -->
   <div class="view-header">
     <div class="header-titles">
-      <div class="header-tag">
-        <span class="tag-badge">_Copy/</span>
-        <span class="tag-meta">Campaign Copywriting Desk &amp; Markdown Sync</span>
-      </div>
-      <h1 class="view-title">Copywriting Studio</h1>
-      <p class="view-subtitle">Live advertising copy matrix, social platform character limit validators, and <code>03_COPY/COPY.md</code> markdown sync.</p>
+      <h1 class="view-title">Copywriting</h1>
+      <p class="view-subtitle">Live copy matrix, platform limit validators, and <code>03_COPY/COPY.md</code> sync.</p>
     </div>
     <div class="header-actions">
       <button class="ai-launch-btn" onclick={() => showAiModal = true}>
