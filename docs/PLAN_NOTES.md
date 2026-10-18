@@ -51,3 +51,11 @@
 - 2026-10-18 | src/app/server/services/ExportService.js, src/app/client/src/lib/components/features/HandoverPackageModal.svelte, HandoverManifestModal.svelte | Phase B3: Automated client handover package builder with live DELIVERY.md preview, SHA-256 cryptographic checksums verification table, HTML colophon summary sheet, and Project Inspector integration.
 - 2026-10-18 | src/app/server/services/ExportService.js, src/app/server/routes/system.js, src/app/client/src/lib/components/settings/VaultHealthInspector.svelte | Phase B4: Atelier "Leave With Your Data" vault exporter streaming the 6 canonical compartments into an unencumbered ZIP archive with top-level VAULT_MANIFEST.md guaranteeing zero vendor lock-in.
 
+## Track C - Demo Data & Structure Repair (Post-0.8.0)
+- 2026-10-18 | src/app/server/services/DemoDataService.js, src/app/server/routes/vault.js, src/app/client/src/lib/components/settings/VaultDemoData.svelte | Phase C1: Optional demo data loader and purger with typed confirmation, keeping fresh vaults clean by default.
+- 2026-10-18 | src/app/server/services/VaultPathService.js, src/app/client/src/lib/components/settings/VaultRepairBanner.svelte | Phase C2: Automated vault structure repair and status monitoring.
+
+## Track D - Vault Safety & Lifecycle (Post-0.8.0)
+- 2026-10-18 | src/app/server/services/VaultPathService.js, src/app/client/src/lib/components/vault/VaultStartupGate.svelte, VaultStartupActions.svelte | Phase D1: Startup vault status probe and relocation gate preventing silent folder creation on disconnected or absent storage.
+- 2026-10-18 | src/app/server/services/VaultPathService.js, src/app/client/src/lib/components/settings/VaultResetDangerZone.svelte, VaultResetModal.svelte | Phase D2: Safe archive-first vault structure reset moving canonical compartments to _Archive/reset-<timestamp>/ with folder-name typed confirmation and preservation of custom user files.
+
