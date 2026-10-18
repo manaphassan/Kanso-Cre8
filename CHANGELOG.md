@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-10-18
+
+### Added
+- Multi-check governance auditor (`verify-kanso.ps1`) with 16 automated architectural, security, brand, and modularity checks.
+- Unified Master Design System documentation in `docs/DESIGN.md` consolidating design tokens, typography, icon map, and accessibility rules.
+- Consolidated multi-platform packaging pipeline (`scripts/build-platforms.ps1`) targeting Windows (Tauri v2), Linux standalone, and Android companion.
+- Dedicated Express sub-routers (`workspace`, `projects`, `clients`, `finance`, `journal`, `notes`, `radio`, `team`, `system`) replacing monolithic API structure.
+- Modular component architectures for Dashboard, ProjectDetail, Journal, Settings, and CassetteDeck with sub-400-line components.
+
+### Changed
+- Standardized Windows desktop shell exclusively on Tauri v2 (`src/app/src-tauri`), deprecating legacy launchers.
+- Replaced all Unicode emojis across the UI with semantic Lucide icon tokens and standardized design tokens (`var(--kanso-*)`).
+- Hardened vault storage engine with strict path traversal validation, symlink defense, and scoped payload limits.
+- Streamlined repository documentation and removed redundant legacy specifications.
+
+### Security
+- Added automated pre-commit scanning for real client names, sensitive secrets, binary commits, and unauthorized design tokens.
+
 ## [0.7.0] - 2026-09-16
 
 ### Added

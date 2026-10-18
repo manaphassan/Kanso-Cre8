@@ -21,7 +21,7 @@ router.get('/status', (req, res) => {
   res.json({
     success: true,
     name: 'Kanso Cre8',
-    version: config.VERSION || '0.7.0',
+    version: config.VERSION || '0.8.0',
     platform: process.platform,
     uptime: process.uptime()
   });

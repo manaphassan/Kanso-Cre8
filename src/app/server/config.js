@@ -142,6 +142,17 @@ if (!resolvedSecret && process.env.NODE_ENV === 'production') {
   throw new Error('[Security Error] Missing server secret in production environment.');
 }
 
+let appVersion = '0.8.0';
+try {
+  const pkg = require('./package.json');
+  if (pkg && pkg.version) appVersion = pkg.version;
+} catch (e) {
+  try {
+    const pkgRoot = require('../package.json');
+    if (pkgRoot && pkgRoot.version) appVersion = pkgRoot.version;
+  } catch (e2) {}
+}
+
 module.exports = {
   PORT: process.env.PORT || 4000,
   HOST: process.env.HOST || '127.0.0.1',
@@ -150,7 +161,7 @@ module.exports = {
   DEFAULT_NAS_PATH: process.platform === 'win32' ? uncNasPath : linuxNasPath,
   FALLBACK_LOCAL_WORKSPACE: fallbackLocalWorkspace,
   APP_TITLE: 'Kanso Cre8 - The Mindful Creative Vault',
-  VERSION: '0.7.0',
+  VERSION: appVersion,
   getMachineConfigPath,
   loadMachineConfig,
   saveMachineConfig

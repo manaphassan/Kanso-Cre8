@@ -1,7 +1,7 @@
 # ==============================================================================
 # Kanso Cre8 — Android Companion App Build Pipeline
 # Uses native Android SDK 35 + JDK 21 + Build-Tools 35.0.0
-# Outputs: dist/android/kanso-cre8-v0.7.0-companion.apk
+# Outputs: dist/android/kanso-cre8-v0.8.0-companion.apk
 # ==============================================================================
 
 param(
@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = (Get-Item "$PSScriptRoot\..").FullName
 $packageJsonPath = Join-Path $repoRoot "src\app\package.json"
-$appVersion = "0.7.0"
+$appVersion = "0.8.0"
 if (Test-Path $packageJsonPath) {
     try {
         $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json

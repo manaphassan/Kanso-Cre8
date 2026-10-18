@@ -1451,7 +1451,7 @@
           <div class="telemetry-detail-list">
             <div class="telemetry-row">
               <span class="tel-label">Server Version</span>
-              <b>Kanso Cre8 Web v{systemStatus?.version || '0.7.0'} ({systemStatus?.platform || 'x64'})</b>
+              <b>Kanso Cre8 Web v{systemStatus?.version || '0.8.0'} ({systemStatus?.platform || 'x64'})</b>
             </div>
             <div class="telemetry-row">
               <span class="tel-label">Client Framework</span>
