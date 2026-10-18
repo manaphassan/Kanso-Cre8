@@ -11,6 +11,7 @@ const AuditService = require('../services/AuditService');
 const WebhookService = require('../services/WebhookService');
 const CommentService = require('../services/CommentService');
 const RadioMetadataService = require('../services/RadioMetadataService');
+const VaultHealthService = require('../services/VaultHealthService');
 const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 router.get('/events', (req, res) => {
@@ -250,6 +251,27 @@ router.post('/system/sync-conflicts/resolve', (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/system/vault-health', (req, res) => {
+  try {
+    const report = VaultHealthService.getVaultHealthReport();
+    res.json({ success: true, report });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/system/vault-health/clean-conflicts', (req, res) => {
+  try {
+    const actor = (req.user && req.user.name) || 'Designer';
+    const resolution = req.body?.resolution || 'keep_local';
+    const result = VaultHealthService.cleanAllSyncConflicts(resolution, actor);
+    SseService.broadcast('workspace:updated', { reason: 'conflicts_cleaned' });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

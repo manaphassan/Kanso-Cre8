@@ -850,6 +850,18 @@ export class ApiClient {
     });
   }
 
+  // ─── Vault Health & Link Integrity Inspector ───
+  static getVaultHealth(): Promise<{ success: boolean; report: any }> {
+    return this.request('/system/vault-health');
+  }
+
+  static cleanVaultSyncConflicts(resolution = 'keep_local'): Promise<{ success: boolean; resolvedCount: number; totalCount: number; details: any[] }> {
+    return this.request('/system/vault-health/clean-conflicts', {
+      method: 'POST',
+      body: JSON.stringify({ resolution })
+    });
+  }
+
   // ─── Machine Tier Live Chronometer ───
   static getTimerState(): Promise<{ success: boolean; timer: any }> {
     return this.request('/system/timer');
