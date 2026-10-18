@@ -73,6 +73,25 @@ const handleExport = (req, res) => {
 router.get('/projects/:id/export', handleExport);
 router.get('/projects/:id/export/zip', handleExport);
 
+router.get('/projects/:id/export/preview', authenticateToken, (req, res) => {
+  try {
+    const project = WorkspaceService.getProjectById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found.' });
+    let selectedFiles = req.query.files ? req.query.files.split(',').map(s => s.trim()).filter(Boolean) : null;
+    const preview = ExportService.getHandoverPreview(project.fullPath, req.params.id, {
+      includeWip: req.query.wip === 'true',
+      includeBrief: req.query.brief !== 'false',
+      includeCopy: req.query.copy !== 'false',
+      includeManifest: req.query.manifest !== 'false',
+      selectedFiles
+    });
+    if (!preview) return res.status(404).json({ error: 'Unable to generate handover preview.' });
+    res.json({ success: true, preview });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.delete('/projects/:id', authenticateToken, (req, res) => {
   try {
     const userRole = (req.user ? req.user.role : '').toLowerCase();

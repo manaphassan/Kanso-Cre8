@@ -64,67 +64,12 @@ class ExportService {
 
     archive.pipe(res);
 
-    const assetItems = [];
+    const assetItems = this.collectProjectAssets(projectFullPath, options);
     const addedFiles = [];
 
-    // 1. Deliverables (Final Outputs)
-    const delivDirs = ['05_DELIVERABLES', '05_Deliverables', '04_Production', 'Production', '04_Final_Exports'];
-    for (const dir of delivDirs) {
-      const p = path.join(projectFullPath, dir);
-      if (fs.existsSync(p)) {
-        this.addDirectoryToArchive(archive, p, 'Deliverables', addedFiles, assetItems, options.selectedFiles);
-        break;
-      }
-    }
-
-    // 2. Mockups / WIP (optional)
-    if (options.includeWip) {
-      const wipDirs = ['04_WORK_IN_PROGRESS', '04_WIP', '02_Artwork_Mockup', 'Artwork Mockup', 'Mockup'];
-      for (const dir of wipDirs) {
-        const p = path.join(projectFullPath, dir);
-        if (fs.existsSync(p)) {
-          this.addDirectoryToArchive(archive, p, 'Mockups', addedFiles, assetItems, options.selectedFiles);
-          break;
-        }
-      }
-    }
-
-    // 3. Copywriting (optional, default true)
-    if (options.includeCopy !== false) {
-      const copyFile = path.join(projectFullPath, '03_COPY', 'COPY.md');
-      if (fs.existsSync(copyFile)) {
-        archive.file(copyFile, { name: 'Copywriting/COPY.md' });
-        addedFiles.push('Copywriting/COPY.md');
-        const hash = this.computeFileSha256(copyFile);
-        const stat = fs.statSync(copyFile);
-        assetItems.push({
-          relPath: 'Copywriting/COPY.md',
-          filename: 'COPY.md',
-          format: 'Markdown',
-          sizeBytes: stat.size,
-          sizeFormatted: this.formatBytes(stat.size),
-          sha256: hash
-        });
-      }
-    }
-
-    // 4. Project Brief (optional, default true)
-    if (options.includeBrief !== false) {
-      const readmeFile = path.join(projectFullPath, 'README.md');
-      if (fs.existsSync(readmeFile)) {
-        archive.file(readmeFile, { name: 'Project_Brief_README.md' });
-        addedFiles.push('Project_Brief_README.md');
-        const hash = this.computeFileSha256(readmeFile);
-        const stat = fs.statSync(readmeFile);
-        assetItems.push({
-          relPath: 'Project_Brief_README.md',
-          filename: 'README.md',
-          format: 'Markdown',
-          sizeBytes: stat.size,
-          sizeFormatted: this.formatBytes(stat.size),
-          sha256: hash
-        });
-      }
+    for (const item of assetItems) {
+      archive.file(item.fullPath, { name: item.relPath });
+      addedFiles.push(item.relPath);
     }
 
     // Load Studio Profile & Client Profile for authentic branding
@@ -173,6 +118,126 @@ class ExportService {
     archive.finalize();
   }
 
+  /**
+   * Collects all project assets to be bundled into the handover package.
+   * @param {string} projectFullPath
+   * @param {object} options
+   * @returns {Array<object>}
+   */
+  static collectProjectAssets(projectFullPath, options = {}) {
+    const assetItems = [];
+    if (!fs.existsSync(projectFullPath)) return assetItems;
+
+    // 1. Deliverables (Final Outputs)
+    const delivDirs = ['05_DELIVERABLES', '05_Deliverables', '04_Production', 'Production', '04_Final_Exports'];
+    for (const dir of delivDirs) {
+      const p = path.join(projectFullPath, dir);
+      if (fs.existsSync(p)) {
+        this.addDirectoryToArchive(null, p, 'Deliverables', null, assetItems, options.selectedFiles);
+        break;
+      }
+    }
+
+    // 2. Mockups / WIP (optional)
+    if (options.includeWip) {
+      const wipDirs = ['04_WORK_IN_PROGRESS', '04_WIP', '02_Artwork_Mockup', 'Artwork Mockup', 'Mockup'];
+      for (const dir of wipDirs) {
+        const p = path.join(projectFullPath, dir);
+        if (fs.existsSync(p)) {
+          this.addDirectoryToArchive(null, p, 'Mockups', null, assetItems, options.selectedFiles);
+          break;
+        }
+      }
+    }
+
+    // 3. Copywriting (optional, default true)
+    if (options.includeCopy !== false) {
+      const copyFile = path.join(projectFullPath, '03_COPY', 'COPY.md');
+      if (fs.existsSync(copyFile)) {
+        const hash = this.computeFileSha256(copyFile);
+        const stat = fs.statSync(copyFile);
+        assetItems.push({
+          fullPath: copyFile,
+          relPath: 'Copywriting/COPY.md',
+          filename: 'COPY.md',
+          format: 'Markdown',
+          sizeBytes: stat.size,
+          sizeFormatted: this.formatBytes(stat.size),
+          sha256: hash
+        });
+      }
+    }
+
+    // 4. Project Brief (optional, default true)
+    if (options.includeBrief !== false) {
+      const readmeFile = path.join(projectFullPath, 'README.md');
+      if (fs.existsSync(readmeFile)) {
+        const hash = this.computeFileSha256(readmeFile);
+        const stat = fs.statSync(readmeFile);
+        assetItems.push({
+          fullPath: readmeFile,
+          relPath: 'Project_Brief_README.md',
+          filename: 'README.md',
+          format: 'Markdown',
+          sizeBytes: stat.size,
+          sizeFormatted: this.formatBytes(stat.size),
+          sha256: hash
+        });
+      }
+    }
+
+    return assetItems;
+  }
+
+  /**
+   * Generates a preview manifest data structure without streaming a ZIP.
+   * @param {string} projectFullPath 
+   * @param {string} projectId 
+   * @param {object} options 
+   * @returns {object|null}
+   */
+  static getHandoverPreview(projectFullPath, projectId, options = {}) {
+    if (!fs.existsSync(projectFullPath)) return null;
+
+    const folderName = path.basename(projectFullPath);
+    const { frontmatter } = FrontmatterService.readProjectReadme(projectFullPath);
+    const jobId = frontmatter.job_id || frontmatter.jobId || projectId || 'PROJECT';
+    const assets = this.collectProjectAssets(projectFullPath, options);
+
+    let studioProfile = {};
+    try {
+      studioProfile = TeamService.getStudioProfile() || {};
+    } catch (e) {
+      studioProfile = {};
+    }
+
+    const clientCode = (frontmatter.client || frontmatter.brand || 'ACME').toUpperCase();
+    let clientProfile = null;
+    try {
+      const companies = new CompanyService().loadCompanies();
+      clientProfile = companies.find(c => c.code === clientCode) || null;
+    } catch (e) {
+      clientProfile = null;
+    }
+
+    const totalBytes = assets.reduce((sum, a) => sum + (a.sizeBytes || 0), 0);
+    const deliveryMd = this.generateDeliveryMarkdown(folderName, frontmatter, assets, studioProfile, clientProfile);
+    const htmlSummary = this.generateHtmlSummary(folderName, frontmatter, assets, studioProfile, clientProfile);
+
+    return {
+      jobId,
+      projectTitle: frontmatter.title || folderName,
+      clientCode,
+      clientName: clientProfile?.name || frontmatter.client_name || frontmatter.client || 'Acme Corporation',
+      totalAssets: assets.length,
+      totalSizeBytes: totalBytes,
+      totalSizeFormatted: this.formatBytes(totalBytes),
+      assets: assets.map(({ fullPath, ...rest }) => rest),
+      deliveryMd,
+      htmlSummary
+    };
+  }
+
   static addDirectoryToArchive(archive, dirPath, prefix, addedFiles, assetItems, selectedFiles = null) {
     const walk = (current, relPrefix) => {
       const entries = fs.readdirSync(current, { withFileTypes: true });
@@ -191,14 +256,19 @@ class ExportService {
             if (!isMatch) continue;
           }
 
-          archive.file(full, { name: rel });
-          addedFiles.push(rel);
+          if (archive) {
+            archive.file(full, { name: rel });
+          }
+          if (addedFiles) {
+            addedFiles.push(rel);
+          }
 
           const stat = fs.statSync(full);
           const ext = path.extname(entry.name).toUpperCase().replace('.', '') || 'BIN';
           const hash = this.computeFileSha256(full);
 
           assetItems.push({
+            fullPath: full,
             relPath: rel,
             filename: entry.name,
             format: ext,
