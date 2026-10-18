@@ -187,7 +187,7 @@ export class VaultService {
     const tasks: ExtractedTask[] = [];
     const lines = markdown.split('\n');
 
-    const taskRegex = /^\s*-\s*\[([ xX])\]\s*#task\s+(.+?)(?:\s+\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s+\u{23EB}\s*(low|normal|high|urgent))?\s*$/;
+    const taskRegex = /^\s*-\s*\[([ xX])\]\s*#task\s+(.+?)(?:\s+\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s+\u{23EB}\s*(low|normal|high|urgent))?\s*$/u;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];

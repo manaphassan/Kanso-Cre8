@@ -141,13 +141,32 @@ class ProjectStore {
     }
   }
 
+  async updateDeliverableStatus(deliverableId: string, status: string) {
+    if (this.currentProject) {
+      try {
+        await ApiClient.submitDecision(this.currentProject.id, {
+          decision: status === 'approved' ? 'approve' : 'request_revision',
+          deliverableId
+        });
+        await this.loadProject(this.currentProject.id);
+      } catch (err: any) {
+        appState.addToast(`Failed to update deliverable status: ${err.message}`, 'error');
+      }
+    }
+  }
+
+
+  async loadProject(id: string) {
+    return this.loadProjectDetail(id);
+  }
+
   async updateProjectStatus(projectId: string, newStatus: string) {
     const project = this.projects.find(p => p.id === projectId || p.jobId === projectId);
     if (!project) return;
     const oldStatus = project.status;
     project.status = newStatus as any;
     try {
-      await ApiClient.updateProject(project.id, { status: newStatus });
+      await ApiClient.updateProject(project.id, { status: newStatus as any });
       appState.addToast(`Project ${project.jobId || project.title} moved to ${newStatus.replace('-', ' ')}`, 'success');
       await this.loadProjects();
     } catch (err: any) {
@@ -169,6 +188,30 @@ class ProjectStore {
       priority: 'all',
       department: 'all'
     };
+  }
+
+  get activeProject(): Project | null {
+    return this.selectedProject;
+  }
+
+  get currentProject(): Project | null {
+    return this.selectedProject;
+  }
+
+  async selectProject(id: string) {
+    return this.loadProject(id);
+  }
+
+  async saveProjectBrief(id: string, briefMarkdown: string) {
+    const res = await ApiClient.updateBrief(id, briefMarkdown);
+    await this.loadProject(id);
+    return res;
+  }
+
+  async saveProjectDirection(id: string, payload: any) {
+    const res = await ApiClient.updateCreativeDirection(id, payload);
+    await this.loadProject(id);
+    return res;
   }
 }
 

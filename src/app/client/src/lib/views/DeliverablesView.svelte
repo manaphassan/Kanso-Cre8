@@ -976,7 +976,6 @@
   <PreflightValidatorModal
     bind:open={showPreflightModal}
     deliverable={preflightTargetDeliverable}
-    projectTitle={preflightTargetDeliverable?.project?.title || preflightTargetDeliverable?.projectTitle}
   />
 
   <!-- Client Handover Package Modal -->
@@ -1070,7 +1069,7 @@
   }
 
   .kpi-pill.active {
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     border-color: var(--kanso-accent);
     color: var(--kanso-accent);
   }
@@ -1179,7 +1178,7 @@
   }
   .mode-btn:hover { color: var(--kanso-text-primary); }
   .mode-btn.active {
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     color: var(--kanso-text-primary);
     border-color: var(--kanso-accent);
   }
@@ -1217,7 +1216,7 @@
     flex-wrap: wrap;
   }
   .group-header:hover {
-    background: var(--kanso-surface-hover));
+    background: var(--kanso-surface-hover);
   }
 
   .group-header-left {
@@ -1251,7 +1250,7 @@
     font-size: 12px;
     font-weight: 800;
     color: var(--kanso-accent);
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -1314,7 +1313,7 @@
     transition: all 0.12s;
   }
   .group-action-btn:hover {
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     color: var(--kanso-accent);
     border-color: var(--kanso-accent);
   }
@@ -1498,7 +1497,7 @@
     font-family: var(--kanso-font-mono);
     font-weight: 700;
     color: var(--kanso-accent);
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -1563,7 +1562,7 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--kanso-accent);
-    background: var(--kanso-accent-muted));
+    background: var(--kanso-accent-muted);
     border: 1px solid rgba(0, 120, 212, 0.2);
     cursor: pointer;
     transition: all 0.12s;
@@ -1594,7 +1593,7 @@
     transition: all 0.12s;
   }
   .tool-icon-btn:hover {
-    background: var(--kanso-surface-hover));
+    background: var(--kanso-surface-hover);
     color: var(--kanso-accent);
     border-color: var(--kanso-accent);
   }
@@ -1637,8 +1636,8 @@
     justify-content: center;
     width: 28px;
     height: 28px;
-    background: var(--kanso-surface-hover));
-    border: 1px solid var(--kanso-border));
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     color: var(--kanso-accent-text);
     cursor: pointer;
@@ -1653,7 +1652,7 @@
   .view-mode-toggle {
     display: flex;
     background: var(--kanso-surface);
-    border: 1px solid var(--kanso-border));
+    border: 1px solid var(--kanso-border);
     border-radius: 6px;
     overflow: hidden;
   }

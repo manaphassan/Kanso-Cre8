@@ -9,6 +9,7 @@ export interface BujoEntry {
   type: 'task' | 'done' | 'migrated' | 'event' | 'note' | 'priority';
   raw: string;
   text: string;
+  content?: string;
   completed?: boolean;
   time?: string;
   tags?: string[];
@@ -19,9 +20,16 @@ export interface DailyNote {
   title: string;
   focusIntentions: string[];
   habits?: string[];
+  reflection?: string;
   entries: BujoEntry[];
   rawMarkdown: string;
   updatedAt: string;
+}
+
+export interface HabitHistory {
+  history: Array<{ date: string; dayName: string; dayNumber: number; habits: string[]; count: number }>;
+  daysCount: number;
+  stats: { totalCompletions: number; currentStreak: number; maxStreak: number; avgPerDay: number };
 }
 
 export interface DailyHabitItem {
@@ -83,6 +91,13 @@ export interface WeeklyTelemetry {
   pendingRevenue: number;
   activeClients: string[];
   dailyCadence?: DailyCadencePoint[];
+  taskCompletionRate?: number;
+  completedTasks?: number;
+  totalTasks?: number;
+  totalHours?: number;
+  avgDailyHours?: number;
+  activeDaysCount?: number;
+  dailyRollup?: Array<{ date: string; hours: number; tasksDone: number; totalTasks: number; hasNote?: boolean; dayOfWeek?: string }>;
 }
 
 export interface MonthlyTelemetry {
@@ -355,6 +370,10 @@ export class JournalService {
     };
   }
 
+  public async rolloverTasksAsync(fromDate?: string, toDate?: string, selectedTaskIds?: string[]): Promise<{ success: boolean; migratedCount: number; message: string; note: DailyNote }> {
+    return this.migratePreviousTasks(toDate, fromDate, selectedTaskIds);
+  }
+
   private createDefaultDailyNote(date: string): DailyNote {
     const formattedDate = new Date(date).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -457,17 +476,18 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
     return note;
   }
 
-  public async getWeeklyHabitMatrix(referenceDate?: string): Promise<Array<{ date: string; dayName: string; habits: string[] }>> {
+  public async getWeeklyHabitMatrix(referenceDate?: string): Promise<Array<{ date: string; dayName: string; habits: string[]; isToday: boolean }>> {
+    const todayStr = new Date().toISOString().split('T')[0];
     try {
       const res = await ApiClient.getHabitWeeklyMatrix(referenceDate);
       if (res && res.success && Array.isArray(res.matrix)) {
-        return res.matrix;
+        return res.matrix.map((m: any) => ({ ...m, isToday: m.date === todayStr }));
       }
     } catch (e) {
       console.warn('[JournalService] Fetch weekly habit matrix error, computing locally:', e);
     }
 
-    const ref = referenceDate || new Date().toISOString().split('T')[0];
+    const ref = referenceDate || todayStr;
     const refD = new Date(ref);
     const dayOfWeek = refD.getDay();
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
@@ -475,7 +495,7 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
     monday.setDate(refD.getDate() + mondayOffset);
 
     const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const matrix: Array<{ date: string; dayName: string; habits: string[] }> = [];
+    const matrix: Array<{ date: string; dayName: string; habits: string[]; isToday: boolean }> = [];
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
@@ -485,11 +505,27 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
       matrix.push({
         date: dateStr,
         dayName: dayLabels[i],
-        habits: daily.habits || []
+        habits: daily.habits || [],
+        isToday: dateStr === todayStr
       });
     }
 
     return matrix;
+  }
+
+  public async appendEntry(noteDate: string, typeOrText: BujoEntry['type'] | string, textArg?: string): Promise<DailyNote> {
+    return this.addEntry(noteDate, typeOrText, textArg);
+  }
+
+  public async saveReflection(noteDate: string, reflection: string): Promise<DailyNote> {
+    const note = this.getDailyNote(noteDate);
+    note.reflection = reflection;
+    this.saveDailyNote(note);
+    return note;
+  }
+
+  public async getYearlyIndex(yearStr?: string): Promise<any> {
+    return this.getYearlyReview(yearStr);
   }
 
   public toggleTask(noteDate: string, taskId: string): DailyNote {
@@ -508,7 +544,7 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
     let type: BujoEntry['type'] = 'task';
     let text = '';
 
-    const validTypes: BujoEntry['type'][] = ['task', 'priority', 'note', 'event', 'completed', 'migrated'];
+    const validTypes: BujoEntry['type'][] = ['task', 'priority', 'note', 'event', 'done', 'migrated'];
     if (textArg !== undefined) {
       if (validTypes.includes(typeOrText as BujoEntry['type'])) {
         type = typeOrText as BujoEntry['type'];

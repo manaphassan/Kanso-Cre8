@@ -254,7 +254,7 @@ export class ZettelService {
     note.linkedProjects = uniqueLinks.filter(l => l.match(/\[\[\d{6}_/));
 
     // Extract inline tasks: - [ ] #task Description due: YYYY-MM-DD priority: priority
-    const taskRegex = /- \[([ xX])\]\s*(?:#task)?\s*(.*?)(?:\s*\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s*\u{23EB}\s*(high|urgent|low))?$/gm;
+    const taskRegex = /- \[([ xX])\]\s*(?:#task)?\s*(.*?)(?:\s*\u{1F4C5}\s*(\d{4}-\d{2}-\d{2}))?(?:\s*\u{23EB}\s*(high|urgent|low))?$/gmu;
     const tasks: ZettelTask[] = [];
 
     for (const match of note.content.matchAll(taskRegex)) {
@@ -270,6 +270,10 @@ export class ZettelService {
           sourceNoteTitle: note.title,
           rawText: match[0],
           description: desc,
+          text: desc,
+          noteTitle: note.title,
+          filepath: (note as any).filepath || note.id,
+          lineIndex: tasks.length,
           completed: isChecked,
           dueDate,
           priority: priority || 'normal'
@@ -295,6 +299,19 @@ export class ZettelService {
       }
     });
     return allTasks;
+  }
+
+  public async toggleUniversalTask(filepathOrNoteId?: string, lineIndexOrTaskId?: number | string, completed?: boolean): Promise<boolean> {
+    const task = this.getAllTasks().find(t => 
+      t.id === String(lineIndexOrTaskId) || 
+      t.filepath === filepathOrNoteId || 
+      t.sourceNoteId === filepathOrNoteId
+    );
+    if (task) {
+      this.toggleTask(task);
+      return true;
+    }
+    return false;
   }
 
   /**

@@ -46,7 +46,7 @@
 
 <aside class="suggestion-strip severity-{currentAlert.severity}" aria-label="Smart suggestions">
   <div class="strip-left">
-    <span class="strip-icon"><Icon name={currentAlert.icon} size={14} /></span>
+    <span class="strip-icon"><Icon name={currentAlert.icon as any} size={14} /></span>
     <span class="strip-label font-semibold">{currentAlert.header}</span>
     <span class="strip-separator">·</span>
     <span class="strip-body">{currentAlert.body}</span>

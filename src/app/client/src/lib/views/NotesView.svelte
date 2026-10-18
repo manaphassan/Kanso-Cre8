@@ -2,7 +2,7 @@
   import { Icon } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { notesService as zettelService } from '../services/notesService';
-  import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem } from '../types/notes';
+  import type { ZettelNote, ZettelType, ZettelTask, BacklinkItem, GraphTopology } from '../types/notes';
   import MarkdownEditor from '../components/markdown/MarkdownEditor.svelte';
   import KnowledgeGraphCanvas from '../components/features/KnowledgeGraphCanvas.svelte';
   import LocalGraphMini from '../components/features/LocalGraphMini.svelte';

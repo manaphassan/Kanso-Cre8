@@ -383,7 +383,7 @@
         onmouseenter={() => (hoveredIndex = i)}
         onmouseleave={() => (hoveredIndex = null)}
       >
-        <span class="chip-icon"><Icon name={meta.icon} size={14} /></span>
+        <span class="chip-icon"><Icon name={meta.icon as any} size={14} /></span>
         <span class="chip-name">{s.label}</span>
         <span class="chip-score" class:ahead={delta >= 0} class:gap={delta < 0}>
           {s.actual}%
@@ -404,7 +404,7 @@
     <div class="detail-card-header">
       <div class="detail-title-col">
         <div class="detail-category-label">
-          <Icon name={activeMeta.icon} size={14} />
+          <Icon name={activeMeta.icon as any} size={14} />
           <span>{activeMeta.category}</span>
           {#if activeMetric.projectCount}
             <span class="project-count-pill">{activeMetric.projectCount} Audited Projects</span>

@@ -219,7 +219,7 @@ class VaultPathService {
 
     if (resolution === 'keep_local') {
       fs.unlinkSync(resolvedPath);
-    } else if (resolution === 'keep_conflict') {
+    } else if (resolution === 'keep_conflict' || resolution === 'keep_cloud') {
       const content = fs.readFileSync(resolvedPath);
       fs.writeFileSync(baseFullPath, content);
       fs.unlinkSync(resolvedPath);

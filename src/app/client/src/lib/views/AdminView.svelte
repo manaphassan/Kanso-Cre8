@@ -192,6 +192,7 @@
       managersCount,
       designersCount,
       copywritersCount,
+      standardUsersCount: totalUsers - adminsCount - managersCount,
       totalAuditCount,
       adminPct: totalUsers > 0 ? Math.round((adminsCount / totalUsers) * 100) : 0,
       managerPct: totalUsers > 0 ? Math.round((managersCount / totalUsers) * 100) : 0,

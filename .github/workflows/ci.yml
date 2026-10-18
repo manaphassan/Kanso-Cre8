@@ -9,7 +9,7 @@ on:
 jobs:
   governance-and-test:
     name: Kanso Governance & Automated Test Suite
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
@@ -18,18 +18,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: src/app/package-lock.json
 
       - name: Run Kanso Brand & Architecture Auditor
         shell: pwsh
         run: |
-          powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
+          pwsh -File ./scripts/verify-kanso.ps1
 
       - name: Install Node Dependencies
         working-directory: src/app
         run: npm ci
+
+      - name: Run Svelte Typecheck Gate (svelte-check)
+        working-directory: src/app
+        run: npm run check
 
       - name: Run Service & Backend Test Suite
         working-directory: src/app

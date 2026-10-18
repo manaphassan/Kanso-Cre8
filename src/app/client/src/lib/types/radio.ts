@@ -10,7 +10,10 @@ export interface CassetteRadioStation {
   description: string;
   featuredTrack?: string;
   isCustom?: boolean;
+  isFavorite?: boolean;
 }
+
+export type RadioStation = CassetteRadioStation;
 
 export interface RadioPlaybackState {
   currentStationId: string;
@@ -22,4 +25,6 @@ export interface RadioPlaybackState {
   spoolRotation: number;
   tapeSide: 'A' | 'B';
   sessionElapsedSeconds: number;
+  progress?: number;
 }
+

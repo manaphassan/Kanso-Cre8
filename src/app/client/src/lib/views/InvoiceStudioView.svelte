@@ -381,7 +381,7 @@
 
   function getClientPalette(code: string) {
     const c = clients.find(cl => cl.code.toUpperCase() === (code || '').toUpperCase());
-    return c?.palette || { primary: 'var(--kanso-accent)', secondary: 'var(--kanso-accent)', accent: 'var(--kanso-accent)' };
+    return c?.palette || { primary: 'var(--kanso-accent)', secondary: 'var(--kanso-accent)', dark: 'var(--kanso-accent)', accent: 'var(--kanso-accent)' };
   }
 
   const currentList = $derived(docType === 'invoices' ? invoices : quotes);
@@ -1065,7 +1065,7 @@
                   {#each [
                     { label: 'Primary', color: palette.primary },
                     { label: 'Secondary', color: palette.secondary },
-                    { label: 'Dark', color: palette.dark },
+                    { label: 'Dark', color: (palette as any).dark || palette.primary },
                     { label: 'Accent', color: palette.accent }
                   ] as swatch}
                     <button

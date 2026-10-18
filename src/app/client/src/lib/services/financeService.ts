@@ -402,11 +402,12 @@ export class FinanceService {
     return null;
   }
 
-  public getIncomeSummary(): { paid: number; pending: number; total: number } {
+  public getIncomeSummary(): { paid: number; pending: number; total: number; draftCount: number } {
     const invoices = this.getDocuments().filter(d => d.type === 'invoice');
     const paid = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.total || 0), 0);
     const pending = invoices.filter(i => i.status === 'sent' || i.status === 'draft').reduce((s, i) => s + (i.total || 0), 0);
-    return { paid, pending, total: paid + pending };
+    const draftCount = invoices.filter(i => i.status === 'draft').length;
+    return { paid, pending, total: paid + pending, draftCount };
   }
 
   /**

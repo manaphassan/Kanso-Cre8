@@ -13,6 +13,7 @@
     loading?: boolean;
     onConfirm?: () => Promise<void> | void;
     onClose?: () => void;
+    onclose?: () => void;
     children?: Snippet;
     footer?: Snippet;
   }
@@ -25,10 +26,16 @@
     confirmAppearance = 'primary',
     loading = false,
     onConfirm,
-    onClose,
+    onClose: onCloseProp,
+    onclose: oncloseProp,
     children,
     footer
   }: Props = $props();
+
+  const onClose = () => {
+    if (oncloseProp) oncloseProp();
+    if (onCloseProp) onCloseProp();
+  };
 
   function onBackdropClick(e: MouseEvent) {
     handleBackdropClick(e, onClose);

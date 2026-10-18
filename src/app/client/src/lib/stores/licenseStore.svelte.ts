@@ -102,7 +102,7 @@ class LicenseStore {
         if (typeof atob !== 'undefined') {
           jsonStr = atob(payloadBase64);
         } else {
-          jsonStr = Buffer.from(payloadBase64, 'base64').toString('utf8');
+          jsonStr = (globalThis as any).Buffer?.from(payloadBase64, 'base64')?.toString('utf8') || '';
         }
 
         const data = JSON.parse(jsonStr);

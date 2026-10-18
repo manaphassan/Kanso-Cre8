@@ -6,10 +6,11 @@
   interface Props {
     open?: boolean;
     fromDate: string;
-    toDate: string;
+    toDate?: string;
     tasks: BujoEntry[];
-    onRollover: (selectedTaskIds: string[]) => Promise<void> | void;
-    onRolloverAll: () => Promise<void> | void;
+    onRollover?: (selectedTaskIds: string[]) => Promise<void> | void;
+    onRolloverAll?: () => Promise<void> | void;
+    onMigrate?: (selectedTaskIds: string[]) => Promise<void> | void;
     onClose: () => void;
   }
 
@@ -20,6 +21,7 @@
     tasks = [],
     onRollover,
     onRolloverAll,
+    onMigrate,
     onClose
   }: Props = $props();
 
@@ -63,7 +65,8 @@
     if (selectedTaskIds.length === 0 || isSubmitting) return;
     isSubmitting = true;
     try {
-      await onRollover(selectedTaskIds);
+      if (onRollover) await onRollover(selectedTaskIds);
+      else if (onMigrate) await onMigrate(selectedTaskIds);
       open = false;
     } finally {
       isSubmitting = false;
@@ -74,7 +77,8 @@
     if (tasks.length === 0 || isSubmitting) return;
     isSubmitting = true;
     try {
-      await onRolloverAll();
+      if (onRolloverAll) await onRolloverAll();
+      else if (onMigrate) await onMigrate(tasks.map(t => t.id));
       open = false;
     } finally {
       isSubmitting = false;
