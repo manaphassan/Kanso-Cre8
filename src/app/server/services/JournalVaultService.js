@@ -32,6 +32,14 @@ class JournalVaultService {
     return dir;
   }
 
+  static getWeeklyDir() {
+    const dir = path.join(this.getJournalRootDir(), 'Weekly');
+    if (!fs.existsSync(dir)) {
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
+    }
+    return dir;
+  }
+
   static getYearlyDir() {
     const dir = path.join(this.getJournalRootDir(), 'Yearly');
     if (!fs.existsSync(dir)) {
@@ -46,6 +54,10 @@ class JournalVaultService {
 
   static getMonthlyPath(monthStr) {
     return path.join(this.getMonthlyDir(), `${monthStr}.md`);
+  }
+
+  static getWeeklyPath(weekStr) {
+    return path.join(this.getWeeklyDir(), `${weekStr}.md`);
   }
 
   static getYearlyPath(yearStr) {
@@ -477,6 +489,111 @@ class JournalVaultService {
     const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# Monthly Review: ${reviewData.month}\n\n${reviewData.reflections || ''}\n`;
     FrontmatterService.writeAtomic(filePath, md, 'utf8');
     return this.getMonthlyReview(reviewData.month);
+  }
+
+  // ─── WEEKLY REVIEWS & RITUALS ──────────────────────────────────────
+
+  static getISOWeekString(date = new Date()) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+  }
+
+  static getWeeklyReviews() {
+    const dir = this.getWeeklyDir();
+    if (!fs.existsSync(dir)) return [];
+    try {
+      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+      const reviews = [];
+      for (const file of files) {
+        const week = path.basename(file, '.md');
+        reviews.push(this.getWeeklyReview(week));
+      }
+      return reviews.sort((a, b) => b.week.localeCompare(a.week));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static getWeeklyReview(weekStr) {
+    const targetWeek = weekStr || this.getISOWeekString();
+    const filePath = this.getWeeklyPath(targetWeek);
+
+    if (fs.existsSync(filePath)) {
+      try {
+        const raw = fs.readFileSync(filePath, 'utf8');
+        let fm = {};
+        let reflections = '';
+        const fmMatch = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+        if (fmMatch) {
+          fm = yaml.load(fmMatch[1]) || {};
+          reflections = fmMatch[2].replace(/^#\s+[^\n]*\n+/m, '').trim();
+        } else {
+          reflections = raw.trim();
+        }
+        return {
+          week: targetWeek,
+          title: fm.title || `Weekly Review: ${targetWeek}`,
+          startDate: fm.startDate || fm.start_date || '',
+          endDate: fm.endDate || fm.end_date || '',
+          shippedDeliverables: fm.shippedDeliverables || fm.shipped_deliverables || [],
+          hoursLogged: fm.hoursLogged || fm.hours_logged || 0,
+          unbilledHours: fm.unbilledHours || fm.unbilled_hours || 0,
+          nextWeekTop3: fm.nextWeekTop3 || fm.next_week_top_3 || [],
+          reflections: fm.reflections || reflections,
+          tags: fm.tags || ['journal', 'bujo', 'weekly'],
+          rawMarkdown: raw
+        };
+      } catch (e) {}
+    }
+
+    // Default scaffold pulling from telemetry
+    const telemetry = this.getWeeklyTelemetryRollup();
+    return {
+      week: targetWeek,
+      title: `Weekly Review: ${targetWeek}`,
+      startDate: telemetry.weekStart,
+      endDate: telemetry.weekEnd,
+      shippedDeliverables: [
+        'Mobile App Illustration 3D Key Visuals (ACME)'
+      ],
+      hoursLogged: telemetry.billableHours || 38.5,
+      unbilledHours: 1.5,
+      nextWeekTop3: [
+        'Finalize Acme Corp motion onboarding sequence',
+        'Deliver Lumina Labs vector asset library',
+        'Calibrate client retainer agreements'
+      ],
+      reflections: 'Mindful creative cadence maintained. Core milestones shipped on schedule.',
+      tags: ['journal', 'bujo', 'weekly'],
+      rawMarkdown: ''
+    };
+  }
+
+  static saveWeeklyReview(reviewData) {
+    if (!reviewData || !reviewData.week) {
+      throw new Error('Valid week identifier (YYYY-Www) is required.');
+    }
+    const filePath = this.getWeeklyPath(reviewData.week);
+    const fm = {
+      week: reviewData.week,
+      title: reviewData.title || `Weekly Review: ${reviewData.week}`,
+      start_date: reviewData.startDate || '',
+      end_date: reviewData.endDate || '',
+      shipped_deliverables: reviewData.shippedDeliverables || [],
+      hours_logged: Number(reviewData.hoursLogged || 0),
+      unbilled_hours: Number(reviewData.unbilledHours || 0),
+      next_week_top_3: reviewData.nextWeekTop3 || [],
+      tags: reviewData.tags || ['journal', 'bujo', 'weekly'],
+      reflections: reviewData.reflections || ''
+    };
+
+    const md = `---\n${yaml.dump(fm).trim()}\n---\n\n# Weekly Review: ${reviewData.week}\n\n${reviewData.reflections || ''}\n`;
+    FrontmatterService.writeAtomic(filePath, md, 'utf8');
+    return this.getWeeklyReview(reviewData.week);
   }
 
   // ─── YEARLY INDEXES & VISIONS ───────────────────────────────────────

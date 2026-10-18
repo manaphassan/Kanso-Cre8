@@ -46,6 +46,20 @@ export const CANONICAL_HABITS: DailyHabitItem[] = [
   { id: 'atomic_note', name: 'Atomic Note', icon: 'file', description: 'Knowledge Engine Insight Logged' }
 ];
 
+export interface WeeklyReview {
+  week: string; // YYYY-Www
+  title?: string;
+  startDate?: string;
+  endDate?: string;
+  shippedDeliverables: string[];
+  hoursLogged: number;
+  unbilledHours: number;
+  nextWeekTop3: string[];
+  reflections: string;
+  tags?: string[];
+  rawMarkdown?: string;
+}
+
 export interface MonthlyReview {
   month: string; // YYYY-MM
   title?: string;
@@ -146,6 +160,7 @@ export interface YearlyTelemetry {
 import { ApiClient } from './api';
 
 const DAILY_STORAGE_PREFIX = 'kanso_bujo_daily_';
+const WEEKLY_STORAGE_PREFIX = 'kanso_bujo_weekly_';
 const MONTHLY_STORAGE_PREFIX = 'kanso_bujo_monthly_';
 const YEARLY_STORAGE_PREFIX = 'kanso_bujo_yearly_';
 
@@ -577,6 +592,77 @@ ${note.focusIntentions.map(i => `- ${i}`).join('\n')}
     note.entries = note.entries.filter(e => e.id !== taskId);
     this.saveDailyNote(note);
     return note;
+  }
+
+  // --- WEEKLY REVIEWS ---
+
+  public getISOWeek(date = new Date()): string {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+  }
+
+  public getWeeklyReview(weekStr?: string): WeeklyReview {
+    const targetWeek = weekStr || this.getISOWeek();
+    const key = `${WEEKLY_STORAGE_PREFIX}${targetWeek}`;
+
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          this.fetchDiskWeeklyReview(targetWeek);
+          return parsed;
+        }
+      } catch (e) {}
+    }
+
+    const defaultWeekly: WeeklyReview = {
+      week: targetWeek,
+      title: `Weekly Review: ${targetWeek}`,
+      shippedDeliverables: [
+        'Mobile App Illustration 3D Key Visuals (ACME)'
+      ],
+      hoursLogged: 38.5,
+      unbilledHours: 1.5,
+      nextWeekTop3: [
+        'Finalize Acme Corp motion onboarding sequence',
+        'Deliver Lumina Labs vector asset library',
+        'Calibrate client retainer agreements'
+      ],
+      reflections: 'Mindful creative cadence maintained. Core milestones shipped on schedule.',
+      tags: ['journal', 'bujo', 'weekly'],
+      rawMarkdown: ''
+    };
+
+    this.saveWeeklyReview(defaultWeekly);
+    this.fetchDiskWeeklyReview(targetWeek);
+    return defaultWeekly;
+  }
+
+  public async fetchDiskWeeklyReview(weekStr: string): Promise<WeeklyReview | null> {
+    try {
+      const res = await ApiClient.getWeeklyReview(weekStr);
+      if (res && res.success && res.review) {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(`${WEEKLY_STORAGE_PREFIX}${weekStr}`, JSON.stringify(res.review));
+        }
+        return res.review as WeeklyReview;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  public saveWeeklyReview(review: WeeklyReview): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(`${WEEKLY_STORAGE_PREFIX}${review.week}`, JSON.stringify(review));
+      } catch (e) {}
+    }
+    ApiClient.saveWeeklyReview(review).catch(() => {});
   }
 
   // --- MONTHLY REVIEWS ---
