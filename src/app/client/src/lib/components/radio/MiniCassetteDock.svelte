@@ -141,6 +141,20 @@
     user-select: none;
     box-sizing: border-box;
     width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  /* Sidebar footer is narrow: drop the badge and title so transport controls never clip. */
+  @container (max-width: 230px) {
+    .mini-freq-badge,
+    .mini-track-btn {
+      display: none;
+    }
+    .mini-chamber-btn {
+      flex-shrink: 1;
+    }
   }
 
   .mini-chamber-btn {

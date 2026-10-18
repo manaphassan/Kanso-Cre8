@@ -17,9 +17,8 @@
   });
 </script>
 
-<div class="clients-money-hub">
-  <!-- ═══ SUB-NAVIGATION TABS ═══════════════════════════════════════════ -->
-  <nav class="hub-tabs-header" aria-label="Clients & Money Navigation">
+{#snippet hubTabs()}
+  <nav aria-label="Clients & Money Navigation">
     <div class="tabs-list">
       <button
         class="hub-tab-btn"
@@ -55,15 +54,17 @@
       </button>
     </div>
   </nav>
+{/snippet}
 
+<div class="clients-money-hub">
   <!-- ═══ ACTIVE TAB CONTENT ════════════════════════════════════════════ -->
   <div class="hub-tab-content">
     {#if activeTab === 'clients'}
-      <ClientsView />
+      <ClientsView tabs={hubTabs} />
     {:else if activeTab === 'quotes'}
-      <InvoiceStudioView initialDocType="quotes" />
+      <InvoiceStudioView initialDocType="quotes" tabs={hubTabs} />
     {:else if activeTab === 'invoices'}
-      <InvoiceStudioView initialDocType="invoices" />
+      <InvoiceStudioView initialDocType="invoices" tabs={hubTabs} />
     {/if}
   </div>
 </div>
@@ -75,16 +76,6 @@
     height: 100%;
     min-height: 0;
     background: var(--kanso-canvas);
-  }
-
-  .hub-tabs-header {
-    height: 42px;
-    padding: 0 var(--kanso-space-4);
-    background: var(--kanso-surface);
-    border-bottom: 1px solid var(--kanso-border);
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
   }
 
   .tabs-list {

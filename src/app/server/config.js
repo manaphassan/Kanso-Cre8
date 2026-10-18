@@ -19,6 +19,8 @@ function isPathAccessible(dirPath) {
 const crypto = require('crypto');
 
 function getMachineConfigPath() {
+  // Override lets the test suite use a throwaway file instead of the real app.json.
+  if (process.env.KANSO_MACHINE_CONFIG) return path.resolve(process.env.KANSO_MACHINE_CONFIG);
   if (process.platform === 'win32') {
     const appData = process.env.APPDATA || path.join(process.env.USERPROFILE || '', 'AppData', 'Roaming');
     return path.join(appData, 'KansoCre8', 'app.json');

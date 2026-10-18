@@ -24,7 +24,7 @@ Kanso Cre8 uses a unified design token system defined exclusively in `src/app/cl
 | Token | Dark Mode (Default) | Light Mode | Purpose |
 |---|---|---|---|
 | `--kanso-canvas` | `#09090B` | `#F8FAFC` | Root app background |
-| `--kanso-surface` | `#18181B` | `#FFFFFF` | Cards, panels, sidebars |
+| `--kanso-surface` | `#18181B` | `#FFFFFF` | Cards, panels, dropdown menus |
 | `--kanso-surface-hover` | `#27272A` | `#F1F5F9` | Interactive hover states |
 | `--kanso-border` | `#27272A` | `#E2E8F0` | 1px hairline borders |
 | `--kanso-text-primary` | `#F4F4F5` | `#0F172A` | Headings, primary text |
@@ -63,7 +63,8 @@ The typographic system follows a strict boundary between display and UI layers:
 
 ## 4. UI Rules & Component Budget
 
-1. **Navigation Structure (Strict 6-Item Architecture)**:
+1. **Navigation Structure (Strict 6-Item Architecture, Raycast-inspired, no sidebar)**:
+   - No persistent sidebar or rail. A hamburger in the 48px header opens a floating dropdown (brand, six items with Ctrl+1..6, Mini-Cassette Dock). Closes on pick, outside click, or Esc.
    - Deck (Dashboard)
    - Projects (Kanban and Table views; Review and Copy are tabs in Project Workspace)
    - Journal (Bullet Journal Daily, Monthly, Yearly logs)
@@ -128,7 +129,7 @@ The Retro Cassette Focus Radio is a faithful recreation of a vintage mechanical 
 - Four corner screws, trapezoidal head/roller, Side A badge, clear tape window.
 - Dual 6-spoke gear spool wheels rotating at 33 RPM during audio playback.
 - Curated focus streams (Chillhop, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus).
-- Persistent 40px Mini-Cassette Dock in the sidebar footer.
+- 40px Mini-Cassette Dock in the footer of the floating navigation dropdown.
 - 25-minute Pomodoro focus timer with mechanical sound effects.
 
 ---

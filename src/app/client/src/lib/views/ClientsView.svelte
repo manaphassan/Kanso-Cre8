@@ -6,6 +6,9 @@
   import { settingsStore, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import ClientEditModal from '$lib/components/features/ClientEditModal.svelte';
   import type { ClientProfile } from '../types/kanso';
+  import type { Snippet } from 'svelte';
+
+  let { tabs }: { tabs?: Snippet } = $props();
 
   let clients: ClientProfile[] = $state([]);
   let copiedSwatch: string | null = $state(null);
@@ -68,6 +71,7 @@
     </div>
 
     <div class="header-actions">
+      {@render tabs?.()}
       <button
         onclick={openNewClientModal}
         class="action-cta-btn"

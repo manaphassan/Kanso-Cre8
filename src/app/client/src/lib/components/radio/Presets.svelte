@@ -107,6 +107,8 @@
   }
   .presets-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
@@ -154,6 +156,7 @@
   }
   .soundboard-strip {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     padding: 10px 14px;
