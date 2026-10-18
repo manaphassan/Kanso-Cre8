@@ -444,6 +444,56 @@ tags: [journal, bujo, daily]
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
     }
   });
+
+  await test('JournalVaultService reads, writes, and lists Weekly reviews in _Journal/Weekly/ with YAML frontmatter', async () => {
+    const testDir = path.join(__dirname, 'temp-journal-weekly-test');
+    const weeklyDir = path.join(testDir, '_Journal', 'Weekly');
+    fs.mkdirSync(weeklyDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      const weekStr = '2026-W42';
+      const scaffold = JournalVaultService.getWeeklyReview(weekStr);
+      assert.strictEqual(scaffold.week, weekStr);
+      assert.ok(Array.isArray(scaffold.shippedDeliverables));
+      assert.ok(Array.isArray(scaffold.nextWeekTop3));
+
+      const toSave = {
+        week: weekStr,
+        title: 'Weekly Review: 2026-W42',
+        startDate: '2026-10-12',
+        endDate: '2026-10-18',
+        shippedDeliverables: ['Mobile App Illustration 3D Key Visuals (ACME)', 'Brand Guidelines v2 (LUM)'],
+        hoursLogged: 42.5,
+        unbilledHours: 2.0,
+        nextWeekTop3: [
+          'Acme Corp motion onboarding sequence',
+          'Lumina Labs vector asset library',
+          'Calibrate Q4 retainers'
+        ],
+        reflections: 'Zero friction week. Delivered all high-impact proofs ahead of schedule.'
+      };
+      const saved = JournalVaultService.saveWeeklyReview(toSave);
+      assert.strictEqual(saved.week, weekStr);
+      assert.strictEqual(saved.hoursLogged, 42.5);
+      assert.strictEqual(saved.shippedDeliverables.length, 2);
+
+      const filePath = path.join(weeklyDir, weekStr + '.md');
+      assert.ok(fs.existsSync(filePath), 'File _Journal/Weekly/2026-W42.md must exist on disk');
+
+      const list = JournalVaultService.getWeeklyReviews();
+      assert.strictEqual(list.length, 1);
+      assert.strictEqual(list[0].week, weekStr);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
+    }
+  });
 };
 
 if (require.main === module) {

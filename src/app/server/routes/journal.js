@@ -174,4 +174,31 @@ router.get('/journal/weekly', (req, res) => {
   }
 });
 
+router.get('/journal/weekly-reviews', (req, res) => {
+  try {
+    res.json({ success: true, reviews: JournalVaultService.getWeeklyReviews() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/journal/weekly-review/:week?', (req, res) => {
+  try {
+    const targetWeek = req.params.week || req.query.week || JournalVaultService.getISOWeekString();
+    res.json({ success: true, week: targetWeek, review: JournalVaultService.getWeeklyReview(targetWeek) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/journal/weekly-review', (req, res) => {
+  try {
+    const saved = JournalVaultService.saveWeeklyReview(req.body);
+    SseService.broadcast('journal:weekly:saved', { review: saved });
+    res.json({ success: true, review: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 module.exports = router;

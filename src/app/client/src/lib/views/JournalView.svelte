@@ -2,10 +2,11 @@
   import { onMount } from 'svelte';
   import { journalService, type DailyNote, type HabitHistory } from '$lib/services/journalService';
   import DailyLog from '$lib/components/journal/DailyLog.svelte';
+  import WeeklyReview from '$lib/components/journal/WeeklyReview.svelte';
   import Monthly from '$lib/components/journal/Monthly.svelte';
   import Yearly from '$lib/components/journal/Yearly.svelte';
 
-  type ViewTab = 'daily' | 'monthly' | 'yearly';
+  type ViewTab = 'daily' | 'weekly' | 'monthly' | 'yearly';
   let activeTab = $state<ViewTab>('daily');
 
   let currentDate = $state(new Date().toISOString().slice(0, 10));
@@ -52,6 +53,13 @@
     </button>
     <button
       class="tab-btn"
+      class:active={activeTab === 'weekly'}
+      onclick={() => (activeTab = 'weekly')}
+    >
+      <span>Weekly Review</span>
+    </button>
+    <button
+      class="tab-btn"
       class:active={activeTab === 'monthly'}
       onclick={() => (activeTab = 'monthly')}
     >
@@ -75,6 +83,8 @@
         onDateChanged={handleDateChange}
         onRefresh={loadData}
       />
+    {:else if activeTab === 'weekly'}
+      <WeeklyReview />
     {:else if activeTab === 'monthly'}
       <Monthly />
     {:else if activeTab === 'yearly'}

@@ -659,6 +659,21 @@ export class ApiClient {
     return this.request(`/journal/weekly${date ? `?date=${encodeURIComponent(date)}` : ''}`);
   }
 
+  static getWeeklyReviews(): Promise<{ success: boolean; reviews: any[] }> {
+    return this.request('/journal/weekly-reviews');
+  }
+
+  static getWeeklyReview(week?: string): Promise<{ success: boolean; week: string; review: any }> {
+    return this.request(`/journal/weekly-review${week ? `/${encodeURIComponent(week)}` : ''}`);
+  }
+
+  static saveWeeklyReview(review: any): Promise<{ success: boolean; review: any }> {
+    return this.request('/journal/weekly-review', {
+      method: 'POST',
+      body: JSON.stringify(review)
+    });
+  }
+
   static saveMonthlyReview(review: any): Promise<{ success: boolean; review: any }> {
     return this.request('/journal/monthly', {
       method: 'POST',
