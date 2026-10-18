@@ -137,7 +137,7 @@ class FinanceVaultService {
     const taxAmount = Math.round((subtotal * taxRatePercent / 100) * 100) / 100;
     const total = Math.round((subtotal + taxAmount) * 100) / 100;
 
-    const fm = {
+    let fm = {
       id: doc.id || doc.documentNumber,
       documentNumber: doc.documentNumber || doc.id,
       type,
