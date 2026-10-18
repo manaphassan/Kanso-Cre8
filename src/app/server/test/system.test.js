@@ -328,6 +328,15 @@ module.exports = async function run(test, context = {}) {
     assert.ok(deliveryMd.includes('5140 1234 5678'), 'Must include wire remittance account');
     assert.ok(deliveryMd.includes('Maybank Berhad'), 'Must include bank name');
 
+    // 2b. Verify getHandoverPreview returns structured manifest data
+    const preview = ExportService.getHandoverPreview(testDir, 'ACME-2026-099');
+    assert.ok(preview, 'Must generate preview object');
+    assert.strictEqual(preview.jobId, 'ACME-2026-099');
+    assert.strictEqual(preview.totalAssets, 2, 'Must include deliverable and brief README');
+    assert.ok(preview.deliveryMd.includes('DELIVERY.md'));
+    assert.ok(preview.htmlSummary.includes('Hero_Motion_Teaser.mp4'));
+    assert.ok(preview.assets.some(a => a.sha256 === hash));
+
     // 3. Verify CommentService stores video timestamp annotations
     const videoComment = CommentService.addComment(testDir, 'ACME-2026-099', {
       author: 'Senior Art Director',

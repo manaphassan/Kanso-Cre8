@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon } from '$lib/components/ui';
+  import HandoverPackageModal from '$lib/components/features/HandoverPackageModal.svelte';
 
   interface Props {
     project: any;
@@ -7,6 +8,7 @@
   }
 
   let { project, onUpdateStatus }: Props = $props();
+  let showHandoverModal = $state<boolean>(false);
 
   const statuses = [
     { id: 'draft', label: 'Draft' },
@@ -77,8 +79,30 @@
         <div class="folder-row"><Icon name="folder" size={12} /> <span class="font-mono">05_DELIVERABLES/</span></div>
       </div>
     </div>
+
+    <!-- Client Handover Package -->
+    <div class="inspector-group">
+      <span class="inspector-label">Client Handover</span>
+      <button
+        type="button"
+        class="handover-export-action-btn"
+        onclick={() => (showHandoverModal = true)}
+        aria-label="Export Client Handover Package"
+      >
+        <Icon name="download" size={14} />
+        <span>Handover Package</span>
+      </button>
+    </div>
   </div>
 </aside>
+
+{#if showHandoverModal && project}
+  <HandoverPackageModal
+    open={showHandoverModal}
+    project={project}
+    onClose={() => (showHandoverModal = false)}
+  />
+{/if}
 
 <style>
   .project-inspector {
@@ -109,4 +133,25 @@
   .form-select { height: 34px; padding: 0 10px; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 6px; color: var(--kanso-text-primary); font-size: 12px; font-weight: 600; }
   .canonical-folder-list { display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; background: var(--kanso-canvas); border: 1px solid var(--kanso-border); border-radius: 6px; }
   .folder-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--kanso-text-muted); }
+  .handover-export-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: 6px;
+    color: var(--kanso-text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .handover-export-action-btn:hover {
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
+    border-color: var(--kanso-accent);
+  }
 </style>

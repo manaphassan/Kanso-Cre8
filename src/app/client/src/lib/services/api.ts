@@ -595,6 +595,25 @@ export class ApiClient {
     return this.rollbackProject(projectId, snapshotId);
   }
 
+  static getProjectHandoverPreview(projectId: string, options: {
+    wip?: boolean;
+    brief?: boolean;
+    copy?: boolean;
+    manifest?: boolean;
+    files?: string[];
+  } = {}): Promise<{ success: boolean; preview: any }> {
+    const params = new URLSearchParams();
+    if (options.wip) params.set('wip', 'true');
+    if (options.brief === false) params.set('brief', 'false');
+    if (options.copy === false) params.set('copy', 'false');
+    if (options.manifest === false) params.set('manifest', 'false');
+    if (options.files && options.files.length > 0) {
+      params.set('files', options.files.join(','));
+    }
+    const qs = params.toString();
+    return this.request(`/projects/${encodeURIComponent(projectId)}/export/preview${qs ? '?' + qs : ''}`);
+  }
+
   // ─── Workload Reassign ───
   static reassignProject(projectId: string, payload: { newDesigner: string; reason?: string }): Promise<{ success: boolean; designer: string; message: string }> {
     return this.request(`/projects/${encodeURIComponent(projectId)}/reassign`, {

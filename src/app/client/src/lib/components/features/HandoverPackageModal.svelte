@@ -6,6 +6,8 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import type { DeliverableItem } from '$lib/types';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
+  import { ApiClient } from '$lib/services/api';
+  import HandoverManifestModal from '$lib/components/features/HandoverManifestModal.svelte';
 
   interface Props {
     open?: boolean;
@@ -30,6 +32,35 @@
   let linkCopied = $state<boolean>(false);
   let studioProfile = $state<any>(null);
   let isLoadingProfile = $state<boolean>(false);
+  let showManifestPreview = $state<boolean>(false);
+  let manifestPreviewData = $state<any>(null);
+  let isLoadingPreview = $state<boolean>(false);
+
+  async function openManifestPreview() {
+    if (!projId) return;
+    try {
+      isLoadingPreview = true;
+      const selectedKeys = availableDeliverables
+        .filter(d => selectedFileNames[d.filename || d.id])
+        .map(d => d.filename || d.id);
+
+      const res = await ApiClient.getProjectHandoverPreview(projId, {
+        wip: includeWip,
+        brief: includeBrief,
+        copy: includeCopy,
+        manifest: includeManifest,
+        files: selectedKeys.length > 0 && selectedKeys.length < availableDeliverables.length ? selectedKeys : undefined
+      });
+      if (res?.preview) {
+        manifestPreviewData = res.preview;
+        showManifestPreview = true;
+      }
+    } catch (err: any) {
+      appState.addToast(`Failed to load manifest preview: ${err.message}`, 'error');
+    } finally {
+      isLoadingPreview = false;
+    }
+  }
 
   const projId = $derived(
     project?.id || project?.projectId || project?.jobId || ''
@@ -422,6 +453,16 @@
 
         <div class="footer-right">
           <Button appearance="subtle" onclick={closeModal}>Cancel</Button>
+          <button
+            type="button"
+            class="preview-manifest-btn"
+            onclick={openManifestPreview}
+            disabled={isLoadingPreview || selectedDeliverables.length === 0}
+            aria-label="Preview DELIVERY.md manifest"
+          >
+            <Icon name="document" size={14} />
+            <span>{isLoadingPreview ? 'Loading...' : 'Preview Manifest'}</span>
+          </button>
           <button 
             class="download-package-btn" 
             onclick={triggerDownload} 
@@ -434,6 +475,15 @@
       </div>
     </div>
   </div>
+{/if}
+
+{#if showManifestPreview && manifestPreviewData}
+  <HandoverManifestModal
+    open={showManifestPreview}
+    preview={manifestPreviewData}
+    onClose={() => (showManifestPreview = false)}
+    onDownload={triggerDownload}
+  />
 {/if}
 
 <style>
@@ -920,6 +970,31 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  .preview-manifest-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--kanso-border);
+    background: var(--kanso-surface);
+    color: var(--kanso-text-primary);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preview-manifest-btn:hover:not(:disabled) {
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-text-muted);
+  }
+
+  .preview-manifest-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   .download-package-btn {
