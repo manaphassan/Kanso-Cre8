@@ -621,6 +621,106 @@ This creative package certifies the final production handover of all deliverable
 </body>
 </html>`;
   }
+
+  /**
+   * Bundles the full atelier vault (the 6 canonical compartments) into a clean UTF-8 ZIP archive.
+   * @param {string} workspaceRoot
+   * @param {object} res Express response object
+   */
+  static streamFullVault(workspaceRoot, res) {
+    if (!fs.existsSync(workspaceRoot)) {
+      return res.status(404).json({ error: 'Workspace vault root not found.' });
+    }
+
+    const dateStr = new Date().toISOString().split('T')[0];
+    const zipFileName = `Kanso_Vault_Archive_${dateStr}.zip`;
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${zipFileName}"`);
+
+    const archive = typeof archiver === 'function'
+      ? archiver('zip', { zlib: { level: 9 } })
+      : (archiver.ZipArchive ? new archiver.ZipArchive({ zlib: { level: 9 } }) : new archiver.Archiver('zip', { zlib: { level: 9 } }));
+
+    archive.on('error', (err) => {
+      console.error('[ExportService] Full vault archive error:', err.message);
+      if (!res.headersSent) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
+    archive.pipe(res);
+
+    const canonicalCompartments = ['_Clients', '_Finance', '_Projects', '_Journal', '_Notes', '_Team'];
+    let totalFilesCount = 0;
+
+    const walkVault = (dirPath, relPrefix) => {
+      if (!fs.existsSync(dirPath)) return;
+      const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.name.startsWith('.') || entry.name.startsWith('~lock~') || entry.name.toLowerCase() === 'thumbs.db') continue;
+        const full = path.join(dirPath, entry.name);
+        const rel = path.join(relPrefix, entry.name).replace(/\\/g, '/');
+
+        if (entry.isDirectory()) {
+          walkVault(full, rel);
+        } else {
+          archive.file(full, { name: rel });
+          totalFilesCount++;
+        }
+      }
+    };
+
+    for (const comp of canonicalCompartments) {
+      const compPath = path.join(workspaceRoot, comp);
+      if (fs.existsSync(compPath)) {
+        walkVault(compPath, comp);
+      }
+    }
+
+    // Top-level VAULT_MANIFEST.md guaranteeing human readability & zero lock-in
+    const manifestMd = `---
+title: "Kanso Cre8 — Atelier Vault Archive"
+exported_at: "${new Date().toISOString()}"
+compartments: ["_Clients", "_Finance", "_Projects", "_Journal", "_Notes", "_Team"]
+total_files: ${totalFilesCount}
+data_ownership: "100% Plain Human-Readable UTF-8 Markdown & JSON (Zero SQL / Zero Binary Locks)"
+---
+
+# Kanso Cre8 (簡素) — Atelier Vault Archive
+
+> **Zero Vendor Lock-in Guarantee: You Own Your Creative Data.**
+
+This archive contains your complete creative operations vault. All records are stored strictly as human-readable UTF-8 \`.md\` Markdown files with YAML frontmatter, plus standard JSON profiles.
+
+You can unpack this archive anywhere and open it immediately with **Obsidian**, **VS Code**, standard text editors, or filesystem tools.
+
+## Included Canonical Compartments
+
+- **\`_Clients/\`**: Multi-client dossier hubs and brand color swatch strip profiles.
+- **\`_Finance/\`**: Markdown-based Quotes and Invoices with line items, tax rules, and remittance info.
+- **\`_Projects/\`**: Standardized 5-folder project vaults (\`01_BRIEF/\`, \`02_SOURCE/\`, \`03_COPY/\`, \`04_WIP/\`, \`05_DELIVERABLES/\`).
+- **\`_Journal/\`**: Bullet Journal system with Daily rapid logging, Monthly reviews, and Yearly retrospectives.
+- **\`_Notes/\`**: Atelier Zettelkasten knowledge base (\`01_Fleeting/\`, \`02_Literature/\`, \`03_Permanent/\`) and Scratchpad.
+- **\`_Team/\`**: Master Studio Profile, business registration, and payment remittance instructions.
+
+---
+*Crafted with tranquility and complete data sovereignty in Kanso Cre8 (簡素).*
+`;
+
+    archive.append(manifestMd, { name: 'VAULT_MANIFEST.md' });
+
+    AuditService.logEvent({
+      actor: 'Designer',
+      role: 'Creator',
+      action: 'VAULT_ARCHIVE_EXPORTED',
+      entityType: 'System',
+      entityId: 'vault-root',
+      details: { zipFileName, totalFilesCount, timestamp: new Date().toISOString() }
+    });
+
+    archive.finalize();
+  }
 }
 
 module.exports = ExportService;

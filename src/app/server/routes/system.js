@@ -12,6 +12,7 @@ const WebhookService = require('../services/WebhookService');
 const CommentService = require('../services/CommentService');
 const RadioMetadataService = require('../services/RadioMetadataService');
 const VaultHealthService = require('../services/VaultHealthService');
+const ExportService = require('../services/ExportService');
 const { authenticateToken, requirePermission } = require('../middleware/auth');
 
 router.get('/events', (req, res) => {
@@ -270,6 +271,15 @@ router.post('/system/vault-health/clean-conflicts', (req, res) => {
     const result = VaultHealthService.cleanAllSyncConflicts(resolution, actor);
     SseService.broadcast('workspace:updated', { reason: 'conflicts_cleaned' });
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/system/export-vault', (req, res) => {
+  try {
+    const wsRoot = (WorkspaceService && WorkspaceService.workspaceRoot) || config.WORKSPACE_ROOT;
+    ExportService.streamFullVault(wsRoot, res);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

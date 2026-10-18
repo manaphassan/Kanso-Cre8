@@ -167,6 +167,28 @@
         </div>
       </div>
 
+      <!-- Leave With Your Data (Data Sovereignty) -->
+      <div class="sovereignty-banner">
+        <div class="sovereignty-text">
+          <div class="sovereignty-header">
+            <Icon name="download" size={15} color="var(--kanso-accent)" />
+            <span class="sovereignty-title font-mono">Data Sovereignty: Leave With Your Data</span>
+          </div>
+          <p class="sovereignty-desc">
+            Download your complete atelier vault as an unencumbered ZIP archive. All 6 compartments remain 100% human-readable UTF-8 Markdown and JSON files with zero binary database locks.
+          </p>
+        </div>
+        <a 
+          href="/api/system/export-vault" 
+          download 
+          class="export-vault-btn"
+          aria-label="Export Full Vault Archive"
+        >
+          <Icon name="download" size={14} />
+          <span>Export Vault Archive (.zip)</span>
+        </a>
+      </div>
+
     {:else if activeTab === 'links'}
       <!-- Broken WikiLinks -->
       <div class="tab-pane">
@@ -330,4 +352,45 @@
   .kanso-btn.danger { background: var(--kanso-danger); color: var(--kanso-surface); }
   .kanso-btn:hover { opacity: 0.9; }
   .kanso-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .sovereignty-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--kanso-canvas);
+    border: 1px solid var(--kanso-border);
+    border-radius: 6px;
+    margin-top: 12px;
+  }
+  @media (max-width: 768px) {
+    .sovereignty-banner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  .sovereignty-text { display: flex; flex-direction: column; gap: 4px; }
+  .sovereignty-header { display: flex; align-items: center; gap: 8px; }
+  .sovereignty-title { font-size: 13px; font-weight: 700; color: var(--kanso-text-primary); }
+  .sovereignty-desc { margin: 0; font-size: 11.5px; color: var(--kanso-text-muted); line-height: 1.4; max-width: 580px; }
+  .export-vault-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--kanso-surface-hover);
+    border: 1px solid var(--kanso-border);
+    border-radius: 6px;
+    color: var(--kanso-text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .export-vault-btn:hover {
+    background: var(--kanso-accent);
+    color: var(--kanso-canvas);
+    border-color: var(--kanso-accent);
+  }
 </style>
