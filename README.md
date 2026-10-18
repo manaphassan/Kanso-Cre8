@@ -22,12 +22,12 @@ Operating on a pure **Markdown-as-Database** storage model, all client dossiers,
 
 ## Core Capabilities
 
-- **Studio Deck**: Executive dashboard with Today's Tasks, design metrics bento (velocity, effective rate, first-time-right %), visual project glance, and total cashflow aggregation.
+- **Home**: Overview dashboard with Today's Tasks, weekly metrics (velocity, effective rate, first-time-right %), projects in progress, and total cashflow aggregation.
 - **Billable Chronometer**: Header live timer with design hourly rate selector, real-time accrued earnings ticker, active client swatch with 1-click HEX copy, and 1-click session logging to draft invoices.
 - **Projects & Kanban**: 5-stage visual Kanban and table views with standardized 5-folder project vaults (`01_BRIEF` to `05_DELIVERABLES`).
-- **Bullet Journal (BuJo)**: Daily rapid logging (`_Journal/Daily/`), monthly review (`_Journal/Monthly/`), and yearly annual vision (`_Journal/Yearly/`).
-- **Atelier Notes**: 3-tier knowledge base (`01_Fleeting/`, `02_Literature/`, `03_Permanent/`) with bidirectional WikiLinks, backlink crawler, and instant Scratchpad buffer.
-- **Clients & Money**: Integrated hub for client profiles (`_Clients/`), design rate cards, proposals, and printable invoices (`_Finance/`) stamped with master studio branding and wire remittance instructions.
+- **Journal**: Daily rapid logging (`_Journal/Daily/`), monthly review (`_Journal/Monthly/`), and yearly annual vision (`_Journal/Yearly/`).
+- **Notes**: 3-tier knowledge base (`01_Fleeting/`, `02_Literature/`, `03_Permanent/`) with bidirectional WikiLinks, backlink crawler, and instant Scratchpad buffer.
+- **Clients & Invoices**: Integrated hub for client profiles (`_Clients/`), design rate cards, proposals, and printable invoices (`_Finance/`) stamped with master studio branding and wire remittance instructions.
 - **Retro Cassette Focus Radio**: Faithful skeuomorphic mechanical cassette player with dual rotating spools (33 RPM), curated ambient streams, and a 25-minute Pomodoro focus timer.
 
 ---
@@ -68,7 +68,7 @@ npm install
 # Run the frontend in development mode
 npm run dev:client
 
-# Run the full automated test suite (62 test suites)
+# Run the full automated test suite (71 test suites)
 npm test
 
 # Run Svelte and TypeScript type checking
@@ -96,6 +96,7 @@ All 16 governance checks must pass with `0 warned / 0 failed`.
 - [docs/DESIGN.md](./docs/DESIGN.md) — Design tokens, typography hierarchy, UI rules, and icon system.
 - [docs/SCHEMA.md](./docs/SCHEMA.md) — Vault folder structure and frontmatter validation contracts.
 - [docs/MASTER_PLAN.md](./docs/MASTER_PLAN.md) — Phased refactoring roadmap and milestone specifications.
+- [docs/UX_REVIEW_2026-10.md](./docs/UX_REVIEW_2026-10.md) — UX review, decluttering, plain language refactor, and quality audit.
 - [CHANGELOG.md](./CHANGELOG.md) — Clean release version history.
 
 ---
