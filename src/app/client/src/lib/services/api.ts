@@ -742,6 +742,20 @@ export class ApiClient {
     });
   }
 
+  static convertQuoteFull(options: {
+    quoteId: string;
+    projectTitle?: string;
+    depositPercentage?: number;
+    deadline?: string;
+    deliverableType?: string;
+    description?: string;
+  }): Promise<{ success: boolean; quote: any; project: any; invoice: any }> {
+    return this.request('/finance/convert-quote-full', {
+      method: 'POST',
+      body: JSON.stringify(options)
+    });
+  }
+
   // ─── Atelier Knowledge Engine (_Notes/) ───
   static getAtomicNotes(): Promise<{ success: boolean; notes: any[] }> {
     return this.request('/notes/atomic');

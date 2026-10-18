@@ -358,6 +358,41 @@ export class FinanceService {
     return null;
   }
 
+  public async convertQuoteFull(options: {
+    quoteId: string;
+    projectTitle?: string;
+    depositPercentage?: number;
+    deadline?: string;
+    deliverableType?: string;
+    description?: string;
+  }): Promise<{ quote: InvoiceDocument; project: any; invoice: InvoiceDocument } | null> {
+    try {
+      const res = await ApiClient.convertQuoteFull(options);
+      if (res && res.success) {
+        const quote = res.quote as InvoiceDocument;
+        const invoice = res.invoice as InvoiceDocument;
+        const project = res.project;
+
+        const qIdx = this.quotes.findIndex(q => q.id === quote.id || q.documentNumber === quote.documentNumber);
+        if (qIdx !== -1) this.quotes[qIdx] = quote;
+        this.saveQuotes();
+
+        const invIdx = this.documents.findIndex(d => d.id === invoice.id || d.documentNumber === invoice.documentNumber);
+        if (invIdx !== -1) {
+          this.documents[invIdx] = invoice;
+        } else {
+          this.documents.unshift(invoice);
+        }
+        this.saveDocuments();
+
+        return { quote, project, invoice };
+      }
+    } catch (err) {
+      console.warn('[FinanceService] convertQuoteFull failed:', err);
+    }
+    return null;
+  }
+
   public deleteDocument(id: string): void {
     this.deleteInvoice(id);
     this.deleteQuote(id);
