@@ -573,6 +573,10 @@ export class ApiClient {
     return this.request(`/projects/${encodeURIComponent(projectId)}/snapshots`);
   }
 
+  static getProjectSnapshotDetails(projectId: string, snapshotId: string): Promise<{ success: boolean; snapshot: { meta: any; readme: string; copy: string; review: string } }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/snapshots/${encodeURIComponent(snapshotId)}`);
+  }
+
   static createProjectSnapshot(projectId: string, payload: { trigger?: string; note?: string }): Promise<{ success: boolean; snapshot: any }> {
     return this.request(`/projects/${encodeURIComponent(projectId)}/snapshot`, {
       method: 'POST',
@@ -585,6 +589,10 @@ export class ApiClient {
       method: 'POST',
       body: JSON.stringify({ snapshotId })
     });
+  }
+
+  static rollbackProjectSnapshot(projectId: string, snapshotId: string): Promise<{ success: boolean; restoredSnapshot: any; message: string }> {
+    return this.rollbackProject(projectId, snapshotId);
   }
 
   // ─── Workload Reassign ───
