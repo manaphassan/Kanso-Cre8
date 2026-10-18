@@ -45,3 +45,9 @@
 - 2026-10-18 | src/app/server/services/VaultHealthService.js, src/app/client/src/lib/components/settings/VaultHealthInspector.svelte | Phase A4: Vault health & link integrity inspector checking broken WikiLinks, orphan atomic notes, frontmatter validity, cloud sync conflicts, and compartment telemetry.
 - 2026-10-18 | src/app/client/src/lib/components/features/ZenMicroBar.svelte, App.svelte | Phase A5: Quiet Mode / Zen Atelier Mode (Ctrl+Shift+Z / Cmd+Shift+Z) with floating micro-bar, live billable chronometer, lo-fi radio strip, scratchpad trigger, and full-bleed distraction-free canvas.
 
+## Track B - Proof Round Timeline & Handover Manifests (Post-0.8.0)
+- 2026-10-18 | src/app/server/services/SnapshotService.js, src/app/server/routes/projects.js | Phase B1: Enhanced snapshot engine capturing _review.md approvals, deliverable counts in meta.json, and getSnapshotDetails API for non-destructive time travel.
+- 2026-10-18 | src/app/client/src/lib/components/project/ProjectTimelineTab.svelte, CaptureSnapshotModal.svelte, SnapshotDetailModal.svelte | Phase B2: Interactive Proof Round Timeline tab in Project Detail with vertical node track, trigger badges, snapshot inspection modal, and 1-click restore.
+- 2026-10-18 | src/app/server/services/ExportService.js, src/app/client/src/lib/components/features/HandoverPackageModal.svelte, HandoverManifestModal.svelte | Phase B3: Automated client handover package builder with live DELIVERY.md preview, SHA-256 cryptographic checksums verification table, HTML colophon summary sheet, and Project Inspector integration.
+- 2026-10-18 | src/app/server/services/ExportService.js, src/app/server/routes/system.js, src/app/client/src/lib/components/settings/VaultHealthInspector.svelte | Phase B4: Atelier "Leave With Your Data" vault exporter streaming the 6 canonical compartments into an unencumbered ZIP archive with top-level VAULT_MANIFEST.md guaranteeing zero vendor lock-in.
+
