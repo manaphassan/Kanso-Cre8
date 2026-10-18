@@ -30,7 +30,7 @@
       "tooltip": "Kanso Cre8 (簡素) — Mindful Creative Vault"
     },
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' http://localhost:4000 http://127.0.0.1:4000 ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; media-src 'self' blob: https:;"
+      "csp": "default-src 'self'; connect-src 'self' http://localhost:* http://127.0.0.1:* ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; media-src 'self' blob: https:;"
     }
   },
   "bundle": {
