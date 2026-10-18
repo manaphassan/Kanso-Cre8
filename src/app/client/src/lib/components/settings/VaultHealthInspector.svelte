@@ -3,6 +3,7 @@
   import { ApiClient } from '$lib/services/api';
   import { appState } from '$lib/stores/appState.svelte';
   import { Icon } from '$lib/components/ui';
+  import VaultRepairBanner from './VaultRepairBanner.svelte';
 
   interface CompartmentStat {
     id: string;
@@ -54,6 +55,8 @@
     }
   }
 
+  const missingNames = $derived(report ? report.compartments.filter((c) => !c.exists).map((c) => c.name) : []);
+
   async function handleCleanAllConflicts() {
     isCleaning = true;
     try {
@@ -100,6 +103,10 @@
       <span>{isScanning ? 'Auditing Vault...' : 'Scan Vault'}</span>
     </button>
   </div>
+
+  {#if report}
+    <VaultRepairBanner vaultExists={report.vaultExists} missing={missingNames} onRepaired={scanVault} />
+  {/if}
 
   <!-- Metric Badges Strip -->
   {#if report}
@@ -363,12 +370,7 @@
     border-radius: 6px;
     margin-top: 12px;
   }
-  @media (max-width: 768px) {
-    .sovereignty-banner {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
+  @media (max-width: 768px) { .sovereignty-banner { flex-direction: column; align-items: flex-start; } }
   .sovereignty-text { display: flex; flex-direction: column; gap: 4px; }
   .sovereignty-header { display: flex; align-items: center; gap: 8px; }
   .sovereignty-title { font-size: 13px; font-weight: 700; color: var(--kanso-text-primary); }
@@ -388,9 +390,5 @@
     white-space: nowrap;
     transition: all 0.15s ease;
   }
-  .export-vault-btn:hover {
-    background: var(--kanso-accent);
-    color: var(--kanso-canvas);
-    border-color: var(--kanso-accent);
-  }
+  .export-vault-btn:hover { background: var(--kanso-accent); color: var(--kanso-canvas); border-color: var(--kanso-accent); }
 </style>

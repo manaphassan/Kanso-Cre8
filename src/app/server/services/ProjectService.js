@@ -14,6 +14,7 @@ class ProjectService {
     this.lastScanTime = null;
     this.isScanning = false;
     this.watcher = null;
+    this.lastVaultStatus = null;
   }
 
   get workspaceRoot() {
@@ -25,10 +26,14 @@ class ProjectService {
   }
 
   init() {
-    VaultPathService.ensureWorkspace();
-    VaultPathService.migrateVault();
-    this.scan();
-    this.startWatcher();
+    this.lastVaultStatus = VaultPathService.getVaultStatus(this.workspaceRoot);
+    if (this.lastVaultStatus.ok) {
+      VaultPathService.migrateVault();
+      this.scan();
+      this.startWatcher();
+    } else {
+      console.warn(`[ProjectService] Vault startup check alert (${this.lastVaultStatus.reason || this.lastVaultStatus.status}): ${this.lastVaultStatus.message || this.workspaceRoot}`);
+    }
   }
 
   startWatcher() {

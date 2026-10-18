@@ -552,22 +552,21 @@ class JournalVaultService {
 
     // Default scaffold pulling from telemetry
     const telemetry = this.getWeeklyTelemetryRollup();
+    const demo = require('./DemoDataService').isEnabled();
     return {
       week: targetWeek,
       title: `Weekly Review: ${targetWeek}`,
       startDate: telemetry.weekStart,
       endDate: telemetry.weekEnd,
-      shippedDeliverables: [
-        'Mobile App Illustration 3D Key Visuals (ACME)'
-      ],
-      hoursLogged: telemetry.billableHours || 38.5,
-      unbilledHours: 1.5,
-      nextWeekTop3: [
+      shippedDeliverables: demo ? ['Mobile App Illustration 3D Key Visuals (ACME)'] : [],
+      hoursLogged: telemetry.billableHours || (demo ? 38.5 : 0),
+      unbilledHours: demo ? 1.5 : 0,
+      nextWeekTop3: demo ? [
         'Finalize Acme Corp motion onboarding sequence',
         'Deliver Lumina Labs vector asset library',
         'Calibrate client retainer agreements'
-      ],
-      reflections: 'Mindful creative cadence maintained. Core milestones shipped on schedule.',
+      ] : [],
+      reflections: demo ? 'Mindful creative cadence maintained. Core milestones shipped on schedule.' : '',
       tags: ['journal', 'bujo', 'weekly'],
       rawMarkdown: ''
     };

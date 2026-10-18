@@ -56,6 +56,8 @@ class WorkspaceService {
   // Lifecycle & scanning
   init() { return ProjectService.init(); }
   ensureWorkspace() { return VaultPathService.ensureWorkspace(); }
+  getVaultStatus() { return VaultPathService.getVaultStatus(); }
+  ensureVaultStructure(root) { return VaultPathService.ensureVaultStructure(root); }
   migrateVault(targetPath) { return VaultPathService.migrateVault(targetPath); }
   startWatcher() { return ProjectService.startWatcher(); }
   scan(force = false) { return ProjectService.scan(force); }
@@ -85,6 +87,7 @@ class WorkspaceService {
   scanSyncConflicts() { return VaultPathService.scanSyncConflicts(); }
   resolveSyncConflict(conflictPath, resolution, actor) { return VaultPathService.resolveSyncConflict(conflictPath, resolution, actor); }
   setWorkspaceRoot(newPath, actor, autoCreate) { return VaultPathService.setWorkspaceRoot(newPath, actor, autoCreate); }
+  resetVaultStructure(confirmationName, actor) { return VaultPathService.resetVaultStructure(confirmationName, actor); }
 }
 
 module.exports = new WorkspaceService();

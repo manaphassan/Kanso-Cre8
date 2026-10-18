@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 
 router.use('/', require('./system'));
+router.use('/', require('./vault'));
 router.use('/', require('./auth'));
 router.use('/', require('./projects'));
 router.use('/', require('./deliverables'));

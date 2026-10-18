@@ -38,6 +38,9 @@ module.exports = async function run(test, context = {}) {
 
     try {
       const CompanyService = require('../services/CompanyService');
+      assert.deepStrictEqual(CompanyService.getAll(), [], 'A clean vault must not auto-seed demo clients');
+
+      require('../services/DemoDataService').setEnabled(true);
       const companies = CompanyService.getAll();
 
       assert.ok(Array.isArray(companies), 'Companies must return an array');
@@ -74,6 +77,77 @@ module.exports = async function run(test, context = {}) {
     } finally {
       config.WORKSPACE_ROOT = origRoot;
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
+  test('DemoDataService keeps vaults clean by default, loads samples on request, and clears only demo items', () => {
+    const testDir = path.join(__dirname, 'temp-demo-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWsRoot = WorkspaceService.workspaceRoot;
+    fs.mkdirSync(testDir, { recursive: true });
+    WorkspaceService.workspaceRoot = testDir;
+    config.WORKSPACE_ROOT = testDir;
+
+    try {
+      const DemoDataService = require('../services/DemoDataService');
+      const clientsDir = path.join(testDir, '_Clients');
+
+      assert.strictEqual(DemoDataService.isEnabled(), false, 'demo data must be off by default');
+      NotesVaultService.ensureSeeded();
+      FinanceVaultService.ensureQuotesSeeded();
+      assert.strictEqual(DemoDataService.getStatus().present, false, 'no demo items on a fresh vault');
+      assert.strictEqual(FinanceVaultService.getQuotes().length, 0, 'no sample quote by default');
+
+      DemoDataService.setEnabled(true);
+      CompanyService.ensureCanonicalSeeds();
+      NotesVaultService.ensureSeeded();
+      FinanceVaultService.ensureQuotesSeeded();
+      const loaded = DemoDataService.getStatus();
+      assert.strictEqual(loaded.counts.client, 3);
+      assert.strictEqual(loaded.counts.quote, 1);
+      assert.strictEqual(loaded.counts.note, 3);
+
+      // User-created client and a demo client holding a user file must survive
+      fs.mkdirSync(path.join(clientsDir, 'ZZZ_Mine'), { recursive: true });
+      fs.writeFileSync(path.join(clientsDir, 'ZZZ_Mine', 'client.md'), '---\nname: Mine\ncode: ZZZ\n---\n', 'utf8');
+      fs.writeFileSync(path.join(clientsDir, 'NEX_NexusStudio', 'brand-notes.txt'), 'mine', 'utf8');
+
+      const result = DemoDataService.clear();
+      assert.strictEqual(DemoDataService.isEnabled(), false);
+      assert.ok(result.skipped.some(s => s.label === 'NEX_NexusStudio'), 'client with user files is kept');
+      assert.ok(fs.existsSync(path.join(clientsDir, 'ZZZ_Mine', 'client.md')), 'user client untouched');
+      assert.strictEqual(fs.existsSync(path.join(clientsDir, 'ACME_AcmeCorp')), false);
+      assert.strictEqual(DemoDataService.getStatus().counts.quote, undefined);
+      assert.strictEqual(DemoDataService.getStatus().counts.note, undefined);
+    } finally {
+      WorkspaceService.workspaceRoot = origWsRoot;
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
+  test('VaultPathService.getVaultStatus repairs an empty vault and reports an unreachable one', () => {
+    const emptyDir = path.join(__dirname, 'temp-status-test');
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWsRoot = WorkspaceService.workspaceRoot;
+    fs.mkdirSync(emptyDir, { recursive: true });
+
+    try {
+      WorkspaceService.workspaceRoot = emptyDir;
+      const ok = WorkspaceService.getVaultStatus();
+      assert.strictEqual(ok.ok, true);
+      assert.ok(ok.repaired.includes('_Clients'), 'missing base folders are recreated');
+      assert.ok(fs.existsSync(path.join(emptyDir, '_Notes', 'Scratchpad.md')));
+      assert.deepStrictEqual(WorkspaceService.getVaultStatus().repaired, [], 'second run is a no-op');
+
+      WorkspaceService.workspaceRoot = path.join(emptyDir, 'does-not-exist');
+      const missing = WorkspaceService.getVaultStatus();
+      assert.strictEqual(missing.ok, false);
+      assert.strictEqual(missing.reason, 'missing_root');
+    } finally {
+      WorkspaceService.workspaceRoot = origWsRoot;
+      config.WORKSPACE_ROOT = origRoot;
+      try { fs.rmSync(emptyDir, { recursive: true, force: true }); } catch (_) {}
     }
   });
 
