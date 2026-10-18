@@ -73,6 +73,14 @@
         actionText: 'Review Invoices →',
         actionHref: '#invoices'
       };
+    } else if (timerStore.unbilledCount > 0) {
+      return {
+        type: 'amber',
+        header: 'Unbilled Atelier Time',
+        body: `${timerStore.unbilledCount} session(s) (${timerStore.unbilledFormatted}, +${settingsStore.settings.currencySymbol || 'RM'}${timerStore.unbilledEarnings.toFixed(2)}) ready to append to invoice.`,
+        actionText: 'Review Invoices →',
+        actionHref: '#invoices'
+      };
     } else if (incomeSummary.pending > 0) {
       return {
         type: 'amber',

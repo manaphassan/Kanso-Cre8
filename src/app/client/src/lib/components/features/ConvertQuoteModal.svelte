@@ -16,7 +16,7 @@
   let projectTitle = $state(
     quote.items && quote.items[0]?.description
       ? quote.items[0].description
-      : (quote.title || `Sprint ${quote.documentNumber}`)
+      : ((quote as any).title || `Sprint ${quote.documentNumber}`)
   );
   let deliverableType = $state('Brand Identity');
   let deadline = $state(

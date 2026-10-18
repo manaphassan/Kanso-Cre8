@@ -89,6 +89,33 @@ class TimerStore {
     return this.formattedTime || '00:00:00';
   });
 
+  // Unbilled Atelier Derivations
+  unbilledLogs = $derived.by(() => {
+    return this.timeLogs.filter(l => !l.appendedToInvoice && l.durationSeconds >= 5);
+  });
+
+  unbilledSeconds = $derived.by(() => {
+    return this.unbilledLogs.reduce((sum, l) => sum + l.durationSeconds, 0);
+  });
+
+  unbilledCount = $derived.by(() => {
+    return this.unbilledLogs.length;
+  });
+
+  unbilledEarnings = $derived.by(() => {
+    return Math.round(this.unbilledLogs.reduce((sum, l) => sum + l.earnedAmount, 0) * 100) / 100;
+  });
+
+  unbilledFormatted = $derived.by(() => {
+    const totalSecs = this.unbilledSeconds;
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    if (hrs > 0) {
+      return `${hrs}h ${mins}m`;
+    }
+    return `${Math.max(1, mins)}m`;
+  });
+
   constructor() {
     this.loadTimeLogs();
     this.loadPersistedState();
@@ -292,6 +319,27 @@ class TimerStore {
     this.persistState();
   }
 
+  // --- UNBILLED SESSION ACTIONS ---
+
+  markSessionAppended(logId: string) {
+    const log = this.timeLogs.find(l => l.id === logId);
+    if (log) {
+      log.appendedToInvoice = true;
+      this.saveTimeLogs();
+    }
+  }
+
+  markAllSessionsAppended() {
+    for (const log of this.timeLogs) {
+      log.appendedToInvoice = true;
+    }
+    this.saveTimeLogs();
+  }
+
+  dismissUnbilledSession(logId: string) {
+    this.markSessionAppended(logId);
+  }
+
   // --- TICKER & PERSISTENCE ---
 
   private startTicker() {
@@ -399,6 +447,26 @@ class TimerStore {
       const stored = localStorage.getItem(LOGS_STORAGE_KEY);
       if (stored) {
         this.timeLogs = JSON.parse(stored);
+      } else {
+        const symbol = settingsStore?.settings?.currencySymbol || 'RM';
+        this.timeLogs = [
+          {
+            id: 'log_seed_01',
+            projectId: '202609_0001_ACME_MobileAppIllustration',
+            projectTitle: 'Mobile App Illustration',
+            clientCode: 'ACME',
+            hourlyRate: 150,
+            durationSeconds: 2700,
+            durationFormatted: '00:45:00',
+            earnedAmount: 112.50,
+            earnedFormatted: `${symbol} 112.50`,
+            startedAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+            endedAt: new Date(Date.now() - 3600000 * 2.25).toISOString(),
+            note: 'Mobile hero illustration wireframes and visual tokens',
+            appendedToInvoice: false
+          }
+        ];
+        this.saveTimeLogs();
       }
     } catch (e) {
       this.timeLogs = [];
