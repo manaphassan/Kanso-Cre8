@@ -55,6 +55,7 @@ class AppStateStore {
   radioDrawerOpen = $state<boolean>(false);
   userMenuOpen = $state<boolean>(false);
   contextDrawerOpen = $state<boolean>(false);
+  isZenMode = $state<boolean>(false);
   sseStatus = $state<'connected' | 'reconnecting' | 'disconnected'>('disconnected');
   lastSyncedAt = $state<Date | null>(null);
 
@@ -101,6 +102,29 @@ class AppStateStore {
     this.quickDrawerOpen = true;
     this.sidebarExpanded = true;
     this.sidebarRail = false;
+  }
+
+  toggleZenMode() {
+    this.isZenMode = !this.isZenMode;
+    if (this.isZenMode) {
+      this.addToast('Quiet Mode active — press Esc or Ctrl+Shift+Z to exit', 'info', 'Zen Atelier');
+    } else {
+      this.addToast('Restored standard studio view', 'info', 'Zen Mode Exited');
+    }
+  }
+
+  exitZenMode() {
+    if (this.isZenMode) {
+      this.isZenMode = false;
+      this.addToast('Restored standard studio view', 'info', 'Zen Mode Exited');
+    }
+  }
+
+  enterZenMode() {
+    if (!this.isZenMode) {
+      this.isZenMode = true;
+      this.addToast('Quiet Mode active — press Esc or Ctrl+Shift+Z to exit', 'info', 'Zen Atelier');
+    }
   }
 
   navigate(route: string, params: Record<string, any> = {}) {
