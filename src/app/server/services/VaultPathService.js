@@ -233,7 +233,7 @@ class VaultPathService {
     try {
       const relative = path.relative(this.workspaceRoot, fullPath);
       const parts = relative.split(path.sep);
-      if (parts.length > 0 && !parts[0].startsWith('SS-') && !/^\d{6}/.test(parts[0]) && !/^\d{4}[A-Za-z]?$/.test(parts[0])) {
+      if (parts.length > 0 && !parts[0].startsWith('_') && !/^\d{4}/.test(parts[0]) && !/^\d{6}/.test(parts[0])) {
         return parts[0];
       }
     } catch (e) {}
@@ -252,11 +252,13 @@ class VaultPathService {
   getWorkspaceCandidates() {
     const userDocs = path.join(process.env.USERPROFILE || '', 'Documents', 'KansoCre8');
     const userOneDriveDocs = path.join(process.env.USERPROFILE || '', 'OneDrive', 'Documents', 'KansoCre8');
+    const userHomeVault = path.join(process.env.USERPROFILE || '', 'KansoVault');
     const candidates = [
       userDocs,
       userOneDriveDocs,
+      userHomeVault,
       'D:\\KansoCre8',
-      'D:\\OneDrive\\Völundr',
+      'D:\\KansoVault',
       path.resolve(__dirname, '../sample-workspace')
     ];
 
@@ -285,138 +287,14 @@ class VaultPathService {
     return { candidates: results, current: currentRoot };
   }
 
-  scanSyncConflicts() {
-    const conflicts = [];
-    const root = this.workspaceRoot;
-    if (!fs.existsSync(root)) return conflicts;
-
-    const conflictPatterns = [
-      /conflicted copy/i,
-      /\(Case Conflict\)/i,
-      /\.sync-conflict-/i,
-      /\.sync-temp-/i,
-      /\(conflict\)/i
-    ];
-
-    const isConflictFilename = (name) => conflictPatterns.some(p => p.test(name));
-
-    const deriveBaseFilename = (filename) => {
-      const ext = path.extname(filename);
-      let baseWithoutExt = path.basename(filename, ext);
-      baseWithoutExt = baseWithoutExt
-        .replace(/\s*\([^)]*conflicted copy[^)]*\)/gi, '')
-        .replace(/\s*[-_.]*conflicted copy[-_.]*/gi, '')
-        .replace(/\s*\(Case Conflict\)/gi, '')
-        .replace(/\.sync-conflict-\d+-\w+/gi, '')
-        .replace(/\.sync-temp-\d+/gi, '')
-        .replace(/\s*\([^)]*conflict[^)]*\)/gi, '')
-        .replace(/\s*[-_.]*conflict[-_.]*/gi, '')
-        .trim();
-      return `${baseWithoutExt}${ext}`;
-    };
-
-    const crawl = (dir) => {
-      try {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist') continue;
-            crawl(fullPath);
-          } else if (entry.isFile()) {
-            if (isConflictFilename(entry.name)) {
-              try {
-                const stat = fs.statSync(fullPath);
-                const baseName = deriveBaseFilename(entry.name);
-                const baseFullPath = path.join(dir, baseName);
-                const baseExists = fs.existsSync(baseFullPath);
-                let baseStat = null;
-                if (baseExists) {
-                  try { baseStat = fs.statSync(baseFullPath); } catch (e) {}
-                }
-
-                conflicts.push({
-                  conflictPath: fullPath,
-                  relPath: path.relative(root, fullPath).replace(/\\/g, '/'),
-                  filename: entry.name,
-                  sizeBytes: stat.size,
-                  mtime: stat.mtime.toISOString(),
-                  baseFilename: baseName,
-                  basePath: baseFullPath,
-                  baseRelPath: path.relative(root, baseFullPath).replace(/\\/g, '/'),
-                  baseExists,
-                  baseSizeBytes: baseStat ? baseStat.size : null,
-                  baseMtime: baseStat ? baseStat.mtime.toISOString() : null
-                });
-              } catch (err) {
-                console.warn('[VaultPathService] Error analyzing conflict file:', err.message);
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('[VaultPathService] Error crawling for conflicts:', err.message);
-      }
-    };
-
-    crawl(root);
-    return conflicts;
+  scanSyncConflicts(root = this.workspaceRoot) {
+    const SyncConflictService = require('./SyncConflictService');
+    return SyncConflictService.scanSyncConflicts(root);
   }
 
   resolveSyncConflict(conflictPath, resolution = 'keep_local', actor = 'Designer') {
-    if (!conflictPath || !fs.existsSync(conflictPath)) {
-      throw new Error(`Conflict file not found on disk: ${conflictPath}`);
-    }
-
-    const resolvedPath = path.resolve(conflictPath);
-    if (!resolvedPath.startsWith(path.resolve(this.workspaceRoot))) {
-      throw new Error('Access denied: target path is outside workspace root.');
-    }
-
-    const dir = path.dirname(resolvedPath);
-    const filename = path.basename(resolvedPath);
-    let base = filename;
-    base = base.replace(/\s*\([^)]*conflicted copy[^)]*\)/i, '');
-    base = base.replace(/\s*\(Case Conflict\)/i, '');
-    base = base.replace(/\.sync-conflict-\d+-\w+/i, '');
-    base = base.replace(/\s*\([^)]*conflict[^)]*\)/i, '');
-    const baseFullPath = path.join(dir, base.trim());
-
-    if (resolution === 'keep_local') {
-      fs.unlinkSync(resolvedPath);
-    } else if (resolution === 'keep_conflict' || resolution === 'keep_cloud') {
-      const content = fs.readFileSync(resolvedPath);
-      fs.writeFileSync(baseFullPath, content);
-      fs.unlinkSync(resolvedPath);
-    } else if (resolution === 'archive') {
-      const archivePath = path.join(dir, `archived_${filename}`);
-      fs.renameSync(resolvedPath, archivePath);
-    } else {
-      throw new Error(`Unknown resolution strategy: ${resolution}`);
-    }
-
-    AuditService.logEvent({
-      actor,
-      action: 'SYNC_CONFLICT_RESOLVED',
-      entityType: 'System',
-      entityId: filename,
-      details: {
-        resolution,
-        conflictPath: resolvedPath,
-        basePath: baseFullPath,
-        timestamp: new Date().toISOString()
-      }
-    });
-
-    const ProjectService = require('./ProjectService');
-    ProjectService.scan();
-
-    return {
-      success: true,
-      message: `Sync conflict resolved via ${resolution}`,
-      conflictPath: resolvedPath,
-      resolution
-    };
+    const SyncConflictService = require('./SyncConflictService');
+    return SyncConflictService.resolveSyncConflict(conflictPath, resolution, actor, this.workspaceRoot);
   }
 
   setWorkspaceRoot(newPath, actor = 'Administrator', autoCreate = false) {
