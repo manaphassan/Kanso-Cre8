@@ -27,6 +27,7 @@ const GeminiService = require('../services/GeminiService');
 const WebhookService = require('../services/WebhookService');
 const SnapshotService = require('../services/SnapshotService');
 const TimerService = require('../services/TimerService');
+const VaultHealthService = require('../services/VaultHealthService');
 
 
 
@@ -775,6 +776,94 @@ revision: 1
       const forbiddenDir = path.join(config.WORKSPACE_ROOT, '_Team', 'comments');
       assert.strictEqual(fs.existsSync(forbiddenDir), false, '_Team/comments must not exist');
     } finally {
+      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    }
+  });
+
+  await test('VaultHealthService audits broken WikiLinks, orphan notes, frontmatter schema and compartments', async () => {
+    const testDir = path.join(__dirname, 'temp-vault-health-test');
+    try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
+    fs.mkdirSync(testDir, { recursive: true });
+
+    const origRoot = config.WORKSPACE_ROOT;
+    const origWs = WorkspaceService.workspaceRoot;
+    config.WORKSPACE_ROOT = testDir;
+    WorkspaceService.workspaceRoot = testDir;
+
+    try {
+      // 1. Scaffold canonical 6 compartments
+      const compartments = ['_Clients', '_Finance', '_Projects', '_Journal', '_Notes', '_Team'];
+      for (const comp of compartments) {
+        fs.mkdirSync(path.join(testDir, comp), { recursive: true });
+      }
+      fs.mkdirSync(path.join(testDir, '_Finance', 'Quotes'), { recursive: true });
+      fs.mkdirSync(path.join(testDir, '_Notes', '01_Fleeting'), { recursive: true });
+      fs.mkdirSync(path.join(testDir, '_Notes', '03_Permanent'), { recursive: true });
+
+      // 2. Note with broken link and note with valid link
+      const note1Path = path.join(testDir, '_Notes', '01_Fleeting', 'CallNotes.md');
+      fs.writeFileSync(note1Path, `---
+title: Call Notes
+id: note_call_01
+type: fleeting
+---
+Discussed packaging specs with [[ACME]]. Also check [[GhostNoteReference]] for details.
+`);
+
+      // 3. Isolated orphan note (no incoming, no outgoing)
+      const orphanPath = path.join(testDir, '_Notes', '03_Permanent', 'SolitaryRule.md');
+      fs.writeFileSync(orphanPath, `---
+title: Solitary Rule
+id: note_solitary_01
+type: permanent
+---
+This is a standalone design principle with no links.
+`);
+
+      // 4. Broken frontmatter quote
+      const quotePath = path.join(testDir, '_Finance', 'Quotes', 'Q-2026-999.md');
+      fs.writeFileSync(quotePath, `---
+client: ACME
+date: 2026-10-18
+---
+# Quote missing documentNumber and total
+`);
+
+      // 5. Cloud sync conflict file
+      const conflictPath = path.join(testDir, '_Notes', '01_Fleeting', 'CallNotes (conflicted copy 2026-10-18).md');
+      fs.writeFileSync(conflictPath, 'Conflicted content copy');
+
+      // 6. Execute audit
+      const report = VaultHealthService.getVaultHealthReport();
+      assert.strictEqual(report.vaultExists, true);
+      assert.strictEqual(report.compartments.length, 6);
+
+      // Check broken links: should detect GhostNoteReference
+      assert.ok(report.brokenWikiLinks.length >= 1, 'Should find broken link');
+      const broken = report.brokenWikiLinks.find(b => b.target === 'GhostNoteReference');
+      assert.ok(broken, 'Should locate GhostNoteReference as broken');
+
+      // Check orphan notes: should detect SolitaryRule
+      assert.ok(report.orphanNotes.length >= 1, 'Should find orphan note');
+      const orphan = report.orphanNotes.find(o => o.title === 'Solitary Rule');
+      assert.ok(orphan, 'Should flag Solitary Rule as orphan');
+
+      // Check frontmatter: quote missing documentNumber
+      assert.ok(report.frontmatterIssues.length >= 1, 'Should flag missing frontmatter');
+
+      // Check sync conflicts
+      assert.ok(report.syncConflicts.length >= 1, 'Should identify sync conflict');
+
+      // Check health score degradation
+      assert.ok(report.score < 100, 'Score should reflect detected issues');
+
+      // 7. Clean sync conflicts
+      const cleanRes = VaultHealthService.cleanAllSyncConflicts('keep_local', 'HealthTester');
+      assert.strictEqual(cleanRes.success, true);
+      assert.strictEqual(cleanRes.resolvedCount, 1);
+    } finally {
+      config.WORKSPACE_ROOT = origRoot;
+      WorkspaceService.workspaceRoot = origWs;
       try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (_) {}
     }
   });

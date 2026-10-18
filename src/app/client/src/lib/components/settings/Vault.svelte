@@ -4,6 +4,7 @@
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
   import VaultMount from './VaultMount.svelte';
   import VaultTree from './VaultTree.svelte';
+  import VaultHealthInspector from './VaultHealthInspector.svelte';
   import SyncConflictDoctor from './SyncConflictDoctor.svelte';
 
   let currentVaultRoot = $state(vaultStore.config.rootPath || '');
@@ -35,6 +36,8 @@
       loadVaultStatus();
     }}
   />
+
+  <VaultHealthInspector />
 
   <VaultTree {currentVaultRoot} />
 
