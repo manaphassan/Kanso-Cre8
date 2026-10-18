@@ -23,3 +23,13 @@
 - 2026-10-18 | src/app/client/src/lib/stores/licenseStore.svelte.ts, App.svelte | P4.7: Removed Pro badges and gating clutter from navigation and views; license management restricted strictly to Settings > About.
 - 2026-10-18 | src/app/client/src/ | P4.8: Copy pass completed (sentence case everywhere, buttons start with active verbs, zero exclamation marks in UI copy, 1-line empty states without illustrations).
 - 2026-10-18 | src/app/client/src/lib/styles/kanso-tokens.css, components | P4.9: Accessibility pass completed (global focus-visible rings using --kanso-accent, form control associations, aria-labels on every icon button, 0 Svelte a11y compiler warnings).
+
+## Phase 5 - Backend and Runtime Health
+- 2026-10-18 | src/app/server/routes/ | P5.1: Split monolithic api.js into 10 modular sub-routes under 300 lines (auth, projects, deliverables, finance, journal, notes, clients, system, ai, share) mounted in routes/index.js.
+- 2026-10-18 | src/app/server/services/ | P5.2: Split WorkspaceService into ProjectService, VaultPathService, and ScaffoldService with backward-compatible facade.
+- 2026-10-18 | src/app/server/test/ | P5.3: Split run-tests.js into per-service modular test suites with new tests for ConfigService, migrateVault, atomic writes, and secure defaults (62 passing tests).
+- 2026-10-18 | src/app/server/, src/app/src-tauri/, src/app/client/ | P5.4: Dynamic backend port discovery via PORT=0 and Tauri sidecar commands (get_backend_port, get_backend_url); eliminated hardcoded port 4000.
+- 2026-10-18 | .github/workflows/, src/app/ | P5.5: Added svelte-check (0 errors) and verify-kanso to ci.yml; unified release workflows in release-builds.yml and removed duplicate tauri-build.yml.
+- 2026-10-18 | scripts/ | P5.6: Consolidated platform build scripts into build-platforms.ps1 as single entry; moved one-off asset tools to scripts/tools/.
+- 2026-10-18 | src/windows-launcher/, scripts/ | P5.7: Consolidated Windows shell exclusively on Tauri v2 (Decision D8) and removed legacy WPF/WebView2 launcher and companion DLLs.
+
