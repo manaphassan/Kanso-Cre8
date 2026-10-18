@@ -1,4 +1,5 @@
-import type { CassetteRadioStation, RadioPlaybackState } from '$lib/types/radio';
+import type { CassetteRadioStation, RadioPlaybackState, RadioStation } from '$lib/types/radio';
+export type { CassetteRadioStation, RadioPlaybackState, RadioStation };
 
 export interface CassetteColorPreset {
   id: string;
@@ -498,6 +499,27 @@ class RadioService {
       clearInterval(this.elapsedInterval);
       this.elapsedInterval = null;
     }
+  }
+
+  init() {
+    // Initialized in constructor
+  }
+
+  tune(stationId: string) {
+    this.play(stationId);
+  }
+
+  flipSide() {
+    this.flipTapeSide();
+  }
+
+  get favoriteStationIds(): string[] {
+    return this.stations.filter(s => s.isFavorite).map(s => s.id);
+  }
+
+  toggleFavorite(id: string) {
+    this.stations = this.stations.map(s => s.id === id ? { ...s, isFavorite: !s.isFavorite } : s);
+    this.persistStations();
   }
 }
 

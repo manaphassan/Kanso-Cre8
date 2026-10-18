@@ -15,18 +15,18 @@
 
   let { station, onRewind, onFastForward, onToggleRack, isRackVisible }: Props = $props();
 
-  const state = $derived(radioService.state);
+  const playbackState = $derived(radioService.state);
 
   // Mechanical Tape Counter
   let tapeCounter = $state(142);
   let counterInterval: any = null;
 
   $effect(() => {
-    if (state.isPlaying && !counterInterval) {
+    if (playbackState.isPlaying && !counterInterval) {
       counterInterval = setInterval(() => {
         tapeCounter = (tapeCounter + 1) % 10000;
       }, 1000);
-    } else if (!state.isPlaying && counterInterval) {
+    } else if (!playbackState.isPlaying && counterInterval) {
       clearInterval(counterInterval);
       counterInterval = null;
     }
@@ -41,7 +41,7 @@
   }
 
   const activeShellColor = $derived(station.shellColor || 'var(--kanso-surface)');
-  const reelProgress = $derived(Math.min(1, Math.max(0, state.progress || 0.35)));
+  const reelProgress = $derived(Math.min(1, Math.max(0, playbackState.progress || 0.35)));
   const leftTapeDiameter = $derived(50 + (1 - reelProgress) * 40);
   const rightTapeDiameter = $derived(50 + reelProgress * 40);
 </script>
@@ -57,9 +57,9 @@
 
     <!-- Tape Counter & Track Title -->
     <div class="deck-top-right">
-      <div class="track-title-ticker font-mono" title={state.currentTrackTitle || station.featuredTrack}>
+      <div class="track-title-ticker font-mono" title={playbackState.currentTrackTitle || station.featuredTrack}>
         <Icon name="music" size={12} />
-        <span>{state.currentTrackTitle || station.featuredTrack}</span>
+        <span>{playbackState.currentTrackTitle || station.featuredTrack}</span>
       </div>
 
       <div class="tape-counter-box" title="Mechanical Tape Index Counter">
@@ -78,7 +78,7 @@
   <div class="deck-body-layout">
     <!-- Left Wing: VU Meter & Pomodoro Timer -->
     <div class="deck-wing-left">
-      <AnalogVuMeter isPlaying={state.isPlaying} volume={state.volume} />
+      <AnalogVuMeter isPlaying={playbackState.isPlaying} volume={playbackState.volume} />
       <Timer />
     </div>
 
@@ -97,7 +97,7 @@
         <!-- Paper Sticker Label -->
         <div class="sticker-label" style="background: {station.labelColor || '#F7F5F0'}; color: #151813;">
           <div class="sticker-left">
-            <span class="sticker-side font-mono">SIDE {state.tapeSide}</span>
+            <span class="sticker-side font-mono">SIDE {playbackState.tapeSide}</span>
             <div class="sticker-meta-wrap">
               <span class="sticker-name">{station.name}</span>
               <span class="sticker-genre">{station.genre}</span>
@@ -110,8 +110,8 @@
 
         <!-- Acrylic Window with Dual Spool Wheels at 33 RPM -->
         <div class="acrylic-window">
-          <div class="tape-ribbon" class:is-moving={state.isPlaying}>
-            <div class="ribbon-travel-layer" class:is-moving={state.isPlaying}></div>
+          <div class="tape-ribbon" class:is-moving={playbackState.isPlaying}>
+            <div class="ribbon-travel-layer" class:is-moving={playbackState.isPlaying}></div>
           </div>
 
           <!-- Left Spool -->
@@ -119,10 +119,10 @@
             <div class="deck-spindle-well"></div>
             <div
               class="tape-roll-disc"
-              class:is-spinning={state.isPlaying}
-              style="width: {leftTapeDiameter}px; height: {leftTapeDiameter}px; transform: rotate({state.isPlaying ? state.spoolRotation : 0}deg);"
+              class:is-spinning={playbackState.isPlaying}
+              style="width: {leftTapeDiameter}px; height: {leftTapeDiameter}px; transform: rotate({playbackState.isPlaying ? playbackState.spoolRotation : 0}deg);"
             ></div>
-            <CassetteSpoolWheel size={56} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} showSpindle={true} />
+            <CassetteSpoolWheel size={56} isSpinning={playbackState.isPlaying} rotationAngle={playbackState.isPlaying ? playbackState.spoolRotation : 0} showSpindle={true} />
           </div>
 
           <!-- Tape Migration Progress Bar -->
@@ -135,19 +135,19 @@
             <div class="deck-spindle-well"></div>
             <div
               class="tape-roll-disc"
-              class:is-spinning={state.isPlaying}
-              style="width: {rightTapeDiameter}px; height: {rightTapeDiameter}px; transform: rotate({state.isPlaying ? state.spoolRotation : 0}deg);"
+              class:is-spinning={playbackState.isPlaying}
+              style="width: {rightTapeDiameter}px; height: {rightTapeDiameter}px; transform: rotate({playbackState.isPlaying ? playbackState.spoolRotation : 0}deg);"
             ></div>
-            <CassetteSpoolWheel size={56} isSpinning={state.isPlaying} rotationAngle={state.isPlaying ? state.spoolRotation : 0} showSpindle={true} />
+            <CassetteSpoolWheel size={56} isSpinning={playbackState.isPlaying} rotationAngle={playbackState.isPlaying ? playbackState.spoolRotation : 0} showSpindle={true} />
           </div>
         </div>
 
         <!-- Bottom Reader Trapezoid -->
         <div class="head-row">
           <div class="head-notch">
-            <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);"></div>
+            <div class="roller-dot" class:is-spinning={playbackState.isPlaying} style="transform: rotate({playbackState.isPlaying ? playbackState.spoolRotation * 2 : 0}deg);"></div>
             <div class="roller-center"><div class="head-core-line"></div></div>
-            <div class="roller-dot" class:is-spinning={state.isPlaying} style="transform: rotate({state.isPlaying ? state.spoolRotation * 2 : 0}deg);"></div>
+            <div class="roller-dot" class:is-spinning={playbackState.isPlaying} style="transform: rotate({playbackState.isPlaying ? playbackState.spoolRotation * 2 : 0}deg);"></div>
           </div>
         </div>
       </div>
@@ -157,8 +157,8 @@
         <button type="button" class="piano-key" onclick={onRewind} title="Previous Station (REW)">
           <span>⏪ REW</span>
         </button>
-        <button type="button" class="piano-key key-play" class:is-active={state.isPlaying} onclick={() => radioService.toggle()} title="Play / Pause">
-          <span>{state.isPlaying ? '⏸ PAUSE' : '▶ PLAY'}</span>
+        <button type="button" class="piano-key key-play" class:is-active={playbackState.isPlaying} onclick={() => radioService.toggle()} title="Play / Pause">
+          <span>{playbackState.isPlaying ? '⏸ PAUSE' : '▶ PLAY'}</span>
         </button>
         <button type="button" class="piano-key" onclick={() => radioService.stop()} title="Stop Deck">
           <span>⏹ STOP</span>
@@ -167,7 +167,7 @@
           <span>⏩ FF</span>
         </button>
         <button type="button" class="piano-key" onclick={() => radioService.flipSide()} title="Flip Side A/B">
-          <span>⮂ SIDE {state.tapeSide}</span>
+          <span>⮂ SIDE {playbackState.tapeSide}</span>
         </button>
         <button type="button" class="piano-key" onclick={onToggleRack} title="Toggle Cassette Rack">
           <span>{isRackVisible ? '▲ HIDE RACK' : '▼ SHOW RACK'}</span>
@@ -177,18 +177,18 @@
       <!-- Volume Bar -->
       <div class="master-volume-bar">
         <button type="button" class="vol-icon-btn" onclick={() => radioService.toggleMute()}>
-          <Icon name={state.isMuted || state.volume === 0 ? 'volumeMute' : 'volume'} size={14} />
+          <Icon name={playbackState.isMuted || playbackState.volume === 0 ? 'volumeMute' : 'volume'} size={14} />
         </button>
         <input
           type="range"
           min="0"
           max="1"
           step="0.01"
-          value={state.volume}
+          value={playbackState.volume}
           oninput={(e) => radioService.setVolume(parseFloat(e.currentTarget.value))}
           class="master-vol-slider"
         />
-        <span class="vol-num font-mono">{Math.round(state.volume * 100)}%</span>
+        <span class="vol-num font-mono">{Math.round(playbackState.volume * 100)}%</span>
       </div>
     </div>
   </div>

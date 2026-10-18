@@ -30,6 +30,10 @@ export interface NoteTask {
   priority?: 'low' | 'normal' | 'high' | 'urgent';
   dueDate?: string;
   linkedProject?: string;
+  filepath?: string;
+  lineIndex?: number;
+  text?: string;
+  noteTitle?: string;
 }
 export type ZettelTask = NoteTask;
 

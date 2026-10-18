@@ -9,6 +9,7 @@
     "dev:client": "vite",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build:client": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
     "test": "node server/test/run-tests.js",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",

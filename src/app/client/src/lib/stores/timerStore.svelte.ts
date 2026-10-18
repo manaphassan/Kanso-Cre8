@@ -136,7 +136,30 @@ class TimerStore {
 
   // --- TIMER CONTROLS ---
 
-  start(opts?: { projectId?: string; projectTitle?: string; clientCode?: string; hourlyRate?: number; note?: string }) {
+  start(
+    optsOrProjectId?: string | { projectId?: string; projectTitle?: string; clientCode?: string; hourlyRate?: number; note?: string },
+    projectTitleOrHourlyRate?: string | number,
+    clientCodeArg?: string,
+    hourlyRateArg?: number
+  ) {
+    let opts: { projectId?: string; projectTitle?: string; clientCode?: string; hourlyRate?: number; note?: string } = {};
+    if (typeof optsOrProjectId === 'string') {
+      if (typeof projectTitleOrHourlyRate === 'string') {
+        opts = {
+          projectId: optsOrProjectId,
+          projectTitle: projectTitleOrHourlyRate,
+          clientCode: clientCodeArg,
+          hourlyRate: hourlyRateArg
+        };
+      } else {
+        opts = {
+          clientCode: optsOrProjectId,
+          hourlyRate: typeof projectTitleOrHourlyRate === 'number' ? projectTitleOrHourlyRate : hourlyRateArg
+        };
+      }
+    } else if (optsOrProjectId) {
+      opts = optsOrProjectId;
+    }
     if (opts) {
       if (opts.projectId !== undefined) this.projectId = opts.projectId;
       if (opts.projectTitle !== undefined) this.projectTitle = opts.projectTitle;

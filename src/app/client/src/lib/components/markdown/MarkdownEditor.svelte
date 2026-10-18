@@ -4,6 +4,8 @@
 
   interface Props {
     value?: string;
+    content?: string;
+    initialContent?: string;
     placeholder?: string;
     onSave?: (newContent: string) => Promise<void> | void;
     readonly?: boolean;
@@ -13,12 +15,18 @@
 
   let {
     value = $bindable(''),
+    content,
+    initialContent,
     placeholder = 'Write Markdown brief, deliverable checklist (- [ ]), or diagrams (```mermaid)...',
     onSave,
     readonly = false,
     title = '',
     saveLabel = 'Save to Vault'
   }: Props = $props();
+
+  if (!value && (content || initialContent)) {
+    value = content || initialContent || '';
+  }
 
   let mode = $state<'split' | 'preview' | 'source'>('preview');
   let isSaving = $state<boolean>(false);

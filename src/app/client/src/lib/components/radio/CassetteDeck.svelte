@@ -8,17 +8,17 @@
 
   const stations = $derived(radioService.stations);
   const currentStation = $derived(radioService.currentStation);
-  const state = $derived(radioService.state);
+  const playbackState = $derived(radioService.state);
   const favoriteStationIds = $derived(radioService.favoriteStationIds);
 
   function handleRewind() {
-    const idx = stations.findIndex(s => s.id === state.currentStationId);
+    const idx = stations.findIndex(s => s.id === playbackState.currentStationId);
     const prev = (idx - 1 + stations.length) % stations.length;
     radioService.tune(stations[prev].id);
   }
 
   function handleFastForward() {
-    const idx = stations.findIndex(s => s.id === state.currentStationId);
+    const idx = stations.findIndex(s => s.id === playbackState.currentStationId);
     const next = (idx + 1) % stations.length;
     radioService.tune(stations[next].id);
   }
@@ -40,7 +40,7 @@
   {#if isRackVisible}
     <Presets
       {stations}
-      currentStationId={state.currentStationId}
+      currentStationId={playbackState.currentStationId}
       {favoriteStationIds}
       onTuneStation={(id) => radioService.tune(id)}
       onToggleFavorite={(id) => radioService.toggleFavorite(id)}

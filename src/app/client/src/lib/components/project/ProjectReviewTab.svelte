@@ -89,12 +89,15 @@
 {#if selectedDeliverable}
   <DeliverableLightbox
     deliverable={selectedDeliverable}
+    open={true}
     onClose={() => (selectedDeliverable = null)}
-    onStatusChange={async (newStatus) => {
-      if (selectedDeliverable) {
-        await projectStore.updateDeliverableStatus(selectedDeliverable.id, newStatus);
-        selectedDeliverable.status = newStatus;
-      }
+    onApprove={async (d) => {
+      await projectStore.updateDeliverableStatus(d.id, 'approved');
+      d.status = 'approved';
+    }}
+    onRevision={async (d) => {
+      await projectStore.updateDeliverableStatus(d.id, 'revision');
+      d.status = 'revision';
     }}
   />
 {/if}

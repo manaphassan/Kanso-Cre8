@@ -9,6 +9,18 @@
   import Icon from '$lib/components/ui/Icon.svelte';
   import CreativeAiAssistantModal from '$lib/components/features/CreativeAiAssistantModal.svelte';
 
+  interface Props {
+    embedded?: boolean;
+    projectContext?: {
+      id?: string;
+      title?: string;
+      client?: string;
+      briefContent?: string;
+    };
+  }
+
+  let { embedded = false, projectContext }: Props = $props();
+
   let selectedProject = $state<any>(null);
   let isEditorOpen = $state<boolean>(false);
   let draftHeadline = $state<string>('');

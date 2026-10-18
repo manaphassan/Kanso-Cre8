@@ -1412,7 +1412,7 @@
   }
 
   .project-chip-card:hover {
-    background: var(--kanso-surface-hover));
+    background: var(--kanso-surface-hover);
     border-color: rgba(33, 161, 247, 0.35);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }

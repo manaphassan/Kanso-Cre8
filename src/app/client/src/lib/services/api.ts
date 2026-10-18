@@ -343,10 +343,31 @@ export class ApiClient {
     return this.request(`/projects/${encodeURIComponent(projectId)}/comments`);
   }
 
-  static addComment(projectId: string, data: { content: string; deliverableId?: string; annotation?: { x: number; y: number; pinNumber?: number; priority?: string }; mentions?: string[] }): Promise<{ success: boolean; comment: any }> {
+  static addComment(
+    projectId: string,
+    dataOrContent: string | {
+      content: string;
+      deliverableId?: string;
+      annotation?: {
+        x: number;
+        y: number;
+        pinNumber?: number;
+        priority?: string;
+        videoTimestamp?: number;
+        timecodeFormatted?: string;
+        [key: string]: any;
+      };
+      mentions?: string[];
+      [key: string]: any;
+    },
+    deliverableTag?: string | null
+  ): Promise<{ success: boolean; comment: any }> {
+    const payload = typeof dataOrContent === 'string'
+      ? { content: dataOrContent, deliverableId: deliverableTag || undefined }
+      : dataOrContent;
     return this.request(`/projects/${encodeURIComponent(projectId)}/comments`, {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     });
   }
 
@@ -395,7 +416,7 @@ export class ApiClient {
   }
 
   static saveCompany(payload: any): Promise<{ success: boolean; company: any }> {
-    return this.saveClient(payload);
+    return this.saveClient(payload) as any;
   }
 
   static deleteCompany(code: string): Promise<{ success: boolean; deletedCode: string }> {
@@ -793,7 +814,7 @@ export class ApiClient {
     return this.request('/system/sync-conflicts');
   }
 
-  static resolveSyncConflict(conflictPath: string, resolution: 'keep_local' | 'keep_conflict' | 'archive'): Promise<{ success: boolean; message: string }> {
+  static resolveSyncConflict(conflictPath: string, resolution: 'keep_local' | 'keep_conflict' | 'keep_cloud' | 'archive'): Promise<{ success: boolean; message: string }> {
     return this.request('/system/sync-conflicts/resolve', {
       method: 'POST',
       body: JSON.stringify({ conflictPath, resolution })

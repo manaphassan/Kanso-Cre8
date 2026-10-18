@@ -11,7 +11,7 @@
 
 <div class="brief-tab-container">
   <MarkdownEditor
-    content={briefContent}
+    value={briefContent}
     onSave={onSave}
     placeholder="# Campaign Project Brief&#10;&#10;Specify deliverables, art direction, and key deliverables..."
   />

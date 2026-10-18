@@ -561,7 +561,7 @@ module.exports = async function run(test, context = {}) {
     const tauriConfPath = path.join(__dirname, '..', '..', 'src-tauri', 'tauri.conf.json');
     const cargoTomlPath = path.join(__dirname, '..', '..', 'src-tauri', 'Cargo.toml');
     const mainRsPath = path.join(__dirname, '..', '..', 'src-tauri', 'src', 'main.rs');
-    const workflowPath = path.resolve(__dirname, '../../../../.github/workflows/tauri-build.yml');
+    const workflowPath = path.resolve(__dirname, '../../../../.github/workflows/release-builds.yml');
 
     // 1. Verify tauri.conf.json
     assert.ok(fs.existsSync(tauriConfPath), 'tauri.conf.json must exist');
@@ -591,7 +591,7 @@ module.exports = async function run(test, context = {}) {
     assert.ok(mainRs.includes('tauri_plugin_global_shortcut'));
 
     // 4. Verify GitHub Actions Packaging Workflow
-    assert.ok(fs.existsSync(workflowPath), 'GitHub Actions tauri-build.yml must exist');
+    assert.ok(fs.existsSync(workflowPath), 'GitHub Actions release-builds.yml must exist');
     const workflow = fs.readFileSync(workflowPath, 'utf8');
     assert.ok(workflow.includes('tauri-action@v1'));
     assert.ok(workflow.includes('windows-latest'));

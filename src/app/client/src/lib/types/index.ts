@@ -20,7 +20,7 @@ export interface User {
   permissions: string[];
 }
 
-export type ProjectStatus = 'backlog' | 'in-progress' | 'review' | 'revision' | 'approved' | 'done' | 'on-hold';
+export type ProjectStatus = 'backlog' | 'in-progress' | 'review' | 'revision' | 'approved' | 'done' | 'on-hold' | 'rejected' | 'archived';
 export type ProjectPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface CreativeDirectionState {
@@ -38,6 +38,7 @@ export interface CopywritingState {
   body_copy?: string;
   cta_text?: string;
   script_notes?: string;
+  content?: string;
 }
 
 export interface ProjectFrontmatter {
@@ -72,6 +73,7 @@ export interface ApprovalRecord {
 export interface DeliverableItem {
   id: string;
   filename: string;
+  name?: string;
   relativePath: string;
   fullPath: string;
   ext: string;
@@ -93,8 +95,14 @@ export interface DeliverableItem {
   isImage: boolean;
   isVideo: boolean;
   isPdf: boolean;
+  isAudio?: boolean;
   status: 'pending' | 'approved' | 'revision';
   revisionCount: number;
+  extension?: string;
+  streamUrl?: string;
+  sizeFormatted?: string;
+  folder?: string;
+  folderLabel?: string;
   project?: {
     id?: string;
     jobId: string;
@@ -103,13 +111,20 @@ export interface DeliverableItem {
     designer: string;
     status: string;
     deadline?: string;
+    priority?: string;
   };
 }
+
+export type Deliverable = DeliverableItem;
 
 export interface Project {
   id?: string;
   jobId: string;
   title: string;
+  folderName?: string;
+  client?: string;
+  clientCode?: string;
+  description?: string;
   brand: string;
   designer: string;
   manager: string;
@@ -129,6 +144,10 @@ export interface Project {
   fullPath?: string;
   readmeBody?: string;
   briefMarkdown?: string;
+  revision?: number;
+  deliverablesCount?: number;
+  currency?: string;
+  direction?: any;
   versionHash?: string;
   creativeDirection?: CreativeDirectionState;
   copywriting?: CopywritingState;

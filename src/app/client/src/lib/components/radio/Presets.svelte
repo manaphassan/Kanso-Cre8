@@ -87,15 +87,13 @@
     {#each filteredStations as st (st.id)}
       <CassetteTapeCard
         station={st}
-        isActive={currentStationId === st.id}
-        isFavorite={favoriteStationIds.includes(st.id)}
-        onSelect={() => onTuneStation(st.id)}
-        onToggleFavorite={() => onToggleFavorite(st.id)}
+        isSelected={currentStationId === st.id}
+        onclick={() => onTuneStation(st.id)}
       />
     {/each}
 
     <!-- Blank Tape Card -->
-    <CassetteBlankCard onSelect={onNewCustomStation} />
+    <CassetteBlankCard onclick={onNewCustomStation} />
   </div>
 </div>
 
