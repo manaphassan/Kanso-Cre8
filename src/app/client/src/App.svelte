@@ -78,6 +78,10 @@
   );
 
   function handleGlobalKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && appState.viewSwitcherOpen) {
+      appState.viewSwitcherOpen = false;
+      return;
+    }
     if (e.key === 'Escape' && appState.isZenMode) {
       e.preventDefault();
       appState.exitZenMode();
@@ -269,60 +273,70 @@
   });
 </script>
 
-<svelte:window onkeydown={handleGlobalKeydown} />
+<svelte:window onkeydown={handleGlobalKeydown} onclick={() => (appState.viewSwitcherOpen = false)} />
 
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
 {:else}
   <div class="app-shell" class:zen-mode-active={appState.isZenMode}>
-    <!-- ═══ 6-ITEM SIDEBAR + MINI-CASSETTE DOCK ═════════════════════════ -->
-    <aside class="app-sidebar" aria-label="Main Navigation">
-      <div class="sidebar-header">
-        <button
-          class="brand-btn"
-          onclick={() => appState.navigate('dashboard')}
-          title="Kanso Cre8 Studio Deck (⌘1)"
-          aria-label="Kanso Cre8 Home"
-        >
-          <svg class="brand-mark" viewBox="0 0 128 128" width="28" height="28" aria-hidden="true">
-            <rect width="128" height="128" rx="28" fill="#131816" stroke="#252F29" stroke-width="2"/>
-            <text x="63" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#00E5FF" opacity="0.5" letter-spacing="1">簡素</text>
-            <text x="65" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#FF1744" opacity="0.5" letter-spacing="1">簡素</text>
-            <text x="64" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#F4F3EE" letter-spacing="1">簡素</text>
-            <text x="64" y="104" text-anchor="middle" font-family="'Red Hat Display', 'Inter', sans-serif" font-weight="900" font-size="24" fill="#FF5722" letter-spacing="3">CRE8</text>
-          </svg>
-          <span class="brand-text">Kanso Cre8</span>
-        </button>
-      </div>
-
-      <nav class="sidebar-nav">
-        {#each navItems as item}
-          <button
-            class="nav-item-btn"
-            class:active={isActive(item)}
-            onclick={() => appState.navigate(item.route)}
-            title="{item.label} ({item.shortcut})"
-            aria-label="{item.label} ({item.shortcut})"
-          >
-            <span class="nav-icon">
-              <Icon name={item.icon} size={18} />
-            </span>
-            <span class="nav-label">{item.label}</span>
-            <kbd class="nav-kbd">{item.shortcut}</kbd>
-          </button>
-        {/each}
-      </nav>
-
-      <div class="sidebar-footer">
-        <MiniCassetteDock />
-      </div>
-    </aside>
-
-    <!-- ═══ MAIN VIEWPORT ═══════════════════════════════════════════════ -->
+    <!-- ═══ MAIN VIEWPORT (no sidebar: hamburger opens floating nav) ════ -->
     <div class="app-main">
       <!-- ═══ PRECISION STUDIO INSTRUMENT HEADER ═════════════════════════ -->
       <header class="app-header">
         <div class="header-left">
+          <div class="nav-menu-wrapper">
+            <button
+              class="icon-btn hamburger-btn"
+              class:active={appState.viewSwitcherOpen}
+              onclick={(e) => { e.stopPropagation(); appState.viewSwitcherOpen = !appState.viewSwitcherOpen; }}
+              title="Navigation"
+              aria-label="Open navigation menu"
+              aria-haspopup="menu"
+              aria-expanded={appState.viewSwitcherOpen}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            </button>
+
+            {#if appState.viewSwitcherOpen}
+              <!-- svelte-ignore a11y_no_static_element_interactions -->
+              <div class="nav-dropdown" role="menu" aria-label="Main Navigation" onclick={(e) => e.stopPropagation()}>
+                <button
+                  class="nav-brand-btn"
+                  onclick={() => { appState.navigate('dashboard'); appState.viewSwitcherOpen = false; }}
+                  aria-label="Kanso Cre8 Home"
+                >
+                  <svg class="brand-mark" viewBox="0 0 128 128" width="26" height="26" aria-hidden="true">
+                    <rect width="128" height="128" rx="28" fill="#131816" stroke="#252F29" stroke-width="2"/>
+                    <text x="64" y="66" text-anchor="middle" font-family="'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif" font-weight="900" font-size="48" fill="#F4F3EE" letter-spacing="1">簡素</text>
+                    <text x="64" y="104" text-anchor="middle" font-family="'Red Hat Display', 'Inter', sans-serif" font-weight="900" font-size="24" fill="#FF5722" letter-spacing="3">CRE8</text>
+                  </svg>
+                  <span class="brand-text">Kanso Cre8</span>
+                </button>
+
+                <div class="nav-dropdown-list">
+                  {#each navItems as item}
+                    <button
+                      class="nav-item-btn"
+                      class:active={isActive(item)}
+                      role="menuitem"
+                      onclick={() => { appState.navigate(item.route); appState.viewSwitcherOpen = false; }}
+                    >
+                      <span class="nav-icon"><Icon name={item.icon} size={18} /></span>
+                      <span class="nav-label">{item.label}</span>
+                      <kbd class="nav-kbd">{item.shortcut}</kbd>
+                    </button>
+                  {/each}
+                </div>
+
+                <div class="nav-dropdown-footer">
+                  <MiniCassetteDock />
+                </div>
+              </div>
+            {/if}
+          </div>
+
           <div class="header-breadcrumbs">
             <span class="bc-root">Kanso Cre8</span>
             <span class="bc-sep" aria-hidden="true">/</span>
@@ -473,9 +487,6 @@
   }
 
   /* Quiet Mode / Zen Atelier Mode */
-  .app-shell.zen-mode-active .app-sidebar {
-    display: none;
-  }
   .app-shell.zen-mode-active .app-header {
     display: none;
   }
@@ -493,36 +504,55 @@
     border-color: var(--kanso-accent);
   }
 
-  /* ═══ SIDEBAR ═══════════════════════════════════════════════════════ */
-  .app-sidebar {
-    width: 230px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
+  /* ═══ FLOATING NAV DROPDOWN (hamburger) ═════════════════════════════ */
+  .header-left {
+    gap: var(--kanso-space-3);
+  }
+
+  .nav-menu-wrapper {
+    position: relative;
+  }
+
+  .hamburger-btn.active {
+    color: var(--kanso-accent);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 280px;
+    max-width: calc(100vw - 24px);
     background: var(--kanso-surface);
-    border-right: 1px solid var(--kanso-border);
+    border: 1px solid var(--kanso-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    z-index: 600;
+    padding: var(--kanso-space-2);
     user-select: none;
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: navDropIn 0.15s ease;
   }
 
-  .sidebar-header {
-    height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 0 var(--kanso-space-3);
-    border-bottom: 1px solid var(--kanso-border);
+  @keyframes navDropIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .brand-btn {
+  .nav-brand-btn {
     display: flex;
     align-items: center;
     gap: var(--kanso-space-2);
+    width: 100%;
+    padding: var(--kanso-space-2) var(--kanso-space-3);
+    margin-bottom: var(--kanso-space-1);
     background: transparent;
     border: none;
-    padding: 0;
+    border-bottom: 1px solid var(--kanso-border);
+    border-radius: 0;
     cursor: pointer;
     color: var(--kanso-text-primary);
-    text-decoration: none;
     font-family: inherit;
   }
 
@@ -539,13 +569,16 @@
     white-space: nowrap;
   }
 
-  .sidebar-nav {
-    flex: 1;
-    padding: var(--kanso-space-2);
+  .nav-dropdown-list {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    overflow-y: auto;
+  }
+
+  .nav-dropdown-footer {
+    margin-top: var(--kanso-space-2);
+    padding-top: var(--kanso-space-2);
+    border-top: 1px solid var(--kanso-border);
   }
 
   .nav-item-btn {
@@ -601,44 +634,6 @@
     border-radius: 4px;
   }
 
-  .sidebar-footer {
-    padding: var(--kanso-space-2);
-    border-top: 1px solid var(--kanso-border);
-    background: var(--kanso-surface);
-  }
-
-  /* ═══ RESPONSIVE SIDEBAR COLLAPSE (< 960px & ANDROID) ═══════════════ */
-  @media (max-width: 960px) {
-    .app-sidebar {
-      width: 58px;
-    }
-    .brand-text, .nav-label, .nav-kbd {
-      display: none;
-    }
-    .sidebar-header {
-      justify-content: center;
-      padding: 0;
-    }
-    .sidebar-nav {
-      padding: var(--kanso-space-2) var(--kanso-space-1);
-    }
-    .nav-item-btn {
-      justify-content: center;
-      padding: var(--kanso-space-2) 0;
-    }
-    .sidebar-footer {
-      padding: var(--kanso-space-1);
-    }
-    .sidebar-footer :global(.mini-track-btn),
-    .sidebar-footer :global(.mini-arrow-btn),
-    .sidebar-footer :global(.mini-freq-badge) {
-      display: none;
-    }
-    .sidebar-footer :global(.mini-dock-container) {
-      padding: 0 4px;
-      justify-content: center;
-    }
-  }
 
   /* ═══ MAIN CONTENT AREA ═════════════════════════════════════════════ */
   .app-main {
@@ -769,8 +764,16 @@
     flex-direction: column;
   }
 
+  /* Single shared page frame: every view gets the same width and gutter. */
   .view-pane {
     flex: 1;
     min-height: 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--kanso-space-6, 24px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
 </style>

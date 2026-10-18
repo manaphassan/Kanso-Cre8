@@ -95,9 +95,6 @@
 
 <style>
   .journal-view-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 20px;

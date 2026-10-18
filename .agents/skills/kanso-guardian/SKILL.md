@@ -59,7 +59,7 @@ KAI-ZEN OCEANIC:         Canvas [#064169] · Surface [#043150] · Cerulean [#21A
 | CSS Token | Dark Mode (Default) | Light Mode | Purpose |
 | :--- | :--- | :--- | :--- |
 | **`--kanso-canvas`** | `#09090B` (Deep Obsidian) | `#F8FAFC` (Porcelain Slate) | Root app canvas / viewport background |
-| **`--kanso-surface`** | `#18181B` (Zinc Dark) | `#FFFFFF` (Pure White) | Elevated cards, sidebars, modal surfaces |
+| **`--kanso-surface`** | `#18181B` (Zinc Dark) | `#FFFFFF` (Pure White) | Elevated cards, dropdown menus, modal surfaces |
 | **`--kanso-surface-hover`**| `#27272A` (Zinc Hover) | `#F1F5F9` (Slate Tint) | Interactive hover states |
 | **`--kanso-border`** | `#27272A` (1px Hairline) | `#E2E8F0` (1px Hairline) | 1px borders, separators, subtle outlines |
 | **`--kanso-text-primary`** | `#F4F4F5` (Zinc 100) | `#0F172A` (Slate 900) | Headings, labels, primary readable text |
@@ -195,7 +195,7 @@ The app includes mock profiles to demonstrate capability:
   - Linear/Geist dark/light tokens in CSS.
   - Tactile Neumorphism (Soft UI) dual-shadow physical extrusion engines (`neumorphic` & `neumorphic-dark`).
   - High-contrast Paperlike E-Ink monochrome and Kai-Zen Oceanic environments.
-  - 3-Zone responsive shell (44px TitleBar, 210px Collapsible Sidebar, Fluid Canvas).
+  - Raycast-style shell: 48px header with hamburger-triggered floating nav dropdown, fluid full-width canvas. No sidebar.
 * **Phase 2: Core Markdown Vault Engine & Client Hub**
   - Local vault scanner and YAML parser.
   - Client Hub with sample profiles (Acme Corp, Nexus Studio, Lumina Labs).

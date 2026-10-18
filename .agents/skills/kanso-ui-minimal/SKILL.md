@@ -22,7 +22,13 @@ Kanso (simplicity). Remove before adding. One primary action per screen. Calm, t
 5. Clients & Money (tabs: Clients, Quotes, Invoices)
 6. Settings (tabs: Studio, Preferences, Vault, About)
 
-Radio is the 40px Mini-Cassette Dock in the sidebar footer that opens the full cassette as a drawer. Shortcuts Ctrl+1..6 map to the items. Ctrl+K command palette is the only power entry. Under 960px the sidebar collapses to icons.
+### Shell: Raycast-inspired, NO sidebar
+
+- Never add a sidebar, nav rail, or icon rail, at any width. Content is full-width under the 48px header.
+- Navigation is a hamburger button at the left of the header that opens a floating dropdown (`.nav-dropdown`, ~280px, surface + 1px border, z-index 600). It holds the brand, the six items with Ctrl+1..6 hints, and the Mini-Cassette Dock.
+- Close on item pick, outside click, or Esc. Open state is `appState.viewSwitcherOpen`. Hamburger needs `aria-label`, `aria-haspopup="menu"`, `aria-expanded`.
+- Radio is the 40px Mini-Cassette Dock in that dropdown footer; it opens the full cassette as a drawer. Ctrl+K command palette is the only power entry.
+- The dock adapts via container query (under 230px it hides badge and title) so transport controls never clip.
 
 ## Component budget
 

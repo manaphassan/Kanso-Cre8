@@ -4,6 +4,15 @@
  */
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+
+// Must run before any service loads config.js: tests must never touch the real %APPDATA%/KansoCre8/app.json.
+const tempMachineDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kanso-test-'));
+process.env.KANSO_MACHINE_CONFIG = path.join(tempMachineDir, 'app.json');
+process.on('exit', () => {
+  try { fs.rmSync(tempMachineDir, { recursive: true, force: true }); } catch (_) {}
+});
+
 const WorkspaceService = require('../services/WorkspaceService');
 const AuditService = require('../services/AuditService');
 

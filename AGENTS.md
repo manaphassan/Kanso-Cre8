@@ -93,6 +93,17 @@ Always use canonical sample profiles:
 
 ---
 
+# APP SHELL: RAYCAST-INSPIRED, NO SIDEBAR
+
+**STRICTLY FORBIDDEN**: Never add a persistent sidebar, nav rail, or icon rail. The shell is a full-width canvas under a 48px header.
+- Header (left to right): hamburger button, breadcrumbs, billable chronometer, Ctrl+K "Jump to…" search, utility icons.
+- The hamburger opens a **floating dropdown** (absolute, below the button, ~280px, `var(--kanso-surface)` with hairline border) containing: brand (click = Deck), the six nav items with Ctrl+1..6 hints, and the Mini-Cassette Dock footer.
+- The dropdown closes on item pick, outside click, or Esc. State lives in `appState.viewSwitcherOpen`.
+- Ctrl+K command palette remains the only power entry point.
+- History: `cdc44869` removed the sidebar; `d19a376e` wrongly re-added it and was reverted by this rule.
+
+---
+
 # UI/UX RULES: LINEAR / GEIST STUDIO SYSTEM
 
 Use the Linear / Geist Studio design tokens as the sole design system reference.
@@ -121,7 +132,7 @@ The Retro Cassette Focus Radio is ported faithfully from the mechanical cassette
 - Dual 6-spoke gear spool wheels rotating at 33 RPM via smooth CSS animations during playback.
 - Curated focus streams (Chillhop Cafe, Nightwave Plaza, SomaFM Groove Salad, Parisian Jazz, Zen Alpha Focus).
 - Synchronized favorite presets rack with active station indicator and automated migration of legacy station IDs.
-- Persistent 40px Mini-Cassette Dock in the sidebar footer.
+- 40px Mini-Cassette Dock at the foot of the floating navigation dropdown (no sidebar).
 - 25-minute Pomodoro focus timer.
 
 ---
@@ -143,5 +154,5 @@ All 16 checks must pass with `0 warned / 0 failed`.
 - `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Atelier Notes knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
 - `kanso-scope-lock`: Execution discipline for Kanso Cre8 plan work. Keeps the agent inside the current task of docs/MASTER_PLAN.md: one task per commit, a file allow-list, mandatory gates, and a stop-and-ask list.
 - `kanso-vault-schema`: Source of truth for how Kanso Cre8 stores, names, and migrates data and config across the three storage tiers, vault folder and filename rules, and frontmatter contracts.
-- `kanso-ui-minimal`: UI and UX rules for Kanso Cre8: six-item navigation, component budget, token-only color, single icon system with emoji-to-icon map, copy rules, accessibility minimums, and 400-line component cap.
+- `kanso-ui-minimal`: UI and UX rules for Kanso Cre8: Raycast-inspired shell with no sidebar (hamburger opens a floating six-item navigation dropdown), component budget, token-only color, single icon system with emoji-to-icon map, copy rules, accessibility minimums, and 400-line component cap.
 - `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards.

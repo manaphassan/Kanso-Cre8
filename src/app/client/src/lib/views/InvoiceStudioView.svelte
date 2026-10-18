@@ -12,9 +12,10 @@
 
   interface Props {
     initialDocType?: 'invoices' | 'quotes';
+    tabs?: import('svelte').Snippet;
   }
 
-  let { initialDocType = 'invoices' }: Props = $props();
+  let { initialDocType = 'invoices', tabs }: Props = $props();
   let docType: 'invoices' | 'quotes' = $state(initialDocType);
   let invoices: InvoiceDocument[] = $state([]);
   let quotes: InvoiceDocument[] = $state([]);
@@ -410,6 +411,7 @@
     </div>
 
     <div class="header-actions">
+      {@render tabs?.()}
       {#if docType === 'invoices'}
         <button
           onclick={createNewInvoice}

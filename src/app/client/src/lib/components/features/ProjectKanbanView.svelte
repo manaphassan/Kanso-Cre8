@@ -255,11 +255,13 @@
     </div>
   {/if}
 
+  <div class="kanban-scroll">
   <div class="kanban-columns-grid">
     {#each columns as col}
       {@const colProjects = getProjectsForColumn(col.id)}
       <div
         class="kanban-column"
+        class:is-collapsed={colProjects.length === 0 && !draggedProjectId}
         class:is-drag-over={dragOverColumnId === col.id}
         ondragover={(e) => handleDragOver(e, col.id)}
         ondragleave={() => handleDragLeave(col.id)}
@@ -462,6 +464,7 @@
       </div>
     {/each}
   </div>
+  </div>
 </div>
 
 <style>
@@ -471,18 +474,47 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+  }
+
+  /* Horizontal scroller with snap and a right-edge fade as the "more columns" cue. */
+  .kanban-scroll {
+    flex: 1;
+    min-height: 0;
     overflow-x: auto;
     padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
   }
 
   .kanban-columns-grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(230px, 1fr));
+    display: flex;
     gap: 14px;
-    width: 100%;
-    flex: 1;
-    min-height: calc(100vh - 220px);
+    width: max-content;
+    min-width: 100%;
+    min-height: calc(100vh - 260px);
     align-items: stretch;
+    padding-right: 32px;
+  }
+
+  .kanban-column {
+    flex: 1 0 240px;
+    scroll-snap-align: start;
+  }
+
+  /* Empty columns shrink to a slim rail until a card is dragged. */
+  .kanban-column.is-collapsed {
+    flex: 0 0 64px;
+    padding: 12px 8px;
+  }
+  .kanban-column.is-collapsed .col-title,
+  .kanban-column.is-collapsed .col-hint,
+  .kanban-column.is-collapsed .column-empty-dropzone {
+    display: none;
+  }
+  .kanban-column.is-collapsed .col-title-wrap {
+    flex-direction: column;
+    gap: 6px;
   }
 
   .kanban-column {

@@ -106,7 +106,7 @@ Notes       (renamed from Zettel; Scratchpad inside)
 Clients & Money   (Clients, Quotes, Invoices as 3 tabs)
 Settings    (Studio profile, Preferences, Vault, About - 4 tabs)
 ```
-Radio is not a page: it is the 40px Mini-Cassette Dock in the sidebar footer that expands into the full cassette as a drawer. Keyboard: Ctrl+1..6 map to the 6 items. Command palette (Ctrl+K) stays as the only "power" entry point.
+Radio is not a page: it is the 40px Mini-Cassette Dock in the footer of the floating navigation dropdown (hamburger in the header; the app has no sidebar) that expands into the full cassette as a drawer. Keyboard: Ctrl+1..6 map to the 6 items. Command palette (Ctrl+K) stays as the only "power" entry point.
 
 ### 2.6 Minimalism rules (the component budget)
 - One primary action per screen. Everything else is a ghost button or lives in the command palette.
@@ -177,7 +177,7 @@ Gate: no `fluent2-*.css`, no `Fluent*` names, 0 hex in components, build passes,
 ### PHASE 4 - Minimalist UI and simpler UX
 Gate: app has 6 nav items; every page passes the 2.6 rules; owner signs off screenshots.
 
-- P4.1 New shell: sidebar with 6 items + dock; top bar = breadcrumb, Ctrl+K hint, billable chronometer. Remove the separate mobile bottom dock logic by making the sidebar collapse to icons under 960px; Android shows the same 6 icons.
+- P4.1 New shell (revised: no sidebar): header hamburger opens a floating dropdown with the 6 items + dock; top bar = hamburger, breadcrumb, Ctrl+K hint, billable chronometer. The same dropdown serves desktop and Android; no rail or bottom dock.
 - P4.2 Merge pages: Review Queue and Copy Studio become tabs in Project Detail. Clients + Quotes + Invoices become tabs under "Clients & Money". Radio page becomes the dock drawer.
 - P4.3 Split god files by feature, no logic change (move, don't rewrite). Targets: SettingsView -> `settings/{Studio,Preferences,Vault,About}.svelte`; DashboardView -> one file per bento tile; ProjectDetailView -> tab components; JournalView -> `journal/{DailyLog,Habits,Monthly,Yearly}.svelte`; CassetteDeck -> `radio/{Deck,Presets,Timer}.svelte` (keep the faithful mechanical look: screws, spools at 33 RPM, tape window). Hard cap 400 lines per file.
 - P4.4 Studio Deck: keep the five required blocks (Today, Metrics bento, Project glance, Smart suggestions, Income and cashflow) at this priority; collapse Smart Suggestions to a one-line strip, bento to 4 tiles (hours, effective rate, first-time-right, velocity), revision rounds moves into project detail.
