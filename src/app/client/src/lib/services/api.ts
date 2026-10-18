@@ -23,11 +23,48 @@ const isTauri = typeof window !== 'undefined' && (
   window.location.origin.includes('tauri.localhost')
 );
 
-const API_BASE = isTauri ? 'http://localhost:4000/api' : '/api';
+let apiBaseUrl = '/api';
+
+export async function resolveBackendUrl(): Promise<string> {
+  if (typeof window !== 'undefined' && (window as any).__KANSO_API_URL__) {
+    return (window as any).__KANSO_API_URL__;
+  }
+  if (isTauri) {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const url = await invoke<string>('get_backend_url');
+      if (url) {
+        const full = `${url.replace(/\/$/, '')}/api`;
+        if (typeof window !== 'undefined') (window as any).__KANSO_API_URL__ = full;
+        apiBaseUrl = full;
+        return full;
+      }
+    } catch (_) {}
+    const port = (typeof window !== 'undefined' && (window as any).__KANSO_API_PORT__) || 4000;
+    const fallback = `http://127.0.0.1:${port}/api`;
+    if (typeof window !== 'undefined') (window as any).__KANSO_API_URL__ = fallback;
+    apiBaseUrl = fallback;
+    return fallback;
+  }
+  return '/api';
+}
+
+if (typeof window !== 'undefined') {
+  resolveBackendUrl().then(url => {
+    apiBaseUrl = url;
+  }).catch(() => {});
+}
 
 export class ApiClient {
   static getBaseUrl(): string {
-    return API_BASE;
+    if (typeof window !== 'undefined' && (window as any).__KANSO_API_URL__) {
+      return (window as any).__KANSO_API_URL__;
+    }
+    if (isTauri && apiBaseUrl === '/api') {
+      const port = (typeof window !== 'undefined' && (window as any).__KANSO_API_PORT__) || 4000;
+      return `http://127.0.0.1:${port}/api`;
+    }
+    return apiBaseUrl;
   }
 
   static getToken(): string {
@@ -43,7 +80,7 @@ export class ApiClient {
   }
 
   static async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE}${endpoint}`;
+    const url = `${this.getBaseUrl()}${endpoint}`;
     const token = this.getToken();
 
     const headers: Record<string, string> = {
@@ -372,7 +409,7 @@ export class ApiClient {
 
   // ─── Real-Time Server-Sent Events (SSE) Stream ───
   static initEventStream(onEvent: (event: string, data: any) => void): () => void {
-    const eventSource = new EventSource('/api/events');
+    const eventSource = new EventSource(`${this.getBaseUrl()}/events`);
 
     const handleMessage = (evt: MessageEvent, eventName: string) => {
       try {
