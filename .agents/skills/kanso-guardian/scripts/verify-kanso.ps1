@@ -206,6 +206,213 @@ if (Test-Path $denyListPath) {
     Report-Check "Privacy" "docs/.deny-list.txt missing" "WARN"
 }
 
+# 7. SOURCE & DOCUMENTATION EMOJI HYGIENE
+Write-Host ""
+Write-Host "[ 7. SOURCE & DOCUMENTATION EMOJI HYGIENE ]" -ForegroundColor White
+$textExtensions = @(".js", ".ts", ".svelte", ".json", ".md", ".html", ".css", ".ps1", ".rs", ".toml")
+$emojiRegex = [regex]'[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]'
+$emojiLeaks = @()
+$scanDirs = @((Join-Path $repoRoot "src"), (Join-Path $repoRoot "docs"))
+
+foreach ($dir in $scanDirs) {
+    if (Test-Path $dir) {
+        $files = Get-ChildItem -Path $dir -Recurse -File | Where-Object {
+            $ext = $_.Extension.ToLower()
+            $textExtensions -contains $ext -and $_.FullName -notmatch '\\(node_modules|target|dist|\.git)\\'
+        }
+        foreach ($f in $files) {
+            $text = Get-Content $f.FullName -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+            if ($text -and $emojiRegex.IsMatch($text)) {
+                $rel = $f.FullName.Substring($repoRoot.Length + 1)
+                $emojiLeaks += $rel
+            }
+        }
+    }
+}
+
+if ($emojiLeaks.Count -eq 0) {
+    Report-Check "EmojiHygiene" "Source code and documentation are 100% clean of unicode emojis" "PASS"
+} else {
+    Report-Check "EmojiHygiene" "Unicode emojis detected in files: $($emojiLeaks -join ', ')" "FAIL"
+}
+
+# 8. COMPONENT COLOR TOKEN ADHERENCE
+Write-Host ""
+Write-Host "[ 8. COMPONENT COLOR TOKEN ADHERENCE ]" -ForegroundColor White
+$hexAllowListPath = Join-Path $repoRoot "docs\.hex-allowlist.txt"
+$allowedHexFiles = @()
+if (Test-Path $hexAllowListPath) {
+    $allowedHexFiles = Get-Content $hexAllowListPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
+        $_.Trim().Replace('/', '\')
+    }
+}
+
+$svelteFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\client\src") -Recurse -Filter *.svelte
+$unauthorizedHexFiles = @()
+$hexPattern = [regex]'#[0-9a-fA-F]{3,8}\b'
+
+foreach ($file in $svelteFiles) {
+    $rel = $file.FullName.Substring($repoRoot.Length + 1)
+    $content = Get-Content $file.FullName -Raw -Encoding UTF8
+    if ($hexPattern.IsMatch($content)) {
+        $isAllowed = $false
+        foreach ($pattern in $allowedHexFiles) {
+            if ($rel -like "*$pattern*" -or $file.Name -eq $pattern) {
+                $isAllowed = $true
+                break
+            }
+        }
+        if (-not $isAllowed) {
+            $unauthorizedHexFiles += $rel
+        }
+    }
+}
+
+if ($unauthorizedHexFiles.Count -eq 0) {
+    Report-Check "DesignTokens" "All .svelte components adhere strictly to CSS design tokens or approved exceptions" "PASS"
+} else {
+    Report-Check "DesignTokens" "Unauthorized hex colors detected in: $($unauthorizedHexFiles -join ', ')" "FAIL" "Add canonical token or document in docs/.hex-allowlist.txt"
+}
+
+# 9. SECRET & BINARY HYGIENE AUDIT
+Write-Host ""
+Write-Host "[ 9. SECRET & BINARY HYGIENE AUDIT ]" -ForegroundColor White
+$binaryExtensions = @("\.exe$", "\.dll$", "\.so$", "\.dylib$", "\.pfx$", "\.keystore$", "\.env$", "\.pem$", "\.key$", "\.cer$", "\.der$")
+$trackedFiles = & git ls-files
+$trackedBinaries = @()
+foreach ($f in $trackedFiles) {
+    foreach ($ext in $binaryExtensions) {
+        if ($f -match $ext) {
+            $trackedBinaries += $f
+            break
+        }
+    }
+}
+
+$secretLeaks = @()
+$secretRegexes = @(
+    'AKIA[0-9A-Z]{16}',
+    'ghp_[0-9a-zA-Z]{36}',
+    '-----BEGIN (?:RSA|OPENSSH|EC|DSA)? PRIVATE KEY-----'
+)
+
+foreach ($f in $trackedFiles) {
+    $full = Join-Path $repoRoot $f
+    if (Test-Path $full) {
+        $ext = [System.IO.Path]::GetExtension($full).ToLower()
+        if (@(".js", ".ts", ".svelte", ".json", ".md", ".html", ".css", ".ps1", ".rs", ".toml") -contains $ext) {
+            $content = Get-Content $full -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+            if ($content) {
+                foreach ($pattern in $secretRegexes) {
+                    if ($content -match $pattern) {
+                        $secretLeaks += "$f matches $pattern"
+                    }
+                }
+            }
+        }
+    }
+}
+
+if ($trackedBinaries.Count -eq 0 -and $secretLeaks.Count -eq 0) {
+    Report-Check "Hygiene" "Zero tracked binary artifacts or plaintext secrets detected" "PASS"
+} else {
+    $detail = ($trackedBinaries + $secretLeaks) -join "; "
+    Report-Check "Hygiene" "Tracked binaries or secret patterns detected: $detail" "FAIL"
+}
+
+# 10. LEGACY TOKEN & BRAND SANITIZATION
+Write-Host ""
+Write-Host "[ 10. LEGACY TOKEN & BRAND SANITIZATION ]" -ForegroundColor White
+$legacyAllowPath = Join-Path $repoRoot "docs\.legacy-allowlist.txt"
+$allowedLegacyFiles = @()
+if (Test-Path $legacyAllowPath) {
+    $allowedLegacyFiles = Get-Content $legacyAllowPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
+        $_.Trim().Replace('/', '\')
+    }
+}
+
+$legacyRegex = [regex]'(ss_cam|SS-CAM|SSNAS|zettel)'
+$legacyMatches = @()
+$sourceFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app") -Recurse -File | Where-Object {
+    $ext = $_.Extension.ToLower()
+    @(".js", ".ts", ".svelte", ".json", ".md", ".html", ".css", ".rs") -contains $ext -and
+    $_.FullName -notmatch '\\(node_modules|target|dist|\.git)\\'
+}
+
+foreach ($f in $sourceFiles) {
+    $rel = $f.FullName.Substring($repoRoot.Length + 1)
+    $content = Get-Content $f.FullName -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+    if ($content -and $legacyRegex.IsMatch($content)) {
+        $isAllowed = $false
+        foreach ($pattern in $allowedLegacyFiles) {
+            if ($rel -like "*$pattern*" -or $f.Name -eq $pattern) {
+                $isAllowed = $true
+                break
+            }
+        }
+        if (-not $isAllowed) {
+            $legacyMatches += $rel
+        }
+    }
+}
+
+if ($legacyMatches.Count -eq 0) {
+    Report-Check "Sanitization" "Zero unaliased legacy tokens (ss_cam/SS-CAM/SSNAS/zettel) detected" "PASS"
+} else {
+    Report-Check "Sanitization" "Unaliased legacy tokens detected in: $($legacyMatches -join ', ')" "FAIL"
+}
+
+# 11. MODULAR COMPONENT & ROUTE ARCHITECTURE
+Write-Host ""
+Write-Host "[ 11. MODULAR ARCHITECTURE & LINE LIMITS ]" -ForegroundColor White
+$routeFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\server\routes") -Filter *.js
+$over300Routes = @()
+foreach ($rf in $routeFiles) {
+    $lineCount = (Get-Content $rf.FullName).Count
+    if ($lineCount -gt 300) {
+        $over300Routes += "$($rf.Name) ($lineCount lines)"
+    }
+}
+
+$linesAllowPath = Join-Path $repoRoot "docs\.lines-allowlist.txt"
+$allowedLineFiles = @()
+if (Test-Path $linesAllowPath) {
+    $allowedLineFiles = Get-Content $linesAllowPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
+        $_.Trim().Replace('/', '\')
+    }
+}
+
+$clientSrcFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\client\src") -Recurse -File | Where-Object {
+    $ext = $_.Extension.ToLower()
+    @(".svelte", ".ts", ".js", ".css") -contains $ext
+}
+$over400Components = @()
+foreach ($cf in $clientSrcFiles) {
+    $lineCount = (Get-Content $cf.FullName).Count
+    if ($lineCount -gt 400) {
+        $rel = $cf.FullName.Substring($repoRoot.Length + 1)
+        $isAllowed = $false
+        foreach ($pattern in $allowedLineFiles) {
+            if ($rel -like "*$pattern*" -or $cf.Name -eq $pattern) {
+                $isAllowed = $true
+                break
+            }
+        }
+        if (-not $isAllowed) {
+            $over400Components += "$($cf.Name) ($lineCount lines)"
+        }
+    }
+}
+
+if ($over300Routes.Count -eq 0 -and $over400Components.Count -eq 0) {
+    Report-Check "Modularity" "Modular architectural limits enforced: routes <= 300 lines, components <= 400 lines" "PASS"
+} else {
+    $violations = @()
+    if ($over300Routes.Count -gt 0) { $violations += "Routes > 300: $($over300Routes -join ', ')" }
+    if ($over400Components.Count -gt 0) { $violations += "Components > 400: $($over400Components -join ', ')" }
+    Report-Check "Modularity" "Modular line count violations: $($violations -join '; ')" "FAIL"
+}
+
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 if ($script:failCount -eq 0) {
@@ -218,3 +425,4 @@ Write-Host "============================================================" -Foreg
 Write-Host ""
 
 exit $script:failCount
+
