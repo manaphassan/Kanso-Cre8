@@ -52,7 +52,7 @@
   <div class="card-header">
     <div class="card-header-badge-row">
       <h2 class="card-title">Active Vault Mount &amp; Directory Path</h2>
-      <span class="storage-pill">Pure Markdown (Zero SQL)</span>
+      <span class="storage-pill">Pure Markdown</span>
     </div>
     <p class="card-subtitle">Direct plain-text filesystem synchronization. Connect any local NVMe, Dropbox, or Synology Drive workspace.</p>
   </div>

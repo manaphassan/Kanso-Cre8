@@ -227,7 +227,7 @@
         {#if report.orphanNotes.length === 0}
           <div class="clean-empty-state">
             <span class="clean-icon"><Icon name="checkmark" size={18} /></span>
-            <span class="clean-text">Zero orphan notes. All atelier notes are linked in the knowledge graph.</span>
+            <span class="clean-text">No orphan notes. All notes are linked in the knowledge graph.</span>
           </div>
         {:else}
           <div class="issues-list">

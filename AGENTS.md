@@ -14,7 +14,7 @@
 - Svelte 5 (Runes: `$state`, `$derived`, `$props`, `$effect`)
 - Linear / Geist Minimalist Studio Tokens + Small Utility Sheet (tailwind-compat.css)
 - Pure Markdown-as-Database Storage Engine (Zero SQL, SQLite, or Prisma)
-- Web Audio API (Retro Cassette Focus Radio & Studio Deck)
+- Web Audio API (Retro Cassette Focus Radio & Home)
 
 ---
 
@@ -53,17 +53,17 @@ Always use canonical sample profiles:
   - `_Finance/` (`Quotes/` and `Invoices/`)
   - `_Projects/` (`[YYYY]/` e.g. `2026/` standardized 5-folder project vaults)
   - `_Journal/` (Bullet Journal system: `Daily/`, `Monthly/`, `Yearly/`)
-  - `_Notes/` (Atelier knowledge base: `01_Fleeting/`, `02_Literature/`, `03_Permanent/`, and `Scratchpad.md` for temporary quick notes)
+  - `_Notes/` (Notes vault: `01_Fleeting/`, `02_Literature/`, `03_Permanent/`, and `Scratchpad.md` for temporary quick notes)
   - `_Team/` (`_Config/studio_profile.json` for Studio Master Profile & Brand Dossier)
 
 ---
 
 # CREATIVE OPERATIONS & ATELIER ERGONOMICS LAW
 
-1. **Studio Deck (Executive Dashboard)**:
+1. **Home (Executive Dashboard)**:
    - Must feature **Today's Tasks** (synced with BuJo Daily Notes rapid log).
-   - Must feature **Design Metrics Bento** (hours logged today/week, effective rate, first-time-right %, turnaround velocity, revision rounds).
-   - Must feature **Project Status at a Glance** (visual card deck with client color, progress bar, stage badge, deadline countdown).
+   - Must feature **Design Metrics (This week)** (hours logged today/week, effective rate, first-time-right %, turnaround velocity, revision rounds).
+   - Must feature **Projects in progress** (visual card deck with client color, progress bar, stage badge, deadline countdown).
    - Must feature **Smart Suggestions** (contextual alerts for unreviewed proofs, unbilled hours, approaching deadlines, and focus wellness).
    - Must feature **Total Income & Cashflow** (Paid invoices + Pending invoices + Live accrued timer earnings).
 
@@ -79,7 +79,7 @@ Always use canonical sample profiles:
    - `Monthly/` review for completed deliverables, total hours, and creative reflections.
    - `Yearly/` index for annual vision, revenue milestones, and portfolio highlights.
 
-4. **Atelier Knowledge Engine (`_Notes/`)**:
+4. **Notes Knowledge Engine (`_Notes/`)**:
    - Replaces old `_Zettelkasten` root. Contains `01_Fleeting/`, `02_Literature/`, `03_Permanent/`.
    - `Scratchpad.md` is reserved strictly for temporary quick notes, clipboard dumps, and instant scratch ideas.
 
@@ -97,7 +97,7 @@ Always use canonical sample profiles:
 
 **STRICTLY FORBIDDEN**: Never add a persistent sidebar, nav rail, or icon rail. The shell is a full-width canvas under a 48px header.
 - Header (left to right): hamburger button, breadcrumbs, billable chronometer, Ctrl+K "Jump to…" search, utility icons.
-- The hamburger opens a **floating dropdown** (absolute, below the button, ~280px, `var(--kanso-surface)` with hairline border) containing: brand (click = Deck), the six nav items with Ctrl+1..6 hints, and the Mini-Cassette Dock footer.
+- The hamburger opens a **floating dropdown** (absolute, below the button, ~280px, `var(--kanso-surface)` with hairline border) containing: brand (click = Home), the six nav items with Ctrl+1..6 hints, and the Mini-Cassette Dock footer.
 - The dropdown closes on item pick, outside click, or Esc. State lives in `appState.viewSwitcherOpen`.
 - Ctrl+K command palette remains the only power entry point.
 - History: `cdc44869` removed the sidebar; `d19a376e` wrongly re-added it and was reverted by this rule.
@@ -151,7 +151,7 @@ All 16 checks must pass with `0 warned / 0 failed`.
 
 # WORKSPACE AGENT SKILLS
 
-- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Atelier Notes knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
+- `kanso-guardian`: Primary brand identity, architecture, and roadmap steward for Kanso Cre8. Enforces Linear/Geist studio tokens, pure Markdown-as-Database storage, Notes knowledge integration, multi-client management (Acme Corp, Nexus Studio, Lumina Labs), quote/invoice studio, and phased roadmap milestones.
 - `kanso-scope-lock`: Execution discipline for Kanso Cre8 plan work. Keeps the agent inside the current task of docs/MASTER_PLAN.md: one task per commit, a file allow-list, mandatory gates, and a stop-and-ask list.
 - `kanso-vault-schema`: Source of truth for how Kanso Cre8 stores, names, and migrates data and config across the three storage tiers, vault folder and filename rules, and frontmatter contracts.
 - `kanso-ui-minimal`: UI and UX rules for Kanso Cre8: Raycast-inspired shell with no sidebar (hamburger opens a floating six-item navigation dropdown), component budget, token-only color, single icon system with emoji-to-icon map, copy rules, accessibility minimums, and 400-line component cap.

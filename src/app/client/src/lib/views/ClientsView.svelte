@@ -109,7 +109,7 @@
                   {client.name}
                 </h3>
                 <span class="text-xs text-muted-foreground font-mono">
-                  Prefix: [{client.code}] · {client.currency} {client.defaultHourlyRate}/hr
+                  Prefix: [{client.code}] · {settingsStore.settings.currencySymbol || getCurrencySymbol(client.currency)} {client.defaultHourlyRate}/hr
                 </span>
               </div>
             </div>

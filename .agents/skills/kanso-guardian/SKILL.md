@@ -126,7 +126,7 @@ KAI-ZEN OCEANIC:         Canvas [#064169] · Surface [#043150] · Cerulean [#21A
 │   ├── 📁 Monthly/                       # Monthly reflections & hours review
 │   └── 📁 Yearly/                        # Annual vision index
 │
-├── 📁 _Notes/                            # 🧠 Atelier Notes & Knowledge Engine
+├── 📁 _Notes/                            # 🧠 Notes & Knowledge Engine
 │   ├── 📁 01_Fleeting/                   # Raw quick captures (Ctrl+Space during calls)
 │   ├── 📁 02_Literature/                 # Design references, book notes, teardowns
 │   ├── 📁 03_Permanent/                  # Atomic rules, layout systems, copy hooks

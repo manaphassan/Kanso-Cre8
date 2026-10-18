@@ -19,7 +19,7 @@
     {
       keys: [`${modKey}`, '1 – 6'],
       title: 'Fast Navigation',
-      desc: 'Jump between Studio Deck, Projects, Journal, Notes, Clients & Money, and Settings.'
+      desc: 'Jump between Home, Projects, Journal, Notes, Clients & Money, and Settings.'
     },
     {
       keys: [`${modKey}`, 'K'],
@@ -29,11 +29,11 @@
     {
       keys: [`${modKey}`, `${shiftKey}`, 'K'],
       title: 'Quick Scratchpad',
-      desc: 'Instant clipboard and idea dump directly into your atelier Scratchpad.md.'
+      desc: 'Instant clipboard and idea dump directly into Scratchpad.md.'
     },
     {
       keys: [`${modKey}`, `${shiftKey}`, 'Z'],
-      title: 'Zen Quiet Mode',
+      title: 'Quiet Mode',
       desc: 'Strip away all UI chrome and navigation for total flow on your active canvas.'
     },
     {

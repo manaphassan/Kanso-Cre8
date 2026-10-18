@@ -15,7 +15,7 @@
       if (res && res.success) {
         syncConflicts = res.conflicts || [];
         if (syncConflicts.length === 0) {
-          appState.addToast('Zero sync conflicts found across active vault.', 'success', 'Vault Clean');
+          appState.addToast('No sync conflicts found across active vault.', 'success', 'Vault Clean');
         } else {
           appState.addToast(`Discovered ${syncConflicts.length} cloud sync conflict(s).`, 'warning', 'Sync Conflicts');
         }
@@ -83,7 +83,7 @@
         <span class="clean-icon-pill-mini"><Icon name="check" size={12} /></span>
         <div>
           <span class="clean-title-inline">Cloud Sync: Pristine</span>
-          <span class="clean-desc-inline">— Zero conflicted copies or collisions detected across active vault.</span>
+          <span class="clean-desc-inline">— No conflicted copies or collisions detected across active vault.</span>
         </div>
       </div>
       <button type="button" class="scan-btn compact" onclick={scanConflicts} disabled={isScanningConflicts}>

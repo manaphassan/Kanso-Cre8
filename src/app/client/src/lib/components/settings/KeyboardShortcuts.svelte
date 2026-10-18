@@ -1,16 +1,16 @@
 <script lang="ts">
   const shortcutList = [
-    { key: '⌘ 1', label: 'Studio Deck', desc: 'Executive overview, today tasks & cashflow' },
-    { key: '⌘ 2', label: 'Project Manager', desc: 'Coordinate campaigns & schedules' },
-    { key: '⌘ 3', label: 'Bullet Journal', desc: 'BuJo rapid log, monthly & yearly review' },
-    { key: '⌘ 4', label: 'Atelier Notes', desc: 'Knowledge base & scratchpad' },
-    { key: '⌘ 5', label: 'Clients & Money', desc: 'Client dossiers, quotes & invoices' },
-    { key: '⌘ 6', label: 'Studio Settings', desc: 'Preferences, themes & vault' },
+    { key: '⌘ 1', label: 'Home', desc: 'Overview, today tasks & cashflow' },
+    { key: '⌘ 2', label: 'Projects', desc: 'Active projects & schedules' },
+    { key: '⌘ 3', label: 'Journal', desc: 'Daily log, monthly & yearly review' },
+    { key: '⌘ 4', label: 'Notes', desc: 'Notes & scratchpad' },
+    { key: '⌘ 5', label: 'Clients & Money', desc: 'Client profiles, quotes & invoices' },
+    { key: '⌘ 6', label: 'Settings', desc: 'Preferences, themes & vault' },
     { key: '⌘ K', label: 'Command Palette', desc: 'Instant search across entire vault' },
     { key: '⌘ ⇧ T', label: 'Toggle Billable Timer', desc: 'Start, pause, or resume billable timer' },
     { key: '⌘ ⇧ K', label: 'Quick Scratchpad', desc: 'Instant capture into Scratchpad.md' },
-    { key: '⌘ ⇧ Z', label: 'Zen / Quiet Mode', desc: 'Toggle distraction-free mode with floating micro-bar' },
-    { key: 'Esc', label: 'Exit Quiet Mode', desc: 'Return to full studio deck and navigation' },
+    { key: '⌘ ⇧ Z', label: 'Quiet Mode', desc: 'Toggle distraction-free mode with floating micro-bar' },
+    { key: 'Esc', label: 'Exit Quiet Mode', desc: 'Return to full view and navigation' },
     { key: 'Space', label: 'Focus Radio Play/Pause', desc: 'Toggle lo-fi cassette stream on/off' }
   ];
 </script>

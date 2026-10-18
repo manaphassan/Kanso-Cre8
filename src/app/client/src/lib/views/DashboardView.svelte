@@ -155,8 +155,8 @@
   <!-- Top Executive Header -->
   <header class="deck-header">
     <div class="header-titles">
-      <h1 class="view-title">Studio Deck</h1>
-      <p class="view-subtitle">Today's tasks, weekly metrics, active projects, and cashflow.</p>
+      <h1 class="view-title">Home</h1>
+      <p class="view-subtitle">Daily overview, active projects, and cashflow.</p>
     </div>
   </header>
 
@@ -172,7 +172,7 @@
 
     <div class="deck-column-right card-surface">
       <div class="bento-header-compact">
-        <h3 class="bento-title-compact">Craft &amp; Velocity Bento</h3>
+        <h3 class="bento-title-compact">This week</h3>
       </div>
       <DashboardMetricsBento
         {firstTimeRightPercent}
