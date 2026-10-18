@@ -20,7 +20,8 @@
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
   import HeaderTimerWidget from '$lib/components/features/HeaderTimerWidget.svelte';
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
-    import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
+  import ZenMicroBar from '$lib/components/features/ZenMicroBar.svelte';
+  import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
 
@@ -74,9 +75,22 @@
   );
 
   function handleGlobalKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && appState.isZenMode) {
+      e.preventDefault();
+      appState.exitZenMode();
+      return;
+    }
+
     const isCmdOrCtrl = e.ctrlKey || e.metaKey;
     if (!isCmdOrCtrl) return;
     const key = e.key.toLowerCase();
+
+    // Ctrl+Shift+Z: Toggle Quiet Mode / Zen Atelier Mode
+    if (e.shiftKey && key === 'z') {
+      e.preventDefault();
+      appState.toggleZenMode();
+      return;
+    }
 
     // Ctrl+1 to Ctrl+6: Canonical 6 Navigation Items
     if (key === '1') { e.preventDefault(); appState.navigate('dashboard'); return; }
@@ -228,7 +242,7 @@
 {#if appState.currentRoute === 'review'}
   <ClientReviewView />
 {:else}
-  <div class="app-shell">
+  <div class="app-shell" class:zen-mode-active={appState.isZenMode}>
     <!-- ═══ 6-ITEM SIDEBAR + MINI-CASSETTE DOCK ═════════════════════════ -->
     <aside class="app-sidebar" aria-label="Main Navigation">
       <div class="sidebar-header">
@@ -314,6 +328,16 @@
           </button>
 
           <button
+            class="icon-btn zen-toggle-btn"
+            class:active={appState.isZenMode}
+            onclick={() => appState.toggleZenMode()}
+            title="Quiet Mode / Zen Atelier Mode (Ctrl+Shift+Z)"
+            aria-label="Toggle Quiet Mode"
+          >
+            <Icon name="sparkle" size={15} />
+          </button>
+
+          <button
             class="icon-btn"
             onclick={() => { appState.addToast('Rescanning workspace…', 'info'); projectStore.loadProjects(); projectStore.loadDashboard(); }}
             title="Rescan Workspace"
@@ -355,6 +379,13 @@
     </div>
   </div>
 
+  {#if appState.isZenMode}
+    <ZenMicroBar
+      currentTitle={currentTitle}
+      onOpenScratchpad={() => (scratchpadOpen = true)}
+    />
+  {/if}
+
   <CommandPaletteModal
     bind:open={commandPaletteOpen}
     onClose={() => (commandPaletteOpen = false)}
@@ -391,6 +422,27 @@
     overflow: hidden;
     background: var(--kanso-canvas);
     color: var(--kanso-text-primary);
+  }
+
+  /* Quiet Mode / Zen Atelier Mode */
+  .app-shell.zen-mode-active .app-sidebar {
+    display: none;
+  }
+  .app-shell.zen-mode-active .app-header {
+    display: none;
+  }
+  .app-shell.zen-mode-active .app-main {
+    width: 100vw;
+    min-width: 100vw;
+  }
+  .app-shell.zen-mode-active .page-body {
+    padding-bottom: 84px;
+  }
+
+  .icon-btn.zen-toggle-btn.active {
+    color: var(--kanso-accent);
+    background: var(--kanso-surface-hover);
+    border-color: var(--kanso-accent);
   }
 
   /* ═══ SIDEBAR ═══════════════════════════════════════════════════════ */

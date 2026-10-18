@@ -9,6 +9,8 @@
     { key: '⌘ K', label: 'Command Palette', desc: 'Instant search across entire vault' },
     { key: '⌘ ⇧ T', label: 'Toggle Billable Timer', desc: 'Start, pause, or resume billable timer' },
     { key: '⌘ ⇧ K', label: 'Quick Scratchpad', desc: 'Instant capture into Scratchpad.md' },
+    { key: '⌘ ⇧ Z', label: 'Zen / Quiet Mode', desc: 'Toggle distraction-free mode with floating micro-bar' },
+    { key: 'Esc', label: 'Exit Quiet Mode', desc: 'Return to full studio deck and navigation' },
     { key: 'Space', label: 'Focus Radio Play/Pause', desc: 'Toggle lo-fi cassette stream on/off' }
   ];
 </script>
