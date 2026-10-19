@@ -5,23 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.0] - 2026-10-18
+## [0.8.0] - 2026-10-19
 
 ### Added
 - Multi-check governance auditor (`verify-kanso.ps1`) with 16 automated architectural, security, brand, and modularity checks.
 - Unified Master Design System documentation in `docs/DESIGN.md` consolidating design tokens, typography, icon map, and accessibility rules.
-- Consolidated multi-platform packaging pipeline (`scripts/build-platforms.ps1`) targeting Windows (Tauri v2), Linux standalone, and Android companion.
-- Dedicated Express sub-routers (`workspace`, `projects`, `clients`, `finance`, `journal`, `notes`, `radio`, `team`, `system`) replacing monolithic API structure.
-- Modular component architectures for Dashboard, ProjectDetail, Journal, Settings, and CassetteDeck with sub-400-line components.
+- Consolidated multi-platform packaging pipeline (`scripts/build-platforms.ps1`) producing release distributions for Windows Desktop (Tauri v2), Linux standalone, and Android companion APK.
+- Unified quote -> project -> invoice pipeline with deposit splits, automated vault folder scaffolding, and draft invoice generation.
+- Weekly review ritual in `_Journal/Weekly/` with rapid-log task aggregation, metrics telemetry bento, and top-3 priorities planning.
+- Vault health & link integrity inspector checking broken WikiLinks, orphan notes, frontmatter validity, cloud sync conflicts, and compartment telemetry.
+- Quiet Mode / Zen Atelier Mode (`Ctrl+Shift+Z` / `Cmd+Shift+Z`) with floating micro-bar and full-bleed distraction-free canvas.
+- Proof Round Timeline tab in Project Detail with non-destructive snapshot restore.
+- Client Handover Package builder with cryptographic SHA-256 verification and `DELIVERY.md` manifest.
+- "Leave With Your Data" vault exporter streaming all 6 canonical compartments into an unencumbered ZIP archive.
 
 ### Changed
-- Standardized Windows desktop shell exclusively on Tauri v2 (`src/app/src-tauri`), deprecating legacy launchers.
-- Replaced all Unicode emojis across the UI with semantic Lucide icon tokens and standardized design tokens (`var(--kanso-*)`).
-- Hardened vault storage engine with strict path traversal validation, symlink defense, and scoped payload limits.
-- Streamlined repository documentation and removed redundant legacy specifications.
+- Refactored page layout into a unified 1200px container with 24px gutters across all six views.
+- Upgraded Project Kanban with horizontal scroll snap (`snap-x snap-mandatory`), smooth scrollbars, and edge cues.
+- Embedded client and finance tabs directly into the page header row beside the title.
+- Standardized canonical plain language across views and documentation (`Home`, `Projects`, `Journal`, `Notes`, `Clients`, `Settings`).
+- Streamlined header actions into Search (`⌘K`), Quick Scratchpad (`⌘⇧K`), and an overflow actions menu.
+- Unified currency symbols from Settings across header chronometer, client cards, and command palette.
+- Purged 11 orphan views and modal components (~11,000 lines of dead code).
+- Replaced all Unicode emojis across the UI with semantic monoline SVG icons adhering to `var(--kanso-*)` design tokens.
 
-### Security
-- Added automated pre-commit scanning for real client names, sensitive secrets, binary commits, and unauthorized design tokens.
+### Security & Governance
+- Hardened vault storage engine with strict path traversal validation, symlink defense, and scoped payload limits.
+- Automated pre-commit scanning for real client names, sensitive secrets, binary commits, and unauthorized design tokens.
+- All 16 Kanso Guardian governance checks verified (`16 passed / 0 warned / 0 failed`).
+- Automated test suite expanded to 71 passing test suites (`71 passed / 0 failed`).
 
 ## [0.7.0] - 2026-09-16
 
