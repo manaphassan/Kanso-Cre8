@@ -181,10 +181,11 @@ The app includes mock profiles to demonstrate capability:
 ## 🏗️ 6. Framework & Repository Structure
 
 ### 6.1 Unified Cross-Platform Framework
-* **Target Stack**: **Tauri v2 + Svelte 5 + Tailwind CSS**
-* **Frontend Location**: `src/app/`
-* **Desktop & Mobile Packaging**: `src-tauri/`
-* **Single Codebase**: Serves Windows (`.msi` / `.exe`), Linux (`.deb` / `.AppImage`), and Android (`.apk`).
+* **Target Stack**: **Tauri v2 + Svelte 5 + Rust command layer**, styled with Kanso token CSS and a small utility sheet (no Tailwind dependency).
+* **Frontend Location**: `src/app/client/`
+* **Native Layer & Packaging**: `src/app/src-tauri/`
+* **Single Codebase**: Serves Windows (`.msi` / `.exe` / portable `.zip`), macOS (`.dmg`), and Linux (`.deb` / `.AppImage`). No mobile build.
+* **No Server**: The app never listens on a network port. The transitional Node server in `src/app/server/` is removed in `docs/MASTER_PLAN.md` Phase 4.
 * **Zero Legacy Law**: All legacy .NET 4.8 / Avalonia code and container artifacts have been completely purged to ensure an ultra-lean repository.
 
 ---
@@ -211,7 +212,7 @@ The app includes mock profiles to demonstrate capability:
   - 1-Click Quote-to-Invoice conversion pipeline.
   - Brand stamping with studio logo, registration badge, SWIFT wire remittance deck, and digital signature colophon.
 * **Phase 5: Retro Cassette Focus Radio & Studio Sanctuary**
-  - Port mechanical cassette player with rotating spools (33 RPM) from SS-CAM Android.
+  - Mechanical cassette player with rotating spools (33 RPM).
   - 5 curated streams, 40px Mini-Cassette Dock, and Pomodoro focus timer.
   - Synchronized favorite presets rack (`validFavoriteStations.length`) and dynamic legacy station ID migration.
 * **Phase 6: Copywriting Studio & Deliverables Review**
@@ -219,7 +220,7 @@ The app includes mock profiles to demonstrate capability:
   - Atomic Hook Injector drawer.
   - 4K Lightbox deliverable review & 1-click ZIP export.
 * **Phase 7: Multi-Platform Tauri v2 Packaging**
-  - Tauri v2 builds for Windows, Linux, and Android Companion.
+  - Tauri v2 builds for Windows, macOS, and Linux. The Android companion was removed.
   - Multi-cloud sync verification (Dropbox, GDrive, OneDrive).
 * **Phase 8: Billable Chronometer & Executive Studio Deck**
   - Header live timer with hourly rate selector & real-time accrued cash ticker (`+$...`).
@@ -228,6 +229,10 @@ The app includes mock profiles to demonstrate capability:
   - One-time perpetual license ($39–$49) based on the "Sanctuary vs. Commerce" split.
   - Zero-database offline cryptographic verification (Ed25519) via native Tauri Rust backend.
   - Merchant-of-record integration (Lemon Squeezy / Gumroad).
+* **Phase 10: Local Release (v0.9.0)** - see `docs/MASTER_PLAN.md`
+  - Remove the Node server; TypeScript domain services plus Rust commands.
+  - Windows first, with macOS and Linux built in CI.
+  - Built-in AI with the user's own API key, portable USB mode, and cross-platform settings export.
 
 ---
 

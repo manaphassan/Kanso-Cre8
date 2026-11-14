@@ -5,16 +5,19 @@
 **Kanso Cre8 (簡素)** is the Mindful Creative Vault — an offline-first, local-first creative operations, client hub, and knowledge engine for freelance designers.
 
 **Platform**:
-- Windows 11/10 (x64 Tauri v2 native desktop)
-- Linux (x64 / ARM64 Tauri v2 native desktop)
-- Android Companion (APK)
+- Windows 11/10 x64 (Tauri v2 native desktop) - reference platform, verified first
+- macOS (Tauri v2 universal build: Apple Silicon and Intel)
+- Linux x64 (Tauri v2 native desktop: AppImage, deb)
+- No mobile app. The Android companion was removed (MASTER_PLAN D11).
 
 **Technology Stack**:
-- Tauri v2 (Rust desktop runtime)
+- Tauri v2 (Rust desktop runtime and native command layer: file access, file watching, secrets, AI requests)
 - Svelte 5 (Runes: `$state`, `$derived`, `$props`, `$effect`)
+- TypeScript domain services in the client (`src/app/client/src/lib/domain/`)
 - Linear / Geist Minimalist Studio Tokens + Small Utility Sheet (tailwind-compat.css)
 - Pure Markdown-as-Database Storage Engine (Zero SQL, SQLite, or Prisma)
 - Web Audio API (Retro Cassette Focus Radio & Home)
+- Transitional only: the Node/Express server in `src/app/server/` is being removed (docs/MASTER_PLAN.md Phase 4). Port from it; never add routes or services to it.
 
 ---
 
@@ -55,6 +58,17 @@ Always use canonical sample profiles:
   - `_Journal/` (Bullet Journal system: `Daily/`, `Monthly/`, `Yearly/`)
   - `_Notes/` (Notes vault: `01_Fleeting/`, `02_Literature/`, `03_Permanent/`, and `Scratchpad.md` for temporary quick notes)
   - `_Team/` (`_Config/studio_profile.json` for Studio Master Profile & Brand Dossier)
+
+---
+
+# LOCAL-ONLY RUNTIME LAW
+
+* **NO SERVER**: The app never listens on a network port. No Express, no `http.createServer`, no `listen(`. Work runs in the webview (TypeScript) or in Rust commands (`src/app/src-tauri/src/`).
+* **STORAGE TIERS**: Vault (`<vault>/`, synced, never a secret), Machine (`app.json` in the OS config dir, or `Data/` beside the app in portable mode), Secrets (target: OS keychain, pending decision D16), Session (`kanso.session` in localStorage). Details live in the `kanso-vault-schema` skill.
+* **PORTABLE MODE**: A `portable.ini` file next to the executable (Windows, Linux AppImage) keeps Machine data and webview data in `Data/` beside the app, so the app runs from a USB drive. Refused when the app folder is inside a cloud sync folder. Not available on macOS.
+* **CLOUD SYNC**: The vault may live in Dropbox, Google Drive, OneDrive or Synology Drive. The app and its `Data/` folder may not.
+* **AI**: Built in, bring your own key. The user pastes an API key in Settings > AI. The key is never sent to the webview and never written to the vault; every AI request is made from Rust.
+* **SETTINGS EXPORT**: `kanso-settings-YYYY-MM-DD.json` moves preferences, studio profile and app settings between Windows, macOS and Linux. It never contains absolute paths, and contains secrets only when the user opts in to passphrase encryption (pending decision D18).
 
 ---
 
@@ -155,4 +169,4 @@ All 16 checks must pass with `0 warned / 0 failed`.
 - `kanso-scope-lock`: Execution discipline for Kanso Cre8 plan work. Keeps the agent inside the current task of docs/MASTER_PLAN.md: one task per commit, a file allow-list, mandatory gates, and a stop-and-ask list.
 - `kanso-vault-schema`: Source of truth for how Kanso Cre8 stores, names, and migrates data and config across the three storage tiers, vault folder and filename rules, and frontmatter contracts.
 - `kanso-ui-minimal`: UI and UX rules for Kanso Cre8: Raycast-inspired shell with no sidebar (hamburger opens a floating six-item navigation dropdown), component budget, token-only color, single icon system with emoji-to-icon map, copy rules, accessibility minimums, and 400-line component cap.
-- `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards.
+- `codebase-cleanup`: Senior software engineer specialist in codebase architecture, repository hygiene, security, maintainability, and software engineering standards.

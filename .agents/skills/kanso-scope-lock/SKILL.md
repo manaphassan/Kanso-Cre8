@@ -16,8 +16,8 @@ This skill outranks speed and cleverness. If unsure, stop and ask.
 
 ## Inputs
 
-- `docs/MASTER_PLAN.md` (source of truth for tasks, phases, decisions)
-- `docs/ANTIGRAVITY_INSTRUCTION.md` (owner answers to decisions D1..D8)
+- `docs/MASTER_PLAN.md` (source of truth for tasks, phases, gates, decisions; owner answers from D9 on are recorded in its section 4)
+- `docs/archive/ANTIGRAVITY_INSTRUCTION.md` (owner answers to decisions D1..D8, carried into MASTER_PLAN section 4)
 - `AGENTS.md` (project law)
 
 ## Loop (repeat per task)
@@ -28,6 +28,7 @@ This skill outranks speed and cleverness. If unsure, stop and ask.
 4. Run the gate:
    - `powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1` (0 warned / 0 failed)
    - from `src/app`: `npm run build:client` and `npm test`
+   - from MASTER_PLAN Phase 1 on, from `src/app/src-tauri`: `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`
 5. Commit once: `type(scope): summary` + the required Co-Authored-By line. One task, one commit.
 6. Report in 3 lines: what changed, gate result, next task. Do not narrate options.
 
@@ -49,7 +50,7 @@ This skill outranks speed and cleverness. If unsure, stop and ask.
 
 ## Stop and ask (do not guess)
 
-- Any `DECISION` item whose answer is not recorded in `docs/ANTIGRAVITY_INSTRUCTION.md`.
+- Any decision marked PENDING in `docs/MASTER_PLAN.md` section 4.
 - Any delete or rewrite inside a user vault directory (anything under a workspace root that is not `sample-workspace`).
 - Any git history rewrite, force push, branch deletion, or key rotation.
 - A gate that fails twice for the same task.

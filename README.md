@@ -20,6 +20,16 @@ Operating on a pure **Markdown-as-Database** storage model, all client dossiers,
 
 ---
 
+## Platforms
+
+- **Windows 10/11 x64** - reference platform (installer and portable zip)
+- **macOS** - Apple Silicon and Intel (`.dmg`)
+- **Linux x64** - AppImage and `.deb`
+
+Kanso Cre8 v0.9 is moving to a fully local runtime with no background server, built-in AI with your own API key, a portable USB mode, and settings export between platforms. See [docs/MASTER_PLAN.md](./docs/MASTER_PLAN.md).
+
+---
+
 ## Core Capabilities
 
 - **Home**: Overview dashboard with Today's Tasks, weekly metrics (velocity, effective rate, first-time-right %), projects in progress, and total cashflow aggregation.
@@ -68,7 +78,7 @@ npm install
 # Run the frontend in development mode
 npm run dev:client
 
-# Run the full automated test suite (71 test suites)
+# Run the full automated test suite
 npm test
 
 # Run Svelte and TypeScript type checking
@@ -95,7 +105,7 @@ All 16 governance checks must pass with `0 warned / 0 failed`.
 - [AGENTS.md](./AGENTS.md) — Core project rules and architectural law.
 - [docs/DESIGN.md](./docs/DESIGN.md) — Design tokens, typography hierarchy, UI rules, and icon system.
 - [docs/SCHEMA.md](./docs/SCHEMA.md) — Vault folder structure and frontmatter validation contracts.
-- [docs/MASTER_PLAN.md](./docs/MASTER_PLAN.md) — Phased refactoring roadmap and milestone specifications.
+- [docs/MASTER_PLAN.md](./docs/MASTER_PLAN.md) - v0.9.0 local release plan: no server, Windows, macOS and Linux, built-in AI, portable mode.
 - [docs/UX_REVIEW_2026-10.md](./docs/UX_REVIEW_2026-10.md) — UX review, decluttering, plain language refactor, and quality audit.
 - [CHANGELOG.md](./CHANGELOG.md) — Clean release version history.
 

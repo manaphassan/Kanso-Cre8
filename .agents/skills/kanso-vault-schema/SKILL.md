@@ -2,8 +2,9 @@
 name: kanso-vault-schema
 description: >
   Source of truth for how Kanso Cre8 stores, names and migrates data and config:
-  the three storage tiers, the vault folder and filename rules, the _Team/_Config file set,
-  frontmatter contracts, atomic writes and migration safety. Trigger: any change to storage,
+  the storage tiers, app modes (installed, portable), the vault folder and filename rules,
+  the _Team/_Config file set, frontmatter contracts, atomic writes, cross-platform file rules,
+  settings export and migration safety. Trigger: any change to storage,
   config, vault layout, frontmatter, filenames, localStorage, workspace paths, or secrets.
 ---
 
@@ -13,13 +14,22 @@ description: >
 
 Zero database. Plain UTF-8 `.md` (YAML frontmatter) and small `.json` only. Openable in VS Code or Obsidian at any time. Safe inside Dropbox, Google Drive, OneDrive, Synology Drive.
 
-## Three storage tiers (the only tiers)
+## Storage tiers (the only tiers)
 
 | Tier | Location | Holds | Synced |
 |---|---|---|---|
 | Vault | `<vault>/` | content, studio profile, preferences, license state | yes, must contain no secret |
-| Machine | Windows `%APPDATA%/KansoCre8/app.json`; Linux `~/.config/kansocre8/app.json` | active vault path, recent vaults, AI API key, server port, generated server secret, window state, running timer `startedAt` | never |
-| Session | localStorage key `kanso.session` only | auth token (if auth exists), last route, unsent drafts | never |
+| Machine | Installed: Windows `%APPDATA%/KansoCre8/app.json`; macOS `~/Library/Application Support/KansoCre8/app.json`; Linux `$XDG_CONFIG_HOME/kansocre8/app.json` (default `~/.config`). Portable: `<app dir>/Data/app.json` | active vault path, recent vaults, device label, AI provider and model, window state, running timer `startedAt`; until MASTER_PLAN Phase 4 also server port and generated server secret | never |
+| Secrets | Target: OS keychain (Windows Credential Manager, macOS Keychain, Linux Secret Service). Pending decision D16; until then the AI key stays in the Machine file | AI API key | never |
+| Session | localStorage key `kanso.session` only (portable mode: webview data lives in `<app dir>/Data/webview/`) | last route, unsent drafts | never |
+
+## App modes
+
+- Installed (default): Machine dir per OS as above, webview data in the OS default location, vault path stored absolute.
+- Portable (Windows, Linux AppImage): triggered by `portable.ini` next to the executable. Machine and webview data live in `<app dir>/Data/`. The vault path is stored relative to `<app dir>` when it is on the same drive, so drive letter changes do not break it.
+- Portable mode is refused when `<app dir>` is inside a cloud sync folder; fall back to installed mode. The vault may be in a cloud folder; the app and `Data/` may not.
+- macOS has no portable mode (App Translocation). A vault on a USB drive still works in installed mode.
+- Secrets are never written to `Data/` unless the user opts in to the encrypted option (pending decision D18).
 
 Hard rules:
 - No secret in the vault. No secret in the repo. No config file under `src/app/server/`.
