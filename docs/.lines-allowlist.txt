@@ -13,7 +13,6 @@ src/app/client/src/lib/components/features/HandoverPackageModal.svelte
 src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
 src/app/client/src/lib/components/features/ProjectKanbanView.svelte
 src/app/client/src/lib/components/features/ProjectTableView.svelte
-src/app/client/src/lib/components/features/ShareLinkModal.svelte
 src/app/client/src/lib/components/features/TaskRolloverModal.svelte
 src/app/client/src/lib/components/features/VaultIngesterModal.svelte
 src/app/client/src/lib/components/features/VaultSwitcherModal.svelte
@@ -28,7 +27,6 @@ src/app/client/src/lib/services/notesService.ts
 src/app/client/src/lib/services/radioService.svelte.ts
 src/app/client/src/lib/stores/timerStore.svelte.ts
 src/app/client/src/lib/styles/kanso-tokens.css
-src/app/client/src/lib/views/ClientReviewView.svelte
 src/app/client/src/lib/views/CopyStudioView.svelte
 src/app/client/src/lib/views/InvoiceStudioView.svelte
 src/app/client/src/lib/views/NotesView.svelte

@@ -14,7 +14,7 @@
   import MiniCassetteDock from '$lib/components/radio/MiniCassetteDock.svelte';
   import RadioDrawer from '$lib/components/radio/RadioDrawer.svelte';
   import SettingsView from '$lib/views/SettingsView.svelte';
-  import ClientReviewView from '$lib/views/ClientReviewView.svelte';
+
   import JournalView from '$lib/views/JournalView.svelte';
   import NotificationDrawer from '$lib/components/features/NotificationDrawer.svelte';
   import CommandPaletteModal from '$lib/components/features/CommandPaletteModal.svelte';
@@ -189,19 +189,13 @@
       const dismissed = localStorage.getItem('kanso.onboarding_dismissed');
       if (dismissed !== 'true') {
         setTimeout(() => {
-          if (appState.currentRoute !== 'review') {
-            keyboardOnboardingOpen = true;
-          }
+          keyboardOnboardingOpen = true;
         }, 1200);
       }
     } catch (_) {}
 
     function handleRouteFromHash() {
       const hash = window.location.hash.replace(/^#\/?/, '');
-      if (hash.startsWith('review') || window.location.search.includes('token=')) {
-        appState.currentRoute = 'review';
-        return;
-      }
       if (!hash || hash === 'login') { appState.currentRoute = 'dashboard'; return; }
       const parts = hash.split('/');
       let route = parts[0];
@@ -219,9 +213,7 @@
     handleRouteFromHash();
 
     (async () => {
-      if (appState.currentRoute !== 'review') {
-        await appState.loadCurrentUser();
-      }
+      await appState.loadCurrentUser();
     })();
 
     // Initialize real-time SSE listener
@@ -277,9 +269,6 @@
 
 <svelte:window onkeydown={handleGlobalKeydown} onclick={() => { appState.viewSwitcherOpen = false; overflowMenuOpen = false; }} />
 
-{#if appState.currentRoute === 'review'}
-  <ClientReviewView />
-{:else}
   <div class="app-shell" class:zen-mode-active={appState.isZenMode}>
     <!-- ═══ MAIN VIEWPORT (no sidebar: hamburger opens floating nav) ════ -->
     <div class="app-main">
@@ -505,7 +494,6 @@
     bind:open={appState.radioDrawerOpen}
     onclose={() => (appState.radioDrawerOpen = false)}
   />
-{/if}
 
 <Toast />
 

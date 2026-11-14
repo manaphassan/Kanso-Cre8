@@ -22,7 +22,6 @@ const CommentService = require('../services/CommentService');
 const CopywritingService = require('../services/CopywritingService');
 const SseService = require('../services/SseService');
 const ExportService = require('../services/ExportService');
-const ShareService = require('../services/ShareService');
 const GeminiService = require('../services/GeminiService');
 const WebhookService = require('../services/WebhookService');
 const SnapshotService = require('../services/SnapshotService');
@@ -400,49 +399,6 @@ module.exports = async function run(test, context = {}) {
 
     // Cleanup
     try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
-  });
-
-  test('ShareService generates, validates, and revokes client review tokens', () => {
-    const ShareService = require('../services/ShareService');
-    const testDir = path.join(__dirname, 'temp-share-workspace');
-    const projectDir = path.join(testDir, '2026', '202608_August', '202608_0088S_SS_Share_Test');
-    fs.mkdirSync(projectDir, { recursive: true });
-    fs.writeFileSync(path.join(projectDir, 'README.md'), '---\nstatus: in-progress\ntitle: Share Test Project\nbrand: SSH\n---\n# Share Test\n', 'utf8');
-
-    const origRoot = WorkspaceService.workspaceRoot;
-    WorkspaceService.workspaceRoot = testDir;
-    WorkspaceService.scan(true);
-
-    try {
-      // 1. Create a 7-day token
-      const shareRecord = ShareService.createShareToken({
-        projectId: '0088S',
-        createdBy: 'Senior Designer',
-        expiresInDays: 7,
-        permissions: 'review_approve',
-        note: 'Director signoff'
-      });
-
-      assert.ok(shareRecord.token, 'Token string must be generated');
-      assert.strictEqual(shareRecord.jobId, '0088S');
-      assert.strictEqual(shareRecord.permissions, 'review_approve');
-      assert.strictEqual(shareRecord.active, true);
-
-      // 2. Validate token
-      const validated = ShareService.validateToken(shareRecord.token);
-      assert.ok(validated, 'Validated result must not be null');
-      assert.strictEqual(validated.project.jobId, '0088S');
-      assert.strictEqual(validated.shareInfo.permissions, 'review_approve');
-
-      // 3. Revoke token
-      const revoked = ShareService.revokeToken(shareRecord.token);
-      assert.strictEqual(revoked, true);
-      assert.strictEqual(ShareService.validateToken(shareRecord.token), null, 'Revoked token must not validate');
-    } finally {
-      WorkspaceService.workspaceRoot = origRoot;
-      WorkspaceService.scan(true);
-      try { fs.rmSync(testDir, { recursive: true, force: true }); } catch (e) {}
-    }
   });
 
   test('GeminiService manages AI configuration and formats Gemini Ultra prompts', () => {

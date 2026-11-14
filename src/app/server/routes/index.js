@@ -10,7 +10,6 @@ router.use('/', require('./vault'));
 router.use('/', require('./auth'));
 router.use('/', require('./projects'));
 router.use('/', require('./deliverables'));
-router.use('/', require('./share'));
 router.use('/', require('./ai'));
 router.use('/', require('./clients'));
 router.use('/', require('./finance'));

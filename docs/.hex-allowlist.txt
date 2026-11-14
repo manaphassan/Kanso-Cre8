@@ -11,7 +11,6 @@ src/app/client/src/lib/components/features/DeliverableVisualDiffSlider.svelte
 src/app/client/src/lib/components/features/HeaderTimerWidget.svelte
 src/app/client/src/lib/components/features/KnowledgeGraphCanvas.svelte
 src/app/client/src/lib/components/features/ProjectFilterBar.svelte
-src/app/client/src/lib/components/features/ShareLinkModal.svelte
 src/app/client/src/lib/components/features/StopSessionModal.svelte
 src/app/client/src/lib/components/journal/DailyLog.svelte
 src/app/client/src/lib/components/markdown/MermaidViewer.svelte
