@@ -57,17 +57,6 @@ public class GenerateKansoIcons
                 b128.Save(tauri128, ImageFormat.Png);
             }
 
-            // Android Companion 192x192
-            string androidIcon = Path.Combine(repoRoot, @"src\android\app\src\main\res\mipmap-xxxhdpi\ic_launcher.png");
-            if (Directory.Exists(Path.GetDirectoryName(androidIcon)))
-            {
-                using (Bitmap b192 = ResizeBicubic(master, 192, 192))
-                {
-                    b192.Save(androidIcon, ImageFormat.Png);
-                    Console.WriteLine("Saved Android icon: " + androidIcon);
-                }
-            }
-
             // Favicon 32x32
             string tauri32 = Path.Combine(repoRoot, @"src\app\src-tauri\icons\32x32.png");
             string publicFavicon = Path.Combine(repoRoot, @"src\app\client\public\favicon.png");

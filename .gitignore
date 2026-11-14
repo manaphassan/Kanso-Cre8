@@ -31,7 +31,6 @@ desktop.ini
 *.swp
 *.log
 src/app/launcher.log
-src/windows-launcher/launcher.log
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
@@ -50,4 +49,3 @@ tmp/
 *.dll
 *.pdb
 *.exe.config
-src/windows-launcher/runtimes/

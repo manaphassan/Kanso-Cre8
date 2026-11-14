@@ -217,11 +217,11 @@ Gate: the key never appears in webview memory, IPC payloads or any file in the v
 ### PHASE 4 - Remove the Node server
 Gate: `git ls-files src/app/server` is empty; `npm ls express` finds nothing; `npm audit --omit=dev` shows 0 high or critical; the installers start and work on a clean Windows VM with no Node installed (macOS and Linux: CI build succeeds).
 
-- P4.1 Delete `src/app/server/` (move `scripts/generate-tauri-icons.js` to `scripts/tools/` if still used). Server tests are already ported or deleted.
+- P4.1 Delete `src/app/server/`. Server tests are already ported or deleted.
 - P4.2 Remove the npm dependencies in 2.9. `package.json` scripts: drop `start`, `dev:server`; `dev` becomes `tauri dev`; `main` field removed.
 - P4.3 `main.rs`: remove `BackendState`, `get_backend_port`, `get_backend_url`, port probing. `api.ts`: remove base URL resolution and the fetch transport.
 - P4.4 CSP: `default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:`. Bundle Geist Sans and Geist Mono locally and drop Google Fonts.
-- P4.5 Build scripts: `build-windows.ps1` and `build-linux.ps1` become thin wrappers over `tauri build` (no `node.exe`, no esbuild bundle). The Windows portable zip is the exe plus `portable.ini` plus a short README. `build-platforms.ps1` stays the single local entry point.
+- P4.5 Build scripts: `build-windows.ps1` and `build-linux.ps1` become thin wrappers over `tauri build` (no `node.exe`, no esbuild bundle). The Windows portable zip is the exe plus `portable.ini` plus a short README. `build-platforms.ps1` stays the single local entry point. Delete `scripts/run-smoketest.ps1` (it drives the server API) or rewrite it as a launch check of the built app.
 - P4.6 Guardian: replace the `server/routes <= 300 lines` check with `src-tauri/src/*.rs <= 400` and `client/src/lib/domain/*.ts <= 400`; add a check that no `express`, `http.createServer` or `.listen(` exists under `src/app`; add a check that `portable.ini` is never committed.
 
 ### PHASE 5 - Portable mode and settings export

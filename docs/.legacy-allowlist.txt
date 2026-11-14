@@ -3,7 +3,6 @@
 # Zero occurrences of SS-CAM, ss_cam, or SSNAS are permitted in active source code.
 
 src/app/client/index.html
-src/app/client/privacy.html
 src/app/client/src/App.svelte
 src/app/client/src/lib/services/notesService.ts
 src/app/client/src/lib/services/vaultService.ts
