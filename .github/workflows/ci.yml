@@ -42,3 +42,63 @@ jobs:
       - name: Build Svelte 5 Frontend
         working-directory: src/app
         run: npm run build:client
+
+  rust:
+    name: Rust fmt, clippy and test (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+          - os: macos-latest
+            name: macOS
+          - os: ubuntu-22.04
+            name: Linux
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Linux WebKit Dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src/app/src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: src/app/package-lock.json
+
+      # tauri::generate_context! reads frontendDist at compile time.
+      - name: Build Svelte 5 Frontend
+        working-directory: src/app
+        run: |
+          npm ci
+          npm run build:client
+
+      - name: cargo fmt
+        working-directory: src/app/src-tauri
+        run: cargo fmt --check
+
+      - name: cargo clippy
+        working-directory: src/app/src-tauri
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: cargo test
+        working-directory: src/app/src-tauri
+        run: cargo test

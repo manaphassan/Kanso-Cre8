@@ -74,4 +74,8 @@
 - 2026-11-14 | .agents/skills/kanso-guardian/scripts/verify-kanso.ps1 | The emoji check misses some pictographs (12 remain in src, for example U+23F3 in MarkdownEditor.svelte) because its regex covers only surrogate pairs and U+2600-27BF | suggested task: widen the regex to U+2300-23FF and U+2B00-2BFF.
 - 2026-11-14 | src/app/server/test/ | Tests call services directly and never check the client ApiClient paths against registered routes, which is how F2 shipped | suggested task: none (routes are deleted in Phase 4; Phase 2 tests the domain modules ApiClient actually calls).
 
+## v0.9.0 Local Release - Phase 1
+- 2026-11-14 | .github/workflows/release-builds.yml | Found while doing P1.1: the v0.8.0 file was invalid YAML (single-quoted `releaseName` containing single quotes), so tag pushes never produced a release. Fixed with double quotes in P1.1.
+- 2026-11-14 | owner machine | The Rust gate cannot run locally: no Visual Studio C++ Build Tools or Windows SDK installed, and Git for Windows puts its coreutils `link.exe` on PATH ahead of the MSVC linker. CI is currently the only place Rust compiles.
+
 
