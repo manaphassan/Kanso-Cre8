@@ -8,7 +8,7 @@
 //! corrupts it.
 
 use serde::Serialize;
-use std::path::{Component, Path, PathBuf};
+use std::path::{Path, PathBuf};
 
 pub const PORTABLE_MARKER: &str = "portable.ini";
 const PORTABLE_DATA_DIR: &str = "Data";
@@ -152,11 +152,13 @@ pub fn cloud_sync_provider(path: &Path, env: EnvFn) -> Option<&'static str> {
         }
     }
 
-    for component in path.components() {
-        let Component::Normal(name) = component else {
+    // Split on both separators so a Windows path (for example from an imported
+    // settings file or a test) is recognized on macOS and Linux too.
+    for name in path.to_string_lossy().split(['/', '\\']) {
+        if name.is_empty() {
             continue;
-        };
-        let name = name.to_string_lossy().to_lowercase();
+        }
+        let name = name.to_lowercase();
         if name == "dropbox" || name.starts_with("dropbox (") {
             return Some("Dropbox");
         }
@@ -307,6 +309,19 @@ mod tests {
         ] {
             assert_eq!(cloud_sync_provider(Path::new(path), &env), None, "{path}");
         }
+    }
+
+    #[test]
+    fn detects_windows_paths_on_any_host() {
+        let env = env_of(&[]);
+        assert_eq!(
+            cloud_sync_provider(Path::new(r"C:\Users\a\Dropbox\Vault"), &env),
+            Some("Dropbox")
+        );
+        assert_eq!(
+            cloud_sync_provider(Path::new("/Users/a/Dropbox/Vault"), &env),
+            Some("Dropbox")
+        );
     }
 
     #[test]

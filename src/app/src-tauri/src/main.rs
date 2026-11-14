@@ -185,13 +185,16 @@ mod tests {
     /// the manifest is refused by the runtime.
     #[test]
     fn runtime_enforces_the_capability() {
+        let mut context = tauri::generate_context!(test = true);
+        // macOS only builds tray icons on the main thread; tests run on others.
+        context.config_mut().app.tray_icon = None;
         let app = tauri::test::mock_builder()
             .manage(crate::vault::VaultState::default())
             .invoke_handler(tauri::generate_handler![
                 crate::vault::vault_root,
                 not_in_manifest
             ])
-            .build(tauri::generate_context!(test = true))
+            .build(context)
             .unwrap();
         let webview = tauri::WebviewWindowBuilder::new(&app, "main", tauri::WebviewUrl::default())
             .build()

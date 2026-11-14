@@ -75,6 +75,10 @@
 - 2026-11-14 | src/app/server/test/ | Tests call services directly and never check the client ApiClient paths against registered routes, which is how F2 shipped | suggested task: none (routes are deleted in Phase 4; Phase 2 tests the domain modules ApiClient actually calls).
 
 ## v0.9.0 Local Release - Phase 1
+- 2026-11-14 | .github/workflows/ci.yml | First CI run of Phase 1 (run 43603796786): Windows green; macOS and Linux failed 3 Rust tests; the governance job failed on Linux. Fixed in the next commit:
+  - `paths.rs` split paths with `Path::components`, which does not treat `\` as a separator on macOS/Linux, so Windows-style paths were not recognized as cloud folders. Now splits on both separators.
+  - `runtime_enforces_the_capability` built the tray icon off the main thread, which macOS refuses (`Tray(NotMainThread)`). The test context drops the tray icon.
+  - `verify-kanso.ps1` built repo-relative paths with `\` and `Substring(len + 1)`, so on Linux runners every allow-list missed (paths showed as `ome/runner/...`) and 3 checks failed. This also failed in every v0.8.0 CI run. Paths are now forward-slash relative on all OS, and the repository root no longer depends on the working directory.
 - 2026-11-14 | .github/workflows/release-builds.yml | Found while doing P1.1: the v0.8.0 file was invalid YAML (single-quoted `releaseName` containing single quotes), so tag pushes never produced a release. Fixed with double quotes in P1.1.
 - 2026-11-14 | owner machine | The Rust gate cannot run locally: no Visual Studio C++ Build Tools or Windows SDK installed, and Git for Windows puts its coreutils `link.exe` on PATH ahead of the MSVC linker. CI is currently the only place Rust compiles.
   - 2026-11-14 resolved: owner added the VCTools workload and Windows SDK 10.0.26100 to Build Tools 2022; fmt, clippy and test now run locally.

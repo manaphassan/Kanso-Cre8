@@ -40,10 +40,18 @@ function Report-Check {
     elseif ($Status -eq "WARN") { $script:warnCount++ }
 }
 
-$repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.Parent.FullName
-if (-not (Test-Path "$repoRoot\README.md")) {
-    $repoRoot = Get-Location
+# scripts -> kanso-guardian -> skills -> .agents -> repository root
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../../../..")).Path
+if (-not (Test-Path (Join-Path $repoRoot "README.md"))) {
+    $repoRoot = (Get-Location).Path
 }
+
+# Repository-relative path with forward slashes, so checks and allow-lists
+# behave the same on Windows, macOS and Linux runners.
+function Get-RelPath([string]$fullPath) {
+    return $fullPath.Substring($repoRoot.Length).TrimStart([char]92, [char]47).Replace([char]92, [char]47)
+}
+$excludedDirs = [regex]'[\\/](node_modules|target|dist|\.git)[\\/]'
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
@@ -218,12 +226,12 @@ foreach ($dir in $scanDirs) {
     if (Test-Path $dir) {
         $files = Get-ChildItem -Path $dir -Recurse -File | Where-Object {
             $ext = $_.Extension.ToLower()
-            $textExtensions -contains $ext -and $_.FullName -notmatch '\\(node_modules|target|dist|\.git)\\'
+            $textExtensions -contains $ext -and -not $excludedDirs.IsMatch($_.FullName)
         }
         foreach ($f in $files) {
             $text = Get-Content $f.FullName -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
             if ($text -and $emojiRegex.IsMatch($text)) {
-                $rel = $f.FullName.Substring($repoRoot.Length + 1)
+                $rel = Get-RelPath $f.FullName
                 $emojiLeaks += $rel
             }
         }
@@ -243,7 +251,7 @@ $hexAllowListPath = Join-Path $repoRoot "docs\.hex-allowlist.txt"
 $allowedHexFiles = @()
 if (Test-Path $hexAllowListPath) {
     $allowedHexFiles = Get-Content $hexAllowListPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
-        $_.Trim().Replace('/', '\')
+        $_.Trim().Replace([char]92, [char]47)
     }
 }
 
@@ -252,7 +260,7 @@ $unauthorizedHexFiles = @()
 $hexPattern = [regex]'#[0-9a-fA-F]{3,8}\b'
 
 foreach ($file in $svelteFiles) {
-    $rel = $file.FullName.Substring($repoRoot.Length + 1)
+    $rel = Get-RelPath $file.FullName
     $content = Get-Content $file.FullName -Raw -Encoding UTF8
     if ($hexPattern.IsMatch($content)) {
         $isAllowed = $false
@@ -327,7 +335,7 @@ $legacyAllowPath = Join-Path $repoRoot "docs\.legacy-allowlist.txt"
 $allowedLegacyFiles = @()
 if (Test-Path $legacyAllowPath) {
     $allowedLegacyFiles = Get-Content $legacyAllowPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
-        $_.Trim().Replace('/', '\')
+        $_.Trim().Replace([char]92, [char]47)
     }
 }
 
@@ -336,11 +344,11 @@ $legacyMatches = @()
 $sourceFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app") -Recurse -File | Where-Object {
     $ext = $_.Extension.ToLower()
     @(".js", ".ts", ".svelte", ".json", ".md", ".html", ".css", ".rs") -contains $ext -and
-    $_.FullName -notmatch '\\(node_modules|target|dist|\.git)\\'
+    -not $excludedDirs.IsMatch($_.FullName)
 }
 
 foreach ($f in $sourceFiles) {
-    $rel = $f.FullName.Substring($repoRoot.Length + 1)
+    $rel = Get-RelPath $f.FullName
     $content = Get-Content $f.FullName -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
     if ($content -and $legacyRegex.IsMatch($content)) {
         $isAllowed = $false
@@ -378,7 +386,7 @@ $linesAllowPath = Join-Path $repoRoot "docs\.lines-allowlist.txt"
 $allowedLineFiles = @()
 if (Test-Path $linesAllowPath) {
     $allowedLineFiles = Get-Content $linesAllowPath | Where-Object { $_ -and -not $_.StartsWith("#") } | ForEach-Object {
-        $_.Trim().Replace('/', '\')
+        $_.Trim().Replace([char]92, [char]47)
     }
 }
 
@@ -390,7 +398,7 @@ $over400Components = @()
 foreach ($cf in $clientSrcFiles) {
     $lineCount = (Get-Content $cf.FullName).Count
     if ($lineCount -gt 400) {
-        $rel = $cf.FullName.Substring($repoRoot.Length + 1)
+        $rel = Get-RelPath $cf.FullName
         $isAllowed = $false
         foreach ($pattern in $allowedLineFiles) {
             if ($rel -like "*$pattern*" -or $cf.Name -eq $pattern) {
