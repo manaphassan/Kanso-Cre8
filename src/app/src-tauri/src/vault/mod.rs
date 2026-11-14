@@ -6,9 +6,9 @@ pub mod ops;
 use guard::VaultRoot;
 use ops::{Entry, Written};
 use serde::Serialize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::RwLock;
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, Runtime, State};
 
 #[derive(Default)]
 pub struct VaultState {
@@ -56,12 +56,23 @@ pub fn vault_open(
 ) -> Result<Opened, String> {
     let root = VaultRoot::open(&PathBuf::from(&path)).map_err(|e| e.to_string())?;
     let display = display_path(root.path());
+    allow_previews(&app, root.path())?;
     let watch = crate::watch::start(&app, &watch_state, &root);
     state.set(root)?;
     Ok(Opened {
         root: display,
         watch,
     })
+}
+
+/// Lets the webview load images and video from the open vault through the
+/// asset protocol (`convertFileSrc`). Nothing outside the vault is allowed.
+/// Tauri's scope has no "un-allow", so a vault opened earlier in the same
+/// session stays previewable until restart.
+pub fn allow_previews<R: Runtime, M: Manager<R>>(app: &M, root: &Path) -> Result<(), String> {
+    app.asset_protocol_scope()
+        .allow_directory(root, true)
+        .map_err(|e| format!("Could not enable previews for the vault: {e}"))
 }
 
 #[tauri::command]
@@ -152,6 +163,44 @@ mod tests {
             r"\\nas\share\Vault"
         );
         assert_eq!(display_path(Path::new("/home/a/Vault")), "/home/a/Vault");
+    }
+
+    #[test]
+    fn previews_are_limited_to_the_open_vault() {
+        let tmp = guard::test_support::TempDir::new("assets");
+        let vault = tmp.path().join("Vault");
+        let outside = tmp.path().join("Outside");
+        std::fs::create_dir_all(vault.join("_Projects/P/04_WIP")).unwrap();
+        std::fs::create_dir_all(&outside).unwrap();
+        std::fs::write(vault.join("_Projects/P/04_WIP/draft.png"), "png").unwrap();
+        std::fs::write(outside.join("secret.png"), "png").unwrap();
+
+        let app = tauri::test::mock_app();
+        let root = VaultRoot::open(&vault).unwrap();
+        let scope = app.asset_protocol_scope();
+        assert!(!scope.is_allowed(vault.join("_Projects/P/04_WIP/draft.png")));
+        allow_previews(&app, root.path()).unwrap();
+        assert!(scope.is_allowed(vault.join("_Projects/P/04_WIP/draft.png")));
+        assert!(scope.is_allowed(display_path(
+            &root.path().join("_Projects/P/04_WIP/draft.png")
+        )));
+        assert!(!scope.is_allowed(outside.join("secret.png")));
+        assert!(!scope.is_allowed(vault.join("../Outside/secret.png")));
+
+        #[cfg(windows)]
+        {
+            let link = vault.join("junction");
+            let ok = std::process::Command::new("cmd")
+                .args(["/C", "mklink", "/J"])
+                .arg(&link)
+                .arg(&outside)
+                .output()
+                .unwrap()
+                .status
+                .success();
+            assert!(ok);
+            assert!(!scope.is_allowed(link.join("secret.png")));
+        }
     }
 
     #[test]
