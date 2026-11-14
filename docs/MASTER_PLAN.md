@@ -1,268 +1,318 @@
-# KANSO CRE8 - MASTER PLAN (v0.7.0 -> v0.8.0 "Quiet Release")
+# KANSO CRE8 - MASTER PLAN (v0.8.0 -> v0.9.0 "Local Release")
 
-Audience: Antigravity (executing agent). Owner: product/art direction.
-Goal: healthier code, one data model, minimal UI, zero emoji, zero drift.
-Rule zero: this plan removes and consolidates. It adds nothing except what a phase explicitly lists.
+Audience: the executing agent. Owner: product/art direction.
+Goal: one native desktop app for Windows, macOS and Linux. No server, no Android. All data saved locally as plain files. AI built in with the user's own API key. Portable from a USB drive. Settings exportable from one OS to another.
+Rule zero: this plan removes the server and the Android stub, and adds only what a phase explicitly lists.
+Previous plan (v0.7.0 -> v0.8.0, D1 to D8): `docs/archive/MASTER_PLAN_v0.8.0.md`.
 
 ---
 
 ## 0. EXECUTION CONTRACT (read first, applies to every phase)
 
-1. Work one phase at a time. One task = one commit. Never start phase N+1 before the phase N gate passes.
+1. Work one phase at a time. One task = one commit. Never start phase N+1 before the phase N gate passes and the owner replies "phase N approved".
 2. Before each task: state the task ID, the files you will touch, and the acceptance check. Touch nothing else.
 3. After each task run the gate:
-   - `powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1` (must be 0 warned / 0 failed)
-   - `npm run build:client` and `npm test` from `src/app`
-4. No new features, no new dependencies, no renames outside the task list. If something looks wrong but is not in the plan, write it to `docs/PLAN_NOTES.md` and continue.
-5. STOP and ask the owner when: a task needs a decision marked `DECISION`, a delete touches user vault data, a history rewrite is required, or a test fails twice.
-6. Never print, copy or commit secrets, bank details, real client or studio identity. Use Acme Corp / Nexus Studio / Lumina Labs only.
-7. Ascii only in code, docs and commit messages. No emoji. If you meet mojibake, fix it, never copy it.
+   - `powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1` (0 warned / 0 failed)
+   - from `src/app`: `npm run check`, `npm run build:client`, `npm test`
+   - from Phase 1 on, from `src/app/src-tauri`: `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`
+4. No new features and no new dependencies beyond section 2.9. If something looks wrong but is not in the plan, write it to `docs/PLAN_NOTES.md` and continue.
+5. STOP and ask the owner when: a task needs a decision marked PENDING in section 4, a delete touches user vault data, a history rewrite is required, or a gate fails twice.
+6. Never print, copy or commit secrets, API keys, bank details, real client or studio identity. Use Acme Corp / Nexus Studio / Lumina Labs only.
+7. ASCII only in code, docs and commit messages. No emoji.
 8. Svelte 5 runes only. Colors only via `var(--kanso-*)`. Icons only via the single Icon component.
-9. Commit format: `type(scope): summary` + the Co-Authored-By line required by the session.
+9. Commit format: `type(scope): summary`.
+10. Windows is the reference platform: every task is verified on Windows first. macOS and Linux must still compile and pass CI on every commit from Phase 1 on.
 
 ---
 
-## 1. AUDIT FINDINGS (evidence from the repo)
+## 1. WHY THIS PLAN (audit of v0.8.0, 2026-11-14)
 
-### 1.1 Critical (security / privacy) - fix in Phase 0
 | # | Finding | Evidence |
 |---|---|---|
-| C1 | `node_modules` is tracked in git | 1012 tracked files under `src/app/node_modules`; `.git` is 454 MB |
-| C2 | Android signing keystore is committed | `src/android/kanso-companion.keystore` |
-| C3 | Plaintext passwords committed | `sample-workspace/_Team/_Config/user_passwords.json` (5 accounts, plain text) |
-| C4 | License key committed | `_Team/_Config/license.key` |
-| C5 | Binary + build output tracked | `src/windows-launcher/KansoCre8.exe`, `src/app/client/dist/*`, `src/app/launcher.log` (all contradict `.gitignore`) |
-| C6 | Real-looking owner identity in sample data | `studio_profile.json` (studio, person, email, phone, bank account), `staff_directory.json`, `audit-log.jsonl` - violates Client Privacy Law |
-| C7 | Server is open on the network with a default secret | `HOST=0.0.0.0`, `cors()` wide open, `JWT_SECRET` falls back to a hardcoded string in `server/config.js` |
-| C8 | Machine-local config sits in the repo tree | `server/workspace_config.json` holds an absolute `D:\` path; `server/ai-config.json` holds the AI API key (ignored but exists, stored as plain JSON) |
-| C9 | Tauri CSP allows everything | `default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:` |
+| F1 | The desktop app never starts its backend | `src-tauri/src/main.rs` only probes port 4000 or picks a free port; no `externalBin`, no spawn. `PLAN_NOTES.md` marks P5.4 done, but it is not. Release installers ship without a server. |
+| F2 | About 16 client calls hit routes that do not exist | Share links, client review, 4 AI actions, vault ingest, project decision, global deliverables. `routes/share.js` calls `ShareService` methods that do not exist. |
+| F3 | Android build is a stub | `MainActivity.java` loads `dist/index.html` with no backend; no Gradle project; the CI step copies a missing APK with `|| true`. |
+| F4 | Local API treats every caller as admin | `middleware/auth.js`: missing or invalid token -> default admin user; CORS accepts any `localhost:*` origin; default passwords; plaintext password store. |
+| F5 | 9 npm vulnerabilities (1 critical, 4 high) | `express` -> `proxy-addr`, `qs`; `archiver` -> `readdir-glob`. |
+| F6 | Licence is cosmetic and forgeable | `requirePro()` returns `true`; any `KANSO-PRO-...-VERIFIED` key passes; signing secret is in source; client upper-cases keys before base64 decode, so genuine keys fail. |
+| F7 | Bundle carries a full Node runtime | `build-windows.ps1` copies `node.exe` (about 80 MB) and an esbuild server bundle that nothing launches. |
 
-### 1.2 Architecture and data
-- Three config homes with no rule: `server/*.json` (machine), `sample-workspace/_Team/_Config/*` (vault), browser `localStorage` (122 call sites, 11 keys).
-- Legacy key prefix `ss_cam_*` (token, theme, view, avatar, remember-me) still used next to `kanso_*`.
-- Tauri `main.rs` only opens a window. The real backend is a Node/Express server on port 4000 (133 routes, `api.js` 2630 lines) that the desktop build assumes is already running. Verify and make this explicit (see 4.2).
-- Multi-user team system (login, roster, users, staff directory 1 MB, plaintext passwords, webhooks, share tokens) in an app whose brief is a solo freelancer vault.
-- Deprecated features still alive: Creative Orders (`OrderService.js`, 8 `/orders` routes) and Migration Wizard (`MigrationService.js`, `/migration/*`), both marked "permanently removed" in AGENTS.md.
-- Duplicate route `GET /status` registered twice (`api.js` lines 41 and 1342). `/team`, `/team/roster`, `/users` overlap.
-- Sample vault has duplicate project folders `03_COPY` and `03_COPYWRITING` in all 3 projects, and duplicate invoice files (`INV-2026-001_ACME.md` vs `INV-2026-001_AcmeCorp_Deposit.md`, two `QUOTE-2026-001_*`).
-- Old naming still in code: "Zettel" 192 refs (route `zettel`, `ZettelView`, `zettelService`) although AGENTS.md says the root was replaced by `_Notes`.
+Removing the server resolves F1, F2, F4, F5 and F7 by construction. Deleting Android resolves F3. F6 is Phase 6.
 
-### 1.3 Code health
-- God files: SettingsView 3457 lines, CassetteDeck 3267, AdminView 3224, ProjectDetailView 2356, DashboardView 2137, DeliverablesView 1961, ZettelView 1793, TeamView 1742, JournalView 1630, InvoiceStudioView 1593. Target max 400 lines per component.
-- Backend: `api.js` 2630 lines (all routes in one file), `WorkspaceService` 1403, `run-tests.js` 2861 (one file).
-- Duplicated helpers copied across components: `closeModal` x8, `handleKeydown` x8, `loadStaffList` x3 (Kanban/Table/Detail), `openLightbox` x3.
-- Hardcoded colors: 2448 hex literals in `.svelte/.ts` (worst: DashboardView 154, CommandPalette 116, JournalView 111, CassetteDeck 92). Violates the token law.
-- Two design systems shipped: `fluent2-base.css` (460) + `fluent2-tokens.css` (642) next to `kanso-tokens.css` (594) + `tailwind-compat.css` (256). Components are named `Fluent*` (9 files) but the law is Linear/Geist. Tailwind is claimed in AGENTS.md but is not a dependency (only a hand-written compat sheet).
-- Unused or heavy deps worth checking: `jsdom` (dev), `mermaid` (large, should be lazy), `multer@1`, `archiver`.
-- Project view modes: Kanban, Table, Gantt, Calendar (+ list) = too many.
-
-### 1.4 Emoji and mojibake
-- Source (client + server): about 560 emoji/pictograph occurrences. Top: folder 33, calendar 21, lightning 13, target 13, palette 9, package 9, warning 9, bulb 8, trash 6.
-- Docs: README 57, FOLDER-STRUCTURE 63, MASTER_SPECIFICATION 53, SKILL.md (guardian) 39, ROADMAP 19.
-- Mojibake: 140 lines, all in `CHANGELOG.md` (broken em dashes, bullets, kanji, emoji). CHANGELOG is 1352 lines / 110 KB and still lists legacy product names and a former client brand set (SS Health, SSNAS, SS-CAM) which breaks the privacy law.
-- Legacy brand leakage in code: `SS-CAM|ss_cam|SSNAS|SS Health` found in 123 lines across 20+ files (api.ts, appState, LoginView, AdminView, TeamView, ProjectsView, OrderService, ApprovalService, docs).
-
-### 1.5 Documentation drift
-- `AGENTS.md` and `.agents/AGENTS.md` are identical copies. Keep one.
-- Five overlapping docs: README, ROADMAP, FOLDER-STRUCTURE, KANSO_CRE8_MASTER_SPECIFICATION, ARCHITECTURE_MODULARITY. No single source of truth.
-- `codebase-cleanup` skill is 766 lines and generic; it invites scope creep.
+Not addressed here (log only, do not fix in this plan): 30 files over the 400-line cap in `docs/.lines-allowlist.txt`, 12 leftover emoji in source, 38 `svelte-check` warnings, duplicated keys in `studio_profile.json` (except where P2.1 must read them).
 
 ---
 
 ## 2. TARGET DESIGN
 
-### 2.1 Three storage tiers (one rule each)
-| Tier | Where | Holds | Synced? |
+### 2.1 Runtime architecture (no server)
+```
+Svelte views and components            (unchanged, 33 files use ApiClient)
+        |
+ApiClient                              (same 96 method signatures; transport changes)
+        |
+TypeScript domain services             client/src/lib/domain/*.ts   (ported from server/services)
+        |
+VaultFs interface                      client/src/lib/vault/
+   |                        |
+TauriVaultFs (app)       MemoryVaultFs (tests)
+   |
+Rust commands                          src-tauri/src/{paths,vault,watch,archive,secrets,ai,settings,license}.rs
+   |
+Vault folder (.md, .json)   Machine dir (app.json)   OS keychain (secrets)
+```
+Rules:
+- No process listens on a port. No `express`, no `http.createServer`, no `listen(`.
+- Business logic (finance math, journal parsing, frontmatter, task rollup) lives in TypeScript.
+- Rust does only what must be native or fast: path safety, bulk scan, atomic write, watch, zip, hash, secrets, outbound HTTP for AI and radio metadata, licence verification, settings export crypto.
+- Every Rust command that takes a path takes it relative to the open vault root and rejects anything that resolves outside it.
+
+### 2.2 Platforms
+| Platform | Rust target | Artifacts | Role |
 |---|---|---|---|
-| Vault (user content) | `<vault>/` plain `.md` + frontmatter, plus small JSON in `_Team/_Config/` | projects, clients, finance, journal, notes, studio profile, UI preferences | Yes (cloud-safe, no secrets) |
-| Machine (this device only) | OS app-data: `%APPDATA%/KansoCre8/app.json` (Linux `~/.config/kansocre8/`) | active vault path, recent vaults, AI API key, local server port, generated server secret, window state | Never |
-| Session (volatile) | one `kanso.session` key in localStorage | auth token if auth survives, last route, unsent drafts | Never |
+| Windows 10/11 x64 | `x86_64-pc-windows-msvc` | NSIS setup `.exe`, `.msi`, portable `.zip` (exe + `portable.ini` + README) | Reference platform. Built, tested and shipped first. Needs WebView2 (present on Windows 11; NSIS bootstrapper installs it if missing). |
+| macOS (Tauri v2 minimum, 10.15+) | `universal-apple-darwin` (arm64 + x64) | `.dmg`, `.app` | Built in CI from Phase 1. Full QA in Phase 6. Opening without warnings needs Developer ID signing and notarization (D19). No portable mode (see 2.3). |
+| Linux x64 (Ubuntu 22.04 baseline) | `x86_64-unknown-linux-gnu` | `.AppImage` (portable-capable), `.deb` | Built in CI from Phase 1. Full QA in Phase 6. Needs `webkit2gtk-4.1`. |
 
-Rules: no secret ever enters the vault or the repo. No config file lives under `src/app/server/`. The browser never stores durable user data.
+Removed: Android (D11).
 
-### 2.2 Vault config consolidation (`_Team/_Config/`)
-Replace 6 loose files with 3:
-- `studio_profile.json` - keep (canonical, matches AGENTS.md). Normalize keys to the names AGENTS.md lists (`registration_no`, `signature_text`, `signature_url`, `logo_url`).
-- `preferences.json` - theme (was `theme.txt`), default project view, density, radio favorites, pomodoro length, hourly rate, currency.
-- `license.json` - license state (was `license.key`); remove from repo samples.
-Delete from vault model: `user_passwords.json`, `staff_directory.json`, `companies.json` (clients already live in `_Clients/<CODE>_<Name>/client.md`, make that the only source), `team-notes.json`, `comments/*.jsonl` (move to `comments:` in project `README.md` frontmatter or a `_comments.md` in the project folder).
-Audit log: keep `audit-log.jsonl` only if it stays human-readable and rotates monthly; otherwise drop (see DECISION D2).
+### 2.3 Storage tiers and app modes
+| Tier | Holds | Synced |
+|---|---|---|
+| Vault `<vault>/` | content `.md`, `_Team/_Config/{studio_profile,preferences,license}.json` | yes, never a secret |
+| Machine `app.json` | active vault path, recent vaults, device label, AI provider and model (no key), window state, running timer `startedAt` | never |
+| Secrets (OS keychain) | AI API key | never |
+| Session (webview localStorage) | `kanso.session` only: last route, unsent drafts | never |
 
-### 2.3 Clients and projects
-- One client = one folder `_Clients/<CODE>_<Name>/client.md` (color, contact, terms). The Studio Deck, header swatch strip and invoices read from here only.
-- Project folder stays the 5-folder vault: `01_BRIEF`, `02_REFERENCE`, `03_COPY`, `04_WIP`, `05_DELIVERABLES`. Remove `03_COPYWRITING` everywhere (code, samples, docs).
-- Finance filenames: `INV-YYYY-NNN_<CODE>.md`, `QUOTE-YYYY-NNN_<CODE>.md`. One file per document, no `_Deposit` or `_BrandSystem` suffixes (put the description in frontmatter `title:`).
+| Mode | Trigger | Machine dir | Webview data dir | Vault path stored as |
+|---|---|---|---|---|
+| Installed | default | Windows `%APPDATA%\KansoCre8`; macOS `~/Library/Application Support/KansoCre8`; Linux `$XDG_CONFIG_HOME/kansocre8` | OS default | absolute |
+| Portable (Windows, Linux AppImage) | file `portable.ini` next to the exe (Linux: next to `$APPIMAGE`) | `<app dir>/Data/` | `<app dir>/Data/webview/` | relative to `<app dir>` when on the same drive, so drive letter changes do not break it |
 
-### 2.4 Product scope (solo-first)
-Keep: Studio Deck, Projects (with Review as a tab), Journal, Notes, Clients and Money, Focus Radio, Settings.
-Remove: login screen and user roster, Admin view, Team view, staff directory, webhooks, Creative Orders, Migration Wizard, license nag modal (see DECISION D1, D3).
+Rules:
+- macOS has no portable mode: Gatekeeper App Translocation runs downloaded apps from a random read-only path. A vault on a USB drive still works in installed mode.
+- Portable mode is refused when `<app dir>` is inside a cloud sync folder (Dropbox, Google Drive, OneDrive, Synology Drive). Syncing webview data corrupts it. Show one line and fall back to installed mode. The vault may live in a cloud folder; the app and its `Data/` may not.
+- Secrets never go to `Data/` by default. In portable mode the key is entered once per computer, or carried inside an encrypted settings export (D18).
+- Linux without a Secret Service (minimal desktops): fall back to `app.json` with `0600` permissions and show a one-line warning in Settings > AI.
 
-### 2.5 Navigation (9 items -> 6)
-```
-Deck        (dashboard)
-Projects    (list + kanban + table; Review queue and Copy become tabs inside a project)
-Journal
-Notes       (renamed from Zettel; Scratchpad inside)
-Clients & Money   (Clients, Quotes, Invoices as 3 tabs)
-Settings    (Studio profile, Preferences, Vault, About - 4 tabs)
-```
-Radio is not a page: it is the 40px Mini-Cassette Dock in the footer of the floating navigation dropdown (hamburger in the header; the app has no sidebar) that expands into the full cassette as a drawer. Keyboard: Ctrl+1..6 map to the 6 items. Command palette (Ctrl+K) stays as the only "power" entry point.
+### 2.4 Rust command surface
+| Module | Commands |
+|---|---|
+| `paths.rs` | `app_mode()` -> installed or portable, machine dir, cloud-folder warning |
+| `vault.rs` | `vault_open(path)`, `vault_root()`, `vault_scan()` (tree + mtime + size + text of `.md`/`.json` under 1 MB, one call), `read_text`, `write_text_atomic`, `ensure_dirs`, `move_to_archive`, `copy_into_vault(src, dest)`, `list_dir` |
+| `watch.rs` | `watch_vault()` emits `vault:changed { paths }`; ignores own temp files; polling fallback for network and virtual drives |
+| `archive.rs` | `export_zip(paths, dest)`, `sha256_file(path)` |
+| `machine.rs` | `machine_get(key)`, `machine_set(key, value)` (atomic, user-only permissions) |
+| `secrets.rs` | `ai_set_key(provider, key)`, `ai_clear_key(provider)`, `ai_status()` -> `{ provider, model, configured }` |
+| `ai.rs` | `ai_test()`, `ai_complete({ provider, model, system, prompt, max_tokens })` |
+| `net.rs` | `radio_now_playing(station)` with a host allow-list (`api.laut.fm`, `api.plaza.one`, `somafm.com`) |
+| `settings.rs` | `settings_export(options, dest)`, `settings_inspect(path)`, `settings_import(path, choices, passphrase?)` |
+| `license.rs` | `license_status()`, `license_activate(key)`, `license_deactivate()` (Phase 6) |
 
-### 2.6 Minimalism rules (the component budget)
-- One primary action per screen. Everything else is a ghost button or lives in the command palette.
-- Max 4 bento tiles above the fold on the Deck. Smart Suggestions collapse to one line unless there is an alert.
-- Project view modes: Kanban and Table only. Delete Gantt and Calendar (DECISION D4).
-- No decorative gradients, no emoji, no more than 2 font weights per screen, hairline borders only (flat) or the neumorphic token set (neumorphic modes). Remove all inline `style="color:#..."`.
-- Empty states: one line of text + one icon + one button.
-- Settings: no page longer than one scroll on a 1280x800 window.
+Previews: enable the Tauri asset protocol and allow only the open vault directory at runtime; the UI uses `convertFileSrc` for images and video (range requests work).
 
-### 2.7 Icon system
-- Rename `ui/FluentIcons.svelte` -> `ui/Icon.svelte` (`<Icon name="folder" size={16} />`, `currentColor`, 1.5px stroke, 24px grid). Already has ~20 users; extend the name list, never add a second icon source.
-- Emoji -> icon map (use exactly this):
-  folder/open folder -> `folder`; calendar -> `calendar`; lightning -> `bolt`; target -> `target`; palette -> `palette`; package -> `package`; warning -> `alert`; bulb -> `lightbulb`; trash -> `trash`; memo/page/clipboard -> `file`; check/checkmark -> `check`; cross -> `close`; bell -> `bell`; speech -> `message`; magnifier -> `search`; chart -> `chart`; gear -> `settings`; building -> `building`; people -> `users`; lock/shield -> `lock`; money -> `wallet`; fire -> `flame`; star -> `star`; music -> `music`; arrows -> `arrow-*`; green/red dot -> `<span class="dot dot-success|dot-danger">`.
-- Allowed text glyphs: BuJo symbols required by the spec (bullet, `[ ]`, `[x]`, `[>]`, `o`, `-`, `*`) only inside the Journal rapid log. Keyboard hints may use `Ctrl`, `Shift`, `Enter` as text, not arrow glyphs.
-- Docs: replace emoji with plain headings; no icons in markdown.
+### 2.5 Cross-platform file rules (vault must open identically on all 3 OS)
+- Paths in data and over IPC: relative to the vault root, forward slashes.
+- Filenames the app creates: ASCII (per `kanso-vault-schema`), and never `< > : " / \ | ? *`, control characters, trailing dot or space, Windows reserved names (`CON PRN AUX NUL COM1-9 LPT1-9`), or a name that differs only by case from a sibling.
+- User files (deliverables) may have Unicode names: compare in NFC (macOS can return NFD).
+- Text: UTF-8 without BOM, write LF, accept CRLF on read.
+- Atomic write: temp file in the same folder, flush, rename. On Windows retry the rename with backoff up to about 1 s on sharing violations (antivirus, sync clients).
+- Test paths longer than 260 characters on Windows (deep project trees inside OneDrive).
+- Never hold a file handle open between writes.
+
+### 2.6 AI (built in, bring your own key)
+- Settings > AI: one password field for the key, Test, Clear, model select. Nothing else to configure.
+- The key is stored by Rust in the OS keychain and never sent to the webview. `ai_status` returns `configured: true|false` only.
+- All requests go out from Rust (`reqwest`, rustls). The webview CSP gains no external `connect-src`.
+- Provider at v0.9: Gemini (existing integration). The `provider` field is reserved so others can be added later without UI changes.
+- The four assistant actions (hooks, script, image prompts, formatted prompt) are TypeScript prompt templates that call `ai_complete`.
+- First use shows one line: "Only the text you send is shared with the AI provider." Offline: AI buttons are disabled with one line of explanation.
+- Errors are plain sentences: invalid key, quota reached, no connection.
+
+### 2.7 Settings export and import (cross-platform)
+Purpose: move a setup from Windows to macOS or Linux (or to a new computer) without copying OS-specific files. Vault content already travels with the vault folder; this file carries everything else.
+
+File: `kanso-settings-YYYY-MM-DD.json`, plain readable JSON, documented in `docs/SCHEMA.md`.
+
+| Key | Content | Default |
+|---|---|---|
+| `format` | `"kanso-settings"` | always |
+| `format_version` | integer, starts at `1` | always |
+| `app_version` | for example `"0.9.0"` | always |
+| `exported_at` | ISO 8601 UTC | always |
+| `source_platform` | `windows`, `macos` or `linux` | always |
+| `sections.preferences` | copy of `_Team/_Config/preferences.json` | on |
+| `sections.studio_profile` | copy of `_Team/_Config/studio_profile.json` (contains bank details: the UI says so) | on |
+| `sections.app` | AI provider and model, recent vault folder names (not paths), device label, shortcut overrides, onboarding flags | on |
+| `sections.license` | licence state from `license.json` | off |
+| `secrets` | `null`, or an encrypted block `{ cipher: "aes-256-gcm", kdf: "argon2id", salt, nonce, data }` holding the AI key | off, opt-in with a passphrase of 12+ characters (D18) |
+
+Never exported: absolute paths, window geometry, running timer `startedAt`, webview data, sync-conflict state.
+
+Import flow: pick file -> validate `format` and `format_version` (reject a newer major version, migrate older ones) -> show a per-section preview of what changes -> Replace or Skip per section -> passphrase if `secrets` is present -> write through the config layer (atomic) and the keychain -> if no vault is open, ask the user to choose the vault folder on this computer. Import never touches `.md` content.
+
+### 2.8 Product scope changes
+Delete: Android companion (D11); share links and client review (`ShareService`, `routes/share.js`, `ShareLinkModal`, `ClientReviewView`, ApiClient share and public-review methods) (D12); login, roster, users, team, RBAC and passwords (D1, finished in Phase 4); webhooks; audit log (D2); server-sent events (replaced by `vault:changed`); the Node sidecar idea (D7, superseded by D9).
+Keep: everything else in the six-item navigation, plus the AI assistant (D13).
+
+### 2.9 Dependencies
+Add (Rust, only these): `keyring`, `notify`, `notify-debouncer-full`, `walkdir`, `zip`, `sha2`, `reqwest` (rustls, json), `serde`/`serde_json` (present), `aes-gcm` and `argon2` (only if D18 = YES), `ed25519-dalek` (Phase 6, only if D3 keeps a paid tier), `tauri-plugin-updater` (Phase 6, only if D20 = YES).
+Add (npm, dev): the test runner chosen in D17.
+Remove (npm, Phase 4): `express`, `cors`, `compression`, `jsonwebtoken`, `bcryptjs`, `multer`, `dotenv`, `chokidar`, `archiver`, `concurrently`. Keep `js-yaml` (moves to client use).
+Remove (Tauri): `tauri-plugin-fs` and the `fs:default` capability once all file access goes through the commands in 2.4.
 
 ---
 
 ## 3. PHASES
 
-### PHASE 0 - Stop the bleeding (security and repo hygiene)
-Gate: `git ls-files | grep -E 'node_modules|\.exe$|keystore|license\.key|user_passwords|launcher\.log|/dist/'` returns nothing; app still builds.
+### PHASE 0 - Scope cut and governance
+Gate: `git ls-files src/android` is empty; `grep -rn "share/generate\|public/review\|ShareService" src/app` is empty; guardian, build and tests green.
 
-- P0.1 `git rm -r --cached` for: `src/app/node_modules`, `src/app/client/dist`, `src/windows-launcher/KansoCre8.exe`, `src/app/launcher.log`, `src/android/kanso-companion.keystore`, `_Team/_Config/license.key`, `_Team/_Config/user_passwords.json`. Do not delete working copies except the keystore (ask first).
-- P0.2 Fix `.gitignore` so it actually matches (add `src/app/launcher.log`, `*.keystore`, `*.jks`, `license.key`, `user_passwords.json`, `app.json`, `.env*`). Add `.gitattributes` binary rules only for real assets.
-- P0.3 DECISION D5: rotate the Android keystore (treat the committed one as burned) and purge history of the items in P0.1 with `git filter-repo`. History is 454 MB. Do NOT rewrite history without the owner's explicit go.
-- P0.4 Replace identity in `studio_profile.json`, `staff_directory.json`, `audit-log.jsonl`, docs, tests: studio "Acme Corp" style placeholders, `example.com` emails, `+1-555-0100` phone, fake bank values clearly marked `0000-0000-0000`. Add a deny-list check to the auditor (see P6.1).
-- P0.5 `server/config.js`: bind `127.0.0.1` by default, `HOST` only via env; generate a random secret on first run and store it in the Machine tier; refuse to start in production if the secret is missing; restrict CORS to `http://localhost:5173`, `http://localhost:4000`, `tauri://localhost`, `http://tauri.localhost`.
-- P0.6 Tighten Tauri CSP: `default-src 'self'; connect-src 'self' http://localhost:4000 ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob: https:` (radio streams need `https:` in `media-src` only). Remove `unsafe-eval` (test mermaid and fix if it breaks).
-- P0.7 Move `workspace_config.json` and `ai-config.json` out of `server/` into the Machine tier path (see 2.1). Add a one-time migration that reads the old file if present, writes the new one, deletes the old.
-- P0.8 Encrypt nothing fancy: AI key stored in Machine tier file with user-only permissions. Never return the key to the client (return `configured: true`).
+- P0.1 Delete Android: `src/android/`, `scripts/build-android.ps1`, the `package:android` script, the Android job in `.github/workflows/release-builds.yml`, Android branches in `scripts/build-platforms.ps1`.
+- P0.2 Delete share links and client review (D12): `server/services/ShareService.js`, `server/routes/share.js` and its mount in `routes/index.js`, `ShareLinkModal.svelte`, `ClientReviewView.svelte`, the review route in `App.svelte`, ApiClient methods `generateShareLink`, `getProjectShareLinks`, `revokeShareLink`, `getPublicReview`, `submitPublicDecision`, `submitPublicComment`, every button that opens them, and the ShareService tests.
+- P0.3 Governance docs: update `AGENTS.md` (platforms: Windows, macOS, Linux; no server; no Android; storage tiers from 2.3), `kanso-guardian` SKILL.md (framework, roadmap, platforms), `kanso-vault-schema` (2.3 tiers, keychain, portable mode, settings export pointer), `kanso-scope-lock` (inputs: this plan, decision answers in section 4), `README.md` and `docs/index.html` (platform list). Move `docs/ANTIGRAVITY_INSTRUCTION.md` to `docs/archive/`.
+- P0.4 Interim safety until Phase 4 deletes the server: run `npm audit fix` (non-breaking only, no `--force`), commit the lockfile change.
+- P0.5 Correct `docs/PLAN_NOTES.md`: mark v0.8 P5.4 as not done (F1) with a pointer to this plan.
 
-### PHASE 1 - Remove dead and duplicate code
-Gate: build and tests pass; `grep -ri "ss_cam\|SS-CAM\|SSNAS\|OrderService\|MigrationService"` over `src` returns nothing.
+### PHASE 1 - Rust foundation and three-OS CI
+Gate: `cargo test` and `cargo clippy -D warnings` pass on Windows, macOS and Linux in CI; the app still runs end to end through the old Node server (nothing switched yet).
 
-- P1.1 Delete `OrderService.js`, `MigrationService.js`, their routes (`/orders*`, `/migration/*`), tests, and client calls.
-- P1.2 Delete the duplicate `GET /status` (keep one, line 41), and merge `/team`, `/team/roster`, `/users` once D1 is decided.
-- P1.3 localStorage migration shim (run once, then delete the shim in v0.9): read `ss_cam_*`, write to `kanso.session` / `preferences.json`, remove the old keys. Final key set: `kanso.session` only.
-- P1.4 Rename legacy words: `zettel` -> `notes` (route, `ZettelView` -> `NotesView`, `zettelService` -> `notesService`, `types/zettel.ts` -> `types/notes.ts`, `NotesVaultService` already correct). Keep an alias route `#zettel -> #notes` for one release.
-- P1.5 Remove `03_COPYWRITING` from `CopywritingService`, scaffolding, samples; keep `03_COPY`.
-- P1.6 Delete duplicate sample finance files; keep one quote and one invoice per sample client, canonical names.
-- P1.7 Delete `.agents/AGENTS.md` (identical copy). Keep root `AGENTS.md`.
-- P1.8 Extract shared helpers (create `client/src/lib/utils/`): `useModal` (close on Escape and backdrop), `useStaffList` (will vanish if D1 = solo), `useLightbox`. Replace the 8/8/3/3 copies. Do not change behavior.
-- P1.9 Dependency prune: remove packages not imported (`npx depcheck` first, show the list, then remove); lazy-load `mermaid` via dynamic import; bump `multer` to 2.x.
+- P1.1 CI: add a `rust` job to `ci.yml` on `windows-latest`, `macos-latest`, `ubuntu-22.04` running fmt, clippy and test. `release-builds.yml`: matrix Windows (NSIS, MSI, portable zip), macOS (`--target universal-apple-darwin`, dmg), Linux (AppImage, deb). Unsigned until D19.
+- P1.2 `paths.rs`: resolve app mode (2.3), machine dir per OS, portable `Data/` dir, cloud-folder detection (Dropbox `info.json`, OneDrive env vars, Google Drive `My Drive` and `~/Library/CloudStorage`, `SynologyDrive`). Create the main window in Rust (remove it from `tauri.conf.json`) so portable mode can set the webview data directory. Keep the existing machine paths so current `app.json` files are found.
+- P1.3 Vault path guard in `vault.rs`: hold the canonical root; every command joins, canonicalizes and checks it stays under the root. Unit tests: `..`, absolute paths, symlink escape, drive letters and UNC on Windows, case-insensitive matches on macOS.
+- P1.4 File commands from 2.4 (`vault.rs`, `archive.rs`, `machine.rs`) with the rules in 2.5. Unit tests for atomic write, reserved names, case collision, CRLF read, long paths.
+- P1.5 `watch.rs` with debounced `vault:changed` events and polling fallback.
+- P1.6 Asset protocol enabled; scope set at runtime to the open vault only.
+- P1.7 Capabilities: add a `kanso` permission set for the new commands; keep `dialog` and `global-shortcut`.
+- P1.8 `client/src/lib/vault/`: `VaultFs` interface, `TauriVaultFs`, `MemoryVaultFs`, and the test runner from D17 wired into `npm test` next to the existing server tests.
 
-### PHASE 2 - Data and config reorganization
-Gate: open the sample vault in VS Code/Obsidian, everything readable; fresh vault boots; old vault migrates automatically.
+### PHASE 2 - Port domain services behind ApiClient
+Rule: ApiClient method signatures do not change, so views are untouched. One domain per task: port `server/services/<X>.js` to `client/src/lib/domain/<x>.ts` (async, uses `VaultFs`), port its tests, switch its ApiClient methods to the local implementation, delete the now-dead server route and service in the same commit.
+Gate per task: domain works in `tauri dev` with its server route deleted. Phase gate: the app is fully usable with the Node server not running.
 
-- P2.1 Create `server/services/ConfigService.js`: the only module that reads/writes config. API: `machine.get/set`, `vault.get/set('studio'|'preferences'|'license')`. All other services call it. Remove direct `fs` reads of config elsewhere.
-- P2.2 Implement the file set in 2.2. Write a `migrateVault()` that is idempotent, logs what it moved, and never deletes user `.md` files (it may delete only the retired JSON files after copying).
-- P2.3 Clients: make `_Clients/*/client.md` the only client source. Remove `CompanyService` JSON, update `/companies` -> `/clients`, update Deck swatches, header chronometer, invoices.
-- P2.4 Frontmatter contract: one schema file `docs/SCHEMA.md` listing every frontmatter key per document type (project, client, quote, invoice, journal day, note). Add a validator `FrontmatterService.validate(type, data)` used on write. Unknown keys are preserved, never dropped.
-- P2.5 Comments and approvals: store inside the project folder as `_review.md` (readable, syncs with the project). Drop the global `_Team/comments/`.
-- P2.6 Timer state: persist in the vault as `_Team/_Config/timer.json` is NOT allowed (machine-local, changes every second). Persist in Machine tier with ms timestamp `startedAt`; compute elapsed from it so restarts stay accurate. On stop, append session to the draft invoice file.
-- P2.7 Sync-safety: write via temp file + rename (atomic), debounce writes 300 ms, detect `*conflicted copy*` files (feature exists as `/system/sync-conflicts`; keep, simplify to one banner in Settings > Vault).
+- P2.1 Config: vault config JSON through one `config.ts`, machine settings through `machine_get/set`. Read legacy duplicate keys in `studio_profile.json` once and write only the canonical keys from `kanso-vault-schema`.
+- P2.2 Notes: atomic notes, scratchpad, WikiLinks, backlinks, `#task` rollup and toggle, graph topology.
+- P2.3 Journal: daily, weekly review, monthly, yearly, habits, rollover.
+- P2.4 Clients: `_Clients/*/client.md` only.
+- P2.5 Projects: list, scaffold (5-folder vault), snapshots, deliverables listing, `_review.md` comments and approvals, ingest through `copy_into_vault` (fixes the broken `/projects/:id/ingest`), decision (fixes `/projects/:id/decision`).
+- P2.6 Finance: quotes, invoices, numbering, quote-to-invoice, studio stamping. HTML export via save dialog plus `write_text_atomic`; print via `window.print()`.
+- P2.7 Timer: `startedAt` in the machine tier, elapsed computed from it, append session to the draft invoice on stop.
+- P2.8 Export: handover ZIP and full-vault export through `export_zip`; manifest checksums through `sha256_file`.
+- P2.9 Vault health and sync conflicts: link integrity, orphans, frontmatter checks, repair, archive-first reset, demo data. Add conflict patterns for OneDrive (`name-COMPUTERNAME.ext`) and Google Drive (`name (1).ext`) after confirming them against real sync clients; record the evidence in `PLAN_NOTES.md`.
+- P2.10 Radio now-playing through `radio_now_playing`.
+- P2.11 Replace the 3 `EventSource` call sites with a `vault:changed` listener.
+- P2.12 Replace the 6 hard-coded `/api/...` URLs (lightbox download, handover zip, studio profile fetch, vault export, invoice HTML export) with local actions.
 
-### PHASE 3 - One design system
-Gate: no `fluent2-*.css`, no `Fluent*` names, 0 hex in components, build passes, screenshot diff reviewed by the owner for dark, light, neumorphic, neumorphic-dark.
+Not ported (deleted with the server in Phase 4): auth, login, roster, users, team, RBAC, webhooks, audit log, `GeminiService` (replaced in Phase 3), `LicenseService` (replaced in Phase 6).
 
-- P3.1 Audit tokens: ensure `kanso-tokens.css` defines every token listed in AGENTS.md plus spacing, radius, type scale, motion (`--kanso-space-1..8`, `--kanso-radius-sm|md|lg`, `--kanso-font-*`, `--kanso-ease`). Add the 4 theme blocks. This is the only token file.
-- P3.2 Map every token the app uses from `fluent2-tokens.css` to a `--kanso-*` equivalent (write the map to `docs/TOKEN_MAP.md`), replace usages, delete both fluent2 files.
-- P3.3 Hex purge, in this order: DashboardView, CommandPalette, JournalView, CassetteDeck, DeliverableAnnotationCanvas, AdminView (deleted by D1), CopyStudio, Kanban, Settings, HeaderTimer, Deliverables, InvoiceStudio, then the rest. Allowed exceptions: client brand colors read from client data, canvas drawing colors read from CSS variables at runtime, cassette artwork. Everything else becomes a token.
-- P3.4 Rename `ui/Fluent*.svelte` -> `ui/Button|Card|Input|Select|Dialog|Badge|Pill|Toast|Icon.svelte`. Update imports. Keep API identical.
-- P3.5 Decide Tailwind: DECISION D6. Default = drop the claim; keep `tailwind-compat.css` shrunk to the utilities actually used (`npx` unused-class scan), and fix AGENTS.md to say "token CSS + small utility sheet".
-- P3.6 Emoji purge (client, server messages, docs): use the map in 2.7. Order: SettingsView, JournalView, CassetteDeck, DashboardRadar, MarkdownEditor, Kanban, StudioProModal, InvoiceStudio, ProjectDetail, then server strings (GeminiService, FrontmatterService, ApprovalService, ExportService, CopywritingService, JournalVaultService, tests), then docs.
-- P3.7 Fix `CHANGELOG.md` mojibake by rewriting the file: keep one short entry per released version (v0.7.0 down to first alpha) in clean ASCII, drop legacy product history and former client names. Target under 250 lines. Keep a keep-a-changelog header.
+### PHASE 3 - AI built in (bring your own key)
+Gate: the key never appears in webview memory, IPC payloads or any file in the vault (check devtools and `grep` the vault); AI unit tests pass on all 3 OS with mocked HTTP.
 
-### PHASE 4 - Minimalist UI and simpler UX
-Gate: app has 6 nav items; every page passes the 2.6 rules; owner signs off screenshots.
+- P3.1 `secrets.rs` with `keyring`: Windows Credential Manager, macOS Keychain, Linux Secret Service; Linux fallback per 2.3.
+- P3.2 `ai.rs`: `ai_test`, `ai_complete` (Gemini), 60 s timeout, error mapping to plain sentences.
+- P3.3 `client/src/lib/domain/ai.ts`: the 4 prompt templates; switch ApiClient AI methods to it (fixes the 4 broken AI endpoints).
+- P3.4 Settings > AI per 2.6: key field, Test, Clear, model select, first-use notice, offline state.
+- P3.5 One-time migration: move `aiApiKey` from `app.json` into the keychain, then remove it from the file.
 
-- P4.1 New shell (revised: no sidebar): header hamburger opens a floating dropdown with the 6 items + dock; top bar = hamburger, breadcrumb, Ctrl+K hint, billable chronometer. The same dropdown serves desktop and Android; no rail or bottom dock.
-- P4.2 Merge pages: Review Queue and Copy Studio become tabs in Project Detail. Clients + Quotes + Invoices become tabs under "Clients & Money". Radio page becomes the dock drawer.
-- P4.3 Split god files by feature, no logic change (move, don't rewrite). Targets: SettingsView -> `settings/{Studio,Preferences,Vault,About}.svelte`; DashboardView -> one file per bento tile; ProjectDetailView -> tab components; JournalView -> `journal/{DailyLog,Habits,Monthly,Yearly}.svelte`; CassetteDeck -> `radio/{Deck,Presets,Timer}.svelte` (keep the faithful mechanical look: screws, spools at 33 RPM, tape window). Hard cap 400 lines per file.
-- P4.4 Studio Deck: keep the five required blocks (Today, Metrics bento, Project glance, Smart suggestions, Income and cashflow) at this priority; collapse Smart Suggestions to a one-line strip, bento to 4 tiles (hours, effective rate, first-time-right, velocity), revision rounds moves into project detail.
-- P4.5 Header chronometer: keep Play/Stop, HH:MM:SS, rate input, `+$` earnings, swatch strip with 1-click HEX copy, Append Session on stop. Collapse rate + earnings into one compact control; swatches show only the active client.
-- P4.6 Projects: Kanban and Table only; filters collapse into one "Filter" popover; delete Gantt and Calendar components after D4. Default view remembered in `preferences.json`.
-- P4.7 Remove Pro badges and gating clutter from nav (D3). If a paid tier stays, show it only in Settings > About.
-- P4.8 Copy pass using the `design:ux-copy` rules: sentence case, verbs on buttons, no exclamation marks, empty states as one line.
-- P4.9 Accessibility: visible focus ring from `--kanso-accent`, 4.5:1 contrast in all 4 themes, every icon-only button has `aria-label`, Svelte a11y warnings = 0.
+### PHASE 4 - Remove the Node server
+Gate: `git ls-files src/app/server` is empty; `npm ls express` finds nothing; `npm audit --omit=dev` shows 0 high or critical; the installers start and work on a clean Windows VM with no Node installed (macOS and Linux: CI build succeeds).
 
-### PHASE 5 - Backend and runtime health
-Gate: `npm test` green across split test files; desktop build starts its own backend.
+- P4.1 Delete `src/app/server/` (move `scripts/generate-tauri-icons.js` to `scripts/tools/` if still used). Server tests are already ported or deleted.
+- P4.2 Remove the npm dependencies in 2.9. `package.json` scripts: drop `start`, `dev:server`; `dev` becomes `tauri dev`; `main` field removed.
+- P4.3 `main.rs`: remove `BackendState`, `get_backend_port`, `get_backend_url`, port probing. `api.ts`: remove base URL resolution and the fetch transport.
+- P4.4 CSP: `default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:`. Bundle Geist Sans and Geist Mono locally and drop Google Fonts.
+- P4.5 Build scripts: `build-windows.ps1` and `build-linux.ps1` become thin wrappers over `tauri build` (no `node.exe`, no esbuild bundle). The Windows portable zip is the exe plus `portable.ini` plus a short README. `build-platforms.ps1` stays the single local entry point.
+- P4.6 Guardian: replace the `server/routes <= 300 lines` check with `src-tauri/src/*.rs <= 400` and `client/src/lib/domain/*.ts <= 400`; add a check that no `express`, `http.createServer` or `.listen(` exists under `src/app`; add a check that `portable.ini` is never committed.
 
-- P5.1 Split `routes/api.js` into `routes/{auth,projects,deliverables,finance,journal,notes,clients,system,ai,share}.js` mounted in `routes/index.js`. Move only; keep paths identical. Max 300 lines per route file.
-- P5.2 Split `WorkspaceService` (1403) into `ProjectService`, `VaultPathService`, `ScaffoldService`. Same rule: move, don't rewrite.
-- P5.3 Split `server/test/run-tests.js` into one file per service under `server/test/`, keep the runner. Add tests for `ConfigService`, `migrateVault`, atomic write, and the secret/host defaults.
-- P5.4 DECISION D7 runtime model. Recommended: keep the Node server, but ship it as a Tauri sidecar (`externalBin`, started in `main.rs` on a random free port, port passed to the client by a Tauri command, killed on exit). Remove the hardcoded `http://localhost:4000` in `api.ts`. Long term (v0.9+): move file operations into Rust commands and drop Express.
-- P5.5 CI: add `svelte-check` and the verify script to `ci.yml`; fail on warnings. Keep the three workflows but remove duplicated steps between `tauri-build.yml` and `release-builds.yml`.
-- P5.6 Scripts: `scripts/` has 7 PowerShell files with overlapping build logic. Keep `build-platforms.ps1` as the single entry; make the others thin or delete (`generate-icons.ps1` vs `GenerateKansoIcons.cs`, `process-calligraphy.ps1` are one-time asset tools: move to `scripts/tools/`).
-- P5.7 Windows launcher (`Program.cs`, WPF + WebView2) vs Tauri: two Windows shells. DECISION D8: pick Tauri as the only shell and delete `src/windows-launcher` (recommended), or declare the launcher the portable build and document why.
+### PHASE 5 - Portable mode and settings export
+Gate: a settings file exported on Windows imports on macOS and Linux (CI round-trip test in Rust); the portable zip runs from a USB drive on two Windows PCs with different drive letters and keeps the same vault, theme and studio profile.
 
-### PHASE 6 - Governance and docs
-Gate: verify script green with the new checks; docs reduced.
+- P5.1 Portable UX: Settings > Vault shows the mode ("Installed" or "Portable: E:\KansoCre8"); vault path stored relative per 2.3; on a removable drive, a one-line reminder to eject before unplugging when the app closes.
+- P5.2 Document the settings file format (2.7) in `docs/SCHEMA.md`.
+- P5.3 Export: Settings > Vault > "Export settings": section checkboxes, optional "Include AI key (encrypted)" with passphrase (only if D18 = YES), save dialog. Built by `settings_export` in Rust; secrets are read from the keychain and encrypted inside Rust.
+- P5.4 Import: Settings > Vault > "Import settings" with the flow in 2.7 (`settings_inspect` for the preview, `settings_import` to apply). Also reachable from the command palette.
+- P5.5 Tests: export/import round trip, wrong passphrase, tampered file, newer `format_version`, missing sections, Windows paths in a file imported on macOS.
+- P5.6 Device presence: `_Team/_Config/.kanso-open.json` `{ device_label, opened_at, heartbeat_at }` updated every 60 s; banner "Vault is also open on <device>" when another device's heartbeat is under 2 minutes old. A warning, never a lock.
 
-- P6.1 Extend `verify-kanso.ps1` (keep the 10 existing checks, add 6): no emoji in `src`/`docs`; no `#hex` in `.svelte` outside the allow-list file; no tracked secret patterns/binaries; no `ss_cam|SS-CAM|SSNAS|zettel` (except alias list); no file over 400 lines in `client/src` and 300 in `server/routes`; real-name deny-list (`docs/.deny-list.txt`, kept private, only hashes or generic patterns committed).
-- P6.2 Docs: keep `README.md` (short), `AGENTS.md`, `CHANGELOG.md`, `docs/SCHEMA.md`, `docs/DESIGN.md` (tokens + icon map + UI rules, merged from BRAND_GUIDELINES and ARCHITECTURE_MODULARITY), `docs/MASTER_PLAN.md` (this, archived after v0.8.0). Fold ROADMAP and FOLDER-STRUCTURE and MASTER_SPECIFICATION into those; delete the rest. Correct AGENTS.md: Tailwind claim (D6), Zettelkasten wording, platform list.
-- P6.3 Version bump to 0.8.0 in `package.json`, `tauri.conf.json`, `server/config.js`, `Program.cs` (if kept), splash and Settings > About, from one source (`package.json`, read by the rest at build time).
+### PHASE 6 - Release v0.9.0 on three platforms
+Gate: clean-VM checklist passes on Windows, macOS and Linux: install, first run, create vault, client, project, quote, invoice, print, timer, AI test, settings export and import, vault in a Dropbox or Google Drive folder, portable USB run (Windows and Linux).
+
+- P6.1 Licence (only if D3 keeps a paid tier): `license.rs` verifies Ed25519-signed keys with an embedded public key; delete the alpha master key, the `VERIFIED` suffix bypass and the client-side verifier; `requirePro()` reads `license_status`. The private key never enters the repo.
+- P6.2 Signing (D19): Windows signing in `release-builds.yml`; macOS Developer ID signing and notarization; Linux unsigned.
+- P6.3 Updates (D20): `tauri-plugin-updater` for installed builds with a signed manifest, opt-in on first run. Portable builds only show a "new version available" link.
+- P6.4 Version 0.9.0 from one source (`package.json`, read by `tauri.conf.json` and Cargo at build time); `CHANGELOG.md` entry.
+- P6.5 QA on macOS and Linux: keychain prompts, case-insensitive APFS, NFD filenames, AppImage portable mode, `webkit2gtk` rendering of the 4 themes and the cassette animation.
 
 ---
 
-## 4. DECISIONS NEEDED FROM THE OWNER (Antigravity must stop on these)
+## 4. DECISIONS (answers recorded here are authoritative from D9 on)
 
-| ID | Question | Recommendation |
+Carried from v0.8.0:
+| ID | Decision | Answer |
 |---|---|---|
-| D1 | Solo-first? Remove login, roster, Admin and Team views and staff directory | Yes. Keep an optional app lock (PIN) only |
-| D2 | Keep audit log? | Keep as monthly `_Team/audit/YYYY-MM.md` or drop; recommend drop |
-| D3 | Pro tier and license modal | Remove from navigation; license is also in tension with PolyForm Noncommercial. Needs a legal/product call |
-| D4 | Drop Gantt and Calendar project views | Yes |
-| D5 | Rewrite git history and rotate keystore | Yes, after a backup of the repo |
-| D6 | Tailwind: adopt or drop the claim | Drop the claim, keep tokens |
-| D7 | Runtime: Node sidecar now, Rust later | Yes |
-| D8 | Windows shell: Tauri only | Yes |
+| D1 | Solo-first: no login, roster, team | YES (leftovers deleted in Phase 4) |
+| D2 | Audit log | DROP |
+| D3 | Paid tier and licence | PENDING (product and legal call; blocks P6.1 only) |
+| D4 | Drop Gantt and Calendar | YES |
+| D5 | Rewrite git history and rotate the Android keystore | PENDING (history still holds `node_modules` and the keystore; never assume) |
+| D6 | Drop the Tailwind claim | YES |
+| D7 | Node sidecar now, Rust later | SUPERSEDED by D9 |
+| D8 | Tauri is the only Windows shell | YES |
 
----
-
-## 5. IMPROVEMENTS WORTH DOING AFTER v0.8.0 (not part of this execution)
-
-1. Weekly review ritual: one screen that pulls shipped work, hours, unbilled time and next week's top 3 from the Journal.
-2. Unbilled-time nudge in the header when a stopped session was not appended.
-3. Quote -> project -> invoice in one flow (convert already exists; make it the default path).
-4. Per-project "proof round" timeline using the existing snapshot service.
-5. Vault health panel: broken links, orphan notes, conflicted copies, missing frontmatter keys.
-6. Plain-text export of everything (a "leave with your data" button) to reinforce the ownership promise.
-7. Rust-native file layer and removal of Express to approach the ~35 MB RAM target.
-8. Android companion: read-only Deck + timer + scratchpad over local network or shared cloud folder.
-9. Quiet mode: hide everything except current task, timer and cassette dock.
-10. Keyboard-first onboarding: 5 shortcuts shown once.
-
----
-
-## 6. SKILLS TO ADD OR TRIM (to prevent drift)
-
-| Skill | Action | Purpose |
+New (owner, 2026-11-14):
+| ID | Decision | Answer |
 |---|---|---|
-| `kanso-scope-lock` | NEW (about 80 lines) | Enforces section 0: one task per commit, file allow-list per task, stop-and-ask list (decisions, vault deletes, history rewrite, 2 failed tests), no new features or dependencies, writes out-of-scope findings to `docs/PLAN_NOTES.md` |
-| `kanso-vault-schema` | NEW | Source of truth for the 3 storage tiers, `_Team/_Config` file set, folder and filename conventions, frontmatter keys, migration rules, "never write secrets to the vault" |
-| `kanso-ui-minimal` | NEW | The 6-item IA, component budget (2.6), token map, emoji-to-icon map (2.7), copy rules, a11y minimums, 400-line cap |
-| `kanso-guardian` | UPDATE | Add the 6 new checks (P6.1), remove emoji from its own SKILL.md (39 lines), rename Zettelkasten wording, point to the 3 new skills |
-| `codebase-cleanup` | TRIM | Cut from 766 lines to about 150: keep hygiene and security checklists, remove "organize/rename freely" language that conflicts with the scope lock; add "only when invoked by a phase task" |
-
-Optional helpers already available in this environment: `design-skills:design-systems` (token audit), `design:accessibility-review` (P4.9), `design:ux-copy` (P4.8), `simplify` (after each phase), `security-review` (after Phase 0 and 5).
-
-Skill authoring rule: each skill states Inputs, Allowed paths, Forbidden actions, Done-when, and a one-line "if unsure, stop and ask".
+| D9 | Runtime: no server; TypeScript domain logic plus Rust commands | YES |
+| D10 | Platforms: Windows is the reference and ships first; macOS and Linux built in CI from Phase 1 and released in v0.9.0 | YES |
+| D11 | Android companion | DELETE |
+| D12 | Share links and client review | DELETE |
+| D13 | AI built in; user only pastes an API key; Gemini first; calls from Rust | YES |
+| D14 | Portable mode on Windows and Linux AppImage; macOS installed only | YES |
+| D15 | Cross-platform settings export and import | YES |
+| D16 | Secrets in the OS keychain (replaces the v0.8 rule "AI key in app.json") | PENDING (recommended YES; blocks Phase 3) |
+| D17 | TypeScript test runner: `vitest` (new dev dependency) or `node:test` with type stripping (no dependency) | PENDING (recommended `vitest`; blocks P1.8) |
+| D18 | Allow the AI key inside the settings export, encrypted with a passphrase (adds `aes-gcm`, `argon2`) | PENDING (recommended YES, opt-in; blocks the secrets part of P5.3) |
+| D19 | Code signing: Windows (for example Azure Trusted Signing) and Apple Developer ID with notarization (about USD 99 per year) | PENDING (blocks P6.2) |
+| D20 | Update check through `tauri-plugin-updater`, opt-in on first run | PENDING (recommended YES; blocks P6.3) |
 
 ---
 
-## 7. PROMPT TO GIVE ANTIGRAVITY
+## 5. AFTER v0.9.0 (not part of this execution)
+
+1. Review pack export: a static HTML page plus images in a ZIP the designer emails to a client (replaces share links without a server).
+2. More AI providers (OpenAI, Anthropic) behind the reserved `provider` field.
+3. Optional app PIN lock.
+4. Linux ARM64 and Windows ARM64 builds.
+5. Move hot TypeScript paths to Rust only where profiling shows a need.
+6. Split the 30 grandfathered files over 400 lines.
+
+---
+
+## 6. SKILLS AND DOCS TO UPDATE (done in P0.3 unless stated)
+
+| File | Change |
+|---|---|
+| `AGENTS.md` | Platform list, no server, no Android, storage tiers, portable mode, AI rule |
+| `kanso-guardian` SKILL.md | Framework (Tauri + Svelte + Rust commands), roadmap, platforms |
+| `kanso-guardian` verify script | New checks in P4.6 |
+| `kanso-vault-schema` | Tiers and modes from 2.3, keychain, file rules from 2.5, settings export pointer |
+| `kanso-scope-lock` | Inputs point to this plan; decision answers live in section 4 |
+| `docs/SCHEMA.md` | Settings export format (P5.2) |
+| `README.md`, `docs/index.html` | Platforms, download artifacts, portable instructions (P6.4) |
+
+---
+
+## 7. PROMPT FOR THE EXECUTING AGENT
 
 ```
-You are executing docs/MASTER_PLAN.md for Kanso Cre8.
+You are executing docs/MASTER_PLAN.md (v0.8.0 -> v0.9.0) for Kanso Cre8.
 Load skills: kanso-scope-lock, kanso-vault-schema, kanso-ui-minimal, kanso-guardian.
-Start with PHASE 0 only. For each task: announce the task ID, list files you will touch,
-make the change, run the gate in section 0, commit once. Do not begin the next phase
-until I reply "phase N approved". Stop and ask on any DECISION item (D1..D8), any
-delete inside a user vault, and before any git history rewrite. No emoji, no hex colors,
-no new dependencies, no features outside the plan. Log anything else you notice to
+Start with PHASE 0 only. For each task: announce the task ID, list the files you will
+touch, make the change, run the gate in section 0, commit once. Do not begin the next
+phase until I reply "phase N approved". Stop and ask on any PENDING decision in section 4,
+any delete inside a user vault, and before any git history rewrite. No emoji, no hex
+colors, no dependencies outside section 2.9, no features outside the plan. Verify on
+Windows first; macOS and Linux must stay green in CI. Log anything else to
 docs/PLAN_NOTES.md.
 ```
 
@@ -272,10 +322,10 @@ docs/PLAN_NOTES.md.
 
 | Phase | Size | Risk | Notes |
 |---|---|---|---|
-| 0 | S | Low | Do today; D5 needs backup |
-| 1 | M | Low | Mostly deletion |
-| 2 | M | Medium | Migration code needs tests first |
-| 3 | L | Medium | Hex purge is mechanical, review visually per theme |
-| 4 | L | Medium | Move, do not rewrite; owner reviews screenshots |
-| 5 | M | Medium | Sidecar is the only real new code |
-| 6 | S | Low | Ship v0.8.0 |
+| 0 | S | Low | Mostly deletion and docs |
+| 1 | M | Medium | New Rust code; three-OS CI catches platform issues early |
+| 2 | L | Medium | 381 synchronous fs calls become async; port tests with each domain |
+| 3 | S | Low | Needs D16 |
+| 4 | S | Low | Deletion once Phase 2 is complete |
+| 5 | M | Medium | Needs D18 for the encrypted secrets option |
+| 6 | M | Medium | Needs D3, D19, D20; macOS notarization is the long pole |
