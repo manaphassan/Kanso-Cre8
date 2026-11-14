@@ -270,7 +270,7 @@ New (owner, 2026-11-14):
 | D14 | Portable mode on Windows and Linux AppImage; macOS installed only | YES |
 | D15 | Cross-platform settings export and import | YES |
 | D16 | Secrets in the OS keychain (replaces the v0.8 rule "AI key in app.json") | PENDING (recommended YES; blocks Phase 3) |
-| D17 | TypeScript test runner: `vitest` (new dev dependency) or `node:test` with type stripping (no dependency) | PENDING (recommended `vitest`; blocks P1.8) |
+| D17 | TypeScript test runner: `vitest` (new dev dependency) or `node:test` with type stripping (no dependency) | YES `vitest` 3.2.7 (owner "proceed" on the recommendation, 2026-11-14) |
 | D18 | Allow the AI key inside the settings export, encrypted with a passphrase (adds `aes-gcm`, `argon2`) | PENDING (recommended YES, opt-in; blocks the secrets part of P5.3) |
 | D19 | Code signing: Windows (for example Azure Trusted Signing) and Apple Developer ID with notarization (about USD 99 per year) | PENDING (blocks P6.2) |
 | D20 | Update check through `tauri-plugin-updater`, opt-in on first run | PENDING (recommended YES; blocks P6.3) |
