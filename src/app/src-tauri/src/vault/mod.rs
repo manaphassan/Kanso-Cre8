@@ -5,9 +5,10 @@ pub mod ops;
 
 use guard::VaultRoot;
 use ops::{Entry, Written};
+use serde::Serialize;
 use std::path::PathBuf;
 use std::sync::RwLock;
-use tauri::State;
+use tauri::{AppHandle, State};
 
 #[derive(Default)]
 pub struct VaultState {
@@ -36,14 +37,31 @@ impl VaultState {
     }
 }
 
-/// Opens an existing folder as the vault. Returns the canonical absolute path
-/// for display (machine-local, never written to the vault).
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Opened {
+    pub root: String,
+    pub watch: crate::watch::WatchMode,
+}
+
+/// Opens an existing folder as the vault and starts watching it. `root` is the
+/// canonical absolute path for display (machine-local, never written to the
+/// vault).
 #[tauri::command]
-pub fn vault_open(path: String, state: State<'_, VaultState>) -> Result<String, String> {
+pub fn vault_open(
+    path: String,
+    app: AppHandle,
+    state: State<'_, VaultState>,
+    watch_state: State<'_, crate::watch::WatchState>,
+) -> Result<Opened, String> {
     let root = VaultRoot::open(&PathBuf::from(&path)).map_err(|e| e.to_string())?;
     let display = display_path(root.path());
+    let watch = crate::watch::start(&app, &watch_state, &root);
     state.set(root)?;
-    Ok(display)
+    Ok(Opened {
+        root: display,
+        watch,
+    })
 }
 
 #[tauri::command]

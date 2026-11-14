@@ -6,6 +6,7 @@ mod machine;
 mod names;
 mod paths;
 mod vault;
+mod watch;
 
 use std::sync::Mutex;
 use tauri::{State, WebviewWindowBuilder};
@@ -77,6 +78,7 @@ fn main() {
         .manage(app_paths.clone())
         .manage(machine::store_for(&app_paths))
         .manage(vault::VaultState::default())
+        .manage(watch::WatchState::default())
         .invoke_handler(tauri::generate_handler![
             get_backend_port,
             get_backend_url,
@@ -93,7 +95,8 @@ fn main() {
             archive::export_zip,
             archive::sha256_file,
             machine::machine_get,
-            machine::machine_set
+            machine::machine_set,
+            watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
