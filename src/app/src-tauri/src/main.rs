@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod paths;
+#[allow(dead_code)] // Commands that use the guard arrive in P1.4.
+mod vault;
 
 use std::sync::Mutex;
 use tauri::{State, WebviewWindowBuilder};
