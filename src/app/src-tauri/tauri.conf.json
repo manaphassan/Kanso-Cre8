@@ -13,6 +13,7 @@
     "windows": [
       {
         "label": "main",
+        "create": false,
         "title": "Kanso Cre8 (簡素)",
         "width": 1280,
         "height": 800,

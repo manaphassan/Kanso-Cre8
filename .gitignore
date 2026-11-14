@@ -5,6 +5,7 @@ dist/
 **/dist/
 .vite/
 src/app/src-tauri/target/
+src/app/src-tauri/gen/
 
 # Local Environment & Machine-Local Configuration
 src/app/server/workspace_config.json

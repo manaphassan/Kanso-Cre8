@@ -77,5 +77,7 @@
 ## v0.9.0 Local Release - Phase 1
 - 2026-11-14 | .github/workflows/release-builds.yml | Found while doing P1.1: the v0.8.0 file was invalid YAML (single-quoted `releaseName` containing single quotes), so tag pushes never produced a release. Fixed with double quotes in P1.1.
 - 2026-11-14 | owner machine | The Rust gate cannot run locally: no Visual Studio C++ Build Tools or Windows SDK installed, and Git for Windows puts its coreutils `link.exe` on PATH ahead of the MSVC linker. CI is currently the only place Rust compiles.
+  - 2026-11-14 resolved: owner added the VCTools workload and Windows SDK 10.0.26100 to Build Tools 2022; fmt, clippy and test now run locally.
+- 2026-11-14 | src-tauri/src/paths.rs, main.rs | P1.2 verified on Windows with the debug exe: installed mode runs; with `portable.ini` beside the exe, WebView2 data is created in `Data/webview/EBWebView`. When the app is killed (not closed), msedgewebview2.exe children keep `Data/` locked for a few seconds. On a USB drive this matters for safe eject | covered by P5.1 eject reminder; verify a normal window close releases the lock in P6 QA.
 
 
