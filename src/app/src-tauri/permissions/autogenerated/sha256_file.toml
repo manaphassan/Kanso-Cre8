@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sha256-file"
+description = "Enables the sha256_file command without any pre-configured scope."
+commands.allow = ["sha256_file"]
+
+[[permission]]
+identifier = "deny-sha256-file"
+description = "Denies the sha256_file command without any pre-configured scope."
+commands.deny = ["sha256_file"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-get-backend-port"
+description = "Enables the get_backend_port command without any pre-configured scope."
+commands.allow = ["get_backend_port"]
+
+[[permission]]
+identifier = "deny-get-backend-port"
+description = "Denies the get_backend_port command without any pre-configured scope."
+commands.deny = ["get_backend_port"]

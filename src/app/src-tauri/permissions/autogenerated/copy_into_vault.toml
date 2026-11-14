@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-copy-into-vault"
+description = "Enables the copy_into_vault command without any pre-configured scope."
+commands.allow = ["copy_into_vault"]
+
+[[permission]]
+identifier = "deny-copy-into-vault"
+description = "Denies the copy_into_vault command without any pre-configured scope."
+commands.deny = ["copy_into_vault"]

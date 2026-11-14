@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-app-mode"
+description = "Enables the app_mode command without any pre-configured scope."
+commands.allow = ["app_mode"]
+
+[[permission]]
+identifier = "deny-app-mode"
+description = "Denies the app_mode command without any pre-configured scope."
+commands.deny = ["app_mode"]

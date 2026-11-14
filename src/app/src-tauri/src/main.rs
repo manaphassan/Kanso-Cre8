@@ -111,3 +111,96 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running Kanso Cre8 application");
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+
+    fn read(rel: &str) -> String {
+        std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)).unwrap()
+    }
+
+    fn between<'a>(text: &'a str, start: &str, end: &str) -> &'a str {
+        let from = text.find(start).unwrap() + start.len();
+        &text[from..from + text[from..].find(end).unwrap()]
+    }
+
+    fn quoted(text: &str) -> BTreeSet<String> {
+        text.split('"')
+            .skip(1)
+            .step_by(2)
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// The handler list, the build.rs manifest and the permission set must name
+    /// the same commands, or a command is either unreachable or unguarded.
+    #[test]
+    fn command_lists_agree() {
+        let main_rs = read("src/main.rs");
+        let handler: BTreeSet<String> = between(&main_rs, "generate_handler![", "]")
+            .split(',')
+            .map(|s| s.trim().rsplit("::").next().unwrap().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
+        let manifest = quoted(between(&read("build.rs"), "COMMANDS: &[&str] = &[", "];"));
+        let permitted: BTreeSet<String> = quoted(&read("permissions/kanso.toml"))
+            .into_iter()
+            .filter_map(|p| p.strip_prefix("allow-").map(|c| c.replace('-', "_")))
+            .collect();
+        assert_eq!(handler, manifest, "main.rs vs build.rs");
+        assert_eq!(handler, permitted, "main.rs vs permissions/kanso.toml");
+    }
+
+    #[tauri::command]
+    fn not_in_manifest() -> &'static str {
+        "should never run"
+    }
+
+    fn invoke(
+        webview: &tauri::WebviewWindow<tauri::test::MockRuntime>,
+        cmd: &str,
+    ) -> Result<tauri::ipc::InvokeResponseBody, serde_json::Value> {
+        tauri::test::get_ipc_response(
+            webview,
+            tauri::webview::InvokeRequest {
+                cmd: cmd.into(),
+                callback: tauri::ipc::CallbackFn(0),
+                error: tauri::ipc::CallbackFn(1),
+                url: if cfg!(windows) {
+                    "http://tauri.localhost"
+                } else {
+                    "tauri://localhost"
+                }
+                .parse()
+                .unwrap(),
+                body: tauri::ipc::InvokeBody::default(),
+                headers: Default::default(),
+                invoke_key: tauri::test::INVOKE_KEY.to_string(),
+            },
+        )
+    }
+
+    /// Uses the real capability files: granted commands run, anything outside
+    /// the manifest is refused by the runtime.
+    #[test]
+    fn runtime_enforces_the_capability() {
+        let app = tauri::test::mock_builder()
+            .manage(crate::vault::VaultState::default())
+            .invoke_handler(tauri::generate_handler![
+                crate::vault::vault_root,
+                not_in_manifest
+            ])
+            .build(tauri::generate_context!(test = true))
+            .unwrap();
+        let webview = tauri::WebviewWindowBuilder::new(&app, "main", tauri::WebviewUrl::default())
+            .build()
+            .unwrap();
+
+        let granted = invoke(&webview, "vault_root").expect("vault_root is granted");
+        assert_eq!(granted.deserialize::<Option<String>>().unwrap(), None);
+
+        let denied = invoke(&webview, "not_in_manifest").expect_err("must be refused");
+        assert!(denied.to_string().contains("not allowed"), "{denied}");
+    }
+}

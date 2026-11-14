@@ -1,0 +1,22 @@
+[[set]]
+identifier = "kanso"
+description = "Everything the Kanso Cre8 window may call: app mode, the open vault (guarded to its folder), ZIP export, hashing, machine settings and the vault watcher."
+permissions = [
+  "allow-get-backend-port",
+  "allow-get-backend-url",
+  "allow-app-mode",
+  "allow-vault-open",
+  "allow-vault-root",
+  "allow-vault-scan",
+  "allow-list-dir",
+  "allow-read-text",
+  "allow-write-text-atomic",
+  "allow-ensure-dirs",
+  "allow-move-to-archive",
+  "allow-copy-into-vault",
+  "allow-export-zip",
+  "allow-sha256-file",
+  "allow-machine-get",
+  "allow-machine-set",
+  "allow-watch-status",
+]
