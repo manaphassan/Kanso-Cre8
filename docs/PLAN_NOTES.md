@@ -79,5 +79,7 @@
 - 2026-11-14 | owner machine | The Rust gate cannot run locally: no Visual Studio C++ Build Tools or Windows SDK installed, and Git for Windows puts its coreutils `link.exe` on PATH ahead of the MSVC linker. CI is currently the only place Rust compiles.
   - 2026-11-14 resolved: owner added the VCTools workload and Windows SDK 10.0.26100 to Build Tools 2022; fmt, clippy and test now run locally.
 - 2026-11-14 | src-tauri/src/paths.rs, main.rs | P1.2 verified on Windows with the debug exe: installed mode runs; with `portable.ini` beside the exe, WebView2 data is created in `Data/webview/EBWebView`. When the app is killed (not closed), msedgewebview2.exe children keep `Data/` locked for a few seconds. On a USB drive this matters for safe eject | covered by P5.1 eject reminder; verify a normal window close releases the lock in P6 QA.
+- 2026-11-14 | src-tauri/src/vault/ops.rs | P1.4: `copy_into_vault` accepts any absolute source path from the webview, so a compromised webview could copy a readable file from anywhere into the vault and then read it. Destinations are guarded; sources are not | suggested task: in P1.7 or P2.5, only accept sources returned by the native open dialog in the same session (or drag-and-drop paths), not arbitrary strings.
+- 2026-11-14 | src-tauri/src/vault/ops.rs | P1.4 found on Windows: `File::sync_all` on a read-only handle fails with "Access is denied" (FlushFileBuffers needs write access). Fixed by opening the staged copy for writing.
 
 

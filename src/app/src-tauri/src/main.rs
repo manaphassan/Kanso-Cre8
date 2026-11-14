@@ -1,8 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod archive;
+mod machine;
+mod names;
 mod paths;
-#[allow(dead_code)] // Commands that use the guard arrive in P1.4.
 mod vault;
 
 use std::sync::Mutex;
@@ -73,10 +75,25 @@ fn main() {
             port: Mutex::new(initial_port),
         })
         .manage(app_paths.clone())
+        .manage(machine::store_for(&app_paths))
+        .manage(vault::VaultState::default())
         .invoke_handler(tauri::generate_handler![
             get_backend_port,
             get_backend_url,
-            paths::app_mode
+            paths::app_mode,
+            vault::vault_open,
+            vault::vault_root,
+            vault::vault_scan,
+            vault::list_dir,
+            vault::read_text,
+            vault::write_text_atomic,
+            vault::ensure_dirs,
+            vault::move_to_archive,
+            vault::copy_into_vault,
+            archive::export_zip,
+            archive::sha256_file,
+            machine::machine_get,
+            machine::machine_set
         ])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())

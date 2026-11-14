@@ -11,7 +11,6 @@ use std::path::{Component, Path, PathBuf};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PathError {
-    Empty,
     NotRelative(String),
     ParentSegment(String),
     InvalidCharacter(String),
@@ -22,7 +21,6 @@ pub enum PathError {
 impl fmt::Display for PathError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            PathError::Empty => write!(f, "A file path is required."),
             PathError::NotRelative(p) => {
                 write!(f, "Paths must be relative to the vault: {p}")
             }
