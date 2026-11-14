@@ -254,7 +254,7 @@ Carried from v0.8.0:
 | D2 | Audit log | DROP |
 | D3 | Paid tier and licence | PENDING (product and legal call; blocks P6.1 only) |
 | D4 | Drop Gantt and Calendar | YES |
-| D5 | Rewrite git history and rotate the Android keystore | PENDING (history still holds `node_modules` and the keystore; never assume) |
+| D5 | Rewrite git history and rotate the Android keystore | PARTLY DONE 2026-10-18 (keystore and `node_modules` purged). Still in `main` and recent tags: about 51 legacy `SS-CAM-*.exe` builds and `nuget.exe` (368 MB pack, legacy brand names). A second purge needs the owner's explicit go; never assume |
 | D6 | Drop the Tailwind claim | YES |
 | D7 | Node sidecar now, Rust later | SUPERSEDED by D9 |
 | D8 | Tauri is the only Windows shell | YES |

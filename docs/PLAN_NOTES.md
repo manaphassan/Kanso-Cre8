@@ -30,6 +30,7 @@
 - 2026-10-18 | src/app/server/services/ | P5.2: Split WorkspaceService into ProjectService, VaultPathService, and ScaffoldService with backward-compatible facade.
 - 2026-10-18 | src/app/server/test/ | P5.3: Split run-tests.js into per-service modular test suites with new tests for ConfigService, migrateVault, atomic writes, and secure defaults (62 passing tests).
 - 2026-10-18 | src/app/server/, src/app/src-tauri/, src/app/client/ | P5.4: Dynamic backend port discovery via PORT=0 and Tauri sidecar commands (get_backend_port, get_backend_url); eliminated hardcoded port 4000.
+  - 2026-11-14 correction: NOT DONE. `main.rs` never spawns the Node server (no `externalBin`, no process start); it only reports a port. Installed builds therefore have no backend. Superseded by D9 (no server) in `docs/MASTER_PLAN.md` v0.9.0.
 - 2026-10-18 | .github/workflows/, src/app/ | P5.5: Added svelte-check (0 errors) and verify-kanso to ci.yml; unified release workflows in release-builds.yml and removed duplicate tauri-build.yml.
 - 2026-10-18 | scripts/ | P5.6: Consolidated platform build scripts into build-platforms.ps1 as single entry; moved one-off asset tools to scripts/tools/.
 - 2026-10-18 | src/windows-launcher/, scripts/ | P5.7: Consolidated Windows shell exclusively on Tauri v2 (Decision D8) and removed legacy WPF/WebView2 launcher and companion DLLs.
@@ -63,5 +64,14 @@
 ## Track E - Atelier Onboarding & Desktop Distribution (Post-0.8.0)
 - 2026-10-18 | src/app/client/src/lib/components/features/KeyboardOnboardingModal.svelte, App.svelte | Phase E1: Keyboard-first onboarding cheatsheet with 5 essential flow-state shortcuts (Cmd/Ctrl+1..6, Cmd/Ctrl+K, Cmd/Ctrl+Shift+K, Cmd/Ctrl+Shift+Z, Space), platform-aware key badge detection (macOS vs Windows/Linux), topbar trigger, Shift+? shortcut, and soft first-run auto-prompt.
 - 2026-10-18 | scripts/build-windows.ps1, src/app/src-tauri/Cargo.toml, FinanceVaultService.js | Phase E2: Validated desktop packaging pipeline producing 35.45 MB portable distribution zip with standalone Node runtime; fixed bundling reassignment in FinanceVaultService; added tray-icon cargo feature.
+
+## v0.9.0 Local Release - Phase 0 (docs/MASTER_PLAN.md)
+- 2026-11-14 | src/android/, scripts/, .github/workflows/release-builds.yml | P0.1: Android companion removed (D11). The ignored, untracked file `src/android/kanso-companion.keystore` is still on the owner's disk; left in place, owner to delete or keep.
+- 2026-11-14 | src/app/client, src/app/server | P0.2: Share links and client review removed (D12). The feature never worked: routes called ShareService methods that did not exist and the client used different paths.
+- 2026-11-14 | AGENTS.md, README.md, docs/index.html, skills | P0.3: Governance aligned with the local desktop plan. ANTIGRAVITY_INSTRUCTION.md archived.
+- 2026-11-14 | src/app/package-lock.json | P0.4: Non-breaking `npm audit fix`. Production: 9 (1 critical, 4 high, 4 moderate) -> 5 moderate (`express`/`qs`, `archiver`/`minimatch`/`readdir-glob`; all removed in Phase 4). Dev: 1 high in `vite` 5 and moderates in `esbuild`, `@sveltejs/vite-plugin-svelte`, `mermaid`/`katex` need major upgrades | suggested task: Vite 6+ and mermaid 12 upgrade after Phase 4.
+- 2026-11-14 | git history | D5 status corrected: keystore and node_modules are not in history any more. `main` and tags v0.0.1 to v0.8.0 still reference about 51 legacy `SS-CAM-*.exe` builds and `archive/legacy-dotnet/nuget.exe` (pack 368 MB, legacy brand names in paths). Stale local branch `master` diverges from `main` | suggested task: second filter-repo purge of `*.exe` with owner approval and a fresh backup.
+- 2026-11-14 | .agents/skills/kanso-guardian/scripts/verify-kanso.ps1 | The emoji check misses some pictographs (12 remain in src, for example U+23F3 in MarkdownEditor.svelte) because its regex covers only surrogate pairs and U+2600-27BF | suggested task: widen the regex to U+2300-23FF and U+2B00-2BFF.
+- 2026-11-14 | src/app/server/test/ | Tests call services directly and never check the client ApiClient paths against registered routes, which is how F2 shipped | suggested task: none (routes are deleted in Phase 4; Phase 2 tests the domain modules ApiClient actually calls).
 
 
