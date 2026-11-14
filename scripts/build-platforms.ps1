@@ -1,10 +1,10 @@
 # ==============================================================================
 # Kanso Cre8 — Master Multi-Platform Build & Distribution Pipeline
-# Builds: Windows Desktop (x64), Linux Standalone (x64), Android Companion (APK)
+# Builds: Windows Desktop (x64), Linux Standalone (x64)
 # ==============================================================================
 
 param(
-    [ValidateSet("All", "Windows", "Linux", "Android")]
+    [ValidateSet("All", "Windows", "Linux")]
     [string]$Platform = "All",
     [switch]$SkipClientBuild
 )
@@ -33,7 +33,7 @@ Write-Host "============================================================" -Foreg
 
 # 1. Build Client Web Bundle Once
 if (-not $SkipClientBuild -or -not (Test-Path "$clientDist\index.html")) {
-    Write-Host "`n>>> [STEP 1/4] Compiling Core Svelte 5 Frontend Production Bundle..." -ForegroundColor Yellow
+    Write-Host "`n>>> [STEP 1/3] Compiling Core Svelte 5 Frontend Production Bundle..." -ForegroundColor Yellow
     Push-Location (Join-Path $repoRoot "src\app")
     try {
         & npm run build:client
@@ -41,35 +41,29 @@ if (-not $SkipClientBuild -or -not (Test-Path "$clientDist\index.html")) {
         Pop-Location
     }
 } else {
-    Write-Host "`n>>> [STEP 1/4] Using pre-compiled Svelte 5 Frontend Bundle ($clientDist)" -ForegroundColor Yellow
+    Write-Host "`n>>> [STEP 1/3] Using pre-compiled Svelte 5 Frontend Bundle ($clientDist)" -ForegroundColor Yellow
 }
 
 # 2. Windows Build
 if ($Platform -eq "All" -or $Platform -eq "Windows") {
-    Write-Host "`n>>> [STEP 2/4] Packaging Windows Desktop Distribution..." -ForegroundColor Yellow
+    Write-Host "`n>>> [STEP 2/3] Packaging Windows Desktop Distribution..." -ForegroundColor Yellow
     & powershell -ExecutionPolicy Bypass -File (Join-Path $scriptsDir "build-windows.ps1") -SkipClientBuild
 }
 
 # 3. Linux Build
 if ($Platform -eq "All" -or $Platform -eq "Linux") {
-    Write-Host "`n>>> [STEP 3/4] Packaging Linux Desktop Distribution..." -ForegroundColor Yellow
+    Write-Host "`n>>> [STEP 3/3] Packaging Linux Desktop Distribution..." -ForegroundColor Yellow
     & powershell -ExecutionPolicy Bypass -File (Join-Path $scriptsDir "build-linux.ps1") -SkipClientBuild
 }
 
-# 4. Android Build
-if ($Platform -eq "All" -or $Platform -eq "Android") {
-    Write-Host "`n>>> [STEP 4/4] Packaging Android Companion APK..." -ForegroundColor Yellow
-    & powershell -ExecutionPolicy Bypass -File (Join-Path $scriptsDir "build-android.ps1") -SkipClientBuild
-}
 
-# 5. Generate Manifest & SHA256 Checksums
+# 4. Generate Manifest & SHA256 Checksums
 Write-Host "`n>>> Generating Release Manifest & SHA256 Checksums..." -ForegroundColor Yellow
 
 $artifacts = @()
 $buildFiles = @(
     (Join-Path $distDir "windows\kanso-cre8-v$appVersion-windows-x64.zip"),
-    (Join-Path $distDir "linux\kanso-cre8-v$appVersion-linux-x64.tar.gz"),
-    (Join-Path $distDir "android\kanso-cre8-v$appVersion-companion.apk")
+    (Join-Path $distDir "linux\kanso-cre8-v$appVersion-linux-x64.tar.gz")
 )
 
 foreach ($filePath in $buildFiles) {
