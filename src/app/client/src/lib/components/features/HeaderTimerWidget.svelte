@@ -104,7 +104,7 @@
 
   function confirmStop(note: string, appendToInvoice: boolean) {
     timerStore.sessionNote = note;
-    const log = timerStore.stop();
+    const log = timerStore.stop(false);
     showStopModal = false;
 
     if (log) {

@@ -240,7 +240,7 @@ class TimerStore {
     this.start();
   }
 
-  stop(): TimeSessionLog | null {
+  stop(appendToInvoice = true): TimeSessionLog | null {
     if (!this.isRunning && !this.isPaused && this.elapsedSeconds === 0) return null;
 
     const totalSeconds = this.elapsedSeconds;
@@ -284,7 +284,14 @@ class TimerStore {
     this.sessionNote = '';
 
     this.clearPersistedState();
-    ApiClient.stopTimer({ appendToInvoice: true, note: log ? log.note : '' }).catch(() => {});
+    // The stop route appends the session to the draft invoice. Callers that
+    // append themselves (HeaderTimerWidget, after its dialog) pass false so
+    // the session is not billed twice.
+    ApiClient.stopTimer({ appendToInvoice: appendToInvoice && !!log, note: log ? log.note : '' })
+      .then((res) => {
+        if (log && res?.sessionLog?.appendedToInvoice) this.markSessionAppended(log.id);
+      })
+      .catch(() => {});
     return log;
   }
 
