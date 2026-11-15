@@ -10,7 +10,7 @@ import { getPreferences } from '../config';
 import type { VaultFs } from '$lib/vault/types';
 import { JournalInputError, assertMonth, assertWeek, assertYear, isoWeekMonday } from './dates';
 import { MONTHLY_DIR, WEEKLY_DIR, YEARLY_DIR, splitFrontmatter } from './daily';
-import { readInvoiceSummaries } from './invoices';
+import { readInvoiceSummaries } from '../finance/summaries';
 import { weeklyTelemetry } from './telemetry';
 
 export interface WeeklyReview {

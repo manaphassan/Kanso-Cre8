@@ -7,7 +7,7 @@
 import { JournalInputError, addDays, assertDate, isoWeek, localDate, localMonth, localYear } from '$lib/domain/journal/dates';
 import { getDailyNote, listDailyNotes, saveDailyNote } from '$lib/domain/journal/daily';
 import { getHabitHistory, getHabitWeeklyMatrix, toggleDailyHabit } from '$lib/domain/journal/habits';
-import { readInvoiceSummaries } from '$lib/domain/journal/invoices';
+import { readInvoiceSummaries } from '$lib/domain/finance/summaries';
 import { getPendingRollover, migrateTasks } from '$lib/domain/journal/migration';
 import {
   getMonthlyReview,

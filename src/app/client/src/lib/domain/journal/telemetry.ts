@@ -8,7 +8,7 @@ import type { Project } from '../projects';
 import type { VaultFs } from '$lib/vault/types';
 import { DAY_LABELS, MONTH_LABELS, assertDate, assertMonth, assertYear, weekDates } from './dates';
 import { getDailyNote, readDailyIndex } from './daily';
-import type { InvoiceSummary } from './invoices';
+import type { InvoiceSummary } from '../finance/summaries';
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 const r2 = (n: number) => Math.round(n * 100) / 100;

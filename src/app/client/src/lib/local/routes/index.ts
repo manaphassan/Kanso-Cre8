@@ -8,6 +8,7 @@ import type { LocalRouter } from '../router';
 import { clientRoutes } from './clients';
 import { dashboardRoutes } from './dashboard';
 import { exportRoutes } from './export';
+import { financeRoutes } from './finance';
 import { healthRoutes } from './health';
 import { journalRoutes } from './journal';
 import { notesRoutes } from './notes';
@@ -27,6 +28,7 @@ export function registerRoutes(router: LocalRouter): void {
     notesRoutes,
     journalRoutes,
     exportRoutes,
-    healthRoutes
+    healthRoutes,
+    financeRoutes
   );
 }
