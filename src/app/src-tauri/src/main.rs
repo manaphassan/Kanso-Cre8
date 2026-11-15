@@ -4,6 +4,7 @@
 mod archive;
 mod machine;
 mod names;
+mod net;
 mod paths;
 mod saveas;
 mod vault;
@@ -102,6 +103,7 @@ fn main() {
             saveas::save_file_as,
             machine::machine_get,
             machine::machine_set,
+            net::radio_now_playing,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())

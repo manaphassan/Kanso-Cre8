@@ -1,4 +1,6 @@
 import type { CassetteRadioStation, RadioPlaybackState, RadioStation } from '$lib/types/radio';
+import { isDesktop } from '$lib/local/desktop';
+import { tauriInvoke } from '$lib/vault/tauriVaultFs';
 export type { CassetteRadioStation, RadioPlaybackState, RadioStation };
 
 export interface CassetteColorPreset {
@@ -227,6 +229,10 @@ class RadioService {
     this.audio.addEventListener('playing', () => {
       this.state.isPlaying = true;
       this.state.isBuffering = false;
+      // Stations without a metadata API keep their name instead of "Tuning into...".
+      if (this.state.currentTrackTitle.startsWith('Tuning into ')) {
+        this.state.currentTrackTitle = this.currentStation.name;
+      }
       this.startSpoolAnimation();
       this.startElapsedTimer();
       this.startMetadataPolling();
@@ -316,16 +322,16 @@ class RadioService {
 
   async fetchNowPlayingMetadata(): Promise<void> {
     const station = this.currentStation;
-    if (!station || !station.streamUrl) return;
+    if (!station || !station.streamUrl || !isDesktop()) return;
 
     try {
-      const res = await fetch(`/api/radio/now-playing?stationId=${encodeURIComponent(station.id)}&streamUrl=${encodeURIComponent(station.streamUrl)}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data && data.success && data.trackTitle) {
-        if (this.state.currentStationId === station.id) {
-          this.state.currentTrackTitle = data.trackTitle;
-        }
+      const invoke = await tauriInvoke();
+      const data = await invoke<{ trackTitle: string } | null>('radio_now_playing', {
+        stationId: station.id,
+        streamUrl: station.streamUrl
+      });
+      if (data?.trackTitle && this.state.currentStationId === station.id) {
+        this.state.currentTrackTitle = data.trackTitle;
       }
     } catch {
       // Quiet background failure fallback

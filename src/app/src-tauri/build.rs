@@ -23,6 +23,7 @@ const COMMANDS: &[&str] = &[
     "save_file_as",
     "machine_get",
     "machine_set",
+    "radio_now_playing",
     "watch_status",
 ];
 
