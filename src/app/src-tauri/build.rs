@@ -19,6 +19,8 @@ const COMMANDS: &[&str] = &[
     "retire_vault_files",
     "export_zip",
     "sha256_file",
+    "save_text_as",
+    "save_file_as",
     "machine_get",
     "machine_set",
     "watch_status",

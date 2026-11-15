@@ -5,6 +5,7 @@ mod archive;
 mod machine;
 mod names;
 mod paths;
+mod saveas;
 mod vault;
 mod watch;
 
@@ -97,6 +98,8 @@ fn main() {
             vault::retire::retire_vault_files,
             archive::export_zip,
             archive::sha256_file,
+            saveas::save_text_as,
+            saveas::save_file_as,
             machine::machine_get,
             machine::machine_set,
             watch::watch_status

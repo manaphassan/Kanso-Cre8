@@ -592,6 +592,39 @@ export class ApiClient {
     return this.request(`/projects/${encodeURIComponent(projectId)}/export/preview${qs ? '?' + qs : ''}`);
   }
 
+  /** Writes the handover ZIP to `dest`, an absolute path from a save dialog. */
+  static exportProjectHandover(projectId: string, dest: string, options: {
+    wip?: boolean;
+    brief?: boolean;
+    copy?: boolean;
+    manifest?: boolean;
+    files?: string[];
+  } = {}): Promise<{ success: boolean; files: number; bytes: number; dest: string; filename: string }> {
+    return this.request(`/projects/${encodeURIComponent(projectId)}/export`, {
+      method: 'POST',
+      body: JSON.stringify({
+        dest,
+        includeWip: options.wip,
+        includeBrief: options.brief,
+        includeCopy: options.copy,
+        includeManifest: options.manifest,
+        selectedFiles: options.files
+      })
+    });
+  }
+
+  static getVaultExportPreview(): Promise<{ success: boolean; preview: any; filename: string }> {
+    return this.request('/system/export-vault/preview');
+  }
+
+  /** Writes the full-vault ZIP to `dest`, an absolute path from a save dialog. */
+  static exportVault(dest: string): Promise<{ success: boolean; files: number; bytes: number; dest: string; filename: string }> {
+    return this.request('/system/export-vault', {
+      method: 'POST',
+      body: JSON.stringify({ dest })
+    });
+  }
+
   // ─── Workload Reassign ───
   static reassignProject(projectId: string, payload: { newDesigner: string; reason?: string }): Promise<{ success: boolean; designer: string; message: string }> {
     return this.request(`/projects/${encodeURIComponent(projectId)}/reassign`, {
@@ -774,6 +807,11 @@ export class ApiClient {
       method: 'POST',
       body: JSON.stringify(options)
     });
+  }
+
+  /** The quote or invoice as a standalone HTML page, for the view to save. */
+  static exportDocumentHtml(type: string, id: string): Promise<{ success: boolean; html: string; filename: string }> {
+    return this.request(`/finance/${encodeURIComponent(type)}/${encodeURIComponent(id)}/export-html`);
   }
 
   // ─── Atelier Knowledge Engine (_Notes/) ───

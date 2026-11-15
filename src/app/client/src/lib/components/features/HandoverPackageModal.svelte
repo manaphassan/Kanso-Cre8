@@ -7,6 +7,7 @@
   import type { DeliverableItem } from '$lib/types';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
   import { ApiClient } from '$lib/services/api';
+  import { pickZipDestination } from '$lib/local/dialog';
   import HandoverManifestModal from '$lib/components/features/HandoverManifestModal.svelte';
 
   interface Props {
@@ -29,7 +30,7 @@
 
   // Selected file names (or relPaths)
   let selectedFileNames = $state<Record<string, boolean>>({});
-  let linkCopied = $state<boolean>(false);
+  let isExporting = $state<boolean>(false);
   let studioProfile = $state<any>(null);
   let isLoadingProfile = $state<boolean>(false);
   let showManifestPreview = $state<boolean>(false);
@@ -40,17 +41,7 @@
     if (!projId) return;
     try {
       isLoadingPreview = true;
-      const selectedKeys = availableDeliverables
-        .filter(d => selectedFileNames[d.filename || d.id])
-        .map(d => d.filename || d.id);
-
-      const res = await ApiClient.getProjectHandoverPreview(projId, {
-        wip: includeWip,
-        brief: includeBrief,
-        copy: includeCopy,
-        manifest: includeManifest,
-        files: selectedKeys.length > 0 && selectedKeys.length < availableDeliverables.length ? selectedKeys : undefined
-      });
+      const res = await ApiClient.getProjectHandoverPreview(projId, exportOptions());
       if (res?.preview) {
         manifestPreviewData = res.preview;
         showManifestPreview = true;
@@ -114,12 +105,9 @@
   async function loadStudioProfile() {
     try {
       isLoadingProfile = true;
-      const res = await fetch('/api/system/studio-profile', { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.profile) {
-          studioProfile = data.profile;
-        }
+      const res = await ApiClient.getStudioProfile();
+      if (res?.profile) {
+        studioProfile = res.profile;
       }
     } catch (err) {
       console.warn('[HandoverPackageModal] Could not load studio profile:', err);
@@ -162,50 +150,33 @@
     };
   }
 
-  // Build Download URL
-  const downloadUrl = $derived.by(() => {
-    if (!projId) return '';
-    const params = new URLSearchParams();
-    if (includeWip) params.set('wip', 'true');
-    if (!includeBrief) params.set('brief', 'false');
-    if (!includeCopy) params.set('copy', 'false');
-    if (!includeManifest) params.set('manifest', 'false');
-
-    // If not all files are selected, pass explicit files list
+  /** The export options for the current selection (shared by preview and download). */
+  function exportOptions() {
     const selectedKeys = availableDeliverables
       .filter(d => selectedFileNames[d.filename || d.id])
       .map(d => d.filename || d.id);
-
-    if (selectedKeys.length > 0 && selectedKeys.length < availableDeliverables.length) {
-      params.set('files', selectedKeys.join(','));
-    }
-
-    const qs = params.toString();
-    return `/api/projects/${encodeURIComponent(projId)}/export/zip${qs ? '?' + qs : ''}`;
-  });
-
-  async function copyDownloadLink() {
-    if (!downloadUrl) return;
-    const fullUrl = window.location.origin + downloadUrl;
-    try {
-      await navigator.clipboard.writeText(fullUrl);
-      linkCopied = true;
-      setTimeout(() => {
-        linkCopied = false;
-      }, 2500);
-    } catch (err) {
-      console.warn('Failed to copy link:', err);
-    }
+    return {
+      wip: includeWip,
+      brief: includeBrief,
+      copy: includeCopy,
+      manifest: includeManifest,
+      files: selectedKeys.length > 0 && selectedKeys.length < availableDeliverables.length ? selectedKeys : undefined
+    };
   }
 
-  function triggerDownload() {
-    if (!downloadUrl) return;
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = `${projectJobId || 'HANDOVER'}_Client_Delivery.zip`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  async function triggerDownload() {
+    if (!projId || isExporting) return;
+    try {
+      const dest = await pickZipDestination('Save the handover package', `${projectJobId || 'HANDOVER'}_Client_Delivery.zip`);
+      if (!dest) return;
+      isExporting = true;
+      const res = await ApiClient.exportProjectHandover(projId, dest, exportOptions());
+      appState.addToast(`Saved ${res.filename} (${res.files} files, ${formatBytes(res.bytes)})`, 'success');
+    } catch (err: any) {
+      appState.addToast(`Could not export the handover package: ${err?.message || err}`, 'error');
+    } finally {
+      isExporting = false;
+    }
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -438,19 +409,6 @@
 
       <!-- Footer Action Bar -->
       <div class="handover-footer">
-        <div class="footer-left">
-          <button 
-            class="copy-link-btn" 
-            onclick={copyDownloadLink} 
-            disabled={!downloadUrl || selectedDeliverables.length === 0}
-            title="Copy direct API download link for client sharing"
-          
-        aria-label="Copy download link">
-            <Icon name={linkCopied ? 'checkCircle' : 'copy'} size={14} color={linkCopied ? 'var(--kanso-success)' : 'currentColor'} />
-            <span>{linkCopied ? 'Link copied' : 'Copy link'}</span>
-          </button>
-        </div>
-
         <div class="footer-right">
           <Button appearance="subtle" onclick={closeModal}>Cancel</Button>
           <button
@@ -465,11 +423,11 @@
           </button>
           <button 
             class="download-package-btn" 
-            onclick={triggerDownload} 
-            disabled={!downloadUrl || selectedDeliverables.length === 0}
+            onclick={triggerDownload}
+            disabled={!projId || isExporting || selectedDeliverables.length === 0}
           >
             <Icon name="download" size={15} />
-            <span>Download Handover ZIP ({formatBytes(selectedSizeBytes)})</span>
+            <span>{isExporting ? 'Saving...' : `Save Handover ZIP (${formatBytes(selectedSizeBytes)})`}</span>
           </button>
         </div>
       </div>
@@ -935,35 +893,10 @@
   .handover-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 16px 22px;
     border-top: 1px solid var(--kanso-border);
     background: var(--kanso-surface);
-  }
-
-  .copy-link-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    border: 1px solid var(--kanso-border);
-    color: var(--kanso-text-primary);
-    padding: 7px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .copy-link-btn:hover:not(:disabled) {
-    background: var(--kanso-surface-hover);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .copy-link-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
   }
 
   .footer-right {

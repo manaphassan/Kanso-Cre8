@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-save-file-as"
+description = "Enables the save_file_as command without any pre-configured scope."
+commands.allow = ["save_file_as"]
+
+[[permission]]
+identifier = "deny-save-file-as"
+description = "Denies the save_file_as command without any pre-configured scope."
+commands.deny = ["save_file_as"]

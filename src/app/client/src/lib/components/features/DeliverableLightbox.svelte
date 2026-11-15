@@ -7,6 +7,7 @@
   import DeliverableAnnotationCanvas from '$lib/components/features/DeliverableAnnotationCanvas.svelte';
   import DeliverableVisualDiffSlider from '$lib/components/features/DeliverableVisualDiffSlider.svelte';
   import { handleBackdropClick, handleModalKeydown } from '$lib/utils';
+  import { saveVaultFileAs } from '$lib/local/dialog';
 
   interface Props {
     deliverable: DeliverableItem | null;
@@ -29,6 +30,16 @@
   let isSubmitting = $state<boolean>(false);
   let isImageZoomed = $state<boolean>(false);
   let isDiffMode = $state<boolean>(false);
+
+  async function handleDownload() {
+    if (!deliverable) return;
+    try {
+      const saved = await saveVaultFileAs('Save a copy of this asset', deliverable.relativePath, deliverable.filename);
+      if (saved) appState.addToast(`Saved ${deliverable.filename}`, 'success');
+    } catch (err: any) {
+      appState.addToast(`Could not save the file: ${err?.message || err}`, 'error');
+    }
+  }
 
   $effect(() => {
     if (open) {
@@ -206,15 +217,15 @@
         </div>
 
         <div class="sidebar-actions">
-          <a
-            href={deliverable.downloadUrl || `/api/deliverables/download?id=${deliverable.id}`}
-            download={deliverable.filename}
+          <button
+            type="button"
+            onclick={handleDownload}
             class="download-btn"
-            title="Download full quality asset"
+            title="Save a copy of the full quality asset"
           >
             <Icon name="download" size={15} />
             <span style="margin-left: 6px;">Download Master Asset</span>
-          </a>
+          </button>
 
           {#if appState.canApprove()}
             <div class="decision-group">
@@ -582,6 +593,8 @@
     padding: 9px 14px;
     font-size: 13px;
     font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
     text-decoration: none;
     transition: all 0.14s;
   }

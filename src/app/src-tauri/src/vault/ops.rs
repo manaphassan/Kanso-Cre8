@@ -231,7 +231,7 @@ fn is_transient(e: &std::io::Error) -> bool {
     e.kind() == std::io::ErrorKind::PermissionDenied || matches!(e.raw_os_error(), Some(32 | 33))
 }
 
-fn write_bytes_atomic(target: &Path, bytes: &[u8], rel: &str) -> Result<(), String> {
+pub(crate) fn write_bytes_atomic(target: &Path, bytes: &[u8], rel: &str) -> Result<(), String> {
     let temp = temp_path_for(target);
     let result = (|| {
         let mut file = fs::File::create(&temp)?;

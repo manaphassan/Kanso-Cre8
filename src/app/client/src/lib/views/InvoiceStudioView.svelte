@@ -5,6 +5,8 @@
   import { studioService } from '../services/studioService.svelte';
     import { settingsStore, SUPPORTED_CURRENCIES, getCurrencySymbol } from '../stores/settingsStore.svelte';
   import { appState } from '../stores/appState.svelte';
+  import { ApiClient } from '../services/api';
+  import { saveTextAs } from '../local/dialog';
   import ScopeTemplateModal from '../components/features/ScopeTemplateModal.svelte';
   import ConvertQuoteModal from '$lib/components/features/ConvertQuoteModal.svelte';
   import { Icon } from '$lib/components/ui';
@@ -95,16 +97,15 @@
     appState.addToast(`Applied scope preset (${items.length} deliverables)`, 'success');
   }
 
-  function handleDownloadHtml() {
+  async function handleDownloadHtml() {
     if (!activeDoc) return;
-    const url = `/api/finance/${activeDoc.type}/${activeDoc.documentNumber}/export-html`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${activeDoc.documentNumber}_${activeDoc.clientCode || 'Client'}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    appState.addToast(`Exported standalone HTML for ${activeDoc.documentNumber}`, 'success');
+    try {
+      const { html, filename } = await ApiClient.exportDocumentHtml(activeDoc.type, activeDoc.documentNumber);
+      const saved = await saveTextAs(`Save ${activeDoc.documentNumber} as HTML`, filename, html, 'HTML page');
+      if (saved) appState.addToast(`Saved ${activeDoc.documentNumber} as HTML`, 'success');
+    } catch (err: any) {
+      appState.addToast(`Could not export HTML: ${err?.message || err}`, 'error');
+    }
   }
 
   function formatDocMoney(amount: number) {
