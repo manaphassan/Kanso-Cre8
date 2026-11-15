@@ -35,9 +35,9 @@ describe('registered routes', () => {
     const missing = calls
       .filter((c) => !patterns.some((p) => p.method === c.method && (p.re.test(c.path) || p.re.test(c.path.replace(/\/X$/, '')))))
       .map((c) => `${c.method} ${c.path}`);
-    // The timer is ported in P2.7, AI in Phase 3 and the licence check in Phase 6;
-    // auth, users, webhooks and audit are not ported and are deleted in Phase 4 (D1, D2).
-    const planned = /^(GET|POST|PUT|DELETE) \/(system\/timer|ai|auth|users|webhooks|audit|system\/license\/verify)/;
+    // AI is ported in Phase 3 and the licence check in Phase 6; auth, users,
+    // webhooks and audit are not ported and are deleted in Phase 4 (D1, D2).
+    const planned = /^(GET|POST|PUT|DELETE) \/(ai|auth|users|webhooks|audit|system\/license\/verify)/;
     expect(missing.filter((m) => !planned.test(m))).toEqual([]);
   });
 });

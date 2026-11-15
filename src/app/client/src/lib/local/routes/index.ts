@@ -16,6 +16,7 @@ import { ownerRoutes } from './owner';
 import { projectRoutes } from './projects';
 import { projectWorkRoutes } from './projectWork';
 import { systemRoutes } from './system';
+import { timerRoutes } from './timer';
 
 export function registerRoutes(router: LocalRouter): void {
   router.use(
@@ -29,6 +30,7 @@ export function registerRoutes(router: LocalRouter): void {
     journalRoutes,
     exportRoutes,
     healthRoutes,
-    financeRoutes
+    financeRoutes,
+    timerRoutes
   );
 }
