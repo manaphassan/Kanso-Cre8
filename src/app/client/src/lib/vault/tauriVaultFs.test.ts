@@ -38,6 +38,7 @@ describe('TauriVaultFs', () => {
   it('maps every method to a granted Rust command with matching argument names', async () => {
     const { fs, calls } = fake();
     await fs.open('D:/Vault');
+    await fs.retire(['timer.json']);
     await fs.root();
     await fs.scan();
     await fs.listDir('_Notes');
@@ -50,7 +51,8 @@ describe('TauriVaultFs', () => {
     await fs.exportZip(['_P'], 'D:/out.zip');
 
     expect(calls).toEqual([
-      { cmd: 'vault_open', args: { path: 'D:/Vault' } },
+      { cmd: 'vault_open', args: { path: 'D:/Vault', create: false } },
+      { cmd: 'retire_vault_files', args: { names: ['timer.json'] } },
       { cmd: 'vault_root', args: undefined },
       { cmd: 'vault_scan', args: { prefix: '' } },
       { cmd: 'list_dir', args: { path: '_Notes' } },
@@ -70,6 +72,16 @@ describe('TauriVaultFs', () => {
   it('turns Rust error strings into Error objects', async () => {
     const { fs } = fake(() => new Error('This path is outside the vault: ../x'));
     await expect(fs.readText('../x')).rejects.toThrow('This path is outside the vault: ../x');
+  });
+
+  it('keeps the code of structured Rust errors', async () => {
+    const fs = new TauriVaultFs(async () => async () => {
+      throw { code: 'not_writable', message: 'The vault folder is not writable: denied' };
+    });
+    await expect(fs.open('E:/Vault')).rejects.toMatchObject({
+      code: 'not_writable',
+      message: 'The vault folder is not writable: denied'
+    });
   });
 
   it('forwards vault:changed payloads and unsubscribes', async () => {

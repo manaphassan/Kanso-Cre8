@@ -92,6 +92,7 @@ fn main() {
             vault::ensure_dirs,
             vault::move_to_archive,
             vault::copy_into_vault,
+            vault::retire::retire_vault_files,
             archive::export_zip,
             archive::sha256_file,
             machine::machine_get,

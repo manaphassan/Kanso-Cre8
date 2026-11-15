@@ -56,6 +56,14 @@ export class MemoryVaultFs implements VaultFs {
     return [...this.nodes.keys()].sort();
   }
 
+  /** Test helper: delete a file or folder (the real vault only archives). */
+  remove(path: string): boolean {
+    const key = normalizePath(path);
+    if (!this.nodes.has(key)) return false;
+    for (const k of [...this.nodes.keys()]) if (k === key || k.startsWith(`${key}/`)) this.nodes.delete(k);
+    return true;
+  }
+
   private mkdirs(path: string): void {
     const segments = parseRelative(path);
     for (let i = 1; i <= segments.length; i++) {

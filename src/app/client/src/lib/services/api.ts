@@ -15,6 +15,7 @@ import type {
 } from '$lib/types';
 
 import { getSession, setSession } from './session';
+import { desktopApi, isDesktop } from '$lib/local/desktop';
 
 const isTauri = typeof window !== 'undefined' && (
   Boolean((window as any).__TAURI_INTERNALS__) ||
@@ -49,7 +50,7 @@ export async function resolveBackendUrl(): Promise<string> {
   return '/api';
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && !isDesktop()) {
   resolveBackendUrl().then(url => {
     apiBaseUrl = url;
   }).catch(() => {});
@@ -80,6 +81,15 @@ export class ApiClient {
   }
 
   static async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    // Desktop app: every call is served in-process from the vault (no server).
+    if (isDesktop()) {
+      const result = await desktopApi().router.handle(options.method || 'GET', endpoint, options.body);
+      if (result.matched) return result.data as T;
+      const message = `Not available in the desktop app yet: ${(options.method || 'GET').toUpperCase()} ${endpoint.split('?')[0]}`;
+      console.warn(`[API] ${message}`);
+      throw new Error(message);
+    }
+
     const url = `${this.getBaseUrl()}${endpoint}`;
     const token = this.getToken();
 
@@ -430,6 +440,10 @@ export class ApiClient {
 
   // ─── Real-Time Server-Sent Events (SSE) Stream ───
   static initEventStream(onEvent: (event: string, data: any) => void): () => void {
+    if (isDesktop()) {
+      onEvent('connection:status', { status: 'connected' });
+      return desktopApi().ctx.bus.on(onEvent);
+    }
     const eventSource = new EventSource(`${this.getBaseUrl()}/events`);
 
     const handleMessage = (evt: MessageEvent, eventName: string) => {

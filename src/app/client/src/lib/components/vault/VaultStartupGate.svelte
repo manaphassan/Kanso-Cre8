@@ -6,6 +6,8 @@
   import { vaultStore } from '$lib/stores/vaultStore.svelte';
   import { Icon } from '$lib/components/ui';
   import VaultStartupActions from './VaultStartupActions.svelte';
+  import { pickFolder } from '$lib/local/dialog';
+  import { isDesktop } from '$lib/local/desktop';
 
   interface VaultStatus {
     ok: boolean;
@@ -73,27 +75,16 @@
 
   async function handleBrowse() {
     try {
-      const tauri = (window as any).__TAURI__;
-      if (tauri && tauri.dialog && typeof tauri.dialog.open === 'function') {
-        const selected = await tauri.dialog.open({ directory: true, multiple: false });
-        if (selected && typeof selected === 'string') {
-          chosenPath = selected;
-          return;
-        }
+      const selected = await pickFolder('Choose your vault folder', chosenPath || undefined);
+      if (selected) {
+        chosenPath = selected;
+        return;
       }
-    } catch (_) {}
-
-    try {
-      const isTauri = typeof window !== 'undefined' && Boolean((window as any).__TAURI_INTERNALS__);
-      if (isTauri) {
-        const { invoke } = await import('@tauri-apps/api/core');
-        const selected = await invoke<string>('pick_folder');
-        if (selected) {
-          chosenPath = selected;
-          return;
-        }
-      }
-    } catch (_) {}
+      if (isDesktop()) return; // cancelled
+    } catch (err: any) {
+      actionError = err?.message || 'Could not open the folder picker.';
+      return;
+    }
 
     const input = prompt('Enter or paste target vault directory path:', chosenPath);
     if (input !== null && input.trim()) {

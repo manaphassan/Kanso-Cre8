@@ -2,6 +2,7 @@
 
 pub mod guard;
 pub mod ops;
+pub mod retire;
 
 use guard::VaultRoot;
 use ops::{Entry, Written};
@@ -44,21 +45,89 @@ pub struct Opened {
     pub watch: crate::watch::WatchMode,
 }
 
-/// Opens an existing folder as the vault and starts watching it. `root` is the
+/// Why a folder could not be opened as the vault. `code` drives the startup
+/// gate (`missing_root`, `not_a_folder`, `not_writable`).
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+pub struct OpenError {
+    pub code: &'static str,
+    pub message: String,
+}
+
+impl OpenError {
+    fn new(code: &'static str, message: String) -> Self {
+        Self { code, message }
+    }
+}
+
+/// Resolves `path` (absolute, or relative to the app folder in portable mode),
+/// optionally creates it, and checks it is a writable folder.
+pub fn open_checked(path: &str, create: bool, app_dir: &Path) -> Result<VaultRoot, OpenError> {
+    let trimmed = path.trim();
+    if trimmed.is_empty() {
+        return Err(OpenError::new(
+            "missing_root",
+            "Choose a folder for the vault.".into(),
+        ));
+    }
+    let target = {
+        let p = PathBuf::from(trimmed);
+        if p.is_absolute() {
+            p
+        } else {
+            app_dir.join(p)
+        }
+    };
+    if !target.exists() {
+        if !create {
+            return Err(OpenError::new(
+                "missing_root",
+                format!("Vault folder not found: {}", target.display()),
+            ));
+        }
+        std::fs::create_dir_all(&target).map_err(|e| {
+            OpenError::new(
+                "missing_root",
+                format!("Could not create {}: {e}", target.display()),
+            )
+        })?;
+    }
+    if !target.is_dir() {
+        return Err(OpenError::new(
+            "not_a_folder",
+            format!("{} is a file, not a folder.", target.display()),
+        ));
+    }
+    let probe = target.join(format!(".kanso-probe-{}", std::process::id()));
+    std::fs::write(&probe, b"ok")
+        .and_then(|_| std::fs::remove_file(&probe))
+        .map_err(|e| {
+            OpenError::new(
+                "not_writable",
+                format!("The vault folder is not writable: {e}"),
+            )
+        })?;
+    VaultRoot::open(&target).map_err(|e| OpenError::new("missing_root", e.to_string()))
+}
+
+/// Opens a folder as the vault and starts watching it. `root` is the
 /// canonical absolute path for display (machine-local, never written to the
 /// vault).
 #[tauri::command]
 pub fn vault_open(
     path: String,
+    create: Option<bool>,
     app: AppHandle,
+    paths: State<'_, crate::paths::AppPaths>,
     state: State<'_, VaultState>,
     watch_state: State<'_, crate::watch::WatchState>,
-) -> Result<Opened, String> {
-    let root = VaultRoot::open(&PathBuf::from(&path)).map_err(|e| e.to_string())?;
+) -> Result<Opened, OpenError> {
+    let root = open_checked(&path, create.unwrap_or(false), &paths.app_dir)?;
     let display = display_path(root.path());
-    allow_previews(&app, root.path())?;
+    allow_previews(&app, root.path()).map_err(|m| OpenError::new("not_writable", m))?;
     let watch = crate::watch::start(&app, &watch_state, &root);
-    state.set(root)?;
+    state
+        .set(root)
+        .map_err(|m| OpenError::new("missing_root", m))?;
     Ok(Opened {
         root: display,
         watch,
@@ -201,6 +270,40 @@ mod tests {
             assert!(ok);
             assert!(!scope.is_allowed(link.join("secret.png")));
         }
+    }
+
+    #[test]
+    fn open_checked_creates_resolves_and_reports_codes() {
+        let tmp = guard::test_support::TempDir::new("open");
+        let app_dir = tmp.path().join("App");
+        std::fs::create_dir_all(&app_dir).unwrap();
+
+        let missing = open_checked("Vault", false, &app_dir).unwrap_err();
+        assert_eq!(missing.code, "missing_root");
+        let created = open_checked("Vault", true, &app_dir).unwrap();
+        assert!(created.path().ends_with("Vault"));
+        assert!(
+            app_dir.join("Vault").is_dir(),
+            "relative paths resolve against the app folder"
+        );
+        let probe_left = std::fs::read_dir(app_dir.join("Vault")).unwrap().count();
+        assert_eq!(probe_left, 0, "probe file must be removed");
+
+        let abs = tmp.path().join("Elsewhere");
+        let opened = open_checked(&abs.display().to_string(), true, &app_dir).unwrap();
+        assert!(opened.path().ends_with("Elsewhere"));
+
+        std::fs::write(tmp.path().join("file.txt"), "x").unwrap();
+        let file = open_checked(
+            &tmp.path().join("file.txt").display().to_string(),
+            false,
+            &app_dir,
+        );
+        assert_eq!(file.unwrap_err().code, "not_a_folder");
+        assert_eq!(
+            open_checked("  ", true, &app_dir).unwrap_err().code,
+            "missing_root"
+        );
     }
 
     #[test]

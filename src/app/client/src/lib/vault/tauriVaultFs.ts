@@ -16,7 +16,7 @@ export interface VaultOpened {
 
 export const VAULT_CHANGED_EVENT = 'vault:changed';
 
-async function tauriInvoke(): Promise<Invoke> {
+export async function tauriInvoke(): Promise<Invoke> {
   const core = await import('@tauri-apps/api/core');
   return core.invoke as Invoke;
 }
@@ -24,6 +24,27 @@ async function tauriInvoke(): Promise<Invoke> {
 async function tauriListen(): Promise<Listen> {
   const event = await import('@tauri-apps/api/event');
   return event.listen as unknown as Listen;
+}
+
+/** An error returned by a Rust command; `code` is set for structured errors. */
+export class CommandError extends Error {
+  constructor(
+    message: string,
+    readonly code?: string
+  ) {
+    super(message);
+  }
+}
+
+function toCommandError(err: unknown): CommandError {
+  if (typeof err === 'string') return new CommandError(err);
+  if (err && typeof err === 'object') {
+    const e = err as { message?: unknown; code?: unknown };
+    if (typeof e.message === 'string') {
+      return new CommandError(e.message, typeof e.code === 'string' ? e.code : undefined);
+    }
+  }
+  return new CommandError(String(err));
 }
 
 export class TauriVaultFs implements VaultFs {
@@ -37,13 +58,22 @@ export class TauriVaultFs implements VaultFs {
     try {
       return await invoke<T>(cmd, args);
     } catch (err) {
-      throw new Error(typeof err === 'string' ? err : (err as Error)?.message ?? String(err));
+      throw toCommandError(err);
     }
   }
 
-  /** Opens a folder as the vault and starts the watcher. */
-  open(path: string): Promise<VaultOpened> {
-    return this.call('vault_open', { path });
+  /**
+   * Opens a folder as the vault and starts the watcher. Relative paths resolve
+   * against the app folder (portable mode). Rejects with a `CommandError`
+   * whose `code` is `missing_root`, `not_a_folder` or `not_writable`.
+   */
+  open(path: string, create = false): Promise<VaultOpened> {
+    return this.call('vault_open', { path, create });
+  }
+
+  /** Copies retired config files to the machine backups folder, then removes them. */
+  retire(names: string[]): Promise<Array<{ path: string; backup: string }>> {
+    return this.call('retire_vault_files', { names });
   }
 
   root(): Promise<string | null> {
