@@ -7,6 +7,7 @@
 import type { LocalRouter } from '../router';
 import { clientRoutes } from './clients';
 import { dashboardRoutes } from './dashboard';
+import { exportRoutes } from './export';
 import { journalRoutes } from './journal';
 import { notesRoutes } from './notes';
 import { ownerRoutes } from './owner';
@@ -15,5 +16,15 @@ import { projectWorkRoutes } from './projectWork';
 import { systemRoutes } from './system';
 
 export function registerRoutes(router: LocalRouter): void {
-  router.use(systemRoutes, ownerRoutes, projectRoutes, projectWorkRoutes, clientRoutes, dashboardRoutes, notesRoutes, journalRoutes);
+  router.use(
+    systemRoutes,
+    ownerRoutes,
+    projectRoutes,
+    projectWorkRoutes,
+    clientRoutes,
+    dashboardRoutes,
+    notesRoutes,
+    journalRoutes,
+    exportRoutes
+  );
 }

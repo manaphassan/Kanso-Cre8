@@ -35,9 +35,9 @@ describe('registered routes', () => {
     const missing = calls
       .filter((c) => !patterns.some((p) => p.method === c.method && (p.re.test(c.path) || p.re.test(c.path.replace(/\/X$/, '')))))
       .map((c) => `${c.method} ${c.path}`);
-    // Ported in later tasks: finance and timer (P2.6, P2.7), export (P2.8),
-    // vault health and demo data (P2.9), AI (Phase 3); auth and team are deleted (D1).
-    const planned = /^(GET|POST|PUT|DELETE) \/(finance|system\/timer|ai|auth|team|users|webhooks|audit|system\/(sync-conflicts|vault-health|demo-data|vault\/reset|license\/verify)|projects\/X\/export)/;
+    // Ported in later tasks: finance and timer (P2.6, P2.7), vault health and
+    // demo data (P2.9), AI (Phase 3); auth and team are deleted (D1).
+    const planned = /^(GET|POST|PUT|DELETE) \/(finance|system\/timer|ai|auth|team|users|webhooks|audit|system\/(sync-conflicts|vault-health|demo-data|vault\/reset|license\/verify))/;
     expect(missing.filter((m) => !planned.test(m))).toEqual([]);
   });
 });
