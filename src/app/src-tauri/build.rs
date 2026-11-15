@@ -14,6 +14,8 @@ const COMMANDS: &[&str] = &[
     "ensure_dirs",
     "move_to_archive",
     "copy_into_vault",
+    "write_bytes_atomic",
+    "copy_within",
     "retire_vault_files",
     "export_zip",
     "sha256_file",

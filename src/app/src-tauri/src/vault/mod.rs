@@ -189,6 +189,57 @@ pub fn move_to_archive(path: String, state: State<'_, VaultState>) -> Result<Str
     state.with(|r| ops::move_to_archive(r, &path))
 }
 
+/// Raw-body command: the webview sends the bytes as the IPC body and the
+/// vault-relative path (URI-encoded) in the `x-vault-path` header, so large
+/// uploads are not inflated into JSON or base64.
+#[tauri::command]
+pub fn write_bytes_atomic(
+    request: tauri::ipc::Request<'_>,
+    state: State<'_, VaultState>,
+) -> Result<Written, String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("Expected the file bytes as the request body.".into());
+    };
+    let header = |name: &str| {
+        request
+            .headers()
+            .get(name)
+            .and_then(|v| v.to_str().ok())
+            .map(percent_decode)
+    };
+    let path = header("x-vault-path").ok_or("Missing x-vault-path header.")??;
+    let overwrite = header("x-overwrite").and_then(Result::ok).as_deref() == Some("true");
+    state.with(|r| ops::write_bytes(r, &path, bytes, overwrite))
+}
+
+#[tauri::command]
+pub fn copy_within(
+    from: String,
+    to: String,
+    overwrite: Option<bool>,
+    state: State<'_, VaultState>,
+) -> Result<Written, String> {
+    state.with(|r| ops::copy_within(r, &from, &to, overwrite.unwrap_or(false)))
+}
+
+/// Decodes `%XX` escapes (what `encodeURIComponent` produces) as UTF-8.
+pub fn percent_decode(s: &str) -> Result<String, String> {
+    let bytes = s.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%' {
+            let hex = s.get(i + 1..i + 3).ok_or("Bad escape in path.")?;
+            out.push(u8::from_str_radix(hex, 16).map_err(|_| "Bad escape in path.")?);
+            i += 3;
+        } else {
+            out.push(bytes[i]);
+            i += 1;
+        }
+    }
+    String::from_utf8(out).map_err(|_| "Path is not valid UTF-8.".to_string())
+}
+
 #[tauri::command]
 pub fn copy_into_vault(
     source: String,
@@ -304,6 +355,18 @@ mod tests {
             open_checked("  ", true, &app_dir).unwrap_err().code,
             "missing_root"
         );
+    }
+
+    #[test]
+    fn percent_decode_handles_utf8_and_rejects_garbage() {
+        assert_eq!(
+            percent_decode("_Projects%2F2026%2FCaf%C3%A9.png").unwrap(),
+            "_Projects/2026/Caf\u{e9}.png"
+        );
+        assert_eq!(percent_decode("plain").unwrap(), "plain");
+        assert!(percent_decode("%G1").is_err());
+        assert!(percent_decode("%2").is_err());
+        assert!(percent_decode("%FF").is_err());
     }
 
     #[test]

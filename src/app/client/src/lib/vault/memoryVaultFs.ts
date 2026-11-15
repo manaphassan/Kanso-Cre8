@@ -215,6 +215,22 @@ export class MemoryVaultFs implements VaultFs {
     return { path: key, size: data.length };
   }
 
+  async writeBytes(path: string, bytes: Uint8Array, overwrite = false): Promise<Written> {
+    const key = normalizePath(path);
+    if (this.nodes.get(key)?.isDir) throw new Error(`"${path}" is a folder.`);
+    if (this.nodes.has(key) && !overwrite) throw new Error(`"${path}" already exists.`);
+    if (!this.nodes.has(key)) this.validateNew(key);
+    this.put(key, new Uint8Array(bytes));
+    this.emit([key]);
+    return { path: key, size: bytes.length };
+  }
+
+  async copyWithin(from: string, to: string, overwrite = false): Promise<Written> {
+    const node = this.nodes.get(normalizePath(from));
+    if (!node || node.isDir) throw new Error(`"${from}" is not a file.`);
+    return this.writeBytes(to, node.data, overwrite);
+  }
+
   async sha256(path: string): Promise<string> {
     const node = this.nodes.get(normalizePath(path));
     if (!node || node.isDir) throw new Error(`Could not read "${path}": not found`);

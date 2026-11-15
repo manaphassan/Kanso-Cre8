@@ -260,6 +260,39 @@ pub fn write_text_atomic(root: &VaultRoot, rel: &str, content: &str) -> Result<W
     })
 }
 
+/// Writes raw bytes (an uploaded image or video) atomically.
+pub fn write_bytes(
+    root: &VaultRoot,
+    rel: &str,
+    bytes: &[u8],
+    overwrite: bool,
+) -> Result<Written, String> {
+    let target = prepare_target(root, rel)?;
+    if target.exists() && !overwrite {
+        return Err(format!("\"{rel}\" already exists."));
+    }
+    write_bytes_atomic(&target, bytes, rel)?;
+    Ok(Written {
+        path: root.relative(&target).unwrap_or_else(|| rel.to_string()),
+        size: bytes.len() as u64,
+    })
+}
+
+/// Copies a file inside the vault (snapshots, restores).
+pub fn copy_within(
+    root: &VaultRoot,
+    from: &str,
+    to: &str,
+    overwrite: bool,
+) -> Result<Written, String> {
+    let source = root.resolve(from).map_err(|e| e.to_string())?;
+    if !source.is_file() {
+        return Err(format!("\"{from}\" is not a file."));
+    }
+    let bytes = fs::read(&source).map_err(|e| io_err("read", from, e))?;
+    write_bytes(root, to, &bytes, overwrite)
+}
+
 pub fn ensure_dirs(root: &VaultRoot, rels: &[String]) -> Result<Vec<String>, String> {
     let mut created = Vec::new();
     for rel in rels {

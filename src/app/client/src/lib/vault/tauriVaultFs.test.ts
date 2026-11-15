@@ -47,6 +47,7 @@ describe('TauriVaultFs', () => {
     await fs.ensureDirs(['_Finance/Quotes']);
     await fs.moveToArchive('_Notes/a.md');
     await fs.copyIn('C:/pick.png', '_P/pick.png');
+    await fs.copyWithin('_P/pick.png', '_P/copy.png');
     await fs.sha256('_P/pick.png');
     await fs.exportZip(['_P'], 'D:/out.zip');
 
@@ -61,12 +62,22 @@ describe('TauriVaultFs', () => {
       { cmd: 'ensure_dirs', args: { paths: ['_Finance/Quotes'] } },
       { cmd: 'move_to_archive', args: { path: '_Notes/a.md' } },
       { cmd: 'copy_into_vault', args: { source: 'C:/pick.png', dest: '_P/pick.png', overwrite: false } },
+      { cmd: 'copy_within', args: { from: '_P/pick.png', to: '_P/copy.png', overwrite: false } },
       { cmd: 'sha256_file', args: { path: '_P/pick.png' } },
       { cmd: 'export_zip', args: { paths: ['_P'], dest: 'D:/out.zip' } }
     ]);
 
     const granted = grantedCommands();
     for (const { cmd } of calls) expect(granted, cmd).toContain(cmd);
+  });
+
+  it('sends bytes as the raw IPC body with the path in a header', async () => {
+    const { fs, calls } = fake();
+    const bytes = new Uint8Array([1, 2, 3]);
+    await fs.writeBytes('_P/Caf\u00e9.png', bytes, true);
+    expect(calls[0].cmd).toBe('write_bytes_atomic');
+    expect(calls[0].args).toBe(bytes);
+    expect(grantedCommands()).toContain('write_bytes_atomic');
   });
 
   it('turns Rust error strings into Error objects', async () => {

@@ -176,6 +176,37 @@ fn copy_into_vault_respects_overwrite() {
 }
 
 #[test]
+fn writes_bytes_and_copies_within_the_vault() {
+    let (_tmp, v) = vault();
+    let bytes: Vec<u8> = (0..=255u8).collect();
+    let w = write_bytes(&v, "_Projects/P/04_WIP/raw.png", &bytes, false).unwrap();
+    assert_eq!(
+        (w.path.as_str(), w.size),
+        ("_Projects/P/04_WIP/raw.png", 256)
+    );
+    assert_eq!(
+        fs::read(v.path().join("_Projects/P/04_WIP/raw.png")).unwrap(),
+        bytes
+    );
+    assert!(write_bytes(&v, "_Projects/P/04_WIP/raw.png", &bytes, false).is_err());
+    assert!(write_bytes(&v, "_Projects/P/04_WIP/raw.png", b"x", true).is_ok());
+    assert!(write_bytes(&v, "../escape.bin", b"x", false).is_err());
+
+    copy_within(
+        &v,
+        "_Notes/Scratchpad.md",
+        "_Projects/P/_snapshots/s1/Scratchpad.md",
+        false,
+    )
+    .unwrap();
+    assert_eq!(
+        fs::read(v.path().join("_Projects/P/_snapshots/s1/Scratchpad.md")).unwrap(),
+        fs::read(v.path().join("_Notes/Scratchpad.md")).unwrap()
+    );
+    assert!(copy_within(&v, "_Notes", "x.md", false).is_err());
+}
+
+#[test]
 fn handles_paths_longer_than_260_characters() {
     let (_tmp, v) = vault();
     let deep: Vec<String> = (0..12)

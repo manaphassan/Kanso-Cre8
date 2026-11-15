@@ -95,6 +95,16 @@ describe('MemoryVaultFs', () => {
     await expect(fs.copyIn('C:/Users/a/missing.png', '_P/x.png')).rejects.toThrow(/not found/);
   });
 
+  it('writes bytes and copies within the vault', async () => {
+    const bytes = Uint8Array.from({ length: 256 }, (_, i) => i);
+    expect(await fs.writeBytes('_Projects/P/04_WIP/raw.png', bytes)).toEqual({ path: '_Projects/P/04_WIP/raw.png', size: 256 });
+    await expect(fs.writeBytes('_Projects/P/04_WIP/raw.png', bytes)).rejects.toThrow(/already exists/);
+    await expect(fs.writeBytes('_Projects/P/04_WIP/raw.png', bytes, true)).resolves.toBeTruthy();
+    await fs.copyWithin('_Notes/Scratchpad.md', '_Projects/P/_snapshots/s1/README.md');
+    expect(await fs.readText('_Projects/P/_snapshots/s1/README.md')).toBe('# Scratch\nline\n');
+    await expect(fs.copyWithin('_Notes', 'x.md')).rejects.toThrow(/not a file/);
+  });
+
   it('hashes like sha256sum', async () => {
     fs.put('empty.txt', '');
     fs.put('abc.txt', 'abc');

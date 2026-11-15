@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-copy-within"
+description = "Enables the copy_within command without any pre-configured scope."
+commands.allow = ["copy_within"]
+
+[[permission]]
+identifier = "deny-copy-within"
+description = "Denies the copy_within command without any pre-configured scope."
+commands.deny = ["copy_within"]

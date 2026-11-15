@@ -108,6 +108,22 @@ export class TauriVaultFs implements VaultFs {
     return this.call('copy_into_vault', { source, dest, overwrite });
   }
 
+  /** Bytes travel as the raw IPC body; the path rides in a header. */
+  async writeBytes(path: string, bytes: Uint8Array, overwrite = false): Promise<Written> {
+    const invoke = await this.invokeFn();
+    try {
+      return await (invoke as any)('write_bytes_atomic', bytes, {
+        headers: { 'x-vault-path': encodeURIComponent(path), 'x-overwrite': String(overwrite) }
+      });
+    } catch (err) {
+      throw toCommandError(err);
+    }
+  }
+
+  copyWithin(from: string, to: string, overwrite = false): Promise<Written> {
+    return this.call('copy_within', { from, to, overwrite });
+  }
+
   sha256(path: string): Promise<string> {
     return this.call('sha256_file', { path });
   }

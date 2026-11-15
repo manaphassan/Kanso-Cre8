@@ -14,6 +14,8 @@ permissions = [
   "allow-ensure-dirs",
   "allow-move-to-archive",
   "allow-copy-into-vault",
+  "allow-write-bytes-atomic",
+  "allow-copy-within",
   "allow-retire-vault-files",
   "allow-export-zip",
   "allow-sha256-file",

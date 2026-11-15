@@ -39,6 +39,10 @@ export interface VaultFs {
   moveToArchive(path: string): Promise<string>;
   /** Copies a file the user picked (absolute path) into the vault. */
   copyIn(source: string, dest: string, overwrite?: boolean): Promise<Written>;
+  /** Writes raw bytes (an uploaded image or video) atomically. */
+  writeBytes(path: string, bytes: Uint8Array, overwrite?: boolean): Promise<Written>;
+  /** Copies a file inside the vault. */
+  copyWithin(from: string, to: string, overwrite?: boolean): Promise<Written>;
   sha256(path: string): Promise<string>;
   /** Writes a ZIP of vault paths to an absolute destination chosen by the user. */
   exportZip(paths: string[], dest: string): Promise<ZipSummary>;
