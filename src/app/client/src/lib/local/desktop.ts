@@ -49,6 +49,12 @@ export function createDesktopContext(): LocalContext {
     async vaultRoot() {
       return opened?.root ?? null;
     },
+    async fileUrl(rel) {
+      if (!opened) return '';
+      const { convertFileSrc } = await import('@tauri-apps/api/core');
+      const sep = opened.root.includes('\\') ? '\\' : '/';
+      return convertFileSrc(`${opened.root}${sep}${rel.split('/').join(sep)}`);
+    },
     retireFiles(names) {
       return fs.retire(names);
     }

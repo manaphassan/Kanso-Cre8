@@ -33,6 +33,8 @@ export interface LocalContext {
   vaultRoot(): Promise<string | null>;
   /** Backs up legacy config files to the machine tier, then removes them from the vault. */
   retireFiles(names: string[]): Promise<Array<{ path: string; backup: string }>>;
+  /** URL the webview can load for a vault file (images, video, PDF). */
+  fileUrl(rel: string): Promise<string>;
   machine: MachineStore;
   bus: EventBus;
   platform: 'win32' | 'darwin' | 'linux';
@@ -43,9 +45,9 @@ export interface LocalContext {
 /** Test context: a memory vault that "opens" any path it was given. */
 export function createMemoryContext(
   files: Record<string, string> = {},
-  options: { root?: string | null; existing?: string[] } = {}
+  options: { root?: string | null; existing?: string[]; fs?: MemoryVaultFs } = {}
 ): LocalContext & { fs: MemoryVaultFs; machine: MemoryMachineStore; opened: string[]; retired: string[] } {
-  const fs = new MemoryVaultFs(files);
+  const fs = options.fs ?? new MemoryVaultFs(files);
   const machine = new MemoryMachineStore();
   const bus = new EventBus();
   const existing = new Set(options.existing ?? []);
@@ -78,6 +80,9 @@ export function createMemoryContext(
     },
     async vaultRoot() {
       return root;
+    },
+    async fileUrl(rel) {
+      return `asset://localhost/${encodeURI(rel)}`;
     },
     async retireFiles(names) {
       const out: Array<{ path: string; backup: string }> = [];

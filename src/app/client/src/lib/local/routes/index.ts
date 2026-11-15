@@ -3,8 +3,9 @@
  */
 
 import type { LocalRouter } from '../router';
+import { projectRoutes } from './projects';
 import { systemRoutes } from './system';
 
 export function registerRoutes(router: LocalRouter): void {
-  router.use(systemRoutes);
+  router.use(systemRoutes, projectRoutes);
 }
