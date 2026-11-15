@@ -32,8 +32,8 @@ src/app/client/src/lib/views/ProjectsView.svelte
 # Retro Cassette Focus Radio Artwork
 src/app/client/src/lib/components/radio/AnalogVuMeter.svelte
 src/app/client/src/lib/components/radio/CassetteBlankCard.svelte
+src/app/client/src/lib/components/radio/CassetteShell.svelte
 src/app/client/src/lib/components/radio/CassetteSpoolWheel.svelte
 src/app/client/src/lib/components/radio/CassetteTapeCard.svelte
-src/app/client/src/lib/components/radio/Deck.svelte
 src/app/client/src/lib/components/radio/MiniCassetteDock.svelte
 src/app/client/src/lib/components/radio/Presets.svelte

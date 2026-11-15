@@ -24,7 +24,7 @@
     <!-- Top Paper Sticker Label -->
     <div class="card-sticker-label blank-label">
       <div class="label-left-group">
-        <span class="blank-rec-dot">⏺</span>
+        <span class="blank-rec-dot" aria-hidden="true"></span>
         <span class="label-station-name">BLANK C-90</span>
       </div>
       <span class="blank-tag">UNRECORDED</span>
@@ -220,9 +220,16 @@
   }
 
   .blank-rec-dot {
-    color: #E5383B;
-    font-size: 10px;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #E5383B;
     animation: rec-pulse 1.8s infinite ease-in-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blank-rec-dot { animation: none; }
   }
 
   @keyframes rec-pulse {
