@@ -165,16 +165,6 @@
   }
 
   onMount(() => {
-    // Notify native desktop launcher to dissolve the native splash screen
-    if ((window as any).chrome?.webview) {
-      try {
-        (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SPLASH_DISMISS' }));
-        (window as any).chrome.webview.postMessage(JSON.stringify({ type: 'SET_THEME', theme: appState.theme }));
-      } catch (e) {
-        console.warn('WebView2 postMessage failed', e);
-      }
-    }
-
     // Smoothly dissolve boot splash screen once workspace is mounted
     requestAnimationFrame(() => {
       setTimeout(() => {
