@@ -10,6 +10,7 @@ import { VaultOpenError, type LocalContext, type OpenedVault } from './context';
 import { TauriMachineStore } from './machine';
 import { LocalRouter } from './router';
 import { registerRoutes } from './routes';
+import { ensureMounted } from './routes/system';
 import { CommandError, TauriVaultFs, tauriInvoke } from '$lib/vault/tauriVaultFs';
 
 export function isDesktop(): boolean {
@@ -26,13 +27,20 @@ function detectPlatform(): LocalContext['platform'] {
 export function createDesktopContext(): LocalContext {
   const fs = new TauriVaultFs();
   let opened: OpenedVault | null = null;
-  return {
+  let autoMount: Promise<unknown> | null = null;
+  const ctx: LocalContext = {
     machine: new TauriMachineStore(tauriInvoke),
     bus: new EventBus(),
     platform: detectPlatform(),
     version: pkg.version,
     now: () => new Date(),
     async vault() {
+      // Views may load before the startup gate runs: open the remembered vault once.
+      if (!opened) {
+        autoMount ??= ensureMounted(ctx).catch(() => null);
+        await autoMount;
+        if (!opened) autoMount = null;
+      }
       if (!opened) throw new VaultOpenError('no_vault', 'No vault is open. Choose a vault folder first.');
       return fs;
     },
@@ -59,6 +67,7 @@ export function createDesktopContext(): LocalContext {
       return fs.retire(names);
     }
   };
+  return ctx;
 }
 
 let instance: { ctx: LocalContext; router: LocalRouter } | null = null;
