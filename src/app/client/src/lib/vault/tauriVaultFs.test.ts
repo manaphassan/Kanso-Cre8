@@ -64,7 +64,7 @@ describe('TauriVaultFs', () => {
       { cmd: 'copy_into_vault', args: { source: 'C:/pick.png', dest: '_P/pick.png', overwrite: false } },
       { cmd: 'copy_within', args: { from: '_P/pick.png', to: '_P/copy.png', overwrite: false } },
       { cmd: 'sha256_file', args: { path: '_P/pick.png' } },
-      { cmd: 'export_zip', args: { paths: ['_P'], dest: 'D:/out.zip' } }
+      { cmd: 'export_zip', args: { paths: ['_P'], dest: 'D:/out.zip', prefix: null, extras: [] } }
     ]);
 
     const granted = grantedCommands();

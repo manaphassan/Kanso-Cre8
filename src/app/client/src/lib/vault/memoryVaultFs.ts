@@ -19,7 +19,7 @@ import {
   utcStamp,
   validateNewName
 } from './paths';
-import type { Unsubscribe, VaultEntry, VaultFs, Written, ZipSummary } from './types';
+import type { Unsubscribe, VaultEntry, VaultFs, Written, ZipOptions, ZipSummary } from './types';
 
 interface Node {
   isDir: boolean;
@@ -37,6 +37,8 @@ export class MemoryVaultFs implements VaultFs {
   readonly external = new Map<string, Uint8Array>();
   /** ZIP exports recorded instead of written: destination -> entry names. */
   readonly exports = new Map<string, string[]>();
+  /** Generated files passed to each export. */
+  readonly exportExtras = new Map<string, Array<{ name: string; text: string }>>();
   now: () => Date = () => new Date();
 
   constructor(files: Record<string, string> = {}) {
@@ -238,8 +240,9 @@ export class MemoryVaultFs implements VaultFs {
     return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 
-  async exportZip(paths: string[], dest: string): Promise<ZipSummary> {
+  async exportZip(paths: string[], dest: string, options: ZipOptions = {}): Promise<ZipSummary> {
     if (!dest.toLowerCase().endsWith('.zip')) throw new Error('The export file must end in .zip.');
+    const strip = options.prefix ? `${options.prefix.replace(/^\/+|\/+$/g, '')}/` : null;
     const names = new Set<string>();
     let bytes = 0;
     for (const path of paths) {
@@ -250,12 +253,19 @@ export class MemoryVaultFs implements VaultFs {
         ? [...this.nodes.keys()].filter((k) => k.startsWith(`${key}/`) && !this.nodes.get(k)!.isDir)
         : [key];
       for (const f of files) {
-        if (baseName(f).includes(TEMP_MARKER) || names.has(f)) continue;
-        names.add(f);
+        const entry = strip && f.startsWith(strip) ? f.slice(strip.length) : f;
+        if (baseName(f).includes(TEMP_MARKER) || names.has(entry)) continue;
+        names.add(entry);
         bytes += this.nodes.get(f)!.data.length;
       }
     }
+    for (const extra of options.extras ?? []) {
+      if (parseRelative(extra.name).length === 0) throw new Error('An export entry needs a name.');
+      names.add(extra.name);
+      bytes += encoder.encode(extra.text).length;
+    }
     this.exports.set(dest, [...names].sort());
+    this.exportExtras.set(dest, options.extras ?? []);
     return { files: names.size, bytes };
   }
 

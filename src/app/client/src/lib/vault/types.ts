@@ -23,6 +23,11 @@ export interface ZipSummary {
   bytes: number;
 }
 
+export interface ZipOptions {
+  prefix?: string;
+  extras?: Array<{ name: string; text: string }>;
+}
+
 export type Unsubscribe = () => void;
 
 export interface VaultFs {
@@ -44,8 +49,11 @@ export interface VaultFs {
   /** Copies a file inside the vault. */
   copyWithin(from: string, to: string, overwrite?: boolean): Promise<Written>;
   sha256(path: string): Promise<string>;
-  /** Writes a ZIP of vault paths to an absolute destination chosen by the user. */
-  exportZip(paths: string[], dest: string): Promise<ZipSummary>;
+  /**
+   * Writes a ZIP of vault paths to an absolute destination chosen by the user.
+   * `prefix` is stripped from entry names; `extras` are generated text files.
+   */
+  exportZip(paths: string[], dest: string, options?: ZipOptions): Promise<ZipSummary>;
   /** Called with vault-relative paths after changes settle. */
   onChange(listener: (paths: string[]) => void): Promise<Unsubscribe>;
 }

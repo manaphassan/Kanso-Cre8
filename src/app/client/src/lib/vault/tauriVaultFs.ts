@@ -4,7 +4,7 @@
  * open vault. Errors from Rust arrive as plain sentences.
  */
 
-import type { VaultEntry, VaultFs, Written, ZipSummary, Unsubscribe } from './types';
+import type { VaultEntry, VaultFs, Written, ZipOptions, ZipSummary, Unsubscribe } from './types';
 
 type Invoke = <T>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
 type Listen = <T>(event: string, handler: (e: { payload: T }) => void) => Promise<Unsubscribe>;
@@ -128,8 +128,8 @@ export class TauriVaultFs implements VaultFs {
     return this.call('sha256_file', { path });
   }
 
-  exportZip(paths: string[], dest: string): Promise<ZipSummary> {
-    return this.call('export_zip', { paths, dest });
+  exportZip(paths: string[], dest: string, options: ZipOptions = {}): Promise<ZipSummary> {
+    return this.call('export_zip', { paths, dest, prefix: options.prefix ?? null, extras: options.extras ?? [] });
   }
 
   async onChange(listener: (paths: string[]) => void): Promise<Unsubscribe> {
