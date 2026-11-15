@@ -20,3 +20,7 @@ src/app/sample-workspace/_Notes/01_Fleeting/client_intake_call_sarah_jenkins_acm
 src/app/sample-workspace/_Notes/03_Permanent/atomic_creative_insight.md
 src/app/sample-workspace/_Notes/03_Permanent/the_60_30_10_creative_color_rule.md
 src/app/sample-workspace/_Notes/03_Permanent/the_curiosity_gap_hook_formula.md
+
+# Tests that read the sample vault, whose note ids are still zettel_NNN
+src/app/client/src/lib/local/routes/notes.test.ts
+src/app/client/src/lib/domain/export/vaultExport.test.ts

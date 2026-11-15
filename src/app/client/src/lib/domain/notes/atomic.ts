@@ -69,7 +69,7 @@ export function parseNote(
   const defaultId = filename.replace(/\.md$/i, '');
   const title = fm.title ? String(fm.title) : (body.match(/^#\s+(.+)$/m)?.[1].trim() ?? (defaultId || 'Untitled Note'));
   const type = String(fm.type || fm.category || defaultCategory || 'permanent');
-  const id = String(fm.id !== undefined && fm.id !== null && fm.id !== '' ? fm.id : defaultId || `zettel_${now.getTime()}`);
+  const id = String(fm.id !== undefined && fm.id !== null && fm.id !== '' ? fm.id : defaultId || `note_${now.getTime()}`);
 
   const links = wikiLinks(body);
   const bracketed = links.map((l) => `[[${l}]]`);
@@ -207,7 +207,7 @@ export async function saveNote(fs: VaultFs, data: Record<string, any>, now: Date
   if (!data || typeof data !== 'object') throw new Error('Note data is required.');
   const requested = data.type || data.category || 'permanent';
   const type = resolveCategory(requested);
-  const id = String(data.id || `zettel_${now.getTime()}`);
+  const id = String(data.id || `note_${now.getTime()}`);
   const check = validateFrontmatter('note', { id, title: data.title, category: type ?? requested });
   if (!type || !check.valid) throw new Error(check.errors.join('; ') || `Invalid note category: "${requested}"`);
 
