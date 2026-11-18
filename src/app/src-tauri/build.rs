@@ -24,6 +24,10 @@ const COMMANDS: &[&str] = &[
     "machine_get",
     "machine_set",
     "radio_now_playing",
+    "ai_status",
+    "ai_set_key",
+    "ai_clear_key",
+    "ai_set_model",
     "watch_status",
 ];
 

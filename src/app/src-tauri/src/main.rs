@@ -7,11 +7,12 @@ mod names;
 mod net;
 mod paths;
 mod saveas;
+mod secrets;
 mod vault;
 mod watch;
 
 use std::sync::Mutex;
-use tauri::{State, WebviewWindowBuilder};
+use tauri::{Manager, State, WebviewWindowBuilder};
 
 // Transitional: removed with the Node server in MASTER_PLAN Phase 4.
 struct BackendState {
@@ -104,6 +105,10 @@ fn main() {
             machine::machine_get,
             machine::machine_set,
             net::radio_now_playing,
+            secrets::ai_status,
+            secrets::ai_set_key,
+            secrets::ai_clear_key,
+            secrets::ai_set_model,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())
@@ -111,6 +116,21 @@ fn main() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(move |app| {
             create_main_window(app, &app_paths)?;
+            // One-time move of a v0.8 AI key from app.json into the keychain,
+            // off the main thread in case the keychain asks to be unlocked.
+            let handle = app.handle().clone();
+            std::thread::spawn(move || {
+                let store = handle.state::<machine::MachineStore>();
+                match secrets::migrate_legacy(&secrets::Keychain, &store, cfg!(target_os = "linux"))
+                {
+                    Ok(true) => eprintln!(
+                        "[secrets] Moved the AI key into {}.",
+                        secrets::keychain_name()
+                    ),
+                    Ok(false) => {}
+                    Err(e) => eprintln!("[secrets] AI key migration skipped: {e}"),
+                }
+            });
             if let Some(reason) = &app_paths.portable_refused {
                 eprintln!("[paths] {reason}");
             }

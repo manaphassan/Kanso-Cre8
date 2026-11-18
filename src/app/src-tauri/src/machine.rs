@@ -2,8 +2,9 @@
 //! `Data/` beside the app in portable mode). Never synced, never in the vault.
 //!
 //! Secret keys are never returned to the webview and cannot be written from
-//! it. Until MASTER_PLAN Phase 3 (keychain) the Node server may still keep the
-//! AI key here, so those keys are preserved untouched on every write.
+//! it. Only `secrets.rs` reaches them, through `secret_get` / `secret_set`:
+//! the AI key lives here only as the Linux fallback when no Secret Service
+//! is running, or until the one-time move into the OS keychain.
 
 use crate::paths::AppPaths;
 use serde_json::{Map, Value};
@@ -81,6 +82,34 @@ impl MachineStore {
             map.remove(key);
         } else {
             map.insert(key.to_string(), value);
+        }
+        self.save(&map)
+    }
+
+    /// Reads a secret key (Rust only; never exposed as a command).
+    pub(crate) fn secret_get(&self, key: &str) -> Result<Option<Value>, String> {
+        let _guard = self
+            .lock
+            .lock()
+            .map_err(|_| "Machine settings are busy.".to_string())?;
+        Ok(self.load().get(key).cloned())
+    }
+
+    /// Writes or (with `None`) removes a secret key (Rust only).
+    pub(crate) fn secret_set(&self, key: &str, value: Option<Value>) -> Result<(), String> {
+        let _guard = self
+            .lock
+            .lock()
+            .map_err(|_| "Machine settings are busy.".to_string())?;
+        let mut map = self.load();
+        match value {
+            Some(v) => {
+                map.insert(key.to_string(), v);
+            }
+            None if !map.contains_key(key) => return Ok(()),
+            None => {
+                map.remove(key);
+            }
         }
         self.save(&map)
     }
