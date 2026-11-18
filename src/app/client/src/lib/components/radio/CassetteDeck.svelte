@@ -4,7 +4,6 @@
   import { Icon } from '$lib/components/ui';
   import Deck from './Deck.svelte';
   import Presets from './Presets.svelte';
-  import Timer from './Timer.svelte';
 
   let isRackVisible = $state(true);
 
@@ -25,8 +24,6 @@
 
 <div class="cassette-deck-view">
   <Deck station={currentStation} onRewind={() => step(-1)} onFastForward={() => step(1)} />
-
-  <Timer />
 
   <div class="rack-toggle-row">
     <button

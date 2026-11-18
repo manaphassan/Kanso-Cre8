@@ -17,7 +17,6 @@ src/app/client/src/lib/components/features/TaskRolloverModal.svelte
 src/app/client/src/lib/components/features/VaultIngesterModal.svelte
 src/app/client/src/lib/components/features/VaultSwitcherModal.svelte
 src/app/client/src/lib/components/markdown/MarkdownEditor.svelte
-src/app/client/src/lib/components/radio/AnalogVuMeter.svelte
 src/app/client/src/lib/components/radio/CassetteBlankCard.svelte
 src/app/client/src/lib/components/radio/CassetteTapeCard.svelte
 src/app/client/src/lib/services/api.ts

@@ -1,6 +1,10 @@
 <script lang="ts">
-  /** The deck's display window: status lamp, frequency, station, track and tape index. */
+  /**
+   * The deck's fluorescent display: mode indicators, tape counter, station,
+   * live track title and the L/R level meter.
+   */
   import { Icon } from '$lib/components/ui';
+  import DeckMeter from './DeckMeter.svelte';
 
   interface Props {
     frequency: string;
@@ -9,144 +13,134 @@
     status: 'playing' | 'tuning' | 'standby' | 'offline';
     index: number;
     side: 'A' | 'B';
+    volume: number;
     onResetIndex: () => void;
   }
 
-  let { frequency, stationName, track, status, index, side, onResetIndex }: Props = $props();
+  let { frequency, stationName, track, status, index, side, volume, onResetIndex }: Props = $props();
 
-  const LABELS = { playing: 'On air', tuning: 'Tuning', standby: 'Standby', offline: 'Offline' } as const;
   const digits = $derived(String(index % 10000).padStart(4, '0'));
+  const indicators = $derived([
+    { label: 'PLAY', on: status === 'playing' },
+    { label: 'TUNE', on: status === 'tuning' },
+    { label: 'NO SIG', on: status === 'offline', alert: true },
+    { label: `SIDE ${side}`, on: true }
+  ]);
 </script>
 
-<div class="display" role="status" aria-live="polite">
+<div class="fl">
   <div class="row">
-    <span class="lamp lamp-{status}" aria-hidden="true"></span>
-    <span class="state">{LABELS[status]}</span>
-    <span class="freq font-mono">{frequency}</span>
-    <span class="side font-mono">Side {side}</span>
-    <div class="index" title="Tape index">
-      <span class="index-digits font-mono" aria-label="Tape index {digits}">{digits}</span>
-      <button type="button" class="index-reset" onclick={onResetIndex} aria-label="Reset tape index">
-        <Icon name="refresh" size={12} />
+    <div class="ind" aria-hidden="true">
+      {#each indicators as ind (ind.label)}
+        <span class:on={ind.on} class:alert={ind.alert}>{ind.label}</span>
+      {/each}
+    </div>
+    <div class="counter">
+      <span class="digits" aria-label="Tape counter {digits}">{digits}</span>
+      <button type="button" class="reset" onclick={onResetIndex} aria-label="Reset tape counter" title="Reset tape counter">
+        <Icon name="refresh" size={11} />
       </button>
     </div>
   </div>
-  <div class="row second">
-    <span class="station" title={stationName}>{stationName}</span>
-    <span class="track" title={track}><Icon name="music" size={12} />{track}</span>
+  <div role="status" aria-live="polite">
+    <div class="station" title={stationName}>{frequency}  {stationName}</div>
+    <div class="track" title={track}>{track}</div>
   </div>
+  <DeckMeter isPlaying={status === 'playing'} {volume} />
 </div>
 
 <style>
-  .display {
+  /* Fluorescent display artwork: fixed phosphor colours (hex allow-listed). */
+  .fl {
     display: flex;
     flex-direction: column;
-    gap: var(--kanso-space-1);
-    padding: var(--kanso-space-3) var(--kanso-space-4);
-    background: var(--kanso-canvas);
-    border: 1px solid var(--kanso-border);
-    border-radius: var(--kanso-radius-md);
-    box-shadow: var(--neu-shadow-inset, none);
+    gap: 4px;
     min-width: 0;
+    padding: 9px 12px;
+    background: #050807;
+    border-radius: 3px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.25);
+    color: #59F2DC;
+    font-family: var(--kanso-font-mono);
+    text-shadow: 0 0 6px rgba(89, 242, 220, 0.7);
   }
 
   .row {
     display: flex;
-    align-items: center;
-    gap: var(--kanso-space-2);
-    min-width: 0;
-  }
-
-  .second {
     justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
 
-  .lamp {
-    width: 8px;
-    height: 8px;
-    border-radius: var(--kanso-radius-full);
-    background: var(--kanso-text-muted);
-    flex-shrink: 0;
+  .ind {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
   }
 
-  .lamp-playing { background: var(--kanso-success); }
-  .lamp-tuning { background: var(--kanso-warning); animation: blink 1s steps(2, start) infinite; }
-  .lamp-offline { background: var(--kanso-danger); }
-
-  .state {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--kanso-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .ind span {
+    color: #12302C;
+    text-shadow: none;
   }
 
-  .freq {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--kanso-accent);
-    margin-left: var(--kanso-space-1);
+  .ind span.on {
+    color: #59F2DC;
+    text-shadow: 0 0 6px rgba(89, 242, 220, 0.7);
   }
 
-  .side {
-    font-size: 11px;
-    color: var(--kanso-text-muted);
+  .ind span.alert.on {
+    color: #FF6A4D;
+    text-shadow: 0 0 6px rgba(255, 106, 77, 0.7);
   }
 
-  .index {
-    margin-left: auto;
+  .counter {
     display: flex;
     align-items: center;
-    gap: var(--kanso-space-1);
+    gap: 4px;
   }
 
-  .index-digits {
-    font-size: 14px;
-    font-weight: 700;
+  .digits {
+    font-size: 22px;
     letter-spacing: 0.12em;
-    color: var(--kanso-text-primary);
+    color: #FFB547;
+    text-shadow: 0 0 8px rgba(255, 181, 71, 0.7);
   }
 
-  .index-reset {
+  .reset {
     display: inline-flex;
-    padding: 4px;
+    padding: 3px;
     background: none;
     border: 1px solid transparent;
-    border-radius: var(--kanso-radius-sm);
-    color: var(--kanso-text-muted);
+    border-radius: 2px;
+    color: #2E6F66;
     cursor: pointer;
   }
 
-  .index-reset:hover { color: var(--kanso-text-primary); border-color: var(--kanso-border); }
+  .reset:hover,
+  .reset:focus-visible {
+    color: #59F2DC;
+    border-color: #12302C;
+  }
 
-  .station {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--kanso-text-primary);
+  .station,
+  .track {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
+  }
+
+  .station {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: pre;
   }
 
   .track {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--kanso-text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-    max-width: 55%;
-  }
-
-  @keyframes blink {
-    to { opacity: 0.25; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .lamp-tuning { animation: none; }
+    font-size: 11px;
+    opacity: 0.85;
+    margin-bottom: 4px;
   }
 </style>
