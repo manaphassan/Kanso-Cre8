@@ -43,13 +43,13 @@
   let isGenerating = $state<boolean>(false);
   let aiStatus = $state<{ configured: boolean; preferredModel: string; availableModels: string[] }>({
     configured: false,
-    preferredModel: 'gemini-1.5-flash',
-    availableModels: ['gemini-1.5-flash', 'gemini-1.5-pro']
+    preferredModel: 'gemini-2.5-flash',
+    availableModels: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro']
   });
 
   // Settings State
   let newApiKey = $state<string>('');
-  let newModel = $state<string>('gemini-1.5-flash');
+  let newModel = $state<string>('gemini-2.5-flash');
   let isSavingSettings = $state<boolean>(false);
 
   $effect(() => {
@@ -64,7 +64,7 @@
     try {
       const res = await ApiClient.getAiStatus();
       aiStatus = res;
-      newModel = res.preferredModel || 'gemini-1.5-flash';
+      newModel = res.preferredModel || 'gemini-2.5-flash';
     } catch (e: any) {
       console.warn('[CreativeAiAssistantModal] loadAiStatus error:', e.message);
     }
@@ -229,7 +229,7 @@
                 {aiStatus.configured ? aiStatus.preferredModel : 'API Key Required'}
               </span>
             </div>
-            <p class="modal-sub">Direct Gemini 1.5 Pro / Flash generator &amp; Gemini Ultra prompt packager.</p>
+            <p class="modal-sub">Gemini generator and campaign prompt packager.</p>
           </div>
         </div>
         <button class="close-btn" onclick={closeModal} title="Close modal" aria-label="Close dialog">
@@ -268,9 +268,9 @@
           <div class="settings-card">
             <h3 class="card-title">Google AI Studio API Configuration</h3>
             <p class="card-sub">
-              Get your free Google AI Studio API key at 
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" class="link-highlight">aistudio.google.com/app/apikey ↗</a> 
-              (100% Free tier: up to 1,500 requests/day).
+              Get a Google AI Studio API key at
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" class="link-highlight">aistudio.google.com/app/apikey</a>.
+              The key is kept in your system keychain, never in the vault. Only the text you send is shared with Google.
             </p>
 
             <div class="field-col" style="margin-top: 14px;">
@@ -287,8 +287,9 @@
             <div class="field-col" style="margin-top: 12px;">
               <label class="field-label" for="model-select">Preferred AI Model</label>
               <select id="model-select" class="form-select" bind:value={newModel}>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Fast, 15 RPM Free Tier)</option>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Creative Reasoning)</option>
+                {#each aiStatus.availableModels as model (model)}
+                  <option value={model}>{model}</option>
+                {/each}
               </select>
             </div>
 
@@ -445,7 +446,7 @@
 
       <!-- Footer -->
       <div class="ai-footer">
-        <span class="footer-tip">Powered by Google Gemini 1.5 Pro/Flash · Kanso Cre8 Copywriting Engine</span>
+        <span class="footer-tip">Powered by Google Gemini with your own API key</span>
         <Button appearance="subtle" onclick={closeModal}>Close</Button>
       </div>
     </div>

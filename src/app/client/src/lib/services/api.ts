@@ -507,8 +507,24 @@ export class ApiClient {
   }
 
   // ─── Gemini Creative AI Studio ───
-  static getAiStatus(): Promise<{ configured: boolean; preferredModel: string; availableModels: string[] }> {
+  static getAiStatus(): Promise<{
+    configured: boolean;
+    preferredModel: string;
+    availableModels: string[];
+    storage?: 'keychain' | 'file' | null;
+    keychainName?: string;
+  }> {
     return this.request('/ai/status');
+  }
+
+  /** Removes the saved AI key from the keychain. */
+  static clearAiKey(): Promise<{ success: boolean; status: any }> {
+    return this.request('/ai/config', { method: 'DELETE' });
+  }
+
+  /** Sends one tiny request with the saved key. Rejects with a plain sentence. */
+  static testAiKey(): Promise<{ success: boolean; ok: boolean; model: string; elapsedMs: number }> {
+    return this.request('/ai/test', { method: 'POST' });
   }
 
   static saveAiConfig(payload: { apiKey: string; preferredModel?: string }): Promise<{ success: boolean; status: any }> {

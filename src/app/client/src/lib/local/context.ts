@@ -5,6 +5,7 @@
  */
 
 import { EventBus } from './bus';
+import { MemoryAiBackend, type AiBackend } from './ai';
 import { MemoryMachineStore, type MachineStore } from './machine';
 import { MemoryVaultFs } from '$lib/vault/memoryVaultFs';
 import type { VaultFs } from '$lib/vault/types';
@@ -36,6 +37,8 @@ export interface LocalContext {
   /** URL the webview can load for a vault file (images, video, PDF). */
   fileUrl(rel: string): Promise<string>;
   machine: MachineStore;
+  /** AI through Rust; the key never reaches the webview. */
+  ai: AiBackend;
   bus: EventBus;
   platform: 'win32' | 'darwin' | 'linux';
   version: string;
@@ -46,7 +49,7 @@ export interface LocalContext {
 export function createMemoryContext(
   files: Record<string, string> = {},
   options: { root?: string | null; existing?: string[]; fs?: MemoryVaultFs } = {}
-): LocalContext & { fs: MemoryVaultFs; machine: MemoryMachineStore; opened: string[]; retired: string[] } {
+): LocalContext & { fs: MemoryVaultFs; machine: MemoryMachineStore; ai: MemoryAiBackend; opened: string[]; retired: string[] } {
   const fs = options.fs ?? new MemoryVaultFs(files);
   const machine = new MemoryMachineStore();
   const bus = new EventBus();
@@ -58,6 +61,7 @@ export function createMemoryContext(
   return {
     fs,
     machine,
+    ai: new MemoryAiBackend(),
     bus,
     opened,
     retired,

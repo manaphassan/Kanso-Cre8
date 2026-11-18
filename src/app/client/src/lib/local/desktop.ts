@@ -6,6 +6,7 @@
 
 import pkg from '../../../../package.json';
 import { EventBus } from './bus';
+import { TauriAiBackend } from './ai';
 import { VaultOpenError, type LocalContext, type OpenedVault } from './context';
 import { TauriMachineStore } from './machine';
 import { LocalRouter } from './router';
@@ -30,6 +31,7 @@ export function createDesktopContext(): LocalContext {
   let autoMount: Promise<unknown> | null = null;
   const ctx: LocalContext = {
     machine: new TauriMachineStore(tauriInvoke),
+    ai: new TauriAiBackend(tauriInvoke),
     bus: new EventBus(),
     platform: detectPlatform(),
     version: pkg.version,

@@ -5,6 +5,7 @@
  */
 
 import type { LocalRouter } from '../router';
+import { aiRoutes } from './ai';
 import { clientRoutes } from './clients';
 import { dashboardRoutes } from './dashboard';
 import { exportRoutes } from './export';
@@ -31,6 +32,7 @@ export function registerRoutes(router: LocalRouter): void {
     exportRoutes,
     healthRoutes,
     financeRoutes,
-    timerRoutes
+    timerRoutes,
+    aiRoutes
   );
 }
