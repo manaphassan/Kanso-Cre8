@@ -17,7 +17,9 @@ class SnapshotService {
     if (!fs.existsSync(projectFullPath)) return null;
 
     const snapshotsDir = this.getSnapshotsDir(projectFullPath);
-    const snapId = `snap_${Date.now()}`;
+    // Two snapshots in the same millisecond must not share a folder.
+    let snapId = `snap_${Date.now()}`;
+    for (let n = 2; fs.existsSync(path.join(snapshotsDir, snapId)); n++) snapId = `snap_${Date.now()}_${n}`;
     const snapDir = path.join(snapshotsDir, snapId);
     fs.mkdirSync(snapDir, { recursive: true });
 
