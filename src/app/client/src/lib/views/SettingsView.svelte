@@ -2,9 +2,10 @@
   import Studio from '$lib/components/settings/Studio.svelte';
   import Preferences from '$lib/components/settings/Preferences.svelte';
   import Vault from '$lib/components/settings/Vault.svelte';
+  import AiSettings from '$lib/components/settings/AiSettings.svelte';
   import About from '$lib/components/settings/About.svelte';
 
-  type SettingsTab = 'studio' | 'preferences' | 'vault' | 'about';
+  type SettingsTab = 'studio' | 'preferences' | 'vault' | 'ai' | 'about';
   let activeTab = $state<SettingsTab>('studio');
 </script>
 
@@ -50,6 +51,14 @@
 
     <button
       class="tab-btn"
+      class:active={activeTab === 'ai'}
+      onclick={() => (activeTab = 'ai')}
+    >
+      <span>AI</span>
+    </button>
+
+    <button
+      class="tab-btn"
       class:active={activeTab === 'about'}
       onclick={() => (activeTab = 'about')}
     >
@@ -64,6 +73,8 @@
       <Preferences />
     {:else if activeTab === 'vault'}
       <Vault />
+    {:else if activeTab === 'ai'}
+      <AiSettings />
     {:else if activeTab === 'about'}
       <About />
     {/if}
