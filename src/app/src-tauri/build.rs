@@ -28,6 +28,8 @@ const COMMANDS: &[&str] = &[
     "ai_set_key",
     "ai_clear_key",
     "ai_set_model",
+    "ai_test",
+    "ai_complete",
     "watch_status",
 ];
 

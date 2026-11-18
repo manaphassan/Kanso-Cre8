@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod ai;
 mod archive;
 mod machine;
 mod names;
@@ -109,6 +110,8 @@ fn main() {
             secrets::ai_set_key,
             secrets::ai_clear_key,
             secrets::ai_set_model,
+            ai::ai_test,
+            ai::ai_complete,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())
