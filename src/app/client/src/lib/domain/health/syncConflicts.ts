@@ -115,6 +115,8 @@ export function findSyncConflicts(entries: VaultEntry[]): SyncConflict[] {
   const byFolder = new Map<string, Set<string>>();
   for (const e of entries) {
     if (e.isDir || e.path === ARCHIVE_DIR || e.path.startsWith(`${ARCHIVE_DIR}/`)) continue;
+    // Hidden files are app-internal (for example the presence file .kanso-open.json).
+    if (baseName(e.path).startsWith('.')) continue;
     files.set(e.path, e);
     const dir = parentPath(e.path);
     if (!byFolder.has(dir)) byFolder.set(dir, new Set());

@@ -41,11 +41,13 @@ describe('detectConflict', () => {
 });
 
 describe('scanSyncConflicts', () => {
-  it('reports vault-relative paths and base details from one scan, ignoring _Archive', async () => {
+  it('reports vault-relative paths and base details from one scan, ignoring _Archive and hidden files', async () => {
     const fs = vault({
       '_Clients/ACME_AcmeCorp/client.md': '---\ncode: ACME\n---\n',
       "_Clients/ACME_AcmeCorp/client (Acme's conflicted copy 2026-10-17).md": '---\ncode: ACME\nname: Remote\n---\n',
-      '_Archive/20260101-000000/_Notes/a (conflicted copy).md': 'old'
+      '_Archive/20260101-000000/_Notes/a (conflicted copy).md': 'old',
+      '_Team/_Config/.kanso-open.json': '{}',
+      "_Team/_Config/.kanso-open (Nexus Laptop's conflicted copy 2026-10-17).json": '{}'
     });
     const conflicts = await scanSyncConflicts(fs);
     expect(conflicts).toHaveLength(1);
