@@ -373,7 +373,7 @@ if ($legacyMatches.Count -eq 0) {
 # 11. MODULAR COMPONENT & ROUTE ARCHITECTURE
 Write-Host ""
 Write-Host "[ 11. MODULAR ARCHITECTURE & LINE LIMITS ]" -ForegroundColor White
-$routeFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\server\routes") -Filter *.js
+$routeFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\server\routes") -Filter *.js -ErrorAction SilentlyContinue
 $over300Routes = @()
 foreach ($rf in $routeFiles) {
     $lineCount = (Get-Content $rf.FullName).Count

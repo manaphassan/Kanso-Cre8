@@ -8,8 +8,6 @@ src/app/src-tauri/target/
 src/app/src-tauri/gen/
 
 # Local Environment & Machine-Local Configuration
-src/app/server/workspace_config.json
-src/app/server/ai-config.json
 app.json
 **/app.json
 .env*

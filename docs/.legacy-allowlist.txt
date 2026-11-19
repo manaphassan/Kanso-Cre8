@@ -13,9 +13,6 @@ src/app/client/src/lib/types/kanso.ts
 src/app/client/src/lib/types/notes.ts
 src/app/client/src/lib/views/NotesView.svelte
 src/app/package.json
-src/app/server/services/NotesVaultService.js
-src/app/server/test/config.test.js
-src/app/server/test/frontmatter.test.js
 src/app/sample-workspace/_Notes/01_Fleeting/client_intake_call_sarah_jenkins_acme.md
 src/app/sample-workspace/_Notes/03_Permanent/atomic_creative_insight.md
 src/app/sample-workspace/_Notes/03_Permanent/the_60_30_10_creative_color_rule.md
