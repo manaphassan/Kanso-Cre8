@@ -297,9 +297,60 @@ updated: "2026-09-08"
 
 ---
 
-## 3. Validation Service: `FrontmatterService.validate(type, data)`
+## 3. Validation: `validateFrontmatter(type, data)`
 
-The server enforces these contracts via `FrontmatterService.validate(type, data)`:
+The app enforces these contracts via `validateFrontmatter(type, data)` in `client/src/lib/domain/frontmatter.ts`:
 - Returns `{ valid: boolean, errors: string[], data: Object }`.
 - Unknown keys are preserved intact in `data`.
 - Any format discrepancies (such as non-ISO dates or unparsed tags) produce structured errors or safe normalization.
+
+## 4. Settings File: `kanso-settings-YYYY-MM-DD.json`
+
+Moves preferences, the studio profile and a few app settings to another computer, including between Windows, macOS and Linux. Vault content (`.md` files) is not in this file; it travels with the vault folder. Written by the `settings_export` Rust command, read by `settings_inspect` and `settings_import` (`src-tauri/src/settings.rs`, `settings_import.rs`).
+
+Plain UTF-8 JSON, pretty-printed, keys sorted:
+
+| Key | Type | Content |
+|---|---|---|
+| `format` | string | always `"kanso-settings"` |
+| `format_version` | integer | `1`. A newer version is refused with "update the app"; older versions are migrated on read |
+| `app_version` | string | version of the app that wrote the file, for example `"0.9.0"` |
+| `exported_at` | string | ISO 8601 UTC, for example `"2026-09-15T09:00:00Z"` |
+| `source_platform` | string | `windows`, `macos` or `linux` |
+| `sections` | object | the sections chosen at export; a missing key means not exported |
+| `secrets` | object or null | the AI key, encrypted (only when the user opted in) |
+
+### 4.1 Sections
+
+| Section | Default | Content |
+|---|---|---|
+| `preferences` | on | copy of `_Team/_Config/preferences.json` |
+| `studio_profile` | on | copy of `_Team/_Config/studio_profile.json` (contains bank details; the export screen says so) |
+| `app` | on | `ai_provider`, `ai_model`, `device_label`, `recent_vault_names` (folder names only) |
+| `license` | off | copy of `_Team/_Config/license.json` |
+
+Import rules:
+- Each section is replaced as a whole or skipped; the preview lists the keys it adds, changes and removes.
+- `app`: the AI model is applied; the device label only when this computer has none yet; `recent_vault_names` is shown as a hint for choosing the vault folder and never applied.
+- Vault sections need an open vault; with none open the app asks for the vault folder first.
+- Everything is checked before anything is written, so a wrong passphrase changes nothing.
+
+Never exported: absolute paths, window geometry, the running timer, webview data, sync-conflict state. Any string value that is an absolute path (`C:\...`, `\\server\...`, `/Users/...`, `/home/...`, `/Volumes/...`, `/media/...` and similar) is removed on export and again on import, and listed in the result.
+
+### 4.2 `secrets`
+
+```json
+{
+  "cipher": "aes-256-gcm",
+  "kdf": "argon2id",
+  "kdf_params": { "m_kib": 65536, "t": 3, "p": 1 },
+  "salt": "<16 bytes, hex>",
+  "nonce": "<12 bytes, hex>",
+  "data": "<ciphertext and tag, hex>"
+}
+```
+
+- Key: Argon2id (version 0x13) over the passphrase (12 characters or more) and `salt`, 32 bytes. Files with Argon2 settings outside 8 MiB to 1 GiB memory, 1 to 10 passes, or 1 to 4 lanes are refused.
+- Plaintext: `{"provider":"gemini","key":"<API key>"}`.
+- Associated data: `kanso-settings/1\n` followed by the lowercase hex SHA-256 of the compact JSON of `sections`. Editing any section after export makes the key undecryptable; the sections themselves still import.
+- The key is decrypted in Rust and written straight to the OS keychain; it never reaches the webview.
