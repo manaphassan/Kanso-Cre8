@@ -35,7 +35,7 @@ jobs:
         working-directory: src/app
         run: npm run check
 
-      - name: Run Service & Backend Test Suite
+      - name: Run Unit Test Suite (vitest)
         working-directory: src/app
         run: npm test
 

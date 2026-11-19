@@ -17,7 +17,6 @@
 - Linear / Geist Minimalist Studio Tokens + Small Utility Sheet (tailwind-compat.css)
 - Pure Markdown-as-Database Storage Engine (Zero SQL, SQLite, or Prisma)
 - Web Audio API (Retro Cassette Focus Radio & Home)
-- Transitional only: the Node/Express server in `src/app/server/` is being removed (docs/MASTER_PLAN.md Phase 4). Port from it; never add routes or services to it.
 
 ---
 

@@ -32,7 +32,7 @@ Zero database. Plain UTF-8 `.md` (YAML frontmatter) and small `.json` only. Open
 - Secrets are never written to `Data/` unless the user opts in to the encrypted option (pending decision D18).
 
 Hard rules:
-- No secret in the vault. No secret in the repo. No config file under `src/app/server/`.
+- No secret in the vault. No secret in the repo. No config file in the app source tree.
 - The browser never stores durable user data. Legacy keys `ss_cam_*` and `kanso_theme` are migrated once, then removed.
 - API responses never return secrets (return `configured: true`).
 - Machine file is written with user-only permissions.
@@ -62,11 +62,11 @@ Filename rules: ASCII, no spaces in system folders, client code is 2 to 5 upperc
 - `preferences.json`: `theme` (light, dark, neumorphic, neumorphic-dark), `default_project_view` (kanban or table), `density`, `hourly_rate`, `currency`, `radio_favorites`, `pomodoro_minutes`.
 - `license.json`: license state only, no private keys.
 
-All reads and writes go through `server/services/ConfigService.js`. No other module touches config files directly.
+All vault config reads and writes go through `client/src/lib/domain/config.ts`; machine settings go through the `machine_get` / `machine_set` Rust commands, and the AI key only through `secrets.rs`. No other module touches config files directly.
 
 ## Frontmatter contract
 
-- Every document type has a key list in `docs/SCHEMA.md`. Writes are validated by `FrontmatterService.validate(type, data)`.
+- Every document type has a key list in `docs/SCHEMA.md`. Writes are validated by `validateFrontmatter(type, data)` in `client/src/lib/domain/frontmatter.ts`.
 - Unknown keys are preserved on write, never dropped.
 - Dates are ISO `YYYY-MM-DD` (timestamps are ISO 8601 UTC). Money is a number plus a `currency` key, never a formatted string.
 - Client color is stored once in `client.md` (`color:` as hex data). That is the only place a hex value is allowed as data.

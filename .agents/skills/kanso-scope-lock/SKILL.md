@@ -36,7 +36,7 @@ This skill outranks speed and cleverness. If unsure, stop and ask.
 
 - Files named in the announced task.
 - Deleting code the plan lists for deletion.
-- Adding the new files a task explicitly lists (for example `ConfigService.js`, `docs/SCHEMA.md`).
+- Adding the new files a task explicitly lists (for example `docs/SCHEMA.md`).
 
 ## Forbidden
 

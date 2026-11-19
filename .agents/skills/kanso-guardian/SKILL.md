@@ -185,7 +185,7 @@ The app includes mock profiles to demonstrate capability:
 * **Frontend Location**: `src/app/client/`
 * **Native Layer & Packaging**: `src/app/src-tauri/`
 * **Single Codebase**: Serves Windows (`.msi` / `.exe` / portable `.zip`), macOS (`.dmg`), and Linux (`.deb` / `.AppImage`). No mobile build.
-* **No Server**: The app never listens on a network port. The transitional Node server in `src/app/server/` is removed in `docs/MASTER_PLAN.md` Phase 4.
+* **No Server**: The app never listens on a network port. The Node server was deleted in MASTER_PLAN Phase 4; check 12 of `verify-kanso.ps1` fails on any server code under `src/app`.
 * **Zero Legacy Law**: All legacy .NET 4.8 / Avalonia code and container artifacts have been completely purged to ensure an ultra-lean repository.
 
 ---
