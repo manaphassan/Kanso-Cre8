@@ -370,17 +370,9 @@ if ($legacyMatches.Count -eq 0) {
     Report-Check "Sanitization" "Unaliased legacy tokens detected in: $($legacyMatches -join ', ')" "FAIL"
 }
 
-# 11. MODULAR COMPONENT & ROUTE ARCHITECTURE
+# 11. MODULAR ARCHITECTURE: clients <= 400, Rust <= 400, domain <= 400 lines
 Write-Host ""
 Write-Host "[ 11. MODULAR ARCHITECTURE & LINE LIMITS ]" -ForegroundColor White
-$routeFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\server\routes") -Filter *.js -ErrorAction SilentlyContinue
-$over300Routes = @()
-foreach ($rf in $routeFiles) {
-    $lineCount = (Get-Content $rf.FullName).Count
-    if ($lineCount -gt 300) {
-        $over300Routes += "$($rf.Name) ($lineCount lines)"
-    }
-}
 
 $linesAllowPath = Join-Path $repoRoot "docs\.lines-allowlist.txt"
 $allowedLineFiles = @()
@@ -390,35 +382,78 @@ if (Test-Path $linesAllowPath) {
     }
 }
 
-$clientSrcFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\client\src") -Recurse -File | Where-Object {
-    $ext = $_.Extension.ToLower()
-    @(".svelte", ".ts", ".js", ".css") -contains $ext
-}
-$over400Components = @()
-foreach ($cf in $clientSrcFiles) {
-    $lineCount = (Get-Content $cf.FullName).Count
-    if ($lineCount -gt 400) {
-        $rel = Get-RelPath $cf.FullName
+function Get-OverLimit($files, [int]$limit, [bool]$useAllowList) {
+    $over = @()
+    foreach ($f in $files) {
+        $lineCount = (Get-Content $f.FullName).Count
+        if ($lineCount -le $limit) { continue }
+        $rel = Get-RelPath $f.FullName
         $isAllowed = $false
-        foreach ($pattern in $allowedLineFiles) {
-            if ($rel -like "*$pattern*" -or $cf.Name -eq $pattern) {
-                $isAllowed = $true
-                break
+        if ($useAllowList) {
+            foreach ($pattern in $allowedLineFiles) {
+                if ($rel -like "*$pattern*" -or $f.Name -eq $pattern) { $isAllowed = $true; break }
             }
         }
-        if (-not $isAllowed) {
-            $over400Components += "$($cf.Name) ($lineCount lines)"
-        }
+        if (-not $isAllowed) { $over += "$($f.Name) ($lineCount lines)" }
     }
+    return ,$over
 }
 
-if ($over300Routes.Count -eq 0 -and $over400Components.Count -eq 0) {
-    Report-Check "Modularity" "Modular architectural limits enforced: routes <= 300 lines, components <= 400 lines" "PASS"
+$clientSrcFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\client\src") -Recurse -File | Where-Object {
+    @(".svelte", ".ts", ".js", ".css") -contains $_.Extension.ToLower()
+}
+$rustFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\src-tauri\src") -Recurse -File -Filter *.rs
+$domainFiles = Get-ChildItem -Path (Join-Path $repoRoot "src\app\client\src\lib\domain") -Recurse -File -Filter *.ts
+
+$over400Components = Get-OverLimit $clientSrcFiles 400 $true
+$over400Rust = Get-OverLimit $rustFiles 400 $false
+$over400Domain = Get-OverLimit $domainFiles 400 $false
+
+if ($over400Components.Count -eq 0 -and $over400Rust.Count -eq 0 -and $over400Domain.Count -eq 0) {
+    Report-Check "Modularity" "Line limits enforced: components, src-tauri/src/*.rs and lib/domain/*.ts <= 400 lines" "PASS"
 } else {
     $violations = @()
-    if ($over300Routes.Count -gt 0) { $violations += "Routes > 300: $($over300Routes -join ', ')" }
     if ($over400Components.Count -gt 0) { $violations += "Components > 400: $($over400Components -join ', ')" }
+    if ($over400Rust.Count -gt 0) { $violations += "Rust > 400: $($over400Rust -join ', ')" }
+    if ($over400Domain.Count -gt 0) { $violations += "Domain > 400: $($over400Domain -join ', ')" }
     Report-Check "Modularity" "Modular line count violations: $($violations -join '; ')" "FAIL"
+}
+
+# 12. LOCAL-ONLY RUNTIME: no server code, no committed portable.ini
+Write-Host ""
+Write-Host "[ 12. LOCAL-ONLY RUNTIME ]" -ForegroundColor White
+
+$appRoot = Join-Path $repoRoot "src\app"
+$codeFiles = Get-ChildItem -Path $appRoot -Recurse -File -Include *.ts, *.js, *.mjs, *.cjs, *.svelte, *.rs -ErrorAction SilentlyContinue | Where-Object {
+    $rel = Get-RelPath $_.FullName
+    -not ($rel -match '/(node_modules|dist|target|gen)/')
+}
+$serverHits = @()
+foreach ($f in $codeFiles) {
+    $rel = Get-RelPath $f.FullName
+    $text = Get-Content $f.FullName -Raw
+    if (-not $text) { continue }
+    if ($text -match "require\(\s*['`"]express['`"]\s*\)|from\s+['`"]express['`"]|createServer\s*\(|\.listen\s*\(") {
+        $serverHits += $rel
+    } elseif ($f.Extension -eq ".rs" -and $f.Name -notlike "*_tests.rs" -and $text -match "TcpListener") {
+        $serverHits += $rel
+    }
+}
+if ($serverHits.Count -eq 0) {
+    Report-Check "LocalOnly" "No server code under src/app (express, createServer, .listen, TcpListener outside tests)" "PASS"
+} else {
+    Report-Check "LocalOnly" "Server code detected in: $($serverHits -join ', ')" "FAIL" "The app never listens on a port (AGENTS.md LOCAL-ONLY RUNTIME LAW)"
+}
+
+$trackedPortable = @()
+$git = Get-Command git -ErrorAction SilentlyContinue
+if ($git) {
+    $trackedPortable = @(& git -C $repoRoot ls-files 2>$null | Where-Object { ($_ -split '/')[-1] -ieq "portable.ini" })
+}
+if ($trackedPortable.Count -eq 0) {
+    Report-Check "Portable" "No portable.ini is committed (portable mode is opt-in per copy)" "PASS"
+} else {
+    Report-Check "Portable" "portable.ini is committed: $($trackedPortable -join ', ')" "FAIL" "Remove it from git; build-windows.ps1 adds it to the portable zip only"
 }
 
 Write-Host ""

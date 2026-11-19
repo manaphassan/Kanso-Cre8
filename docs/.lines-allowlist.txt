@@ -1,6 +1,6 @@
 # Kanso Cre8 File Length Allow-List
 # Grandfathered views and complex modals in src/app/client/src awaiting future decomposition.
-# All other components MUST adhere to <= 400 lines. All server routes MUST adhere to <= 300 lines.
+# All other client files MUST adhere to <= 400 lines. Rust (src-tauri/src) and lib/domain files have no allow-list: <= 400 lines.
 
 src/app/client/src/App.svelte
 src/app/client/src/lib/components/features/BatchResizerModal.svelte

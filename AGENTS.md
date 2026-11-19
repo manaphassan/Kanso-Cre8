@@ -159,7 +159,7 @@ Before committing changes, always run the brand and architecture auditor:
 powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
 ```
 
-All 16 checks must pass with `0 warned / 0 failed`.
+All 18 checks must pass with `0 warned / 0 failed`.
 
 ---
 

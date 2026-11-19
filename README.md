@@ -96,7 +96,7 @@ Verify brand, privacy, token, and architectural adherence across the entire repo
 powershell -ExecutionPolicy Bypass -File .\.agents\skills\kanso-guardian\scripts\verify-kanso.ps1
 ```
 
-All 16 governance checks must pass with `0 warned / 0 failed`.
+All 18 governance checks must pass with `0 warned / 0 failed`.
 
 ---
 
