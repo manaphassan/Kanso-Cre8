@@ -113,7 +113,7 @@ Always use canonical sample profiles:
 - The hamburger opens a **floating dropdown** (absolute, below the button, ~280px, `var(--kanso-surface)` with hairline border) containing: brand (click = Home), the six nav items with Ctrl+1..6 hints, and the Mini-Cassette Dock footer.
 - The dropdown closes on item pick, outside click, or Esc. State lives in `appState.viewSwitcherOpen`.
 - Ctrl+K command palette remains the only power entry point.
-- History: `cdc44869` removed the sidebar; `d19a376e` wrongly re-added it and was reverted by this rule.
+- History: `df714e7e` removed the sidebar; `acf5ab8e` wrongly re-added it and was reverted by this rule.
 
 ---
 
