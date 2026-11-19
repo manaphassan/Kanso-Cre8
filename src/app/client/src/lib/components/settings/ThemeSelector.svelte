@@ -26,7 +26,7 @@
       id: 'oceanic',
       name: 'Kai-Zen Blue',
       tag: 'OCEANIC CERULEAN',
-      desc: 'Deep Ocean #064169 canvas with Cerulean #21A8C3 highlights, slate accents, and Poppins studio typography.',
+      desc: 'Deep Ocean #064169 canvas with Cerulean #21A8C3 highlights, and slate accents.',
       canvasColor: '#064169',
       surfaceColor: '#043150',
       accentColor: '#21A8C3'

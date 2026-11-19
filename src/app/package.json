@@ -30,6 +30,8 @@
   "author": "Kanso Cre8 Team",
   "license": "PolyForm-Noncommercial-1.0.0",
   "devDependencies": {
+    "@fontsource-variable/nunito": "^5.3.0",
+    "@fontsource-variable/red-hat-display": "^5.3.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/cli": "^2.11.4",
