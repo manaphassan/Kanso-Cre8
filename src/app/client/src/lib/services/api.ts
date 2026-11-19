@@ -14,108 +14,24 @@ import type {
   TeamMember
 } from '$lib/types';
 
-import { getSession, setSession } from './session';
 import { desktopApi, isDesktop } from '$lib/local/desktop';
 
-const isTauri = typeof window !== 'undefined' && (
-  Boolean((window as any).__TAURI_INTERNALS__) ||
-  window.location.protocol === 'tauri:' ||
-  window.location.hostname === 'tauri.localhost' ||
-  window.location.origin.includes('tauri.localhost')
-);
-
-let apiBaseUrl = '/api';
-
-export async function resolveBackendUrl(): Promise<string> {
-  if (typeof window !== 'undefined' && (window as any).__KANSO_API_URL__) {
-    return (window as any).__KANSO_API_URL__;
-  }
-  if (isTauri) {
-    try {
-      const { invoke } = await import('@tauri-apps/api/core');
-      const url = await invoke<string>('get_backend_url');
-      if (url) {
-        const full = `${url.replace(/\/$/, '')}/api`;
-        if (typeof window !== 'undefined') (window as any).__KANSO_API_URL__ = full;
-        apiBaseUrl = full;
-        return full;
-      }
-    } catch (_) {}
-    const port = (typeof window !== 'undefined' && (window as any).__KANSO_API_PORT__) || 4000;
-    const fallback = `http://127.0.0.1:${port}/api`;
-    if (typeof window !== 'undefined') (window as any).__KANSO_API_URL__ = fallback;
-    apiBaseUrl = fallback;
-    return fallback;
-  }
-  return '/api';
-}
-
-if (typeof window !== 'undefined' && !isDesktop()) {
-  resolveBackendUrl().then(url => {
-    apiBaseUrl = url;
-  }).catch(() => {});
-}
-
 export class ApiClient {
-  static getBaseUrl(): string {
-    if (typeof window !== 'undefined' && (window as any).__KANSO_API_URL__) {
-      return (window as any).__KANSO_API_URL__;
-    }
-    if (isTauri && apiBaseUrl === '/api') {
-      const port = (typeof window !== 'undefined' && (window as any).__KANSO_API_PORT__) || 4000;
-      return `http://127.0.0.1:${port}/api`;
-    }
-    return apiBaseUrl;
-  }
-
-  static getToken(): string {
-    return getSession().token || '';
-  }
-
-  static setToken(token: string): void {
-    setSession({ token });
-  }
-
-  static removeToken(): void {
-    setSession({ token: undefined });
-  }
-
+  /**
+   * Every call is served in-process by the local router (vault files and
+   * Rust commands). There is no network server, so outside the desktop app
+   * (a plain browser tab) calls fail with one clear message.
+   */
   static async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    // Desktop app: every call is served in-process from the vault (no server).
-    if (isDesktop()) {
-      const result = await desktopApi().router.handle(options.method || 'GET', endpoint, options.body);
-      if (result.matched) return result.data as T;
-      const message = `Not available in the desktop app yet: ${(options.method || 'GET').toUpperCase()} ${endpoint.split('?')[0]}`;
-      console.warn(`[API] ${message}`);
-      throw new Error(message);
+    const method = (options.method || 'GET').toUpperCase();
+    if (!isDesktop()) {
+      throw new Error('Kanso Cre8 runs as a desktop app. Start it with npm run dev.');
     }
-
-    const url = `${this.getBaseUrl()}${endpoint}`;
-    const token = this.getToken();
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      ...((options.headers as Record<string, string>) || {})
-    };
-
-    try {
-      const response = await fetch(url, { ...options, headers });
-      const data = await response.json().catch(() => ({}));
-
-      if (response.status === 401 && endpoint !== '/auth/login') {
-        throw new Error(data.error || 'Authentication required');
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
-      }
-
-      return data as T;
-    } catch (err: any) {
-      console.error(`[API Error] ${endpoint}:`, err.message);
-      throw err;
-    }
+    const result = await desktopApi().router.handle(method, endpoint, options.body);
+    if (result.matched) return result.data as T;
+    const message = `Not available in the desktop app: ${method} ${endpoint.split('?')[0]}`;
+    console.warn(`[API] ${message}`);
+    throw new Error(message);
   }
 
   // ─── Authentication ───
@@ -438,47 +354,11 @@ export class ApiClient {
     return this.request(`/notifications?limit=${limit}`);
   }
 
-  // ─── Real-Time Server-Sent Events (SSE) Stream ───
+  // ─── Live events (in-app bus, fed by the vault watcher) ───
   static initEventStream(onEvent: (event: string, data: any) => void): () => void {
-    if (isDesktop()) {
-      onEvent('connection:status', { status: 'connected' });
-      return desktopApi().ctx.bus.on(onEvent);
-    }
-    const eventSource = new EventSource(`${this.getBaseUrl()}/events`);
-
-    const handleMessage = (evt: MessageEvent, eventName: string) => {
-      try {
-        const parsed = JSON.parse(evt.data);
-        onEvent(eventName, parsed);
-      } catch {
-        onEvent(eventName, evt.data);
-      }
-    };
-
-    eventSource.onopen = () => {
-      onEvent('connection:status', { status: 'connected' });
-    };
-
-    eventSource.addEventListener('connected', (e) => {
-      handleMessage(e, 'connected');
-      onEvent('connection:status', { status: 'connected' });
-    });
-    eventSource.addEventListener('workspace:updated', (e) => handleMessage(e, 'workspace:updated'));
-    eventSource.addEventListener('project:updated', (e) => handleMessage(e, 'project:updated'));
-    eventSource.addEventListener('project:decision', (e) => handleMessage(e, 'project:decision'));
-    eventSource.addEventListener('comment:added', (e) => handleMessage(e, 'comment:added'));
-    eventSource.addEventListener('comment:resolved', (e) => handleMessage(e, 'comment:resolved'));
-    eventSource.addEventListener('team:updated', (e) => handleMessage(e, 'team:updated'));
-    eventSource.addEventListener('company:updated', (e) => handleMessage(e, 'company:updated'));
-
-    eventSource.onerror = (err) => {
-      console.warn('[SSE] Connection interrupted, retrying in background...', err);
-      onEvent('connection:status', { status: 'reconnecting' });
-    };
-
-    return () => {
-      eventSource.close();
-    };
+    if (!isDesktop()) return () => {};
+    onEvent('connection:status', { status: 'connected' });
+    return desktopApi().ctx.bus.on(onEvent);
   }
 
   // ─── Audit & System ───

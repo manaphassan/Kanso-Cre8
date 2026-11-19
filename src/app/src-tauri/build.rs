@@ -2,8 +2,6 @@
 // capability grants (`permissions/kanso.toml`, `capabilities/default.json`).
 const COMMANDS: &[&str] = &[
     // Transitional: removed with the Node server in MASTER_PLAN Phase 4.
-    "get_backend_port",
-    "get_backend_url",
     "app_mode",
     "vault_open",
     "vault_root",
