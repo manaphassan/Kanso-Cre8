@@ -11,9 +11,9 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "package:all": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform All",
     "package:windows": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform Windows",
-    "package:linux": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1 -Platform Linux"
+    "package:linux": "pwsh -File ../../scripts/build-platforms.ps1 -Platform Linux",
+    "package": "powershell -ExecutionPolicy Bypass -File ../../scripts/build-platforms.ps1"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

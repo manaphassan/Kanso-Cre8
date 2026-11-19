@@ -1,104 +1,46 @@
 # ==============================================================================
-# Kanso Cre8 — Master Multi-Platform Build & Distribution Pipeline
-# Builds: Windows Desktop (x64), Linux Standalone (x64)
+# Kanso Cre8 - local build entry point
+# Builds the packages for this machine's OS (Tauri does not cross-compile)
+# and writes dist/manifest.json with SHA-256 checksums. macOS packages and
+# release uploads come from the Release workflow on GitHub.
+#   powershell -ExecutionPolicy Bypass -File scripts/build-platforms.ps1
 # ==============================================================================
 
 param(
-    [ValidateSet("All", "Windows", "Linux")]
-    [string]$Platform = "All",
-    [switch]$SkipClientBuild
+    [ValidateSet("Auto", "Windows", "Linux")]
+    [string]$Platform = "Auto"
 )
 
 $ErrorActionPreference = "Stop"
 
-$repoRoot = (Get-Item "$PSScriptRoot\..").FullName
-$packageJsonPath = Join-Path $repoRoot "src\app\package.json"
-$appVersion = "0.8.0"
-if (Test-Path $packageJsonPath) {
-    try {
-        $pkg = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
-        if ($pkg.version) { $appVersion = $pkg.version }
-    } catch {}
-}
-$scriptsDir = Join-Path $repoRoot "scripts"
+$repoRoot = (Get-Item "$PSScriptRoot/..").FullName
+$appVersion = (Get-Content (Join-Path $repoRoot "src/app/package.json") -Raw | ConvertFrom-Json).version
 $distDir = Join-Path $repoRoot "dist"
-$clientDist = Join-Path $repoRoot "src\app\client\dist"
+$onLinux = (Get-Variable IsLinux -ErrorAction SilentlyContinue) -and $IsLinux
 
-Write-Host ""
-Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  KANSO CRE8 - MASTER MULTI-PLATFORM BUILD ORCHESTRATOR     " -ForegroundColor Cyan
-Write-Host "  Version:  $appVersion (Production Ready)                  " -ForegroundColor Cyan
-Write-Host "  Target:   $Platform                                       " -ForegroundColor Cyan
-Write-Host "============================================================" -ForegroundColor Cyan
+if ($Platform -eq "Auto") { $Platform = if ($onLinux) { "Linux" } else { "Windows" } }
+if ($Platform -eq "Windows" -and $onLinux) { throw "Windows packages must be built on Windows." }
+if ($Platform -eq "Linux" -and -not $onLinux) { throw "Linux packages must be built on Linux." }
 
-# 1. Build Client Web Bundle Once
-if (-not $SkipClientBuild -or -not (Test-Path "$clientDist\index.html")) {
-    Write-Host "`n>>> [STEP 1/3] Compiling Core Svelte 5 Frontend Production Bundle..." -ForegroundColor Yellow
-    Push-Location (Join-Path $repoRoot "src\app")
-    try {
-        & npm run build:client
-    } finally {
-        Pop-Location
-    }
-} else {
-    Write-Host "`n>>> [STEP 1/3] Using pre-compiled Svelte 5 Frontend Bundle ($clientDist)" -ForegroundColor Yellow
-}
+$script = Join-Path $PSScriptRoot ("build-{0}.ps1" -f $Platform.ToLower())
+& $script
+if (-not $?) { throw "$Platform build failed." }
 
-# 2. Windows Build
-if ($Platform -eq "All" -or $Platform -eq "Windows") {
-    Write-Host "`n>>> [STEP 2/3] Packaging Windows Desktop Distribution..." -ForegroundColor Yellow
-    & powershell -ExecutionPolicy Bypass -File (Join-Path $scriptsDir "build-windows.ps1") -SkipClientBuild
-}
-
-# 3. Linux Build
-if ($Platform -eq "All" -or $Platform -eq "Linux") {
-    Write-Host "`n>>> [STEP 3/3] Packaging Linux Desktop Distribution..." -ForegroundColor Yellow
-    & powershell -ExecutionPolicy Bypass -File (Join-Path $scriptsDir "build-linux.ps1") -SkipClientBuild
-}
-
-
-# 4. Generate Manifest & SHA256 Checksums
-Write-Host "`n>>> Generating Release Manifest & SHA256 Checksums..." -ForegroundColor Yellow
-
-$artifacts = @()
-$buildFiles = @(
-    (Join-Path $distDir "windows\kanso-cre8-v$appVersion-windows-x64.zip"),
-    (Join-Path $distDir "linux\kanso-cre8-v$appVersion-linux-x64.tar.gz")
-)
-
-foreach ($filePath in $buildFiles) {
-    if (Test-Path $filePath) {
-        $item = Get-Item $filePath
-        $hash = (Get-FileHash -Path $filePath -Algorithm SHA256).Hash
-        $artifacts += @{
-            name = $item.Name
-            path = $filePath.Substring($repoRoot.Length + 1).Replace('\', '/')
-            size_bytes = $item.Length
-            size_mb = [math]::Round($item.Length / 1MB, 2)
-            sha256 = $hash
-        }
+$artifacts = Get-ChildItem -Path (Join-Path $distDir $Platform.ToLower()) -File | ForEach-Object {
+    [ordered]@{
+        name       = $_.Name
+        path       = "dist/$($Platform.ToLower())/$($_.Name)"
+        size_bytes = $_.Length
+        sha256     = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
     }
 }
 
-$manifest = @{
-    product = "Kanso Cre8"
-    tagline = "The Mindful Creative Vault"
-    version = $appVersion
-    build_date = (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz")
-    artifacts = $artifacts
+$manifest = [ordered]@{
+    product    = "Kanso Cre8"
+    version    = $appVersion
+    platform   = $Platform.ToLower()
+    build_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    artifacts  = @($artifacts)
 }
-
-$manifestJson = $manifest | ConvertTo-Json -Depth 5
-Set-Content -Path (Join-Path $distDir "manifest.json") -Value $manifestJson
-
-Write-Host ""
-Write-Host "============================================================" -ForegroundColor Green
-Write-Host "  KANSO CRE8 - MULTI-PLATFORM BUILD SUITE COMPLETE!         " -ForegroundColor Green
-Write-Host "============================================================" -ForegroundColor Green
-
-foreach ($a in $artifacts) {
-    Write-Host ("  [{0}] {1,-35} {2,6} MB  ({3})" -f "OK", $a.name, $a.size_mb, $a.sha256.Substring(0, 12) + "...") -ForegroundColor White
-}
-
-Write-Host "`nManifest: dist/manifest.json" -ForegroundColor Cyan
-Write-Host "============================================================" -ForegroundColor Green
+$manifest | ConvertTo-Json -Depth 5 | Set-Content -Encoding ascii -Path (Join-Path $distDir "manifest.json")
+Write-Host "`nManifest: dist/manifest.json ($(@($artifacts).Count) artifacts)" -ForegroundColor Cyan
