@@ -33,6 +33,7 @@
     "security": {
       "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:",
       "devCsp": "default-src 'self'; connect-src ipc: http://ipc.localhost ws://localhost:5173; img-src 'self' asset: http://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:",
+      "dangerousDisableAssetCspModification": ["style-src"],
       "assetProtocol": {
         "enable": true,
         "scope": []
