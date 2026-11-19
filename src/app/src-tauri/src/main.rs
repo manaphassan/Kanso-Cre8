@@ -9,6 +9,9 @@ mod net;
 mod paths;
 mod saveas;
 mod secrets;
+mod settings;
+mod settings_crypto;
+mod settings_import;
 mod vault;
 mod vaultpath;
 mod watch;
@@ -104,6 +107,9 @@ fn main() {
             secrets::ai_set_model,
             ai::ai_test,
             ai::ai_complete,
+            settings::settings_export,
+            settings::settings_inspect,
+            settings::settings_import,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())

@@ -28,5 +28,8 @@ permissions = [
   "allow-ai-set-model",
   "allow-ai-test",
   "allow-ai-complete",
+  "allow-settings-export",
+  "allow-settings-inspect",
+  "allow-settings-import",
   "allow-watch-status",
 ]

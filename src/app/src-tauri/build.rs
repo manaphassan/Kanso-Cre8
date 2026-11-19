@@ -28,6 +28,9 @@ const COMMANDS: &[&str] = &[
     "ai_set_model",
     "ai_test",
     "ai_complete",
+    "settings_export",
+    "settings_inspect",
+    "settings_import",
     "watch_status",
 ];
 

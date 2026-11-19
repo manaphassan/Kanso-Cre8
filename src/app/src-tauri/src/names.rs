@@ -99,7 +99,7 @@ pub fn utc_stamp(unix_secs: u64) -> String {
 }
 
 /// Days since 1970-01-01 to a proleptic Gregorian date (H. Hinnant's method).
-fn civil_from_days(days: i64) -> (i64, u32, u32) {
+pub fn civil_from_days(days: i64) -> (i64, u32, u32) {
     let z = days + 719_468;
     let era = z.div_euclid(146_097);
     let doe = z.rem_euclid(146_097);

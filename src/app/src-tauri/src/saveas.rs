@@ -11,7 +11,7 @@ use tauri_plugin_fs::FsExt;
 
 /// The dialog plugin adds every path the user picks to the fs scope, so a
 /// destination outside that scope did not come from a save dialog.
-fn picked<R: Runtime>(app: &AppHandle<R>, dest: &str) -> Result<PathBuf, String> {
+pub(crate) fn picked<R: Runtime>(app: &AppHandle<R>, dest: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(dest);
     let allowed = app
         .try_fs_scope()

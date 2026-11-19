@@ -237,6 +237,34 @@ pub fn app_mode(paths: tauri::State<'_, AppPaths>) -> AppPaths {
     paths.inner().clone()
 }
 
+/// This computer's name, used as the default device label.
+pub fn device_name() -> String {
+    let clean = |s: String| {
+        let s = s
+            .trim()
+            .chars()
+            .filter(|c| !c.is_control())
+            .take(64)
+            .collect::<String>();
+        (!s.is_empty()).then_some(s)
+    };
+    ["COMPUTERNAME", "HOSTNAME"]
+        .iter()
+        .find_map(|v| std::env::var(v).ok().and_then(clean))
+        .or_else(|| {
+            std::fs::read_to_string("/etc/hostname")
+                .ok()
+                .and_then(clean)
+        })
+        .or_else(|| {
+            std::process::Command::new("hostname")
+                .output()
+                .ok()
+                .and_then(|o| clean(String::from_utf8_lossy(&o.stdout).into_owned()))
+        })
+        .unwrap_or_else(|| "This computer".to_string())
+}
+
 #[cfg(test)]
 #[path = "paths_tests.rs"]
 mod tests;

@@ -1,0 +1,38 @@
+{
+  "app_version": "0.8.0",
+  "exported_at": "2026-09-10T00:26:40Z",
+  "format": "kanso-settings",
+  "format_version": 1,
+  "secrets": {
+    "cipher": "aes-256-gcm",
+    "data": "9d0e3de0e423b14a31a0f273e42f2daf9f74ae4ebae3a15fc9271d083264b0669c82a649426a72d78ee7a020e59575770619afb9d526c2baac574c87041cec8855480ae4d65c6a2a686c2c0bcc6d7e71db2e4f96",
+    "kdf": "argon2id",
+    "kdf_params": {
+      "m_kib": 65536,
+      "p": 1,
+      "t": 3
+    },
+    "nonce": "db76efc3f6d58ce6a6b5a118",
+    "salt": "70c7d37f16134beed86f46f035f2e89e"
+  },
+  "sections": {
+    "app": {
+      "ai_model": "gemini-2.5-flash",
+      "ai_provider": "gemini",
+      "device_label": "Lumina Studio PC",
+      "recent_vault_names": [
+        "Lumina Labs"
+      ]
+    },
+    "preferences": {
+      "currency": "USD",
+      "hourly_rate": 125,
+      "theme": "neumorphic"
+    },
+    "studio_profile": {
+      "email": "studio@example.com",
+      "studio_name": "Lumina Labs"
+    }
+  },
+  "source_platform": "windows"
+}
