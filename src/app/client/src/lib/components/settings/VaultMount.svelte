@@ -5,6 +5,8 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { journalService } from '$lib/services/journalService';
   import { financeService } from '$lib/services/financeService';
+  import { getAppMode, type AppMode } from '$lib/local/appMode';
+  import { onMount } from 'svelte';
 
   interface Props {
     currentVaultRoot: string;
@@ -16,6 +18,11 @@
 
   let customVaultInput = $state('');
   let isMountingVault = $state(false);
+  let appMode = $state<AppMode | null>(null);
+
+  onMount(() => {
+    getAppMode().then((m) => (appMode = m)).catch(() => (appMode = null));
+  });
 
   $effect(() => {
     customVaultInput = currentVaultRoot;
@@ -77,6 +84,23 @@
     </div>
   </div>
 
+  {#if appMode}
+    <div class="mode-row" role="status">
+      <span class="mode-label">App mode</span>
+      <span class="mode-value">
+        {appMode.mode === 'portable' ? `Portable: ${appMode.appDir}` : 'Installed'}
+      </span>
+    </div>
+    {#if appMode.mode === 'portable'}
+      <p class="mode-note">
+        Settings are kept in the Data folder beside the app. A vault on the same drive is remembered relative to the app folder, so a new drive letter does not break it.
+        {#if appMode.externalDrive}You will be reminded to eject {appMode.externalDrive} when the app closes.{/if}
+      </p>
+    {:else if appMode.portableRefused}
+      <p class="mode-note warn">{appMode.portableRefused}</p>
+    {/if}
+  {/if}
+
   <div class="custom-mount-box">
     <label class="form-label" for="custom-vault-path">Switch or Mount Custom Vault Directory</label>
     <div class="mount-input-row">
@@ -126,4 +150,9 @@
   .btn-primary:hover:not(:disabled) { opacity: 0.9; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
   .mount-hint { margin: 4px 0 0 0; font-size: 12px; color: var(--kanso-text-muted); }
+  .mode-row { display: flex; gap: 12px; align-items: baseline; margin: -8px 0 6px 0; font-size: 12.5px; }
+  .mode-label { font-weight: 600; color: var(--kanso-text-muted); }
+  .mode-value { font-family: var(--kanso-font-mono); color: var(--kanso-text-primary); word-break: break-all; }
+  .mode-note { margin: 0 0 20px 0; font-size: 12px; line-height: 1.5; color: var(--kanso-text-muted); }
+  .mode-note.warn { color: var(--kanso-warning); }
 </style>

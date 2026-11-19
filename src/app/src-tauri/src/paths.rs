@@ -49,6 +49,10 @@ pub struct AppPaths {
     pub webview_data_dir: Option<PathBuf>,
     /// Set when `portable.ini` exists but portable mode was refused.
     pub portable_refused: Option<String>,
+    /// In portable mode, the drive or mount the app runs from when it is not
+    /// the system drive (for example `E:` or `/media/ana/USB`): the app asks
+    /// to eject it before unplugging when it closes.
+    pub external_drive: Option<String>,
 }
 
 type EnvFn<'a> = &'a dyn Fn(&str) -> Option<String>;
@@ -83,6 +87,7 @@ pub fn resolve(os: Platform, app_dir: &Path, marker_present: bool, env: EnvFn) -
         machine_dir: installed_machine_dir(os, env),
         webview_data_dir: None,
         portable_refused: refused,
+        external_drive: None,
     };
 
     if !marker_present {
@@ -105,6 +110,41 @@ pub fn resolve(os: Platform, app_dir: &Path, marker_present: bool, env: EnvFn) -
         webview_data_dir: Some(data_dir.join(WEBVIEW_DIR)),
         machine_dir: data_dir,
         portable_refused: None,
+        external_drive: external_drive(os, app_dir, env),
+    }
+}
+
+/// The drive letter (Windows) or mount point (Linux) of `app_dir` when it is
+/// not the system drive. Decided from the path alone: no OS calls.
+pub fn external_drive(os: Platform, app_dir: &Path, env: EnvFn) -> Option<String> {
+    let p = app_dir.to_string_lossy().replace('\\', "/");
+    let p = p.strip_prefix("//?/").unwrap_or(&p);
+    match os {
+        Platform::Windows => {
+            let b = p.as_bytes();
+            if b.len() < 2 || !b[0].is_ascii_alphabetic() || b[1] != b':' {
+                return None;
+            }
+            let drive = p[..2].to_ascii_uppercase();
+            let system = env("SystemDrive")
+                .unwrap_or_else(|| "C:".into())
+                .to_ascii_uppercase();
+            (drive != system).then_some(drive)
+        }
+        Platform::Linux => {
+            let parts: Vec<&str> = p.split('/').filter(|s| !s.is_empty()).collect();
+            let depth = if parts.starts_with(&["run", "media"]) {
+                4
+            } else if parts.first() == Some(&"media") {
+                3
+            } else if parts.first() == Some(&"mnt") {
+                2
+            } else {
+                return None;
+            };
+            (parts.len() >= depth).then(|| format!("/{}", parts[..depth].join("/")))
+        }
+        Platform::Mac => None,
     }
 }
 
@@ -198,143 +238,5 @@ pub fn app_mode(paths: tauri::State<'_, AppPaths>) -> AppPaths {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use std::collections::HashMap;
-
-    fn env_of(pairs: &[(&str, &str)]) -> impl Fn(&str) -> Option<String> {
-        let map: HashMap<String, String> = pairs
-            .iter()
-            .map(|(k, v)| (k.to_string(), v.to_string()))
-            .collect();
-        move |key: &str| map.get(key).cloned()
-    }
-
-    #[test]
-    fn installed_without_marker() {
-        let env = env_of(&[("APPDATA", r"C:\Users\a\AppData\Roaming")]);
-        let p = resolve(
-            Platform::Windows,
-            Path::new(r"C:\Program Files\Kanso Cre8"),
-            false,
-            &env,
-        );
-        assert_eq!(p.mode, Mode::Installed);
-        assert_eq!(
-            p.machine_dir,
-            PathBuf::from(r"C:\Users\a\AppData\Roaming").join("KansoCre8")
-        );
-        assert_eq!(p.webview_data_dir, None);
-        assert_eq!(p.portable_refused, None);
-    }
-
-    #[test]
-    fn portable_on_usb_drive() {
-        let env = env_of(&[]);
-        let app = Path::new(r"E:\KansoCre8");
-        let p = resolve(Platform::Windows, app, true, &env);
-        assert_eq!(p.mode, Mode::Portable);
-        assert_eq!(p.machine_dir, app.join("Data"));
-        assert_eq!(p.webview_data_dir, Some(app.join("Data").join("webview")));
-    }
-
-    #[test]
-    fn portable_on_linux_appimage_folder() {
-        let env = env_of(&[("HOME", "/home/a")]);
-        let app = Path::new("/media/a/USB/KansoCre8");
-        let p = resolve(Platform::Linux, app, true, &env);
-        assert_eq!(p.mode, Mode::Portable);
-        assert_eq!(p.machine_dir, app.join("Data"));
-    }
-
-    #[test]
-    fn portable_refused_on_macos() {
-        let env = env_of(&[("HOME", "/Users/a")]);
-        let p = resolve(Platform::Mac, Path::new("/Volumes/USB/Kanso"), true, &env);
-        assert_eq!(p.mode, Mode::Installed);
-        assert!(p.portable_refused.is_some());
-        assert_eq!(
-            p.machine_dir,
-            PathBuf::from("/Users/a")
-                .join("Library")
-                .join("Application Support")
-                .join("KansoCre8")
-        );
-    }
-
-    #[test]
-    fn portable_refused_inside_cloud_folders() {
-        let cases = [
-            (r"C:\Users\a\Dropbox\Apps\KansoCre8", "Dropbox"),
-            (r"C:\Users\a\Dropbox (Studio)\KansoCre8", "Dropbox"),
-            (r"C:\Users\a\OneDrive - Acme Corp\KansoCre8", "OneDrive"),
-            (r"G:\My Drive\KansoCre8", "Google Drive"),
-            (
-                "/Users/a/Library/CloudStorage/GoogleDrive-a@example.com/My Drive/K",
-                "Google Drive",
-            ),
-            ("/home/a/SynologyDrive/KansoCre8", "Synology Drive"),
-        ];
-        let env = env_of(&[]);
-        for (path, provider) in cases {
-            let p = resolve(Platform::Windows, Path::new(path), true, &env);
-            assert_eq!(p.mode, Mode::Installed, "{path}");
-            assert!(
-                p.portable_refused.as_deref().unwrap().contains(provider),
-                "{path}"
-            );
-        }
-    }
-
-    #[test]
-    fn onedrive_detected_from_env_with_custom_folder_name() {
-        let env = env_of(&[("OneDriveCommercial", r"D:\Sync\WorkFiles")]);
-        assert_eq!(
-            cloud_sync_provider(Path::new(r"d:\sync\workfiles\Apps\Kanso"), &env),
-            Some("OneDrive")
-        );
-        assert_eq!(
-            cloud_sync_provider(Path::new(r"D:\Sync\WorkFilesOther"), &env),
-            None
-        );
-    }
-
-    #[test]
-    fn local_folders_are_not_cloud() {
-        let env = env_of(&[]);
-        for path in [
-            r"C:\Program Files\Kanso Cre8",
-            "/opt/kansocre8",
-            r"E:\Tools\DropboxExport",
-        ] {
-            assert_eq!(cloud_sync_provider(Path::new(path), &env), None, "{path}");
-        }
-    }
-
-    #[test]
-    fn detects_windows_paths_on_any_host() {
-        let env = env_of(&[]);
-        assert_eq!(
-            cloud_sync_provider(Path::new(r"C:\Users\a\Dropbox\Vault"), &env),
-            Some("Dropbox")
-        );
-        assert_eq!(
-            cloud_sync_provider(Path::new("/Users/a/Dropbox/Vault"), &env),
-            Some("Dropbox")
-        );
-    }
-
-    #[test]
-    fn linux_machine_dir_prefers_xdg() {
-        let env = env_of(&[("HOME", "/home/a"), ("XDG_CONFIG_HOME", "/home/a/.cfg")]);
-        assert_eq!(
-            installed_machine_dir(Platform::Linux, &env),
-            PathBuf::from("/home/a/.cfg").join("kansocre8")
-        );
-        let env = env_of(&[("HOME", "/home/a")]);
-        assert_eq!(
-            installed_machine_dir(Platform::Linux, &env),
-            PathBuf::from("/home/a").join(".config").join("kansocre8")
-        );
-    }
-}
+#[path = "paths_tests.rs"]
+mod tests;

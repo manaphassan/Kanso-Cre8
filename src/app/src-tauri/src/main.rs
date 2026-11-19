@@ -10,9 +10,37 @@ mod paths;
 mod saveas;
 mod secrets;
 mod vault;
+mod vaultpath;
 mod watch;
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{Manager, WebviewWindowBuilder};
+use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+
+/// Portable mode on a USB drive: remind once, when the window closes, to
+/// eject the drive so the last writes finish before it is unplugged.
+fn remind_to_eject(window: &tauri::Window, event: &tauri::WindowEvent, drive: &str) {
+    static SHOWN: AtomicBool = AtomicBool::new(false);
+    let tauri::WindowEvent::CloseRequested { api, .. } = event else {
+        return;
+    };
+    if SHOWN.swap(true, Ordering::SeqCst) {
+        return;
+    }
+    api.prevent_close();
+    let target = window.clone();
+    window
+        .dialog()
+        .message(format!(
+            "Eject {drive} before you unplug it, so your last changes finish writing."
+        ))
+        .title("Before you unplug the drive")
+        .kind(MessageDialogKind::Info)
+        .parent(window)
+        .show(move |_| {
+            let _ = target.destroy();
+        });
+}
 
 /// Creates the main window from `tauri.conf.json` (where `create` is false) so
 /// portable mode can move the webview data directory beside the app.
@@ -37,8 +65,14 @@ fn create_main_window(app: &tauri::App, app_paths: &paths::AppPaths) -> tauri::R
 
 fn main() {
     let app_paths = paths::detect();
+    let eject_drive = app_paths.external_drive.clone();
 
     tauri::Builder::default()
+        .on_window_event(move |window, event| {
+            if let Some(drive) = &eject_drive {
+                remind_to_eject(window, event, drive);
+            }
+        })
         .manage(app_paths.clone())
         .manage(machine::store_for(&app_paths))
         .manage(vault::VaultState::default())

@@ -6,7 +6,8 @@
 //! the AI key lives here only as the Linux fallback when no Secret Service
 //! is running, or until the one-time move into the OS keychain.
 
-use crate::paths::AppPaths;
+use crate::paths::{AppPaths, Mode};
+use crate::vaultpath;
 use serde_json::{Map, Value};
 use std::fs;
 use std::io::Write;
@@ -20,6 +21,8 @@ const SECRET_KEYS: &[&str] = &["aiApiKey", "serverSecret"];
 pub struct MachineStore {
     path: PathBuf,
     lock: Mutex<()>,
+    /// The app folder in portable mode: vault paths are stored relative to it.
+    vault_base: Option<PathBuf>,
 }
 
 impl MachineStore {
@@ -27,7 +30,51 @@ impl MachineStore {
         Self {
             path: machine_dir.join(FILE_NAME),
             lock: Mutex::new(()),
+            vault_base: None,
         }
+    }
+
+    pub fn with_vault_base(mut self, base: Option<PathBuf>) -> Self {
+        self.vault_base = base;
+        self
+    }
+
+    /// Maps vault paths in `value` with `f` (a string, or an array of strings).
+    fn map_vault_paths(key: &str, value: Value, f: impl Fn(&str) -> String) -> Value {
+        if !vaultpath::VAULT_PATH_KEYS.contains(&key) {
+            return value;
+        }
+        match value {
+            Value::String(s) => Value::String(f(&s)),
+            Value::Array(items) => Value::Array(
+                items
+                    .into_iter()
+                    .map(|v| match v {
+                        Value::String(s) => Value::String(f(&s)),
+                        other => other,
+                    })
+                    .collect(),
+            ),
+            other => other,
+        }
+    }
+
+    fn encode(&self, key: &str, value: Value) -> Value {
+        let Some(base) = &self.vault_base else {
+            return value;
+        };
+        let b = base.to_string_lossy();
+        Self::map_vault_paths(key, value, |p| {
+            vaultpath::to_stored(&b, p, vaultpath::same_volume(base, Path::new(p)))
+        })
+    }
+
+    fn decode(&self, key: &str, value: Value) -> Value {
+        let Some(base) = &self.vault_base else {
+            return value;
+        };
+        let b = base.to_string_lossy();
+        Self::map_vault_paths(key, value, |p| vaultpath::from_stored(&b, p))
     }
 
     fn load(&self) -> Map<String, Value> {
@@ -67,12 +114,13 @@ impl MachineStore {
             .lock
             .lock()
             .map_err(|_| "Machine settings are busy.".to_string())?;
-        Ok(self.load().get(key).cloned())
+        Ok(self.load().get(key).cloned().map(|v| self.decode(key, v)))
     }
 
     /// Sets a key, or removes it when `value` is null.
     pub fn set(&self, key: &str, value: Value) -> Result<(), String> {
         check_key(key)?;
+        let value = self.encode(key, value);
         let _guard = self
             .lock
             .lock()
@@ -179,7 +227,8 @@ pub fn machine_set(
 }
 
 pub fn store_for(paths: &AppPaths) -> MachineStore {
-    MachineStore::new(&paths.machine_dir)
+    let base = (paths.mode == Mode::Portable).then(|| paths.app_dir.clone());
+    MachineStore::new(&paths.machine_dir).with_vault_base(base)
 }
 
 #[cfg(test)]
@@ -240,6 +289,29 @@ mod tests {
         assert_eq!(store.get("theme").unwrap(), None);
         store.set("theme", json!("dark")).unwrap();
         assert_eq!(store.get("theme").unwrap(), Some(json!("dark")));
+    }
+
+    #[test]
+    fn portable_mode_stores_same_drive_vaults_relative() {
+        let tmp = TempDir::new("machine-portable");
+        let app = tmp.path().join("KansoCre8");
+        let vault = tmp.path().join("Vault");
+        fs::create_dir_all(&app).unwrap();
+        fs::create_dir_all(&vault).unwrap();
+        let store = MachineStore::new(&app.join("Data")).with_vault_base(Some(app.clone()));
+        let abs = vault.to_string_lossy().to_string();
+        store.set("workspaceRoot", json!(abs)).unwrap();
+        store
+            .set("recentVaults", json!([abs, "Z:/Elsewhere"]))
+            .unwrap();
+        let raw: Value =
+            serde_json::from_slice(&fs::read(app.join("Data").join(FILE_NAME)).unwrap()).unwrap();
+        assert_eq!(raw["workspaceRoot"], json!("../Vault"));
+        assert_eq!(raw["recentVaults"][1], json!("Z:/Elsewhere"));
+        assert_eq!(store.get("workspaceRoot").unwrap(), Some(json!(abs)));
+        assert_eq!(store.get("recentVaults").unwrap().unwrap()[0], json!(abs));
+        store.set("theme", json!("../not-a-path")).unwrap();
+        assert_eq!(store.get("theme").unwrap(), Some(json!("../not-a-path")));
     }
 
     #[cfg(unix)]
