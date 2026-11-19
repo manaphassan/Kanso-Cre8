@@ -134,6 +134,24 @@
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'o', ctrlKey: true, bubbles: true }));
       }
     },
+    {
+      type: 'action',
+      id: 'act-export-settings',
+      label: 'Export settings',
+      sublabel: 'Save preferences and studio profile for another computer',
+      icon: 'download',
+      category: 'System & Vault',
+      execute: () => appState.navigate('settings', { id: 'vault' })
+    },
+    {
+      type: 'action',
+      id: 'act-import-settings',
+      label: 'Import settings',
+      sublabel: 'Bring in a kanso-settings file from another computer',
+      icon: 'upload',
+      category: 'System & Vault',
+      execute: () => appState.navigate('settings', { id: 'vault' })
+    },
 
     // Focus Radio Stations
     {

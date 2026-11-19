@@ -8,6 +8,8 @@
   import VaultDemoData from './VaultDemoData.svelte';
   import VaultResetDangerZone from './VaultResetDangerZone.svelte';
   import SyncConflictDoctor from './SyncConflictDoctor.svelte';
+  import SettingsExport from './SettingsExport.svelte';
+  import SettingsImport from './SettingsImport.svelte';
 
   let currentVaultRoot = $state(vaultStore.config.rootPath || '');
   let vaultHealth = $state<any>(null);
@@ -38,6 +40,10 @@
       loadVaultStatus();
     }}
   />
+
+  <SettingsExport />
+
+  <SettingsImport />
 
   <VaultHealthInspector />
 

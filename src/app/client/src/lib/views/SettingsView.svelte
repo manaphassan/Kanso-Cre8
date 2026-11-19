@@ -4,9 +4,17 @@
   import Vault from '$lib/components/settings/Vault.svelte';
   import AiSettings from '$lib/components/settings/AiSettings.svelte';
   import About from '$lib/components/settings/About.svelte';
+  import { appState } from '$lib/stores/appState.svelte';
 
   type SettingsTab = 'studio' | 'preferences' | 'vault' | 'ai' | 'about';
+  const TABS: SettingsTab[] = ['studio', 'preferences', 'vault', 'ai', 'about'];
   let activeTab = $state<SettingsTab>('studio');
+
+  // `#/settings/vault` (for example from the command palette) opens that tab.
+  $effect(() => {
+    const wanted = appState.routeParams?.id as SettingsTab | undefined;
+    if (wanted && TABS.includes(wanted)) activeTab = wanted;
+  });
 </script>
 
 <div class="settings-view-container">
