@@ -22,6 +22,7 @@
   import QuickScratchpadModal from '$lib/components/features/QuickScratchpadModal.svelte';
   import ZenMicroBar from '$lib/components/features/ZenMicroBar.svelte';
   import VaultSwitcherModal from '$lib/components/features/VaultSwitcherModal.svelte';
+  import PresenceBanner from '$lib/components/features/PresenceBanner.svelte';
   import VaultStartupGate from '$lib/components/vault/VaultStartupGate.svelte';
   import KeyboardOnboardingModal from '$lib/components/features/KeyboardOnboardingModal.svelte';
   import { timerStore } from '$lib/stores/timerStore.svelte';
@@ -418,6 +419,7 @@
       <!-- ═══ VIEW PANE ═════════════════════════════════════════════════ -->
       <div class="page-body">
         <section class="view-pane layout-full">
+          <PresenceBanner />
           {#if appState.currentRoute === 'dashboard'}
             <DashboardView />
           {:else if appState.currentRoute === 'journal'}

@@ -36,6 +36,10 @@ export function createDesktopContext(): LocalContext {
     platform: detectPlatform(),
     version: pkg.version,
     now: () => new Date(),
+    async deviceName() {
+      const invoke = await tauriInvoke();
+      return invoke<string>('device_name');
+    },
     async vault() {
       // Views may load before the startup gate runs: open the remembered vault once.
       if (!opened) {

@@ -361,6 +361,11 @@ export class ApiClient {
     return desktopApi().ctx.bus.on(onEvent);
   }
 
+  /** Writes this computer's heartbeat; `other` is another computer with the vault open. */
+  static presenceHeartbeat(): Promise<{ success: boolean; device: string; other: { label: string; heartbeatAt: string } | null }> {
+    return this.request('/system/presence/heartbeat', { method: 'POST' });
+  }
+
   // ─── Audit & System ───
   static getAuditLogs(params: Record<string, string> = {}): Promise<{ logs: any[] }> {
     const searchParams = new URLSearchParams(params);

@@ -238,6 +238,7 @@ pub fn app_mode(paths: tauri::State<'_, AppPaths>) -> AppPaths {
 }
 
 /// This computer's name, used as the default device label.
+#[tauri::command(async)]
 pub fn device_name() -> String {
     let clean = |s: String| {
         let s = s

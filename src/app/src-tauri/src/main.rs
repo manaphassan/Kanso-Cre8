@@ -82,6 +82,7 @@ fn main() {
         .manage(watch::WatchState::default())
         .invoke_handler(tauri::generate_handler![
             paths::app_mode,
+            paths::device_name,
             vault::vault_open,
             vault::vault_root,
             vault::vault_scan,

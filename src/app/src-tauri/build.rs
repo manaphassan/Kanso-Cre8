@@ -3,6 +3,7 @@
 const COMMANDS: &[&str] = &[
     // Transitional: removed with the Node server in MASTER_PLAN Phase 4.
     "app_mode",
+    "device_name",
     "vault_open",
     "vault_root",
     "vault_scan",

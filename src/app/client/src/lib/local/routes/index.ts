@@ -14,6 +14,7 @@ import { healthRoutes } from './health';
 import { journalRoutes } from './journal';
 import { notesRoutes } from './notes';
 import { ownerRoutes } from './owner';
+import { presenceRoutes } from './presence';
 import { projectRoutes } from './projects';
 import { projectWorkRoutes } from './projectWork';
 import { systemRoutes } from './system';
@@ -33,6 +34,7 @@ export function registerRoutes(router: LocalRouter): void {
     healthRoutes,
     financeRoutes,
     timerRoutes,
-    aiRoutes
+    aiRoutes,
+    presenceRoutes
   );
 }

@@ -36,6 +36,8 @@ export interface LocalContext {
   retireFiles(names: string[]): Promise<Array<{ path: string; backup: string }>>;
   /** URL the webview can load for a vault file (images, video, PDF). */
   fileUrl(rel: string): Promise<string>;
+  /** This computer's name (default device label). */
+  deviceName(): Promise<string>;
   machine: MachineStore;
   /** AI through Rust; the key never reaches the webview. */
   ai: AiBackend;
@@ -68,6 +70,7 @@ export function createMemoryContext(
     platform: 'win32',
     version: '0.0.0-test',
     now: () => fs.now(),
+    deviceName: async () => 'Studio PC',
     async vault() {
       if (!root) throw new VaultOpenError('no_vault', 'No vault is open.');
       return fs;
