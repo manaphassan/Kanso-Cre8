@@ -88,30 +88,6 @@ export class ApiClient {
     });
   }
 
-  static async getLicense(): Promise<{ success: boolean; license: string | null }> {
-    return this.request('/system/license');
-  }
-
-  static async saveLicense(licenseKey: string): Promise<{ success: boolean; message: string; status?: any }> {
-    return this.request('/system/license', {
-      method: 'PUT',
-      body: JSON.stringify({ licenseKey })
-    });
-  }
-
-  static async verifyLicense(licenseKey: string): Promise<{ success: boolean; result: any }> {
-    return this.request('/system/license/verify', {
-      method: 'POST',
-      body: JSON.stringify({ licenseKey })
-    });
-  }
-
-  static async deactivateLicense(): Promise<{ success: boolean; message: string; status?: any }> {
-    return this.request('/system/license/deactivate', {
-      method: 'POST'
-    });
-  }
-
   // ─── Dashboard ───
   static getDashboard(params: { timeRange?: string; brand?: string } = {}): Promise<DashboardData> {
     const qs = new URLSearchParams();

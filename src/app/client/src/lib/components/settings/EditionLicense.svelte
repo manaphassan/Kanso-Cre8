@@ -44,15 +44,15 @@
           <span class="info-value">Studio Pro (Perpetual)</span>
         </div>
         <div class="info-block">
-          <span class="info-label">ACTIVATION DATE</span>
-          <span class="info-value">{licenseStore.issuedDate || '2026-09-14'}</span>
+          <span class="info-label">ISSUED</span>
+          <span class="info-value">{licenseStore.issuedDate || 'Not recorded'}</span>
         </div>
       </div>
 
       <div class="info-block key-block">
-        <span class="info-label">ACTIVE CRYPTOGRAPHIC KEY</span>
+        <span class="info-label">LICENCE KEY</span>
         <div class="key-display-box">
-          <code>{licenseStore.licenseKey}</code>
+          <code>{licenseStore.licenseKey.slice(0, 18)}...{licenseStore.licenseKey.slice(-6)}</code>
         </div>
       </div>
 
@@ -72,7 +72,7 @@
             type="text"
             class="form-input key-input font-mono"
             bind:value={licenseInputKey}
-            placeholder="KANSO-PRO-XXXX-XXXX-VERIFIED"
+            placeholder="KANSO1-..."
           />
           <button
             type="button"
@@ -86,15 +86,11 @@
             {licenseStore.isLoading ? 'Verifying...' : 'Activate Studio Pro'}
           </button>
         </div>
-        <span class="form-hint">Keys are validated offline using cryptographic checksums. Zero server calls required.</span>
+        <span class="form-hint">Keys are checked on this computer with a digital signature. Nothing is sent anywhere.</span>
       </div>
-
-      <div class="quick-fill-row">
-        <span class="quick-fill-label">Evaluation / Testing:</span>
-        <button type="button" class="quick-fill-btn" onclick={() => { licenseInputKey = 'KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED'; }}>
-          Quick-fill Master Studio Alpha Key
-        </button>
-      </div>
+      {#if licenseStore.status === 'invalid' && licenseStore.message}
+        <p class="form-hint warn" role="status">{licenseStore.message}</p>
+      {/if}
     </div>
   {/if}
 </div>
@@ -125,6 +121,5 @@
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-secondary.danger { color: var(--kanso-danger); background: var(--kanso-surface-hover); border: 1px solid var(--kanso-border); padding: 8px 16px; border-radius: 6px; cursor: pointer; }
   .form-hint { font-size: 12px; color: var(--kanso-text-muted); }
-  .quick-fill-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--kanso-text-muted); }
-  .quick-fill-btn { background: none; border: none; color: var(--kanso-accent); cursor: pointer; text-decoration: underline; font-size: 12px; padding: 0; }
+  .form-hint.warn { margin: 0; color: var(--kanso-warning); }
 </style>

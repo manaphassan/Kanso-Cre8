@@ -78,15 +78,6 @@ describe('vault config routes', () => {
     expect(JSON.parse(await ctx.fs.readText('_Team/_Config/studio_profile.json'))).not.toHaveProperty('principalName');
   });
 
-  it('stores licence state without verifying it', async () => {
-    const { call } = setup();
-    expect(await call('GET', '/system/license')).toMatchObject({ success: true, license: null });
-    await call('PUT', '/system/license', { licenseKey: 'KANSO-PRO-X' });
-    expect(await call('GET', '/system/license')).toMatchObject({ license: 'KANSO-PRO-X', status: { isPro: true } });
-    await call('POST', '/system/license/deactivate');
-    expect(await call('GET', '/system/license')).toMatchObject({ license: null });
-  });
-
   it('repairs a damaged layout on request', async () => {
     const { ctx, call } = setup({ '_Notes/Scratchpad.md': '# mine' });
     const res = await call('POST', '/system/vault-health/repair');

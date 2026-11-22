@@ -1,6 +1,6 @@
 [[set]]
 identifier = "kanso"
-description = "Everything the Kanso Cre8 window may call: app mode and device name, the open vault (guarded to its folder), ZIP export, save-as to a dialog-picked path, hashing, machine settings, radio now-playing, the AI key status (never the key), Gemini requests, settings files and the vault watcher."
+description = "Everything the Kanso Cre8 window may call: app mode and device name, the open vault (guarded to its folder), ZIP export, save-as to a dialog-picked path, hashing, machine settings, radio now-playing, the AI key status (never the key), Gemini requests, settings files, licence status and the vault watcher."
 permissions = [
   "allow-app-mode",
   "allow-device-name",
@@ -32,5 +32,8 @@ permissions = [
   "allow-settings-export",
   "allow-settings-inspect",
   "allow-settings-import",
+  "allow-license-status",
+  "allow-license-activate",
+  "allow-license-deactivate",
   "allow-watch-status",
 ]

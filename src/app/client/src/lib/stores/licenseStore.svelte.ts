@@ -1,227 +1,79 @@
 /**
- * Kanso Cre8 — Commercial Engine & Zero-Database Offline Licensing Store
- *
- * Governs the "Sanctuary vs. Commerce" Split:
- * - Free Tier (Kanso Zen): Unconditionally free for personal journaling, atomic notes,
- *   scratchpad, copywriting telemetry, and retro cassette focus radio.
- * - Paid Tier (Kanso Studio Pro — $39–$49 One-Time Perpetual): Required for commercial
- *   freelance operations (unlimited clients, YAML invoices with PDF print, billable rate calculations,
- *   5-folder project scaffolder, and deliverables packaging).
- *
- * 100% Offline Cryptographic Verification Law:
- * Zero cloud auth servers, zero telemetry phone-home checks, zero database binary locks.
+ * Licence state for the UI (D3: free Kanso Zen tier plus a paid Studio Pro
+ * tier). Keys are Ed25519-signed and verified in Rust (`license.rs`); this
+ * store only shows the result. Fully offline: no activation server.
  */
 
-import { ApiClient } from '$lib/services/api';
+import { activateLicense, deactivateLicense, licenseStatus, type LicenseStatus } from '$lib/local/license';
 import { appState } from './appState.svelte';
 
 export type LicenseTier = 'zen' | 'pro';
-
-export interface LicensePayload {
-  licensee: string;
-  email?: string;
-  tier: LicenseTier;
-  issued: string;
-  type: 'perpetual' | 'alpha-studio';
-}
-
-const STORAGE_KEY = 'kanso_cre8_license';
-const CANONICAL_ALPHA_KEY = 'KANSO-PRO-STUDIO-2026-ALPHA-VERIFIED';
 
 class LicenseStore {
   tier = $state<LicenseTier>('zen');
   licenseKey = $state<string>('');
   licensee = $state<string>('');
   issuedDate = $state<string>('');
-  status = $state<'unlicensed' | 'valid' | 'invalid'>('unlicensed');
+  status = $state<LicenseStatus['status']>('unlicensed');
+  /** Why a stored key was rejected, as a sentence. */
+  message = $state<string>('');
   showUpgradeModal = $state<boolean>(false);
   isLoading = $state<boolean>(false);
 
-  // Derived: Is commercial Pro unlocked?
   isPro = $derived(this.tier === 'pro' && this.status === 'valid');
 
   constructor() {
-    this.init();
+    if (typeof window !== 'undefined') {
+      this.refresh();
+      // The licence lives in the vault, so re-read it when the vault changes.
+      window.addEventListener('workspace:updated', () => this.refresh());
+    }
   }
 
-  private async init() {
-    if (typeof window === 'undefined') return;
+  private apply(s: LicenseStatus): void {
+    this.status = s.status;
+    this.tier = s.tier;
+    this.licenseKey = s.key ?? '';
+    this.licensee = s.license?.licensee ?? '';
+    this.issuedDate = s.license?.issued ?? '';
+    this.message = s.message ?? '';
+  }
 
-    // 1. Try local cache first for instant zero-latency boot
-    const cachedKey = localStorage.getItem(STORAGE_KEY);
-    if (cachedKey) {
-      this.validateAndApply(cachedKey, false);
-    }
-
-    // 2. Sync with disk config (_Team/_Config/license.key) asynchronously
+  async refresh(): Promise<void> {
     try {
-      const res = (await ApiClient.getLicense()) as any;
-      if (res?.success && res.license) {
-        if (res.license !== cachedKey) {
-          this.validateAndApply(res.license, false);
-        }
-      } else if (res?.success && !res.license && cachedKey) {
-        this.deactivateSilent();
-      }
+      this.apply(await licenseStatus());
     } catch {
-      // Offline fallback: use local cache
+      // Outside the desktop app: stay on the free tier.
     }
   }
 
-  /**
-   * Deterministic offline cryptographic checksum validator
-   */
-  public verifyOfflineSignature(key: string): { valid: boolean; payload?: LicensePayload; error?: string } {
-    const cleanKey = (key || '').trim().toUpperCase();
-    if (!cleanKey) {
-      return { valid: false, error: 'License key is empty.' };
-    }
-
-    // Check canonical master alpha studio license
-    if (cleanKey === CANONICAL_ALPHA_KEY) {
-      return {
-        valid: true,
-        payload: {
-          licensee: 'Kanso Atelier Master Studio',
-          tier: 'pro',
-          issued: '2026-09-01',
-          type: 'alpha-studio'
-        }
-      };
-    }
-
-    // Format: KANSO-PRO-<BASE64_PAYLOAD>-<CHECKSUM>
-    const parts = cleanKey.split('-');
-    if (parts.length >= 4 && parts[0] === 'KANSO' && (parts[1] === 'PRO' || parts[1] === 'STUDIO')) {
-      try {
-        const payloadBase64 = parts[2];
-        const checksum = parts[3];
-
-        // Simple base64 decode check
-        let jsonStr = '';
-        if (typeof atob !== 'undefined') {
-          jsonStr = atob(payloadBase64);
-        } else {
-          jsonStr = (globalThis as any).Buffer?.from(payloadBase64, 'base64')?.toString('utf8') || '';
-        }
-
-        const data = JSON.parse(jsonStr);
-        if (data && data.licensee) {
-          // Checksum verification
-          let sum = 0;
-          for (let i = 0; i < payloadBase64.length; i++) {
-            sum = (sum * 31 + payloadBase64.charCodeAt(i)) >>> 0;
-          }
-          const expectedChecksum = (sum % 0xffff).toString(16).toUpperCase().padStart(4, '0');
-
-          if (checksum === expectedChecksum || checksum === 'VERIFIED') {
-            return {
-              valid: true,
-              payload: {
-                licensee: data.licensee,
-                email: data.email,
-                tier: 'pro',
-                issued: data.issued || new Date().toISOString().split('T')[0],
-                type: 'perpetual'
-              }
-            };
-          }
-        }
-      } catch {
-        // Fallback for standard commercial test pattern
-        if (parts[1] === 'PRO' && cleanKey.endsWith('VERIFIED')) {
-          return {
-            valid: true,
-            payload: {
-              licensee: 'Commercial Studio Licensee',
-              tier: 'pro',
-              issued: '2026-09-14',
-              type: 'perpetual'
-            }
-          };
-        }
-      }
-    }
-
-    return { valid: false, error: 'Invalid license signature. Please verify key.' };
-  }
-
-  /**
-   * Validates and applies a license key
-   */
-  public async validateAndApply(key: string, persist = true): Promise<boolean> {
-    const result = this.verifyOfflineSignature(key);
-    if (result.valid && result.payload) {
-      this.licenseKey = key.trim();
-      this.tier = 'pro';
-      this.licensee = result.payload.licensee;
-      this.issuedDate = result.payload.issued;
-      this.status = 'valid';
-
-      if (persist) {
-        localStorage.setItem(STORAGE_KEY, this.licenseKey);
-        try {
-          await ApiClient.saveLicense(this.licenseKey);
-        } catch (e) {
-          console.warn('[LicenseStore] Failed to save license to disk:', e);
-        }
-      }
-      return true;
-    } else {
-      this.status = 'invalid';
-      return false;
-    }
-  }
-
-  /**
-   * Activates license with user feedback toast
-   */
-  public async activate(key: string): Promise<boolean> {
+  async activate(key: string): Promise<boolean> {
     this.isLoading = true;
     try {
-      const success = await this.validateAndApply(key, true);
-      if (success) {
-        appState.addToast(`Kanso Studio Pro Activated — Welcome, ${this.licensee}!`, 'success');
-        this.showUpgradeModal = false;
-        return true;
-      } else {
-        appState.addToast('Invalid license key. Check format or use the official studio key.', 'error');
-        return false;
-      }
+      this.apply(await activateLicense(key));
+      appState.addToast(`Kanso Studio Pro activated. Welcome, ${this.licensee}.`, 'success');
+      this.showUpgradeModal = false;
+      return true;
+    } catch (err: any) {
+      appState.addToast(err?.message || String(err), 'error');
+      return false;
     } finally {
       this.isLoading = false;
     }
   }
 
-  /**
-   * Reverts to free Kanso Zen tier
-   */
-  public async deactivate(): Promise<void> {
-    this.deactivateSilent();
+  async deactivate(): Promise<void> {
     try {
-      await ApiClient.deactivateLicense();
-    } catch {
-      try { await ApiClient.saveLicense(''); } catch {}
-    }
-    appState.addToast('Reverted to Kanso Zen (Free Sanctuary Edition).', 'info');
-  }
-
-  public deactivateSilent(): void {
-    this.tier = 'zen';
-    this.licenseKey = '';
-    this.licensee = '';
-    this.issuedDate = '';
-    this.status = 'unlicensed';
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEY);
+      this.apply(await deactivateLicense());
+      appState.addToast('Back on Kanso Zen, the free edition.', 'info');
+    } catch (err: any) {
+      appState.addToast(err?.message || String(err), 'error');
     }
   }
 
-  /**
-   * Checks if an action is allowed. Gating clutter outside Settings > About has been removed.
-   */
-  public requirePro(_featureName?: string): boolean {
-    return true;
+  /** True when the Studio Pro licence is valid. */
+  requirePro(_featureName?: string): boolean {
+    return this.isPro;
   }
 }
 

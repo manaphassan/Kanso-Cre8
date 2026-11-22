@@ -32,6 +32,9 @@ const COMMANDS: &[&str] = &[
     "settings_export",
     "settings_inspect",
     "settings_import",
+    "license_status",
+    "license_activate",
+    "license_deactivate",
     "watch_status",
 ];
 

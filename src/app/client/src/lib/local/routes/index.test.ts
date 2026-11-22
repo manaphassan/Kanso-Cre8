@@ -35,9 +35,8 @@ describe('registered routes', () => {
     const missing = calls
       .filter((c) => !patterns.some((p) => p.method === c.method && (p.re.test(c.path) || p.re.test(c.path.replace(/\/X$/, '')))))
       .map((c) => `${c.method} ${c.path}`);
-    // The licence check is ported in Phase 6; auth, users, webhooks and audit
-    // are not ported and are deleted in Phase 4 (D1, D2).
-    const planned = /^(GET|POST|PUT|DELETE) \/(auth|users|webhooks|audit|system\/license\/verify)/;
+    // auth, users, webhooks and audit are not ported (D1, D2).
+    const planned = /^(GET|POST|PUT|DELETE) \/(auth|users|webhooks|audit)/;
     expect(missing.filter((m) => !planned.test(m))).toEqual([]);
   });
 });

@@ -3,6 +3,7 @@
 
 mod ai;
 mod archive;
+mod license;
 mod machine;
 mod names;
 mod net;
@@ -111,6 +112,9 @@ fn main() {
             settings::settings_export,
             settings::settings_inspect,
             settings::settings_import,
+            license::license_status,
+            license::license_activate,
+            license::license_deactivate,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())

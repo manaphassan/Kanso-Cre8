@@ -5,14 +5,11 @@
  */
 
 import {
-  getLicenseState,
   getPreferences,
   getStudioProfile,
   migrateVaultConfig,
-  saveLicenseState,
   savePreferences,
-  saveStudioProfile,
-  DEFAULT_LICENSE
+  saveStudioProfile
 } from '$lib/domain/config';
 import { countProjects, ensureVaultStructure } from '$lib/domain/vaultLayout';
 import { VaultOpenError, type LocalContext } from '../context';
@@ -146,28 +143,4 @@ export function systemRoutes(router: LocalRouter): void {
     success: true,
     preferences: await savePreferences(await ctx.vault(), body && typeof body === 'object' ? body : {})
   }));
-
-  // Licence state only. Verification moves to Rust in MASTER_PLAN P6.1 (D3).
-  router.get('/system/license', async ({ ctx }) => {
-    const state = await getLicenseState(await ctx.vault());
-    const key = state.licenseKey ? String(state.licenseKey).trim() : null;
-    return {
-      success: true,
-      license: key,
-      status: { valid: Boolean(key && state.active), tier: key ? state.tier : 'zen', status: key ? 'valid' : 'unlicensed', isPro: Boolean(key && state.tier === 'pro') }
-    };
-  });
-  router.put('/system/license', async ({ ctx, body }) => {
-    const key = typeof body?.licenseKey === 'string' ? body.licenseKey.trim() : '';
-    if (!key) {
-      await saveLicenseState(await ctx.vault(), { ...DEFAULT_LICENSE, active: false, tier: 'zen' });
-      return { success: true, message: 'License removed.', license: null };
-    }
-    await saveLicenseState(await ctx.vault(), { active: true, tier: 'pro', licenseKey: key });
-    return { success: true, message: 'License saved.', license: key };
-  });
-  router.post('/system/license/deactivate', async ({ ctx }) => {
-    await saveLicenseState(await ctx.vault(), { ...DEFAULT_LICENSE, active: false, tier: 'zen', issuedTo: 'Solo Creator' });
-    return { success: true, message: 'License deactivated.', status: { valid: false, tier: 'zen', status: 'unlicensed', isPro: false } };
-  });
 }

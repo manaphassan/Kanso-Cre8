@@ -24,13 +24,11 @@ notify-debouncer-full = "0.7.0"
 keyring = { version = "3", default-features = false, features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
 aes-gcm = "0.11.1"
 argon2 = "0.6.0"
+ed25519-dalek = "3.0.0"
 
 [dev-dependencies]
 tauri = { version = "2", features = ["test"] }
 
 # Argon2 runs in unit tests and debug builds: keep it fast there.
 [profile.dev.package.argon2]
-opt-level = 3
-
-[profile.dev.package.blake2]
 opt-level = 3
