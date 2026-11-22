@@ -27,7 +27,7 @@ function arg(name, fallback) {
 const rawPublic = (key) => key.export({ format: 'der', type: 'spki' }).subarray(-32);
 
 function keygen(dir) {
-  if (!dir) throw new Error('Give a folder outside the repo, for example %USERPROFILE%\\.kanso-licensing');
+  if (!dir) throw new Error('Give a folder outside the repo, for example %USERPROFILE%\\.kanso-private\\licensing');
   const out = resolve(dir);
   if (existsSync(join(process.cwd(), '.git')) && out.startsWith(resolve(process.cwd()))) {
     throw new Error('Refusing to write the private key inside the repository.');
