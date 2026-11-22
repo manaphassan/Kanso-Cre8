@@ -144,7 +144,7 @@ jobs:
           releaseBody: 'See CHANGELOG.md for what changed. Windows and macOS builds are signed when signing is configured; Linux builds are unsigned.'
           releaseDraft: true
           prerelease: false
-          includeUpdaterJson: true
+          uploadUpdaterJson: true
           args: ${{ steps.sign.outputs.args }}
 
       - name: Package the Windows portable zip
