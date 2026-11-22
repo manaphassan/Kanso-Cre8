@@ -252,7 +252,7 @@ Carried from v0.8.0:
 |---|---|---|
 | D1 | Solo-first: no login, roster, team | YES (leftovers deleted in Phase 4) |
 | D2 | Audit log | DROP |
-| D3 | Paid tier and licence | PENDING (product and legal call; blocks P6.1 only) |
+| D3 | Paid tier and licence | YES: keep the paid tier; licence keys are Ed25519-signed and verified in Rust (owner, 2026-11-19) |
 | D4 | Drop Gantt and Calendar | YES |
 | D5 | Rewrite git history and rotate the Android keystore | DONE: keystore and `node_modules` purged 2026-10-18; second purge 2026-11-19 on the owner's go (every `*.exe`, `*.msi`, `*.dll`, `*.pdb`, `*.so`, `*.nupkg`, `*.jks`, `*.keystore`, `*.afassets`, and the build-output and asset folders `dist/`, `publish/`, `installer/`, `payload/`, `FontLibrary/`, `Assets Library/`, `scratch/`, `bin/Debug|Release`, `obj/`, `packages/`, `client/dist/`). Pack 368 MB to 14 MB; the `main` tree is unchanged. Backup bundles kept outside the repo |
 | D6 | Drop the Tailwind claim | YES |
@@ -272,8 +272,8 @@ New (owner, 2026-11-14):
 | D16 | Secrets in the OS keychain (replaces the v0.8 rule "AI key in app.json") | YES: the user keys in the AI key in Settings > AI; Rust stores it in the OS keychain (owner, 2026-11-14) |
 | D17 | TypeScript test runner: `vitest` (new dev dependency) or `node:test` with type stripping (no dependency) | YES `vitest` 3.2.7 (owner "proceed" on the recommendation, 2026-11-14) |
 | D18 | Allow the AI key inside the settings export, encrypted with a passphrase (adds `aes-gcm`, `argon2`) | YES, opt-in (owner "proceed all" on the recommendation, 2026-11-14) |
-| D19 | Code signing: Windows (for example Azure Trusted Signing) and Apple Developer ID with notarization (about USD 99 per year) | PENDING (blocks P6.2) |
-| D20 | Update check through `tauri-plugin-updater`, opt-in on first run | PENDING (recommended YES; blocks P6.3) |
+| D19 | Code signing: Windows (for example Azure Trusted Signing) and Apple Developer ID with notarization (about USD 99 per year) | YES: sign Windows and macOS (Developer ID plus notarization); Linux unsigned (owner, 2026-11-19) |
+| D20 | Update check through `tauri-plugin-updater`, opt-in on first run | YES: tauri-plugin-updater for installed builds, opt-in on first run (owner, 2026-11-19) |
 
 ---
 
