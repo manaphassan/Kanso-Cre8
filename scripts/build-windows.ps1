@@ -22,9 +22,12 @@ Write-Host "`n== Kanso Cre8 $appVersion - Windows build ==" -ForegroundColor Cya
 Get-Process kanso-cre8, KansoCre8 -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
 Write-Host "`n[1/3] tauri build" -ForegroundColor Yellow
+# With the updater key in the environment, also produce signed update files (D20).
+$tauriArgs = @()
+if ($env:TAURI_SIGNING_PRIVATE_KEY) { $tauriArgs = @('--', '--config', 'src-tauri/tauri.updater.conf.json') }
 Push-Location $appDir
 try {
-    & npm run tauri:build
+    & npm run tauri:build @tauriArgs
     if ($LASTEXITCODE -ne 0) { throw "tauri build failed (exit code $LASTEXITCODE)" }
 } finally {
     Pop-Location

@@ -13,6 +13,7 @@ mod secrets;
 mod settings;
 mod settings_crypto;
 mod settings_import;
+mod updates;
 mod vault;
 mod vaultpath;
 mod watch;
@@ -115,10 +116,14 @@ fn main() {
             license::license_status,
             license::license_activate,
             license::license_deactivate,
+            updates::update_check,
+            updates::update_install,
+            updates::open_releases_page,
             watch::watch_status
         ])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(move |app| {
             create_main_window(app, &app_paths)?;

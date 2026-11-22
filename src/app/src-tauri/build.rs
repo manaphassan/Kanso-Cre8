@@ -35,6 +35,9 @@ const COMMANDS: &[&str] = &[
     "license_status",
     "license_activate",
     "license_deactivate",
+    "update_check",
+    "update_install",
+    "open_releases_page",
     "watch_status",
 ];
 
