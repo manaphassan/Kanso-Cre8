@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - Unreleased
+
+The Local Release: one desktop app for Windows, macOS and Linux with no server, no Android app, and every file in your vault folder.
+
+### Added
+- Built-in AI with your own Gemini key: Settings > AI stores the key in Windows Credential Manager, macOS Keychain or the Linux Secret Service; every request is made from Rust and the key never reaches the app window. A key in the old `app.json` moves to the keychain on first start.
+- Portable mode for USB drives (Windows, Linux AppImage): a `portable.ini` next to the app keeps settings in `Data/`, the vault path survives a new drive letter, and closing the app reminds you to eject the drive.
+- Settings export and import between computers and operating systems (`kanso-settings-YYYY-MM-DD.json`), with a per-section preview and the AI key optionally encrypted with a passphrase (Argon2id and AES-256-GCM). Format in `docs/SCHEMA.md`.
+- A banner when the vault is also open on another computer.
+- Opt-in, signed in-app updates for installed builds; the portable edition links to the releases page.
+- Hi-fi cassette deck for the Focus Radio (silver in light themes, black in dark themes) with live now-playing titles and the focus timer on the faceplate.
+- Save dialogs for invoice HTML, asset copies, the handover ZIP and the vault archive.
+
+### Changed
+- All vault work runs inside the app (TypeScript domain code and Rust commands) instead of a local Node server; the app opens no network port.
+- Licence keys are Ed25519-signed and verified in Rust. Pre-release keys (`KANSO-PRO-...`) are no longer accepted.
+- Fonts are bundled with the app; the window loads nothing from the internet and runs under a strict content security policy.
+- Installers are about 5 to 7 MB (the 0.8 portable zip carried Node and was about 35 MB). Windows and macOS builds are signed when signing is configured; Linux builds are unsigned.
+- Version 0.9.0 comes from `src/app/package.json` only.
+
+### Removed
+- The Node/Express server and its ten npm dependencies, the Android companion, share links and client review, login, team and roster screens, and the audit log.
+- Legacy build artifacts and binaries from the git history (repository pack 368 MB to 14 MB). Existing clones must be re-cloned.
+
+### Fixed
+- A stopped timer session was appended to the draft invoice twice.
+- Release builds blocked every inline style because of how Tauri added style hashes to the content security policy.
+
 ## [0.8.0] - 2026-10-19
 
 ### Added
