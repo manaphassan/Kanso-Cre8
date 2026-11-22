@@ -167,6 +167,20 @@ mod tests {
             .collect()
     }
 
+    /// package.json is the single version source (P6.4); tauri.conf.json reads
+    /// it directly and Cargo.toml must match it.
+    #[test]
+    fn versions_come_from_package_json() {
+        let pkg: serde_json::Value = serde_json::from_str(&read("../package.json")).unwrap();
+        assert_eq!(
+            pkg["version"].as_str(),
+            Some(env!("CARGO_PKG_VERSION")),
+            "Cargo.toml vs package.json"
+        );
+        let conf: serde_json::Value = serde_json::from_str(&read("tauri.conf.json")).unwrap();
+        assert_eq!(conf["version"], "../package.json");
+    }
+
     /// The handler list, the build.rs manifest and the permission set must name
     /// the same commands, or a command is either unreachable or unguarded.
     #[test]

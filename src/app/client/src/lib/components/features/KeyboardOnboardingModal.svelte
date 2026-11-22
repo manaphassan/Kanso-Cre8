@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Icon } from '$lib/components/ui';
+  import { APP_VERSION } from '$lib/version';
 
   interface Props {
     open: boolean;
@@ -83,7 +84,7 @@
             <Icon name="sparkles" size={12} />
             <span>ATELIER FLOW STATE</span>
           </span>
-          <span class="version-tag">Kanso Cre8 v0.8.0</span>
+          <span class="version-tag">Kanso Cre8 v{APP_VERSION}</span>
         </div>
         <h2 id="onboarding-title" class="modal-title">Designed for Tactile Speed</h2>
         <p class="modal-subtitle">

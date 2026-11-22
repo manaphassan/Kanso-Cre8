@@ -1,14 +1,22 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const { version } = JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+
+/** Writes the package.json version into index.html (%APP_VERSION%). */
+const appVersion = () => ({
+  name: 'kanso-app-version',
+  transformIndexHtml: (html) => html.replaceAll('%APP_VERSION%', version)
+});
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [svelte(), appVersion()],
   root: 'client',
   publicDir: 'public',
   resolve: {
