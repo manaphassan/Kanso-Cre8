@@ -1,5 +1,19 @@
 name: Release & Multi-Platform Builds
 
+# Tag push (v*): builds, signs and uploads a DRAFT release; publish it on
+# GitHub to make it the update the app sees (releases/latest/download/latest.json).
+# workflow_dispatch: builds and uploads artifacts only, no release.
+#
+# Signing secrets (each part is skipped while its secrets are missing):
+#   Updater (D20):  TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+#   Windows (D19):  AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID,
+#                   AZURE_SIGNING_ENDPOINT, AZURE_SIGNING_ACCOUNT, AZURE_SIGNING_PROFILE
+#                   (Azure Trusted Signing)
+#   macOS (D19):    APPLE_CERTIFICATE (base64 .p12), APPLE_CERTIFICATE_PASSWORD,
+#                   APPLE_SIGNING_IDENTITY, APPLE_ID, APPLE_PASSWORD (app-specific),
+#                   APPLE_TEAM_ID
+#   Linux:          unsigned
+
 on:
   push:
     tags:
@@ -30,6 +44,11 @@ jobs:
             name: 'Linux x64'
 
     runs-on: ${{ matrix.platform }}
+    env:
+      HAS_UPDATER_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY != '' }}
+      HAS_WINDOWS_SIGNING: ${{ secrets.AZURE_CLIENT_ID != '' && secrets.AZURE_SIGNING_ENDPOINT != '' }}
+      HAS_APPLE_SIGNING: ${{ secrets.APPLE_CERTIFICATE != '' }}
+      IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -56,35 +75,94 @@ jobs:
         working-directory: src/app
         run: npm ci
 
-      - name: Build Svelte 5 Client
+      - name: Check the tag matches package.json
+        if: env.IS_TAG == 'true'
+        shell: bash
         working-directory: src/app
-        run: npm run build:client
+        run: |
+          v=$(node -p "require('./package.json').version")
+          if [ "v$v" != "${GITHUB_REF_NAME}" ]; then echo "Tag ${GITHUB_REF_NAME} does not match package.json version $v"; exit 1; fi
+
+      - name: Prepare signing and updater config
+        id: sign
+        shell: bash
+        working-directory: src/app
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          AZURE_SIGNING_PROFILE: ${{ secrets.AZURE_SIGNING_PROFILE }}
+        run: |
+          args="${{ matrix.args }}"
+          # Only export what exists: an empty APPLE_SIGNING_IDENTITY would make the bundler try to sign.
+          if [ "$HAS_UPDATER_KEY" = "true" ]; then
+            args="$args --config src-tauri/tauri.updater.conf.json"
+            { echo "TAURI_SIGNING_PRIVATE_KEY<<KEY_EOF"; echo "$TAURI_SIGNING_PRIVATE_KEY"; echo "KEY_EOF"; } >> "$GITHUB_ENV"
+            echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD=$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No updater key: this build cannot be offered as an in-app update."
+          fi
+          if [ "${{ matrix.platform }}" = "macos-latest" ] && [ "$HAS_APPLE_SIGNING" = "true" ]; then
+            for v in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID; do
+              { echo "$v<<VAL_EOF"; printenv "$v"; echo "VAL_EOF"; } >> "$GITHUB_ENV"
+            done
+          elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
+            echo "::warning::No Apple signing secrets: the macOS build is unsigned and Gatekeeper will warn."
+          fi
+          if [ "${{ matrix.platform }}" = "windows-latest" ] && [ "$HAS_WINDOWS_SIGNING" = "true" ]; then
+            node -e "
+              const sign = 'trusted-signing-cli -e ' + process.env.AZURE_SIGNING_ENDPOINT + ' -a ' + process.env.AZURE_SIGNING_ACCOUNT + ' -c ' + process.env.AZURE_SIGNING_PROFILE + ' -d \"Kanso Cre8\" %1';
+              require('fs').writeFileSync('src-tauri/tauri.windows-sign.conf.json', JSON.stringify({ bundle: { windows: { signCommand: sign } } }, null, 2));"
+            args="$args --config src-tauri/tauri.windows-sign.conf.json"
+          elif [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            echo "::warning::No Windows signing secrets: the Windows build is unsigned and SmartScreen will warn."
+          fi
+          echo "args=$args" >> "$GITHUB_OUTPUT"
+
+      - name: Install Azure Trusted Signing client
+        if: matrix.platform == 'windows-latest' && env.HAS_WINDOWS_SIGNING == 'true'
+        run: cargo install trusted-signing-cli --locked
 
       - name: Build Tauri Desktop Package
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         with:
           projectPath: src/app
-          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v0.0.1' }}
-          releaseName: "Kanso Cre8 ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v0.0.1' }}"
-          releaseBody: 'Official Multi-Platform Release of Kanso Cre8 (簡素) — The Mindful Creative Vault.'
-          releaseDraft: false
+          tagName: ${{ env.IS_TAG == 'true' && github.ref_name || '' }}
+          releaseName: 'Kanso Cre8 ${{ github.ref_name }}'
+          releaseBody: 'See CHANGELOG.md for what changed. Windows and macOS builds are signed when signing is configured; Linux builds are unsigned.'
+          releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
+          includeUpdaterJson: true
+          args: ${{ steps.sign.outputs.args }}
 
-      - name: Attach Portable Executable to GitHub Release
+      - name: Package the Windows portable zip
         if: matrix.platform == 'windows-latest'
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if (Test-Path "src/app/src-tauri/target/release/kanso-cre8.exe") {
-            Copy-Item "src/app/src-tauri/target/release/kanso-cre8.exe" "Kanso.Cre8_Portable.exe"
-            gh release upload ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v0.0.1' }} "Kanso.Cre8_Portable.exe" --clobber
-          }
+          $v = (Get-Content src/app/package.json -Raw | ConvertFrom-Json).version
+          $dir = "kanso-cre8-v$v-windows-x64-portable"
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          Copy-Item src/app/src-tauri/target/release/kanso-cre8.exe "$dir/KansoCre8.exe"
+          Set-Content -Encoding ascii "$dir/portable.ini" "; Kanso Cre8 portable mode: settings live in the Data folder beside the app."
+          Set-Content -Encoding ascii "$dir/README.txt" "Kanso Cre8 $v portable edition. Run KansoCre8.exe from any folder or USB drive; settings are kept in Data next to it. Delete portable.ini for normal settings."
+          Compress-Archive -Path "$dir/*" -DestinationPath "$dir.zip"
+          if ($env:GITHUB_REF -like 'refs/tags/*') { gh release upload $env:GITHUB_REF_NAME "$dir.zip" --clobber }
 
-      - name: Upload Windows Executables & Installers
+      - name: Upload Windows Installers & Portable Zip
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
@@ -92,8 +170,7 @@ jobs:
           path: |
             src/app/src-tauri/target/release/bundle/nsis/*.exe
             src/app/src-tauri/target/release/bundle/msi/*.msi
-            src/app/src-tauri/target/release/kanso-cre8.exe
-            Kanso.Cre8_Portable.exe
+            kanso-cre8-v*-windows-x64-portable.zip
           if-no-files-found: warn
 
       - name: Upload Linux AppImage & Deb Packages
