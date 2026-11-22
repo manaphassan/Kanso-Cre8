@@ -10,6 +10,7 @@
   import ScopeTemplateModal from '../components/features/ScopeTemplateModal.svelte';
   import ConvertQuoteModal from '$lib/components/features/ConvertQuoteModal.svelte';
   import { Icon } from '$lib/components/ui';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
   import type { InvoiceDocument, ClientProfile, InvoiceLineItem } from '../types/kanso';
 
   interface Props {
@@ -216,6 +217,7 @@
   }
 
   function createNewInvoice() {
+    if (!licenseStore.gate('A new invoice')) return;
     const defaultClient = clients[0] || {
       code: 'ACME',
       name: 'Acme Corporation',
@@ -278,6 +280,7 @@
   }
 
   function createNewQuote() {
+    if (!licenseStore.gate('A new quote')) return;
     const defaultClient = clients.find(c => c.code === 'NEX') || clients[0] || {
       code: 'NEX',
       name: 'Nexus Studio',
@@ -342,6 +345,7 @@
 
   async function handleConvertQuote() {
     if (!activeDoc || activeDoc.type !== 'quote') return;
+    if (!licenseStore.gate('Turning a quote into an invoice')) return;
     isConverting = true;
     try {
       const res = await financeService.convertQuoteToInvoice(activeDoc.documentNumber);

@@ -19,6 +19,7 @@ import { clientCodeFor } from '$lib/domain/export/manifest';
 import { exportVault, planVaultExport, suggestedVaultFilename } from '$lib/domain/export/vaultExport';
 import type { LocalContext } from '../context';
 import { requireProject } from '../projectIndex';
+import { requirePro } from '../plan';
 import { badRequest, type LocalRouter } from '../router';
 
 type Input = Record<string, any>;
@@ -80,6 +81,7 @@ export function exportRoutes(router: LocalRouter): void {
   });
 
   router.post(['/projects/:id/export', '/projects/:id/export/zip'], async ({ ctx, params, body }) => {
+    await requirePro(ctx, 'The client handover package');
     const dest = destination(body);
     const { plan } = await planFor(ctx, params.id, body ?? {});
     const result = await exportHandover(await ctx.vault(), plan, dest);

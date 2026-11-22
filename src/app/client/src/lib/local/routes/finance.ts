@@ -11,6 +11,7 @@ import { archiveDocument, getDocument, listDocuments, saveDocument } from '$lib/
 import { documentHtmlFilename, renderDocumentHtml } from '$lib/domain/finance/html';
 import type { DocKind } from '$lib/domain/finance/numbering';
 import type { LocalContext } from '../context';
+import { requirePro } from '../plan';
 import { badRequest, notFound, type LocalRouter } from '../router';
 
 /** Domain errors become 400 (as the server); HTTP errors keep their status. */
@@ -52,7 +53,11 @@ function documentRoutes(router: LocalRouter, kind: DocKind): void {
 
   router.post(`/finance/${plural}`, ({ ctx, body }) =>
     as400(async () => {
-      const result = await saveDocument(await ctx.vault(), kind, body, ctx.now());
+      const fs = await ctx.vault();
+      // Editing an existing document stays free; creating a new one is Pro.
+      const ref = String(body?.id || body?.documentNumber || '');
+      if (!ref || !(await getDocument(fs, kind, ref, ctx.now()))) await requirePro(ctx, `A new ${kind}`);
+      const result = await saveDocument(fs, kind, body, ctx.now());
       changed(ctx, kind === 'quote' ? 'finance:quote-saved' : 'finance:updated', { [kind]: result.document });
       return { success: true, [kind]: result.document };
     })
@@ -75,6 +80,7 @@ export function financeRoutes(router: LocalRouter): void {
       const sessionLog = body?.sessionLog ?? body?.session;
       const clientCode = body?.clientCode || sessionLog?.clientCode;
       if (!clientCode || !sessionLog) throw badRequest('clientCode and sessionLog are required.');
+      await requirePro(ctx, 'Adding time to an invoice');
       const invoice = await appendSessionToInvoice(await ctx.vault(), clientCode, sessionLog, ctx.now());
       changed(ctx, 'finance:session-appended', { invoice });
       return { success: true, invoice };
@@ -85,6 +91,7 @@ export function financeRoutes(router: LocalRouter): void {
     as400(async () => {
       const quoteId = body?.quoteId || body?.id || body?.documentNumber;
       if (!quoteId) throw badRequest('quoteId is required.');
+      await requirePro(ctx, 'Turning a quote into an invoice');
       const result = await convertQuoteToInvoice(await ctx.vault(), String(quoteId), ctx.now());
       changed(ctx, 'finance:quote-converted', { ...result });
       return result;
@@ -95,6 +102,7 @@ export function financeRoutes(router: LocalRouter): void {
     as400(async () => {
       const { quoteId, projectTitle, depositPercentage, deadline, deliverableType, description } = body || {};
       if (!quoteId) throw badRequest('quoteId is required.');
+      await requirePro(ctx, 'Turning a quote into a project');
       const result = await convertQuoteToProjectAndInvoice(
         await ctx.vault(),
         String(quoteId),

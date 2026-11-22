@@ -4,6 +4,7 @@
   import { projectStore } from '$lib/stores/projectStore.svelte';
   import { appState } from '$lib/stores/appState.svelte';
   import { Icon } from '$lib/components/ui';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
 
   interface Props {
     quote: InvoiceDocument;
@@ -29,6 +30,7 @@
   const invoiceAmount = $derived(depositMode === 'half' ? Math.round(totalAmount * 0.5 * 100) / 100 : totalAmount);
 
   async function handleConvert() {
+    if (!licenseStore.gate('Turning a quote into a project')) return;
     if (!projectTitle.trim()) {
       appState.addToast('Please enter a project title.', 'warning');
       return;

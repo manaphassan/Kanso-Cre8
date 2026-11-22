@@ -7,6 +7,8 @@
   import ClientEditModal from '$lib/components/features/ClientEditModal.svelte';
   import type { ClientProfile } from '../types/kanso';
   import type { Snippet } from 'svelte';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
+  import { FREE_CLIENT_LIMIT } from '$lib/local/plan';
 
   let { tabs }: { tabs?: Snippet } = $props();
 
@@ -28,6 +30,7 @@
   }
 
   function openNewClientModal() {
+    if (clients.length >= FREE_CLIENT_LIMIT && !licenseStore.gate(`A client beyond the first ${FREE_CLIENT_LIMIT}`)) return;
     selectedClient = null;
     isEditingClient = true;
   }

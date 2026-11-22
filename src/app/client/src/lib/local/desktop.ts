@@ -40,6 +40,11 @@ export function createDesktopContext(): LocalContext {
       const invoke = await tauriInvoke();
       return invoke<string>('device_name');
     },
+    async licenseTier() {
+      const invoke = await tauriInvoke();
+      const s = await invoke<{ tier: 'pro' | 'zen' }>('license_status').catch(() => ({ tier: 'zen' as const }));
+      return s.tier === 'pro' ? 'pro' : 'zen';
+    },
     async vault() {
       // Views may load before the startup gate runs: open the remembered vault once.
       if (!opened) {

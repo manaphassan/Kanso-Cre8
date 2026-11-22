@@ -38,6 +38,8 @@ export interface LocalContext {
   fileUrl(rel: string): Promise<string>;
   /** This computer's name (default device label). */
   deviceName(): Promise<string>;
+  /** `pro` only with a valid Studio Pro licence (verified in Rust). */
+  licenseTier(): Promise<'pro' | 'zen'>;
   machine: MachineStore;
   /** AI through Rust; the key never reaches the webview. */
   ai: AiBackend;
@@ -51,7 +53,7 @@ export interface LocalContext {
 export function createMemoryContext(
   files: Record<string, string> = {},
   options: { root?: string | null; existing?: string[]; fs?: MemoryVaultFs } = {}
-): LocalContext & { fs: MemoryVaultFs; machine: MemoryMachineStore; ai: MemoryAiBackend; opened: string[]; retired: string[] } {
+): LocalContext & { fs: MemoryVaultFs; machine: MemoryMachineStore; ai: MemoryAiBackend; opened: string[]; retired: string[]; tier: 'pro' | 'zen' } {
   const fs = options.fs ?? new MemoryVaultFs(files);
   const machine = new MemoryMachineStore();
   const bus = new EventBus();
@@ -71,6 +73,11 @@ export function createMemoryContext(
     version: '0.0.0-test',
     now: () => fs.now(),
     deviceName: async () => 'Studio PC',
+    // Tests run as Pro unless they set `tier = 'zen'` to check the free limits.
+    tier: 'pro',
+    async licenseTier() {
+      return this.tier;
+    },
     async vault() {
       if (!root) throw new VaultOpenError('no_vault', 'No vault is open.');
       return fs;

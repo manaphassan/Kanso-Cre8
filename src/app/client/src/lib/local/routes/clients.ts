@@ -6,10 +6,19 @@
 
 import { deleteClient, getClient, listClients, saveClient, type ClientInput } from '$lib/domain/clients';
 import type { LocalContext } from '../context';
+import { FREE_CLIENT_LIMIT, isPro, proRequired } from '../plan';
 import { badRequest, notFound, type LocalRouter } from '../router';
 
 async function save(ctx: LocalContext, input: ClientInput, action: 'created' | 'updated') {
   const fs = await ctx.vault();
+  if (action === 'created') {
+    const existing = await listClients(fs);
+    const code = String(input.code || '').trim().toUpperCase();
+    const isNew = !existing.some((c) => c.code === code);
+    if (isNew && existing.length >= FREE_CLIENT_LIMIT && !(await isPro(ctx))) {
+      throw proRequired(`A client beyond the first ${FREE_CLIENT_LIMIT}`);
+    }
+  }
   let client;
   try {
     client = await saveClient(fs, input, ctx.now());

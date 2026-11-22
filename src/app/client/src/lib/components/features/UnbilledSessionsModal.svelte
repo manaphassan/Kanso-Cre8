@@ -4,6 +4,7 @@
   import { financeService } from '$lib/services/financeService';
   import { appState } from '$lib/stores/appState.svelte';
   import { Icon } from '$lib/components/ui';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
 
   interface Props {
     open: boolean;
@@ -20,6 +21,7 @@
   }
 
   async function appendSingleSession(session: TimeSessionLog) {
+    if (!licenseStore.gate('Adding time to an invoice')) return;
     appendingId = session.id;
     try {
       const inv = await financeService.appendSession(session.clientCode, session);
@@ -44,6 +46,7 @@
 
   async function appendAllSessions() {
     if (timerStore.unbilledLogs.length === 0) return;
+    if (!licenseStore.gate('Adding time to an invoice')) return;
     isAppendingAll = true;
     try {
       const logs = [...timerStore.unbilledLogs];

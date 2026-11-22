@@ -5,6 +5,7 @@
  */
 
 import { activateLicense, deactivateLicense, licenseStatus, type LicenseStatus } from '$lib/local/license';
+import { proMessage } from '$lib/local/plan';
 import { appState } from './appState.svelte';
 
 export type LicenseTier = 'zen' | 'pro';
@@ -74,6 +75,16 @@ class LicenseStore {
   /** True when the Studio Pro licence is valid. */
   requirePro(_featureName?: string): boolean {
     return this.isPro;
+  }
+
+  /**
+   * For actions that need Pro (see local/plan.ts): true with a valid licence,
+   * otherwise shows one toast that names the feature and returns false.
+   */
+  gate(what: string): boolean {
+    if (this.isPro) return true;
+    appState.addToast(proMessage(what), 'info', 'Kanso Studio Pro', 6000);
+    return false;
   }
 }
 

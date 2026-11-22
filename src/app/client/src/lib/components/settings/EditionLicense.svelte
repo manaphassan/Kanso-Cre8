@@ -25,9 +25,9 @@
     </div>
     <p class="card-subtitle">
       {#if licenseStore.isPro}
-        Your studio is licensed under a one-time perpetual license. Commercial operations, unlimited clients, YAML invoice generation, and custom rate calculators are permanently unlocked.
+        Studio Pro is active: new quotes and invoices, quote-to-invoice and quote-to-project conversion, timer sessions on invoices, client handover packages and unlimited clients.
       {:else}
-        You are operating under the free Kanso Zen sanctuary tier. Personal journaling, atomic notes, and focus radio are free forever. Commercial operations require an offline studio key.
+        Kanso Zen is free forever: journal, notes, projects, focus radio, the timer, up to 3 clients, and everything already in your vault (open, edit, print and export it any time). Studio Pro adds new quotes and invoices, quote conversion, timer sessions on invoices, client handover packages and unlimited clients.
       {/if}
     </p>
   </div>

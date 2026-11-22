@@ -14,6 +14,7 @@ import {
   type TimerState
 } from '$lib/domain/timer';
 import type { LocalContext } from '../context';
+import { isPro } from '../plan';
 import type { LocalRouter } from '../router';
 
 // Header clicks fire start/pause/stop without awaiting; run them one at a time
@@ -75,8 +76,10 @@ export function timerRoutes(router: LocalRouter): void {
       const now = ctx.now();
       const current = await load(ctx);
       const wantsInvoice = body?.appendToInvoice !== false && body?.appendToInvoice !== 'false';
-      const fs = wantsInvoice ? await ctx.vault().catch(() => null) : null;
-      const { result, next } = await stopTimer(fs, current, body, now);
+      // Free tier: the session is still logged, just not added to an invoice.
+      const append = wantsInvoice && (await isPro(ctx));
+      const fs = append ? await ctx.vault().catch(() => null) : null;
+      const { result, next } = await stopTimer(fs, current, { ...(body || {}), appendToInvoice: append }, now);
       await save(ctx, next);
       const state = timerView(next, now);
       ctx.bus.emit('timer:stopped', { timer: state, sessionLog: result.sessionLog });

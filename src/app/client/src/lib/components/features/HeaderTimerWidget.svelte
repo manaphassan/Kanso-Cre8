@@ -8,6 +8,7 @@
   import { Icon } from '$lib/components/ui';
   import StopSessionModal from './StopSessionModal.svelte';
   import UnbilledSessionsModal from './UnbilledSessionsModal.svelte';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
 
   let showRatePopover = $state(false);
   let showClientPopover = $state(false);
@@ -112,7 +113,7 @@
         `Session saved: ${log.durationFormatted} (${log.earnedFormatted}) on ${log.clientCode}`,
         'success'
       );
-      if (appendToInvoice) {
+      if (appendToInvoice && licenseStore.gate('Adding time to an invoice')) {
         financeService.appendSession(log.clientCode, log).then(inv => {
           if (inv) {
             timerStore.markSessionAppended(log.id);

@@ -9,6 +9,7 @@
   import { ApiClient } from '$lib/services/api';
   import { pickZipDestination } from '$lib/local/dialog';
   import HandoverManifestModal from '$lib/components/features/HandoverManifestModal.svelte';
+  import { licenseStore } from '$lib/stores/licenseStore.svelte';
 
   interface Props {
     open?: boolean;
@@ -166,6 +167,7 @@
 
   async function triggerDownload() {
     if (!projId || isExporting) return;
+    if (!licenseStore.gate('The client handover package')) return;
     try {
       const dest = await pickZipDestination('Save the handover package', `${projectJobId || 'HANDOVER'}_Client_Delivery.zip`);
       if (!dest) return;
